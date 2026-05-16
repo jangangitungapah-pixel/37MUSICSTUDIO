@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useBookingStore } from '../store/useBookingStore';
 import { useSettingsStore } from '../store/useSettingsStore';
 import { useCustomerStore } from '../store/useCustomerStore';
+import { useTourStore } from '../store/useTourStore';
 import { format } from 'date-fns';
 import './BookingForm.css';
 
@@ -9,6 +10,7 @@ const BookingForm = ({ onClose, initialDate, initialHour }) => {
   const { addBooking } = useBookingStore();
   const { pricePerHour } = useSettingsStore();
   const { customers, incrementBookingCount } = useCustomerStore();
+  const { run, currentStep, nextStep } = useTourStore();
   
   const today = format(new Date(), 'yyyy-MM-dd');
 
@@ -57,6 +59,10 @@ const BookingForm = ({ onClose, initialDate, initialHour }) => {
       totalPrice: formData.duration * pricePerHour
     });
     onClose();
+
+    if (run && currentStep === 8) {
+      setTimeout(() => nextStep(), 100);
+    }
   };
 
   const totalPrice = formData.duration * pricePerHour;
@@ -76,7 +82,7 @@ const BookingForm = ({ onClose, initialDate, initialHour }) => {
             onChange={handleChange} 
             placeholder="contoh: The Rockers" 
             required 
-            className="form-input"
+            className="form-input tour-input-band"
             autoFocus
             autoComplete="off"
           />
@@ -94,7 +100,7 @@ const BookingForm = ({ onClose, initialDate, initialHour }) => {
             value={formData.phone} 
             onChange={handleChange} 
             placeholder="08xxxxxxxxxx" 
-            className="form-input"
+            className="form-input tour-input-phone"
           />
         </div>
       </div>
@@ -107,13 +113,13 @@ const BookingForm = ({ onClose, initialDate, initialHour }) => {
             name="date" 
             value={formData.date} 
             onChange={handleChange} 
-            className="form-input"
+            className="form-input tour-input-date"
             required
           />
         </div>
         <div className="form-group">
           <label>Status Pembayaran</label>
-          <select name="status" value={formData.status} onChange={handleChange} className="form-input">
+          <select name="status" value={formData.status} onChange={handleChange} className="form-input tour-input-status">
             <option value="pending">Belum Bayar</option>
             <option value="dp">DP (Down Payment)</option>
             <option value="confirmed">Lunas</option>
@@ -124,7 +130,7 @@ const BookingForm = ({ onClose, initialDate, initialHour }) => {
       <div className="form-row form-row-3">
         <div className="form-group">
           <label>Jam Mulai <span className="required">*</span></label>
-          <select name="hour" value={formData.hour} onChange={handleChange} className="form-input">
+          <select name="hour" value={formData.hour} onChange={handleChange} className="form-input tour-input-hour">
             {Array.from({ length: 13 }).map((_, i) => {
               const h = i + 10; // 10:00 to 22:00
               return <option key={h} value={h}>{String(h).padStart(2, '0')}.00</option>
@@ -140,7 +146,7 @@ const BookingForm = ({ onClose, initialDate, initialHour }) => {
             max="12" 
             value={formData.duration} 
             onChange={handleChange} 
-            className="form-input"
+            className="form-input tour-input-duration"
             required
           />
         </div>
@@ -154,7 +160,7 @@ const BookingForm = ({ onClose, initialDate, initialHour }) => {
 
       {/* DP Amount Section - only visible when status is 'dp' */}
       {formData.status === 'dp' && (
-        <div className="dp-section">
+        <div className="dp-section tour-input-dp-section">
           <div className="form-row">
             <div className="form-group">
               <label>Nominal DP yang Dibayar <span className="required">*</span></label>
@@ -165,7 +171,7 @@ const BookingForm = ({ onClose, initialDate, initialHour }) => {
                 max={totalPrice}
                 value={formData.dpAmount} 
                 onChange={handleChange} 
-                className="form-input"
+                className="form-input tour-input-dp"
                 placeholder="Masukkan nominal DP..."
                 required
               />
@@ -199,7 +205,7 @@ const BookingForm = ({ onClose, initialDate, initialHour }) => {
 
       <div className="form-actions">
         <button type="button" className="btn-secondary" onClick={onClose}>Batal</button>
-        <button type="submit" className="btn-primary">Simpan Booking</button>
+        <button type="submit" className="btn-primary tour-btn-save">Simpan Booking</button>
       </div>
     </form>
   );

@@ -207,4 +207,11 @@
     from { opacity: 0; }
     to { opacity: 1; }
   }
+
+  /* Force sidebar open during tour mode */
+  body.tour-show-sidebar .sidebar.glass-panel {
+    transform: translateX(0) !important;
+    transition: none !important; /* Instant so joyride can measure it immediately */
+    z-index: 10005 !important;
+  }
 }

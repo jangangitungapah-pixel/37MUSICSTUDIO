@@ -341,7 +341,7 @@
 .sticky-col {
   position: sticky;
   left: 0;
-  z-index: 5;
+  z-index: 20;
 }
 
 .time-label {
@@ -356,7 +356,7 @@
 }
 
 .time-label.even-row {
-  background: rgba(255, 255, 255, 0.015);
+  background: #1d1d23; /* Opaque instead of transparent to hide scrolled content */
 }
 
 .time-range {
@@ -421,6 +421,7 @@
   cursor: pointer;
   transition: filter 0.15s;
   overflow: hidden;
+  border-bottom: none; /* Remove default grid cell border for contiguous look */
 }
 
 .booked-cell:hover {

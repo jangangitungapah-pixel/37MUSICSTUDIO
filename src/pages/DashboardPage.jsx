@@ -120,7 +120,7 @@ const DashboardPage = () => {
 
       {/* Charts Section */}
       <div className="charts-grid">
-        <div className="chart-container glass-panel span-2">
+        <div className="chart-container glass-panel span-2 tour-dashboard-revenue-chart">
           <h3>Tren Pendapatan (7 Hari Terakhir)</h3>
           <div className="chart-wrapper">
             <ResponsiveContainer width="100%" height={300}>
@@ -138,7 +138,7 @@ const DashboardPage = () => {
           </div>
         </div>
 
-        <div className="chart-container glass-panel">
+        <div className="chart-container glass-panel tour-dashboard-inventory-chart">
           <h3>Kondisi Inventaris Alat</h3>
           <div className="chart-wrapper">
             <ResponsiveContainer width="100%" height={300}>
@@ -168,7 +168,7 @@ const DashboardPage = () => {
 
       {/* Bottom Section */}
       <div className="dashboard-bottom-grid">
-        <div className="dash-table-card glass-panel">
+        <div className="dash-table-card glass-panel tour-dashboard-top-customers">
           <h3>Top Customers (Loyalitas)</h3>
           <div className="table-responsive">
             <table className="dash-table">

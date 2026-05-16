@@ -3,6 +3,7 @@ import { ChevronLeft, ChevronRight, Plus, Search, CalendarCheck, Clock, DollarSi
 import { format, addMonths, startOfMonth, getDaysInMonth, addDays, getDay, isSameMonth } from 'date-fns';
 import { useBookingStore } from '../store/useBookingStore';
 import { useSettingsStore } from '../store/useSettingsStore';
+import { useTourStore } from '../store/useTourStore';
 import Modal from '../components/Modal';
 import BookingForm from '../components/BookingForm';
 import './CalendarPage.css';
@@ -21,6 +22,7 @@ const CalendarPage = () => {
   // Use global state
   const { bookings, deleteBooking, updateBookingStatus, getMonthlyStats } = useBookingStore();
   const { pricePerHour } = useSettingsStore();
+  const { run, currentStep, nextStep } = useTourStore();
 
   // Calendar configuration
   const numDays = getDaysInMonth(currentMonth);
@@ -43,6 +45,9 @@ const CalendarPage = () => {
     setPrefillDate(dateStr);
     setPrefillHour(hour);
     setIsModalOpen(true);
+    if (run && currentStep === 2) {
+      setTimeout(() => nextStep(), 100);
+    }
   };
 
   const handleNewBooking = () => {
@@ -84,11 +89,18 @@ const CalendarPage = () => {
     const left = Math.min(rect.left, window.innerWidth - 320);
     setDetailPos({ top, left });
     setSelectedBooking(booking);
+
+    if (run && currentStep === 9 && booking.band === 'Band Tutorial') {
+      setTimeout(() => nextStep(), 100);
+    }
   };
 
   const handleDeleteBooking = (id) => {
     deleteBooking(id);
     setSelectedBooking(null);
+    if (run && currentStep === 10) {
+      setTimeout(() => nextStep(), 100);
+    }
   };
 
   const handleStatusChange = (id, newStatus) => {
@@ -120,6 +132,8 @@ const CalendarPage = () => {
 
   const todayStr = format(new Date(), 'yyyy-MM-dd');
 
+  let emptyCellAssigned = false;
+
   return (
     <div className="calendar-page">
       <header className="page-header">
@@ -129,7 +143,7 @@ const CalendarPage = () => {
         </div>
         
         <div className="header-actions">
-          <div className="search-bar glass-panel">
+          <div className="search-bar glass-panel tour-calendar-search">
             <Search size={18} color="var(--text-muted)" />
             <input 
               type="text" 
@@ -141,7 +155,7 @@ const CalendarPage = () => {
               <button className="search-clear" onClick={() => setSearchQuery('')}><X size={14} /></button>
             )}
           </div>
-          <button className="btn-primary" onClick={handleNewBooking}>
+          <button className="btn-primary tour-calendar-new-btn" onClick={handleNewBooking}>
             <Plus size={18} />
             <span>New Booking</span>
           </button>
@@ -188,7 +202,7 @@ const CalendarPage = () => {
 
       <div className="calendar-container glass-panel">
         <div className="calendar-toolbar">
-          <div className="date-navigation">
+          <div className="date-navigation tour-calendar-nav">
             <button className="icon-btn" onClick={() => setCurrentMonth(addMonths(currentMonth, -1))}>
               <ChevronLeft size={20} />
             </button>
@@ -205,7 +219,7 @@ const CalendarPage = () => {
           </div>
         </div>
 
-        <div className="monthly-grid-wrapper" ref={gridWrapperRef}>
+        <div className="monthly-grid-wrapper tour-calendar-grid" ref={gridWrapperRef}>
           <div className="monthly-grid" style={{ gridTemplateColumns: `90px repeat(${numDays}, minmax(60px, 1fr))` }}>
             
             {/* Top-Left Corner Header Cell */}
@@ -252,11 +266,18 @@ const CalendarPage = () => {
                   const isBookingStart = cellBooking && cellBooking.hour === hour;
                   const isBookingEnd = cellBooking && (cellBooking.hour + cellBooking.duration - 1) === hour;
 
+                  const isTargetCell = run && currentStep === 2 && isToday && !cellBooking && !emptyCellAssigned;
+                  if (isTargetCell) emptyCellAssigned = true;
+
+                  const isTutorialBooking = cellBooking && cellBooking.band === 'Band Tutorial' && run && currentStep === 9;
+
                   const cellClasses = [
                     'grid-cell',
                     hourIdx % 2 === 0 ? 'even-row' : '',
                     isToday ? 'today-col-highlight' : '',
                     isWeekend ? 'weekend-col' : '',
+                    isTargetCell ? 'tour-target-cell' : '',
+                    isTutorialBooking ? 'tour-new-booking' : ''
                   ].filter(Boolean).join(' ');
 
                   if (cellBooking) {
@@ -364,7 +385,7 @@ const CalendarPage = () => {
             </div>
           </div>
           <div className="detail-footer">
-            <button className="delete-btn" onClick={() => handleDeleteBooking(selectedBooking.id)}>
+            <button className="delete-btn tour-btn-delete" onClick={() => handleDeleteBooking(selectedBooking.id)}>
               <Trash2 size={14} />
               <span>Hapus Booking</span>
             </button>

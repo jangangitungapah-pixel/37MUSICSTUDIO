@@ -25,7 +25,14 @@ const Sidebar = () => {
   const handleRestartTour = () => {
     // Navigate to dashboard first to ensure all tour targets are available
     navigate('/');
-    startTour();
+    
+    // Close sidebar on mobile so dashboard stats are visible
+    setMobileOpen(false);
+    
+    // Wait for the Dashboard component to mount before starting the tour
+    setTimeout(() => {
+      startTour();
+    }, 300);
   };
 
   const menuItems = [
