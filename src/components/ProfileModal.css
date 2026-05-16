@@ -1,0 +1,78 @@
+.profile-modal-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--border-light);
+  padding-bottom: 8px;
+}
+
+.profile-modal-tabs .tab-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  font-weight: 500;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.profile-modal-tabs .tab-btn:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.profile-modal-tabs .tab-btn.active {
+  color: var(--accent-cyan);
+  background: rgba(0, 240, 255, 0.1);
+}
+
+.profile-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.profile-form .form-group label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-secondary);
+}
+
+.profile-form .form-input.disabled {
+  background: rgba(255, 255, 255, 0.02);
+  color: var(--text-muted);
+  cursor: not-allowed;
+}
+
+.alert-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-size: 0.9rem;
+}
+
+.alert-box.error {
+  background: rgba(255, 42, 95, 0.1);
+  border: 1px solid rgba(255, 42, 95, 0.2);
+  color: var(--accent-pink);
+}
+
+.alert-box.success {
+  background: rgba(0, 255, 136, 0.1);
+  border: 1px solid rgba(0, 255, 136, 0.2);
+  color: #00ff88;
+}
+
+.profile-form .btn-primary {
+  margin-top: 8px;
+  padding: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

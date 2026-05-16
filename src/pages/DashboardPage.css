@@ -1,0 +1,243 @@
+.dashboard-page {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  min-height: 100%;
+  padding-right: 8px;
+}
+
+.dashboard-header h2 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin: 0 0 4px 0;
+  color: var(--text-primary);
+}
+
+.dashboard-header .subtitle {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+/* Stats Grid */
+.dash-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+.dash-stat-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+}
+
+.stat-icon-wrapper {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.stat-icon-wrapper.blue { background: rgba(0, 240, 255, 0.15); color: #00f0ff; }
+.stat-icon-wrapper.green { background: rgba(76, 175, 80, 0.15); color: #4CAF50; }
+.stat-icon-wrapper.pink { background: rgba(255, 42, 95, 0.15); color: #ff2a5f; }
+.stat-icon-wrapper.orange { background: rgba(255, 193, 7, 0.15); color: #FFC107; }
+
+.stat-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.dash-stat-card .stat-label {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--text-muted);
+  letter-spacing: 0.5px;
+}
+
+.dash-stat-card .stat-value {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+.dash-stat-card .stat-value small {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+/* Charts Grid */
+.charts-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 20px;
+}
+
+.chart-container {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.chart-container h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0;
+  color: var(--text-primary);
+}
+
+.chart-wrapper {
+  width: 100%;
+  flex: 1;
+  min-height: 300px;
+}
+
+/* Bottom Grid */
+.dashboard-bottom-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+
+.dash-table-card {
+  padding: 20px;
+}
+
+.dash-table-card h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0 0 16px 0;
+  color: var(--text-primary);
+}
+
+.dash-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.dash-table th {
+  text-align: left;
+  padding: 12px;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border-light);
+}
+
+.dash-table td {
+  padding: 14px 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.top-cust-name {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.rank-badge {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  background: var(--bg-body);
+  color: var(--text-muted);
+}
+
+.rank-1 { background: linear-gradient(135deg, #FFD700, #FDB931); color: #000; }
+.rank-2 { background: linear-gradient(135deg, #E0E0E0, #9E9E9E); color: #000; }
+.rank-3 { background: linear-gradient(135deg, #CD7F32, #8B4513); color: #fff; }
+
+/* ===== Mobile Responsive ===== */
+@media (max-width: 768px) {
+  .dashboard-page {
+    padding-right: 0;
+    gap: 16px;
+  }
+
+  .dashboard-header h2 {
+    font-size: 1.3rem;
+  }
+
+  .dash-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .dash-stat-card {
+    padding: 14px;
+    gap: 12px;
+  }
+
+  .stat-icon-wrapper {
+    width: 40px;
+    height: 40px;
+  }
+
+  .dash-stat-card .stat-value {
+    font-size: 1.1rem;
+  }
+
+  .dash-stat-card .stat-label {
+    font-size: 0.72rem;
+  }
+
+  .charts-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .chart-container {
+    padding: 16px;
+  }
+
+  .chart-container h3 {
+    font-size: 0.95rem;
+  }
+
+  .chart-wrapper {
+    min-height: 200px;
+  }
+
+  .dash-table-card {
+    overflow-x: auto;
+    padding: 14px;
+  }
+
+  .dash-table-card h3 {
+    font-size: 0.95rem;
+    margin-bottom: 12px;
+  }
+
+  .dash-table th,
+  .dash-table td {
+    padding: 10px 12px;
+    font-size: 0.82rem;
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 480px) {
+  .dash-stats-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
