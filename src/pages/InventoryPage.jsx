@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { Search, Plus, Edit2, Trash2, Box, Package, AlertTriangle, AlertCircle, Wrench, X, Tag, Hash, ChevronRight, Calendar, StickyNote, FolderPlus } from 'lucide-react';
 import { useInventoryStore } from '../store/useInventoryStore';
+import { useTourStore } from '../store/useTourStore';
 import Modal from '../components/Modal';
 import './InventoryPage.css';
 
@@ -13,6 +14,7 @@ const CONDITION_COLORS = {
 
 const InventoryPage = () => {
   const { inventory, categories, addCategory, addEquipment, updateEquipment, deleteEquipment, getStats } = useInventoryStore();
+  const { run, currentStep, nextStep } = useTourStore();
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('All');
   const [selectedItem, setSelectedItem] = useState(null);
@@ -98,6 +100,9 @@ const InventoryPage = () => {
       addEquipment(formData);
     }
     setIsModalOpen(false);
+    if (run && currentStep === 8) {
+      setTimeout(() => nextStep(), 300);
+    }
   };
 
   const handleRowClick = (item) => {
@@ -117,7 +122,7 @@ const InventoryPage = () => {
         </div>
         
         <div className="header-actions">
-          <div className="search-bar glass-panel">
+          <div className="search-bar glass-panel tour-inv-search">
             <Search size={18} color="var(--text-muted)" />
             <input 
               type="text" 
@@ -129,7 +134,12 @@ const InventoryPage = () => {
               <button className="search-clear" onClick={() => setSearchQuery('')}><X size={14} /></button>
             )}
           </div>
-          <button className="btn-primary" onClick={handleOpenNew}>
+          <button className="btn-primary tour-inv-add-btn" onClick={() => {
+            handleOpenNew();
+            if (run && currentStep === 3) {
+              setTimeout(() => nextStep(), 300);
+            }
+          }}>
             <Plus size={18} />
             <span>Alat Baru</span>
           </button>
@@ -137,7 +147,7 @@ const InventoryPage = () => {
       </header>
 
       {/* Stats Bar */}
-      <div className="stats-bar">
+      <div className="stats-bar tour-inv-stats">
         <div className="stat-card glass-panel">
           <div className="stat-icon" style={{ background: 'rgba(0, 240, 255, 0.1)' }}>
             <Box size={20} color="var(--accent-cyan)" />
@@ -189,7 +199,7 @@ const InventoryPage = () => {
       <div className="inventory-content-area">
         <div className="inventory-container glass-panel">
           {/* Category Tabs — dynamic from store */}
-          <div className="filter-tabs">
+          <div className="filter-tabs tour-inv-categories">
             <button 
               className={`filter-tab ${activeCategory === 'All' ? 'active' : ''}`} 
               onClick={() => setActiveCategory('All')}
@@ -211,7 +221,7 @@ const InventoryPage = () => {
           </div>
 
           <div className="table-responsive">
-            <table className="inventory-table">
+            <table className="inventory-table tour-inv-table">
               <thead>
                 <tr>
                   <th>Nama Alat</th>
@@ -352,13 +362,13 @@ const InventoryPage = () => {
       >
         <form className="inventory-form" onSubmit={handleSubmit}>
           {/* Section 1: Identitas Alat */}
-          <div className="form-section">
+          <div className="form-section tour-inv-input-identity">
             <div className="form-section-header">
               <Box size={16} />
               <span>Identitas Alat</span>
             </div>
             
-            <div className="form-row" style={{ gridTemplateColumns: '2fr 1fr' }}>
+            <div className="form-row form-row-2-1">
               <div className="form-group">
                 <label>Nama Alat / Model <span className="required">*</span></label>
                 <input 
@@ -404,7 +414,7 @@ const InventoryPage = () => {
           </div>
 
           {/* Section 2: Kondisi */}
-          <div className="form-section">
+          <div className="form-section tour-inv-input-condition">
             <div className="form-section-header">
               <AlertCircle size={16} />
               <span>Kondisi Alat</span>
@@ -425,7 +435,7 @@ const InventoryPage = () => {
           </div>
 
           {/* Section 3: Maintenance */}
-          <div className="form-section">
+          <div className="form-section tour-inv-input-maintenance">
             <div className="form-section-header">
               <Wrench size={16} />
               <span>Jadwal Maintenance</span>
@@ -443,7 +453,7 @@ const InventoryPage = () => {
           </div>
 
           {/* Section 4: Catatan */}
-          <div className="form-section">
+          <div className="form-section tour-inv-input-notes">
             <div className="form-section-header">
               <StickyNote size={16} />
               <span>Catatan Tambahan</span>
@@ -457,7 +467,7 @@ const InventoryPage = () => {
 
           <div className="form-actions">
             <button type="button" className="btn-secondary" onClick={() => setIsModalOpen(false)}>Batal</button>
-            <button type="submit" className="btn-primary">
+            <button type="submit" className="btn-primary tour-inv-btn-save">
               {editingItem ? 'Update Alat' : 'Simpan Alat'}
             </button>
           </div>

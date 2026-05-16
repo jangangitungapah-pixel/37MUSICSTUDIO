@@ -484,7 +484,6 @@
 }
 
 .mobile-customer-list {
-  display: flex;
   flex-direction: column;
   padding: 8px;
   gap: 4px;
@@ -561,6 +560,25 @@
 
 .status-dot.inactive {
   background: var(--text-muted);
+}
+
+.mobile-card-actions {
+  display: flex;
+  gap: 4px;
+  margin-left: 4px;
+}
+
+.mobile-card-actions .icon-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+}
+
+.mobile-card-actions .icon-btn.delete:hover {
+  background: rgba(255, 68, 68, 0.1);
+  color: #ff4444;
+  border-color: rgba(255, 68, 68, 0.2);
 }
 
 /* ===== Mobile Responsive ===== */

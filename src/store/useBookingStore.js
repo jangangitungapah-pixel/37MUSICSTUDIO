@@ -13,46 +13,41 @@ export const useBookingStore = create((set, get) => {
   let isFirstLoad = true;
 
   onSnapshot(bookingsRef, (snapshot) => {
-    const newData = snapshot.docs.map(doc => doc.data());
-    
     if (isFirstLoad) {
       // First load — just set data, no notifications
       isFirstLoad = false;
-      set({ bookings: newData, isLoaded: true });
+      set({ bookings: snapshot.docs.map(doc => doc.data()), isLoaded: true });
       return;
     }
 
-    const oldData = get().bookings;
-    const oldIds = new Set(oldData.map(b => b.id));
-    const newIds = new Set(newData.map(b => b.id));
-
-    // Detect added bookings (remote only)
-    const addedBookings = newData.filter(b => !oldIds.has(b.id) && !localActionIds.has(b.id));
-    // Detect deleted bookings (remote only)
-    const deletedBookings = oldData.filter(b => !newIds.has(b.id) && !localActionIds.has(b.id));
-
     const { addNotification } = useNotificationStore.getState();
 
-    addedBookings.forEach(b => {
-      addNotification({
-        type: 'booking',
-        title: 'Booking Baru',
-        message: `${b.band} — ${b.date}, ${b.hour}.00–${b.hour + b.duration}.00 (${b.duration} jam)`
-      });
+    snapshot.docChanges().forEach((change) => {
+      const b = change.doc.data();
+      
+      if (change.type === 'added' && !localActionIds.has(b.id)) {
+        addNotification({
+          type: 'booking',
+          title: 'Booking Baru',
+          message: `${b.band} — ${b.date}, ${b.hour}.00–${b.hour + b.duration}.00 (${b.duration} jam)`
+        });
+      }
+      
+      if (change.type === 'removed' && !localActionIds.has(b.id)) {
+        addNotification({
+          type: 'warning',
+          title: 'Booking Dihapus',
+          message: `${b.band} — ${b.date} telah dihapus oleh pengguna lain`
+        });
+      }
+
+      // If the server confirmed our local action, we can safely remove it from the ignore list
+      if (localActionIds.has(b.id)) {
+        localActionIds.delete(b.id);
+      }
     });
 
-    deletedBookings.forEach(b => {
-      addNotification({
-        type: 'warning',
-        title: 'Booking Dihapus',
-        message: `${b.band} — ${b.date} telah dihapus oleh pengguna lain`
-      });
-    });
-
-    // Clean up local action IDs after processing
-    localActionIds.clear();
-
-    set({ bookings: newData, isLoaded: true });
+    set({ bookings: snapshot.docs.map(doc => doc.data()), isLoaded: true });
   });
 
   return {

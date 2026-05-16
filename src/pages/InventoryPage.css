@@ -766,7 +766,8 @@
   }
 
   .inventory-form .form-row,
-  .inventory-form .form-row-3 {
+  .inventory-form .form-row-3,
+  .inventory-form .form-row-2-1 {
     grid-template-columns: 1fr;
   }
 

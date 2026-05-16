@@ -1,17 +1,24 @@
 import React, { useState } from 'react';
-import { CalendarDays, Users, Package, CreditCard, Settings, Music, BookOpen, PieChart, Menu, X, LogOut, HelpCircle } from 'lucide-react';
+import { CalendarDays, Users, Package, CreditCard, Settings, Music, BookOpen, PieChart, Menu, X, LogOut, HelpCircle, Bell } from 'lucide-react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/useAuthStore';
 import { useTourStore } from '../store/useTourStore';
+import { useNotificationStore } from '../store/useNotificationStore';
 import ProfileModal from './ProfileModal';
+import NotificationPanel from './NotificationPanel';
 import './Sidebar.css';
 
 const Sidebar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isNotifOpen, setIsNotifOpen] = useState(false);
+  
   const { user, userProfile, logout } = useAuthStore();
   const { startTour } = useTourStore();
+  const { notifications } = useNotificationStore();
   const navigate = useNavigate();
+
+  const unreadCount = notifications.filter(n => !n.isRead).length;
 
   const handleLogout = async () => {
     try {
@@ -23,16 +30,23 @@ const Sidebar = () => {
   };
 
   const handleRestartTour = () => {
-    // Navigate to dashboard first to ensure all tour targets are available
-    navigate('/');
+    const currentPath = window.location.pathname;
+    const tourPages = ['/', '/calendar', '/customers', '/inventory'];
     
-    // Close sidebar on mobile so dashboard stats are visible
-    setMobileOpen(false);
-    
-    // Wait for the Dashboard component to mount before starting the tour
-    setTimeout(() => {
-      startTour();
-    }, 300);
+    // If already on a page with a tour, start it here
+    if (tourPages.includes(currentPath)) {
+      setMobileOpen(false);
+      setTimeout(() => {
+        startTour();
+      }, 300);
+    } else {
+      // Navigate to dashboard first
+      navigate('/');
+      setMobileOpen(false);
+      setTimeout(() => {
+        startTour();
+      }, 300);
+    }
   };
 
   const menuItems = [
@@ -57,9 +71,15 @@ const Sidebar = () => {
           <Music size={20} color="var(--accent-pink)" />
           <span className="mobile-header-title">37 STUDIO</span>
         </div>
-        <button className="mobile-menu-btn" onClick={() => setMobileOpen(!mobileOpen)}>
-          {mobileOpen ? <X size={22} /> : <Menu size={22} />}
-        </button>
+        <div style={{display: 'flex', gap: '8px', alignItems: 'center'}}>
+          <button className="notification-bell-btn" onClick={() => setIsNotifOpen(true)}>
+             <Bell size={22} color="var(--text-primary)" />
+             {unreadCount > 0 && <span className="notification-badge">{unreadCount > 99 ? '99+' : unreadCount}</span>}
+          </button>
+          <button className="mobile-menu-btn" onClick={() => setMobileOpen(!mobileOpen)}>
+            {mobileOpen ? <X size={22} /> : <Menu size={22} />}
+          </button>
+        </div>
       </div>
 
       {/* Mobile Overlay */}
@@ -72,6 +92,10 @@ const Sidebar = () => {
             <Music size={24} color="var(--accent-pink)" />
           </div>
           <h1 className="logo-text">37 STUDIO</h1>
+          <button className="notification-bell-btn" onClick={() => setIsNotifOpen(true)} style={{marginLeft: 'auto', display: 'flex'}}>
+             <Bell size={20} color="var(--text-muted)" />
+             {unreadCount > 0 && <span className="notification-badge">{unreadCount > 99 ? '99+' : unreadCount}</span>}
+          </button>
         </div>
 
         <nav className="sidebar-nav">
@@ -114,6 +138,7 @@ const Sidebar = () => {
       </aside>
 
       <ProfileModal isOpen={isProfileOpen} onClose={() => setIsProfileOpen(false)} />
+      <NotificationPanel isOpen={isNotifOpen} onClose={() => setIsNotifOpen(false)} />
     </>
   );
 };

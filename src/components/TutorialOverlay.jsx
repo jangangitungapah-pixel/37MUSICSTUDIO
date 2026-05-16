@@ -293,7 +293,7 @@ const TutorialOverlay = ({ steps, currentStep, onNext, onPrev, onClose, onComple
               </button>
             ) : isLast && !step?.hideNext ? (
               <button onClick={onComplete || onClose} className="action-btn primary" style={{ padding: '8px 16px', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                {step.nextPage ? 'Lanjut ke Calendar' : 'Selesai'} <Check size={16} />
+                {step.nextPage === '/calendar' ? 'Lanjut ke Calendar' : step.nextPage === '/customers' ? 'Lanjut ke Customers' : step.nextPage === '/inventory' ? 'Lanjut ke Inventory' : 'Selesai'} <Check size={16} />
               </button>
             ) : null}
           </div>

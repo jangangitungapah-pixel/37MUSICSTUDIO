@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { Search, Plus, Edit2, Trash2, Mail, Phone, Calendar as CalendarIcon, Users, UserCheck, UserX, DollarSign, X, AtSign, MapPin, Clock, Star } from 'lucide-react';
 import { useCustomerStore } from '../store/useCustomerStore';
+import { useTourStore } from '../store/useTourStore';
 import Modal from '../components/Modal';
 import './CustomersPage.css';
 
@@ -23,6 +24,7 @@ const formatCurrency = (num) => new Intl.NumberFormat('id-ID', { style: 'currenc
 
 const CustomersPage = () => {
   const { customers, addCustomer, updateCustomer, deleteCustomer, getStats } = useCustomerStore();
+  const { run, currentStep, nextStep } = useTourStore();
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState('all'); // 'all', 'Active', 'Inactive'
   const [selectedCustomer, setSelectedCustomer] = useState(null);
@@ -97,6 +99,10 @@ const CustomersPage = () => {
       addCustomer(formData);
     }
     setIsModalOpen(false);
+    // Advance tour if we're on the save step
+    if (run && currentStep === 9) {
+      setTimeout(() => nextStep(), 300);
+    }
   };
 
   const handleRowClick = (customer) => {
@@ -112,7 +118,7 @@ const CustomersPage = () => {
         </div>
         
         <div className="header-actions">
-          <div className="search-bar glass-panel">
+          <div className="search-bar glass-panel tour-cust-search">
             <Search size={18} color="var(--text-muted)" />
             <input 
               type="text" 
@@ -124,7 +130,12 @@ const CustomersPage = () => {
               <button className="search-clear" onClick={() => setSearchQuery('')}><X size={14} /></button>
             )}
           </div>
-          <button className="btn-primary" onClick={handleOpenNew}>
+          <button className="btn-primary tour-cust-add-btn" onClick={() => {
+            handleOpenNew();
+            if (run && currentStep === 3) {
+              setTimeout(() => nextStep(), 300);
+            }
+          }}>
             <Plus size={18} />
             <span>Pelanggan Baru</span>
           </button>
@@ -132,7 +143,7 @@ const CustomersPage = () => {
       </header>
 
       {/* Stats Bar */}
-      <div className="stats-bar">
+      <div className="stats-bar tour-cust-stats">
         <div className="stat-card glass-panel">
           <div className="stat-icon" style={{ background: 'rgba(0, 240, 255, 0.1)' }}>
             <Users size={20} color="var(--accent-cyan)" />
@@ -185,7 +196,7 @@ const CustomersPage = () => {
         {/* Main Table */}
         <div className="customers-container glass-panel">
           {/* Filter Tabs */}
-          <div className="filter-tabs">
+          <div className="filter-tabs tour-cust-filters">
             <button className={`filter-tab ${activeFilter === 'all' ? 'active' : ''}`} onClick={() => setActiveFilter('all')}>
               Semua <span className="tab-count">{customers.length}</span>
             </button>
@@ -198,7 +209,7 @@ const CustomersPage = () => {
           </div>
 
           <div className="table-responsive hide-on-mobile">
-            <table className="customers-table">
+            <table className="customers-table tour-cust-table">
               <thead>
                 <tr>
                   <th>Nama Band / Pelanggan</th>
@@ -299,6 +310,14 @@ const CustomersPage = () => {
                     <div className="mobile-card-right">
                       <span className="booking-badge">{customer.totalBookings}×</span>
                       <span className={`status-dot ${customer.status.toLowerCase()}`}></span>
+                      <div className="mobile-card-actions" onClick={e => e.stopPropagation()}>
+                        <button className="icon-btn" onClick={() => handleOpenEdit(customer)} title="Edit">
+                          <Edit2 size={14} />
+                        </button>
+                        <button className="icon-btn delete" onClick={() => handleDelete(customer.id)} title="Hapus">
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
                     </div>
                   </div>
                 );
@@ -313,7 +332,7 @@ const CustomersPage = () => {
 
         {/* Detail Sidebar */}
         {selectedCustomer && (
-          <div className="customer-detail-panel glass-panel">
+          <div className="customer-detail-panel glass-panel tour-cust-detail">
             <div className="detail-panel-header">
               <div className="detail-avatar" style={{ background: getAvatarColor(selectedCustomer.name).bg, color: getAvatarColor(selectedCustomer.name).color }}>
                 {selectedCustomer.name.charAt(0).toUpperCase()}
@@ -381,7 +400,7 @@ const CustomersPage = () => {
         title={editingCustomer ? "Edit Pelanggan" : "Pelanggan Baru"}
       >
         <form className="customer-form" onSubmit={handleSubmit}>
-          <div className="form-group">
+          <div className="form-group tour-cust-input-name">
             <label>Nama Band / Pelanggan <span className="required">*</span></label>
             <input 
               type="text" 
@@ -395,7 +414,7 @@ const CustomersPage = () => {
             />
           </div>
 
-          <div className="form-row">
+          <div className="form-row tour-cust-input-contact">
             <div className="form-group">
               <label>No. HP / WhatsApp <span className="required">*</span></label>
               <input 
@@ -421,7 +440,7 @@ const CustomersPage = () => {
             </div>
           </div>
 
-          <div className="form-row">
+          <div className="form-row tour-cust-input-social">
             <div className="form-group">
               <label>Instagram</label>
               <input 
@@ -442,7 +461,7 @@ const CustomersPage = () => {
             </div>
           </div>
 
-          <div className="form-group">
+          <div className="form-group tour-cust-input-address">
             <label>Alamat</label>
             <input 
               type="text" 
@@ -454,7 +473,7 @@ const CustomersPage = () => {
             />
           </div>
 
-          <div className="form-group">
+          <div className="form-group tour-cust-input-notes">
             <label>Catatan</label>
             <textarea 
               name="notes" 
@@ -468,7 +487,7 @@ const CustomersPage = () => {
 
           <div className="form-actions">
             <button type="button" className="btn-secondary" onClick={() => setIsModalOpen(false)}>Batal</button>
-            <button type="submit" className="btn-primary">Simpan</button>
+            <button type="submit" className="btn-primary tour-cust-btn-save">Simpan</button>
           </div>
         </form>
       </Modal>

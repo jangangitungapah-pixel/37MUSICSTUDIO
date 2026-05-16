@@ -22,7 +22,133 @@ const TourGuide = () => {
   let steps = [];
   const path = window.location.pathname;
 
-  if (path === '/calendar') {
+  if (path === '/inventory') {
+    steps = [
+      {
+        target: '.tour-inv-stats',
+        title: '📊 Ringkasan Inventaris',
+        content: 'Selamat datang di Inventory Studio! Baris kartu ini menampilkan ringkasan lengkap: total jenis alat, total unit, jumlah alat dalam kondisi baik, yang perlu perhatian, dan jadwal servis yang sudah dekat.',
+      },
+      {
+        target: '.tour-inv-search',
+        title: '🔍 Pencarian Alat',
+        content: 'Ketik nama alat atau merk di sini untuk langsung menemukan alat yang Anda cari. Misalnya: "Zildjian", "Pearl", atau "Mic".',
+      },
+      {
+        target: '.tour-inv-categories',
+        title: '📂 Filter Kategori',
+        content: 'Gunakan tab kategori ini untuk memfilter alat berdasarkan jenisnya: Drum, Gitar, Amplifier, Mic & Audio, dan lain-lain. Tab kategori akan bertambah otomatis saat Anda menambahkan kategori baru.',
+      },
+      {
+        target: '.tour-inv-add-btn',
+        title: '➕ Tambah Alat Baru',
+        content: 'Mari kita coba menambahkan alat baru ke inventaris studio! Klik tombol "Alat Baru" yang bercahaya ini untuk membuka formulir pendaftaran alat.',
+        hideNext: true,
+      },
+      {
+        target: '.tour-inv-input-identity',
+        title: '🎸 Identitas Alat',
+        content: 'Di bagian ini, isi nama alat atau model (wajib), jumlah unit yang dimiliki, pilih kategori dari daftar yang tersedia (atau buat kategori baru), dan masukkan merk/brand alat tersebut.',
+      },
+      {
+        target: '.tour-inv-input-condition',
+        title: '🔧 Kondisi Alat',
+        content: 'Pilih salah satu dari 4 tingkat kondisi: Sangat Baik (hijau), Baik (cyan), Butuh Servis (kuning), atau Rusak (merah). Status ini akan tampil sebagai indikator warna di tabel utama.',
+      },
+      {
+        target: '.tour-inv-input-maintenance',
+        title: '🗓️ Jadwal Maintenance',
+        content: 'Catat tanggal servis terakhir dan jadwal servis berikutnya. Jika jadwal servis sudah melewati tanggal hari ini, baris alat tersebut akan otomatis ditandai dengan peringatan "TERLAMBAT" berwarna merah.',
+      },
+      {
+        target: '.tour-inv-input-notes',
+        title: '📝 Catatan Tambahan',
+        content: 'Catat informasi penting seperti riwayat kerusakan, penggantian onderdil, atau instruksi khusus perawatan. Catatan ini akan muncul sebagai teks kecil di bawah nama alat pada tabel.',
+      },
+      {
+        target: '.tour-inv-btn-save',
+        title: '💾 Simpan Alat',
+        content: 'Setelah semua data terisi, klik tombol "Simpan Alat" ini untuk menyimpan ke database. Data akan langsung tersinkronisasi ke semua perangkat.',
+        hideNext: true,
+      },
+      {
+        target: '.tour-inv-table',
+        title: '🎉 Alat Tersimpan!',
+        content: 'Alat baru Anda sudah muncul di tabel! Tabel ini menampilkan nama, kategori & merk, jumlah unit, jadwal servis, dan kondisi alat. Klik salah satu baris untuk melihat detail lengkapnya di panel samping.',
+      },
+      {
+        target: '.tour-inv-table',
+        title: '✅ Panduan Selesai!',
+        content: 'Anda telah berhasil menguasai cara mengelola inventaris studio! Gunakan tombol Edit (pensil) untuk memperbarui data, atau tombol Hapus (tempat sampah) untuk menghapus alat. Selamat bekerja!',
+      },
+    ];
+  } else if (path === '/customers') {
+    steps = [
+      {
+        target: '.tour-cust-stats',
+        title: '📊 Statistik Pelanggan',
+        content: 'Selamat datang di Database Pelanggan! Baris kartu ini menampilkan ringkasan penting: total pelanggan terdaftar, pelanggan aktif, jumlah total booking, total jam sewa, dan total pemasukan dari seluruh pelanggan.',
+      },
+      {
+        target: '.tour-cust-search',
+        title: '🔍 Pencarian Pelanggan',
+        content: 'Ketik nama band, nomor HP, email, atau akun Instagram di sini untuk langsung menemukan pelanggan yang Anda cari. Hasil pencarian akan muncul secara instan di tabel bawah.',
+      },
+      {
+        target: '.tour-cust-filters',
+        title: '📋 Filter Status',
+        content: 'Gunakan tab filter ini untuk menampilkan pelanggan berdasarkan status: "Semua" untuk melihat seluruh daftar, "Aktif" untuk pelanggan yang masih rutin sewa, atau "Tidak Aktif" untuk pelanggan yang sudah lama tidak datang.',
+      },
+      {
+        target: '.tour-cust-add-btn',
+        title: '➕ Tambah Pelanggan Baru',
+        content: 'Mari kita coba menambahkan pelanggan baru! Klik tombol "Pelanggan Baru" yang menyala ini untuk membuka formulir pendaftaran.',
+        hideNext: true,
+      },
+      {
+        target: '.tour-cust-input-name',
+        title: '✏️ Nama Band / Pelanggan',
+        content: 'Masukkan nama band atau nama pelanggan di kolom ini. Contoh: "The Rockers", "Band Tutorial", atau nama pribadi pelanggan. Nama ini yang akan muncul di tabel dan kalender booking.',
+      },
+      {
+        target: '.tour-cust-input-contact',
+        title: '📱 Kontak Utama',
+        content: 'Isi nomor HP/WhatsApp pelanggan (wajib diisi) agar Anda bisa menghubungi mereka untuk konfirmasi booking. Kolom email bersifat opsional, tapi sangat berguna untuk mengirim invoice atau pengingat.',
+      },
+      {
+        target: '.tour-cust-input-social',
+        title: '📲 Media Sosial & Status',
+        content: 'Tambahkan akun Instagram pelanggan (opsional) untuk referensi. Di sebelah kanan, pilih status: "Aktif" untuk pelanggan yang masih rutin, atau "Tidak Aktif" untuk yang sudah jarang menyewa.',
+      },
+      {
+        target: '.tour-cust-input-address',
+        title: '📍 Alamat',
+        content: 'Kolom alamat bersifat opsional. Berguna jika Anda perlu mengirimkan surat atau ingin mengetahui area domisili pelanggan.',
+      },
+      {
+        target: '.tour-cust-input-notes',
+        title: '📝 Catatan Tambahan',
+        content: 'Catat informasi penting tentang pelanggan di sini, misalnya: preferensi alat, kebiasaan, alergi suara tertentu, atau catatan khusus lainnya yang perlu diingat oleh pengelola studio.',
+      },
+      {
+        target: '.tour-cust-btn-save',
+        title: '💾 Simpan Data Pelanggan',
+        content: 'Setelah semua data terisi, klik tombol "Simpan" ini untuk menyimpan pelanggan ke database. Data akan langsung tersinkronisasi ke semua perangkat yang terhubung.',
+        hideNext: true,
+      },
+      {
+        target: '.tour-cust-table',
+        title: '🎉 Pelanggan Tersimpan!',
+        content: 'Pelanggan baru Anda sudah muncul di tabel ini! Tabel menampilkan nama, kontak, tanggal bergabung, total booking, jam, revenue, dan status. Klik salah satu baris untuk melihat detail lengkapnya di panel samping.',
+      },
+      {
+        target: '.tour-cust-table',
+        title: '✅ Panduan Selesai!',
+        content: 'Anda telah berhasil menguasai cara mengelola database pelanggan! Gunakan tombol Edit (pensil) untuk memperbarui data, atau tombol Hapus (tempat sampah) untuk menghapus pelanggan. Selanjutnya, mari kita pelajari inventaris studio!',
+        nextPage: '/inventory'
+      },
+    ];
+  } else if (path === '/calendar') {
     steps = [
       {
         target: '.tour-calendar-nav',
@@ -86,7 +212,8 @@ const TourGuide = () => {
       {
         target: '.tour-calendar-grid',
         title: 'Hebat Sekali!',
-        content: 'Anda telah berhasil menguasai cara super lengkap untuk membuat dan menghapus jadwal!',
+        content: 'Anda telah berhasil menguasai cara super lengkap untuk membuat dan menghapus jadwal! Selanjutnya, mari kita pelajari cara mengelola database pelanggan.',
+        nextPage: '/customers'
       }
     ];
   } else {

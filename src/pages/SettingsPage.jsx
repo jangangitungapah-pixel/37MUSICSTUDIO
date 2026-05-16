@@ -204,6 +204,44 @@ const SettingsPage = () => {
             </div>
           </div>
 
+          {/* Section 2.5: Notifikasi Sistem */}
+          <div className="settings-section glass-panel">
+            <div className="settings-section-header">
+              <AlertCircle size={20} />
+              <h3>Notifikasi Sistem (OS-Level)</h3>
+            </div>
+            <p className="section-desc">Aktifkan fitur ini agar Anda tetap menerima notifikasi jadwal baru di layar perangkat Anda meskipun sedang membuka tab lain.</p>
+            
+            <div className="settings-actions" style={{ marginTop: '1rem' }}>
+              {'Notification' in window ? (
+                Notification.permission === 'granted' ? (
+                  <div style={{ color: 'var(--color-success)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--color-success)' }}></div>
+                    Izin Notifikasi Aktif
+                  </div>
+                ) : Notification.permission === 'denied' ? (
+                  <div style={{ color: 'var(--color-danger)' }}>
+                    Izin notifikasi diblokir oleh browser. Buka pengaturan situs browser Anda untuk mengizinkan.
+                  </div>
+                ) : (
+                  <button 
+                    type="button" 
+                    className="btn-primary" 
+                    onClick={() => {
+                      Notification.requestPermission().then(() => {
+                        window.location.reload(); // Reload to update status text
+                      });
+                    }}
+                  >
+                    Izinkan Notifikasi Perangkat
+                  </button>
+                )
+              ) : (
+                <div style={{ color: 'var(--text-muted)' }}>Browser Anda tidak mendukung Web Notifications.</div>
+              )}
+            </div>
+          </div>
+
           {/* Section 3: Data Management */}
           <div className="settings-section glass-panel danger-zone">
             <div className="settings-section-header">

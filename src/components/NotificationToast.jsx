@@ -12,13 +12,13 @@ const ICONS = {
 };
 
 const NotificationToast = () => {
-  const { notifications, dismissNotification } = useNotificationStore();
+  const { toastQueue, dismissToast } = useNotificationStore();
 
-  if (notifications.length === 0) return null;
+  if (toastQueue.length === 0) return null;
 
   return (
     <div className="toast-container">
-      {notifications.map((notif) => {
+      {toastQueue.map((notif) => {
         const Icon = ICONS[notif.type] || ICONS.default;
         return (
           <div 
@@ -32,7 +32,7 @@ const NotificationToast = () => {
               <span className="toast-title">{notif.title}</span>
               <span className="toast-message">{notif.message}</span>
             </div>
-            <button className="toast-close" onClick={() => dismissNotification(notif.id)}>
+            <button className="toast-close" onClick={() => dismissToast(notif.id)}>
               <X size={14} />
             </button>
           </div>
