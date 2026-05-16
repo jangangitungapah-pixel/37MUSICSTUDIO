@@ -1,6 +1,7 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useBookingStore } from '../store/useBookingStore';
 import { useSettingsStore } from '../store/useSettingsStore';
+import { useTourStore } from '../store/useTourStore';
 import { CreditCard, Printer, CheckCircle, Clock, AlertCircle, FileText, Search, X, Share2, MessageCircle, Copy, Download, Check } from 'lucide-react';
 import { format } from 'date-fns';
 import html2canvas from 'html2canvas';
@@ -10,12 +11,20 @@ import './BillingPage.css';
 const BillingPage = () => {
   const { bookings, updateBookingStatus, updateBooking } = useBookingStore();
   const { pricePerHour, studioName, studioAddress, studioPhone } = useSettingsStore();
+  const { currentStep, nextStep, run } = useTourStore();
   const [activeTab, setActiveTab] = useState('Semua');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedInvoice, setSelectedInvoice] = useState(null);
   const [isInvoiceModalOpen, setIsInvoiceModalOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const invoiceRef = useRef(null);
+
+  // Auto-close invoice modal if user clicks Lanjut on the print step (step 7 -> 8)
+  useEffect(() => {
+    if (run && currentStep === 8 && isInvoiceModalOpen) {
+      setIsInvoiceModalOpen(false);
+    }
+  }, [run, currentStep, isInvoiceModalOpen]);
 
   // Helper functions
   const calculateTotal = (duration) => duration * pricePerHour;
@@ -50,13 +59,23 @@ const BillingPage = () => {
   const handleMarkAsPaid = (e, id) => {
     e.stopPropagation();
     updateBookingStatus(id, 'confirmed');
-    // Also reset DP if any since it's fully paid now? 
-    // Actually no, updateBookingStatus just sets to confirmed, which means remaining is 0.
+    if (run && currentStep === 4) setTimeout(() => nextStep(), 100);
+  };
+
+  const handleStatusChange = (e, id, newStatus) => {
+    e.stopPropagation();
+    updateBookingStatus(id, newStatus);
   };
 
   const handleOpenInvoice = (booking) => {
     setSelectedInvoice(booking);
     setIsInvoiceModalOpen(true);
+    if (run && currentStep === 5) setTimeout(() => nextStep(), 100);
+  };
+  
+  const handleCloseInvoiceModal = () => {
+    setIsInvoiceModalOpen(false);
+    if (run && currentStep === 7) setTimeout(() => nextStep(), 100);
   };
 
   const handlePrint = () => {
@@ -178,7 +197,7 @@ const BillingPage = () => {
   return (
     <div className="billing-page">
       {/* Header Stats */}
-      <div className="billing-stats-bar">
+      <div className="billing-stats-bar tour-bill-stats">
         <div className="billing-stat-card income">
           <div className="stat-icon"><CheckCircle size={24} /></div>
           <div className="stat-data">
@@ -204,7 +223,7 @@ const BillingPage = () => {
 
       <div className="billing-content glass-panel">
         <div className="billing-toolbar">
-          <div className="billing-tabs">
+          <div className="billing-tabs tour-bill-tabs">
             {['Semua', 'Lunas', 'Belum Lunas'].map(tab => (
               <button 
                 key={tab} 
@@ -215,7 +234,7 @@ const BillingPage = () => {
               </button>
             ))}
           </div>
-          <div className="search-wrapper">
+          <div className="search-wrapper tour-bill-search">
             <Search size={16} className="search-icon" />
             <input 
               type="text" 
@@ -227,7 +246,7 @@ const BillingPage = () => {
           </div>
         </div>
 
-        <div className="table-responsive">
+        <div className="table-responsive tour-bill-table">
           <table className="billing-table">
             <thead>
               <tr>
@@ -243,25 +262,33 @@ const BillingPage = () => {
             <tbody>
               {filteredBookings.length === 0 ? (
                 <tr><td colSpan="7" className="empty-state">Tidak ada data transaksi.</td></tr>
-              ) : (
-                filteredBookings.map(b => {
+              ) : (() => {
+                const firstUnpaidIdx = filteredBookings.findIndex(b => b.status !== 'confirmed');
+                const tutorialTargetIdx = firstUnpaidIdx !== -1 ? firstUnpaidIdx : 0;
+
+                return filteredBookings.map((b, index) => {
                   const remaining = calculateRemaining(b);
                   const total = calculateTotal(b.duration);
                   
+                  // Target the first unpaid booking dynamically for the tutorial row
+                  const isTutorialRow = run && index === tutorialTargetIdx;
+
                   return (
-                    <tr key={b.id} onClick={() => handleOpenInvoice(b)}>
+                    <tr key={b.id} className={isTutorialRow && currentStep === 5 ? 'tour-bill-row' : ''} onClick={() => handleOpenInvoice(b)}>
                       <td className="inv-id">INV-{b.id.toString().padStart(5, '0')}</td>
                       <td>{format(new Date(b.date), 'dd MMM yyyy')}</td>
                       <td className="inv-band">{b.band}</td>
                       <td className="inv-total">{formatCurrency(total)}</td>
-                      <td>
-                        {b.status === 'confirmed' ? (
-                          <span className="status-badge paid"><CheckCircle size={12}/> Lunas</span>
-                        ) : b.status === 'dp' ? (
-                          <span className="status-badge partial"><Clock size={12}/> DP {formatCurrency(b.dpAmount)}</span>
-                        ) : (
-                          <span className="status-badge unpaid"><AlertCircle size={12}/> Belum Bayar</span>
-                        )}
+                      <td onClick={(e) => e.stopPropagation()}>
+                        <select 
+                          className={`status-select ${b.status} ${isTutorialRow && currentStep === 8 ? 'tour-bill-status-select' : ''}`}
+                          value={b.status}
+                          onChange={(e) => handleStatusChange(e, b.id, e.target.value)}
+                        >
+                          <option value="pending">Belum Bayar</option>
+                          <option value="dp">DP {b.dpAmount > 0 ? `(${formatCurrency(b.dpAmount)})` : ''}</option>
+                          <option value="confirmed">Lunas</option>
+                        </select>
                       </td>
                       <td className={`inv-remaining ${remaining > 0 ? 'has-debt' : ''}`}>
                         {remaining > 0 ? formatCurrency(remaining) : '-'}
@@ -270,7 +297,7 @@ const BillingPage = () => {
                         <div className="row-actions">
                           {remaining > 0 && (
                             <button 
-                              className="btn-sm-pay" 
+                              className={`btn-sm-pay ${isTutorialRow && currentStep === 4 ? 'tour-bill-btn-pay' : ''}`} 
                               onClick={(e) => handleMarkAsPaid(e, b.id)}
                               title="Tandai Lunas"
                             >
@@ -288,8 +315,8 @@ const BillingPage = () => {
                       </td>
                     </tr>
                   );
-                })
-              )}
+                });
+              })()}
             </tbody>
           </table>
         </div>
@@ -305,7 +332,7 @@ const BillingPage = () => {
         return (
         <Modal 
           isOpen={isInvoiceModalOpen} 
-          onClose={() => setIsInvoiceModalOpen(false)} 
+          onClose={handleCloseInvoiceModal} 
           title="Detail Invoice"
         >
           <div className="invoice-container">
@@ -412,7 +439,7 @@ const BillingPage = () => {
 
             {/* Share & Actions */}
             <div className="invoice-actions no-print">
-              <div className="invoice-share-row">
+              <div className={`invoice-share-row ${run && currentStep === 6 ? 'tour-invoice-share' : ''}`}>
                 <button className="share-btn whatsapp" onClick={() => handleShareWhatsApp(selectedInvoice)} title="Kirim via WhatsApp">
                   <MessageCircle size={16} /> WhatsApp
                 </button>
@@ -429,8 +456,8 @@ const BillingPage = () => {
                 )}
               </div>
               <div className="invoice-main-actions">
-                <button className="btn-secondary" onClick={() => setIsInvoiceModalOpen(false)}>Tutup</button>
-                <button className="btn-primary" onClick={handlePrint}>
+                <button className="btn-secondary" onClick={handleCloseInvoiceModal}>Tutup</button>
+                <button className={`btn-primary ${run && currentStep === 7 ? 'tour-invoice-print' : ''}`} onClick={handlePrint}>
                   <Printer size={16} /> Cetak / PDF
                 </button>
               </div>

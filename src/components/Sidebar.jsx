@@ -31,7 +31,7 @@ const Sidebar = () => {
 
   const handleRestartTour = () => {
     const currentPath = window.location.pathname;
-    const tourPages = ['/', '/calendar', '/customers', '/inventory'];
+    const tourPages = ['/', '/calendar', '/customers', '/inventory', '/billing', '/settings'];
     
     // If already on a page with a tour, start it here
     if (tourPages.includes(currentPath)) {

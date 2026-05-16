@@ -79,7 +79,8 @@ const TourGuide = () => {
       {
         target: '.tour-inv-table',
         title: '✅ Panduan Selesai!',
-        content: 'Anda telah berhasil menguasai cara mengelola inventaris studio! Gunakan tombol Edit (pensil) untuk memperbarui data, atau tombol Hapus (tempat sampah) untuk menghapus alat. Selamat bekerja!',
+        content: 'Anda telah berhasil menguasai cara mengelola inventaris studio! Gunakan tombol Edit (pensil) untuk memperbarui data, atau tombol Hapus (tempat sampah) untuk menghapus alat. Selanjutnya, mari kita ke halaman Billing/POS!',
+        nextPage: '/billing'
       },
     ];
   } else if (path === '/customers') {
@@ -216,8 +217,62 @@ const TourGuide = () => {
         nextPage: '/customers'
       }
     ];
+  } else if (path === '/billing') {
+    steps = [
+      {
+        target: '.tour-bill-stats',
+        title: '📈 Ringkasan Keuangan',
+        content: 'Selamat datang di halaman Kasir & Penagihan (Billing/POS)! Panel ini memberikan ringkasan cepat: total pendapatan dari transaksi Lunas, sisa piutang dari DP atau transaksi Belum Bayar, dan total seluruh transaksi.',
+      },
+      {
+        target: '.tour-bill-tabs',
+        title: '📂 Filter Status',
+        content: 'Gunakan tab ini untuk menyaring transaksi. Anda bisa melihat "Semua" transaksi, hanya transaksi yang sudah "Lunas", atau memantau transaksi yang "Belum Lunas" agar mudah ditagih.',
+      },
+      {
+        target: '.tour-bill-search',
+        title: '🔍 Cari Transaksi',
+        content: 'Ketik nama penyewa / band di sini untuk langsung menemukan riwayat transaksi dan tagihan mereka dengan cepat.',
+      },
+      {
+        target: '.tour-bill-table',
+        title: '🧾 Daftar Transaksi',
+        content: 'Ini adalah daftar seluruh tagihan sewa. Di sini Anda bisa melihat detail status pembayaran dan sisa tagihan untuk setiap transaksi secara berurutan.',
+      },
+      {
+        target: '.tour-bill-btn-pay',
+        title: '💳 Melunasi Tagihan',
+        content: 'Jika tagihan belum lunas (seperti jadwal DP yang baru saja Anda buat), tombol "Lunasi" akan muncul. Coba tekan tombol Lunasi ini sekarang untuk melunasinya!',
+        hideNext: true
+      },
+      {
+        target: '.tour-bill-row',
+        title: '📄 Buka Invoice Digital',
+        content: 'Sip! Jadwal sudah lunas. Sekarang, coba klik langsung pada baris transaksi ini untuk membuka Invoice digital secara lengkap.',
+        hideNext: true
+      },
+      {
+        target: '.tour-invoice-share',
+        title: '📤 Bagikan Invoice',
+        content: 'Di sini Anda bisa membagikan invoice langsung ke WhatsApp pelanggan, menyalin teks, atau mengunduhnya sebagai file gambar. Sangat praktis!',
+      },
+      {
+        target: '.tour-invoice-print',
+        title: '🖨️ Cetak atau Simpan PDF',
+        content: 'Gunakan tombol ini jika Anda terhubung ke printer kasir bluetooth atau ingin menyimpan sebagai PDF. Setelah itu, silakan klik tombol Lanjut.',
+      },
+      {
+        target: '.tour-bill-status-select',
+        title: '↩️ Ubah / Batal Status',
+        content: 'Jika terjadi kesalahan (misalnya Anda tidak sengaja menekan Lunas), Anda bisa mengembalikan status pembayaran kapan saja melalui dropdown ini. (Misal: kembali ke DP).',
+      },
+      {
+        target: '.tour-bill-table',
+        title: '✅ Panduan Selesai!',
+        content: 'Sekarang Anda sudah benar-benar menguasai seluruh fitur kasir dan digital invoice! Sampai jumpa di panduan modul selanjutnya.',
+      }
+    ];
   } else {
-    // Default to Dashboard
     steps = [
       {
         target: '.tour-dashboard-stats',

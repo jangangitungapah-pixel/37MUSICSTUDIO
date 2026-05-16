@@ -131,6 +131,9 @@ const CalendarPage = () => {
   };
 
   const todayStr = format(new Date(), 'yyyy-MM-dd');
+  
+  const todaysBookings = filteredBookings.filter(b => b.date === todayStr);
+  const latestBookingId = todaysBookings.length > 0 ? Math.max(...todaysBookings.map(b => b.id)) : null;
 
   let emptyCellAssigned = false;
 
@@ -269,7 +272,8 @@ const CalendarPage = () => {
                   const isTargetCell = run && currentStep === 2 && isToday && !cellBooking && !emptyCellAssigned;
                   if (isTargetCell) emptyCellAssigned = true;
 
-                  const isTutorialBooking = cellBooking && cellBooking.band === 'Band Tutorial' && run && currentStep === 9;
+                  // Robust tutorial targeting: highlight the absolute latest booking created today
+                  const isTutorialBooking = cellBooking && cellBooking.id === latestBookingId && run && currentStep === 9;
 
                   const cellClasses = [
                     'grid-cell',
