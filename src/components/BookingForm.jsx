@@ -5,6 +5,7 @@ import { useCustomerStore } from '../store/useCustomerStore';
 import { useTourStore } from '../store/useTourStore';
 import { useNotificationStore } from '../store/useNotificationStore';
 import { format } from 'date-fns';
+import { Music2, Wrench, User, Phone, Calendar, Clock, DollarSign, StickyNote, Star, AlertCircle } from 'lucide-react';
 import './BookingForm.css';
 
 const BookingForm = ({ onClose, initialDate, initialHour }) => {
@@ -12,11 +13,11 @@ const BookingForm = ({ onClose, initialDate, initialHour }) => {
   const { pricePerHour } = useSettingsStore();
   const { customers, incrementBookingCount } = useCustomerStore();
   const { run, currentStep, nextStep } = useTourStore();
-  
+
   const today = format(new Date(), 'yyyy-MM-dd');
 
   const [formData, setFormData] = useState({
-    type: 'booking', // 'booking' or 'maintenance'
+    type: 'booking',
     band: '',
     phone: '',
     date: initialDate || today,
@@ -30,249 +31,279 @@ const BookingForm = ({ onClose, initialDate, initialHour }) => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => {
-      const newData = { 
-        ...prev, 
-        [name]: (name === 'hour' || name === 'duration' || name === 'dpAmount') ? Number(value) : value 
+      const newData = {
+        ...prev,
+        [name]: (name === 'hour' || name === 'duration' || name === 'dpAmount') ? Number(value) : value
       };
-      
-      // Auto-fill phone if band name matches an existing customer
       if (name === 'band') {
-        const foundCustomer = customers.find(c => c.name.toLowerCase() === value.toLowerCase());
-        if (foundCustomer && !prev.phone) {
-          newData.phone = foundCustomer.phone;
-        }
+        const found = customers.find(c => c.name.toLowerCase() === value.toLowerCase());
+        if (found && !prev.phone) newData.phone = found.phone;
       }
-
-      // Reset dpAmount when status changes away from 'dp'
-      if (name === 'status' && value !== 'dp') {
-        newData.dpAmount = 0;
-      }
-      
+      if (name === 'status' && value !== 'dp') newData.dpAmount = 0;
       return newData;
     });
   };
 
   const selectedCustomer = customers.find(c => c.name.toLowerCase() === formData.band.toLowerCase());
   const isVIP = selectedCustomer?.isVIP || false;
-
   const basePrice = formData.duration * pricePerHour;
   const discountAmount = isVIP ? basePrice * 0.1 : 0;
   const totalPrice = basePrice - discountAmount;
   const remaining = totalPrice - formData.dpAmount;
+  const dpPercent = totalPrice > 0 ? Math.min(100, Math.round((formData.dpAmount / totalPrice) * 100)) : 0;
+
   const formatCurrency = (num) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(num);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    
     const isOverlap = bookings.some(b => {
       if (b.date !== formData.date) return false;
-      const bHour = Number(b.hour);
-      const bDur = Number(b.duration);
-      const formHour = Number(formData.hour);
-      const formDur = Number(formData.duration);
-      return (bHour < formHour + formDur) && (formHour < bHour + bDur);
+      const bH = Number(b.hour), bD = Number(b.duration);
+      const fH = Number(formData.hour), fD = Number(formData.duration);
+      return (bH < fH + fD) && (fH < bH + bD);
     });
-    
     if (isOverlap) {
-      const { addNotification } = useNotificationStore.getState();
-      addNotification({ 
-        title: 'Jadwal Bentrok!', 
-        message: 'Gagal menyimpan. Jam yang Anda pilih menabrak jadwal band lain.', 
-        type: 'error' 
-      });
+      useNotificationStore.getState().addNotification({ title: 'Jadwal Bentrok!', message: 'Jam yang dipilih menabrak jadwal band lain.', type: 'error' });
       return;
     }
-
     if (formData.type === 'maintenance') {
-      addBooking({ 
-        ...formData,
-        status: 'maintenance'
-      });
+      addBooking({ ...formData, status: 'maintenance' });
     } else {
       addBooking({ ...formData, isVIP, discountAmount });
-      incrementBookingCount(formData.band, {
-        phone: formData.phone,
-        duration: formData.duration,
-        totalPrice: totalPrice
-      });
+      incrementBookingCount(formData.band, { phone: formData.phone, duration: formData.duration, totalPrice });
     }
-    
     onClose();
-
-    if (run && currentStep === 10) {
-      setTimeout(() => nextStep(), 100);
-    }
+    if (run && currentStep === 10) setTimeout(() => nextStep(), 100);
   };
+
+  const statusOptions = [
+    { value: 'pending', label: 'Belum Bayar', color: '#FF9800' },
+    { value: 'dp', label: 'DP', color: '#00f0ff' },
+    { value: 'confirmed', label: 'Lunas', color: '#4CAF50' },
+  ];
 
   return (
     <form className="booking-form" onSubmit={handleSubmit}>
-      <div className="type-toggle-container" style={{ display: 'flex', gap: '8px', marginBottom: '16px', background: 'rgba(0,0,0,0.2)', padding: '4px', borderRadius: '10px' }}>
-        <button 
+
+      {/* Type Toggle */}
+      <div className="bf-type-toggle">
+        <button
           type="button"
-          className={`toggle-btn ${formData.type === 'booking' ? 'active' : ''}`}
+          className={`bf-type-btn ${formData.type === 'booking' ? 'active booking' : ''}`}
           onClick={() => setFormData(p => ({ ...p, type: 'booking', band: '' }))}
-          style={{ flex: 1, padding: '10px', borderRadius: '8px', border: 'none', background: formData.type === 'booking' ? 'var(--bg-surface)' : 'transparent', color: formData.type === 'booking' ? 'var(--accent-cyan)' : 'var(--text-secondary)', fontWeight: '600', cursor: 'pointer', transition: 'all 0.2s', boxShadow: formData.type === 'booking' ? '0 2px 8px rgba(0,0,0,0.3)' : 'none' }}
         >
+          <Music2 size={16} />
           Sewa Studio
         </button>
-        <button 
+        <button
           type="button"
-          className={`toggle-btn ${formData.type === 'maintenance' ? 'active' : ''}`}
+          className={`bf-type-btn ${formData.type === 'maintenance' ? 'active maintenance' : ''}`}
           onClick={() => setFormData(p => ({ ...p, type: 'maintenance', band: 'Maintenance' }))}
-          style={{ flex: 1, padding: '10px', borderRadius: '8px', border: 'none', background: formData.type === 'maintenance' ? 'var(--bg-surface)' : 'transparent', color: formData.type === 'maintenance' ? 'var(--accent-pink)' : 'var(--text-secondary)', fontWeight: '600', cursor: 'pointer', transition: 'all 0.2s', boxShadow: formData.type === 'maintenance' ? '0 2px 8px rgba(0,0,0,0.3)' : 'none' }}
         >
-          Blokir Jadwal (Maintenance)
+          <Wrench size={16} />
+          Blokir Jadwal
         </button>
       </div>
 
-      <div className="form-row">
-        <div className="form-group">
-          <label>{formData.type === 'maintenance' ? 'Judul / Keterangan' : 'Nama Band / Penyewa'} <span className="required">*</span></label>
-          <input 
-            type="text" 
-            name="band" 
-            list="customer-list"
-            value={formData.band} 
-            onChange={handleChange} 
-            placeholder={formData.type === 'maintenance' ? "contoh: Perbaikan Drum" : "contoh: The Rockers"} 
-            required 
-            className="form-input tour-input-band"
-            autoFocus
-            autoComplete="off"
-          />
-          {formData.type === 'booking' && (
-            <datalist id="customer-list">
-              {customers.map(c => (
-                <option key={c.id} value={c.name} />
-              ))}
-            </datalist>
-          )}
+      {/* Section: Identity */}
+      <div className="bf-section">
+        <div className="bf-section-title">
+          <User size={13} />
+          {formData.type === 'booking' ? 'Identitas Penyewa' : 'Keterangan Blokir'}
         </div>
-        {formData.type === 'booking' && (
-          <div className="form-group">
-            <label>No. HP / WhatsApp</label>
-            <input 
-              type="tel" 
-              name="phone" 
-              value={formData.phone} 
-              onChange={handleChange} 
-              placeholder="08xxxxxxxxxx" 
-              className="form-input tour-input-phone"
-            />
-          </div>
-        )}
-      </div>
-
-      <div className="form-row">
-        <div className="form-group">
-          <label>Tanggal {formData.type === 'booking' ? 'Booking' : ''} <span className="required">*</span></label>
-          <input 
-            type="date" 
-            name="date" 
-            value={formData.date} 
-            onChange={handleChange} 
-            className="form-input tour-input-date"
-            required
-          />
-        </div>
-        {formData.type === 'booking' && (
-          <div className="form-group">
-            <label>Status Pembayaran</label>
-            <select name="status" value={formData.status} onChange={handleChange} className="form-input tour-input-status">
-              <option value="pending">Belum Bayar</option>
-              <option value="dp">DP (Down Payment)</option>
-              <option value="confirmed">Lunas</option>
-            </select>
-          </div>
-        )}
-      </div>
-
-      <div className="form-row form-row-3">
-        <div className="form-group">
-          <label>Jam Mulai <span className="required">*</span></label>
-          <select name="hour" value={formData.hour} onChange={handleChange} className="form-input tour-input-hour">
-            {Array.from({ length: 13 }).map((_, i) => {
-              const h = i + 10; // 10:00 to 22:00
-              return <option key={h} value={h}>{String(h).padStart(2, '0')}.00</option>
-            })}
-          </select>
-        </div>
-        <div className="form-group">
-          <label>Durasi (Jam) <span className="required">*</span></label>
-          <input 
-            type="number" 
-            name="duration" 
-            min="1" 
-            max="12" 
-            value={formData.duration} 
-            onChange={handleChange} 
-            className="form-input tour-input-duration"
-            required
-          />
-        </div>
-        {formData.type === 'booking' && (
-          <div className="form-group">
-            <label>Total Harga</label>
-            <div className="price-display">
-              {formatCurrency(totalPrice)}
+        <div className="bf-row">
+          <div className="bf-field">
+            <label className="bf-label">
+              {formData.type === 'booking' ? 'Nama Band / Penyewa' : 'Judul Blokir'}
+              <span className="bf-required">*</span>
+            </label>
+            <div className="bf-input-wrap">
+              <input
+                type="text"
+                name="band"
+                list="customer-list"
+                value={formData.band}
+                onChange={handleChange}
+                placeholder={formData.type === 'booking' ? 'contoh: The Rockers' : 'contoh: Perbaikan Drum'}
+                required
+                className="bf-input tour-input-band"
+                autoFocus
+                autoComplete="off"
+              />
               {isVIP && (
-                <span style={{ fontSize: '0.75rem', background: '#FFC107', color: '#000', padding: '2px 6px', borderRadius: '4px', marginLeft: '8px', fontWeight: 'bold' }}>
-                  VIP Diskon 10%
-                </span>
+                <span className="bf-vip-badge"><Star size={11} /> VIP</span>
               )}
             </div>
+            {formData.type === 'booking' && (
+              <datalist id="customer-list">
+                {customers.map(c => <option key={c.id} value={c.name} />)}
+              </datalist>
+            )}
           </div>
-        )}
-      </div>
 
-      {/* DP Amount Section - only visible when status is 'dp' */}
-      {formData.status === 'dp' && (
-        <div className="dp-section tour-input-dp-section">
-          <div className="form-row">
-            <div className="form-group">
-              <label>Nominal DP yang Dibayar <span className="required">*</span></label>
-              <input 
-                type="number" 
-                name="dpAmount" 
-                min="0" 
-                max={totalPrice}
-                value={formData.dpAmount} 
-                onChange={handleChange} 
-                className="form-input tour-input-dp"
-                placeholder="Masukkan nominal DP..."
-                required
+          {formData.type === 'booking' && (
+            <div className="bf-field">
+              <label className="bf-label"><Phone size={12} /> No. HP / WhatsApp</label>
+              <input
+                type="tel"
+                name="phone"
+                value={formData.phone}
+                onChange={handleChange}
+                placeholder="08xxxxxxxxxx"
+                className="bf-input tour-input-phone"
               />
             </div>
-            <div className="form-group">
-              <label>Sisa Tagihan</label>
-              <div className={`price-display remaining ${remaining > 0 ? 'has-balance' : 'paid-off'}`}>
-                {formatCurrency(remaining)}
-              </div>
+          )}
+        </div>
+      </div>
+
+      {/* Section: Schedule */}
+      <div className="bf-section">
+        <div className="bf-section-title"><Calendar size={13} /> Jadwal</div>
+        <div className="bf-row">
+          <div className="bf-field">
+            <label className="bf-label">Tanggal <span className="bf-required">*</span></label>
+            <input
+              type="date"
+              name="date"
+              value={formData.date}
+              onChange={handleChange}
+              className="bf-input tour-input-date"
+              required
+            />
+          </div>
+          <div className="bf-field">
+            <label className="bf-label"><Clock size={12} /> Jam Mulai <span className="bf-required">*</span></label>
+            <select name="hour" value={formData.hour} onChange={handleChange} className="bf-input tour-input-hour">
+              {Array.from({ length: 13 }, (_, i) => i + 10).map(h => (
+                <option key={h} value={h}>{String(h).padStart(2, '0')}:00</option>
+              ))}
+            </select>
+          </div>
+          <div className="bf-field">
+            <label className="bf-label">Durasi <span className="bf-required">*</span></label>
+            <div className="bf-duration-picker">
+              <button type="button" className="bf-dur-btn" onClick={() => setFormData(p => ({ ...p, duration: Math.max(1, p.duration - 1) }))} disabled={formData.duration <= 1}>−</button>
+              <span className="bf-dur-val">{formData.duration} <small>jam</small></span>
+              <button type="button" className="bf-dur-btn" onClick={() => setFormData(p => ({ ...p, duration: Math.min(12, p.duration + 1) }))} disabled={formData.duration >= 12}>+</button>
             </div>
           </div>
-          <div className="dp-summary">
-            <span>Total: <strong>{formatCurrency(totalPrice)}</strong></span>
-            <span>DP: <strong className="dp-paid">{formatCurrency(formData.dpAmount)}</strong></span>
-            <span>Sisa: <strong className="dp-remaining">{formatCurrency(remaining)}</strong></span>
+        </div>
+
+        {/* Time Preview */}
+        <div className="bf-time-preview">
+          <Clock size={12} />
+          {String(formData.hour).padStart(2, '0')}:00 – {String(Number(formData.hour) + formData.duration).padStart(2, '0')}:00
+          <span className="bf-time-dot">·</span>
+          {formData.duration} jam
+        </div>
+      </div>
+
+      {/* Section: Payment (booking only) */}
+      {formData.type === 'booking' && (
+        <div className="bf-section">
+          <div className="bf-section-title"><DollarSign size={13} /> Pembayaran</div>
+
+          {/* Status Selector */}
+          <div className="bf-status-grid">
+            {statusOptions.map(opt => (
+              <label key={opt.value} className={`bf-status-card ${formData.status === opt.value ? 'selected' : ''}`} style={{ '--status-color': opt.color }}>
+                <input type="radio" name="status" value={opt.value} checked={formData.status === opt.value} onChange={handleChange} className="bf-status-radio" />
+                <span className="bf-status-dot" style={{ background: opt.color }} />
+                <span className="bf-status-label">{opt.label}</span>
+              </label>
+            ))}
           </div>
+
+          {/* Price Summary Card */}
+          <div className="bf-price-card">
+            {isVIP && (
+              <div className="bf-price-row vip">
+                <span><Star size={11} /> Diskon VIP 10%</span>
+                <span>−{formatCurrency(discountAmount)}</span>
+              </div>
+            )}
+            <div className="bf-price-row subtotal">
+              <span>Subtotal ({formData.duration} jam)</span>
+              <span>{formatCurrency(basePrice)}</span>
+            </div>
+            {isVIP && (
+              <div className="bf-price-row after-disc">
+                <span>Setelah Diskon</span>
+                <span>{formatCurrency(totalPrice)}</span>
+              </div>
+            )}
+            <div className="bf-price-row total">
+              <span>Total Tagihan</span>
+              <span className="bf-total-val">{formatCurrency(totalPrice)}</span>
+            </div>
+          </div>
+
+          {/* DP Section */}
+          {formData.status === 'dp' && (
+            <div className="bf-dp-section tour-input-dp-section">
+              <div className="bf-row">
+                <div className="bf-field">
+                  <label className="bf-label">Nominal DP <span className="bf-required">*</span></label>
+                  <input
+                    type="number"
+                    name="dpAmount"
+                    min="0"
+                    max={totalPrice}
+                    value={formData.dpAmount}
+                    onChange={handleChange}
+                    className="bf-input tour-input-dp"
+                    placeholder="0"
+                    required
+                  />
+                </div>
+                <div className="bf-field">
+                  <label className="bf-label">Sisa Tagihan</label>
+                  <div className={`bf-input bf-remaining ${remaining > 0 ? 'unpaid' : 'paid'}`}>
+                    {formatCurrency(remaining)}
+                  </div>
+                </div>
+              </div>
+              <div className="bf-dp-progress">
+                <div className="bf-dp-bar" style={{ width: `${dpPercent}%` }} />
+              </div>
+              <div className="bf-dp-labels">
+                <span>DP: {formatCurrency(formData.dpAmount)}</span>
+                <span className="bf-dp-pct">{dpPercent}% terbayar</span>
+                <span>Sisa: {formatCurrency(remaining)}</span>
+              </div>
+            </div>
+          )}
+
+          {formData.status === 'confirmed' && (
+            <div className="bf-paid-notice">
+              ✓ Pembayaran penuh {formatCurrency(totalPrice)} dicatat sebagai Lunas
+            </div>
+          )}
         </div>
       )}
 
-      <div className="form-group">
-        <label>Catatan</label>
-        <textarea 
-          name="note" 
-          value={formData.note} 
-          onChange={handleChange} 
-          placeholder="Catatan tambahan (opsional)..." 
-          className="form-input form-textarea"
-          rows="2"
-        />
+      {/* Note */}
+      <div className="bf-section">
+        <div className="bf-field">
+          <label className="bf-label"><StickyNote size={12} /> Catatan (opsional)</label>
+          <textarea
+            name="note"
+            value={formData.note}
+            onChange={handleChange}
+            placeholder="Catatan tambahan..."
+            className="bf-input bf-textarea"
+            rows="2"
+          />
+        </div>
       </div>
 
-      <div className="form-actions">
+      {/* Actions */}
+      <div className="bf-actions">
         <button type="button" className="btn-secondary" onClick={onClose}>Batal</button>
-        <button type="submit" className="btn-primary tour-btn-save">Simpan Booking</button>
+        <button type="submit" className="btn-primary tour-btn-save">
+          {formData.type === 'maintenance' ? 'Blokir Jadwal' : 'Simpan Booking'}
+        </button>
       </div>
     </form>
   );

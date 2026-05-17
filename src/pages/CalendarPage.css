@@ -5,6 +5,241 @@
   gap: 20px;
 }
 
+/* ===== New Calendar Header ===== */
+.cal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.cal-header-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.cal-header-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: rgba(255, 42, 95, 0.1);
+  border: 1px solid rgba(255, 42, 95, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent-pink);
+  flex-shrink: 0;
+}
+
+.cal-header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* ===== Trend Badge ===== */
+.trend-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 20px;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+.trend-badge.up { background: rgba(76,175,80,0.15); color: #4CAF50; }
+.trend-badge.down { background: rgba(255,42,95,0.12); color: var(--accent-pink); transform: scaleY(-1) scaleX(1); }
+.trend-badge.down svg { transform: scaleY(-1); }
+
+/* ===== Toolbar Right ===== */
+.toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* ===== View Switcher (updated) ===== */
+.view-switcher {
+  display: flex;
+  background: rgba(255,255,255,0.05);
+  border-radius: 10px;
+  padding: 3px;
+  gap: 2px;
+}
+
+.view-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  padding: 5px 12px;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+  white-space: nowrap;
+}
+.view-btn:hover { color: var(--text-primary); background: rgba(255,255,255,0.05); }
+.view-btn.active { background: var(--accent-pink); color: white; font-weight: 700; box-shadow: 0 0 12px rgba(255,42,95,0.25); }
+
+/* ===== Nav Arrow ===== */
+.nav-arrow { transition: all 0.15s; }
+.nav-arrow:hover { background: rgba(255,42,95,0.1); color: var(--accent-pink); }
+
+/* ===== Detail Overlay (mobile) ===== */
+.detail-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  z-index: 999;
+  backdrop-filter: blur(4px);
+  animation: fadeIn 0.2s ease-out;
+}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+/* ===== Booking Detail Popup (enhanced) ===== */
+.booking-detail-popup {
+  position: fixed;
+  width: 300px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 16px;
+  animation: popupIn 0.2s cubic-bezier(0.16,1,0.3,1);
+}
+
+.booking-detail-popup.mobile-sheet {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  border-radius: 20px 20px 0 0;
+  animation: sheetUp 0.3s cubic-bezier(0.16,1,0.3,1);
+  max-height: 88vh;
+  overflow-y: auto;
+}
+@keyframes sheetUp { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+.detail-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  background: rgba(255,255,255,0.02);
+}
+.detail-header-info { display: flex; align-items: center; gap: 8px; }
+.detail-header-info h4 { font-size: 1rem; font-weight: 700; color: var(--text-primary); margin: 0; }
+.detail-header-actions { display: flex; align-items: center; gap: 8px; }
+
+.detail-status-dot {
+  width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+}
+.detail-status-dot.status-confirmed { background: #4CAF50; box-shadow: 0 0 6px rgba(76,175,80,0.5); }
+.detail-status-dot.status-dp { background: var(--accent-cyan); box-shadow: 0 0 6px rgba(0,240,255,0.4); }
+.detail-status-dot.status-pending { background: #FF9800; box-shadow: 0 0 6px rgba(255,152,0,0.4); }
+.detail-status-dot.status-maintenance { background: var(--text-muted); }
+
+.detail-status-badge {
+  font-size: 0.68rem; font-weight: 700; padding: 3px 8px; border-radius: 20px;
+  text-transform: uppercase; letter-spacing: 0.3px;
+}
+.detail-status-badge.status-confirmed { background: rgba(76,175,80,0.12); color: #4CAF50; }
+.detail-status-badge.status-dp { background: rgba(0,240,255,0.1); color: var(--accent-cyan); }
+.detail-status-badge.status-pending { background: rgba(255,152,0,0.1); color: #FF9800; }
+.detail-status-badge.status-maintenance { background: rgba(255,255,255,0.05); color: var(--text-muted); }
+
+.detail-body {
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.detail-info-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+.detail-info-row svg { flex-shrink: 0; margin-top: 2px; color: var(--text-muted); }
+.detail-info-content { display: flex; flex-direction: column; gap: 6px; }
+
+/* Duration Controls */
+.duration-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 8px;
+  padding: 3px 6px;
+  align-self: flex-start;
+}
+.dur-btn {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.08);
+  color: var(--text-primary);
+  width: 24px; height: 24px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  line-height: 1;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s;
+}
+.dur-btn:hover:not(:disabled) { background: rgba(255,42,95,0.15); color: var(--accent-pink); border-color: rgba(255,42,95,0.2); }
+.dur-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+.dur-label { font-size: 0.8rem; color: var(--text-secondary); min-width: 40px; text-align: center; }
+
+/* Price Card */
+.detail-price-card {
+  background: rgba(0,0,0,0.2);
+  border: 1px solid rgba(255,255,255,0.05);
+  border-radius: 10px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.detail-price-row {
+  display: flex; justify-content: space-between;
+  font-size: 0.8rem; color: var(--text-secondary);
+}
+.detail-price-row.total { font-weight: 700; color: var(--text-primary); padding-top: 6px; border-top: 1px solid rgba(255,255,255,0.06); }
+.detail-price-row.discount { color: #FFC107; }
+.detail-price-row.dp { color: var(--accent-cyan); }
+.detail-price-row.remaining { color: #FF9800; }
+.detail-paid-badge { text-align: center; font-size: 0.78rem; font-weight: 700; color: #4CAF50; padding: 5px; border-top: 1px solid rgba(76,175,80,0.15); }
+.detail-unpaid-badge { text-align: center; font-size: 0.78rem; font-weight: 700; color: #FF9800; padding: 5px; border-top: 1px solid rgba(255,152,0,0.15); }
+
+/* Status Section */
+.detail-status-section { display: flex; flex-direction: column; gap: 6px; }
+.detail-status-section label { font-size: 0.72rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+
+.detail-footer {
+  display: flex;
+  gap: 8px;
+  padding: 10px 16px 14px;
+  border-top: 1px solid rgba(255,255,255,0.05);
+}
+.detail-footer .btn-secondary { flex: 1; justify-content: center; font-size: 0.82rem; }
+.detail-close { color: var(--text-muted); }
+
+
+
 /* ===== Page Header ===== */
 .view-switcher {
   display: flex;
