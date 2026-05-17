@@ -33,14 +33,14 @@ const FinancePage = () => {
     bookings.forEach(b => {
       // Confirmed bookings contribute total price
       if (b.status === 'confirmed') {
-        const total = b.duration * pricePerHour;
+        const total = (b.duration * pricePerHour) - (b.discountAmount || 0);
         allEntries.push({
           id: `book-${b.id}`,
           date: b.date,
           type: 'income',
           category: 'Sewa Studio',
           amount: total,
-          description: `Sewa oleh ${b.band} (${b.duration} Jam)`,
+          description: `Sewa oleh ${b.band} (${b.duration} Jam)${b.discountAmount > 0 ? ' [VIP]' : ''}`,
           isManual: false
         });
       } 
@@ -95,15 +95,17 @@ const FinancePage = () => {
 
   return (
     <div className="finance-page">
-      <div className="finance-header">
+      <header className="page-header">
         <div>
-          <h2>Buku Kas / Pembukuan</h2>
-          <p className="subtitle">Pantau arus kas masuk dan keluar operasional studio</p>
+          <h2 className="page-title">Buku Kas / Pembukuan</h2>
+          <p className="page-subtitle">Pantau arus kas masuk dan keluar operasional studio</p>
         </div>
-        <button className="btn-primary" onClick={() => setIsModalOpen(true)}>
-          <Plus size={16} /> Catat Transaksi
-        </button>
-      </div>
+        <div className="header-actions">
+          <button className="btn-primary" onClick={() => setIsModalOpen(true)}>
+            <Plus size={18} /> <span>Catat Transaksi</span>
+          </button>
+        </div>
+      </header>
 
       {/* Stats Cards */}
       <div className="finance-stats">
@@ -132,7 +134,7 @@ const FinancePage = () => {
 
       {/* Ledger Table */}
       <div className="finance-content glass-panel">
-        <div className="table-responsive">
+        <div className="finance-page table-responsive hide-on-mobile" style={{flex: 1, overflow: 'auto'}}>
           <table className="finance-table">
             <thead>
               <tr>
@@ -174,7 +176,7 @@ const FinancePage = () => {
                           onClick={() => deleteTransaction(entry.id)}
                           title="Hapus Transaksi"
                         >
-                          <Trash2 size={16} />
+                          <Trash2 size={15} />
                         </button>
                       )}
                     </td>
@@ -183,6 +185,41 @@ const FinancePage = () => {
               )}
             </tbody>
           </table>
+        </div>
+
+        {/* Mobile Ledger Cards */}
+        <div className="mobile-ledger-list show-on-mobile">
+          {combinedData.length === 0 ? (
+            <div className="empty-state" style={{padding: '32px', textAlign: 'center', color: 'var(--text-muted)'}}>
+              Tidak ada catatan transaksi.
+            </div>
+          ) : combinedData.map(entry => (
+            <div key={entry.id} className={`mobile-ledger-card ${entry.type}`}>
+              <div className="mobile-ledger-info">
+                <span className="mobile-ledger-desc">{entry.description}</span>
+                <div className="mobile-ledger-meta">
+                  <span className={`cat-badge ${entry.type}`}>{entry.category}</span>
+                  <span className="mobile-ledger-date">{format(new Date(entry.date), 'dd MMM yyyy')}</span>
+                </div>
+              </div>
+              <div className="mobile-ledger-right">
+                <span className={`mobile-ledger-amount ${entry.type}`}>
+                  {entry.type === 'income' ? '+' : '-'}{formatCurrency(entry.amount)}
+                </span>
+                <span className="mobile-ledger-balance">Saldo: {formatCurrency(entry.balance)}</span>
+              </div>
+              {entry.isManual && (
+                <button 
+                  className="icon-btn delete" 
+                  onClick={() => deleteTransaction(entry.id)}
+                  title="Hapus"
+                  style={{ width: 28, height: 28, flexShrink: 0 }}
+                >
+                  <Trash2 size={13} />
+                </button>
+              )}
+            </div>
+          ))}
         </div>
       </div>
 

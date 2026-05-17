@@ -1,51 +1,90 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
-import { ChevronLeft, ChevronRight, Plus, Search, CalendarCheck, Clock, DollarSign, Trash2, Phone, StickyNote, X } from 'lucide-react';
-import { format, addMonths, startOfMonth, getDaysInMonth, addDays, getDay, isSameMonth } from 'date-fns';
+import { ChevronLeft, ChevronRight, Plus, Search, CalendarCheck, Clock, DollarSign, Trash2, Phone, StickyNote, X, MessageCircle } from 'lucide-react';
+import { format, addMonths, subMonths, startOfMonth, endOfMonth, getDaysInMonth, addDays, subDays, getDay, isSameMonth, startOfWeek, endOfWeek, eachDayOfInterval, addWeeks, subWeeks } from 'date-fns';
 import { useBookingStore } from '../store/useBookingStore';
 import { useSettingsStore } from '../store/useSettingsStore';
 import { useTourStore } from '../store/useTourStore';
+import { useNotificationStore } from '../store/useNotificationStore';
 import Modal from '../components/Modal';
 import BookingForm from '../components/BookingForm';
 import './CalendarPage.css';
+import './CalendarPrintStyles.css';
 
 const CalendarPage = () => {
-  const [currentMonth, setCurrentMonth] = useState(startOfMonth(new Date()));
+  const [currentDate, setCurrentDate] = useState(new Date());
+  const [viewMode, setViewMode] = useState('month'); // 'day', 'week', 'month'
+  
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [prefillDate, setPrefillDate] = useState(null);
   const [prefillHour, setPrefillHour] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [filterStatus, setFilterStatus] = useState('all');
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [detailPos, setDetailPos] = useState({ top: 0, left: 0 });
 
+  // Drag-to-resize state (removed)
   const gridWrapperRef = useRef(null);
 
+  // Responsive breakpoint detection
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   // Use global state
-  const { bookings, deleteBooking, updateBookingStatus, getMonthlyStats } = useBookingStore();
-  const { pricePerHour } = useSettingsStore();
+  const { bookings, deleteBooking, updateBookingStatus, updateBooking, getMonthlyStats } = useBookingStore();
+  const { pricePerHour, studioName } = useSettingsStore();
   const { run, currentStep, nextStep } = useTourStore();
 
-  // Calendar configuration
-  const numDays = getDaysInMonth(currentMonth);
-  const daysArray = Array.from({ length: numDays }).map((_, i) => addDays(currentMonth, i));
+  // Calendar configuration based on View Mode
+  const daysArray = useMemo(() => {
+    if (viewMode === 'day') {
+      return [currentDate];
+    } else if (viewMode === 'week') {
+      const start = startOfWeek(currentDate, { weekStartsOn: 0 }); // Sunday
+      const end = endOfWeek(currentDate, { weekStartsOn: 0 });
+      return eachDayOfInterval({ start, end });
+    } else {
+      const start = startOfMonth(currentDate);
+      const end = endOfMonth(currentDate);
+      return eachDayOfInterval({ start, end });
+    }
+  }, [currentDate, viewMode]);
+
+  const numDays = daysArray.length;
   const startHour = 10;
   const endHour = 23;
   const hoursArray = Array.from({ length: endHour - startHour }).map((_, i) => startHour + i);
 
-  // Stats
-  const stats = getMonthlyStats(currentMonth);
+  // Stats (Always Monthly based on currentDate)
+  const stats = getMonthlyStats(currentDate);
 
-  // Filter bookings by search
+  // Filter bookings by search and status
   const filteredBookings = useMemo(() => {
-    if (!searchQuery.trim()) return bookings;
-    const q = searchQuery.toLowerCase();
-    return bookings.filter(b => b.band.toLowerCase().includes(q) || (b.phone && b.phone.includes(q)));
-  }, [bookings, searchQuery]);
+    return bookings.filter(b => {
+      // 1. Search Query Filter
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase();
+        const matchesSearch = b.band.toLowerCase().includes(q) || (b.phone && b.phone.includes(q));
+        if (!matchesSearch) return false;
+      }
+      
+      // 2. Status Filter
+      if (filterStatus !== 'all') {
+        if (b.status !== filterStatus) return false;
+      }
+      
+      return true;
+    });
+  }, [bookings, searchQuery, filterStatus]);
 
   const handleCellClick = (dateStr, hour) => {
     setPrefillDate(dateStr);
     setPrefillHour(hour);
     setIsModalOpen(true);
-    if (run && currentStep === 2) {
+    if (run && currentStep === 4) {
       setTimeout(() => nextStep(), 100);
     }
   };
@@ -57,7 +96,7 @@ const CalendarPage = () => {
   };
 
   const handleGoToday = () => {
-    setCurrentMonth(startOfMonth(new Date()));
+    setCurrentDate(new Date());
     // Scroll to today column
     setTimeout(() => {
       const todayEl = document.querySelector('.today-col-highlight');
@@ -67,10 +106,22 @@ const CalendarPage = () => {
     }, 100);
   };
 
+  const handlePrev = () => {
+    if (viewMode === 'day') setCurrentDate(subDays(currentDate, 1));
+    else if (viewMode === 'week') setCurrentDate(subWeeks(currentDate, 1));
+    else setCurrentDate(subMonths(currentDate, 1));
+  };
+  
+  const handleNext = () => {
+    if (viewMode === 'day') setCurrentDate(addDays(currentDate, 1));
+    else if (viewMode === 'week') setCurrentDate(addWeeks(currentDate, 1));
+    else setCurrentDate(addMonths(currentDate, 1));
+  };
+
   const handleBookingClick = (e, booking) => {
     e.stopPropagation();
     const rect = e.currentTarget.getBoundingClientRect();
-    const popupHeight = 360; // estimated popup height
+    const popupHeight = 480; // estimated popup height increased to accommodate new WhatsApp button and VIP rows
     const spaceBelow = window.innerHeight - rect.bottom;
     const spaceAbove = rect.top;
     
@@ -90,7 +141,7 @@ const CalendarPage = () => {
     setDetailPos({ top, left });
     setSelectedBooking(booking);
 
-    if (run && currentStep === 9 && booking.band === 'Band Tutorial') {
+    if (run && currentStep === 11 && booking.band === 'Band Tutorial') {
       setTimeout(() => nextStep(), 100);
     }
   };
@@ -98,24 +149,38 @@ const CalendarPage = () => {
   const handleDeleteBooking = (id) => {
     deleteBooking(id);
     setSelectedBooking(null);
-    if (run && currentStep === 10) {
+    if (run && currentStep === 12) {
       setTimeout(() => nextStep(), 100);
     }
   };
 
-  const handleStatusChange = (id, newStatus) => {
-    updateBookingStatus(id, newStatus);
-    setSelectedBooking(prev => prev ? { ...prev, status: newStatus } : null);
+  const handleSendReminder = () => {
+    if (!selectedBooking.phone) {
+      alert("Nomor telepon tidak tersedia untuk jadwal ini.");
+      return;
+    }
+    const message = `Halo ${selectedBooking.band}, sekadar mengingatkan Anda ada jadwal latihan besok tanggal ${format(new Date(selectedBooking.date), 'dd MMM yyyy')} jam ${String(selectedBooking.hour).padStart(2, '0')}:00 WIB di ${studioName}. Mohon datang tepat waktu ya! Terima kasih.`;
+    let phoneStr = selectedBooking.phone.replace(/\D/g, '');
+    if (phoneStr.startsWith('0')) {
+      phoneStr = '62' + phoneStr.substring(1);
+    }
+    const url = `https://wa.me/${phoneStr}?text=${encodeURIComponent(message)}`;
+    window.open(url, '_blank');
   };
 
-  // Close detail popup on outside click
+  const handleStatusChange = (id, newStatus) => {
+    updateBookingStatus(id, newStatus);
+  };
+
+  // Close detail popup on outside click (disabled during tour)
   useEffect(() => {
+    if (run) return; // Don't close popup during tour
     const handleClick = () => setSelectedBooking(null);
     if (selectedBooking) {
       document.addEventListener('click', handleClick);
       return () => document.removeEventListener('click', handleClick);
     }
-  }, [selectedBooking]);
+  }, [selectedBooking, run]);
 
   const formatCurrency = (num) => {
     return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(num);
@@ -131,9 +196,6 @@ const CalendarPage = () => {
   };
 
   const todayStr = format(new Date(), 'yyyy-MM-dd');
-  
-  const todaysBookings = filteredBookings.filter(b => b.date === todayStr);
-  const latestBookingId = todaysBookings.length > 0 ? Math.max(...todaysBookings.map(b => b.id)) : null;
 
   let emptyCellAssigned = false;
 
@@ -142,7 +204,7 @@ const CalendarPage = () => {
       <header className="page-header">
         <div>
           <h2 className="page-title">Booking Calendar</h2>
-          <p className="page-subtitle">37 Music Studio — {format(currentMonth, 'MMMM yyyy')}</p>
+          <p className="page-subtitle">37 Music Studio — {format(currentDate, 'MMMM yyyy')}</p>
         </div>
         
         <div className="header-actions">
@@ -158,6 +220,10 @@ const CalendarPage = () => {
               <button className="search-clear" onClick={() => setSearchQuery('')}><X size={14} /></button>
             )}
           </div>
+          <button className="btn-secondary tour-calendar-print" onClick={() => window.print()} title="Cetak Jadwal Hari Ini">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+            <span className="hide-on-mobile">Cetak</span>
+          </button>
           <button className="btn-primary tour-calendar-new-btn" onClick={handleNewBooking}>
             <Plus size={18} />
             <span>New Booking</span>
@@ -206,24 +272,37 @@ const CalendarPage = () => {
       <div className="calendar-container glass-panel">
         <div className="calendar-toolbar">
           <div className="date-navigation tour-calendar-nav">
-            <button className="icon-btn" onClick={() => setCurrentMonth(addMonths(currentMonth, -1))}>
+            <button className="icon-btn" onClick={handlePrev}>
               <ChevronLeft size={20} />
             </button>
-            <h3 className="current-month">{format(currentMonth, 'MMMM yyyy')}</h3>
-            <button className="icon-btn" onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}>
+            <h3 className="current-month" style={{ minWidth: viewMode === 'week' ? '180px' : '140px', textAlign: 'center' }}>
+              {viewMode === 'day' && format(currentDate, 'dd MMM yyyy')}
+              {viewMode === 'week' && `${format(startOfWeek(currentDate, {weekStartsOn: 0}), 'dd MMM')} - ${format(endOfWeek(currentDate, {weekStartsOn: 0}), 'dd MMM yyyy')}`}
+              {viewMode === 'month' && format(currentDate, 'MMMM yyyy')}
+            </h3>
+            <button className="icon-btn" onClick={handleNext}>
               <ChevronRight size={20} />
             </button>
             <button className="today-btn" onClick={handleGoToday}>Hari Ini</button>
+            
+            <div className="view-switcher hide-on-mobile" style={{ display: 'flex', background: 'rgba(255,255,255,0.05)', borderRadius: '8px', padding: '4px', marginLeft: '12px' }}>
+              <button className={`view-btn ${viewMode === 'day' ? 'active' : ''}`} onClick={() => setViewMode('day')}>Hari</button>
+              <button className={`view-btn ${viewMode === 'week' ? 'active' : ''}`} onClick={() => setViewMode('week')}>Minggu</button>
+              <button className={`view-btn ${viewMode === 'month' ? 'active' : ''}`} onClick={() => setViewMode('month')}>Bulan</button>
+            </div>
           </div>
-          <div className="legend">
-            <span className="legend-item"><span className="dot confirmed"></span> Lunas</span>
-            <span className="legend-item"><span className="dot dp"></span> DP</span>
-            <span className="legend-item"><span className="dot pending"></span> Belum Bayar</span>
+          
+          <div className="quick-filters tour-calendar-filters" style={{ display: 'flex', gap: '6px', overflowX: 'auto', paddingBottom: '4px' }}>
+            <button className={`filter-chip ${filterStatus === 'all' ? 'active' : ''}`} onClick={() => setFilterStatus('all')}>Semua</button>
+            <button className={`filter-chip ${filterStatus === 'pending' ? 'active pending' : ''}`} onClick={() => setFilterStatus('pending')}><span className="dot pending"></span>Belum Bayar</button>
+            <button className={`filter-chip ${filterStatus === 'dp' ? 'active dp' : ''}`} onClick={() => setFilterStatus('dp')}><span className="dot dp"></span>DP</button>
+            <button className={`filter-chip ${filterStatus === 'confirmed' ? 'active confirmed' : ''}`} onClick={() => setFilterStatus('confirmed')}><span className="dot confirmed"></span>Lunas</button>
+            <button className={`filter-chip ${filterStatus === 'maintenance' ? 'active maintenance' : ''}`} onClick={() => setFilterStatus('maintenance')}><span className="dot maintenance" style={{background:'#6b6b76'}}></span>Blokir</button>
           </div>
         </div>
 
         <div className="monthly-grid-wrapper tour-calendar-grid" ref={gridWrapperRef}>
-          <div className="monthly-grid" style={{ gridTemplateColumns: `90px repeat(${numDays}, minmax(60px, 1fr))` }}>
+          <div className="monthly-grid" style={{ gridTemplateColumns: `${isMobile ? '65px' : '90px'} repeat(${numDays}, minmax(${viewMode === 'day' ? '200px' : viewMode === 'week' ? '120px' : isMobile ? '50px' : '60px'}, 1fr))` }}>
             
             {/* Top-Left Corner Header Cell */}
             <div className="grid-corner-cell sticky-col">
@@ -269,11 +348,11 @@ const CalendarPage = () => {
                   const isBookingStart = cellBooking && cellBooking.hour === hour;
                   const isBookingEnd = cellBooking && (cellBooking.hour + cellBooking.duration - 1) === hour;
 
-                  const isTargetCell = run && currentStep === 2 && isToday && !cellBooking && !emptyCellAssigned;
+                  const isTargetCell = run && currentStep === 4 && isToday && !cellBooking && !emptyCellAssigned;
                   if (isTargetCell) emptyCellAssigned = true;
 
-                  // Robust tutorial targeting: highlight the absolute latest booking created today
-                  const isTutorialBooking = cellBooking && cellBooking.id === latestBookingId && run && currentStep === 9;
+                  // Tutorial targeting: highlight the "Band Tutorial" booking
+                  const isTutorialBooking = cellBooking && cellBooking.band === 'Band Tutorial' && run && currentStep === 11;
 
                   const cellClasses = [
                     'grid-cell',
@@ -286,6 +365,7 @@ const CalendarPage = () => {
 
                   if (cellBooking) {
                     const statusClass = `status-${cellBooking.status}`;
+
                     return (
                       <div 
                         key={`${hour}-${dayIdx}`} 
@@ -320,82 +400,139 @@ const CalendarPage = () => {
       </div>
 
       {/* Booking Detail Popup */}
-      {selectedBooking && (
-        <div className="booking-detail-popup glass-panel" style={{ top: detailPos.top, left: detailPos.left }} onClick={e => e.stopPropagation()}>
-          <div className="detail-header">
-            <h4>{selectedBooking.band}</h4>
-            <button className="icon-btn detail-close" onClick={() => setSelectedBooking(null)}><X size={16} /></button>
-          </div>
-          <div className="detail-body">
-            <div className="detail-row">
-              <Clock size={14} /> 
-              <span>{selectedBooking.date} • {selectedBooking.hour}.00 – {selectedBooking.hour + selectedBooking.duration}.00 ({selectedBooking.duration} jam)</span>
+      {selectedBooking && (() => {
+        const activeBooking = bookings.find(b => b.id === selectedBooking.id) || selectedBooking;
+        return (
+          <div className="booking-detail-popup glass-panel" style={{ top: detailPos.top, left: detailPos.left }} onClick={e => e.stopPropagation()}>
+            <div className="detail-header">
+              <h4>{activeBooking.band}</h4>
+              <button className="icon-btn detail-close" onClick={() => setSelectedBooking(null)}><X size={16} /></button>
             </div>
-            {selectedBooking.phone && (
+            <div className="detail-body">
               <div className="detail-row">
-                <Phone size={14} /> 
-                <span>{selectedBooking.phone}</span>
-              </div>
-            )}
-            <div className="detail-price-section">
-              <div className="detail-price-row">
-                <span className="price-label">Total Harga</span>
-                <span className="price-value">{formatCurrency(selectedBooking.duration * pricePerHour)}</span>
-              </div>
-              {selectedBooking.status === 'dp' && selectedBooking.dpAmount > 0 && (
-                <>
-                  <div className="detail-price-row dp-row">
-                    <span className="price-label">DP Dibayar</span>
-                    <span className="price-value dp-paid">{formatCurrency(selectedBooking.dpAmount)}</span>
+                <Clock size={14} /> 
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                  <span>{activeBooking.date} • {activeBooking.hour}.00 – {activeBooking.hour + activeBooking.duration}.00</span>
+                  <div className="duration-controls" style={{ display: 'flex', alignItems: 'center', gap: '4px', background: 'rgba(255,255,255,0.05)', padding: '2px', borderRadius: '4px' }}>
+                    <button className="icon-btn" style={{ width: '24px', height: '24px', minHeight: '24px' }} onClick={() => updateBooking(activeBooking.id, { duration: Math.max(1, activeBooking.duration - 1) })} disabled={activeBooking.duration <= 1}>-</button>
+                    <span style={{ fontSize: '0.8rem', width: '40px', textAlign: 'center' }}>{activeBooking.duration} jam</span>
+                    <button className="icon-btn" style={{ width: '24px', height: '24px', minHeight: '24px' }} onClick={() => {
+                      const newDuration = Math.min(12, activeBooking.duration + 1);
+                      if (newDuration > activeBooking.duration) {
+                        const isOverlap = bookings.some(b => {
+                          if (b.id === activeBooking.id || b.date !== activeBooking.date) return false;
+                          const bHour = Number(b.hour);
+                          const bDur = Number(b.duration);
+                          const aHour = Number(activeBooking.hour);
+                          return (bHour < aHour + newDuration) && (aHour < bHour + bDur);
+                        });
+                        
+                        if (isOverlap) {
+                          const { addNotification } = useNotificationStore.getState();
+                          addNotification({ 
+                            title: 'Jadwal Bentrok!', 
+                            message: 'Gagal menambah durasi. Penambahan durasi menabrak jadwal band lain.', 
+                            type: 'error' 
+                          });
+                          return;
+                        }
+                        updateBooking(activeBooking.id, { duration: newDuration });
+                      }
+                    }}>+</button>
                   </div>
-                  <div className="detail-price-row remaining-row">
-                    <span className="price-label">Sisa Tagihan</span>
-                    <span className="price-value remaining">{formatCurrency((selectedBooking.duration * pricePerHour) - selectedBooking.dpAmount)}</span>
+                </div>
+              </div>
+              
+              {activeBooking.status !== 'maintenance' && (
+                <>
+                  {activeBooking.phone && (
+                    <div className="detail-row">
+                      <Phone size={14} /> 
+                      <span>{activeBooking.phone}</span>
+                    </div>
+                  )}
+                  <div className="detail-price-section">
+                    <div className="detail-price-row">
+                      <span className="price-label">Subtotal</span>
+                      <span className="price-value">{formatCurrency(activeBooking.duration * pricePerHour)}</span>
+                    </div>
+                    {activeBooking.discountAmount > 0 && (
+                      <div className="detail-price-row">
+                        <span className="price-label">Diskon VIP</span>
+                        <span className="price-value" style={{ color: '#FFC107' }}>-{formatCurrency(activeBooking.discountAmount)}</span>
+                      </div>
+                    )}
+                    <div className="detail-price-row" style={{ fontWeight: 'bold' }}>
+                      <span className="price-label">Total Harga</span>
+                      <span className="price-value">{formatCurrency((activeBooking.duration * pricePerHour) - (activeBooking.discountAmount || 0))}</span>
+                    </div>
+                    {activeBooking.status === 'dp' && activeBooking.dpAmount > 0 && (
+                      <>
+                        <div className="detail-price-row dp-row">
+                          <span className="price-label">DP Dibayar</span>
+                          <span className="price-value dp-paid">{formatCurrency(activeBooking.dpAmount)}</span>
+                        </div>
+                        <div className="detail-price-row remaining-row">
+                          <span className="price-label">Sisa Tagihan</span>
+                          <span className="price-value remaining">{formatCurrency(((activeBooking.duration * pricePerHour) - (activeBooking.discountAmount || 0)) - activeBooking.dpAmount)}</span>
+                        </div>
+                      </>
+                    )}
+                    {activeBooking.status === 'pending' && (
+                      <div className="detail-price-row remaining-row">
+                        <span className="price-label">Belum Dibayar</span>
+                        <span className="price-value remaining">{formatCurrency((activeBooking.duration * pricePerHour) - (activeBooking.discountAmount || 0))}</span>
+                      </div>
+                    )}
+                    {activeBooking.status === 'confirmed' && (
+                      <div className="detail-price-row paid-row">
+                        <span className="price-label">Status</span>
+                        <span className="price-value paid-full">✓ Lunas</span>
+                      </div>
+                    )}
                   </div>
                 </>
               )}
-              {selectedBooking.status === 'pending' && (
-                <div className="detail-price-row remaining-row">
-                  <span className="price-label">Belum Dibayar</span>
-                  <span className="price-value remaining">{formatCurrency(selectedBooking.duration * pricePerHour)}</span>
+
+              {activeBooking.note && (
+                <div className="detail-row">
+                  <StickyNote size={14} />
+                  <span>{activeBooking.note}</span>
                 </div>
               )}
-              {selectedBooking.status === 'confirmed' && (
-                <div className="detail-price-row paid-row">
-                  <span className="price-label">Status</span>
-                  <span className="price-value paid-full">✓ Lunas</span>
+              
+              {activeBooking.status !== 'maintenance' && (
+                <div className="detail-status">
+                  <label>Ubah Status:</label>
+                  <div className="status-buttons">
+                    {['pending', 'dp', 'confirmed'].map(s => (
+                      <button 
+                        key={s} 
+                        className={`status-btn ${s} ${activeBooking.status === s ? 'active' : ''}`}
+                        onClick={() => handleStatusChange(activeBooking.id, s)}
+                      >
+                        {getStatusLabel(s)}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               )}
             </div>
-            {selectedBooking.note && (
-              <div className="detail-row">
-                <StickyNote size={14} />
-                <span>{selectedBooking.note}</span>
-              </div>
-            )}
-            <div className="detail-status">
-              <label>Ubah Status:</label>
-              <div className="status-buttons">
-                {['pending', 'dp', 'confirmed'].map(s => (
-                  <button 
-                    key={s} 
-                    className={`status-btn ${s} ${selectedBooking.status === s ? 'active' : ''}`}
-                    onClick={() => handleStatusChange(selectedBooking.id, s)}
-                  >
-                    {getStatusLabel(s)}
-                  </button>
-                ))}
-              </div>
+            <div className="detail-footer">
+              <button className="delete-btn tour-btn-delete" onClick={() => handleDeleteBooking(activeBooking.id)}>
+                <Trash2 size={14} />
+                <span>{activeBooking.status === 'maintenance' ? 'Hapus Blokir' : 'Hapus Booking'}</span>
+              </button>
+              {activeBooking.status !== 'maintenance' && (
+                <button className="btn-secondary" onClick={handleSendReminder}>
+                  <MessageCircle size={14} />
+                  <span>Kirim Pengingat</span>
+                </button>
+              )}
             </div>
           </div>
-          <div className="detail-footer">
-            <button className="delete-btn tour-btn-delete" onClick={() => handleDeleteBooking(selectedBooking.id)}>
-              <Trash2 size={14} />
-              <span>Hapus Booking</span>
-            </button>
-          </div>
-        </div>
-      )}
+        );
+      })()}
 
       <Modal 
         isOpen={isModalOpen} 

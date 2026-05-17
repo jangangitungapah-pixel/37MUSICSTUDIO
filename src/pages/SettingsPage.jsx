@@ -114,15 +114,17 @@ const SettingsPage = () => {
 
   return (
     <div className="settings-page">
-      <div className="settings-header">
+      <header className="page-header">
         <div>
-          <h2>Pengaturan Sistem</h2>
-          <p className="subtitle">Konfigurasi profil studio, tarif sewa, dan preferensi aplikasi</p>
+          <h2 className="page-title">Pengaturan Sistem</h2>
+          <p className="page-subtitle">Konfigurasi profil studio, tarif sewa, dan preferensi aplikasi</p>
         </div>
-        <button className="btn-primary" onClick={handleSubmit}>
-          <Save size={16} /> Simpan Pengaturan
-        </button>
-      </div>
+        <div className="header-actions">
+          <button className="btn-primary" onClick={handleSubmit}>
+            <Save size={18} /> <span>Simpan Pengaturan</span>
+          </button>
+        </div>
+      </header>
 
       {isSaved && (
         <div className="settings-alert success">
@@ -135,7 +137,7 @@ const SettingsPage = () => {
         <form className="settings-form" onSubmit={handleSubmit} id="settings-form">
           
           {/* Section 1: Profil Studio */}
-          <div className="settings-section glass-panel">
+          <div className="settings-section glass-panel tour-settings-profile">
             <div className="settings-section-header">
               <Building size={20} />
               <h3>Profil & Identitas Studio</h3>
@@ -180,7 +182,7 @@ const SettingsPage = () => {
           </div>
 
           {/* Section 2: Konfigurasi Tarif */}
-          <div className="settings-section glass-panel">
+          <div className="settings-section glass-panel tour-settings-rate">
             <div className="settings-section-header">
               <DollarSign size={20} />
               <h3>Konfigurasi Tarif & Keuangan</h3>
@@ -243,7 +245,7 @@ const SettingsPage = () => {
           </div>
 
           {/* Section 3: Data Management */}
-          <div className="settings-section glass-panel danger-zone">
+          <div className="settings-section glass-panel danger-zone tour-settings-danger">
             <div className="settings-section-header">
               <Database size={20} />
               <h3>Manajemen Data (Danger Zone)</h3>

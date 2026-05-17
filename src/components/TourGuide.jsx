@@ -162,6 +162,16 @@ const TourGuide = () => {
         content: 'Punya jadwal yang sangat padat? Anda bisa mengetikkan nama band atau nomor HP di kotak pencarian ini untuk langsung menemukan jadwal mereka.',
       },
       {
+        target: '.tour-calendar-filters',
+        title: 'Filter Cepat',
+        content: 'Fitur baru! Gunakan filter ini untuk menyaring tampilan jadwal di kalender. Sangat praktis untuk melihat jadwal mana saja yang "Belum Bayar" atau yang sengaja "Diblokir".',
+      },
+      {
+        target: '.tour-calendar-print',
+        title: 'Cetak Jadwal',
+        content: 'Jika Anda butuh rekapan fisik, klik tombol ini untuk mencetak kalender ke kertas dengan layout khusus hitam-putih yang hemat tinta.',
+      },
+      {
         target: '.tour-target-cell',
         title: 'Mari Kita Coba!',
         content: 'Klik tepat pada kotak yang bercahaya ini untuk mencoba memasukkan jadwal booking secara instan.',
@@ -202,7 +212,6 @@ const TourGuide = () => {
         target: '.tour-new-booking',
         title: 'Jadwal Berhasil Dibuat!',
         content: 'Ini dia blok jadwal Anda! Sekarang, coba klik blok jadwal "Band Tutorial" yang menyala ini untuk melihat ringkasan detailnya.',
-        hideNext: true
       },
       {
         target: '.tour-btn-delete',
@@ -270,6 +279,54 @@ const TourGuide = () => {
         target: '.tour-bill-table',
         title: '✅ Panduan Selesai!',
         content: 'Sekarang Anda sudah benar-benar menguasai seluruh fitur kasir dan digital invoice! Sampai jumpa di panduan modul selanjutnya.',
+        nextPage: '/finance'
+      }
+    ];
+  } else if (path === '/settings') {
+    steps = [
+      {
+        target: '.tour-settings-profile',
+        title: '🏢 Profil Studio',
+        content: 'Di sini Anda dapat mengatur nama, alamat, dan nomor kontak studio. Informasi ini akan langsung tercetak pada bagian bawah setiap Invoice/Nota digital yang Anda bagikan ke pelanggan.'
+      },
+      {
+        target: '.tour-settings-rate',
+        title: '💰 Konfigurasi Tarif',
+        content: 'Anda dapat menyesuaikan harga sewa per jam kapan saja. Perubahan harga hanya akan berlaku untuk jadwal baru yang dibuat setelahnya, jadi jadwal lama tidak akan berubah.'
+      },
+      {
+        target: '.tour-settings-danger',
+        title: '⚠️ Manajemen Data (Danger Zone)',
+        content: 'Jika Anda ingin mengosongkan seluruh database (misal: menghapus semua jadwal lama atau data pelanggan) untuk memulai dari awal, Anda bisa melakukannya di sini dengan sangat hati-hati.'
+      },
+      {
+        target: '.tour-settings-profile',
+        title: '🎉 Semua Panduan Selesai!',
+        content: 'Selamat! Anda telah menguasai seluruh fitur 37 Music Studio System. Kini Anda siap mengelola studio dengan lebih profesional dan efisien.'
+      }
+    ];
+  } else if (path === '/finance') {
+    steps = [
+      {
+        target: '.tour-finance-dashboard',
+        title: '💼 Pembukuan Keuangan',
+        content: 'Halaman ini adalah pusat laporan keuangan studio Anda. Anda bisa memantau total pemasukan kotor dari jadwal sewa, dan mencatat pengeluaran operasional.'
+      },
+      {
+        target: '.tour-finance-add',
+        title: '➖ Catat Pengeluaran',
+        content: 'Gunakan form ini untuk mencatat setiap biaya operasional (seperti beli senar, bayar listrik, gaji penjaga). Sistem akan otomatis menghitung laba bersih bulanan Anda.'
+      },
+      {
+        target: '.tour-finance-table',
+        title: '📑 Laporan Transaksi Lengkap',
+        content: 'Semua transaksi (Pemasukan Booking dan Pengeluaran) tergabung di sini. Anda juga bisa mengunduhnya ke dalam format Excel (CSV) untuk pelaporan.'
+      },
+      {
+        target: '.tour-finance-dashboard',
+        title: '✅ Panduan Selesai!',
+        content: 'Sekarang Anda sudah menguasai cara mengelola keuangan studio. Selanjutnya, mari kita selesaikan pengaturan sistem utama.',
+        nextPage: '/settings'
       }
     ];
   } else {

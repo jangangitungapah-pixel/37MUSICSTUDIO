@@ -23,9 +23,10 @@
 }
 
 .form-group label {
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   font-weight: 600;
   color: var(--text-secondary);
+  letter-spacing: 0.2px;
 }
 
 .required {
@@ -33,20 +34,25 @@
 }
 
 .form-input {
-  background: var(--bg-dark);
-  border: 1px solid var(--border-light);
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   color: var(--text-primary);
   padding: 10px 14px;
-  border-radius: 8px;
+  border-radius: 10px;
   font-family: inherit;
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   outline: none;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
 }
 
 .form-input:focus {
-  border-color: var(--accent-pink);
-  box-shadow: 0 0 0 2px var(--border-focus);
+  border-color: rgba(255, 42, 95, 0.4);
+  box-shadow: 0 0 0 3px rgba(255, 42, 95, 0.1);
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.form-input::placeholder {
+  color: var(--text-muted);
 }
 
 .form-textarea {
@@ -55,34 +61,38 @@
 }
 
 .price-display {
-  background: rgba(76, 175, 80, 0.08);
-  border: 1px solid rgba(76, 175, 80, 0.2);
+  background: rgba(76, 175, 80, 0.06);
+  border: 1px solid rgba(76, 175, 80, 0.15);
   color: #4CAF50;
   padding: 10px 14px;
-  border-radius: 8px;
-  font-size: 0.95rem;
+  border-radius: 10px;
+  font-size: 0.92rem;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
 }
 
 .price-display.remaining.has-balance {
-  background: rgba(255, 152, 0, 0.08);
-  border-color: rgba(255, 152, 0, 0.25);
+  background: rgba(255, 152, 0, 0.06);
+  border-color: rgba(255, 152, 0, 0.2);
   color: #FF9800;
 }
 
 .price-display.remaining.paid-off {
-  background: rgba(76, 175, 80, 0.08);
-  border-color: rgba(76, 175, 80, 0.25);
+  background: rgba(76, 175, 80, 0.06);
+  border-color: rgba(76, 175, 80, 0.2);
   color: #4CAF50;
 }
 
 /* DP Section */
 .dp-section {
-  background: rgba(255, 193, 7, 0.04);
-  border: 1px solid rgba(255, 193, 7, 0.12);
-  border-radius: 10px;
-  padding: 14px;
+  background: rgba(255, 193, 7, 0.03);
+  border: 1px solid rgba(255, 193, 7, 0.1);
+  border-radius: 12px;
+  padding: 16px;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -92,9 +102,9 @@
   display: flex;
   justify-content: space-between;
   padding: 10px 14px;
-  background: rgba(0, 0, 0, 0.2);
+  background: rgba(0, 0, 0, 0.25);
   border-radius: 8px;
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   color: var(--text-secondary);
 }
 
@@ -116,46 +126,126 @@
   gap: 10px;
   margin-top: 8px;
   padding-top: 18px;
-  border-top: 1px solid var(--border-light);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .btn-secondary {
-  background: transparent;
-  border: 1px solid var(--border-light);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   color: var(--text-primary);
   padding: 10px 20px;
-  border-radius: 8px;
+  border-radius: 10px;
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   cursor: pointer;
-  transition: background 0.15s;
+  transition: all 0.15s;
   font-family: inherit;
 }
 
 .btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.12);
 }
 
 /* ===== Mobile Responsive ===== */
 @media (max-width: 768px) {
+  .booking-form {
+    gap: 10px;
+  }
+
   .form-row {
     flex-direction: column;
-    gap: 14px;
+    gap: 10px;
   }
 
   .form-row-3 {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  /* Make 3rd item (Total Harga) span full width */
+  .form-row-3 .form-group:last-child {
+    grid-column: 1 / -1;
+  }
+
+  .form-group {
+    gap: 4px;
+  }
+
+  .form-group label {
+    font-size: 0.74rem;
+  }
+
+  .form-input {
+    padding: 9px 12px;
+    font-size: 0.84rem;
+    border-radius: 9px;
+    min-height: 38px;
+  }
+
+  .form-textarea {
+    min-height: 44px;
+  }
+
+  .price-display {
+    padding: 9px 12px;
+    font-size: 0.85rem;
+    min-height: 38px;
+    border-radius: 9px;
+  }
+
+  .dp-section {
+    padding: 10px;
+    border-radius: 9px;
+    gap: 8px;
+  }
+
+  .dp-summary {
+    font-size: 0.75rem;
+    padding: 8px 10px;
+    flex-wrap: wrap;
+    gap: 4px;
   }
 
   .form-actions {
-    flex-direction: column-reverse;
+    flex-direction: row;
+    gap: 8px;
+    padding-top: 10px;
+    margin-top: 4px;
   }
 
   .form-actions .btn-primary,
   .form-actions .btn-secondary {
-    width: 100%;
+    flex: 1;
     justify-content: center;
     text-align: center;
+    padding: 10px 14px;
+    min-height: 40px;
+    font-size: 0.84rem;
+    border-radius: 9px;
   }
 }
 
+@media (max-width: 360px) {
+  .form-group label {
+    font-size: 0.7rem;
+  }
+
+  .form-input,
+  .form-textarea {
+    font-size: 0.8rem;
+    padding: 8px 10px;
+    border-radius: 8px;
+  }
+
+  .form-actions {
+    gap: 6px;
+  }
+
+  .form-actions .btn-primary,
+  .form-actions .btn-secondary {
+    padding: 8px 10px;
+    font-size: 0.78rem;
+    min-height: 36px;
+  }
+}

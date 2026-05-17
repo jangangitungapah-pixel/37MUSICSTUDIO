@@ -63,8 +63,27 @@ body {
   }
 
   .main-content {
-    padding: 16px;
+    padding: 14px;
     height: calc(100vh - 57px);
+  }
+}
+
+@media (max-width: 480px) {
+  .main-content {
+    padding: 10px;
+  }
+}
+
+@media (max-width: 360px) {
+  .main-content {
+    padding: 8px;
+  }
+}
+
+/* Safe area insets for modern phones (notch, home bar) */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .main-content {
+    padding-bottom: calc(14px + env(safe-area-inset-bottom));
   }
 }
 

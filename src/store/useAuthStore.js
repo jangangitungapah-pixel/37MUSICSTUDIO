@@ -6,7 +6,8 @@ import {
   signOut, 
   onAuthStateChanged,
   updateProfile,
-  updatePassword
+  updatePassword,
+  signInAnonymously
 } from 'firebase/auth';
 import { collection, query, where, getDocs, setDoc, doc, getDoc, updateDoc } from 'firebase/firestore';
 
@@ -74,6 +75,21 @@ export const useAuthStore = create((set, get) => {
         let msg = error.message;
         if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
           msg = 'Email/Username/Telepon atau Password salah.';
+        }
+        set({ error: msg, loading: false });
+        throw error;
+      }
+    },
+
+    loginGuest: async () => {
+      set({ loading: true, error: null });
+      try {
+        await signInAnonymously(auth);
+        set({ loading: false });
+      } catch (error) {
+        let msg = error.message;
+        if (error.code === 'auth/operation-not-allowed') {
+          msg = 'Fitur Tamu belum diaktifkan (Aktifkan Anonymous Auth di Firebase).';
         }
         set({ error: msg, loading: false });
         throw error;

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { CalendarDays, Users, Package, CreditCard, Settings, Music, BookOpen, PieChart, Menu, X, LogOut, HelpCircle, Bell } from 'lucide-react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { CalendarDays, Users, Package, CreditCard, Settings, Music, BookOpen, PieChart, Menu, X, LogOut, HelpCircle, Bell, ChevronRight } from 'lucide-react';
+import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../store/useAuthStore';
 import { useTourStore } from '../store/useTourStore';
 import { useNotificationStore } from '../store/useNotificationStore';
@@ -17,6 +17,7 @@ const Sidebar = () => {
   const { startTour } = useTourStore();
   const { notifications } = useNotificationStore();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const unreadCount = notifications.filter(n => !n.isRead).length;
 
@@ -50,18 +51,22 @@ const Sidebar = () => {
   };
 
   const menuItems = [
-    { icon: <PieChart size={20} />, label: 'Dashboard', path: '/', tourClass: '' },
-    { icon: <CalendarDays size={20} />, label: 'Calendar', path: '/calendar', tourClass: 'tour-calendar' },
-    { icon: <Users size={20} />, label: 'Customers', path: '/customers', tourClass: 'tour-customers' },
-    { icon: <Package size={20} />, label: 'Inventory', path: '/inventory', tourClass: '' },
-    { icon: <CreditCard size={20} />, label: 'Billing / POS', path: '/billing', tourClass: 'tour-billing' },
-    { icon: <BookOpen size={20} />, label: 'Pembukuan', path: '/finance', tourClass: '' },
-    { icon: <Settings size={20} />, label: 'Settings', path: '/settings', tourClass: '' },
+    { icon: <PieChart size={19} />, label: 'Dashboard', path: '/', tourClass: '' },
+    { icon: <CalendarDays size={19} />, label: 'Calendar', path: '/calendar', tourClass: 'tour-calendar' },
+    { icon: <Users size={19} />, label: 'Customers', path: '/customers', tourClass: 'tour-customers' },
+    { icon: <Package size={19} />, label: 'Inventory', path: '/inventory', tourClass: '' },
+    { icon: <CreditCard size={19} />, label: 'Billing / POS', path: '/billing', tourClass: 'tour-billing' },
+    { icon: <BookOpen size={19} />, label: 'Pembukuan', path: '/finance', tourClass: '' },
+    { icon: <Settings size={19} />, label: 'Settings', path: '/settings', tourClass: '' },
   ];
 
   // Get first letter of username or email for avatar
   const displayName = userProfile?.username || user?.displayName || (user?.email ? user.email.split('@')[0] : 'User');
   const avatarLetter = displayName.charAt(0).toUpperCase();
+
+  // Get current page title for mobile header
+  const currentPage = menuItems.find(item => item.path === location.pathname);
+  const currentLabel = currentPage ? currentPage.label : '37 Studio';
 
   return (
     <>
@@ -87,18 +92,26 @@ const Sidebar = () => {
 
       {/* Sidebar */}
       <aside className={`sidebar glass-panel ${mobileOpen ? 'mobile-open' : ''}`}>
+        {/* Brand Header */}
         <div className="sidebar-header">
-          <div className="logo-icon">
-            <Music size={24} color="var(--accent-pink)" />
+          <div className="sidebar-brand">
+            <div className="logo-icon">
+              <Music size={22} color="var(--accent-pink)" />
+            </div>
+            <div className="logo-text-group">
+              <h1 className="logo-text">37 STUDIO</h1>
+              <span className="logo-subtitle">Music Studio</span>
+            </div>
           </div>
-          <h1 className="logo-text">37 STUDIO</h1>
-          <button className="notification-bell-btn" onClick={() => setIsNotifOpen(true)} style={{marginLeft: 'auto', display: 'flex'}}>
-             <Bell size={20} color="var(--text-muted)" />
-             {unreadCount > 0 && <span className="notification-badge">{unreadCount > 99 ? '99+' : unreadCount}</span>}
+          <button className="notification-bell-btn sidebar-bell" onClick={() => setIsNotifOpen(true)}>
+            <Bell size={18} />
+            {unreadCount > 0 && <span className="notification-badge">{unreadCount > 99 ? '99+' : unreadCount}</span>}
           </button>
         </div>
 
+        {/* Navigation */}
         <nav className="sidebar-nav">
+          <span className="nav-section-label">MENU</span>
           {menuItems.map((item, index) => (
             <NavLink 
               key={index} 
@@ -106,32 +119,34 @@ const Sidebar = () => {
               className={({ isActive }) => `nav-item ${item.tourClass} ${isActive ? 'active' : ''}`}
               onClick={() => setMobileOpen(false)}
             >
-              {item.icon}
-              <span>{item.label}</span>
+              <span className="nav-icon">{item.icon}</span>
+              <span className="nav-label">{item.label}</span>
+              <ChevronRight size={14} className="nav-chevron" />
             </NavLink>
           ))}
         </nav>
 
+        {/* Footer */}
         <div className="sidebar-footer">
-          <button className="nav-item" onClick={handleRestartTour} style={{background: 'transparent', border: 'none', cursor: 'pointer', width: '100%', marginBottom: '10px'}}>
-            <HelpCircle size={20} color="var(--text-muted)" />
-            <span style={{color: 'var(--text-muted)'}}>Panduan Tour</span>
+          <button className="nav-item tour-guide-btn" onClick={handleRestartTour}>
+            <span className="nav-icon"><HelpCircle size={19} /></span>
+            <span className="nav-label">Panduan Tour</span>
           </button>
           
-          <div className="user-profile tour-profile" style={{cursor: 'pointer', position: 'relative'}} onClick={() => setIsProfileOpen(true)}>
+          <div className="sidebar-divider" />
+          
+          <div className="user-profile tour-profile" onClick={() => setIsProfileOpen(true)}>
             <div className="avatar">{avatarLetter}</div>
             <div className="user-info">
               <span className="user-name" title={user?.email || ''}>{displayName}</span>
               <span className="user-role">Administrator</span>
             </div>
-            
             <button 
-              className="icon-btn logout-btn" 
+              className="sidebar-logout-btn" 
               onClick={(e) => { e.stopPropagation(); handleLogout(); }} 
-              title="Logout" 
-              style={{marginLeft: 'auto'}}
+              title="Logout"
             >
-              <LogOut size={18} color="var(--text-muted)" />
+              <LogOut size={16} />
             </button>
           </div>
         </div>

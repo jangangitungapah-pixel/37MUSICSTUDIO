@@ -73,10 +73,12 @@ const DashboardPage = () => {
 
   return (
     <div className="dashboard-page">
-      <div className="dashboard-header">
-        <h2>Dashboard Analytics</h2>
-        <p className="subtitle">Ringkasan performa 37 Music Studio bulan ini</p>
-      </div>
+      <header className="page-header">
+        <div>
+          <h2 className="page-title">Dashboard Analytics</h2>
+          <p className="page-subtitle">Ringkasan performa 37 Music Studio bulan ini</p>
+        </div>
+      </header>
 
       {/* Top Stats Cards */}
       <div className="dash-stats-grid tour-dashboard-stats">

@@ -78,10 +78,55 @@ export const useBookingStore = create((set, get) => {
 
     updateBooking: async (id, data) => {
       localActionIds.add(id); // Mark as local
-      set((state) => ({
-        bookings: state.bookings.map(b => b.id === id ? { ...b, ...data } : b)
-      }));
-      await updateDoc(doc(bookingsRef, id.toString()), data);
+      
+      let updatedBookingData = { ...data };
+      
+      set((state) => {
+        const newBookings = state.bookings.map(b => {
+          if (b.id !== id) return b;
+          
+          let newData = { ...data };
+          
+          // Auto-recalculate financial status if duration changed
+          if (newData.duration !== undefined && newData.duration !== b.duration && b.status !== 'maintenance') {
+             const currentPricePerHour = useSettingsStore.getState().pricePerHour;
+             const oldDuration = b.duration;
+             const newDuration = newData.duration;
+             
+             // Calculate how much was already paid
+             let paidAmount = 0;
+             if (b.status === 'confirmed') {
+                paidAmount = (oldDuration * currentPricePerHour) - (b.discountAmount || 0);
+             } else if (b.status === 'dp') {
+                paidAmount = b.dpAmount || 0;
+             }
+             
+             const newTotalPrice = (newDuration * currentPricePerHour) - (b.discountAmount || 0);
+             
+             if (paidAmount > 0) {
+                if (paidAmount >= newTotalPrice) {
+                   // They paid MORE or EXACTLY the new total price
+                   newData.status = 'confirmed';
+                   newData.dpAmount = 0;
+                } else {
+                   // They paid LESS than the new total price
+                   newData.status = 'dp';
+                   newData.dpAmount = paidAmount;
+                }
+             }
+          }
+          
+          updatedBookingData = { ...b, ...newData }; // Save merged object for Firestore
+          return updatedBookingData;
+        });
+        return { bookings: newBookings };
+      });
+      
+      // Update Firestore with the calculated final data
+      // We strip the ID from the payload to avoid overwriting the document ID
+      const payload = { ...updatedBookingData };
+      delete payload.id;
+      await updateDoc(doc(bookingsRef, id.toString()), payload);
     },
 
     getMonthlyStats: (monthDate) => {

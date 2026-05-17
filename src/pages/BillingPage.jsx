@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useBookingStore } from '../store/useBookingStore';
 import { useSettingsStore } from '../store/useSettingsStore';
 import { useTourStore } from '../store/useTourStore';
-import { CreditCard, Printer, CheckCircle, Clock, AlertCircle, FileText, Search, X, Share2, MessageCircle, Copy, Download, Check } from 'lucide-react';
+import { CreditCard, Printer, CheckCircle, Clock, AlertCircle, FileText, Search, X, Share2, MessageCircle, Copy, Download, Check, Bell } from 'lucide-react';
 import { format } from 'date-fns';
 import html2canvas from 'html2canvas';
 import Modal from '../components/Modal';
@@ -27,17 +27,17 @@ const BillingPage = () => {
   }, [run, currentStep, isInvoiceModalOpen]);
 
   // Helper functions
-  const calculateTotal = (duration) => duration * pricePerHour;
+  const calculateTotal = (booking) => (booking.duration * pricePerHour) - (booking.discountAmount || 0);
   const calculateRemaining = (booking) => {
     if (booking.status === 'confirmed') return 0;
-    const total = calculateTotal(booking.duration);
+    const total = calculateTotal(booking);
     return booking.status === 'dp' ? total - (booking.dpAmount || 0) : total;
   };
   const formatCurrency = (num) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(num);
 
   // Stats calculation
   const totalPendapatan = bookings.reduce((sum, b) => {
-    if (b.status === 'confirmed') return sum + calculateTotal(b.duration);
+    if (b.status === 'confirmed') return sum + calculateTotal(b);
     if (b.status === 'dp') return sum + (b.dpAmount || 0);
     return sum;
   }, 0);
@@ -84,7 +84,9 @@ const BillingPage = () => {
 
   // Build invoice text for sharing
   const buildInvoiceText = (inv) => {
-    const total = calculateTotal(inv.duration);
+    const subtotal = inv.duration * pricePerHour;
+    const discount = inv.discountAmount || 0;
+    const total = calculateTotal(inv);
     const dp = inv.dpAmount || 0;
     const statusText = inv.status === 'confirmed' ? 'LUNAS' : inv.status === 'dp' ? 'DP' : 'BELUM BAYAR';
     const lines = [
@@ -102,7 +104,8 @@ const BillingPage = () => {
       `Jadwal: ${format(new Date(inv.date), 'dd MMM yyyy')} • ${String(inv.hour).padStart(2, '0')}:00-${String(inv.hour + inv.duration).padStart(2, '0')}:00`,
       `Durasi: ${inv.duration} jam × ${formatCurrency(pricePerHour)}`,
       ``,
-      `Subtotal: ${formatCurrency(total)}`,
+      `Subtotal: ${formatCurrency(subtotal)}`,
+      discount > 0 ? `Diskon VIP: -${formatCurrency(discount)}` : null,
       dp > 0 ? `DP: -${formatCurrency(dp)}` : null,
       `━━━━━━━━━━━━━━━━━━`,
       inv.status === 'confirmed' 
@@ -121,6 +124,17 @@ const BillingPage = () => {
     const text = buildInvoiceText(inv);
     const phone = inv.phone ? inv.phone.replace(/\D/g, '') : '';
     const url = `https://wa.me/${phone.startsWith('0') ? '62' + phone.slice(1) : phone}?text=${encodeURIComponent(text)}`;
+    window.open(url, '_blank');
+  };
+
+  const handleSendReminder = (inv) => {
+    if (!inv.phone) {
+      alert("Nomor telepon tidak tersedia untuk jadwal ini.");
+      return;
+    }
+    const message = `Halo ${inv.band}, sekadar mengingatkan Anda ada jadwal latihan besok tanggal ${format(new Date(inv.date), 'dd MMM yyyy')} jam ${String(inv.hour).padStart(2, '0')}:00 WIB di ${studioName}. Mohon datang tepat waktu ya! Terima kasih.`;
+    const phone = inv.phone.replace(/\D/g, '');
+    const url = `https://wa.me/${phone.startsWith('0') ? '62' + phone.slice(1) : phone}?text=${encodeURIComponent(message)}`;
     window.open(url, '_blank');
   };
 
@@ -246,7 +260,7 @@ const BillingPage = () => {
           </div>
         </div>
 
-        <div className="table-responsive tour-bill-table">
+        <div className="table-responsive tour-bill-table hide-on-mobile">
           <table className="billing-table">
             <thead>
               <tr>
@@ -268,16 +282,19 @@ const BillingPage = () => {
 
                 return filteredBookings.map((b, index) => {
                   const remaining = calculateRemaining(b);
-                  const total = calculateTotal(b.duration);
-                  
-                  // Target the first unpaid booking dynamically for the tutorial row
+                  const total = calculateTotal(b);
                   const isTutorialRow = run && index === tutorialTargetIdx;
 
                   return (
                     <tr key={b.id} className={isTutorialRow && currentStep === 5 ? 'tour-bill-row' : ''} onClick={() => handleOpenInvoice(b)}>
                       <td className="inv-id">INV-{b.id.toString().padStart(5, '0')}</td>
                       <td>{format(new Date(b.date), 'dd MMM yyyy')}</td>
-                      <td className="inv-band">{b.band}</td>
+                      <td className="inv-band">
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                          {b.band}
+                          {b.discountAmount > 0 && <span title="VIP Discount" style={{ fontSize: '10px', background: '#FFC107', color: '#000', padding: '1px 4px', borderRadius: '4px' }}>VIP</span>}
+                        </div>
+                      </td>
                       <td className="inv-total">{formatCurrency(total)}</td>
                       <td onClick={(e) => e.stopPropagation()}>
                         <select 
@@ -320,11 +337,57 @@ const BillingPage = () => {
             </tbody>
           </table>
         </div>
+
+        {/* Mobile Card List */}
+        <div className="mobile-billing-list show-on-mobile">
+          {filteredBookings.length === 0 ? (
+            <div className="empty-state" style={{padding: '32px', textAlign: 'center', color: 'var(--text-muted)'}}>
+              Tidak ada data transaksi.
+            </div>
+          ) : filteredBookings.map(b => {
+            const remaining = calculateRemaining(b);
+            const total = calculateTotal(b);
+            const statusLabel = b.status === 'confirmed' ? 'Lunas' : b.status === 'dp' ? 'DP' : 'Belum Bayar';
+            const statusClass = b.status === 'confirmed' ? 'paid' : b.status === 'dp' ? 'partial' : 'unpaid';
+            return (
+              <div key={b.id} className="mobile-billing-card" onClick={() => handleOpenInvoice(b)}>
+                <div className="mobile-bill-top">
+                  <span className="mobile-bill-band">{b.band}</span>
+                  <span className="mobile-bill-id">INV-{b.id.toString().padStart(5, '0')}</span>
+                </div>
+                <div className="mobile-bill-mid">
+                  <span className="mobile-bill-tag date">{format(new Date(b.date), 'dd MMM yyyy')}</span>
+                  <span className="mobile-bill-tag total">{formatCurrency(total)}</span>
+                  {remaining > 0 && <span className="mobile-bill-tag debt">Sisa: {formatCurrency(remaining)}</span>}
+                </div>
+                <div className="mobile-bill-bottom" onClick={e => e.stopPropagation()}>
+                  <select 
+                    className={`status-select ${b.status}`}
+                    value={b.status}
+                    onChange={(e) => handleStatusChange(e, b.id, e.target.value)}
+                  >
+                    <option value="pending">Belum Bayar</option>
+                    <option value="dp">DP {b.dpAmount > 0 ? `(${formatCurrency(b.dpAmount)})` : ''}</option>
+                    <option value="confirmed">Lunas</option>
+                  </select>
+                  <div className="mobile-bill-actions" onClick={e => e.stopPropagation()}>
+                    {remaining > 0 && (
+                      <button className="btn-sm-pay" onClick={(e) => handleMarkAsPaid(e, b.id)}>Lunasi</button>
+                    )}
+                    <button className="icon-btn" onClick={(e) => { e.stopPropagation(); handleOpenInvoice(b); }} title="Invoice">
+                      <Printer size={14} />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </div>
 
       {/* Invoice Modal */}
       {selectedInvoice && (() => {
-        const total = calculateTotal(selectedInvoice.duration);
+        const total = calculateTotal(selectedInvoice);
         const dpPaid = selectedInvoice.dpAmount || 0;
         const amountPaid = selectedInvoice.status === 'confirmed' ? total : dpPaid;
         const remaining = selectedInvoice.status === 'confirmed' ? 0 : total - dpPaid;
@@ -399,8 +462,18 @@ const BillingPage = () => {
                     </td>
                     <td className="text-center">{selectedInvoice.duration} jam</td>
                     <td>{formatCurrency(pricePerHour)}</td>
-                    <td className="text-right">{formatCurrency(total)}</td>
+                    <td className="text-right">{formatCurrency(selectedInvoice.duration * pricePerHour)}</td>
                   </tr>
+                  {selectedInvoice.discountAmount > 0 && (
+                    <tr>
+                      <td>
+                        <span className="item-title" style={{ color: '#FF9800' }}>Diskon VIP Member</span>
+                      </td>
+                      <td className="text-center">-</td>
+                      <td>-</td>
+                      <td className="text-right" style={{ color: '#FF9800' }}>-{formatCurrency(selectedInvoice.discountAmount)}</td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
 
@@ -441,8 +514,13 @@ const BillingPage = () => {
             <div className="invoice-actions no-print">
               <div className={`invoice-share-row ${run && currentStep === 6 ? 'tour-invoice-share' : ''}`}>
                 <button className="share-btn whatsapp" onClick={() => handleShareWhatsApp(selectedInvoice)} title="Kirim via WhatsApp">
-                  <MessageCircle size={16} /> WhatsApp
+                  <MessageCircle size={16} /> Invoice WA
                 </button>
+                {selectedInvoice.status !== 'confirmed' && (
+                  <button className="share-btn reminder" onClick={() => handleSendReminder(selectedInvoice)} title="Kirim Pengingat Jadwal" style={{ background: 'rgba(255, 152, 0, 0.1)', color: '#FF9800', borderColor: 'rgba(255, 152, 0, 0.3)' }}>
+                    <Bell size={16} /> Pengingat
+                  </button>
+                )}
                 <button className="share-btn download" onClick={handleDownloadImage} title="Simpan sebagai Gambar">
                   <Download size={16} /> Gambar
                 </button>

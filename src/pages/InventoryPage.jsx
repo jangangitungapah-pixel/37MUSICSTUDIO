@@ -220,7 +220,7 @@ const InventoryPage = () => {
             })}
           </div>
 
-          <div className="table-responsive">
+          <div className="table-responsive hide-on-mobile">
             <table className="inventory-table tour-inv-table">
               <thead>
                 <tr>
@@ -295,6 +295,47 @@ const InventoryPage = () => {
                 )}
               </tbody>
             </table>
+          </div>
+
+          {/* Mobile Card List */}
+          <div className="mobile-inv-list show-on-mobile">
+            {filteredInventory.length > 0 ? (
+              filteredInventory.map(item => {
+                const condition = CONDITION_COLORS[item.condition] || CONDITION_COLORS['Good'];
+                const overdue = isServiceOverdue(item.nextService);
+                return (
+                  <div key={item.id} className="mobile-inv-card" onClick={() => handleRowClick(item)}>
+                    <div className={`item-condition-dot ${item.condition.toLowerCase().replace(' ', '-')}`} />
+                    <div className="mobile-inv-info">
+                      <span className="item-name">{item.name}</span>
+                      <div className="mobile-inv-meta">
+                        <span className="mobile-meta-tag cat">{item.category}</span>
+                        {item.brand && <span className="mobile-meta-tag brand">{item.brand}</span>}
+                        <span className="mobile-meta-tag qty">{item.qty || 1} unit</span>
+                        {overdue && <span className="mobile-meta-tag overdue">⚠ Servis</span>}
+                      </div>
+                    </div>
+                    <div className="mobile-inv-right">
+                      <span className="condition-badge" style={{ background: condition.bg, color: condition.color }}>
+                        {condition.label}
+                      </span>
+                      <div className="mobile-inv-actions" onClick={e => e.stopPropagation()}>
+                        <button className="icon-btn" onClick={() => handleOpenEdit(item)} title="Edit">
+                          <Edit2 size={14} />
+                        </button>
+                        <button className="icon-btn delete" onClick={() => handleDelete(item.id)} title="Hapus">
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })
+            ) : (
+              <div className="empty-state" style={{padding: '32px', textAlign: 'center', color: 'var(--text-muted)'}}>
+                Tidak ada data inventaris ditemukan.
+              </div>
+            )}
           </div>
         </div>
 

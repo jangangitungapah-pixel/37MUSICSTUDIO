@@ -161,7 +161,30 @@
   width: 100%;
   border-collapse: collapse;
   text-align: left;
+  table-layout: fixed;
 }
+
+/* Column widths */
+.billing-table th:nth-child(1),
+.billing-table td:nth-child(1) { width: 12%; } /* Invoice ID */
+
+.billing-table th:nth-child(2),
+.billing-table td:nth-child(2) { width: 14%; } /* Tanggal */
+
+.billing-table th:nth-child(3),
+.billing-table td:nth-child(3) { width: 20%; } /* Penyewa */
+
+.billing-table th:nth-child(4),
+.billing-table td:nth-child(4) { width: 15%; } /* Total Harga */
+
+.billing-table th:nth-child(5),
+.billing-table td:nth-child(5) { width: 15%; } /* Status */
+
+.billing-table th:nth-child(6),
+.billing-table td:nth-child(6) { width: 13%; } /* Sisa Tagihan */
+
+.billing-table th:nth-child(7),
+.billing-table td:nth-child(7) { width: 11%; } /* Aksi */
 
 .billing-table th {
   position: sticky;
@@ -169,21 +192,23 @@
   background: #14141a;
   color: var(--text-muted);
   font-weight: 600;
-  font-size: 0.78rem;
+  font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  padding: 14px 20px;
+  padding: 11px 16px;
   border-bottom: 1px solid var(--border-light);
   z-index: 10;
   white-space: nowrap;
 }
 
 .billing-table td {
-  padding: 16px 20px;
+  padding: 12px 16px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.03);
   vertical-align: middle;
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   color: var(--text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .billing-table tbody tr {
@@ -738,29 +763,138 @@
   }
 }
 
+/* ===== Mobile Card List ===== */
+.show-on-mobile { display: none; }
+.mobile-billing-list {
+  flex-direction: column;
+  padding: 6px;
+  gap: 6px;
+  overflow-y: auto;
+}
+
+.mobile-billing-card {
+  display: flex;
+  flex-direction: column;
+  padding: 12px;
+  border-radius: 12px;
+  cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  background: rgba(255, 255, 255, 0.015);
+  gap: 8px;
+  transition: background 0.15s;
+}
+
+.mobile-billing-card:active { background: rgba(255, 255, 255, 0.07); }
+
+.mobile-bill-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.mobile-bill-band {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.mobile-bill-id {
+  font-size: 0.72rem;
+  font-family: monospace;
+  color: var(--text-muted);
+}
+
+.mobile-bill-mid {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.mobile-bill-tag {
+  font-size: 0.68rem;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.mobile-bill-tag.date {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-secondary);
+}
+
+.mobile-bill-tag.total {
+  background: rgba(0, 240, 255, 0.06);
+  color: var(--accent-cyan);
+  font-variant-numeric: tabular-nums;
+}
+
+.mobile-bill-tag.debt {
+  background: rgba(255, 152, 0, 0.08);
+  color: #FF9800;
+  font-variant-numeric: tabular-nums;
+}
+
+.mobile-bill-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.mobile-bill-actions {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.mobile-bill-actions .btn-sm-pay {
+  font-size: 0.72rem;
+  padding: 4px 10px;
+}
+
 /* ===== Mobile Responsive ===== */
 @media (max-width: 768px) {
   .billing-page {
-    gap: 14px;
-  }
-
-  .billing-stats-bar {
-    grid-template-columns: 1fr;
-    gap: 10px;
-  }
-
-  .billing-stat-card {
-    padding: 14px;
     gap: 12px;
   }
 
+  .billing-stats-bar {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .billing-stat-card {
+    padding: 10px 12px;
+    gap: 8px;
+    border-radius: 10px;
+  }
+
   .billing-stat-card .stat-icon {
-    width: 44px;
-    height: 44px;
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+  }
+
+  .billing-stat-card .stat-icon svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .billing-stat-card .stat-label {
+    font-size: 0.68rem;
   }
 
   .billing-stat-card .stat-value {
-    font-size: 1.15rem;
+    font-size: 1rem;
+  }
+
+  .billing-stat-card .stat-value small {
+    font-size: 0.7rem;
+  }
+
+  /* 3rd stat spans full */
+  .billing-stats-bar .billing-stat-card:nth-child(3) {
+    grid-column: 1 / -1;
   }
 
   .billing-content {
@@ -770,8 +904,8 @@
 
   .billing-toolbar {
     flex-direction: column;
-    gap: 10px;
-    padding: 12px 14px;
+    gap: 8px;
+    padding: 10px 12px;
   }
 
   .billing-tabs {
@@ -780,7 +914,7 @@
   }
 
   .billing-tab {
-    padding: 12px 14px;
+    padding: 10px 14px;
     font-size: 0.82rem;
     white-space: nowrap;
   }
@@ -789,26 +923,19 @@
     width: 100%;
   }
 
-  .table-responsive {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-  }
+  /* Hide table, show card list */
+  .hide-on-mobile { display: none !important; }
+  .show-on-mobile { display: flex !important; }
 
-  .billing-table th,
-  .billing-table td {
-    padding: 12px 14px;
-    font-size: 0.82rem;
-    white-space: nowrap;
-  }
-
+  /* Invoice modal mobile */
   .billing-page .modal-content {
     max-width: 95vw;
   }
 
   .invoice-header {
     flex-direction: column;
-    gap: 16px;
-    padding: 20px 20px 0;
+    gap: 12px;
+    padding: 20px 16px 0;
   }
 
   .invoice-meta {
@@ -816,12 +943,12 @@
   }
 
   .invoice-meta h1 {
-    font-size: 1.2rem;
-    letter-spacing: 4px;
+    font-size: 1.1rem;
+    letter-spacing: 3px;
   }
 
   .invoice-info-row {
-    padding: 0 20px;
+    padding: 0 16px;
     flex-wrap: wrap;
   }
 
@@ -830,30 +957,31 @@
   }
 
   .invoice-divider {
-    margin: 16px 20px;
+    margin: 14px 16px;
   }
 
   .invoice-customer {
-    padding: 0 20px;
+    padding: 0 16px;
+    margin-bottom: 14px;
   }
 
   .invoice-items-table {
-    width: calc(100% - 40px);
-    margin: 0 20px 16px;
+    width: calc(100% - 32px);
+    margin: 0 16px 14px;
   }
 
   .invoice-items-table th {
-    font-size: 0.62rem;
-    padding: 8px 8px;
+    font-size: 0.6rem;
+    padding: 7px 6px;
   }
 
   .invoice-items-table td {
-    padding: 10px 8px;
-    font-size: 0.8rem;
+    padding: 8px 6px;
+    font-size: 0.78rem;
   }
 
   .invoice-summary-wrapper {
-    padding: 0 20px;
+    padding: 0 16px;
     flex-direction: column-reverse;
     align-items: center;
   }
@@ -863,26 +991,57 @@
   }
 
   .invoice-stamp.paid span {
-    font-size: 1.2rem;
-    padding: 3px 14px;
+    font-size: 1.1rem;
+    padding: 3px 12px;
   }
 
   .invoice-footer {
-    padding: 0 20px 20px;
+    padding: 0 16px 16px;
   }
 
   .invoice-share-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 8px;
+    gap: 6px;
+  }
+
+  .share-btn {
+    font-size: 0.72rem;
+    padding: 7px 10px;
   }
 
   .invoice-main-actions {
-    flex-direction: column;
+    flex-direction: row;
+    gap: 8px;
   }
 
   .invoice-main-actions button {
-    width: 100%;
+    flex: 1;
     justify-content: center;
+    text-align: center;
+    padding: 10px 14px;
+    font-size: 0.84rem;
+    border-radius: 9px;
+  }
+}
+
+@media (max-width: 360px) {
+  .billing-page .page-title {
+    font-size: 1rem;
+  }
+
+  .invoice-share-row {
+    grid-template-columns: 1fr;
+  }
+
+  .share-btn {
+    font-size: 0.7rem;
+    padding: 6px 8px;
+  }
+
+  .invoice-items-table th,
+  .invoice-items-table td {
+    padding: 5px 4px;
+    font-size: 0.7rem;
   }
 }

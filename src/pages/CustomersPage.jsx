@@ -72,6 +72,10 @@ const CustomersPage = () => {
     setIsModalOpen(true);
   };
 
+  const handleToggleVIP = (customer) => {
+    updateCustomer(customer.id, { ...customer, isVIP: !customer.isVIP });
+  };
+
   const handleOpenEdit = (customer) => {
     setEditingCustomer(customer);
     setFormData({ ...customer });
@@ -235,7 +239,10 @@ const CustomersPage = () => {
                               {customer.name.charAt(0).toUpperCase()}
                             </div>
                             <div className="customer-info">
-                              <span className="customer-name">{customer.name}</span>
+                              <span className="customer-name" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                {customer.name}
+                                {customer.isVIP && <Star size={12} color="#FFC107" fill="#FFC107" title="VIP Member" />}
+                              </span>
                               {customer.notes && <span className="customer-note">{customer.notes}</span>}
                             </div>
                           </div>
@@ -265,6 +272,9 @@ const CustomersPage = () => {
                         </td>
                         <td className="action-col" onClick={e => e.stopPropagation()}>
                           <div className="row-actions">
+                            <button className="icon-btn" onClick={() => handleToggleVIP(customer)} title={customer.isVIP ? "Hapus VIP" : "Jadikan VIP"}>
+                              <Star size={15} color={customer.isVIP ? "#FFC107" : "currentColor"} fill={customer.isVIP ? "#FFC107" : "none"} />
+                            </button>
                             <button className="icon-btn" onClick={() => handleOpenEdit(customer)} title="Edit">
                               <Edit2 size={15} />
                             </button>
@@ -304,11 +314,14 @@ const CustomersPage = () => {
                       </div>
                       <div className="mobile-card-info">
                         <span className="customer-name">{customer.name}</span>
-                        <span className="mobile-card-phone"><Phone size={12} /> {customer.phone || '-'}</span>
+                        <span className="mobile-card-phone"><Phone size={11} /> {customer.phone || '-'}</span>
+                        <div className="mobile-card-meta">
+                          <span className="mobile-meta-tag bookings">{customer.totalBookings}× booking</span>
+                          <span className="mobile-meta-tag hours">{customer.totalHours || 0}h</span>
+                        </div>
                       </div>
                     </div>
                     <div className="mobile-card-right">
-                      <span className="booking-badge">{customer.totalBookings}×</span>
                       <span className={`status-dot ${customer.status.toLowerCase()}`}></span>
                       <div className="mobile-card-actions" onClick={e => e.stopPropagation()}>
                         <button className="icon-btn" onClick={() => handleOpenEdit(customer)} title="Edit">

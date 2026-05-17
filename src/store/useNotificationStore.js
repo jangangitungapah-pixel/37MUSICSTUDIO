@@ -47,7 +47,7 @@ export const useNotificationStore = create(
           toastQueue: [newNotif, ...state.toastQueue].slice(0, 5) // Active toasts
         }));
 
-        // Auto-dismiss the toast popup after 5 seconds
+        // Auto-dismiss the toast popup after 2 seconds
         setTimeout(() => {
           set((state) => ({
             toastQueue: state.toastQueue.map(n => 
@@ -59,7 +59,7 @@ export const useNotificationStore = create(
               toastQueue: state.toastQueue.filter(n => n.id !== id)
             }));
           }, 400);
-        }, 5000);
+        }, 2000);
       },
 
       dismissToast: (id) => {

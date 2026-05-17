@@ -7,7 +7,7 @@ import './AuthPage.css'; // Shared CSS for both Login and Register
 const LoginPage = () => {
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
-  const { login, error, loading, user, isAuthLoaded, clearError } = useAuthStore();
+  const { login, loginGuest, error, loading, user, isAuthLoaded, clearError } = useAuthStore();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -25,6 +25,15 @@ const LoginPage = () => {
     try {
       await login(identifier, password);
       navigate('/');
+    } catch (err) {
+      // Error is handled by store
+    }
+  };
+
+  const handleGuestLogin = async () => {
+    try {
+      await loginGuest();
+      navigate('/jadwal-publik');
     } catch (err) {
       // Error is handled by store
     }
@@ -82,6 +91,17 @@ const LoginPage = () => {
 
         <div className="auth-footer">
           <p>Belum punya akun? <Link to="/register">Daftar di sini</Link></p>
+          <div style={{ marginTop: '1.5rem', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '1.5rem' }}>
+            <button 
+              type="button" 
+              onClick={handleGuestLogin} 
+              className="btn-secondary" 
+              style={{ width: '100%', justifyContent: 'center' }}
+              disabled={loading}
+            >
+              Masuk sebagai Tamu (Lihat Jadwal)
+            </button>
+          </div>
         </div>
       </div>
     </div>
