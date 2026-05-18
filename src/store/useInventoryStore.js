@@ -2,25 +2,46 @@ import { create } from 'zustand';
 import { db } from '../firebase';
 import { collection, doc, onSnapshot, setDoc, deleteDoc, updateDoc } from 'firebase/firestore';
 import { format, subDays, addDays } from 'date-fns';
+import { useDemoStore } from './useDemoStore';
 
 const today = new Date();
 
 export const useInventoryStore = create((set, get) => {
   const inventoryRef = collection(db, 'inventory');
   const categoriesRef = doc(db, 'config', 'inventoryCategories');
-  
+  let realInventory = [];
+  let realCategories = [];
+
   onSnapshot(inventoryRef, (snapshot) => {
-    const data = snapshot.docs.map(doc => doc.data());
-    set({ inventory: data, isLoaded: true });
+    realInventory = snapshot.docs.map(doc => doc.data());
+    if (!useDemoStore.getState().isDemoMode) {
+      set({ inventory: realInventory, isLoaded: true });
+    } else {
+      set({ isLoaded: true });
+    }
   });
 
   onSnapshot(categoriesRef, (docSnap) => {
+    if (useDemoStore.getState().isDemoMode) return;
     if (docSnap.exists()) {
-      set({ categories: docSnap.data().list });
+      realCategories = docSnap.data().list;
+      set({ categories: realCategories });
     } else {
       const initialCategories = ['Drum', 'Amps', 'Microphones', 'Accessories'];
       setDoc(categoriesRef, { list: initialCategories });
+      realCategories = initialCategories;
       set({ categories: initialCategories });
+    }
+  });
+
+  useDemoStore.subscribe((demoState) => {
+    if (demoState.isDemoMode) {
+      set({
+        inventory: demoState.demoInventory,
+        categories: ['Drum', 'Amps', 'Microphones', 'Accessories'],
+      });
+    } else {
+      set({ inventory: realInventory, categories: realCategories });
     }
   });
 

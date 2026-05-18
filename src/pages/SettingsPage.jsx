@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useSettingsStore } from '../store/useSettingsStore';
+import { useDemoStore } from '../store/useDemoStore';
 import {
   Settings, Save, Building2, Phone, MapPin, DollarSign,
   Bell, Database, Trash2, CheckCircle2, XCircle, ShieldAlert,
   ChevronRight, Music2, Sparkles, Lock, ToggleLeft, ToggleRight,
-  AlertTriangle, RefreshCw
+  AlertTriangle, RefreshCw, FlaskConical
 } from 'lucide-react';
 import { collection, getDocs, deleteDoc } from 'firebase/firestore';
 import { db } from '../firebase';
@@ -12,15 +13,22 @@ import './SettingsPage.css';
 
 const SettingsPage = () => {
   const storeSettings = useSettingsStore();
+  const { isDemoMode, toggleDemoMode } = useDemoStore();
   const [formData, setFormData] = useState({
     studioName: '',
     studioAddress: '',
     studioPhone: '',
-    pricePerHour: 0
+    pricePerHour: 0,
+    durationDiscounts: []
   });
 
   const [saveStatus, setSaveStatus] = useState('idle'); // 'idle' | 'saving' | 'saved' | 'error'
   const [activeSection, setActiveSection] = useState('profile'); // tab navigation
+  
+  // Duration Discount states
+  const [newDiscountHours, setNewDiscountHours] = useState('');
+  const [newDiscountAmount, setNewDiscountAmount] = useState('');
+
   const [notifPermission, setNotifPermission] = useState(
     'Notification' in window ? Notification.permission : 'unsupported'
   );
@@ -40,15 +48,52 @@ const SettingsPage = () => {
       studioName: storeSettings.studioName,
       studioAddress: storeSettings.studioAddress,
       studioPhone: storeSettings.studioPhone,
-      pricePerHour: storeSettings.pricePerHour
+      pricePerHour: storeSettings.pricePerHour,
+      durationDiscounts: storeSettings.durationDiscounts || []
     });
-  }, [storeSettings.studioName, storeSettings.studioAddress, storeSettings.studioPhone, storeSettings.pricePerHour]);
+  }, [storeSettings.studioName, storeSettings.studioAddress, storeSettings.studioPhone, storeSettings.pricePerHour, storeSettings.durationDiscounts]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
       [name]: name === 'pricePerHour' ? Number(value) : value
+    }));
+    if (saveStatus === 'saved') setSaveStatus('idle');
+  };
+
+  const handleAddDiscount = () => {
+    const hours = parseInt(newDiscountHours);
+    const amount = parseInt(newDiscountAmount);
+    
+    if (isNaN(hours) || hours <= 0 || isNaN(amount) || amount < 0) {
+      alert("Masukkan durasi jam dan nominal diskon yang valid.");
+      return;
+    }
+
+    const newDiscount = {
+      id: crypto.randomUUID(),
+      hours,
+      discountAmount: amount
+    };
+
+    setFormData(prev => {
+      // Avoid duplicate hours by removing existing one first if any, or just add
+      const filtered = prev.durationDiscounts.filter(d => d.hours !== hours);
+      return {
+        ...prev,
+        durationDiscounts: [...filtered, newDiscount].sort((a, b) => a.hours - b.hours)
+      };
+    });
+    setNewDiscountHours('');
+    setNewDiscountAmount('');
+    if (saveStatus === 'saved') setSaveStatus('idle');
+  };
+
+  const handleRemoveDiscount = (id) => {
+    setFormData(prev => ({
+      ...prev,
+      durationDiscounts: prev.durationDiscounts.filter(d => d.id !== id)
     }));
     if (saveStatus === 'saved') setSaveStatus('idle');
   };
@@ -114,10 +159,11 @@ const SettingsPage = () => {
   const allSelected = Object.values(resetOptions).every(Boolean);
 
   const sections = [
-    { id: 'profile', label: 'Profil Studio', icon: Building2 },
-    { id: 'pricing', label: 'Tarif & Harga', icon: DollarSign },
-    { id: 'notifications', label: 'Notifikasi', icon: Bell },
-    { id: 'data', label: 'Manajemen Data', icon: Database },
+    { id: 'profile',       label: 'Profil Studio',    icon: Building2   },
+    { id: 'pricing',       label: 'Tarif & Harga',    icon: DollarSign  },
+    { id: 'notifications', label: 'Notifikasi',        icon: Bell        },
+    { id: 'demo',          label: 'Mode Demo',         icon: FlaskConical},
+    { id: 'data',          label: 'Manajemen Data',    icon: Database    },
   ];
 
   return (
@@ -317,11 +363,149 @@ const SettingsPage = () => {
                   </div>
                 </div>
 
-                <div className="settings-info-box">
+                {/* Duration Discounts UI */}
+                <div className="duration-discount-section">
+                  <h4 className="duration-discount-title">Diskon Berdasarkan Durasi</h4>
+                  <p className="duration-discount-desc">Otomatis memotong harga saat pelanggan membooking dengan durasi tertentu (atau lebih besar). Contoh: Diskon Rp 50.000 untuk minimal 4 jam.</p>
+                  
+                  <div className="duration-discount-form">
+                    <div className="dd-input-group">
+                      <label>Durasi (Jam)</label>
+                      <input 
+                        type="number" 
+                        min="1" 
+                        value={newDiscountHours} 
+                        onChange={e => setNewDiscountHours(e.target.value)} 
+                        placeholder="Contoh: 4" 
+                        className="settings-input"
+                      />
+                    </div>
+                    <div className="dd-input-group">
+                      <label>Potongan Diskon (Rp)</label>
+                      <input 
+                        type="number" 
+                        min="0" 
+                        value={newDiscountAmount} 
+                        onChange={e => setNewDiscountAmount(e.target.value)} 
+                        placeholder="Contoh: 50000" 
+                        className="settings-input"
+                      />
+                    </div>
+                    <button type="button" className="btn-add-discount" onClick={handleAddDiscount}>
+                      + Tambah
+                    </button>
+                  </div>
+
+                  {formData.durationDiscounts && formData.durationDiscounts.length > 0 ? (
+                    <div className="duration-discount-list">
+                      {formData.durationDiscounts.map(d => (
+                        <div key={d.id} className="duration-discount-item">
+                          <div className="dd-item-info">
+                            <span className="dd-item-hours">≥ {d.hours} Jam</span>
+                            <span className="dd-item-amount">− {formatCurrency(d.discountAmount)}</span>
+                          </div>
+                          <button type="button" className="btn-remove-discount" onClick={() => handleRemoveDiscount(d.id)} title="Hapus">
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="duration-discount-empty">
+                      Belum ada aturan diskon durasi.
+                    </div>
+                  )}
+                </div>
+
+                <div className="settings-info-box mt-3">
                   <AlertTriangle size={14} />
                   <span>Perubahan tarif hanya berlaku untuk booking baru. Booking yang sudah ada tidak berubah secara otomatis.</span>
                 </div>
               </form>
+            </div>
+          )}
+
+          {/* === SECTION: DEMO MODE === */}
+          {activeSection === 'demo' && (
+            <div className="settings-panel glass-panel demo-mode-panel">
+              <div className="settings-panel-header">
+                <div className="panel-header-icon" style={{ background: 'rgba(138,43,226,0.15)', color: '#a855f7' }}>
+                  <FlaskConical size={20} />
+                </div>
+                <div>
+                  <h3 className="panel-title">Mode Demo</h3>
+                  <p className="panel-desc">Tampilkan simulasi data dummy sepanjang tahun 2026 tanpa mengubah data nyata.</p>
+                </div>
+              </div>
+
+              <div className="settings-form-body">
+                {/* Main Toggle Card */}
+                <div className={`demo-toggle-card ${isDemoMode ? 'active' : ''}`}>
+                  <div className="demo-toggle-left">
+                    <div className="demo-toggle-icon">
+                      <FlaskConical size={28} />
+                    </div>
+                    <div>
+                      <p className="demo-toggle-title">Simulasi Data 2026</p>
+                      <p className="demo-toggle-desc">
+                        {isDemoMode
+                          ? '✅ Mode Demo AKTIF — Semua halaman menampilkan data simulasi'
+                          : 'Data asli ditampilkan. Aktifkan untuk melihat contoh penggunaan aplikasi.'}
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    className={`demo-big-toggle ${isDemoMode ? 'on' : 'off'}`}
+                    onClick={toggleDemoMode}
+                    title={isDemoMode ? 'Matikan Demo Mode' : 'Aktifkan Demo Mode'}
+                  >
+                    <div className="demo-big-thumb" />
+                  </button>
+                </div>
+
+                {/* Stats Preview when active */}
+                {isDemoMode && (
+                  <div className="demo-stats-preview">
+                    <div className="demo-stat-chip">
+                      <span className="demo-chip-value">200+</span>
+                      <span className="demo-chip-label">Booking simulasi</span>
+                    </div>
+                    <div className="demo-stat-chip">
+                      <span className="demo-chip-value">15</span>
+                      <span className="demo-chip-label">Band / Pelanggan</span>
+                    </div>
+                    <div className="demo-stat-chip">
+                      <span className="demo-chip-value">12</span>
+                      <span className="demo-chip-label">Item inventaris</span>
+                    </div>
+                    <div className="demo-stat-chip">
+                      <span className="demo-chip-value">Jan–Des 2026</span>
+                      <span className="demo-chip-label">Rentang waktu</span>
+                    </div>
+                  </div>
+                )}
+
+                {/* Info Boxes */}
+                <div className="demo-info-list">
+                  <div className="demo-info-item safe">
+                    <CheckCircle2 size={15} />
+                    <span>Data asli di Firebase <strong>tidak akan tersentuh</strong> — mode demo hanya berjalan di memori browser.</span>
+                  </div>
+                  <div className="demo-info-item safe">
+                    <CheckCircle2 size={15} />
+                    <span>Semua fitur (Kalender, Dashboard, Billing, dll.) akan menampilkan data simulasi secara real-time.</span>
+                  </div>
+                  <div className="demo-info-item warn">
+                    <AlertTriangle size={15} />
+                    <span>Aksi seperti <strong>Tambah / Hapus Booking</strong> tidak akan menyimpan ke server saat Mode Demo aktif.</span>
+                  </div>
+                  <div className="demo-info-item warn">
+                    <AlertTriangle size={15} />
+                    <span>Mode Demo akan otomatis dimatikan saat halaman di-refresh.</span>
+                  </div>
+                </div>
+              </div>
             </div>
           )}
 

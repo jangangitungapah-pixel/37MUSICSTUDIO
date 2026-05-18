@@ -16,6 +16,7 @@ export const useSettingsStore = create((set, get) => {
         studioAddress: 'Jl. Musik Indah No. 37, Jakarta',
         studioPhone: '0812-3456-7890',
         pricePerHour: 120000,
+        durationDiscounts: [],
       };
       setDoc(settingsRef, initialSettings);
       set({ ...initialSettings, isLoaded: true });
@@ -28,6 +29,7 @@ export const useSettingsStore = create((set, get) => {
     studioAddress: 'Memuat...',
     studioPhone: 'Memuat...',
     pricePerHour: 120000,
+    durationDiscounts: [],
     
     updateSettings: async (newSettings) => {
       // Optimistic update

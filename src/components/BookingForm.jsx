@@ -10,7 +10,7 @@ import './BookingForm.css';
 
 const BookingForm = ({ onClose, initialDate, initialHour }) => {
   const { bookings, addBooking } = useBookingStore();
-  const { pricePerHour } = useSettingsStore();
+  const { pricePerHour, durationDiscounts = [] } = useSettingsStore();
   const { customers, incrementBookingCount } = useCustomerStore();
   const { run, currentStep, nextStep } = useTourStore();
 
@@ -47,7 +47,15 @@ const BookingForm = ({ onClose, initialDate, initialHour }) => {
   const selectedCustomer = customers.find(c => c.name.toLowerCase() === formData.band.toLowerCase());
   const isVIP = selectedCustomer?.isVIP || false;
   const basePrice = formData.duration * pricePerHour;
-  const discountAmount = isVIP ? basePrice * 0.1 : 0;
+  
+  // Calculate Duration Discount
+  const applicableDiscount = durationDiscounts
+    .filter(d => formData.duration >= d.hours)
+    .sort((a, b) => b.discountAmount - a.discountAmount)[0];
+  const durationDiscountAmount = applicableDiscount ? applicableDiscount.discountAmount : 0;
+  
+  const vipDiscountAmount = isVIP ? basePrice * 0.1 : 0;
+  const discountAmount = vipDiscountAmount + durationDiscountAmount;
   const totalPrice = basePrice - discountAmount;
   const remaining = totalPrice - formData.dpAmount;
   const dpPercent = totalPrice > 0 ? Math.min(100, Math.round((formData.dpAmount / totalPrice) * 100)) : 0;
@@ -220,14 +228,20 @@ const BookingForm = ({ onClose, initialDate, initialHour }) => {
             {isVIP && (
               <div className="bf-price-row vip">
                 <span><Star size={11} /> Diskon VIP 10%</span>
-                <span>−{formatCurrency(discountAmount)}</span>
+                <span>−{formatCurrency(vipDiscountAmount)}</span>
+              </div>
+            )}
+            {durationDiscountAmount > 0 && (
+              <div className="bf-price-row vip">
+                <span><AlertCircle size={11} /> Diskon Durasi (≥ {applicableDiscount?.hours} Jam)</span>
+                <span>−{formatCurrency(durationDiscountAmount)}</span>
               </div>
             )}
             <div className="bf-price-row subtotal">
               <span>Subtotal ({formData.duration} jam)</span>
               <span>{formatCurrency(basePrice)}</span>
             </div>
-            {isVIP && (
+            {(isVIP || durationDiscountAmount > 0) && (
               <div className="bf-price-row after-disc">
                 <span>Setelah Diskon</span>
                 <span>{formatCurrency(totalPrice)}</span>

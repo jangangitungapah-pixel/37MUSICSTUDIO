@@ -385,157 +385,238 @@ const BillingPage = () => {
         </div>
       </div>
 
-      {/* Invoice Modal */}
+      {/* ── Invoice Modal — Premium Redesign ── */}
       {selectedInvoice && (() => {
-        const total = calculateTotal(selectedInvoice);
-        const dpPaid = selectedInvoice.dpAmount || 0;
-        const amountPaid = selectedInvoice.status === 'confirmed' ? total : dpPaid;
-        const remaining = selectedInvoice.status === 'confirmed' ? 0 : total - dpPaid;
+        const subtotal    = selectedInvoice.duration * pricePerHour;
+        const discount    = selectedInvoice.discountAmount || 0;
+        const total       = subtotal - discount;
+        const dpPaid      = selectedInvoice.dpAmount || 0;
+        const remaining   = selectedInvoice.status === 'confirmed' ? 0 : total - dpPaid;
+        const invNo       = `INV-${String(selectedInvoice.id).slice(-5).padStart(5,'0')}`;
+        const isLunas     = selectedInvoice.status === 'confirmed';
+        const isDP        = selectedInvoice.status === 'dp';
 
         return (
-        <Modal 
-          isOpen={isInvoiceModalOpen} 
-          onClose={handleCloseInvoiceModal} 
-          title="Detail Invoice"
+        <Modal
+          isOpen={isInvoiceModalOpen}
+          onClose={handleCloseInvoiceModal}
+          title=""
+          className="invoice-modal-wide"
         >
-          <div className="invoice-container">
-            <div className="invoice-print-area" ref={invoiceRef}>
-              {/* Minimal Accent */}
-              <div className="invoice-accent-bar"></div>
+          <div className="inv2-shell">
+            {/* ════ LEFT: Print-ready Invoice ════ */}
+            <div className="inv2-paper" ref={invoiceRef}>
 
-              {/* Header */}
-              <div className="invoice-header">
-                <div className="invoice-brand">
-                  <h2>{studioName}</h2>
-                  <p>{studioAddress}</p>
-                  <p>Telp: {studioPhone}</p>
+              {/* Gradient top accent */}
+              <div className="inv2-accent" />
+
+              {/* Studio Header */}
+              <div className="inv2-header">
+                <div className="inv2-brand">
+                  <div className="inv2-brand-icon">🎸</div>
+                  <div>
+                    <div className="inv2-brand-name">{studioName}</div>
+                    {studioAddress && <div className="inv2-brand-sub">{studioAddress}</div>}
+                    {studioPhone  && <div className="inv2-brand-sub">📞 {studioPhone}</div>}
+                  </div>
                 </div>
-                <div className="invoice-meta">
-                  <h1>INVOICE</h1>
+                <div className="inv2-title-block">
+                  <div className="inv2-title">INVOICE</div>
+                  <div className="inv2-number">{invNo}</div>
                 </div>
               </div>
 
-              {/* Meta Info Row */}
-              <div className="invoice-info-row">
-                <div className="invoice-info-block">
-                  <span className="info-label">No. Invoice</span>
-                  <span className="info-value">INV-{selectedInvoice.id.toString().padStart(5, '0')}</span>
+              {/* Meta cards row */}
+              <div className="inv2-meta-row">
+                <div className="inv2-meta-card">
+                  <span className="inv2-meta-label">Tanggal</span>
+                  <span className="inv2-meta-val">{format(new Date(), 'dd MMM yyyy')}</span>
                 </div>
-                <div className="invoice-info-block">
-                  <span className="info-label">Tanggal</span>
-                  <span className="info-value">{format(new Date(), 'dd MMM yyyy')}</span>
+                <div className="inv2-meta-card">
+                  <span className="inv2-meta-label">Jadwal</span>
+                  <span className="inv2-meta-val">{format(new Date(selectedInvoice.date), 'dd MMM yyyy')}</span>
                 </div>
-                <div className="invoice-info-block">
-                  <span className="info-label">Status</span>
-                  <span className={`invoice-status-badge ${selectedInvoice.status}`}>
-                    {selectedInvoice.status === 'confirmed' ? 'LUNAS' : selectedInvoice.status === 'dp' ? 'DP' : 'BELUM BAYAR'}
+                <div className={`inv2-meta-card status-card ${selectedInvoice.status}`}>
+                  <span className="inv2-meta-label">Status</span>
+                  <span className="inv2-status-val">
+                    {isLunas ? '✅ LUNAS' : isDP ? '🟡 DP' : '🔴 BELUM BAYAR'}
                   </span>
                 </div>
               </div>
 
-              {/* Divider */}
-              <div className="invoice-divider"></div>
-              
-              {/* Customer Info */}
-              <div className="invoice-customer">
-                <span className="customer-label">Ditagihkan Kepada</span>
-                <h3>{selectedInvoice.band}</h3>
-                {selectedInvoice.phone && <p className="customer-phone">{selectedInvoice.phone}</p>}
+              {/* Customer */}
+              <div className="inv2-customer-section">
+                <div className="inv2-section-label">DITAGIHKAN KEPADA</div>
+                <div className="inv2-customer-name">{selectedInvoice.band}</div>
+                {selectedInvoice.phone && (
+                  <div className="inv2-customer-phone">📱 {selectedInvoice.phone}</div>
+                )}
               </div>
 
-              {/* Items Table */}
-              <table className="invoice-items-table">
+              {/* Line items */}
+              <table className="inv2-items">
                 <thead>
                   <tr>
-                    <th>Deskripsi</th>
-                    <th className="text-center">Durasi</th>
-                    <th>Tarif</th>
-                    <th className="text-right">Jumlah</th>
+                    <th>Deskripsi Layanan</th>
+                    <th>Durasi</th>
+                    <th>Tarif/Jam</th>
+                    <th>Jumlah</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr>
                     <td>
-                      <span className="item-title">Sewa Studio Latihan</span>
-                      <span className="item-detail">{format(new Date(selectedInvoice.date), 'EEEE, dd MMMM yyyy')}</span>
-                      <span className="item-detail">{String(selectedInvoice.hour).padStart(2, '0')}:00 — {String(selectedInvoice.hour + selectedInvoice.duration).padStart(2, '0')}:00 WIB</span>
+                      <div className="inv2-item-name">Sewa Studio Latihan</div>
+                      <div className="inv2-item-time">
+                        {format(new Date(selectedInvoice.date), 'EEEE, dd MMMM yyyy')}
+                      </div>
+                      <div className="inv2-item-time">
+                        {String(selectedInvoice.hour).padStart(2,'0')}:00 – {String(selectedInvoice.hour + selectedInvoice.duration).padStart(2,'0')}:00 WIB
+                      </div>
                     </td>
-                    <td className="text-center">{selectedInvoice.duration} jam</td>
-                    <td>{formatCurrency(pricePerHour)}</td>
-                    <td className="text-right">{formatCurrency(selectedInvoice.duration * pricePerHour)}</td>
+                    <td className="inv2-td-c">{selectedInvoice.duration} jam</td>
+                    <td className="inv2-td-c">{formatCurrency(pricePerHour)}</td>
+                    <td className="inv2-td-r">{formatCurrency(subtotal)}</td>
                   </tr>
-                  {selectedInvoice.discountAmount > 0 && (
-                    <tr>
-                      <td>
-                        <span className="item-title" style={{ color: '#FF9800' }}>Diskon VIP Member</span>
-                      </td>
-                      <td className="text-center">-</td>
-                      <td>-</td>
-                      <td className="text-right" style={{ color: '#FF9800' }}>-{formatCurrency(selectedInvoice.discountAmount)}</td>
+                  {discount > 0 && (
+                    <tr className="inv2-discount-row">
+                      <td><div className="inv2-item-name inv2-discount-label">⭐ Diskon (VIP / Durasi)</div></td>
+                      <td className="inv2-td-c">—</td>
+                      <td className="inv2-td-c">—</td>
+                      <td className="inv2-td-r inv2-discount-val">−{formatCurrency(discount)}</td>
                     </tr>
                   )}
                 </tbody>
               </table>
 
               {/* Summary */}
-              <div className="invoice-summary-wrapper">
-                {selectedInvoice.status === 'confirmed' && (
-                  <div className="invoice-stamp paid">
-                    <span>LUNAS</span>
+              <div className="inv2-summary-wrap">
+                {/* LUNAS stamp */}
+                {isLunas && (
+                  <div className="inv2-stamp-wrap">
+                    <div className="inv2-stamp">LUNAS</div>
                   </div>
                 )}
-                <div className="invoice-summary">
-                  <div className="invoice-summary-row">
-                    <span>Subtotal</span>
+
+                <div className="inv2-summary">
+                  {discount > 0 && (
+                    <div className="inv2-sum-row">
+                      <span>Subtotal sebelum diskon</span>
+                      <span>{formatCurrency(subtotal)}</span>
+                    </div>
+                  )}
+                  {discount > 0 && (
+                    <div className="inv2-sum-row disct">
+                      <span>Diskon VIP</span>
+                      <span>−{formatCurrency(discount)}</span>
+                    </div>
+                  )}
+                  <div className="inv2-sum-row sub">
+                    <span>Total Tagihan</span>
                     <span>{formatCurrency(total)}</span>
                   </div>
                   {dpPaid > 0 && (
-                    <div className="invoice-summary-row dp-row">
-                      <span>DP Dibayar</span>
-                      <span className="dp-amount">− {formatCurrency(dpPaid)}</span>
+                    <div className="inv2-sum-row dp">
+                      <span>DP Telah Dibayar</span>
+                      <span>−{formatCurrency(dpPaid)}</span>
                     </div>
                   )}
-                  <div className="invoice-summary-row total-row">
-                    <span>{selectedInvoice.status === 'confirmed' ? 'Total Dibayar' : 'Sisa Tagihan'}</span>
-                    <span className="total-amount">{formatCurrency(selectedInvoice.status === 'confirmed' ? total : remaining)}</span>
+                  <div className={`inv2-sum-row grand ${isLunas ? 'paid' : 'due'}`}>
+                    <span>{isLunas ? '✅ Total Dibayar' : '⚠️ Sisa Tagihan'}</span>
+                    <span>{formatCurrency(isLunas ? total : remaining)}</span>
                   </div>
                 </div>
               </div>
-              
+
               {/* Footer */}
-              <div className="invoice-footer">
-                <div className="invoice-footer-divider"></div>
-                <p className="footer-thanks">Terima kasih atas kepercayaan Anda</p>
-                <p className="footer-note">{studioName}</p>
+              <div className="inv2-footer">
+                <div className="inv2-footer-line" />
+                <div className="inv2-footer-inner">
+                  <span>🎵 Terima kasih atas kepercayaan Anda!</span>
+                  <span className="inv2-footer-studio">{studioName}</span>
+                </div>
               </div>
             </div>
 
-            {/* Share & Actions */}
-            <div className="invoice-actions no-print">
-              <div className={`invoice-share-row ${run && currentStep === 6 ? 'tour-invoice-share' : ''}`}>
-                <button className="share-btn whatsapp" onClick={() => handleShareWhatsApp(selectedInvoice)} title="Kirim via WhatsApp">
-                  <MessageCircle size={16} /> Invoice WA
+            {/* ════ RIGHT: Action Panel ════ */}
+            <div className="inv2-actions no-print">
+              <div className="inv2-actions-header">
+                <span className="inv2-actions-title">Bagikan Invoice</span>
+                <span className="inv2-actions-sub">{invNo} · {selectedInvoice.band}</span>
+              </div>
+
+              {/* Share grid */}
+              <div className="inv2-share-grid">
+                <button
+                  className="inv2-share-btn wa"
+                  onClick={() => handleShareWhatsApp(selectedInvoice)}
+                >
+                  <MessageCircle size={20} />
+                  <span>WhatsApp</span>
+                  <small>Kirim teks invoice</small>
                 </button>
-                {selectedInvoice.status !== 'confirmed' && (
-                  <button className="share-btn reminder" onClick={() => handleSendReminder(selectedInvoice)} title="Kirim Pengingat Jadwal" style={{ background: 'rgba(255, 152, 0, 0.1)', color: '#FF9800', borderColor: 'rgba(255, 152, 0, 0.3)' }}>
-                    <Bell size={16} /> Pengingat
+
+                {!isLunas && (
+                  <button
+                    className="inv2-share-btn remind"
+                    onClick={() => handleSendReminder(selectedInvoice)}
+                  >
+                    <Bell size={20} />
+                    <span>Pengingat</span>
+                    <small>Ingatkan jadwal</small>
                   </button>
                 )}
-                <button className="share-btn download" onClick={handleDownloadImage} title="Simpan sebagai Gambar">
-                  <Download size={16} /> Gambar
+
+                <button
+                  className="inv2-share-btn dl"
+                  onClick={handleDownloadImage}
+                >
+                  <Download size={20} />
+                  <span>Unduh</span>
+                  <small>Simpan sebagai gambar</small>
                 </button>
-                <button className="share-btn copy" onClick={() => handleCopyText(selectedInvoice)} title="Salin Teks Invoice">
-                  {copied ? <Check size={16} /> : <Copy size={16} />} {copied ? 'Tersalin!' : 'Salin'}
+
+                <button
+                  className="inv2-share-btn cp"
+                  onClick={() => handleCopyText(selectedInvoice)}
+                >
+                  {copied ? <Check size={20} /> : <Copy size={20} />}
+                  <span>{copied ? 'Tersalin!' : 'Salin Teks'}</span>
+                  <small>{copied ? 'Berhasil disalin' : 'Salin ke clipboard'}</small>
                 </button>
+
                 {navigator.share && (
-                  <button className="share-btn native" onClick={() => handleNativeShare(selectedInvoice)} title="Bagikan">
-                    <Share2 size={16} /> Lainnya
+                  <button
+                    className="inv2-share-btn more"
+                    onClick={() => handleNativeShare(selectedInvoice)}
+                  >
+                    <Share2 size={20} />
+                    <span>Lainnya</span>
+                    <small>Share via aplikasi lain</small>
                   </button>
                 )}
               </div>
-              <div className="invoice-main-actions">
-                <button className="btn-secondary" onClick={handleCloseInvoiceModal}>Tutup</button>
-                <button className={`btn-primary ${run && currentStep === 7 ? 'tour-invoice-print' : ''}`} onClick={handlePrint}>
+
+              {/* Status quick actions */}
+              {!isLunas && (
+                <button
+                  className="inv2-pay-btn"
+                  onClick={(e) => { handleMarkAsPaid(e, selectedInvoice.id); setSelectedInvoice({ ...selectedInvoice, status: 'confirmed' }); }}
+                >
+                  <CheckCircle size={18} />
+                  Tandai Lunas Sekarang
+                </button>
+              )}
+
+              {/* Print / Close */}
+              <div className="inv2-main-btns">
+                <button className="inv2-btn-close" onClick={handleCloseInvoiceModal}>
+                  <X size={16} /> Tutup
+                </button>
+                <button
+                  className={`inv2-btn-print ${run && currentStep === 7 ? 'tour-invoice-print' : ''}`}
+                  onClick={handlePrint}
+                >
                   <Printer size={16} /> Cetak / PDF
                 </button>
               </div>

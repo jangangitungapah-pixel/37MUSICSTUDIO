@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { CalendarDays, Users, Package, CreditCard, Settings, Music, BookOpen, PieChart, Menu, X, LogOut, HelpCircle, Bell, ChevronRight } from 'lucide-react';
+import { CalendarDays, Users, Package, CreditCard, Settings, Music, BookOpen, PieChart, Menu, X, LogOut, HelpCircle, Bell, ChevronRight, FlaskConical } from 'lucide-react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../store/useAuthStore';
 import { useTourStore } from '../store/useTourStore';
 import { useNotificationStore } from '../store/useNotificationStore';
+import { useDemoStore } from '../store/useDemoStore';
 import ProfileModal from './ProfileModal';
 import NotificationPanel from './NotificationPanel';
 import './Sidebar.css';
@@ -16,6 +17,7 @@ const Sidebar = () => {
   const { user, userProfile, logout } = useAuthStore();
   const { startTour } = useTourStore();
   const { notifications } = useNotificationStore();
+  const { isDemoMode, toggleDemoMode } = useDemoStore();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -128,6 +130,20 @@ const Sidebar = () => {
 
         {/* Footer */}
         <div className="sidebar-footer">
+          {/* Demo Mode Badge */}
+          {isDemoMode && (
+            <button
+              className="demo-mode-badge"
+              onClick={() => { navigate('/settings'); setMobileOpen(false); }}
+              title="Mode Demo Aktif — klik untuk ke Settings"
+            >
+              <span className="demo-badge-dot" />
+              <FlaskConical size={13} color="#a855f7" />
+              <span className="demo-badge-text">Demo Mode</span>
+              <span className="demo-badge-off" onClick={(e) => { e.stopPropagation(); toggleDemoMode(); }}>✕ OFF</span>
+            </button>
+          )}
+
           <button className="nav-item tour-guide-btn" onClick={handleRestartTour}>
             <span className="nav-icon"><HelpCircle size={19} /></span>
             <span className="nav-label">Panduan Tour</span>

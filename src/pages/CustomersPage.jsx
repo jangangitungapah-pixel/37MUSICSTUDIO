@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Search, Plus, Edit2, Trash2, Mail, Phone, Calendar as CalendarIcon, Users, UserCheck, UserX, DollarSign, X, AtSign, MapPin, Clock, Star } from 'lucide-react';
+import { Search, Plus, Edit2, Trash2, Mail, Phone, Calendar as CalendarIcon, Users, UserCheck, UserX, DollarSign, X, AtSign, MapPin, Clock, Star, StickyNote } from 'lucide-react';
 import { useCustomerStore } from '../store/useCustomerStore';
 import { useTourStore } from '../store/useTourStore';
 import Modal from '../components/Modal';
@@ -413,94 +413,97 @@ const CustomersPage = () => {
         title={editingCustomer ? "Edit Pelanggan" : "Pelanggan Baru"}
       >
         <form className="customer-form" onSubmit={handleSubmit}>
-          <div className="form-group tour-cust-input-name">
-            <label>Nama Band / Pelanggan <span className="required">*</span></label>
-            <input 
-              type="text" 
-              name="name" 
-              value={formData.name} 
-              onChange={handleChange} 
-              placeholder="contoh: The Rockers"
-              required 
-              className="form-input"
-              autoFocus
-            />
-          </div>
 
-          <div className="form-row tour-cust-input-contact">
-            <div className="form-group">
-              <label>No. HP / WhatsApp <span className="required">*</span></label>
-              <input 
-                type="tel" 
-                name="phone" 
-                value={formData.phone} 
-                onChange={handleChange} 
-                placeholder="08xxxxxxxxxx"
+          {/* Avatar Preview + Name */}
+          <div className="cf-identity-section">
+            <div className="cf-avatar-preview" style={{
+              background: formData.name ? getAvatarColor(formData.name).bg : 'rgba(255,255,255,0.06)',
+              color: formData.name ? getAvatarColor(formData.name).color : 'var(--text-muted)',
+              border: formData.name ? `1.5px solid ${getAvatarColor(formData.name).color}30` : '1.5px solid rgba(255,255,255,0.08)'
+            }}>
+              {formData.name ? formData.name.charAt(0).toUpperCase() : <Users size={22} opacity={0.4} />}
+            </div>
+            <div className="cf-name-field">
+              <label className="cf-label">Nama Band / Pelanggan <span className="cf-required">*</span></label>
+              <input
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                placeholder="contoh: The Rockers"
                 required
-                className="form-input"
-              />
-            </div>
-            <div className="form-group">
-              <label>Email</label>
-              <input 
-                type="email" 
-                name="email" 
-                value={formData.email} 
-                onChange={handleChange} 
-                placeholder="email@example.com"
-                className="form-input"
+                className="cf-input tour-cust-input-name"
+                autoFocus
               />
             </div>
           </div>
 
-          <div className="form-row tour-cust-input-social">
-            <div className="form-group">
-              <label>Instagram</label>
-              <input 
-                type="text" 
-                name="instagram" 
-                value={formData.instagram} 
-                onChange={handleChange} 
-                placeholder="@username"
-                className="form-input"
-              />
+          {/* Section: Kontak */}
+          <div className="cf-section">
+            <div className="cf-section-title"><Phone size={12} /> Kontak</div>
+            <div className="cf-row">
+              <div className="cf-field">
+                <label className="cf-label">No. HP / WhatsApp <span className="cf-required">*</span></label>
+                <input type="tel" name="phone" value={formData.phone} onChange={handleChange} placeholder="08xxxxxxxxxx" required className="cf-input tour-cust-input-contact" />
+              </div>
+              <div className="cf-field">
+                <label className="cf-label"><Mail size={11} /> Email</label>
+                <input type="email" name="email" value={formData.email} onChange={handleChange} placeholder="email@example.com" className="cf-input" />
+              </div>
             </div>
-            <div className="form-group">
-              <label>Status</label>
-              <select name="status" value={formData.status} onChange={handleChange} className="form-input">
-                <option value="Active">Aktif</option>
-                <option value="Inactive">Tidak Aktif</option>
-              </select>
+            <div className="cf-row">
+              <div className="cf-field">
+                <label className="cf-label"><AtSign size={11} /> Instagram</label>
+                <div className="cf-prefix-input">
+                  <span className="cf-prefix">@</span>
+                  <input type="text" name="instagram" value={formData.instagram.replace('@','')} onChange={(e) => handleChange({ target: { name: 'instagram', value: '@' + e.target.value.replace('@','') }})} placeholder="username" className="cf-input cf-input-prefixed tour-cust-input-social" />
+                </div>
+              </div>
+              <div className="cf-field">
+                <label className="cf-label"><MapPin size={11} /> Alamat</label>
+                <input type="text" name="address" value={formData.address} onChange={handleChange} placeholder="Jl. Contoh No. 123" className="cf-input tour-cust-input-address" />
+              </div>
             </div>
           </div>
 
-          <div className="form-group tour-cust-input-address">
-            <label>Alamat</label>
-            <input 
-              type="text" 
-              name="address" 
-              value={formData.address} 
-              onChange={handleChange} 
-              placeholder="Jl. Contoh No. 123, Kota"
-              className="form-input"
-            />
+          {/* Section: Status & VIP */}
+          <div className="cf-section">
+            <div className="cf-section-title"><Star size={12} /> Status Keanggotaan</div>
+            <div className="cf-status-row">
+              <div className="cf-status-cards">
+                {[
+                  { value: 'Active', label: 'Aktif', color: '#4CAF50' },
+                  { value: 'Inactive', label: 'Tidak Aktif', color: '#6b6b76' },
+                ].map(opt => (
+                  <label key={opt.value} className={`cf-status-card ${formData.status === opt.value ? 'selected' : ''}`} style={{ '--cs-color': opt.color }}>
+                    <input type="radio" name="status" value={opt.value} checked={formData.status === opt.value} onChange={handleChange} className="cf-radio" />
+                    <span className="cf-status-dot" style={{ background: opt.color }} />
+                    <span>{opt.label}</span>
+                  </label>
+                ))}
+              </div>
+              <label className="cf-vip-toggle">
+                <span className="cf-vip-label"><Star size={13} color="#FFC107" fill="#FFC107" /> VIP Member <span className="cf-vip-sub">Diskon 10%</span></span>
+                <div className={`cf-toggle-switch ${formData.isVIP ? 'on' : ''}`} onClick={() => setFormData(p => ({ ...p, isVIP: !p.isVIP }))}>
+                  <div className="cf-toggle-thumb" />
+                </div>
+              </label>
+            </div>
           </div>
 
-          <div className="form-group tour-cust-input-notes">
-            <label>Catatan</label>
-            <textarea 
-              name="notes" 
-              value={formData.notes} 
-              onChange={handleChange} 
-              placeholder="Preferensi alat, kebiasaan, dll..." 
-              className="form-input form-textarea"
-              rows="3"
-            />
+          {/* Notes */}
+          <div className="cf-section">
+            <div className="cf-field">
+              <label className="cf-label"><StickyNote size={11} /> Catatan (opsional)</label>
+              <textarea name="notes" value={formData.notes} onChange={handleChange} placeholder="Preferensi alat, kebiasaan, dll..." className="cf-input cf-textarea tour-cust-input-notes" rows="2" />
+            </div>
           </div>
 
-          <div className="form-actions">
+          <div className="cf-actions">
             <button type="button" className="btn-secondary" onClick={() => setIsModalOpen(false)}>Batal</button>
-            <button type="submit" className="btn-primary tour-cust-btn-save">Simpan</button>
+            <button type="submit" className="btn-primary tour-cust-btn-save">
+              {editingCustomer ? 'Simpan Perubahan' : 'Tambah Pelanggan'}
+            </button>
           </div>
         </form>
       </Modal>
@@ -509,3 +512,4 @@ const CustomersPage = () => {
 };
 
 export default CustomersPage;
+

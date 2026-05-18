@@ -3,47 +3,49 @@ import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/useAuthStore';
 import { useBookingStore } from '../store/useBookingStore';
 import { useSettingsStore } from '../store/useSettingsStore';
-import { ChevronLeft, ChevronRight, LogOut, CalendarDays, Phone, MessageCircle, Plus } from 'lucide-react';
-import { format, addMonths, subMonths, startOfMonth, endOfMonth, eachDayOfInterval, getDay, addDays, subDays, startOfWeek, endOfWeek, addWeeks, subWeeks } from 'date-fns';
+import {
+  ChevronLeft, ChevronRight, LogOut, Music, Phone, MessageCircle,
+  Plus, CalendarDays, Clock, CheckCircle2, XCircle, Info, X
+} from 'lucide-react';
+import {
+  format, addMonths, subMonths, startOfMonth, endOfMonth,
+  eachDayOfInterval, getDay, addDays, subDays,
+  startOfWeek, endOfWeek, addWeeks, subWeeks, isSameDay
+} from 'date-fns';
+import { id as localeId } from 'date-fns/locale';
 import { useNotificationStore } from '../store/useNotificationStore';
-import Modal from '../components/Modal';
 import './PublicCalendarPage.css';
 
 const PublicCalendarPage = () => {
   const navigate = useNavigate();
   const { user, logout } = useAuthStore();
   const { bookings } = useBookingStore();
-  const { studioName, studioPhone } = useSettingsStore();
-  
-  const [currentDate, setCurrentDate] = useState(new Date());
-  const [viewMode, setViewMode] = useState('month'); // 'day', 'week', 'month'
-  const gridWrapperRef = useRef(null);
-  
-  // Modal state
-  const [waModalOpen, setWaModalOpen] = useState(false);
-  const [selectedSlot, setSelectedSlot] = useState({ dateStr: '', hour: 0 });
-  const [bandName, setBandName] = useState('');
-  const [duration, setDuration] = useState(2);
+  const { studioName, studioPhone, pricePerHour, durationDiscounts = [] } = useSettingsStore();
 
-  // If not guest, redirect
+  const [currentDate, setCurrentDate] = useState(new Date());
+  const [viewMode, setViewMode]       = useState('week');
+  const gridWrapperRef = useRef(null);
+
+  // Booking modal state
+  const [modalOpen, setModalOpen]     = useState(false);
+  const [selectedSlot, setSelectedSlot] = useState({ dateStr: '', hour: 0 });
+  const [bandName, setBandName]       = useState('');
+  const [duration, setDuration]       = useState(2);
+
+  // Redirect non-guests
   useEffect(() => {
-    if (!user || !user.isAnonymous) {
-      navigate('/login');
-    }
+    if (!user || !user.isAnonymous) navigate('/login');
   }, [user, navigate]);
 
-  const handleLogout = async () => {
-    await logout();
-    navigate('/login');
-  };
+  const handleLogout = async () => { await logout(); navigate('/login'); };
 
   const handleGoToday = () => {
     setCurrentDate(new Date());
     setTimeout(() => {
       if (gridWrapperRef.current) {
-        const todayCell = gridWrapperRef.current.querySelector('.grid-header-cell.today');
+        const todayCell = gridWrapperRef.current.querySelector('.pc-header-cell.today');
         if (todayCell) {
-          const scrollPos = todayCell.offsetLeft - (window.innerWidth / 2) + 45;
+          const scrollPos = todayCell.offsetLeft - window.innerWidth / 2 + 45;
           gridWrapperRef.current.scrollTo({ left: scrollPos, behavior: 'smooth' });
         }
       }
@@ -51,186 +53,251 @@ const PublicCalendarPage = () => {
   };
 
   const handlePrev = () => {
-    if (viewMode === 'day') setCurrentDate(subDays(currentDate, 1));
+    if (viewMode === 'day')   setCurrentDate(subDays(currentDate, 1));
     else if (viewMode === 'week') setCurrentDate(subWeeks(currentDate, 1));
     else setCurrentDate(subMonths(currentDate, 1));
   };
-  
   const handleNext = () => {
-    if (viewMode === 'day') setCurrentDate(addDays(currentDate, 1));
+    if (viewMode === 'day')   setCurrentDate(addDays(currentDate, 1));
     else if (viewMode === 'week') setCurrentDate(addWeeks(currentDate, 1));
     else setCurrentDate(addMonths(currentDate, 1));
   };
 
-  // Calendar configuration based on View Mode
+  // Days array based on view mode
   const daysArray = useMemo(() => {
-    if (viewMode === 'day') {
-      return [currentDate];
-    } else if (viewMode === 'week') {
-      const start = startOfWeek(currentDate, { weekStartsOn: 0 }); // Sunday
-      const end = endOfWeek(currentDate, { weekStartsOn: 0 });
-      return eachDayOfInterval({ start, end });
-    } else {
-      const start = startOfMonth(currentDate);
-      const end = endOfMonth(currentDate);
-      return eachDayOfInterval({ start, end });
+    if (viewMode === 'day') return [currentDate];
+    if (viewMode === 'week') {
+      const start = startOfWeek(currentDate, { weekStartsOn: 0 });
+      return eachDayOfInterval({ start, end: endOfWeek(currentDate, { weekStartsOn: 0 }) });
     }
+    return eachDayOfInterval({ start: startOfMonth(currentDate), end: endOfMonth(currentDate) });
   }, [currentDate, viewMode]);
 
-  const numDays = daysArray.length;
-  
   const startHour = 10;
-  const endHour = 23;
+  const endHour   = 23;
   const hoursArray = Array.from({ length: endHour - startHour }, (_, i) => startHour + i);
-  const todayStr = format(new Date(), 'yyyy-MM-dd');
+  const todayStr   = format(new Date(), 'yyyy-MM-dd');
+  const nowHour    = new Date().getHours();
 
-  // Filter out cancelled bookings
-  const activeBookings = useMemo(() => {
-    return bookings.filter(b => b.status !== 'cancelled');
-  }, [bookings]);
+  const activeBookings = useMemo(() =>
+    bookings.filter(b => b.status !== 'cancelled'), [bookings]);
+
+  // Count available slots today
+  const availableToday = useMemo(() => {
+    return hoursArray.filter(h => {
+      const isBooked = activeBookings.some(b => b.date === todayStr && h >= b.hour && h < b.hour + b.duration);
+      return !isBooked && h >= nowHour;
+    }).length;
+  }, [activeBookings, todayStr, nowHour, hoursArray]);
+
+  // Price estimate
+  const basePriceEst = (pricePerHour || 120000) * duration;
+  const applicableDiscount = durationDiscounts
+    .filter(d => duration >= d.hours)
+    .sort((a, b) => b.discountAmount - a.discountAmount)[0];
+  const durationDiscountEst = applicableDiscount ? applicableDiscount.discountAmount : 0;
+  const priceEst = basePriceEst - durationDiscountEst;
+
+  // Open booking modal
+  const openModal = (dateStr, hour) => {
+    setSelectedSlot({ dateStr, hour });
+    setBandName('');
+    setDuration(2);
+    setModalOpen(true);
+  };
+
+  // Send WA
+  const sendWA = () => {
+    if (!bandName.trim()) {
+      useNotificationStore.getState().addNotification({ title: 'Nama Band kosong', message: 'Harap isi nama band Anda.', type: 'error' });
+      return;
+    }
+    const isOverlap = activeBookings.some(b => {
+      if (b.date !== selectedSlot.dateStr) return false;
+      return Number(b.hour) < selectedSlot.hour + duration && selectedSlot.hour < Number(b.hour) + Number(b.duration);
+    });
+    if (isOverlap) {
+      useNotificationStore.getState().addNotification({ title: 'Jadwal Bentrok', message: 'Durasi yang Anda pilih menabrak jadwal lain. Silakan kurangi durasi.', type: 'error' });
+      return;
+    }
+    const dateLabel = format(new Date(selectedSlot.dateStr + 'T00:00:00'), 'dd MMMM yyyy', { locale: localeId });
+    const endHourLabel = selectedSlot.hour + duration;
+    const message = `Halo Admin ${studioName} 👋\n\nSaya dari band *${bandName.trim()}* ingin booking studio:\n\n📅 Tanggal : ${dateLabel}\n⏰ Jam     : ${selectedSlot.hour}:00 – ${endHourLabel}:00\n⏱️ Durasi  : ${duration} jam\n\nApakah slot tersebut masih tersedia?`;
+    let phone = (studioPhone || '').replace(/\D/g, '');
+    if (phone.startsWith('0')) phone = '62' + phone.substring(1);
+    window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, '_blank');
+    setModalOpen(false);
+  };
+
+  const currentLabel = useMemo(() => {
+    if (viewMode === 'day') return format(currentDate, 'EEEE, dd MMMM yyyy', { locale: localeId });
+    if (viewMode === 'week') {
+      const s = startOfWeek(currentDate, { weekStartsOn: 0 });
+      const e = endOfWeek(currentDate, { weekStartsOn: 0 });
+      return `${format(s, 'dd MMM')} – ${format(e, 'dd MMM yyyy')}`;
+    }
+    return format(currentDate, 'MMMM yyyy', { locale: localeId });
+  }, [currentDate, viewMode]);
+
+  const dayNames = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
+  const colWidth = viewMode === 'day' ? '220px' : viewMode === 'week' ? '110px' : '60px';
 
   return (
-    <div className="public-calendar-page">
-      <header className="public-header glass-panel">
-        <div className="header-brand">
-          <div className="logo-icon">
-            <CalendarDays size={24} color="var(--accent-pink)" />
+    <div className="pc-page">
+      {/* ── Hero Header ── */}
+      <header className="pc-hero">
+        <div className="pc-hero-bg" />
+        <div className="pc-hero-inner">
+          {/* Brand */}
+          <div className="pc-hero-brand">
+            <div className="pc-hero-logo">
+              <Music size={22} color="#ff2a5f" />
+            </div>
+            <div>
+              <h1 className="pc-hero-title">{studioName || '37 MUSIC STUDIO'}</h1>
+              <p className="pc-hero-sub">Cek ketersediaan & booking via WhatsApp</p>
+            </div>
           </div>
-          <h1>{studioName} - Jadwal Studio</h1>
+
+          {/* Right: info + logout */}
+          <div className="pc-hero-right">
+            {/* Today availability chip */}
+            <div className="pc-avail-chip">
+              <span className={`pc-avail-dot ${availableToday > 0 ? 'green' : 'red'}`} />
+              <span>
+                {availableToday > 0
+                  ? `${availableToday} slot tersedia hari ini`
+                  : 'Penuh untuk hari ini'}
+              </span>
+            </div>
+
+            {studioPhone && (
+              <a
+                href={`https://wa.me/${studioPhone.replace(/\D/g,'').replace(/^0/,'62')}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="pc-wa-quick-btn"
+              >
+                <Phone size={15} />
+                <span>Hubungi Kami</span>
+              </a>
+            )}
+
+            <button className="pc-logout-btn" onClick={handleLogout} title="Keluar">
+              <LogOut size={16} />
+              <span>Keluar</span>
+            </button>
+          </div>
         </div>
-        <button className="btn-secondary logout-btn" onClick={handleLogout}>
-          <LogOut size={16} />
-          <span>Keluar</span>
-        </button>
       </header>
 
-      <div className="public-content">
-        <div className="calendar-container glass-panel">
-          <div className="calendar-toolbar">
-            <div className="date-navigation">
-              <button className="icon-btn" onClick={handlePrev}>
-                <ChevronLeft size={20} />
-              </button>
-              <h3 className="current-month" style={{ minWidth: viewMode === 'week' ? '180px' : '140px', textAlign: 'center' }}>
-                {viewMode === 'day' && format(currentDate, 'dd MMM yyyy')}
-                {viewMode === 'week' && `${format(startOfWeek(currentDate, {weekStartsOn: 0}), 'dd MMM')} - ${format(endOfWeek(currentDate, {weekStartsOn: 0}), 'dd MMM yyyy')}`}
-                {viewMode === 'month' && format(currentDate, 'MMMM yyyy')}
-              </h3>
-              <button className="icon-btn" onClick={handleNext}>
-                <ChevronRight size={20} />
-              </button>
-              <button className="today-btn" onClick={handleGoToday}>Hari Ini</button>
-
-              <div className="view-switcher hide-on-mobile" style={{ display: 'flex', background: 'rgba(255,255,255,0.05)', borderRadius: '8px', padding: '4px', marginLeft: '12px' }}>
-                <button className={`view-btn ${viewMode === 'day' ? 'active' : ''}`} onClick={() => setViewMode('day')}>Hari</button>
-                <button className={`view-btn ${viewMode === 'week' ? 'active' : ''}`} onClick={() => setViewMode('week')}>Minggu</button>
-                <button className={`view-btn ${viewMode === 'month' ? 'active' : ''}`} onClick={() => setViewMode('month')}>Bulan</button>
-              </div>
-            </div>
-            <div className="legend">
-              <span className="legend-item"><span className="dot booked"></span> Terisi / Dibooking</span>
-              <span className="legend-item"><span className="dot available"></span> Kosong</span>
-            </div>
+      {/* ── Calendar Container ── */}
+      <div className="pc-body">
+        {/* Toolbar */}
+        <div className="pc-toolbar glass-panel">
+          {/* Navigation */}
+          <div className="pc-nav">
+            <button className="pc-icon-btn" onClick={handlePrev}><ChevronLeft size={20} /></button>
+            <span className="pc-date-label">{currentLabel}</span>
+            <button className="pc-icon-btn" onClick={handleNext}><ChevronRight size={20} /></button>
+            <button className="pc-today-btn" onClick={handleGoToday}>Hari Ini</button>
           </div>
 
-          <div className="monthly-grid-wrapper" ref={gridWrapperRef}>
-            <div className="monthly-grid" style={{ gridTemplateColumns: `80px repeat(${numDays}, minmax(${viewMode === 'day' ? '200px' : viewMode === 'week' ? '120px' : '60px'}, 1fr))` }}>
-              
-              {/* Top-Left Corner Header Cell */}
-              <div className="grid-corner-cell sticky-col">
-                <span className="corner-label">JAM</span>
-              </div>
+          <div className="pc-toolbar-right">
+            {/* View switcher */}
+            <div className="pc-view-switch">
+              {['day', 'week', 'month'].map(v => (
+                <button
+                  key={v}
+                  className={`pc-view-btn ${viewMode === v ? 'active' : ''}`}
+                  onClick={() => setViewMode(v)}
+                >
+                  {v === 'day' ? 'Hari' : v === 'week' ? 'Minggu' : 'Bulan'}
+                </button>
+              ))}
+            </div>
+            {/* Legend */}
+            <div className="pc-legend">
+              <span className="pc-legend-item"><span className="pc-dot booked" />Terisi</span>
+              <span className="pc-legend-item"><span className="pc-dot available" />Kosong</span>
+            </div>
+          </div>
+        </div>
 
-              {/* Days Header */}
+        {/* Grid */}
+        <div className="pc-grid-panel glass-panel">
+          <div className="pc-grid-wrapper" ref={gridWrapperRef}>
+            <div
+              className="pc-grid"
+              style={{ gridTemplateColumns: `72px repeat(${daysArray.length}, minmax(${colWidth}, 1fr))` }}
+            >
+              {/* Corner */}
+              <div className="pc-corner"><span>JAM</span></div>
+
+              {/* Day Headers */}
               {daysArray.map((day, idx) => {
                 const isToday = format(day, 'yyyy-MM-dd') === todayStr;
-                const dayOfWeek = getDay(day);
-                const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
-                const dayNames = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
+                const dow = getDay(day);
+                const isWknd = dow === 0 || dow === 6;
                 return (
-                  <div key={idx} className={`grid-header-cell ${isToday ? 'today' : ''} ${isWeekend ? 'weekend' : ''}`}>
-                    <span className="day-name">{dayNames[dayOfWeek]}</span>
-                    <span className="day-number">{format(day, 'd')}</span>
+                  <div key={idx} className={`pc-header-cell ${isToday ? 'today' : ''} ${isWknd ? 'weekend' : ''}`}>
+                    <span className="pc-day-name">{dayNames[dow]}</span>
+                    <span className="pc-day-num">{format(day, 'd')}</span>
+                    {isToday && <span className="pc-today-dot" />}
                   </div>
                 );
               })}
 
-              {/* Grid Body */}
-              {hoursArray.map((hour, hourIdx) => (
+              {/* Hour rows */}
+              {hoursArray.map((hour, hIdx) => (
                 <React.Fragment key={hour}>
-                  {/* Time Label Column (Sticky) */}
-                  <div className={`sticky-col time-label ${hourIdx % 2 === 0 ? 'even-row' : ''}`}>
-                    <span className="time-range">{String(hour).padStart(2, '0')}.00 – {String(hour + 1).padStart(2, '0')}.00</span>
+                  {/* Time label */}
+                  <div className={`pc-time-label ${hIdx % 2 === 0 ? 'even' : ''}`}>
+                    <span>{String(hour).padStart(2,'0')}.00</span>
                   </div>
 
-                  {/* Day Cells for this Hour */}
-                  {daysArray.map((day, dayIdx) => {
+                  {/* Day cells */}
+                  {daysArray.map((day, dIdx) => {
                     const dateStr = format(day, 'yyyy-MM-dd');
                     const isToday = dateStr === todayStr;
-                    const dayOfWeek = getDay(day);
-                    const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+                    const dow = getDay(day);
+                    const isWknd = dow === 0 || dow === 6;
 
-                    // Find if any active booking covers this date and hour
-                    const slotBooking = activeBookings.find(b => {
+                    const booking = activeBookings.find(b => {
                       if (b.date !== dateStr) return false;
-                      const startHour = b.hour;
-                      const endHour = b.hour + b.duration;
-                      return hour >= startHour && hour < endHour;
+                      return hour >= b.hour && hour < b.hour + b.duration;
                     });
 
-                    // Determine block characteristics
-                    let blockClass = '';
-                    let label = '';
-                    
-                    if (slotBooking) {
-                      const startHour = slotBooking.hour;
-                      const endHour = slotBooking.hour + slotBooking.duration;
-                      const isBookingStart = hour === startHour;
-                      const isBookingEnd = hour === endHour - 1;
-                      
-                      blockClass = 'booked-cell status-confirmed';
-                      if (isBookingStart) blockClass += ' booking-start';
-                      if (isBookingEnd) blockClass += ' booking-end';
-                      
-                      label = 'TERISI';
-                    }
+                    const isPast = dateStr < todayStr || (isToday && hour < nowHour);
+                    const canBook = !booking && !isPast;
+                    const isBlockStart = booking && hour === booking.hour;
 
-                    const isAvailable = !slotBooking;
-                    const isPast = day < new Date(new Date().setHours(0,0,0,0)) || (isToday && hour < new Date().getHours());
-                    const canBook = isAvailable && !isPast && hour >= 9; // Only allow booking from 9 AM onwards, not in past
-                    
-                    const handleSlotClick = () => {
-                      if (canBook) {
-                        setSelectedSlot({ dateStr, hour });
-                        setBandName('');
-                        setDuration(2);
-                        setWaModalOpen(true);
-                      }
-                    };
-
-                    const cellClasses = [
-                      'grid-cell',
-                      hourIdx % 2 === 0 ? 'even-row' : '',
-                      isToday ? 'today-col-highlight' : '',
-                      isWeekend ? 'weekend-col' : '',
-                      blockClass,
-                      canBook ? 'available-slot-interactive empty-cell' : '',
-                      isPast && isAvailable ? 'past-slot empty-cell' : ''
+                    const classes = [
+                      'pc-cell',
+                      hIdx % 2 === 0 ? 'even' : '',
+                      isToday ? 'today-col' : '',
+                      isWknd ? 'weekend-col' : '',
+                      booking ? 'booked' : '',
+                      booking && isBlockStart ? 'block-start' : '',
+                      booking && hour === booking.hour + booking.duration - 1 ? 'block-end' : '',
+                      canBook ? 'available' : '',
+                      isPast && !booking ? 'past' : '',
                     ].filter(Boolean).join(' ');
 
                     return (
-                      <div 
-                        key={`${dateStr}-${hour}`} 
-                        className={cellClasses}
-                        onClick={handleSlotClick}
+                      <div
+                        key={`${dateStr}-${hour}`}
+                        className={classes}
+                        onClick={() => canBook && openModal(dateStr, hour)}
                       >
-                        {slotBooking && (hour === slotBooking.hour) && (
-                          <div className="public-booking-label">
-                            {label}
+                        {booking && isBlockStart && (
+                          <div className="pc-booked-tag">
+                            <XCircle size={11} />
+                            <span>TERISI</span>
                           </div>
                         )}
-                        {canBook && !slotBooking && (
-                          <div className="public-available-label">
+                        {canBook && (
+                          <div className="pc-plus-icon">
                             <Plus size={14} />
                           </div>
                         )}
@@ -244,85 +311,97 @@ const PublicCalendarPage = () => {
         </div>
       </div>
 
-      <Modal
-        isOpen={waModalOpen}
-        onClose={() => setWaModalOpen(false)}
-        title="Pesan via WhatsApp"
-      >
-        <div className="wa-booking-form">
-          <p className="wa-booking-info">
-            Pesan studio untuk tanggal <strong>{selectedSlot.dateStr ? format(new Date(selectedSlot.dateStr), 'dd MMM yyyy') : ''}</strong> jam <strong>{selectedSlot.hour}:00</strong>.
-          </p>
-          
-          <div className="form-group">
-            <label>Nama Band</label>
-            <input 
-              type="text" 
-              className="form-input" 
-              value={bandName}
-              onChange={(e) => setBandName(e.target.value)}
-              placeholder="Contoh: The Beatles"
-              autoFocus
-            />
+      {/* ── Booking Modal (Bottom-Sheet on mobile) ── */}
+      {modalOpen && (
+        <div className="pc-modal-overlay" onClick={() => setModalOpen(false)}>
+          <div className="pc-modal glass-panel" onClick={e => e.stopPropagation()}>
+            {/* Header */}
+            <div className="pc-modal-header">
+              <div className="pc-modal-header-info">
+                <CalendarDays size={20} color="#00f0ff" />
+                <div>
+                  <h3>Pesan Studio</h3>
+                  <p>
+                    {selectedSlot.dateStr
+                      ? format(new Date(selectedSlot.dateStr + 'T00:00:00'), 'EEEE, dd MMMM yyyy', { locale: localeId })
+                      : ''}
+                  </p>
+                </div>
+              </div>
+              <button className="pc-modal-close" onClick={() => setModalOpen(false)}>
+                <X size={18} />
+              </button>
+            </div>
+
+            {/* Time chip */}
+            <div className="pc-time-chip">
+              <Clock size={14} />
+              <span>
+                {String(selectedSlot.hour).padStart(2,'0')}:00 –{' '}
+                {String(selectedSlot.hour + duration).padStart(2,'0')}:00
+                &nbsp;({duration} jam)
+              </span>
+            </div>
+
+            {/* Form */}
+            <div className="pc-modal-body">
+              <div className="pc-form-group">
+                <label>Nama Band / Artis</label>
+                <input
+                  type="text"
+                  className="pc-form-input"
+                  value={bandName}
+                  onChange={e => setBandName(e.target.value)}
+                  placeholder="Contoh: The Beatles"
+                  autoFocus
+                />
+              </div>
+
+              <div className="pc-form-group">
+                <label>Durasi (Jam)</label>
+                <div className="pc-duration-grid">
+                  {[1,2,3,4,5].map(h => (
+                    <button
+                      key={h}
+                      type="button"
+                      className={`pc-dur-btn ${duration === h ? 'active' : ''}`}
+                      onClick={() => setDuration(h)}
+                    >
+                      {h}j
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Price estimate */}
+              <div className="pc-price-estimate">
+                <span className="pc-price-label">Estimasi harga</span>
+                <div className="pc-price-value-container">
+                  {durationDiscountEst > 0 && (
+                    <div className="pc-price-discount-label">
+                      Potongan Diskon: −{new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(durationDiscountEst)}
+                    </div>
+                  )}
+                  <span className="pc-price-value">
+                    {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(priceEst)}
+                  </span>
+                </div>
+              </div>
+
+              {/* Info note */}
+              <div className="pc-modal-note">
+                <Info size={13} />
+                <span>Klik tombol di bawah untuk mengirim permintaan booking ke WhatsApp admin. Booking akan dikonfirmasi oleh admin.</span>
+              </div>
+
+              <button className="pc-wa-send-btn" onClick={sendWA}>
+                <MessageCircle size={20} />
+                <span>Kirim ke WhatsApp Admin</span>
+              </button>
+            </div>
           </div>
-
-          <div className="form-group">
-            <label>Durasi Main (Jam)</label>
-            <select 
-              className="form-input" 
-              value={duration} 
-              onChange={(e) => setDuration(Number(e.target.value))}
-            >
-              {[1, 2, 3, 4, 5, 6].map(h => (
-                <option key={h} value={h}>{h} Jam</option>
-              ))}
-            </select>
-          </div>
-
-          <button 
-            className="btn-primary" 
-            style={{ width: '100%', marginTop: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
-            onClick={() => {
-              if (!bandName.trim()) {
-                const { addNotification } = useNotificationStore.getState();
-                addNotification({ title: 'Data Tidak Lengkap', message: 'Silakan isi Nama Band terlebih dahulu.', type: 'error' });
-                return;
-              }
-
-              // Overlap check
-              const isOverlap = activeBookings.some(b => {
-                if (b.date !== selectedSlot.dateStr) return false;
-                const bHour = Number(b.hour);
-                const bDur = Number(b.duration);
-                const formHour = Number(selectedSlot.hour);
-                const formDur = Number(duration);
-                return (bHour < formHour + formDur) && (formHour < bHour + bDur);
-              });
-
-              if (isOverlap) {
-                const { addNotification } = useNotificationStore.getState();
-                addNotification({ title: 'Jadwal Bentrok', message: 'Durasi yang Anda pilih menabrak jadwal band lain di bawahnya. Silakan kurangi durasi.', type: 'error' });
-                return;
-              }
-
-              // Construct WA Message
-              const formattedDate = format(new Date(selectedSlot.dateStr), 'dd MMMM yyyy');
-              const message = `Halo Admin ${studioName},\n\nSaya dari band *${bandName.trim()}* ingin menyewa studio untuk:\n📅 Tanggal: ${formattedDate}\n⏰ Jam: ${selectedSlot.hour}:00\n⏱️ Durasi: ${duration} Jam\n\nApakah masih tersedia?`;
-              
-              // Clean phone number
-              let phone = (studioPhone || '').replace(/\D/g, '');
-              if (phone.startsWith('0')) phone = '62' + phone.substring(1);
-              
-              const waUrl = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
-              window.open(waUrl, '_blank');
-              setWaModalOpen(false);
-            }}
-          >
-            <MessageCircle size={18} />
-            <span>Kirim Pesan ke WhatsApp</span>
-          </button>
         </div>
-      </Modal>
+      )}
     </div>
   );
 };

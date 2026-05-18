@@ -4,6 +4,7 @@ import { collection, doc, onSnapshot, setDoc, deleteDoc, updateDoc } from 'fireb
 import { format, addDays } from 'date-fns';
 import { useSettingsStore } from './useSettingsStore';
 import { useNotificationStore } from './useNotificationStore';
+import { useDemoStore } from './useDemoStore';
 
 // Track IDs of bookings added/deleted locally to suppress self-notifications
 const localActionIds = new Set();
@@ -11,43 +12,45 @@ const localActionIds = new Set();
 export const useBookingStore = create((set, get) => {
   const bookingsRef = collection(db, 'bookings');
   let isFirstLoad = true;
+  let realBookings = [];
 
   onSnapshot(bookingsRef, (snapshot) => {
+    realBookings = snapshot.docs.map(doc => doc.data());
+
+    // In demo mode, don't overwrite demo data with real Firebase data
+    if (useDemoStore.getState().isDemoMode) {
+      set({ isLoaded: true });
+      return;
+    }
+
     if (isFirstLoad) {
-      // First load — just set data, no notifications
       isFirstLoad = false;
-      set({ bookings: snapshot.docs.map(doc => doc.data()), isLoaded: true });
+      set({ bookings: realBookings, isLoaded: true });
       return;
     }
 
     const { addNotification } = useNotificationStore.getState();
-
     snapshot.docChanges().forEach((change) => {
       const b = change.doc.data();
-      
       if (change.type === 'added' && !localActionIds.has(b.id)) {
-        addNotification({
-          type: 'booking',
-          title: 'Booking Baru',
-          message: `${b.band} — ${b.date}, ${b.hour}.00–${b.hour + b.duration}.00 (${b.duration} jam)`
-        });
+        addNotification({ type: 'booking', title: 'Booking Baru', message: `${b.band} — ${b.date}, ${b.hour}.00–${b.hour + b.duration}.00 (${b.duration} jam)` });
       }
-      
       if (change.type === 'removed' && !localActionIds.has(b.id)) {
-        addNotification({
-          type: 'warning',
-          title: 'Booking Dihapus',
-          message: `${b.band} — ${b.date} telah dihapus oleh pengguna lain`
-        });
+        addNotification({ type: 'warning', title: 'Booking Dihapus', message: `${b.band} — ${b.date} telah dihapus oleh pengguna lain` });
       }
-
-      // If the server confirmed our local action, we can safely remove it from the ignore list
-      if (localActionIds.has(b.id)) {
-        localActionIds.delete(b.id);
-      }
+      if (localActionIds.has(b.id)) localActionIds.delete(b.id);
     });
 
-    set({ bookings: snapshot.docs.map(doc => doc.data()), isLoaded: true });
+    set({ bookings: realBookings, isLoaded: true });
+  });
+
+  // React to demo mode toggle
+  useDemoStore.subscribe((demoState) => {
+    if (demoState.isDemoMode) {
+      set({ bookings: demoState.demoBookings });
+    } else {
+      set({ bookings: realBookings });
+    }
   });
 
   return {

@@ -1,13 +1,27 @@
 import { create } from 'zustand';
 import { db } from '../firebase';
 import { collection, doc, onSnapshot, setDoc, deleteDoc } from 'firebase/firestore';
+import { useDemoStore } from './useDemoStore';
 
 export const useFinanceStore = create((set, get) => {
   const financeRef = collection(db, 'finances');
-  
+  let realTransactions = [];
+
   onSnapshot(financeRef, (snapshot) => {
-    const data = snapshot.docs.map(doc => doc.data());
-    set({ transactions: data, isLoaded: true });
+    realTransactions = snapshot.docs.map(doc => doc.data());
+    if (!useDemoStore.getState().isDemoMode) {
+      set({ transactions: realTransactions, isLoaded: true });
+    } else {
+      set({ isLoaded: true });
+    }
+  });
+
+  useDemoStore.subscribe((demoState) => {
+    if (demoState.isDemoMode) {
+      set({ transactions: demoState.demoTransactions });
+    } else {
+      set({ transactions: realTransactions });
+    }
   });
 
   return {

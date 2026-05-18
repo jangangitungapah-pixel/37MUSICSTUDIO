@@ -2,13 +2,27 @@ import { create } from 'zustand';
 import { db } from '../firebase';
 import { collection, doc, onSnapshot, setDoc, deleteDoc, updateDoc } from 'firebase/firestore';
 import { format, subDays } from 'date-fns';
+import { useDemoStore } from './useDemoStore';
 
 export const useCustomerStore = create((set, get) => {
   const customersRef = collection(db, 'customers');
-  
+  let realCustomers = [];
+
   onSnapshot(customersRef, (snapshot) => {
-    const data = snapshot.docs.map(doc => doc.data());
-    set({ customers: data, isLoaded: true });
+    realCustomers = snapshot.docs.map(doc => doc.data());
+    if (!useDemoStore.getState().isDemoMode) {
+      set({ customers: realCustomers, isLoaded: true });
+    } else {
+      set({ isLoaded: true });
+    }
+  });
+
+  useDemoStore.subscribe((demoState) => {
+    if (demoState.isDemoMode) {
+      set({ customers: demoState.demoCustomers });
+    } else {
+      set({ customers: realCustomers });
+    }
   });
 
   return {
