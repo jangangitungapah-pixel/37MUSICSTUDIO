@@ -165,84 +165,228 @@ const FinancePage = () => {
 
   const handleExportExcel = async () => {
     const workbook = new ExcelJS.Workbook();
-    const worksheet = workbook.addWorksheet('Buku Kas');
+    workbook.creator = '37 Music Studio';
+    workbook.created = new Date();
 
-    // Title Rows
-    worksheet.mergeCells('A1:F1');
-    worksheet.getCell('A1').value = 'LAPORAN KEUANGAN 37 MUSIC STUDIO';
-    worksheet.getCell('A1').font = { size: 16, bold: true };
-    worksheet.getCell('A1').alignment = { vertical: 'middle', horizontal: 'center' };
-
-    worksheet.mergeCells('A2:F2');
-    worksheet.getCell('A2').value = `Periode: ${periodLabel} | Dicetak: ${format(new Date(), 'dd MMM yyyy HH:mm')}`;
-    worksheet.getCell('A2').font = { size: 11, italic: true };
-    worksheet.getCell('A2').alignment = { vertical: 'middle', horizontal: 'center' };
-
-    worksheet.addRow([]); // Empty row
-
-    // Headers
-    const headerRow = worksheet.addRow(['Tanggal', 'Kategori', 'Tipe', 'Keterangan', 'Nominal', 'Saldo Berjalan']);
-    headerRow.font = { bold: true, color: { argb: 'FFFFFFFF' } };
-    headerRow.eachCell((cell) => {
-      cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1E1E2D' } };
-      cell.alignment = { vertical: 'middle', horizontal: 'center' };
-      cell.border = {
-        top: { style: 'thin' }, left: { style: 'thin' },
-        bottom: { style: 'thin' }, right: { style: 'thin' }
-      };
+    const ws = workbook.addWorksheet('Buku Kas', {
+      pageSetup: { paperSize: 9, orientation: 'landscape', fitToPage: true, fitToWidth: 1 },
+      views: [{ state: 'frozen', ySplit: 5 }],
     });
 
-    // Columns width setup
-    worksheet.columns = [
-      { key: 'tanggal', width: 15 },
+    ws.columns = [
+      { key: 'no',       width: 5  },
+      { key: 'tanggal',  width: 14 },
       { key: 'kategori', width: 20 },
-      { key: 'tipe', width: 15 },
-      { key: 'keterangan', width: 45 },
-      { key: 'nominal', width: 22 },
-      { key: 'saldo', width: 22 }
+      { key: 'tipe',     width: 15 },
+      { key: 'desc',     width: 46 },
+      { key: 'masuk',    width: 22 },
+      { key: 'keluar',   width: 22 },
+      { key: 'saldo',    width: 22 },
     ];
 
-    // Add Data
-    filteredData.forEach(d => {
-      const row = worksheet.addRow([
+    const C = {
+      headerBg:    'FF0F0F1A',
+      titleText:   'FF00E5FF',
+      subheadBg:   'FF1A1A2E',
+      incomeGreen: 'FF2E7D32',
+      expenseRed:  'FFC62828',
+      saldoBlue:   'FF0277BD',
+      borderLight: 'FFD0D0D0',
+      borderDark:  'FF444466',
+      rowEven:     'FFF5F5FF',
+      rowOdd:      'FFFFFFFF',
+      footerText:  'FF888888',
+    };
+
+    const currency = '"Rp "#,##0;[Red]-"Rp "#,##0';
+    const TOTAL_COLS = 8;
+
+    const thin = (color = C.borderLight) => ({
+      top:    { style: 'thin',   color: { argb: color } },
+      left:   { style: 'thin',   color: { argb: color } },
+      bottom: { style: 'thin',   color: { argb: color } },
+      right:  { style: 'thin',   color: { argb: color } },
+    });
+    const medium = {
+      top:    { style: 'medium', color: { argb: C.borderDark } },
+      left:   { style: 'medium', color: { argb: C.borderDark } },
+      bottom: { style: 'medium', color: { argb: C.borderDark } },
+      right:  { style: 'medium', color: { argb: C.borderDark } },
+    };
+
+    const colLetter = (n) => String.fromCharCode(64 + n);
+    const merge = (row, from, to) => ws.mergeCells(`${colLetter(from)}${row}:${colLetter(to)}${row}`);
+    const setCell = (addr, props) => Object.assign(ws.getCell(addr), props);
+
+    // ── Row 1: Studio Name ──────────────────────────────────────────
+    merge(1, 1, TOTAL_COLS);
+    ws.getRow(1).height = 34;
+    setCell('A1', {
+      value:     '37 MUSIC STUDIO',
+      font:      { name: 'Calibri', size: 22, bold: true, color: { argb: C.titleText } },
+      alignment: { vertical: 'middle', horizontal: 'center' },
+      fill:      { type: 'pattern', pattern: 'solid', fgColor: { argb: C.headerBg } },
+    });
+
+    // ── Row 2: Report Title ─────────────────────────────────────────
+    merge(2, 1, TOTAL_COLS);
+    ws.getRow(2).height = 22;
+    setCell('A2', {
+      value:     'LAPORAN KEUANGAN — BUKU KAS OPERASIONAL',
+      font:      { name: 'Calibri', size: 13, bold: true, color: { argb: 'FFFFFFFF' } },
+      alignment: { vertical: 'middle', horizontal: 'center' },
+      fill:      { type: 'pattern', pattern: 'solid', fgColor: { argb: C.subheadBg } },
+    });
+
+    // ── Row 3: Meta (Periode & Tanggal) ────────────────────────────
+    merge(3, 1, TOTAL_COLS);
+    ws.getRow(3).height = 18;
+    setCell('A3', {
+      value:     `Periode: ${periodLabel}   •   Dicetak: ${format(new Date(), 'dd MMMM yyyy, HH:mm')} WIB   •   Total: ${filteredData.length} transaksi`,
+      font:      { name: 'Calibri', size: 9.5, italic: true, color: { argb: 'FFAAAACC' } },
+      alignment: { vertical: 'middle', horizontal: 'center' },
+      fill:      { type: 'pattern', pattern: 'solid', fgColor: { argb: C.subheadBg } },
+    });
+
+    // ── Row 4: Spacer ───────────────────────────────────────────────
+    ws.getRow(4).height = 8;
+
+    // ── Row 5: Column Headers ───────────────────────────────────────
+    const headers = ['No', 'Tanggal', 'Kategori', 'Tipe', 'Keterangan', 'Kas Masuk', 'Kas Keluar', 'Saldo'];
+    const hRow = ws.getRow(5);
+    hRow.height = 26;
+    headers.forEach((h, i) => {
+      const cell = hRow.getCell(i + 1);
+      cell.value     = h;
+      cell.font      = { name: 'Calibri', size: 10, bold: true, color: { argb: 'FFFFFFFF' } };
+      cell.fill      = { type: 'pattern', pattern: 'solid', fgColor: { argb: C.headerBg } };
+      cell.alignment = { vertical: 'middle', horizontal: i >= 5 ? 'right' : 'center' };
+      cell.border    = thin(C.borderDark);
+    });
+
+    // ── Data Rows (oldest first) ────────────────────────────────────
+    const dataRows    = [...filteredData].reverse();
+    let totalIncome   = 0;
+    let totalExpense  = 0;
+
+    dataRows.forEach((d, idx) => {
+      const isIncome = d.type === 'income';
+      const rowNum   = 6 + idx;
+      const row      = ws.getRow(rowNum);
+      row.height     = 18;
+      if (isIncome) totalIncome  += d.amount;
+      else          totalExpense += d.amount;
+
+      const rowBgArgb = idx % 2 === 0 ? C.rowEven : C.rowOdd;
+      const rowFill   = { type: 'pattern', pattern: 'solid', fgColor: { argb: rowBgArgb } };
+
+      const values = [
+        idx + 1,
         format(new Date(d.date), 'dd/MM/yyyy'),
         d.category,
-        d.type === 'income' ? 'Pemasukan' : 'Pengeluaran',
+        isIncome ? '▲ Pemasukan' : '▼ Pengeluaran',
         d.description,
-        d.amount,
-        d.balance
-      ]);
+        isIncome  ? d.amount : null,
+        !isIncome ? d.amount : null,
+        d.balance,
+      ];
 
-      // Styling Data Row
-      row.eachCell((cell, colNumber) => {
-        cell.border = {
-          top: { style: 'thin', color: {argb: 'FFE0E0E0'} }, left: { style: 'thin', color: {argb: 'FFE0E0E0'} },
-          bottom: { style: 'thin', color: {argb: 'FFE0E0E0'} }, right: { style: 'thin', color: {argb: 'FFE0E0E0'} }
-        };
+      values.forEach((val, ci) => {
+        const cell  = row.getCell(ci + 1);
+        cell.value  = val;
+        cell.fill   = rowFill;
+        cell.border = thin();
+        cell.font   = { name: 'Calibri', size: 9.5 };
         cell.alignment = { vertical: 'middle' };
-        
-        // Currency formatting
-        if (colNumber === 5 || colNumber === 6) {
-          cell.numFmt = '"Rp"#,##0;[Red]\-"Rp"#,##0';
+
+        if (ci === 0) cell.alignment = { vertical: 'middle', horizontal: 'center' };
+        if (ci === 1) cell.alignment = { vertical: 'middle', horizontal: 'center' };
+        if (ci === 2) { cell.alignment = { vertical: 'middle', horizontal: 'center' }; cell.font = { name: 'Calibri', size: 9.5, italic: true }; }
+
+        if (ci === 3) {
+          cell.font      = { name: 'Calibri', size: 9.5, bold: true, color: { argb: isIncome ? C.incomeGreen : C.expenseRed } };
+          cell.alignment = { vertical: 'middle', horizontal: 'center' };
         }
-        
-        // Color coding for Type and Nominal
-        if (colNumber === 3 || colNumber === 5) {
-          if (d.type === 'income') cell.font = { color: { argb: 'FF4CAF50' }, bold: colNumber === 5 };
-          else cell.font = { color: { argb: 'FFFF2A5F' }, bold: colNumber === 5 };
+
+        if (ci === 5) {
+          cell.numFmt    = currency;
+          cell.alignment = { vertical: 'middle', horizontal: 'right' };
+          cell.font      = val !== null
+            ? { name: 'Calibri', size: 9.5, bold: true, color: { argb: C.incomeGreen } }
+            : { name: 'Calibri', size: 9.5, color: { argb: 'FFCCCCCC' } };
         }
-        
-        // Make Saldo bold
-        if (colNumber === 6) {
-          cell.font = { bold: true };
+
+        if (ci === 6) {
+          cell.numFmt    = currency;
+          cell.alignment = { vertical: 'middle', horizontal: 'right' };
+          cell.font      = val !== null
+            ? { name: 'Calibri', size: 9.5, bold: true, color: { argb: C.expenseRed } }
+            : { name: 'Calibri', size: 9.5, color: { argb: 'FFCCCCCC' } };
+        }
+
+        if (ci === 7) {
+          cell.numFmt    = currency;
+          cell.alignment = { vertical: 'middle', horizontal: 'right' };
+          cell.font      = { name: 'Calibri', size: 9.5, bold: true, color: { argb: d.balance >= 0 ? C.saldoBlue : C.expenseRed } };
+          cell.border    = { ...thin(), left: { style: 'medium', color: { argb: C.borderDark } } };
         }
       });
     });
 
-    // Generate File
+    // ── Total Row ───────────────────────────────────────────────────
+    const totNum = 6 + dataRows.length;
+    ws.getRow(totNum).height = 24;
+    merge(totNum, 1, 5);
+
+    setCell(`A${totNum}`, {
+      value:     'TOTAL PERIODE',
+      font:      { name: 'Calibri', size: 10, bold: true },
+      alignment: { vertical: 'middle', horizontal: 'right' },
+      fill:      { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE3F2FD' } },
+      border:    medium,
+    });
+    setCell(`F${totNum}`, {
+      value:     totalIncome,
+      numFmt:    currency,
+      font:      { name: 'Calibri', size: 10, bold: true, color: { argb: C.incomeGreen } },
+      fill:      { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE8F5E9' } },
+      alignment: { vertical: 'middle', horizontal: 'right' },
+      border:    medium,
+    });
+    setCell(`G${totNum}`, {
+      value:     totalExpense,
+      numFmt:    currency,
+      font:      { name: 'Calibri', size: 10, bold: true, color: { argb: C.expenseRed } },
+      fill:      { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFCE4EC' } },
+      alignment: { vertical: 'middle', horizontal: 'right' },
+      border:    medium,
+    });
+    const net = totalIncome - totalExpense;
+    setCell(`H${totNum}`, {
+      value:     net,
+      numFmt:    currency,
+      font:      { name: 'Calibri', size: 10, bold: true, color: { argb: net >= 0 ? C.incomeGreen : C.expenseRed } },
+      fill:      { type: 'pattern', pattern: 'solid', fgColor: { argb: net >= 0 ? 'FFE8F5E9' : 'FFFCE4EC' } },
+      alignment: { vertical: 'middle', horizontal: 'right' },
+      border:    medium,
+    });
+
+    // ── Footer ──────────────────────────────────────────────────────
+    const footNum = totNum + 2;
+    merge(footNum, 1, TOTAL_COLS);
+    setCell(`A${footNum}`, {
+      value:     'Dokumen ini dibuat otomatis oleh sistem 37 Music Studio. Harap simpan sebagai arsip resmi studio.',
+      font:      { name: 'Calibri', size: 8.5, italic: true, color: { argb: C.footerText } },
+      alignment: { horizontal: 'center', vertical: 'middle' },
+    });
+
+    // ── Auto-filter ─────────────────────────────────────────────────
+    ws.autoFilter = { from: 'A5', to: 'H5' };
+
+    // ── Download ─────────────────────────────────────────────────────
     const buffer = await workbook.xlsx.writeBuffer();
-    const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-    saveAs(blob, `Laporan_Keuangan_37Studio_${filterPeriod}.xlsx`);
+    const blob   = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    saveAs(blob, `Laporan_Keuangan_37Studio_${filterPeriod}_${format(new Date(), 'yyyy-MM-dd')}.xlsx`);
   };
 
   const handlePrint = (transaction) => {
@@ -263,133 +407,182 @@ const FinancePage = () => {
     setFormData(prev => ({ ...prev, amount: '', description: '' }));
   };
 
+  const PERIOD_OPTIONS = [
+    { value: 'day',   label: 'Hari Ini' },
+    { value: 'week',  label: 'Minggu' },
+    { value: 'month', label: 'Bulan Ini' },
+    { value: 'year',  label: 'Tahun Ini' },
+    { value: 'all',   label: 'Semua' },
+  ];
+
   return (
     <div className="finance-page">
-      <header className="page-header">
-        <div>
-          <h2 className="page-title">Buku Kas / Pembukuan</h2>
-          <p className="page-subtitle">Pantau arus kas masuk dan keluar operasional studio</p>
+      {/* ── Header ── */}
+      <div className="finance-header">
+        <div className="finance-header-left">
+          <h2 className="page-title">Buku Kas</h2>
+          <p className="page-subtitle">Pantau arus kas masuk &amp; keluar operasional studio</p>
         </div>
-        <div className="header-actions" style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
-          <div className="search-bar" style={{ position: 'relative' }}>
-            <Search size={16} style={{ position: 'absolute', left: '10px', top: '10px', color: 'var(--text-muted)' }} />
-            <input 
-              type="text" 
-              className="form-input" 
-              placeholder="Cari transaksi..." 
+        <div className="finance-header-actions">
+          {/* Period Pill Buttons */}
+          <div className="toolbar-group hide-on-print">
+            {PERIOD_OPTIONS.map(opt => (
+              <button
+                key={opt.value}
+                className={`period-btn ${filterPeriod === opt.value ? 'active' : ''}`}
+                onClick={() => setFilterPeriod(opt.value)}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Search */}
+          <div className="finance-search-wrap hide-on-print">
+            <Search size={15} className="search-icon" />
+            <input
+              type="text"
+              placeholder="Cari transaksi..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              style={{ paddingLeft: '32px', width: '200px' }}
             />
           </div>
-          <select 
-            className="form-input" 
-            style={{ width: 'auto', padding: '6px 12px', height: '36px', minWidth: '130px' }}
-            value={filterPeriod} 
-            onChange={(e) => setFilterPeriod(e.target.value)}
-          >
-            <option value="day">Hari Ini</option>
-            <option value="week">Minggu Ini</option>
-            <option value="month">Bulan Ini</option>
-            <option value="year">Tahun Ini</option>
-            <option value="all">Semua Waktu</option>
-          </select>
-          <button className="btn-secondary" onClick={handleExportExcel} title="Export ke Excel" style={{ display: 'flex', alignItems: 'center', gap: '6px', height: '36px', padding: '0 12px' }}>
-            <Download size={16} /> <span className="hide-on-mobile">Export Excel</span>
-          </button>
-          <button className="btn-primary" onClick={() => setIsModalOpen(true)} style={{ height: '36px' }}>
-            <Plus size={18} /> <span className="hide-on-mobile">Catat Transaksi</span>
-          </button>
-        </div>
-      </header>
 
-      {/* Charts Section */}
-      <div className="finance-charts-grid hide-on-print" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px', marginBottom: '20px' }}>
-        <div className="finance-chart-card glass-panel" style={{ padding: '20px' }}>
-          <h3 style={{ fontSize: '15px', color: 'var(--text-secondary)', marginBottom: '15px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <TrendingUp size={16} color="var(--accent-cyan)" /> Tren Arus Kas
-          </h3>
-          <ResponsiveContainer width="100%" height={250}>
-            <LineChart data={lineChartData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
-              <XAxis dataKey="date" stroke="var(--text-muted)" fontSize={12} tickMargin={10} axisLine={false} tickLine={false} />
-              <YAxis stroke="var(--text-muted)" fontSize={12} tickFormatter={(val) => `Rp${val/1000}k`} axisLine={false} tickLine={false} />
-              <RechartsTooltip contentStyle={{backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border-light)', borderRadius: '8px', color: '#fff'}} itemStyle={{color: '#fff'}} />
-              <Line type="monotone" dataKey="Pemasukan" stroke="var(--accent-cyan)" strokeWidth={3} dot={{r: 4, fill: 'var(--bg-dark)', strokeWidth: 2}} activeDot={{r: 6}} />
-              <Line type="monotone" dataKey="Pengeluaran" stroke="var(--accent-pink)" strokeWidth={3} dot={{r: 4, fill: 'var(--bg-dark)', strokeWidth: 2}} activeDot={{r: 6}} />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
-        
-        <div className="finance-chart-card glass-panel" style={{ padding: '20px' }}>
-          <h3 style={{ fontSize: '15px', color: 'var(--text-secondary)', marginBottom: '15px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <TrendingDown size={16} color="var(--accent-pink)" /> Pengeluaran per Kategori
-          </h3>
-          {pieChartData.length > 0 ? (
-            <ResponsiveContainer width="100%" height={250}>
-              <PieChart>
-                <Pie data={pieChartData} cx="50%" cy="50%" innerRadius={60} outerRadius={80} paddingAngle={5} dataKey="value">
-                  {pieChartData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} stroke="transparent" />
-                  ))}
-                </Pie>
-                <RechartsTooltip 
-                  formatter={(value) => formatCurrency(value)}
-                  contentStyle={{backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border-light)', borderRadius: '8px'}} 
-                />
-              </PieChart>
-            </ResponsiveContainer>
-          ) : (
-            <div style={{ height: '250px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)' }}>
-              Belum ada pengeluaran
-            </div>
-          )}
+          {/* Export */}
+          <button className="btn-export hide-on-print" onClick={handleExportExcel} title="Export ke Excel (.xlsx)">
+            <Download size={15} />
+            <span className="hide-on-mobile">Export Excel</span>
+          </button>
+
+          {/* Add */}
+          <button className="btn-add hide-on-print" onClick={() => setIsModalOpen(true)}>
+            <Plus size={16} />
+            <span className="hide-on-mobile">Catat Transaksi</span>
+          </button>
         </div>
       </div>
 
-      {/* Stats Cards */}
+      {/* ── Stats Cards ── */}
       <div className="finance-stats">
         <div className="finance-stat-card primary">
-          <div className="stat-icon"><Wallet size={24} /></div>
+          <div className="stat-icon"><Wallet size={22} /></div>
           <div className="stat-data">
             <span className="stat-label">Total Saldo Bersih</span>
             <span className="stat-value">{formatCurrency(totalBalance)}</span>
           </div>
         </div>
         <div className="finance-stat-card income">
-          <div className="stat-icon"><TrendingUp size={24} /></div>
+          <div className="stat-icon"><TrendingUp size={22} /></div>
           <div className="stat-data">
-            <span className="stat-label">Pemasukan ({periodLabel})</span>
+            <span className="stat-label">Pemasukan · {periodLabel}</span>
             <span className="stat-value">{formatCurrency(totalIncomeFiltered)}</span>
           </div>
         </div>
         <div className="finance-stat-card expense">
-          <div className="stat-icon"><TrendingDown size={24} /></div>
+          <div className="stat-icon"><TrendingDown size={22} /></div>
           <div className="stat-data">
-            <span className="stat-label">Pengeluaran ({periodLabel})</span>
+            <span className="stat-label">Pengeluaran · {periodLabel}</span>
             <span className="stat-value">{formatCurrency(totalExpenseFiltered)}</span>
           </div>
         </div>
       </div>
 
-      {/* Ledger Table */}
-      <div className="finance-content glass-panel">
-        <div className="finance-page table-responsive hide-on-mobile" style={{flex: 1, overflow: 'auto'}}>
+      {/* ── Charts ── */}
+      <div className="finance-charts-grid hide-on-print">
+        {/* Line Chart */}
+        <div className="finance-chart-card">
+          <div className="chart-card-header">
+            <TrendingUp size={15} color="var(--accent-cyan)" />
+            <h3>Tren Arus Kas</h3>
+          </div>
+          <ResponsiveContainer width="100%" height={220}>
+            <LineChart data={lineChartData} margin={{ top: 4, right: 8, left: 0, bottom: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" vertical={false} />
+              <XAxis dataKey="date" stroke="var(--text-muted)" fontSize={11} tickMargin={8} axisLine={false} tickLine={false} />
+              <YAxis stroke="var(--text-muted)" fontSize={11} tickFormatter={(v) => `${v/1000}k`} axisLine={false} tickLine={false} width={40} />
+              <RechartsTooltip
+                formatter={(v) => formatCurrency(v)}
+                contentStyle={{ backgroundColor: '#1a1a2e', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', color: '#fff', fontSize: '0.82rem' }}
+                itemStyle={{ color: '#fff' }}
+              />
+              <Line type="monotone" dataKey="Pemasukan" stroke="#00f0ff" strokeWidth={2.5} dot={{ r: 3, fill: '#0d0d1a', strokeWidth: 2 }} activeDot={{ r: 5 }} />
+              <Line type="monotone" dataKey="Pengeluaran" stroke="#ff2a5f" strokeWidth={2.5} dot={{ r: 3, fill: '#0d0d1a', strokeWidth: 2 }} activeDot={{ r: 5 }} />
+            </LineChart>
+          </ResponsiveContainer>
+          <div className="chart-legend">
+            <span className="legend-item"><span className="legend-dot" style={{ background: '#00f0ff' }} />Pemasukan</span>
+            <span className="legend-item"><span className="legend-dot" style={{ background: '#ff2a5f' }} />Pengeluaran</span>
+          </div>
+        </div>
+
+        {/* Pie Chart */}
+        <div className="finance-chart-card">
+          <div className="chart-card-header">
+            <TrendingDown size={15} color="var(--accent-pink)" />
+            <h3>Pengeluaran per Kategori</h3>
+          </div>
+          {pieChartData.length > 0 ? (
+            <>
+              <ResponsiveContainer width="100%" height={160}>
+                <PieChart>
+                  <Pie data={pieChartData} cx="50%" cy="50%" innerRadius={48} outerRadius={70} paddingAngle={4} dataKey="value">
+                    {pieChartData.map((_, i) => (
+                      <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} stroke="transparent" />
+                    ))}
+                  </Pie>
+                  <RechartsTooltip
+                    formatter={(v) => formatCurrency(v)}
+                    contentStyle={{ backgroundColor: '#1a1a2e', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', fontSize: '0.8rem' }}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+              <div className="pie-legend-list">
+                {pieChartData.map((item, i) => (
+                  <div key={item.name} className="pie-legend-item">
+                    <div className="pie-legend-left">
+                      <span className="pie-legend-dot" style={{ background: PIE_COLORS[i % PIE_COLORS.length] }} />
+                      <span className="pie-legend-name">{item.name}</span>
+                    </div>
+                    <span className="pie-legend-val">{formatCurrency(item.value)}</span>
+                  </div>
+                ))}
+              </div>
+            </>
+          ) : (
+            <div style={{ height: '200px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
+              Belum ada pengeluaran
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* ── Ledger Table ── */}
+      <div className="finance-content">
+        {/* Table Header Bar */}
+        <div className="finance-table-header">
+          <span className="finance-table-title">Riwayat Transaksi</span>
+          <span className="finance-table-count">{filteredData.length} transaksi</span>
+        </div>
+
+        {/* Desktop Table */}
+        <div className="table-responsive hide-on-mobile" style={{ flex: 1, overflow: 'auto' }}>
           <table className="finance-table">
             <thead>
               <tr>
                 <th>Tanggal</th>
                 <th>Kategori</th>
                 <th>Keterangan</th>
-                <th className="col-money">Kas Masuk (Debit)</th>
-                <th className="col-money">Kas Keluar (Kredit)</th>
-                <th className="col-money">Saldo Berjalan</th>
-                <th className="action-col">Aksi</th>
+                <th className="col-money">Kas Masuk</th>
+                <th className="col-money">Kas Keluar</th>
+                <th className="col-money">Saldo</th>
+                <th className="action-col"></th>
               </tr>
             </thead>
             <tbody>
               {filteredData.length === 0 ? (
-                <tr><td colSpan="7" className="empty-state">Tidak ada catatan transaksi untuk periode ini.</td></tr>
+                <tr>
+                  <td colSpan="7" className="empty-state">Tidak ada catatan transaksi untuk periode ini.</td>
+                </tr>
               ) : (
                 filteredData.map(entry => (
                   <tr key={entry.id}>
@@ -401,32 +594,23 @@ const FinancePage = () => {
                     </td>
                     <td className="desc-cell">{entry.description}</td>
                     <td className="col-money text-income">
-                      {entry.type === 'income' ? formatCurrency(entry.amount) : '-'}
+                      {entry.type === 'income' ? formatCurrency(entry.amount) : '—'}
                     </td>
                     <td className="col-money text-expense">
-                      {entry.type === 'expense' ? formatCurrency(entry.amount) : '-'}
+                      {entry.type === 'expense' ? formatCurrency(entry.amount) : '—'}
                     </td>
-                    <td className="col-money fw-bold">
-                      {formatCurrency(entry.balance)}
-                    </td>
-                    <td className="action-col" style={{ display: 'flex', gap: '8px' }}>
-                      <button 
-                        className="icon-btn" 
-                        onClick={() => handlePrint(entry)}
-                        title="Cetak Kwitansi"
-                        style={{ color: 'var(--text-secondary)' }}
-                      >
-                        <Printer size={15} />
-                      </button>
-                      {entry.isManual && (
-                        <button 
-                          className="icon-btn delete" 
-                          onClick={() => deleteTransaction(entry.id)}
-                          title="Hapus Transaksi"
-                        >
-                          <Trash2 size={15} />
+                    <td className="col-money fw-bold">{formatCurrency(entry.balance)}</td>
+                    <td className="action-col">
+                      <div className="action-cell">
+                        <button className="icon-btn print-btn" onClick={() => handlePrint(entry)} title="Cetak Kwitansi">
+                          <Printer size={14} />
                         </button>
-                      )}
+                        {entry.isManual && (
+                          <button className="icon-btn delete" onClick={() => deleteTransaction(entry.id)} title="Hapus">
+                            <Trash2 size={14} />
+                          </button>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))
@@ -435,10 +619,10 @@ const FinancePage = () => {
           </table>
         </div>
 
-        {/* Mobile Ledger Cards */}
+        {/* Mobile Cards */}
         <div className="mobile-ledger-list show-on-mobile">
           {filteredData.length === 0 ? (
-            <div className="empty-state" style={{padding: '32px', textAlign: 'center', color: 'var(--text-muted)'}}>
+            <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-muted)' }}>
               Tidak ada catatan transaksi untuk periode ini.
             </div>
           ) : filteredData.map(entry => (
@@ -452,17 +636,12 @@ const FinancePage = () => {
               </div>
               <div className="mobile-ledger-right">
                 <span className={`mobile-ledger-amount ${entry.type}`}>
-                  {entry.type === 'income' ? '+' : '-'}{formatCurrency(entry.amount)}
+                  {entry.type === 'income' ? '+' : '−'}{formatCurrency(entry.amount)}
                 </span>
                 <span className="mobile-ledger-balance">Saldo: {formatCurrency(entry.balance)}</span>
               </div>
               {entry.isManual && (
-                <button 
-                  className="icon-btn delete" 
-                  onClick={() => deleteTransaction(entry.id)}
-                  title="Hapus"
-                  style={{ width: 28, height: 28, flexShrink: 0 }}
-                >
+                <button className="icon-btn delete" onClick={() => deleteTransaction(entry.id)} title="Hapus" style={{ width: 28, height: 28, flexShrink: 0 }}>
                   <Trash2 size={13} />
                 </button>
               )}
