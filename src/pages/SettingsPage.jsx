@@ -19,7 +19,8 @@ const SettingsPage = () => {
     studioAddress: '',
     studioPhone: '',
     pricePerHour: 0,
-    durationDiscounts: []
+    durationDiscounts: [],
+    recordingSessions: []
   });
 
   const [saveStatus, setSaveStatus] = useState('idle'); // 'idle' | 'saving' | 'saved' | 'error'
@@ -28,6 +29,11 @@ const SettingsPage = () => {
   // Duration Discount states
   const [newDiscountHours, setNewDiscountHours] = useState('');
   const [newDiscountAmount, setNewDiscountAmount] = useState('');
+
+  // Recording Session states
+  const [newRecSessionName, setNewRecSessionName] = useState('');
+  const [newRecSessionHours, setNewRecSessionHours] = useState('');
+  const [newRecSessionPrice, setNewRecSessionPrice] = useState('');
 
   const [notifPermission, setNotifPermission] = useState(
     'Notification' in window ? Notification.permission : 'unsupported'
@@ -49,9 +55,10 @@ const SettingsPage = () => {
       studioAddress: storeSettings.studioAddress,
       studioPhone: storeSettings.studioPhone,
       pricePerHour: storeSettings.pricePerHour,
-      durationDiscounts: storeSettings.durationDiscounts || []
+      durationDiscounts: storeSettings.durationDiscounts || [],
+      recordingSessions: storeSettings.recordingSessions || []
     });
-  }, [storeSettings.studioName, storeSettings.studioAddress, storeSettings.studioPhone, storeSettings.pricePerHour, storeSettings.durationDiscounts]);
+  }, [storeSettings.studioName, storeSettings.studioAddress, storeSettings.studioPhone, storeSettings.pricePerHour, storeSettings.durationDiscounts, storeSettings.recordingSessions]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -62,7 +69,7 @@ const SettingsPage = () => {
     if (saveStatus === 'saved') setSaveStatus('idle');
   };
 
-  const handleAddDiscount = () => {
+  const handleAddDiscount = async () => {
     const hours = parseInt(newDiscountHours);
     const amount = parseInt(newDiscountAmount);
     
@@ -77,25 +84,46 @@ const SettingsPage = () => {
       discountAmount: amount
     };
 
-    setFormData(prev => {
-      // Avoid duplicate hours by removing existing one first if any, or just add
-      const filtered = prev.durationDiscounts.filter(d => d.hours !== hours);
-      return {
-        ...prev,
-        durationDiscounts: [...filtered, newDiscount].sort((a, b) => a.hours - b.hours)
-      };
-    });
+    const filtered = formData.durationDiscounts.filter(d => d.hours !== hours);
+    const newData = {
+      ...formData,
+      durationDiscounts: [...filtered, newDiscount].sort((a, b) => a.hours - b.hours)
+    };
+
+    setFormData(newData);
     setNewDiscountHours('');
     setNewDiscountAmount('');
-    if (saveStatus === 'saved') setSaveStatus('idle');
+    
+    // Auto-save ke database agar tidak hilang saat di-refresh
+    setSaveStatus('saving');
+    try {
+      await storeSettings.updateSettings(newData);
+      setSaveStatus('saved');
+      setTimeout(() => setSaveStatus('idle'), 3000);
+    } catch {
+      setSaveStatus('error');
+      setTimeout(() => setSaveStatus('idle'), 3000);
+    }
   };
 
-  const handleRemoveDiscount = (id) => {
-    setFormData(prev => ({
-      ...prev,
-      durationDiscounts: prev.durationDiscounts.filter(d => d.id !== id)
-    }));
-    if (saveStatus === 'saved') setSaveStatus('idle');
+  const handleRemoveDiscount = async (id) => {
+    const newData = {
+      ...formData,
+      durationDiscounts: formData.durationDiscounts.filter(d => d.id !== id)
+    };
+    
+    setFormData(newData);
+
+    // Auto-save saat menghapus diskon
+    setSaveStatus('saving');
+    try {
+      await storeSettings.updateSettings(newData);
+      setSaveStatus('saved');
+      setTimeout(() => setSaveStatus('idle'), 3000);
+    } catch {
+      setSaveStatus('error');
+      setTimeout(() => setSaveStatus('idle'), 3000);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -103,6 +131,62 @@ const SettingsPage = () => {
     setSaveStatus('saving');
     try {
       await storeSettings.updateSettings(formData);
+      setSaveStatus('saved');
+      setTimeout(() => setSaveStatus('idle'), 3000);
+    } catch {
+      setSaveStatus('error');
+      setTimeout(() => setSaveStatus('idle'), 3000);
+    }
+  };
+
+  const handleAddRecordingSession = async () => {
+    const hours = parseInt(newRecSessionHours);
+    const price = parseInt(newRecSessionPrice);
+    
+    if (!newRecSessionName || isNaN(hours) || hours <= 0 || isNaN(price) || price < 0) {
+      alert("Masukkan nama sesi, durasi jam, dan harga yang valid.");
+      return;
+    }
+
+    const newSession = {
+      id: crypto.randomUUID(),
+      name: newRecSessionName,
+      hours,
+      price
+    };
+
+    const newData = {
+      ...formData,
+      recordingSessions: [...formData.recordingSessions, newSession].sort((a, b) => a.hours - b.hours)
+    };
+
+    setFormData(newData);
+    setNewRecSessionName('');
+    setNewRecSessionHours('');
+    setNewRecSessionPrice('');
+    
+    setSaveStatus('saving');
+    try {
+      await storeSettings.updateSettings(newData);
+      setSaveStatus('saved');
+      setTimeout(() => setSaveStatus('idle'), 3000);
+    } catch {
+      setSaveStatus('error');
+      setTimeout(() => setSaveStatus('idle'), 3000);
+    }
+  };
+
+  const handleRemoveRecordingSession = async (id) => {
+    const newData = {
+      ...formData,
+      recordingSessions: formData.recordingSessions.filter(s => s.id !== id)
+    };
+    
+    setFormData(newData);
+
+    setSaveStatus('saving');
+    try {
+      await storeSettings.updateSettings(newData);
       setSaveStatus('saved');
       setTimeout(() => setSaveStatus('idle'), 3000);
     } catch {
@@ -413,6 +497,70 @@ const SettingsPage = () => {
                   ) : (
                     <div className="duration-discount-empty">
                       Belum ada aturan diskon durasi.
+                    </div>
+                  )}
+                </div>
+
+                {/* Recording Sessions UI */}
+                <div className="duration-discount-section mt-4">
+                  <h4 className="duration-discount-title">Paket Sesi Recording</h4>
+                  <p className="duration-discount-desc">Tentukan paket kustom untuk sesi recording. Harga paket bersifat tetap dan tidak menggunakan perhitungan tarif per jam.</p>
+                  
+                  <div className="duration-discount-form" style={{ gridTemplateColumns: '1fr 80px 120px 100px' }}>
+                    <div className="dd-input-group">
+                      <label>Nama Paket</label>
+                      <input 
+                        type="text" 
+                        value={newRecSessionName} 
+                        onChange={e => setNewRecSessionName(e.target.value)} 
+                        placeholder="Cth: Sesi 6 Jam" 
+                        className="settings-input"
+                      />
+                    </div>
+                    <div className="dd-input-group">
+                      <label>Durasi (Jam)</label>
+                      <input 
+                        type="number" 
+                        min="1" 
+                        value={newRecSessionHours} 
+                        onChange={e => setNewRecSessionHours(e.target.value)} 
+                        placeholder="6" 
+                        className="settings-input"
+                      />
+                    </div>
+                    <div className="dd-input-group">
+                      <label>Harga Paket (Rp)</label>
+                      <input 
+                        type="number" 
+                        min="0" 
+                        value={newRecSessionPrice} 
+                        onChange={e => setNewRecSessionPrice(e.target.value)} 
+                        placeholder="600000" 
+                        className="settings-input"
+                      />
+                    </div>
+                    <button type="button" className="btn-add-discount" onClick={handleAddRecordingSession}>
+                      + Tambah
+                    </button>
+                  </div>
+
+                  {formData.recordingSessions && formData.recordingSessions.length > 0 ? (
+                    <div className="duration-discount-list">
+                      {formData.recordingSessions.map(s => (
+                        <div key={s.id} className="duration-discount-item">
+                          <div className="dd-item-info">
+                            <span className="dd-item-hours">{s.name} ({s.hours} Jam)</span>
+                            <span className="dd-item-amount">{formatCurrency(s.price)}</span>
+                          </div>
+                          <button type="button" className="btn-remove-discount" onClick={() => handleRemoveRecordingSession(s.id)} title="Hapus">
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="duration-discount-empty">
+                      Belum ada paket sesi recording.
                     </div>
                   )}
                 </div>

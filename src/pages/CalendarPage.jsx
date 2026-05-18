@@ -315,7 +315,10 @@ const CalendarPage = () => {
       {/* Booking Detail — Bottom Sheet on mobile, Popup on desktop */}
       {selectedBooking && (() => {
         const b = bookings.find(x => x.id === selectedBooking.id) || selectedBooking;
-        const totalPrice = (b.duration * pricePerHour) - (b.discountAmount || 0);
+        const isRecording = b.type === 'recording';
+        const basePrice = isRecording ? (b.sessionPrice || 0) : (b.duration * pricePerHour);
+        const totalPrice = basePrice - (b.discountAmount || 0);
+        
         return (
           <>
             {isMobile && <div className="detail-overlay" onClick={() => setSelectedBooking(null)} />}
@@ -328,7 +331,7 @@ const CalendarPage = () => {
               <div className="detail-header">
                 <div className="detail-header-info">
                   <span className={`detail-status-dot status-${b.status}`} />
-                  <h4>{b.band}</h4>
+                  <h4>{b.band} {isRecording && <span style={{fontSize:'0.7rem', background:'var(--accent-cyan)', color:'#000', padding:'2px 6px', borderRadius:'4px', marginLeft:'6px'}}>Recording</span>}</h4>
                 </div>
                 <div className="detail-header-actions">
                   <span className={`detail-status-badge status-${b.status}`}>{getStatusLabel(b.status)}</span>
@@ -342,9 +345,14 @@ const CalendarPage = () => {
                   <Clock size={14} />
                   <div className="detail-info-content">
                     <span>{b.date} • {b.hour}.00 – {b.hour + b.duration}.00 WIB</span>
-                    <div className="duration-controls">
-                      <button className="dur-btn" onClick={() => updateBooking(b.id, { duration: Math.max(1, b.duration - 1) })} disabled={b.duration <= 1}>−</button>
-                      <span className="dur-label">{b.duration} jam</span>
+                    {isRecording ? (
+                      <div className="duration-controls" style={{ opacity: 0.8 }}>
+                        <span className="dur-label">Paket Sesi ({b.duration} jam)</span>
+                      </div>
+                    ) : (
+                      <div className="duration-controls">
+                        <button className="dur-btn" onClick={() => updateBooking(b.id, { duration: Math.max(1, b.duration - 1) })} disabled={b.duration <= 1}>−</button>
+                        <span className="dur-label">{b.duration} jam</span>
                       <button className="dur-btn" onClick={() => {
                         const newDur = Math.min(12, b.duration + 1);
                         if (newDur > b.duration) {
@@ -353,7 +361,8 @@ const CalendarPage = () => {
                           updateBooking(b.id, { duration: newDur });
                         }
                       }}>+</button>
-                    </div>
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -371,8 +380,8 @@ const CalendarPage = () => {
                 {b.status !== 'maintenance' && (
                   <div className="detail-price-card">
                     <div className="detail-price-row">
-                      <span>Subtotal ({b.duration} jam)</span>
-                      <span>{formatCurrency(b.duration * pricePerHour)}</span>
+                      <span>Subtotal {isRecording ? '(Sesi Recording)' : `(${b.duration} jam)`}</span>
+                      <span>{formatCurrency(basePrice)}</span>
                     </div>
                     {(b.discountAmount || 0) > 0 && (
                       <div className="detail-price-row discount">
