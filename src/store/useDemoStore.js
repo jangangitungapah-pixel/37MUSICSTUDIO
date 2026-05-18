@@ -54,9 +54,23 @@ function buildDemoBookings() {
 
       for (let b = 0; b < count; b++) {
         let hour, duration, ok = false, tries = 0;
+        let type = 'latihan', sessionPrice = 0, sessionId = '';
+
         while (!ok && tries < 25) {
           hour = Math.floor(rand() * 11) + 10;  // 10–20
-          duration = Math.floor(rand() * 4) + 2; // 2–5
+          
+          const isRec = rand() < 0.2;
+          if (isRec) {
+            type = 'recording';
+            if (rand() < 0.5) { duration = 6; sessionId = 'demo-sesi-1'; sessionPrice = 450000; }
+            else { duration = 3; sessionId = 'demo-sesi-2'; sessionPrice = 250000; }
+          } else {
+            type = 'latihan';
+            duration = Math.floor(rand() * 4) + 2; // 2–5
+            sessionPrice = 0;
+            sessionId = '';
+          }
+
           ok = !slots.some(s => s.h < hour + duration && hour < s.h + s.d);
           tries++;
         }
@@ -74,12 +88,13 @@ function buildDemoBookings() {
         } else {
           status = r < 0.25 ? 'confirmed' : r < 0.55 ? 'dp' : 'pending';
         }
+        const basePrice = type === 'recording' ? sessionPrice : (duration * PRICE_PER_HOUR);
         const dpAmount = status === 'dp'
-          ? Math.round(duration * PRICE_PER_HOUR * 0.5) : 0;
-        const discountAmount = band.isVIP
-          ? Math.round(duration * PRICE_PER_HOUR * 0.1) : 0;
+          ? Math.round(basePrice * 0.5) : 0;
+        const discountAmount = (band.isVIP && type === 'latihan')
+          ? Math.round(basePrice * 0.1) : 0;
 
-        result.push({ id, band: band.name, phone: band.phone, date: dateStr, hour, duration, status, dpAmount, discountAmount, note: '' });
+        result.push({ id, type, sessionId, sessionPrice, band: band.name, phone: band.phone, date: dateStr, hour, duration, status, dpAmount, discountAmount, note: '' });
         id++;
       }
     }
@@ -94,7 +109,8 @@ function buildDemoCustomers(bookings) {
     const bks = bookings.filter(b => b.band === band.name);
     const totalHours = bks.reduce((s, b) => s + b.duration, 0);
     const totalSpent = bks.reduce((s, b) => {
-      if (b.status === 'confirmed') return s + (b.duration * PRICE_PER_HOUR) - (b.discountAmount || 0);
+      const base = b.type === 'recording' ? (b.sessionPrice || 0) : (b.duration * PRICE_PER_HOUR);
+      if (b.status === 'confirmed') return s + base - (b.discountAmount || 0);
       if (b.status === 'dp') return s + (b.dpAmount || 0);
       return s;
     }, 0);
@@ -134,26 +150,58 @@ const DEMO_INVENTORY_LIST = [
   { id: 1700000300012, name: 'DI Box Behringer', category: 'Accessories', brand: 'Behringer', qty: 3, condition: 'Broken', lastServiced: '2025-12-01', nextService: '2026-01-01', notes: 'Perlu penggantian unit baru' },
 ];
 
-// ─── Monthly Operational Expenses (Jan–May 2026) ───
+// ─── Monthly Operational Expenses (Full Year 2026) ───
 function buildDemoTransactions() {
   const txs = [];
   let id = 1700000400001;
-  const monthExpenses = [
-    { cat: 'Listrik / Air',  desc: 'Tagihan PLN & PDAM',                    amount: 850000 },
-    { cat: 'Gaji',            desc: 'Gaji teknisi & staf studio',             amount: 3500000 },
-    { cat: 'Operasional',     desc: 'Perlengkapan kebersihan & operasional',  amount: 320000 },
-    { cat: 'Listrik / Air',   desc: 'Tagihan internet Indihome',              amount: 450000 },
-    { cat: 'Perawatan',       desc: 'Servis rutin peralatan studio',          amount: 650000 },
-  ];
-  for (let m = 0; m < 5; m++) {   // Jan–May
+  const rand = makeSeedRand(20260404);
+  
+  for (let m = 0; m < 12; m++) {   // Jan–Dec
     const mm = String(m + 1).padStart(2, '0');
-    monthExpenses.forEach((exp, ei) => {
-      const dd = String(Math.min(28, (ei + 1) * 5)).padStart(2, '0');
-      txs.push({ id, date: `2026-${mm}-${dd}`, type: 'expense', category: exp.cat, amount: exp.amount, description: `${exp.desc} — ${m + 1}/2026`, isManual: true });
-      id++;
-    });
+    
+    // Fixed / Semi-fixed monthly expenses
+    const baseListrik = 800000 + (rand() * 200000); // 800k - 1m
+    const baseGaji = 3500000;
+    const baseInternet = 450000;
+    const baseCicilan = 1250000;
+    
+    // 1. Tagihan Listrik (around 5th of month)
+    txs.push({ id: id++, date: `2026-${mm}-05`, type: 'expense', category: 'Listrik / Air', amount: Math.round(baseListrik/1000)*1000, description: `Tagihan PLN & PDAM`, isManual: true });
+    
+    // 2. Internet (around 10th)
+    txs.push({ id: id++, date: `2026-${mm}-10`, type: 'expense', category: 'Listrik / Air', amount: baseInternet, description: `Tagihan Internet Indihome`, isManual: true });
+    
+    // 3. Cicilan Alat (around 15th)
+    txs.push({ id: id++, date: `2026-${mm}-15`, type: 'expense', category: 'Alat Baru', amount: baseCicilan, description: `Cicilan alat musik & perlengkapan`, isManual: true });
+    
+    // 4. Gaji Karyawan (around 28th)
+    txs.push({ id: id++, date: `2026-${mm}-28`, type: 'expense', category: 'Gaji', amount: baseGaji, description: `Gaji teknisi & staf studio`, isManual: true });
+
+    // Variable expenses (Random amounts and days)
+    // Operasional (Air minum, kebersihan)
+    if (rand() > 0.2) {
+       const opAmt = 150000 + (rand() * 200000);
+       const opDay = String(Math.floor(rand() * 25) + 1).padStart(2, '0');
+       txs.push({ id: id++, date: `2026-${mm}-${opDay}`, type: 'expense', category: 'Operasional', amount: Math.round(opAmt/1000)*1000, description: `Perlengkapan kebersihan & air minum`, isManual: true });
+    }
+
+    // Perawatan (Servis, beli senar/stick)
+    if (rand() > 0.4) {
+       const pAmt = 200000 + (rand() * 400000);
+       const pDay = String(Math.floor(rand() * 25) + 1).padStart(2, '0');
+       txs.push({ id: id++, date: `2026-${mm}-${pDay}`, type: 'expense', category: 'Perawatan', amount: Math.round(pAmt/1000)*1000, description: rand() > 0.5 ? `Beli senar gitar & stick drum` : `Servis ampli / AC`, isManual: true });
+    }
+
+    // Lainnya (Lain-lain)
+    if (rand() > 0.7) {
+       const lAmt = 50000 + (rand() * 150000);
+       const lDay = String(Math.floor(rand() * 25) + 1).padStart(2, '0');
+       txs.push({ id: id++, date: `2026-${mm}-${lDay}`, type: 'expense', category: 'Lainnya', amount: Math.round(lAmt/1000)*1000, description: `Konsumsi lembur / tak terduga`, isManual: true });
+    }
   }
-  return txs;
+  
+  // Sort transactions chronologically
+  return txs.sort((a, b) => a.date.localeCompare(b.date) || a.id - b.id);
 }
 
 // ─── Pre-build all demo data (runs once at import) ───

@@ -5,12 +5,12 @@ import { useCustomerStore } from '../store/useCustomerStore';
 import { useTourStore } from '../store/useTourStore';
 import { useNotificationStore } from '../store/useNotificationStore';
 import { format } from 'date-fns';
-import { Music2, Wrench, User, Phone, Calendar, Clock, DollarSign, StickyNote, Star, AlertCircle } from 'lucide-react';
+import { Music2, Mic, Wrench, User, Phone, Calendar, Clock, DollarSign, StickyNote, Star, AlertCircle } from 'lucide-react';
 import './BookingForm.css';
 
 const BookingForm = ({ onClose, initialDate, initialHour }) => {
   const { bookings, addBooking } = useBookingStore();
-  const { pricePerHour, durationDiscounts = [] } = useSettingsStore();
+  const { pricePerHour, durationDiscounts = [], recordingSessions = [] } = useSettingsStore();
   const { customers, incrementBookingCount } = useCustomerStore();
   const { run, currentStep, nextStep } = useTourStore();
 
@@ -25,7 +25,9 @@ const BookingForm = ({ onClose, initialDate, initialHour }) => {
     duration: 2,
     status: 'pending',
     dpAmount: 0,
-    note: ''
+    note: '',
+    sessionId: recordingSessions.length > 0 ? recordingSessions[0].id : '',
+    sessionPrice: recordingSessions.length > 0 ? recordingSessions[0].price : 0
   });
 
   const handleChange = (e) => {
@@ -35,6 +37,15 @@ const BookingForm = ({ onClose, initialDate, initialHour }) => {
         ...prev,
         [name]: (name === 'hour' || name === 'duration' || name === 'dpAmount') ? Number(value) : value
       };
+      
+      if (name === 'sessionId') {
+        const session = recordingSessions.find(s => s.id === value);
+        if (session) {
+          newData.duration = session.hours;
+          newData.sessionPrice = session.price;
+        }
+      }
+
       if (name === 'band') {
         const found = customers.find(c => c.name.toLowerCase() === value.toLowerCase());
         if (found && !prev.phone) newData.phone = found.phone;
@@ -46,10 +57,11 @@ const BookingForm = ({ onClose, initialDate, initialHour }) => {
 
   const selectedCustomer = customers.find(c => c.name.toLowerCase() === formData.band.toLowerCase());
   const isVIP = selectedCustomer?.isVIP || false;
-  const basePrice = formData.duration * pricePerHour;
+  
+  const basePrice = formData.type === 'recording' ? formData.sessionPrice : (formData.duration * pricePerHour);
   
   // Calculate Duration Discount
-  const applicableDiscount = durationDiscounts
+  const applicableDiscount = formData.type === 'recording' ? null : durationDiscounts
     .filter(d => formData.duration >= d.hours)
     .sort((a, b) => b.discountAmount - a.discountAmount)[0];
   const durationDiscountAmount = applicableDiscount ? applicableDiscount.discountAmount : 0;
@@ -101,7 +113,26 @@ const BookingForm = ({ onClose, initialDate, initialHour }) => {
           onClick={() => setFormData(p => ({ ...p, type: 'booking', band: '' }))}
         >
           <Music2 size={16} />
-          Sewa Studio
+          Latihan
+        </button>
+        <button
+          type="button"
+          className={`bf-type-btn ${formData.type === 'recording' ? 'active recording' : ''}`}
+          style={formData.type === 'recording' ? { background: 'rgba(255, 152, 0, 0.15)', color: '#FF9800', borderColor: 'rgba(255, 152, 0, 0.3)' } : {}}
+          onClick={() => {
+            const defaultSession = recordingSessions.length > 0 ? recordingSessions[0] : null;
+            setFormData(p => ({ 
+              ...p, 
+              type: 'recording', 
+              band: '',
+              sessionId: defaultSession ? defaultSession.id : '',
+              sessionPrice: defaultSession ? defaultSession.price : 0,
+              duration: defaultSession ? defaultSession.hours : 6
+            }));
+          }}
+        >
+          <Mic size={16} />
+          Recording
         </button>
         <button
           type="button"
@@ -117,12 +148,12 @@ const BookingForm = ({ onClose, initialDate, initialHour }) => {
       <div className="bf-section">
         <div className="bf-section-title">
           <User size={13} />
-          {formData.type === 'booking' ? 'Identitas Penyewa' : 'Keterangan Blokir'}
+          {formData.type === 'maintenance' ? 'Keterangan Blokir' : 'Identitas Penyewa'}
         </div>
         <div className="bf-row">
           <div className="bf-field">
             <label className="bf-label">
-              {formData.type === 'booking' ? 'Nama Band / Penyewa' : 'Judul Blokir'}
+              {formData.type === 'maintenance' ? 'Judul Blokir' : 'Nama Band / Penyewa'}
               <span className="bf-required">*</span>
             </label>
             <div className="bf-input-wrap">
@@ -132,7 +163,7 @@ const BookingForm = ({ onClose, initialDate, initialHour }) => {
                 list="customer-list"
                 value={formData.band}
                 onChange={handleChange}
-                placeholder={formData.type === 'booking' ? 'contoh: The Rockers' : 'contoh: Perbaikan Drum'}
+                placeholder={formData.type === 'maintenance' ? 'contoh: Perbaikan Drum' : 'contoh: The Rockers'}
                 required
                 className="bf-input tour-input-band"
                 autoFocus
@@ -142,14 +173,14 @@ const BookingForm = ({ onClose, initialDate, initialHour }) => {
                 <span className="bf-vip-badge"><Star size={11} /> VIP</span>
               )}
             </div>
-            {formData.type === 'booking' && (
+            {formData.type !== 'maintenance' && (
               <datalist id="customer-list">
                 {customers.map(c => <option key={c.id} value={c.name} />)}
               </datalist>
             )}
           </div>
 
-          {formData.type === 'booking' && (
+          {formData.type !== 'maintenance' && (
             <div className="bf-field">
               <label className="bf-label"><Phone size={12} /> No. HP / WhatsApp</label>
               <input
@@ -188,14 +219,30 @@ const BookingForm = ({ onClose, initialDate, initialHour }) => {
               ))}
             </select>
           </div>
-          <div className="bf-field">
-            <label className="bf-label">Durasi <span className="bf-required">*</span></label>
-            <div className="bf-duration-picker">
-              <button type="button" className="bf-dur-btn" onClick={() => setFormData(p => ({ ...p, duration: Math.max(1, p.duration - 1) }))} disabled={formData.duration <= 1}>−</button>
-              <span className="bf-dur-val">{formData.duration} <small>jam</small></span>
-              <button type="button" className="bf-dur-btn" onClick={() => setFormData(p => ({ ...p, duration: Math.min(12, p.duration + 1) }))} disabled={formData.duration >= 12}>+</button>
+          
+          {formData.type === 'recording' ? (
+            <div className="bf-field" style={{ flex: 1.5 }}>
+              <label className="bf-label">Paket Sesi <span className="bf-required">*</span></label>
+              <select name="sessionId" value={formData.sessionId} onChange={handleChange} className="bf-input" required>
+                {recordingSessions.length === 0 ? (
+                   <option value="">Belum ada sesi diatur</option>
+                ) : (
+                   recordingSessions.map(s => (
+                     <option key={s.id} value={s.id}>{s.name} ({s.hours} Jam)</option>
+                   ))
+                )}
+              </select>
             </div>
-          </div>
+          ) : (
+            <div className="bf-field">
+              <label className="bf-label">Durasi <span className="bf-required">*</span></label>
+              <div className="bf-duration-picker">
+                <button type="button" className="bf-dur-btn" onClick={() => setFormData(p => ({ ...p, duration: Math.max(1, p.duration - 1) }))} disabled={formData.duration <= 1}>−</button>
+                <span className="bf-dur-val">{formData.duration} <small>jam</small></span>
+                <button type="button" className="bf-dur-btn" onClick={() => setFormData(p => ({ ...p, duration: Math.min(12, p.duration + 1) }))} disabled={formData.duration >= 12}>+</button>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Time Preview */}
@@ -208,7 +255,7 @@ const BookingForm = ({ onClose, initialDate, initialHour }) => {
       </div>
 
       {/* Section: Payment (booking only) */}
-      {formData.type === 'booking' && (
+      {formData.type !== 'maintenance' && (
         <div className="bf-section">
           <div className="bf-section-title"><DollarSign size={13} /> Pembayaran</div>
 
@@ -238,7 +285,7 @@ const BookingForm = ({ onClose, initialDate, initialHour }) => {
               </div>
             )}
             <div className="bf-price-row subtotal">
-              <span>Subtotal ({formData.duration} jam)</span>
+              <span>Subtotal {formData.type === 'recording' ? '(Paket Sesi)' : `(${formData.duration} jam)`}</span>
               <span>{formatCurrency(basePrice)}</span>
             </div>
             {(isVIP || durationDiscountAmount > 0) && (

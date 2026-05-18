@@ -17,6 +17,9 @@ export const useSettingsStore = create((set, get) => {
         studioPhone: '0812-3456-7890',
         pricePerHour: 120000,
         durationDiscounts: [],
+        recordingSessions: [
+          { id: 'default-6h', name: 'Sesi Recording 6 Jam', hours: 6, price: 600000 }
+        ],
       };
       setDoc(settingsRef, initialSettings);
       set({ ...initialSettings, isLoaded: true });
@@ -30,6 +33,7 @@ export const useSettingsStore = create((set, get) => {
     studioPhone: 'Memuat...',
     pricePerHour: 120000,
     durationDiscounts: [],
+    recordingSessions: [],
     
     updateSettings: async (newSettings) => {
       // Optimistic update

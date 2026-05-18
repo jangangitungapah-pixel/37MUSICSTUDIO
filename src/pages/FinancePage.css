@@ -512,3 +512,115 @@
     font-size: 0.82rem;
   }
 }
+
+/* ===== Additional Features Styles ===== */
+.search-bar {
+  position: relative;
+}
+
+.search-bar input {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-light);
+  color: var(--text-primary);
+  border-radius: 8px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.search-bar input:focus {
+  border-color: var(--accent-pink);
+}
+
+/* Print Receipt Styles */
+.print-receipt-container {
+  display: none;
+}
+
+@media print {
+  body {
+    background: white !important;
+    color: black !important;
+  }
+  
+  /* Hide all app UI except the receipt container */
+  #root > *:not(.app-container) {
+    display: none !important;
+  }
+  
+  .app-container > *:not(.main-content) {
+    display: none !important;
+  }
+  
+  .main-content {
+    padding: 0 !important;
+    background: white !important;
+  }
+  
+  .finance-page > *:not(.print-receipt-container) {
+    display: none !important;
+  }
+  
+  .hide-on-print {
+    display: none !important;
+  }
+
+  .print-receipt-container {
+    display: block !important;
+    width: 100%;
+    padding: 20px;
+  }
+  
+  .receipt {
+    width: 80mm; /* Standard thermal printer width */
+    margin: 0 auto;
+    font-family: monospace, 'Courier New', Courier;
+    color: black;
+    background: white;
+  }
+  
+  .receipt-title {
+    text-align: center;
+    font-size: 18px;
+    margin-bottom: 10px;
+    font-weight: bold;
+  }
+  
+  .receipt-header {
+    text-align: center;
+    font-size: 12px;
+    margin-bottom: 10px;
+  }
+  
+  .receipt-divider {
+    border: none;
+    border-top: 1px dashed black;
+    margin: 10px 0;
+  }
+  
+  .receipt-info, .receipt-desc {
+    font-size: 12px;
+    margin-bottom: 10px;
+  }
+  
+  .receipt-info p {
+    display: flex;
+    justify-content: space-between;
+    margin: 4px 0;
+  }
+  
+  .receipt-total {
+    margin: 15px 0;
+  }
+  
+  .receipt-total p {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .receipt-footer {
+    text-align: center;
+    font-size: 10px;
+    margin-top: 20px;
+  }
+}

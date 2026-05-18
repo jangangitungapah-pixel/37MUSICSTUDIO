@@ -41,6 +41,12 @@ body {
   overflow-x: hidden;
 }
 
+/* Global Select & Option styling for dark theme */
+option {
+  background-color: var(--bg-surface);
+  color: var(--text-primary);
+}
+
 /* Layout */
 .app-container {
   display: flex;

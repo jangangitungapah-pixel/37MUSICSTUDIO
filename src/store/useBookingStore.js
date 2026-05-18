@@ -98,13 +98,16 @@ export const useBookingStore = create((set, get) => {
              
              // Calculate how much was already paid
              let paidAmount = 0;
+             const oldBase = b.type === 'recording' ? (b.sessionPrice || 0) : (oldDuration * currentPricePerHour);
+             
              if (b.status === 'confirmed') {
-                paidAmount = (oldDuration * currentPricePerHour) - (b.discountAmount || 0);
+                paidAmount = oldBase - (b.discountAmount || 0);
              } else if (b.status === 'dp') {
                 paidAmount = b.dpAmount || 0;
              }
              
-             const newTotalPrice = (newDuration * currentPricePerHour) - (b.discountAmount || 0);
+             const newBase = b.type === 'recording' ? (newData.sessionPrice || b.sessionPrice || 0) : (newDuration * currentPricePerHour);
+             const newTotalPrice = newBase - (b.discountAmount || 0);
              
              if (paidAmount > 0) {
                 if (paidAmount >= newTotalPrice) {
@@ -139,11 +142,23 @@ export const useBookingStore = create((set, get) => {
       const monthBookings = state.bookings.filter(b => b.date.startsWith(monthStr));
       const totalBookings = monthBookings.length;
       const totalHours = monthBookings.reduce((sum, b) => sum + b.duration, 0);
-      const totalRevenue = totalHours * currentPricePerHour;
+      
+      let totalRevenue = 0;
+      let totalPaidFull = 0;
+      
+      monthBookings.forEach(b => {
+        if (b.status !== 'maintenance') {
+          const base = b.type === 'recording' ? (b.sessionPrice || 0) : (b.duration * currentPricePerHour);
+          const finalPrice = base - (b.discountAmount || 0);
+          totalRevenue += finalPrice;
+          
+          if (b.status === 'confirmed') {
+            totalPaidFull += finalPrice;
+          }
+        }
+      });
+      
       const totalDpReceived = monthBookings.reduce((sum, b) => sum + (b.dpAmount || 0), 0);
-      const totalPaidFull = monthBookings
-        .filter(b => b.status === 'confirmed')
-        .reduce((sum, b) => sum + (b.duration * currentPricePerHour), 0);
       const confirmed = monthBookings.filter(b => b.status === 'confirmed').length;
       const dp = monthBookings.filter(b => b.status === 'dp').length;
       const pending = monthBookings.filter(b => b.status === 'pending').length;
