@@ -125,10 +125,23 @@
   left: 0;
   right: 0;
   width: 100%;
-  border-radius: 20px 20px 0 0;
-  animation: sheetUp 0.3s cubic-bezier(0.16,1,0.3,1);
-  max-height: 88vh;
+  border-radius: 22px 22px 0 0;
+  animation: sheetUp 0.35s cubic-bezier(0.16,1,0.3,1);
+  max-height: 90vh;
   overflow-y: auto;
+  box-shadow: 0 -20px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.06);
+}
+
+/* Drag handle indicator */
+.booking-detail-popup.mobile-sheet::before {
+  content: '';
+  display: block;
+  width: 36px;
+  height: 4px;
+  background: rgba(255,255,255,0.2);
+  border-radius: 2px;
+  margin: 10px auto 2px;
+  flex-shrink: 0;
 }
 @keyframes sheetUp { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
@@ -1076,55 +1089,66 @@
 /* ===== Mobile Responsive ===== */
 @media (max-width: 768px) {
   .calendar-page {
-    gap: 12px;
+    gap: 10px;
     height: auto;
     min-height: 0;
     overflow: visible;
   }
 
-  /* --- Page Header --- */
-  .page-header {
+  /* --- New Cal Header --- */
+  .cal-header {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: stretch;
     gap: 10px;
   }
 
-  .page-title {
-    font-size: 1.2rem;
-    font-weight: 800;
+  .cal-header-left {
+    gap: 10px;
   }
 
-  .page-subtitle {
-    font-size: 0.75rem;
-  }
-
-  /* Search + Button row */
-  .header-actions {
-    width: 100%;
-    gap: 8px;
-  }
-
-  .search-bar {
-    width: 100%;
-    flex: 1;
-    padding: 10px 14px;
+  .cal-header-icon {
+    width: 38px;
+    height: 38px;
     border-radius: 10px;
-  }
-
-  .search-bar input {
-    font-size: 0.85rem;
-  }
-
-  .btn-primary {
-    padding: 10px 14px;
-    font-size: 0.82rem;
-    white-space: nowrap;
-    border-radius: 10px;
-    gap: 6px;
     flex-shrink: 0;
   }
 
-  /* --- Stats: 2x2 grid layout (no more horizontal cut-off) --- */
+  .cal-header-right {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: nowrap;
+  }
+
+  .search-bar {
+    flex: 1;
+    min-width: 0;
+    padding: 9px 12px;
+    border-radius: 10px;
+    width: auto;
+  }
+
+  .search-bar input { font-size: 0.85rem; }
+
+  /* Hide print button text on mobile, keep icon */
+  .btn-secondary .hide-on-mobile { display: none; }
+
+  /* New booking button: compact */
+  .btn-primary {
+    padding: 9px 14px;
+    font-size: 0.82rem;
+    white-space: nowrap;
+    border-radius: 10px;
+    gap: 5px;
+    flex-shrink: 0;
+  }
+
+  /* Page title */
+  .page-title { font-size: 1.15rem; font-weight: 800; }
+  .page-subtitle { font-size: 0.72rem; }
+
+  /* --- Stats Bar: clean 2x2 grid --- */
   .stats-bar {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -1135,48 +1159,65 @@
   .stat-card {
     min-width: 0;
     padding: 10px 12px;
-    gap: 10px;
-    border-radius: 12px;
-  }
-
-  .stat-breakdown {
-    min-width: 0;
+    gap: 8px;
+    border-radius: 14px;
+    flex-direction: row;
+    align-items: center;
   }
 
   .stat-icon {
-    width: 30px;
-    height: 30px;
-    border-radius: 8px;
+    width: 32px;
+    height: 32px;
+    border-radius: 9px;
+    flex-shrink: 0;
   }
 
-  .stat-icon svg {
-    width: 14px;
-    height: 14px;
-  }
+  .stat-icon svg { width: 15px; height: 15px; }
+
+  .stat-data { min-width: 0; }
 
   .stat-value {
-    font-size: 0.92rem;
+    font-size: 0.88rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
-  .stat-label {
-    font-size: 0.66rem;
+  .stat-label { font-size: 0.62rem; }
+
+  .stat-breakdown {
+    grid-column: span 2;
   }
 
-  .breakdown-item {
-    font-size: 0.7rem;
+  .breakdown-items {
+    flex-direction: row;
+    gap: 10px;
+    justify-content: center;
   }
+
+  .breakdown-item { font-size: 0.72rem; }
 
   /* --- Calendar Container --- */
   .calendar-container {
     overflow: visible;
     min-height: 0;
-    border-radius: 12px;
+    border-radius: 14px;
+    padding: 0;
   }
 
+  /* Sticky toolbar inside calendar */
   .calendar-toolbar {
+    position: sticky;
+    top: 0;
+    z-index: 10;
     flex-direction: column;
     gap: 8px;
-    padding: 10px 12px;
+    padding: 10px 12px 8px;
+    background: rgba(14, 14, 20, 0.92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 14px 14px 0 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
   }
 
   .date-navigation {
@@ -1194,13 +1235,54 @@
   .current-month {
     font-size: 0.88rem;
     min-width: 120px;
-    letter-spacing: 0.5px;
+    text-align: center;
+    letter-spacing: 0.3px;
+    font-weight: 700;
   }
 
   .today-btn {
     padding: 5px 10px;
     font-size: 0.75rem;
-    border-radius: 6px;
+    border-radius: 20px;
+  }
+
+  /* View switcher: stretch full width */
+  .toolbar-right {
+    flex-direction: column;
+    gap: 6px;
+    align-items: stretch;
+  }
+
+  .view-switcher {
+    width: 100%;
+    justify-content: stretch;
+  }
+
+  .view-btn {
+    flex: 1;
+    justify-content: center;
+    padding: 6px 8px;
+    font-size: 0.78rem;
+  }
+
+  /* Quick filters: full-width scrollable row */
+  .quick-filters {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 6px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 2px;
+  }
+  .quick-filters::-webkit-scrollbar { display: none; }
+
+  .filter-chip {
+    flex-shrink: 0;
+    padding: 5px 12px;
+    font-size: 0.72rem;
+    border-radius: 20px;
+    white-space: nowrap;
   }
 
   .legend {
@@ -1209,48 +1291,37 @@
     justify-content: center;
   }
 
-  .legend-item {
-    font-size: 0.7rem;
-  }
+  .legend-item { font-size: 0.7rem; }
 
-  /* --- Grid: dynamic full height, smooth scrolling --- */
+  /* --- Grid: smooth touch scrolling --- */
   .monthly-grid-wrapper {
     overflow: auto;
     -webkit-overflow-scrolling: touch;
-    max-height: calc(100vh - 360px);
+    max-height: calc(100vh - 340px);
     min-height: 220px;
+    scroll-snap-type: x proximity;
   }
 
-  .monthly-grid {
-    font-size: 0.82rem;
-  }
+  .monthly-grid { font-size: 0.82rem; }
 
-  .grid-corner-cell {
-    padding: 4px;
-  }
+  .grid-corner-cell { padding: 4px; }
 
   .corner-label {
     font-size: 0.55rem;
     letter-spacing: 0.5px;
   }
 
-  .grid-header-cell {
-    padding: 6px 2px;
-  }
-
-  .grid-header-cell .day-name {
-    font-size: 0.58rem;
-  }
-
+  .grid-header-cell { padding: 6px 2px; }
+  .grid-header-cell .day-name { font-size: 0.58rem; }
   .grid-header-cell .day-number {
-    font-size: 0.85rem;
-    width: 26px;
-    height: 26px;
-    border-radius: 7px;
+    font-size: 0.82rem;
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
   }
 
   .grid-header-cell.today .day-number {
-    box-shadow: 0 0 6px rgba(0, 240, 255, 0.25);
+    box-shadow: 0 0 8px rgba(0, 240, 255, 0.3);
   }
 
   .time-label {
@@ -1258,135 +1329,119 @@
     padding: 0 4px;
   }
 
-  /* Compact time: show only start hour */
-  .time-range {
-    font-size: 0.58rem;
-  }
+  .time-range { font-size: 0.58rem; }
+  .grid-cell { min-height: 34px; }
 
-  .grid-cell {
-    min-height: 34px;
-  }
+  .booking-info { padding: 2px 3px; }
+  .booking-band-name { font-size: 0.58rem; font-weight: 700; }
+  .booking-time-label { font-size: 0.48rem; }
 
-  .booking-info {
-    padding: 2px 3px;
-  }
-
-  .booking-band-name {
-    font-size: 0.6rem;
-  }
-
-  .booking-time-label {
-    font-size: 0.5rem;
-  }
-
-  /* --- Detail Popup: compact floating bottom-sheet --- */
+  /* --- Mobile Bottom Sheet: full-width modern card --- */
   .booking-detail-popup {
-    position: fixed;
-    bottom: 10px !important;
+    position: fixed !important;
+    bottom: 0 !important;
     top: auto !important;
-    left: 10px !important;
-    right: 10px !important;
-    width: calc(100% - 20px);
-    max-width: calc(100% - 20px);
-    max-height: 55vh;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    max-height: 80vh;
     overflow-y: auto;
-    border-radius: 16px;
-    animation: mobileSheetUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-    box-shadow: 0 -8px 40px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.06);
+    border-radius: 22px 22px 0 0 !important;
+    box-shadow: 0 -12px 48px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.07) !important;
+    background: rgba(16, 16, 22, 0.98) !important;
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
   }
 
-  /* No drag handle needed — floating card style */
+  /* Drag handle */
   .booking-detail-popup::before {
-    display: none;
+    content: '';
+    display: block;
+    width: 40px;
+    height: 4px;
+    background: rgba(255,255,255,0.18);
+    border-radius: 2px;
+    margin: 10px auto 4px;
   }
 
   .detail-header {
-    padding: 6px 16px 8px;
+    padding: 8px 18px 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
   }
 
-  .detail-header h4 {
-    font-size: 1rem;
-  }
+  .detail-header-info h4 { font-size: 1.05rem; }
 
   .detail-close {
-    width: 26px;
-    height: 26px;
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.06);
   }
 
   .detail-body {
-    padding: 8px 16px;
-    gap: 7px;
+    padding: 12px 18px;
+    gap: 10px;
   }
 
-  .detail-row {
-    font-size: 0.78rem;
-    gap: 8px;
+  .detail-info-row { font-size: 0.83rem; gap: 10px; }
+  .detail-info-row svg { width: 14px; height: 14px; }
+
+  .detail-price-card {
+    border-radius: 12px;
+    padding: 12px 14px;
   }
 
-  .detail-row svg {
-    width: 13px;
-    height: 13px;
-  }
+  .detail-price-row { font-size: 0.8rem; }
 
-  .detail-price-section {
-    padding: 8px 10px;
-    gap: 4px;
-  }
+  .detail-status-section label { font-size: 0.7rem; }
 
-  .detail-price-row {
-    font-size: 0.78rem;
-  }
-
-  .detail-price-row.dp-row,
-  .detail-price-row.remaining-row,
-  .detail-price-row.paid-row {
-    padding-top: 5px;
-  }
-
-  .detail-status {
-    gap: 5px;
-    margin-top: 2px;
-  }
-
-  .detail-status label {
-    font-size: 0.68rem;
+  .status-buttons {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
   }
 
   .status-btn {
-    padding: 7px 6px;
-    font-size: 0.72rem;
-    border-radius: 7px;
-    min-height: 0;
-  }
-
-  /* Side-by-side footer buttons */
-  .detail-footer {
-    flex-direction: row;
-    gap: 8px;
-    padding: 8px 16px 12px;
-    padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
-  }
-
-  .delete-btn {
-    padding: 8px 10px;
-    font-size: 0.78rem;
-    min-height: 0;
+    padding: 8px 6px;
+    font-size: 0.73rem;
     border-radius: 8px;
-  }
-
-  .detail-footer .btn-secondary {
-    padding: 8px 10px;
-    font-size: 0.78rem;
-    min-height: 0;
-    border-radius: 8px;
-    display: flex;
-    gap: 5px;
-    align-items: center;
+    text-align: center;
     justify-content: center;
   }
 
+  /* Footer: side-by-side full width */
+  .detail-footer {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 8px;
+    padding: 10px 18px 16px;
+    padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .delete-btn {
+    padding: 10px 14px;
+    font-size: 0.8rem;
+    border-radius: 10px;
+    white-space: nowrap;
+  }
+
+  .detail-footer .btn-secondary {
+    padding: 10px 14px;
+    font-size: 0.8rem;
+    border-radius: 10px;
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+  }
+
   @keyframes mobileSheetUp {
-    from { opacity: 0; transform: translateY(100%); }
+    from { opacity: 0; transform: translateY(30px); }
     to { opacity: 1; transform: translateY(0); }
   }
 }
