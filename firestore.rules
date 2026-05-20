@@ -30,13 +30,14 @@ service cloud.firestore {
     }
 
     function isPublicBookingShape() {
-      return request.resource.data.keys().hasOnly(['id', 'date', 'hour', 'duration', 'status', 'type'])
+      return request.resource.data.keys().hasOnly(['id', 'date', 'hour', 'duration', 'status', 'type', 'roomId'])
         && request.resource.data.id is number
         && request.resource.data.date is string
         && request.resource.data.hour is number
         && request.resource.data.duration is number
         && request.resource.data.status in ['pending', 'dp', 'confirmed', 'maintenance', 'cancelled']
-        && request.resource.data.type in ['booking', 'recording', 'maintenance'];
+        && request.resource.data.type in ['booking', 'recording', 'maintenance']
+        && (!('roomId' in request.resource.data) || request.resource.data.roomId is string);
     }
 
     // Shared settings/config are readable by the app and public calendar.

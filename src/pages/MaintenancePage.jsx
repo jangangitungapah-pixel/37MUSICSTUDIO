@@ -1,9 +1,8 @@
 import { useState, useMemo } from 'react';
 import { useBookingStore } from '../store/useBookingStore';
 import { useFinanceStore } from '../store/useFinanceStore';
-import { useSettingsStore } from '../store/useSettingsStore';
 import { format } from 'date-fns';
-import { Wrench, Plus, AlertCircle, CheckCircle, Clock, DollarSign, Trash2, FileText } from 'lucide-react';
+import { Wrench, AlertCircle, CheckCircle, Clock, DollarSign, Trash2, FileText } from 'lucide-react';
 import Modal from '../components/Modal';
 import { toast } from 'sonner';
 import './MaintenancePage.css';
@@ -11,7 +10,6 @@ import './MaintenancePage.css';
 const MaintenancePage = () => {
   const { bookings, deleteBooking } = useBookingStore();
   const { addTransaction } = useFinanceStore();
-  const { rooms } = useSettingsStore();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedLog, setSelectedLog] = useState(null);
@@ -40,11 +38,6 @@ const MaintenancePage = () => {
 
   const formatCurrency = (num) =>
     new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(num || 0);
-
-  const getRoomName = (roomId) => {
-    const room = rooms?.find(r => r.id === roomId);
-    return room?.name || roomId || 'Studio';
-  };
 
   const handleOpenDetail = (log) => {
     setSelectedLog(log);
@@ -105,7 +98,7 @@ const MaintenancePage = () => {
       <div className="page-header">
         <div className="page-header-left">
           <h2 className="page-title">Log Maintenance</h2>
-          <p className="page-subtitle">Pantau jadwal perawatan alat dan ruangan studio</p>
+          <p className="page-subtitle">Pantau jadwal perawatan alat dan studio</p>
         </div>
       </div>
 
@@ -161,7 +154,6 @@ const MaintenancePage = () => {
                 <tr>
                   <th>Tanggal</th>
                   <th>Judul</th>
-                  <th>Ruangan</th>
                   <th>Jam</th>
                   <th>Durasi</th>
                   <th>Status</th>
@@ -179,7 +171,6 @@ const MaintenancePage = () => {
                         <Wrench size={14} color="var(--accent-pink)" style={{ marginRight: 6 }} />
                         {log.band || 'Maintenance'}
                       </td>
-                      <td>{getRoomName(log.roomId)}</td>
                       <td>{String(log.hour).padStart(2, '0')}:00</td>
                       <td>{log.duration} jam</td>
                       <td>
@@ -222,10 +213,6 @@ const MaintenancePage = () => {
               <div className="maint-modal-row">
                 <span>Jadwal</span>
                 <strong>{format(new Date(selectedLog.date), 'dd MMMM yyyy')}, {String(selectedLog.hour).padStart(2, '0')}:00 – {String(Number(selectedLog.hour) + Number(selectedLog.duration)).padStart(2, '0')}:00</strong>
-              </div>
-              <div className="maint-modal-row">
-                <span>Ruangan</span>
-                <strong>{getRoomName(selectedLog.roomId)}</strong>
               </div>
             </div>
 

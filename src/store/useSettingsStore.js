@@ -2,6 +2,17 @@ import { create } from 'zustand';
 import { db } from '../firebase';
 import { doc, onSnapshot, setDoc } from 'firebase/firestore';
 
+const DEFAULT_SETTINGS = {
+  studioName: '37 MUSIC STUDIO',
+  studioAddress: 'Jl. Musik Indah No. 37, Jakarta',
+  studioPhone: '0812-3456-7890',
+  pricePerHour: 120000,
+  durationDiscounts: [],
+  recordingSessions: [
+    { id: 'default-6h', name: 'Sesi Recording 6 Jam', hours: 6, price: 600000 }
+  ],
+};
+
 export const useSettingsStore = create((set) => {
   // Initialize listener
   const settingsRef = doc(db, 'config', 'settings');
@@ -10,35 +21,17 @@ export const useSettingsStore = create((set) => {
     if (docSnap.exists()) {
       set({ ...docSnap.data(), isLoaded: true });
     } else {
-      // Default initial settings if database is empty
-      const initialSettings = {
-        studioName: '37 MUSIC STUDIO',
-        studioAddress: 'Jl. Musik Indah No. 37, Jakarta',
-        studioPhone: '0812-3456-7890',
-        pricePerHour: 120000,
-        durationDiscounts: [],
-        recordingSessions: [
-          { id: 'default-6h', name: 'Sesi Recording 6 Jam', hours: 6, price: 600000 }
-        ],
-        rooms: [
-          { id: 'studio-a', name: 'Studio A', color: 'var(--accent-cyan)' },
-          { id: 'studio-b', name: 'Studio B', color: 'var(--accent-pink)' },
-        ],
-      };
-      setDoc(settingsRef, initialSettings);
-      set({ ...initialSettings, isLoaded: true });
+      set({ ...DEFAULT_SETTINGS, isLoaded: true });
     }
+  }, (error) => {
+    console.error('Error loading studio settings:', error);
+    set({ ...DEFAULT_SETTINGS, isLoaded: true, error: error.message });
   });
 
   return {
     isLoaded: false,
-    studioName: 'Memuat...',
-    studioAddress: 'Memuat...',
-    studioPhone: 'Memuat...',
-    pricePerHour: 120000,
-    durationDiscounts: [],
-    recordingSessions: [],
-    rooms: [],
+    error: null,
+    ...DEFAULT_SETTINGS,
     
     updateSettings: async (newSettings) => {
       // Optimistic update

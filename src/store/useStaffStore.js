@@ -3,7 +3,7 @@ import { persist } from 'zustand/middleware';
 
 export const useStaffStore = create(
   persist(
-    (set, get) => ({
+    (set) => ({
       staffMembers: [
         { id: '1', name: 'Admin Utama', role: 'admin', phone: '08123456789', status: 'active' },
         { id: '2', name: 'Budi Staff', role: 'staff', phone: '08198765432', status: 'active' },

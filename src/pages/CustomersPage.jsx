@@ -4,7 +4,7 @@ import { useCustomerStore } from '../store/useCustomerStore';
 import { useTourStore } from '../store/useTourStore';
 import { toast } from 'sonner';
 import Modal from '../components/Modal';
-import { getMembershipTier, TIER_CONFIG, getLoyaltyPoints, sendWelcomeMessage, sendPromoMessage, sendBookingReminder, sendMembershipUpgrade } from '../lib/whatsappService';
+import { getMembershipTier, TIER_CONFIG, getLoyaltyPoints, sendWelcomeMessage, sendPromoMessage, sendMembershipUpgrade } from '../lib/whatsappService';
 import './CustomersPage.css';
 
 const AVATAR_COLORS = [

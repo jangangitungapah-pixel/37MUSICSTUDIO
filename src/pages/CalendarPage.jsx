@@ -19,7 +19,6 @@ const CalendarPage = () => {
   const [prefillHour, setPrefillHour] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
-  const [selectedRoom, setSelectedRoom] = useState('studio-a');
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [detailPos, setDetailPos] = useState({ top: 0, left: 0 });
   const gridWrapperRef = useRef(null);
@@ -47,7 +46,7 @@ const CalendarPage = () => {
   }, []);
 
   const { bookings, deleteBooking, updateBookingStatus, updateBooking, getMonthlyStats } = useBookingStore();
-  const { pricePerHour, studioName, rooms } = useSettingsStore();
+  const { pricePerHour, studioName } = useSettingsStore();
   const { run, currentStep, nextStep } = useTourStore();
 
   const daysArray = useMemo(() => {
@@ -69,16 +68,13 @@ const CalendarPage = () => {
   const revTrend = lastStats.totalRevenue > 0 ? Math.round(((stats.totalRevenue - lastStats.totalRevenue) / lastStats.totalRevenue) * 100) : null;
 
   const filteredBookings = useMemo(() => bookings.filter(b => {
-    if (b.roomId && b.roomId !== selectedRoom) return false;
-    if (!b.roomId && selectedRoom !== 'studio-a') return false; // Default fallback for old bookings
-
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
       if (!b.band.toLowerCase().includes(q) && !(b.phone && b.phone.includes(q))) return false;
     }
     if (filterStatus !== 'all' && b.status !== filterStatus) return false;
     return true;
-  }), [bookings, searchQuery, filterStatus, selectedRoom]);
+  }), [bookings, searchQuery, filterStatus]);
 
   const handleCellClick = (dateStr, hour) => {
     setPrefillDate(dateStr); setPrefillHour(hour); setIsModalOpen(true);
@@ -130,6 +126,19 @@ const CalendarPage = () => {
   const handleDrop = (e, dateStr, hour) => {
     e.preventDefault();
     if (draggedBooking) {
+      const duration = Number(draggedBooking.duration);
+      const isOverlap = bookings.some(x => {
+        if (x.id === draggedBooking.id || x.date !== dateStr) return false;
+        return Number(x.hour) < hour + duration && hour < Number(x.hour) + Number(x.duration);
+      });
+      if (isOverlap) {
+        useNotificationStore.getState().addNotification({
+          title: 'Jadwal Bentrok!',
+          message: 'Slot tujuan bertabrakan dengan booking lain.',
+          type: 'error',
+        });
+        return;
+      }
       updateBooking(draggedBooking.id, { date: dateStr, hour: hour });
     }
   };
@@ -143,7 +152,7 @@ const CalendarPage = () => {
   };
 
   useEffect(() => {
-    const handleResizeMove = (e) => {
+    const handleResizeMove = () => {
       if (!resizingBooking) return;
       // Just prevent default if needed to stop scroll while resizing
     };
@@ -328,18 +337,6 @@ const CalendarPage = () => {
 
           {/* Right: View Switcher + Filters */}
           <div className="toolbar-right">
-            <div className="room-switcher tour-calendar-filters" style={{ marginRight: '10px' }}>
-              {rooms.map(room => (
-                <button
-                  key={room.id}
-                  className={`view-btn ${selectedRoom === room.id ? 'active' : ''}`}
-                  onClick={() => setSelectedRoom(room.id)}
-                >
-                  <span className="dot" style={{ background: room.color, marginRight: 6 }}></span>
-                  {room.name}
-                </button>
-              ))}
-            </div>
             <div className="view-switcher tour-calendar-filters">
               {viewModes.map(({ id, label, icon: Icon }) => (
                 <button key={id} className={`view-btn ${viewMode === id ? 'active' : ''}`} onClick={() => setViewMode(id)}>
@@ -505,7 +502,7 @@ const CalendarPage = () => {
                       <button className="dur-btn" onClick={() => {
                         const newDur = Math.min(12, b.duration + 1);
                         if (newDur > b.duration) {
-                          const isOverlap = bookings.some(x => x.id !== b.id && x.date === b.date && (x.roomId || 'studio-a') === (b.roomId || 'studio-a') && (Number(x.hour) < Number(b.hour) + newDur) && (Number(b.hour) < Number(x.hour) + Number(x.duration)));
+                          const isOverlap = bookings.some(x => x.id !== b.id && x.date === b.date && (Number(x.hour) < Number(b.hour) + newDur) && (Number(b.hour) < Number(x.hour) + Number(x.duration)));
                           if (isOverlap) { useNotificationStore.getState().addNotification({ title: 'Jadwal Bentrok!', message: 'Durasi bertabrakan dengan booking lain.', type: 'error' }); return; }
                           updateBooking(b.id, { duration: newDur });
                         }
@@ -586,7 +583,7 @@ const CalendarPage = () => {
       </AnimatePresence>
 
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Booking Baru">
-        <BookingForm onClose={() => setIsModalOpen(false)} initialDate={prefillDate} initialHour={prefillHour} initialRoom={selectedRoom} />
+        <BookingForm onClose={() => setIsModalOpen(false)} initialDate={prefillDate} initialHour={prefillHour} />
       </Modal>
     </div>
   );

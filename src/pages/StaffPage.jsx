@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useStaffStore } from '../store/useStaffStore';
-import { UserPlus, Edit2, Trash2, Shield, User, Power, MoreVertical } from 'lucide-react';
+import { UserPlus, Edit2, Trash2, Shield, User, Power } from 'lucide-react';
 import Modal from '../components/Modal';
 import { toast } from 'sonner';
 import './StaffPage.css';

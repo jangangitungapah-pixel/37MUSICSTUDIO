@@ -19,13 +19,13 @@ import './PublicCalendarPage.css';
 
 const PublicCalendarPage = () => {
   const navigate = useNavigate();
-  const { user, logout } = useAuthStore();
+  const { user, logout, loginGuest, isAuthLoaded, loading: authLoading } = useAuthStore();
   const { bookings } = useBookingStore();
-  const { studioName, studioPhone, pricePerHour, durationDiscounts = [], rooms = [] } = useSettingsStore();
+  const { studioName, studioPhone, pricePerHour, durationDiscounts = [] } = useSettingsStore();
 
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [selectedRoom, setSelectedRoom] = useState('studio-a');
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const [publicAccessError, setPublicAccessError] = useState('');
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth <= 768);
@@ -42,12 +42,31 @@ const PublicCalendarPage = () => {
   const [bandName, setBandName]       = useState('');
   const [duration, setDuration]       = useState(2);
 
-  // Redirect non-guests
   useEffect(() => {
-    if (!user || !user.isAnonymous) navigate('/login');
-  }, [user, navigate]);
+    if (!isAuthLoaded || user) return;
 
-  const handleLogout = async () => { await logout(); navigate('/login'); };
+    let isActive = true;
+    loginGuest().catch(() => {
+      if (isActive) {
+        setPublicAccessError('Jadwal publik belum bisa dimuat. Aktifkan Anonymous Auth di Firebase atau hubungi admin studio.');
+      }
+    });
+
+    return () => {
+      isActive = false;
+    };
+  }, [isAuthLoaded, user, loginGuest]);
+
+  const handleExitPublic = async () => {
+    if (user?.isAnonymous) {
+      try {
+        await logout();
+      } catch {
+        // Keep navigation responsive even if sign-out fails.
+      }
+    }
+    navigate('/');
+  };
 
   const handleGoToday = () => {
     setCurrentDate(new Date());
@@ -90,7 +109,7 @@ const PublicCalendarPage = () => {
   const nowHour    = new Date().getHours();
 
   const activeBookings = useMemo(() =>
-    bookings.filter(b => b.status !== 'cancelled' && (b.roomId || 'studio-a') === selectedRoom), [bookings, selectedRoom]);
+    bookings.filter(b => b.status !== 'cancelled'), [bookings]);
 
   // Count available slots today
   const availableToday = useMemo(() => {
@@ -132,11 +151,14 @@ const PublicCalendarPage = () => {
     }
     const dateLabel = format(new Date(selectedSlot.dateStr + 'T00:00:00'), 'dd MMMM yyyy', { locale: localeId });
     const endHourLabel = selectedSlot.hour + duration;
-    const roomName = rooms.find(r => r.id === selectedRoom)?.name || 'Studio A';
-    const message = `Halo Admin ${studioName} 👋\n\nSaya dari band *${bandName.trim()}* ingin booking studio:\n\n📅 Tanggal : ${dateLabel}\n🚪 Ruangan : ${roomName}\n⏰ Jam     : ${selectedSlot.hour}:00 – ${endHourLabel}:00\n⏱️ Durasi  : ${duration} jam\n\nApakah slot tersebut masih tersedia?`;
+    const cleanMessage = `Halo Admin ${studioName}\n\nSaya dari band *${bandName.trim()}* ingin booking studio:\n\nTanggal : ${dateLabel}\nJam     : ${selectedSlot.hour}:00 - ${endHourLabel}:00\nDurasi  : ${duration} jam\n\nApakah slot tersebut masih tersedia?`;
     let phone = (studioPhone || '').replace(/\D/g, '');
+    if (!phone) {
+      useNotificationStore.getState().addNotification({ title: 'Nomor admin belum tersedia', message: 'Silakan hubungi admin studio secara manual.', type: 'error' });
+      return;
+    }
     if (phone.startsWith('0')) phone = '62' + phone.substring(1);
-    window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, '_blank');
+    window.open(`https://wa.me/${phone}?text=${encodeURIComponent(cleanMessage)}`, '_blank');
     setModalOpen(false);
   };
 
@@ -145,7 +167,7 @@ const PublicCalendarPage = () => {
     if (viewMode === 'week') {
       const s = startOfWeek(currentDate, { weekStartsOn: 0 });
       const e = endOfWeek(currentDate, { weekStartsOn: 0 });
-      return `${format(s, 'dd MMM')} – ${format(e, 'dd MMM yyyy')}`;
+      return `${format(s, 'dd MMM')} - ${format(e, 'dd MMM yyyy')}`;
     }
     return format(currentDate, 'MMMM yyyy', { locale: localeId });
   }, [currentDate, viewMode]);
@@ -195,9 +217,9 @@ const PublicCalendarPage = () => {
               </a>
             )}
 
-            <button className="pc-logout-btn" onClick={handleLogout} title="Keluar">
+            <button className="pc-logout-btn" onClick={handleExitPublic} title="Kembali ke beranda">
               <LogOut size={16} />
-              <span>Keluar</span>
+              <span>Beranda</span>
             </button>
           </div>
         </div>
@@ -205,6 +227,12 @@ const PublicCalendarPage = () => {
 
       {/* ── Calendar Container ── */}
       <div className="pc-body">
+        {(authLoading || publicAccessError) && (
+          <div className={`pc-public-status glass-panel ${publicAccessError ? 'error' : ''}`}>
+            {publicAccessError || 'Menyiapkan akses jadwal publik...'}
+          </div>
+        )}
+
         {/* Toolbar */}
         <div className="pc-toolbar glass-panel">
           {/* Navigation */}
@@ -216,19 +244,6 @@ const PublicCalendarPage = () => {
           </div>
 
           <div className="pc-toolbar-right">
-            {/* Room switcher */}
-            <div className="pc-view-switch" style={{ marginRight: '10px' }}>
-              {rooms.map(r => (
-                <button
-                  key={r.id}
-                  className={`pc-view-btn ${selectedRoom === r.id ? 'active' : ''}`}
-                  onClick={() => setSelectedRoom(r.id)}
-                >
-                  <span className="pc-dot" style={{ background: r.color, width: 8, height: 8, marginRight: 6, display: 'inline-block' }} />
-                  {r.name}
-                </button>
-              ))}
-            </div>
             {/* View switcher */}
             <div className="pc-view-switch">
               {['day', 'week', 'month'].map(v => (
@@ -381,7 +396,7 @@ const PublicCalendarPage = () => {
             <div className="pc-time-chip">
               <Clock size={14} />
               <span>
-                {String(selectedSlot.hour).padStart(2,'0')}:00 –{' '}
+                {String(selectedSlot.hour).padStart(2,'0')}:00 -{' '}
                 {String(selectedSlot.hour + duration).padStart(2,'0')}:00
                 &nbsp;({duration} jam)
               </span>
@@ -423,7 +438,7 @@ const PublicCalendarPage = () => {
                 <div className="pc-price-value-container">
                   {durationDiscountEst > 0 && (
                     <div className="pc-price-discount-label">
-                      Potongan Diskon: −{new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(durationDiscountEst)}
+                      Potongan Diskon: -{new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(durationDiscountEst)}
                     </div>
                   )}
                   <span className="pc-price-value">

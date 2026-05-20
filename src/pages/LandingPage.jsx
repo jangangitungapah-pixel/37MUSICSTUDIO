@@ -1,13 +1,13 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Music2, Calendar, MapPin, Mic2, Star, ChevronRight, Activity } from 'lucide-react';
+import { Music2, Calendar, MapPin, Mic2, Star, ChevronRight, Activity, Clock3, Headphones, MessageCircle } from 'lucide-react';
 import { useSettingsStore } from '../store/useSettingsStore';
 import { useAuthStore } from '../store/useAuthStore';
 import './LandingPage.css';
 
 const LandingPage = () => {
-  const { studioName, studioAddress, studioPhone, pricePerHour, rooms } = useSettingsStore();
+  const { studioName, studioAddress, studioPhone, pricePerHour } = useSettingsStore();
   const { user, isAuthLoaded } = useAuthStore();
   const navigate = useNavigate();
 
@@ -90,44 +90,67 @@ const LandingPage = () => {
               <Calendar size={18} /> Cek Jadwal & Booking
             </Link>
           </motion.div>
+
+          <motion.div variants={itemVariants} className="hero-quick-facts" aria-label="Ringkasan studio">
+            <div className="hero-fact">
+              <Clock3 size={17} />
+              <span>10.00-23.00</span>
+            </div>
+            <div className="hero-fact">
+              <Headphones size={17} />
+              <span>1 ruang studio</span>
+            </div>
+            <div className="hero-fact">
+              <MessageCircle size={17} />
+              <span>Booking via WhatsApp</span>
+            </div>
+          </motion.div>
         </motion.div>
       </section>
 
       {/* Facilities Section */}
       <section id="features" className="features-section">
         <div className="section-header text-center">
-          <h2>Fasilitas & Ruangan</h2>
-          <p>Pilih ruangan yang sesuai dengan kebutuhan band Anda</p>
+          <h2>Fasilitas Studio</h2>
+          <p>Satu ruang studio yang siap untuk latihan band dan produksi rekaman.</p>
         </div>
         
         <div className="features-grid">
-          {(rooms && rooms.length > 0 ? rooms : [
-            { id: 'studio-a', name: 'Studio A', color: 'var(--accent-cyan)' },
-            { id: 'studio-b', name: 'Studio B', color: 'var(--accent-pink)' }
-          ]).map((room, idx) => (
-            <div key={room.id} className="feature-card glass-panel">
-              <div className="feature-icon" style={{ background: `linear-gradient(135deg, ${room.color}33, transparent)`, border: `1px solid ${room.color}55` }}>
-                {idx === 0 ? <Music2 size={24} color={room.color} /> : <Mic2 size={24} color={room.color} />}
-              </div>
-              <h3>{room.name}</h3>
-              <p>Ruangan luas, full AC, drum kit premium, dan ampli tabung. Cocok untuk latihan band format besar atau live recording.</p>
-              <ul className="feature-list">
-                <li><ChevronRight size={14} /> Full AC & Kedap Suara</li>
-                <li><ChevronRight size={14} /> Drum Set Premium</li>
-                <li><ChevronRight size={14} /> Ampli Gitar Tabung</li>
-              </ul>
+          <div className="feature-card glass-panel">
+            <div className="feature-icon" style={{ background: 'linear-gradient(135deg, rgba(0, 240, 255, 0.18), transparent)', border: '1px solid rgba(0, 240, 255, 0.35)' }}>
+              <Music2 size={24} color="var(--accent-cyan)" />
             </div>
-          ))}
+            <h3>Studio Musik Utama</h3>
+            <p>Ruang latihan kedap suara dengan tata akustik rapi untuk latihan band, rehearsal, dan tracking live.</p>
+            <ul className="feature-list">
+              <li><ChevronRight size={14} /> Full AC & Kedap Suara</li>
+              <li><ChevronRight size={14} /> Drum Set Premium</li>
+              <li><ChevronRight size={14} /> Ampli Gitar dan Bass</li>
+            </ul>
+          </div>
+
+          <div className="feature-card glass-panel">
+            <div className="feature-icon" style={{ background: 'linear-gradient(135deg, rgba(255, 42, 95, 0.18), transparent)', border: '1px solid rgba(255, 42, 95, 0.35)' }}>
+              <Mic2 size={24} color="var(--accent-pink)" />
+            </div>
+            <h3>Recording Support</h3>
+            <p>Peralatan rekaman siap pakai untuk demo, take vocal, instrumen, dan dokumentasi karya musik.</p>
+            <ul className="feature-list">
+              <li><ChevronRight size={14} /> Mic Condenser Studio</li>
+              <li><ChevronRight size={14} /> Digital Audio Workstation</li>
+              <li><ChevronRight size={14} /> Monitoring Headphone</li>
+            </ul>
+          </div>
           
           <div className="feature-card glass-panel">
             <div className="feature-icon" style={{ background: 'rgba(255, 152, 0, 0.15)', border: '1px solid rgba(255, 152, 0, 0.3)' }}>
               <Star size={24} color="#FF9800" />
             </div>
-            <h3>Recording VIP</h3>
-            <p>Fasilitas rekaman multitrack dengan operator berpengalaman. Hasil mixing dan mastering berstandar industri.</p>
+            <h3>Operator & Setup</h3>
+            <p>Setup alat dibantu operator sehingga sesi latihan atau rekaman bisa berjalan lebih cepat dan terarah.</p>
             <ul className="feature-list">
-              <li><ChevronRight size={14} /> Mic Condenser Studio</li>
-              <li><ChevronRight size={14} /> Digital Audio Workstation</li>
+              <li><ChevronRight size={14} /> Bantuan Sound Check</li>
+              <li><ChevronRight size={14} /> Setup Instrumen</li>
               <li><ChevronRight size={14} /> Termasuk Operator</li>
             </ul>
           </div>

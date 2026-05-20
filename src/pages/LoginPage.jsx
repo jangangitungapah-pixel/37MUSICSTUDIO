@@ -22,7 +22,7 @@ const LoginPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (isAuthLoaded && user) navigate('/dashboard');
+    if (isAuthLoaded && user && !user.isAnonymous) navigate('/dashboard');
   }, [user, isAuthLoaded, navigate]);
 
   useEffect(() => { clearError(); }, [clearError]);

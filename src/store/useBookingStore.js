@@ -16,7 +16,6 @@ const toPublicBooking = (booking) => ({
   duration: Number(booking.duration),
   status: booking.status || 'pending',
   type: booking.type || 'booking',
-  roomId: booking.roomId || 'studio-a',
 });
 
 const normalizeBookingDoc = (docSnap) => {

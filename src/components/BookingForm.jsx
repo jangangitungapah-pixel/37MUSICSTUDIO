@@ -9,9 +9,9 @@ import { Music2, Mic, Wrench, User, Phone, Calendar, Clock, DollarSign, StickyNo
 import { generatePaymentLink, checkPaymentStatus } from '../lib/paymentGateway';
 import './BookingForm.css';
 
-const BookingForm = ({ onClose, initialDate, initialHour, initialRoom }) => {
+const BookingForm = ({ onClose, initialDate, initialHour }) => {
   const { bookings, addBooking } = useBookingStore();
-  const { pricePerHour, durationDiscounts = [], recordingSessions = [], rooms = [] } = useSettingsStore();
+  const { pricePerHour, durationDiscounts = [], recordingSessions = [] } = useSettingsStore();
   const { customers, incrementBookingCount } = useCustomerStore();
   const { run, currentStep, nextStep } = useTourStore();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -35,7 +35,6 @@ const BookingForm = ({ onClose, initialDate, initialHour, initialRoom }) => {
     note: '',
     sessionId: recordingSessions.length > 0 ? recordingSessions[0].id : '',
     sessionPrice: recordingSessions.length > 0 ? recordingSessions[0].price : 0,
-    roomId: initialRoom || (rooms.length > 0 ? rooms[0].id : 'studio-a')
   });
 
   const handleChange = (e) => {
@@ -88,7 +87,6 @@ const BookingForm = ({ onClose, initialDate, initialHour, initialRoom }) => {
 
     const isOverlap = bookings.some(b => {
       if (b.date !== formData.date) return false;
-      if ((b.roomId || 'studio-a') !== (formData.roomId || 'studio-a')) return false;
       const bH = Number(b.hour), bD = Number(b.duration);
       const fH = Number(formData.hour), fD = Number(formData.duration);
       return (bH < fH + fD) && (fH < bH + bD);
@@ -246,16 +244,6 @@ const BookingForm = ({ onClose, initialDate, initialHour, initialRoom }) => {
               />
             </div>
           )}
-        </div>
-        <div className="bf-row" style={{ marginTop: '12px' }}>
-          <div className="bf-field">
-            <label className="bf-label">Pilih Ruangan <span className="bf-required">*</span></label>
-            <select name="roomId" value={formData.roomId} onChange={handleChange} className="bf-input" required>
-              {rooms.map(room => (
-                <option key={room.id} value={room.id}>{room.name}</option>
-              ))}
-            </select>
-          </div>
         </div>
       </div>
 
