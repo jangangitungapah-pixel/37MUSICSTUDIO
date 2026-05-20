@@ -19,19 +19,35 @@ const CalendarPage = () => {
   const [prefillHour, setPrefillHour] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
+  const [selectedRoom, setSelectedRoom] = useState('studio-a');
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [detailPos, setDetailPos] = useState({ top: 0, left: 0 });
   const gridWrapperRef = useRef(null);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const [now, setNow] = useState(new Date());
+
+  // Swipe gesture state
+  const touchStartRef = useRef(null);
+
+  // Drag & drop state
+  const [draggedBooking, setDraggedBooking] = useState(null);
+
+  // Resize state
+  const [resizingBooking, setResizingBooking] = useState(null);
+  const [initialResizeY, setInitialResizeY] = useState(0);
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth <= 768);
     window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    const interval = setInterval(() => setNow(new Date()), 60000); // update every minute
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      clearInterval(interval);
+    };
   }, []);
 
   const { bookings, deleteBooking, updateBookingStatus, updateBooking, getMonthlyStats } = useBookingStore();
-  const { pricePerHour, studioName } = useSettingsStore();
+  const { pricePerHour, studioName, rooms } = useSettingsStore();
   const { run, currentStep, nextStep } = useTourStore();
 
   const daysArray = useMemo(() => {
@@ -53,13 +69,16 @@ const CalendarPage = () => {
   const revTrend = lastStats.totalRevenue > 0 ? Math.round(((stats.totalRevenue - lastStats.totalRevenue) / lastStats.totalRevenue) * 100) : null;
 
   const filteredBookings = useMemo(() => bookings.filter(b => {
+    if (b.roomId && b.roomId !== selectedRoom) return false;
+    if (!b.roomId && selectedRoom !== 'studio-a') return false; // Default fallback for old bookings
+
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
       if (!b.band.toLowerCase().includes(q) && !(b.phone && b.phone.includes(q))) return false;
     }
     if (filterStatus !== 'all' && b.status !== filterStatus) return false;
     return true;
-  }), [bookings, searchQuery, filterStatus]);
+  }), [bookings, searchQuery, filterStatus, selectedRoom]);
 
   const handleCellClick = (dateStr, hour) => {
     setPrefillDate(dateStr); setPrefillHour(hour); setIsModalOpen(true);
@@ -83,6 +102,80 @@ const CalendarPage = () => {
     else if (viewMode === 'week') setCurrentDate(addWeeks(currentDate, 1));
     else setCurrentDate(addMonths(currentDate, 1));
   };
+
+  // Swipe handlers
+  const handleTouchStart = (e) => { touchStartRef.current = e.touches[0].clientX; };
+  const handleTouchEnd = (e) => {
+    if (touchStartRef.current === null) return;
+    const touchEndX = e.changedTouches[0].clientX;
+    const diff = touchStartRef.current - touchEndX;
+    if (diff > 50) handleNext(); // Swiped left -> next
+    else if (diff < -50) handlePrev(); // Swiped right -> prev
+    touchStartRef.current = null;
+  };
+
+  // Drag & Drop handlers
+  const handleDragStart = (e, booking) => {
+    if (isMobile) return;
+    setDraggedBooking(booking);
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', booking.id);
+    setTimeout(() => { if (e.target) e.target.style.opacity = '0.5'; }, 0);
+  };
+  const handleDragEnd = (e) => {
+    setDraggedBooking(null);
+    if (e.target) e.target.style.opacity = '1';
+  };
+  const handleDragOver = (e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; };
+  const handleDrop = (e, dateStr, hour) => {
+    e.preventDefault();
+    if (draggedBooking) {
+      updateBooking(draggedBooking.id, { date: dateStr, hour: hour });
+    }
+  };
+
+  // Resize handler
+  const handleResizeStart = (e, booking) => {
+    e.stopPropagation();
+    e.preventDefault();
+    setResizingBooking(booking);
+    setInitialResizeY(e.clientY || (e.touches && e.touches[0].clientY));
+  };
+
+  useEffect(() => {
+    const handleResizeMove = (e) => {
+      if (!resizingBooking) return;
+      // Just prevent default if needed to stop scroll while resizing
+    };
+    const handleResizeEnd = (e) => {
+      if (!resizingBooking) return;
+      const clientY = e.clientY || (e.changedTouches && e.changedTouches[0].clientY);
+      const diffY = clientY - initialResizeY;
+      const cellHeight = 44; // approximate height of 1 grid cell
+      const addedHours = Math.round(diffY / cellHeight);
+      
+      if (addedHours !== 0) {
+        const newDur = Math.max(1, Math.min(12, resizingBooking.duration + addedHours));
+        if (newDur !== resizingBooking.duration) {
+          updateBooking(resizingBooking.id, { duration: newDur });
+        }
+      }
+      setResizingBooking(null);
+    };
+
+    if (resizingBooking) {
+      document.addEventListener('mousemove', handleResizeMove);
+      document.addEventListener('mouseup', handleResizeEnd);
+      document.addEventListener('touchmove', handleResizeMove);
+      document.addEventListener('touchend', handleResizeEnd);
+    }
+    return () => {
+      document.removeEventListener('mousemove', handleResizeMove);
+      document.removeEventListener('mouseup', handleResizeEnd);
+      document.removeEventListener('touchmove', handleResizeMove);
+      document.removeEventListener('touchend', handleResizeEnd);
+    };
+  }, [resizingBooking, initialResizeY, updateBooking]);
 
   const handleBookingClick = (e, booking) => {
     e.stopPropagation();
@@ -235,6 +328,18 @@ const CalendarPage = () => {
 
           {/* Right: View Switcher + Filters */}
           <div className="toolbar-right">
+            <div className="room-switcher tour-calendar-filters" style={{ marginRight: '10px' }}>
+              {rooms.map(room => (
+                <button
+                  key={room.id}
+                  className={`view-btn ${selectedRoom === room.id ? 'active' : ''}`}
+                  onClick={() => setSelectedRoom(room.id)}
+                >
+                  <span className="dot" style={{ background: room.color, marginRight: 6 }}></span>
+                  {room.name}
+                </button>
+              ))}
+            </div>
             <div className="view-switcher tour-calendar-filters">
               {viewModes.map(({ id, label, icon: Icon }) => (
                 <button key={id} className={`view-btn ${viewMode === id ? 'active' : ''}`} onClick={() => setViewMode(id)}>
@@ -261,7 +366,7 @@ const CalendarPage = () => {
         </div>
 
         {/* Grid */}
-        <div className="monthly-grid-wrapper tour-calendar-grid" ref={gridWrapperRef}>
+        <div className="monthly-grid-wrapper tour-calendar-grid" ref={gridWrapperRef} onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
           <div className="monthly-grid" style={{ gridTemplateColumns: `${timeColWidth} repeat(${numDays}, minmax(${colWidth}, 1fr))` }}>
             <div className="grid-corner-cell"><span className="corner-label">JAM</span></div>
 
@@ -300,20 +405,46 @@ const CalendarPage = () => {
 
                   const cellClasses = ['grid-cell', hourIdx % 2 === 0 ? 'even-row' : '', isToday ? 'today-col-highlight' : '', isWeekend ? 'weekend-col' : '', isTargetCell ? 'tour-target-cell' : '', isTutorialBooking ? 'tour-new-booking' : ''].filter(Boolean).join(' ');
 
+                  // Current time line logic
+                  const isCurrentHour = isToday && now.getHours() === hour;
+                  const timeLineTop = isCurrentHour ? `${(now.getMinutes() / 60) * 100}%` : null;
+
                   if (cellBooking) {
                     return (
-                      <div key={`${hour}-${dayIdx}`} className={`${cellClasses} booked-cell status-${cellBooking.status} ${isBookingStart ? 'booking-start' : ''} ${isBookingEnd ? 'booking-end' : ''}`} onClick={e => handleBookingClick(e, cellBooking)}>
+                      <div 
+                        key={`${hour}-${dayIdx}`} 
+                        className={`${cellClasses} booked-cell status-${cellBooking.status} ${isBookingStart ? 'booking-start' : ''} ${isBookingEnd ? 'booking-end' : ''}`} 
+                        onClick={e => handleBookingClick(e, cellBooking)}
+                        draggable={isBookingStart && !isMobile}
+                        onDragStart={(e) => handleDragStart(e, cellBooking)}
+                        onDragEnd={handleDragEnd}
+                        onDragOver={handleDragOver}
+                        onDrop={(e) => handleDrop(e, dateStr, hour)}
+                      >
+                        {isCurrentHour && <div className="current-time-line" style={{ top: timeLineTop }} />}
                         {isBookingStart && (
                           <div className="booking-info">
                             <span className="booking-band-name">{cellBooking.band}</span>
                             <span className="booking-time-label">{cellBooking.hour}.00–{cellBooking.hour + cellBooking.duration}.00</span>
                           </div>
                         )}
+                        {isBookingEnd && (
+                          <div className="resize-handle" onMouseDown={(e) => handleResizeStart(e, cellBooking)} onTouchStart={(e) => handleResizeStart(e, cellBooking)}>
+                            <div className="resize-line" />
+                          </div>
+                        )}
                       </div>
                     );
                   }
                   return (
-                    <div key={`${hour}-${dayIdx}`} className={`${cellClasses} empty-cell`} onClick={() => handleCellClick(dateStr, hour)}>
+                    <div 
+                      key={`${hour}-${dayIdx}`} 
+                      className={`${cellClasses} empty-cell`} 
+                      onClick={() => handleCellClick(dateStr, hour)}
+                      onDragOver={handleDragOver}
+                      onDrop={(e) => handleDrop(e, dateStr, hour)}
+                    >
+                      {isCurrentHour && <div className="current-time-line" style={{ top: timeLineTop }} />}
                       <span className="hover-plus">+</span>
                     </div>
                   );
@@ -374,7 +505,7 @@ const CalendarPage = () => {
                       <button className="dur-btn" onClick={() => {
                         const newDur = Math.min(12, b.duration + 1);
                         if (newDur > b.duration) {
-                          const isOverlap = bookings.some(x => x.id !== b.id && x.date === b.date && (Number(x.hour) < Number(b.hour) + newDur) && (Number(b.hour) < Number(x.hour) + Number(x.duration)));
+                          const isOverlap = bookings.some(x => x.id !== b.id && x.date === b.date && (x.roomId || 'studio-a') === (b.roomId || 'studio-a') && (Number(x.hour) < Number(b.hour) + newDur) && (Number(b.hour) < Number(x.hour) + Number(x.duration)));
                           if (isOverlap) { useNotificationStore.getState().addNotification({ title: 'Jadwal Bentrok!', message: 'Durasi bertabrakan dengan booking lain.', type: 'error' }); return; }
                           updateBooking(b.id, { duration: newDur });
                         }
@@ -455,7 +586,7 @@ const CalendarPage = () => {
       </AnimatePresence>
 
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Booking Baru">
-        <BookingForm onClose={() => setIsModalOpen(false)} initialDate={prefillDate} initialHour={prefillHour} />
+        <BookingForm onClose={() => setIsModalOpen(false)} initialDate={prefillDate} initialHour={prefillHour} initialRoom={selectedRoom} />
       </Modal>
     </div>
   );

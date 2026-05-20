@@ -1099,3 +1099,117 @@
   .cf-identity-section { align-items: flex-start; }
   .cf-avatar-preview { width: 44px; height: 44px; font-size: 1.1rem; }
 }
+
+/* ===== Membership Tier Badge (Table) ===== */
+.tier-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* ===== Membership Tier Card (Detail Panel) ===== */
+.membership-tier-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-radius: 12px;
+  gap: 12px;
+}
+
+.tier-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.tier-icon {
+  font-size: 1.6rem;
+  line-height: 1;
+}
+
+.tier-name {
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.tier-next {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.tier-points {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.points-value {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.points-label {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+/* ===== WA CRM Buttons ===== */
+.wa-crm-buttons {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.wa-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.wa-btn.welcome {
+  background: rgba(37, 211, 102, 0.1);
+  border-color: rgba(37, 211, 102, 0.3);
+  color: #25d366;
+}
+.wa-btn.welcome:hover {
+  background: rgba(37, 211, 102, 0.2);
+}
+
+.wa-btn.promo {
+  background: rgba(255, 152, 0, 0.1);
+  border-color: rgba(255, 152, 0, 0.3);
+  color: #FF9800;
+}
+.wa-btn.promo:hover {
+  background: rgba(255, 152, 0, 0.2);
+}
+
+.wa-btn.tier {
+  background: rgba(168, 85, 247, 0.1);
+  border-color: rgba(168, 85, 247, 0.3);
+  color: #a855f7;
+}
+.wa-btn.tier:hover {
+  background: rgba(168, 85, 247, 0.2);
+}
+

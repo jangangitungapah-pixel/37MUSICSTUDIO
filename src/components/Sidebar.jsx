@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { CalendarDays, Users, Package, CreditCard, Settings, Music, BookOpen, PieChart, Menu, X, LogOut, HelpCircle, Bell, ChevronRight, FlaskConical, Sun, Moon } from 'lucide-react';
+import { CalendarDays, Users, Package, CreditCard, Settings, Music, BookOpen, PieChart, Menu, X, LogOut, HelpCircle, Bell, ChevronRight, FlaskConical, Sun, Moon, Shield, Hammer } from 'lucide-react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/useAuthStore';
 import { useTourStore } from '../store/useTourStore';
@@ -46,7 +46,7 @@ const Sidebar = () => {
       }, 300);
     } else {
       // Navigate to dashboard first
-      navigate('/');
+      navigate('/dashboard');
       setMobileOpen(false);
       setTimeout(() => {
         startTour();
@@ -55,12 +55,14 @@ const Sidebar = () => {
   };
 
   const menuItems = [
-    { icon: <PieChart size={19} />, label: 'Dashboard', path: '/', tourClass: '' },
+    { icon: <PieChart size={19} />, label: 'Dashboard', path: '/dashboard', tourClass: '' },
     { icon: <CalendarDays size={19} />, label: 'Calendar', path: '/calendar', tourClass: 'tour-calendar' },
     { icon: <Users size={19} />, label: 'Customers', path: '/customers', tourClass: 'tour-customers' },
     { icon: <Package size={19} />, label: 'Inventory', path: '/inventory', tourClass: '' },
     { icon: <CreditCard size={19} />, label: 'Billing / POS', path: '/billing', tourClass: 'tour-billing' },
     { icon: <BookOpen size={19} />, label: 'Pembukuan', path: '/finance', tourClass: '' },
+    { icon: <Shield size={19} />, label: 'Staff', path: '/staff', tourClass: '' },
+    { icon: <Hammer size={19} />, label: 'Maintenance', path: '/maintenance', tourClass: '' },
     { icon: <Settings size={19} />, label: 'Settings', path: '/settings', tourClass: '' },
   ];
 

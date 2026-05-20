@@ -1,9 +1,10 @@
 import { useState, useMemo } from 'react';
-import { Search, Plus, Edit2, Trash2, Mail, Phone, Calendar as CalendarIcon, Users, UserCheck, DollarSign, X, AtSign, MapPin, Clock, Star, StickyNote } from 'lucide-react';
+import { Search, Plus, Edit2, Trash2, Mail, Phone, Calendar as CalendarIcon, Users, UserCheck, DollarSign, X, AtSign, MapPin, Clock, Star, StickyNote, MessageCircle, Gift, Award } from 'lucide-react';
 import { useCustomerStore } from '../store/useCustomerStore';
 import { useTourStore } from '../store/useTourStore';
 import { toast } from 'sonner';
 import Modal from '../components/Modal';
+import { getMembershipTier, TIER_CONFIG, getLoyaltyPoints, sendWelcomeMessage, sendPromoMessage, sendBookingReminder, sendMembershipUpgrade } from '../lib/whatsappService';
 import './CustomersPage.css';
 
 const AVATAR_COLORS = [
@@ -234,6 +235,7 @@ const CustomersPage = () => {
                   <th>Booking</th>
                   <th>Jam</th>
                   <th>Revenue</th>
+                  <th>Tier</th>
                   <th>Status</th>
                   <th className="action-col">Aksi</th>
                 </tr>
@@ -276,6 +278,17 @@ const CustomersPage = () => {
                         </td>
                         <td>
                           <span className="revenue-text">{formatCurrency(customer.totalSpent)}</span>
+                        </td>
+                        <td>
+                          {(() => {
+                            const tier = getMembershipTier(customer.totalBookings, customer.totalSpent);
+                            const cfg = TIER_CONFIG[tier];
+                            return (
+                              <span className="tier-badge" style={{ background: cfg.bg, color: cfg.color, border: `1px solid ${cfg.color}44` }}>
+                                {cfg.icon} {tier}
+                              </span>
+                            );
+                          })()}
                         </td>
                         <td>
                           <span className={`status-badge ${customer.status.toLowerCase()}`}>
@@ -378,6 +391,33 @@ const CustomersPage = () => {
                 {selectedCustomer.address && <div className="detail-item"><MapPin size={14} /> <span>{selectedCustomer.address}</span></div>}
               </div>
 
+              {/* Membership Tier */}
+              {(() => {
+                const tier = getMembershipTier(selectedCustomer.totalBookings, selectedCustomer.totalSpent);
+                const cfg = TIER_CONFIG[tier];
+                const points = getLoyaltyPoints(selectedCustomer.totalSpent);
+                return (
+                  <div className="detail-section">
+                    <h4 className="section-title">Membership & Poin</h4>
+                    <div className="membership-tier-card" style={{ background: cfg.bg, border: `1px solid ${cfg.color}44` }}>
+                      <div className="tier-info">
+                        <span className="tier-icon">{cfg.icon}</span>
+                        <div>
+                          <div className="tier-name" style={{ color: cfg.color }}>{tier} Member</div>
+                          {cfg.next && (
+                            <div className="tier-next">Naik ke {cfg.next} di {cfg.nextAt}</div>
+                          )}
+                        </div>
+                      </div>
+                      <div className="tier-points">
+                        <span className="points-value">{points.toLocaleString('id-ID')}</span>
+                        <span className="points-label">poin</span>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })()}
+
               <div className="detail-section">
                 <h4 className="section-title">Statistik</h4>
                 <div className="stat-grid stat-grid-3">
@@ -411,6 +451,30 @@ const CustomersPage = () => {
             </div>
 
             <div className="detail-panel-footer">
+              {/* WA CRM Buttons */}
+              <div className="wa-crm-buttons">
+                <button
+                  className="wa-btn welcome"
+                  onClick={() => sendWelcomeMessage(selectedCustomer)}
+                  title="Kirim pesan sapaan"
+                >
+                  <MessageCircle size={14} /> Sapaan
+                </button>
+                <button
+                  className="wa-btn promo"
+                  onClick={() => sendPromoMessage(selectedCustomer, { title: 'Promo Spesial!', description: 'Diskon booking untuk pelanggan setia kami.' })}
+                  title="Kirim promo"
+                >
+                  <Gift size={14} /> Promo
+                </button>
+                <button
+                  className="wa-btn tier"
+                  onClick={() => sendMembershipUpgrade(selectedCustomer, getMembershipTier(selectedCustomer.totalBookings, selectedCustomer.totalSpent))}
+                  title="Ingatkan membership tier"
+                >
+                  <Award size={14} /> Tier
+                </button>
+              </div>
               <button className="btn-edit-full" onClick={() => handleOpenEdit(selectedCustomer)}>
                 <Edit2 size={14} /> Edit Pelanggan
               </button>

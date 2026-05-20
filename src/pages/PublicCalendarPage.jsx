@@ -21,9 +21,10 @@ const PublicCalendarPage = () => {
   const navigate = useNavigate();
   const { user, logout } = useAuthStore();
   const { bookings } = useBookingStore();
-  const { studioName, studioPhone, pricePerHour, durationDiscounts = [] } = useSettingsStore();
+  const { studioName, studioPhone, pricePerHour, durationDiscounts = [], rooms = [] } = useSettingsStore();
 
   const [currentDate, setCurrentDate] = useState(new Date());
+  const [selectedRoom, setSelectedRoom] = useState('studio-a');
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
   useEffect(() => {
@@ -89,7 +90,7 @@ const PublicCalendarPage = () => {
   const nowHour    = new Date().getHours();
 
   const activeBookings = useMemo(() =>
-    bookings.filter(b => b.status !== 'cancelled'), [bookings]);
+    bookings.filter(b => b.status !== 'cancelled' && (b.roomId || 'studio-a') === selectedRoom), [bookings, selectedRoom]);
 
   // Count available slots today
   const availableToday = useMemo(() => {
@@ -131,7 +132,8 @@ const PublicCalendarPage = () => {
     }
     const dateLabel = format(new Date(selectedSlot.dateStr + 'T00:00:00'), 'dd MMMM yyyy', { locale: localeId });
     const endHourLabel = selectedSlot.hour + duration;
-    const message = `Halo Admin ${studioName} 👋\n\nSaya dari band *${bandName.trim()}* ingin booking studio:\n\n📅 Tanggal : ${dateLabel}\n⏰ Jam     : ${selectedSlot.hour}:00 – ${endHourLabel}:00\n⏱️ Durasi  : ${duration} jam\n\nApakah slot tersebut masih tersedia?`;
+    const roomName = rooms.find(r => r.id === selectedRoom)?.name || 'Studio A';
+    const message = `Halo Admin ${studioName} 👋\n\nSaya dari band *${bandName.trim()}* ingin booking studio:\n\n📅 Tanggal : ${dateLabel}\n🚪 Ruangan : ${roomName}\n⏰ Jam     : ${selectedSlot.hour}:00 – ${endHourLabel}:00\n⏱️ Durasi  : ${duration} jam\n\nApakah slot tersebut masih tersedia?`;
     let phone = (studioPhone || '').replace(/\D/g, '');
     if (phone.startsWith('0')) phone = '62' + phone.substring(1);
     window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, '_blank');
@@ -214,6 +216,19 @@ const PublicCalendarPage = () => {
           </div>
 
           <div className="pc-toolbar-right">
+            {/* Room switcher */}
+            <div className="pc-view-switch" style={{ marginRight: '10px' }}>
+              {rooms.map(r => (
+                <button
+                  key={r.id}
+                  className={`pc-view-btn ${selectedRoom === r.id ? 'active' : ''}`}
+                  onClick={() => setSelectedRoom(r.id)}
+                >
+                  <span className="pc-dot" style={{ background: r.color, width: 8, height: 8, marginRight: 6, display: 'inline-block' }} />
+                  {r.name}
+                </button>
+              ))}
+            </div>
             {/* View switcher */}
             <div className="pc-view-switch">
               {['day', 'week', 'month'].map(v => (

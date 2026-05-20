@@ -5,15 +5,21 @@ import { useCustomerStore } from '../store/useCustomerStore';
 import { useTourStore } from '../store/useTourStore';
 import { useNotificationStore } from '../store/useNotificationStore';
 import { format } from 'date-fns';
-import { Music2, Mic, Wrench, User, Phone, Calendar, Clock, DollarSign, StickyNote, Star, AlertCircle } from 'lucide-react';
+import { Music2, Mic, Wrench, User, Phone, Calendar, Clock, DollarSign, StickyNote, Star, AlertCircle, QrCode, Banknote, RefreshCw } from 'lucide-react';
+import { generatePaymentLink, checkPaymentStatus } from '../lib/paymentGateway';
 import './BookingForm.css';
 
-const BookingForm = ({ onClose, initialDate, initialHour }) => {
+const BookingForm = ({ onClose, initialDate, initialHour, initialRoom }) => {
   const { bookings, addBooking } = useBookingStore();
-  const { pricePerHour, durationDiscounts = [], recordingSessions = [] } = useSettingsStore();
+  const { pricePerHour, durationDiscounts = [], recordingSessions = [], rooms = [] } = useSettingsStore();
   const { customers, incrementBookingCount } = useCustomerStore();
   const { run, currentStep, nextStep } = useTourStore();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  const [paymentMethod, setPaymentMethod] = useState('cash');
+  const [qrisData, setQrisData] = useState(null);
+  const [isGeneratingQR, setIsGeneratingQR] = useState(false);
+  const [paymentStatus, setPaymentStatus] = useState(null);
 
   const today = format(new Date(), 'yyyy-MM-dd');
 
@@ -28,7 +34,8 @@ const BookingForm = ({ onClose, initialDate, initialHour }) => {
     dpAmount: 0,
     note: '',
     sessionId: recordingSessions.length > 0 ? recordingSessions[0].id : '',
-    sessionPrice: recordingSessions.length > 0 ? recordingSessions[0].price : 0
+    sessionPrice: recordingSessions.length > 0 ? recordingSessions[0].price : 0,
+    roomId: initialRoom || (rooms.length > 0 ? rooms[0].id : 'studio-a')
   });
 
   const handleChange = (e) => {
@@ -81,6 +88,7 @@ const BookingForm = ({ onClose, initialDate, initialHour }) => {
 
     const isOverlap = bookings.some(b => {
       if (b.date !== formData.date) return false;
+      if ((b.roomId || 'studio-a') !== (formData.roomId || 'studio-a')) return false;
       const bH = Number(b.hour), bD = Number(b.duration);
       const fH = Number(formData.hour), fD = Number(formData.duration);
       return (bH < fH + fD) && (fH < bH + bD);
@@ -108,6 +116,36 @@ const BookingForm = ({ onClose, initialDate, initialHour }) => {
       });
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleGenerateQRIS = async () => {
+    const amountToPay = formData.status === 'dp' ? formData.dpAmount : totalPrice;
+    if (amountToPay <= 0) {
+      useNotificationStore.getState().addNotification({ title: 'Error', message: 'Nominal pembayaran tidak valid', type: 'error' });
+      return;
+    }
+    setIsGeneratingQR(true);
+    try {
+      const res = await generatePaymentLink({ amount: amountToPay });
+      setQrisData(res);
+      setPaymentStatus('pending');
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsGeneratingQR(false);
+    }
+  };
+
+  const handleCheckStatus = async () => {
+    if (!qrisData?.invoiceId) return;
+    const res = await checkPaymentStatus(qrisData.invoiceId);
+    setPaymentStatus(res.status);
+    if (res.status === 'paid') {
+      useNotificationStore.getState().addNotification({ title: 'Berhasil', message: 'Pembayaran QRIS berhasil dikonfirmasi.', type: 'success' });
+      setFormData(prev => ({ ...prev, note: `${prev.note ? prev.note + '\n' : ''}[PAID VIA QRIS ${res.invoiceId}]` }));
+    } else {
+      useNotificationStore.getState().addNotification({ title: 'Pending', message: 'Pembayaran belum diterima.', type: 'warning' });
     }
   };
 
@@ -208,6 +246,16 @@ const BookingForm = ({ onClose, initialDate, initialHour }) => {
               />
             </div>
           )}
+        </div>
+        <div className="bf-row" style={{ marginTop: '12px' }}>
+          <div className="bf-field">
+            <label className="bf-label">Pilih Ruangan <span className="bf-required">*</span></label>
+            <select name="roomId" value={formData.roomId} onChange={handleChange} className="bf-input" required>
+              {rooms.map(room => (
+                <option key={room.id} value={room.id}>{room.name}</option>
+              ))}
+            </select>
+          </div>
         </div>
       </div>
 
@@ -354,6 +402,53 @@ const BookingForm = ({ onClose, initialDate, initialHour }) => {
           {formData.status === 'confirmed' && (
             <div className="bf-paid-notice">
               ✓ Pembayaran penuh {formatCurrency(totalPrice)} dicatat sebagai Lunas
+            </div>
+          )}
+
+          {/* Payment Method Selector */}
+          {(formData.status === 'dp' || formData.status === 'confirmed') && (
+            <div className="bf-payment-method" style={{ marginTop: '16px', display: 'flex', gap: '8px' }}>
+              <button 
+                type="button" 
+                className={`bf-type-btn ${paymentMethod === 'cash' ? 'active' : ''}`}
+                onClick={() => setPaymentMethod('cash')}
+                style={{ flex: 1 }}
+              >
+                <Banknote size={16} /> Cash / Manual
+              </button>
+              <button 
+                type="button" 
+                className={`bf-type-btn ${paymentMethod === 'qris' ? 'active' : ''}`}
+                onClick={() => setPaymentMethod('qris')}
+                style={{ flex: 1 }}
+              >
+                <QrCode size={16} /> QRIS Otomatis
+              </button>
+            </div>
+          )}
+
+          {/* QRIS Mock UI */}
+          {paymentMethod === 'qris' && (formData.status === 'dp' || formData.status === 'confirmed') && (
+            <div className="bf-qris-container" style={{ marginTop: '16px', padding: '16px', background: 'rgba(0, 0, 0, 0.2)', borderRadius: '12px', border: '1px solid rgba(255, 255, 255, 0.1)', textAlign: 'center' }}>
+              {!qrisData ? (
+                <button type="button" className="btn-secondary" onClick={handleGenerateQRIS} disabled={isGeneratingQR} style={{ width: '100%' }}>
+                  {isGeneratingQR ? 'Generating QRIS...' : 'Generate QRIS Code'}
+                </button>
+              ) : (
+                <div className="bf-qris-display">
+                  <div style={{ marginBottom: '12px' }}>
+                    <QrCode size={120} color="var(--accent-cyan)" />
+                  </div>
+                  <div style={{ marginBottom: '16px', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+                    Scan QRIS ini untuk membayar {formatCurrency(qrisData.amount)}<br/>
+                    Status: <span style={{ color: paymentStatus === 'paid' ? '#4CAF50' : '#FF9800', fontWeight: 'bold' }}>{paymentStatus.toUpperCase()}</span>
+                  </div>
+                  <button type="button" className="btn-secondary" onClick={handleCheckStatus} disabled={paymentStatus === 'paid'} style={{ width: '100%' }}>
+                    <RefreshCw size={16} style={{ marginRight: '8px' }} />
+                    Cek Status Pembayaran
+                  </button>
+                </div>
+              )}
             </div>
           )}
         </div>

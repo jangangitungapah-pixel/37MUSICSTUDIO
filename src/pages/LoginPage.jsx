@@ -22,14 +22,14 @@ const LoginPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (isAuthLoaded && user) navigate('/');
+    if (isAuthLoaded && user) navigate('/dashboard');
   }, [user, isAuthLoaded, navigate]);
 
   useEffect(() => { clearError(); }, [clearError]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try { await login(identifier, password); navigate('/'); } catch { return; }
+    try { await login(identifier, password); navigate('/dashboard'); } catch { return; }
   };
 
   const handleGuestLogin = async () => {

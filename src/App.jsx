@@ -14,6 +14,7 @@ import './components/BookingForm.css'; // Shared global form styles (.form-group
 
 import LoginPage from './pages/LoginPage';
 import PublicCalendarPage from './pages/PublicCalendarPage';
+import LandingPage from './pages/LandingPage';
 
 // Lazy load pages for code splitting to reduce chunk size
 const CalendarPage = lazy(() => import('./pages/CalendarPage'));
@@ -23,6 +24,8 @@ const BillingPage = lazy(() => import('./pages/BillingPage'));
 const FinancePage = lazy(() => import('./pages/FinancePage'));
 const SettingsPage = lazy(() => import('./pages/SettingsPage'));
 const DashboardPage = lazy(() => import('./pages/DashboardPage'));
+const StaffPage = lazy(() => import('./pages/StaffPage'));
+const MaintenancePage = lazy(() => import('./pages/MaintenancePage'));
 
 const STAFF_ROLES = new Set(['admin', 'staff']);
 
@@ -171,14 +174,16 @@ const AnimatedRoutes = () => {
     // which triggers PageTransition's initial→animate enter animation.
     <Suspense fallback={null}>
       <Routes location={location} key={location.pathname}>
-        <Route path="/" element={<PageTransition><DashboardPage /></PageTransition>} />
+        <Route path="/dashboard" element={<PageTransition><DashboardPage /></PageTransition>} />
         <Route path="/calendar" element={<PageTransition><CalendarPage /></PageTransition>} />
         <Route path="/customers" element={<PageTransition><CustomersPage /></PageTransition>} />
         <Route path="/inventory" element={<PageTransition><InventoryPage /></PageTransition>} />
         <Route path="/billing" element={<PageTransition><BillingPage /></PageTransition>} />
         <Route path="/finance" element={<PageTransition><FinancePage /></PageTransition>} />
+        <Route path="/staff" element={<PageTransition><StaffPage /></PageTransition>} />
+        <Route path="/maintenance" element={<PageTransition><MaintenancePage /></PageTransition>} />
         <Route path="/settings" element={<PageTransition><SettingsPage /></PageTransition>} />
-        <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>
     </Suspense>
   );
@@ -244,6 +249,7 @@ function App() {
         }}
       />
         <Routes>
+          <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/jadwal-publik" element={<PublicCalendarPage />} />
           
