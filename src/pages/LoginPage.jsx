@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/useAuthStore';
 import {
   Music, AlertCircle, Loader2, Mail, Lock, Eye, EyeOff,
-  CalendarDays, Users, BarChart2, ChevronRight, ArrowRight
+  CalendarDays, ArrowRight
 } from 'lucide-react';
 import './AuthPage.css';
 
@@ -15,8 +15,8 @@ const FEATURES = [
 ];
 
 const LoginPage = () => {
-  const [identifier, setIdentifier] = useState('admin');
-  const [password, setPassword]     = useState('123456');
+  const [identifier, setIdentifier] = useState('');
+  const [password, setPassword]     = useState('');
   const [showPass, setShowPass]     = useState(false);
   const { login, loginGuest, error, loading, user, isAuthLoaded, clearError } = useAuthStore();
   const navigate = useNavigate();
@@ -29,11 +29,11 @@ const LoginPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try { await login(identifier, password); navigate('/'); } catch {}
+    try { await login(identifier, password); navigate('/'); } catch { return; }
   };
 
   const handleGuestLogin = async () => {
-    try { await loginGuest(); navigate('/jadwal-publik'); } catch {}
+    try { await loginGuest(); navigate('/jadwal-publik'); } catch { return; }
   };
 
   if (!isAuthLoaded) {
@@ -116,14 +116,14 @@ const LoginPage = () => {
             {/* Login Form */}
             <form onSubmit={handleSubmit} className="auth-form">
               <div className="form-group">
-                <label>Email, Username, atau No. Telepon</label>
+                <label>Username atau Email</label>
                 <div className="form-input-wrap">
                   <input
                     type="text"
                     value={identifier}
                     onChange={e => setIdentifier(e.target.value)}
                     className="form-input"
-                    placeholder="Masukkan identitas login"
+                    placeholder="admin"
                     autoComplete="username"
                     required
                   />

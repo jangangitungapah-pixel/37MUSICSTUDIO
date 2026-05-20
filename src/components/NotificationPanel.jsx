@@ -1,4 +1,3 @@
-import React from 'react';
 import { useNotificationStore } from '../store/useNotificationStore';
 import { CalendarCheck, UserPlus, AlertTriangle, Info, Bell, Check, X, Trash2 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';

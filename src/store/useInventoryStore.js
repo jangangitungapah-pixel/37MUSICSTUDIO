@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { db } from '../firebase';
 import { collection, doc, onSnapshot, setDoc, deleteDoc, updateDoc } from 'firebase/firestore';
-import { format, subDays, addDays } from 'date-fns';
+import { format, addDays } from 'date-fns';
 import { useDemoStore } from './useDemoStore';
 
 const today = new Date();
@@ -57,6 +57,7 @@ export const useInventoryStore = create((set, get) => {
       
       const newCategories = [...state.categories, trimmed];
       set({ categories: newCategories });
+      if (useDemoStore.getState().isDemoMode) return;
       await setDoc(categoriesRef, { list: newCategories }, { merge: true });
     },
 
@@ -64,6 +65,7 @@ export const useInventoryStore = create((set, get) => {
       const state = get();
       const newCategories = state.categories.filter(c => c !== cat);
       set({ categories: newCategories });
+      if (useDemoStore.getState().isDemoMode) return;
       await setDoc(categoriesRef, { list: newCategories }, { merge: true });
     },
 
@@ -77,6 +79,7 @@ export const useInventoryStore = create((set, get) => {
         nextService: newItem.nextService || format(addDays(new Date(), 90), 'yyyy-MM-dd')
       };
       set((state) => ({ inventory: [...state.inventory, itemData] }));
+      if (useDemoStore.getState().isDemoMode) return;
       await setDoc(doc(inventoryRef, id.toString()), itemData);
     },
 
@@ -84,11 +87,13 @@ export const useInventoryStore = create((set, get) => {
       set((state) => ({
         inventory: state.inventory.map(item => item.id === id ? { ...item, ...updatedData } : item)
       }));
+      if (useDemoStore.getState().isDemoMode) return;
       await updateDoc(doc(inventoryRef, id.toString()), updatedData);
     },
 
     deleteEquipment: async (id) => {
       set((state) => ({ inventory: state.inventory.filter(item => item.id !== id) }));
+      if (useDemoStore.getState().isDemoMode) return;
       await deleteDoc(doc(inventoryRef, id.toString()));
     },
 
@@ -105,7 +110,7 @@ export const useInventoryStore = create((set, get) => {
       _7DaysFromNow.setDate(_7DaysFromNow.getDate() + 7);
       const serviceNeeded = state.inventory.filter(i => new Date(i.nextService) <= _7DaysFromNow).length;
 
-      return { total, totalQty, excellent, good, needsRepair, broken, serviceNeeded };
+      return { total, totalItems: total, totalQty, excellent, good, needsRepair, broken, serviceNeeded };
     }
   };
 });

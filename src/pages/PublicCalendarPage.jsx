@@ -5,12 +5,12 @@ import { useBookingStore } from '../store/useBookingStore';
 import { useSettingsStore } from '../store/useSettingsStore';
 import {
   ChevronLeft, ChevronRight, LogOut, Music, Phone, MessageCircle,
-  Plus, CalendarDays, Clock, CheckCircle2, XCircle, Info, X
+  Plus, CalendarDays, Clock, XCircle, Info, X
 } from 'lucide-react';
 import {
   format, addMonths, subMonths, startOfMonth, endOfMonth,
   eachDayOfInterval, getDay, addDays, subDays,
-  startOfWeek, endOfWeek, addWeeks, subWeeks, isSameDay
+  startOfWeek, endOfWeek, addWeeks, subWeeks
 } from 'date-fns';
 import { id as localeId } from 'date-fns/locale';
 import { useNotificationStore } from '../store/useNotificationStore';
@@ -271,7 +271,7 @@ const PublicCalendarPage = () => {
                   </div>
 
                   {/* Day cells */}
-                  {daysArray.map((day, dIdx) => {
+                  {daysArray.map((day) => {
                     const dateStr = format(day, 'yyyy-MM-dd');
                     const isToday = dateStr === todayStr;
                     const dow = getDay(day);

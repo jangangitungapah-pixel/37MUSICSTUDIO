@@ -1,7 +1,8 @@
-import React, { useState, useMemo } from 'react';
-import { Search, Plus, Edit2, Trash2, Box, Package, AlertTriangle, AlertCircle, Wrench, X, Tag, Hash, ChevronRight, Calendar, StickyNote, FolderPlus } from 'lucide-react';
+import { useState, useMemo } from 'react';
+import { Search, Plus, Edit2, Trash2, Box, Package, AlertTriangle, AlertCircle, Wrench, X, Tag, Hash, StickyNote } from 'lucide-react';
 import { useInventoryStore } from '../store/useInventoryStore';
 import { useTourStore } from '../store/useTourStore';
+import { toast } from 'sonner';
 import Modal from '../components/Modal';
 import './InventoryPage.css';
 
@@ -68,10 +69,21 @@ const InventoryPage = () => {
   };
 
   const handleDelete = (id) => {
-    if (window.confirm('Yakin ingin menghapus alat ini dari inventaris?')) {
-      deleteEquipment(id);
-      if (selectedItem && selectedItem.id === id) setSelectedItem(null);
-    }
+    const item = inventory.find(equipment => equipment.id === id);
+    toast.warning('Hapus item inventaris?', {
+      description: item?.name || 'Data alat ini akan dihapus permanen.',
+      action: {
+        label: 'Hapus',
+        onClick: () => {
+          deleteEquipment(id);
+          if (selectedItem && selectedItem.id === id) setSelectedItem(null);
+        }
+      },
+      cancel: {
+        label: 'Batal',
+        onClick: () => {}
+      }
+    });
   };
 
   const handleChange = (e) => {

@@ -7,6 +7,7 @@
   flex-direction: column;
   min-height: 100%;
   gap: 24px;
+  padding-bottom: 28px;
 }
 
 /* ===== Header ===== */
@@ -805,6 +806,7 @@
 @media (max-width: 768px) {
   .finance-page {
     gap: 14px;
+    padding-bottom: 20px;
   }
 
   .finance-header {

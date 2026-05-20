@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import Modal from './Modal';
 import { useAuthStore } from '../store/useAuthStore';
 import { User, Phone, Mail, Lock, AlertCircle, CheckCircle2, Loader2 } from 'lucide-react';
@@ -39,8 +39,8 @@ const ProfileModal = ({ isOpen, onClose }) => {
     try {
       await updateUserProfile(username, phone);
       setSuccessMsg('Profil berhasil diperbarui!');
-    } catch (err) {
-      // Error is handled by store
+    } catch {
+      return;
     }
   };
 
@@ -65,8 +65,8 @@ const ProfileModal = ({ isOpen, onClose }) => {
       setSuccessMsg('Password berhasil diperbarui!');
       setPassword('');
       setConfirmPassword('');
-    } catch (err) {
-      // Error handled by store
+    } catch {
+      return;
     }
   };
 

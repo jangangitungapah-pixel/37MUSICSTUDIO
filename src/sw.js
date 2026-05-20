@@ -51,7 +51,7 @@ self.addEventListener('push', (event) => {
     event.waitUntil(
       self.registration.showNotification(title, options)
     );
-  } catch (e) {
+  } catch {
     // If data is not JSON, show as text
     const title = '37 Music Studio';
     event.waitUntil(

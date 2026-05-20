@@ -1,14 +1,14 @@
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { useBookingStore } from '../store/useBookingStore';
 import { useCustomerStore } from '../store/useCustomerStore';
 import { useInventoryStore } from '../store/useInventoryStore';
 import { useFinanceStore } from '../store/useFinanceStore';
 import { useSettingsStore } from '../store/useSettingsStore';
-import { format, subDays, addMonths, parseISO, isToday, isTomorrow } from 'date-fns';
+import { format, subDays, addMonths } from 'date-fns';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import {
   TrendingUp, TrendingDown, Users, CalendarCheck, PackageOpen, Clock,
-  ArrowRight, LayoutDashboard, Zap, AlertTriangle, CheckCircle2, Music2
+  ArrowRight, AlertTriangle, CheckCircle2, Music2
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import './DashboardPage.css';
@@ -23,7 +23,7 @@ const DashboardPage = () => {
   const { pricePerHour, studioName } = useSettingsStore();
   const navigate = useNavigate();
 
-  const today = new Date();
+  const today = useMemo(() => new Date(), []);
   const currentHour = today.getHours();
   const greeting = currentHour < 11 ? 'Selamat Pagi' : currentHour < 15 ? 'Selamat Siang' : currentHour < 18 ? 'Selamat Sore' : 'Selamat Malam';
 
@@ -41,7 +41,9 @@ const DashboardPage = () => {
   const combinedData = useMemo(() => {
     const allEntries = [...transactions];
     bookings.forEach(b => {
-      if (b.status === 'confirmed') allEntries.push({ date: b.date, type: 'income', amount: b.duration * pricePerHour });
+      const base = b.type === 'recording' ? (b.sessionPrice || 0) : (b.duration * pricePerHour);
+      const total = base - (b.discountAmount || 0);
+      if (b.status === 'confirmed') allEntries.push({ date: b.date, type: 'income', amount: total });
       else if (b.status === 'dp' && b.dpAmount > 0) allEntries.push({ date: b.date, type: 'income', amount: b.dpAmount });
     });
     return allEntries;
@@ -54,7 +56,7 @@ const DashboardPage = () => {
       const income = combinedData.filter(t => t.date === dateStr && t.type === 'income').reduce((s, t) => s + t.amount, 0);
       return { name: format(d, 'EEE'), Pendapatan: income };
     });
-  }, [combinedData]);
+  }, [combinedData, today]);
 
   const inventoryChartData = [
     { name: 'Excellent', value: invStats.excellent },
@@ -184,7 +186,7 @@ const DashboardPage = () => {
               <h3 className="chart-title">Tren Pendapatan</h3>
               <p className="chart-sub">7 hari terakhir</p>
             </div>
-            <button className="chart-link-btn" onClick={() => navigate('/keuangan')}>
+            <button className="chart-link-btn" onClick={() => navigate('/finance')}>
               Lihat Detail <ArrowRight size={14} />
             </button>
           </div>
@@ -231,7 +233,7 @@ const DashboardPage = () => {
               <h3 className="chart-title">Jadwal Mendatang</h3>
               <p className="chart-sub">Hari ini & besok</p>
             </div>
-            <button className="chart-link-btn" onClick={() => navigate('/kalender')}>
+            <button className="chart-link-btn" onClick={() => navigate('/calendar')}>
               Kalender <ArrowRight size={14} />
             </button>
           </div>
@@ -265,7 +267,7 @@ const DashboardPage = () => {
               <h3 className="chart-title">Kondisi Inventaris</h3>
               <p className="chart-sub">{invStats.totalItems} item total</p>
             </div>
-            <button className="chart-link-btn" onClick={() => navigate('/inventaris')}>
+            <button className="chart-link-btn" onClick={() => navigate('/inventory')}>
               Detail <ArrowRight size={14} />
             </button>
           </div>
@@ -320,7 +322,7 @@ const DashboardPage = () => {
               <h3 className="chart-title">Top Pelanggan</h3>
               <p className="chart-sub">Berdasarkan loyalitas booking</p>
             </div>
-            <button className="chart-link-btn" onClick={() => navigate('/pelanggan')}>
+            <button className="chart-link-btn" onClick={() => navigate('/customers')}>
               Semua <ArrowRight size={14} />
             </button>
           </div>

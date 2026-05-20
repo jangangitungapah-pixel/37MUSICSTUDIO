@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { db } from '../firebase';
 import { doc, onSnapshot, setDoc } from 'firebase/firestore';
 
-export const useSettingsStore = create((set, get) => {
+export const useSettingsStore = create((set) => {
   // Initialize listener
   const settingsRef = doc(db, 'config', 'settings');
   

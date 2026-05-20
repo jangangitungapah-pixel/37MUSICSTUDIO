@@ -1,7 +1,8 @@
-import React, { useState, useMemo } from 'react';
-import { Search, Plus, Edit2, Trash2, Mail, Phone, Calendar as CalendarIcon, Users, UserCheck, UserX, DollarSign, X, AtSign, MapPin, Clock, Star, StickyNote } from 'lucide-react';
+import { useState, useMemo } from 'react';
+import { Search, Plus, Edit2, Trash2, Mail, Phone, Calendar as CalendarIcon, Users, UserCheck, DollarSign, X, AtSign, MapPin, Clock, Star, StickyNote } from 'lucide-react';
 import { useCustomerStore } from '../store/useCustomerStore';
 import { useTourStore } from '../store/useTourStore';
+import { toast } from 'sonner';
 import Modal from '../components/Modal';
 import './CustomersPage.css';
 
@@ -84,10 +85,21 @@ const CustomersPage = () => {
   };
 
   const handleDelete = (id) => {
-    if (window.confirm('Yakin ingin menghapus pelanggan ini?')) {
-      deleteCustomer(id);
-      if (selectedCustomer && selectedCustomer.id === id) setSelectedCustomer(null);
-    }
+    const customer = customers.find(c => c.id === id);
+    toast.warning('Hapus pelanggan?', {
+      description: customer?.name || 'Data pelanggan ini akan dihapus permanen.',
+      action: {
+        label: 'Hapus',
+        onClick: () => {
+          deleteCustomer(id);
+          if (selectedCustomer && selectedCustomer.id === id) setSelectedCustomer(null);
+        }
+      },
+      cancel: {
+        label: 'Batal',
+        onClick: () => {}
+      }
+    });
   };
 
   const handleChange = (e) => {

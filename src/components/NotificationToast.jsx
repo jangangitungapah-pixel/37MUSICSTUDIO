@@ -1,4 +1,3 @@
-import React from 'react';
 import { useNotificationStore } from '../store/useNotificationStore';
 import { CalendarCheck, UserPlus, X, Bell, AlertTriangle, Info } from 'lucide-react';
 import './NotificationToast.css';

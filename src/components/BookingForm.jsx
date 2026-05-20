@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useBookingStore } from '../store/useBookingStore';
 import { useSettingsStore } from '../store/useSettingsStore';
 import { useCustomerStore } from '../store/useCustomerStore';
@@ -13,6 +13,7 @@ const BookingForm = ({ onClose, initialDate, initialHour }) => {
   const { pricePerHour, durationDiscounts = [], recordingSessions = [] } = useSettingsStore();
   const { customers, incrementBookingCount } = useCustomerStore();
   const { run, currentStep, nextStep } = useTourStore();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const today = format(new Date(), 'yyyy-MM-dd');
 
@@ -74,8 +75,10 @@ const BookingForm = ({ onClose, initialDate, initialHour }) => {
 
   const formatCurrency = (num) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(num);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    if (isSubmitting) return;
+
     const isOverlap = bookings.some(b => {
       if (b.date !== formData.date) return false;
       const bH = Number(b.hour), bD = Number(b.duration);
@@ -86,14 +89,26 @@ const BookingForm = ({ onClose, initialDate, initialHour }) => {
       useNotificationStore.getState().addNotification({ title: 'Jadwal Bentrok!', message: 'Jam yang dipilih menabrak jadwal band lain.', type: 'error' });
       return;
     }
-    if (formData.type === 'maintenance') {
-      addBooking({ ...formData, status: 'maintenance' });
-    } else {
-      addBooking({ ...formData, isVIP, discountAmount });
-      incrementBookingCount(formData.band, { phone: formData.phone, duration: formData.duration, totalPrice });
+
+    setIsSubmitting(true);
+    try {
+      if (formData.type === 'maintenance') {
+        await addBooking({ ...formData, status: 'maintenance' });
+      } else {
+        await addBooking({ ...formData, isVIP, discountAmount });
+        await incrementBookingCount(formData.band, { phone: formData.phone, duration: formData.duration, totalPrice });
+      }
+      onClose();
+      if (run && currentStep === 10) setTimeout(() => nextStep(), 100);
+    } catch (error) {
+      useNotificationStore.getState().addNotification({
+        title: 'Gagal menyimpan booking',
+        message: error.message || 'Coba lagi beberapa saat lagi.',
+        type: 'error',
+      });
+    } finally {
+      setIsSubmitting(false);
     }
-    onClose();
-    if (run && currentStep === 10) setTimeout(() => nextStep(), 100);
   };
 
   const statusOptions = [
@@ -362,8 +377,8 @@ const BookingForm = ({ onClose, initialDate, initialHour }) => {
       {/* Actions */}
       <div className="bf-actions">
         <button type="button" className="btn-secondary" onClick={onClose}>Batal</button>
-        <button type="submit" className="btn-primary tour-btn-save">
-          {formData.type === 'maintenance' ? 'Blokir Jadwal' : 'Simpan Booking'}
+        <button type="submit" className="btn-primary tour-btn-save" disabled={isSubmitting}>
+          {isSubmitting ? 'Menyimpan...' : formData.type === 'maintenance' ? 'Blokir Jadwal' : 'Simpan Booking'}
         </button>
       </div>
     </form>

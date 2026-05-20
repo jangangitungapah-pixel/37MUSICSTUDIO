@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { CalendarDays, Users, Package, CreditCard, Settings, Music, BookOpen, PieChart, Menu, X, LogOut, HelpCircle, Bell, ChevronRight, FlaskConical, Sun, Moon } from 'lucide-react';
-import { NavLink, useNavigate, useLocation } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/useAuthStore';
 import { useTourStore } from '../store/useTourStore';
 import { useNotificationStore } from '../store/useNotificationStore';
@@ -22,7 +22,6 @@ const Sidebar = () => {
   const { isDemoMode, toggleDemoMode } = useDemoStore();
   const { theme, toggleTheme } = useThemeStore();
   const navigate = useNavigate();
-  const location = useLocation();
 
   const unreadCount = notifications.filter(n => !n.isRead).length;
 
@@ -70,9 +69,6 @@ const Sidebar = () => {
   const avatarLetter = displayName.charAt(0).toUpperCase();
 
   // Get current page title for mobile header
-  const currentPage = menuItems.find(item => item.path === location.pathname);
-  const currentLabel = currentPage ? currentPage.label : '37 Studio';
-
   return (
     <>
       {/* Mobile Header Bar */}

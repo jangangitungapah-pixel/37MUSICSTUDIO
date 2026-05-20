@@ -1,50 +1,116 @@
 import { create } from 'zustand';
-import { db } from '../firebase';
-import { collection, doc, onSnapshot, setDoc, deleteDoc, updateDoc } from 'firebase/firestore';
-import { format, addDays } from 'date-fns';
+import { auth, db } from '../firebase';
+import { collection, doc, onSnapshot, setDoc, writeBatch } from 'firebase/firestore';
+import { onAuthStateChanged } from 'firebase/auth';
+import { format } from 'date-fns';
 import { useSettingsStore } from './useSettingsStore';
 import { useNotificationStore } from './useNotificationStore';
 import { useDemoStore } from './useDemoStore';
 
-// Track IDs of bookings added/deleted locally to suppress self-notifications
 const localActionIds = new Set();
+
+const toPublicBooking = (booking) => ({
+  id: Number(booking.id),
+  date: booking.date,
+  hour: Number(booking.hour),
+  duration: Number(booking.duration),
+  status: booking.status || 'pending',
+  type: booking.type || 'booking',
+});
+
+const normalizeBookingDoc = (docSnap) => {
+  const data = docSnap.data();
+  return {
+    id: data.id ?? (Number(docSnap.id) || docSnap.id),
+    ...data,
+  };
+};
 
 export const useBookingStore = create((set, get) => {
   const bookingsRef = collection(db, 'bookings');
+  const publicBookingsRef = collection(db, 'publicBookings');
   let isFirstLoad = true;
   let realBookings = [];
+  let unsubscribeBookings = null;
 
-  onSnapshot(bookingsRef, (snapshot) => {
-    realBookings = snapshot.docs.map(doc => doc.data());
+  const mirrorPublicBooking = async (booking) => {
+    if (!booking?.id || !auth.currentUser || auth.currentUser.isAnonymous) return;
+    await setDoc(doc(publicBookingsRef, booking.id.toString()), toPublicBooking(booking));
+  };
 
-    // In demo mode, don't overwrite demo data with real Firebase data
-    if (useDemoStore.getState().isDemoMode) {
-      set({ isLoaded: true });
+  const subscribeToBookings = (user) => {
+    if (unsubscribeBookings) {
+      unsubscribeBookings();
+      unsubscribeBookings = null;
+    }
+
+    isFirstLoad = true;
+
+    if (!user) {
+      realBookings = [];
+      set({ bookings: [], isLoaded: true, error: null });
       return;
     }
 
-    if (isFirstLoad) {
-      isFirstLoad = false;
-      set({ bookings: realBookings, isLoaded: true });
-      return;
-    }
+    const isPublicReader = user.isAnonymous;
+    const activeRef = isPublicReader ? publicBookingsRef : bookingsRef;
 
-    const { addNotification } = useNotificationStore.getState();
-    snapshot.docChanges().forEach((change) => {
-      const b = change.doc.data();
-      if (change.type === 'added' && !localActionIds.has(b.id)) {
-        addNotification({ type: 'booking', title: 'Booking Baru', message: `${b.band} — ${b.date}, ${b.hour}.00–${b.hour + b.duration}.00 (${b.duration} jam)` });
+    unsubscribeBookings = onSnapshot(activeRef, (snapshot) => {
+      realBookings = snapshot.docs.map(normalizeBookingDoc);
+
+      if (!isPublicReader) {
+        snapshot.docChanges().forEach((change) => {
+          if (change.type !== 'removed') {
+            mirrorPublicBooking(normalizeBookingDoc(change.doc)).catch((error) => {
+              console.error('Error mirroring public booking:', error);
+            });
+          }
+        });
       }
-      if (change.type === 'removed' && !localActionIds.has(b.id)) {
-        addNotification({ type: 'warning', title: 'Booking Dihapus', message: `${b.band} — ${b.date} telah dihapus oleh pengguna lain` });
+
+      if (useDemoStore.getState().isDemoMode) {
+        set({ isLoaded: true, error: null });
+        return;
       }
-      if (localActionIds.has(b.id)) localActionIds.delete(b.id);
+
+      if (isFirstLoad) {
+        isFirstLoad = false;
+        set({ bookings: realBookings, isLoaded: true, error: null });
+        return;
+      }
+
+      if (!isPublicReader) {
+        const { addNotification } = useNotificationStore.getState();
+        snapshot.docChanges().forEach((change) => {
+          const b = normalizeBookingDoc(change.doc);
+          if (change.type === 'added' && !localActionIds.has(b.id)) {
+            addNotification({
+              type: 'booking',
+              title: 'Booking Baru',
+              message: `${b.band} - ${b.date}, ${b.hour}.00-${b.hour + b.duration}.00 (${b.duration} jam)`,
+            });
+          }
+          if (change.type === 'removed' && !localActionIds.has(b.id)) {
+            addNotification({
+              type: 'warning',
+              title: 'Booking Dihapus',
+              message: `${b.band} - ${b.date} telah dihapus oleh pengguna lain`,
+            });
+          }
+          if (localActionIds.has(b.id)) localActionIds.delete(b.id);
+        });
+      }
+
+      set({ bookings: realBookings, isLoaded: true, error: null });
+    }, (error) => {
+      console.error('Error loading bookings:', error);
+      realBookings = [];
+      set({ bookings: [], isLoaded: true, error: error.message });
     });
+  };
 
-    set({ bookings: realBookings, isLoaded: true });
-  });
+  onAuthStateChanged(auth, subscribeToBookings);
 
-  // React to demo mode toggle
   useDemoStore.subscribe((demoState) => {
     if (demoState.isDemoMode) {
       set({ bookings: demoState.demoBookings });
@@ -56,114 +122,167 @@ export const useBookingStore = create((set, get) => {
   return {
     bookings: [],
     isLoaded: false,
-    
+    error: null,
+
     addBooking: async (newBooking) => {
       const id = Date.now();
       const bookingData = { ...newBooking, id };
-      localActionIds.add(id); // Mark as local
-      set((state) => ({ bookings: [...state.bookings, bookingData] }));
-      await setDoc(doc(bookingsRef, id.toString()), bookingData);
+
+      if (useDemoStore.getState().isDemoMode) {
+        set((state) => ({ bookings: [...state.bookings, bookingData] }));
+        return;
+      }
+
+      localActionIds.add(id);
+
+      try {
+        const batch = writeBatch(db);
+        batch.set(doc(bookingsRef, id.toString()), bookingData);
+        batch.set(doc(publicBookingsRef, id.toString()), toPublicBooking(bookingData));
+        await batch.commit();
+      } catch (error) {
+        localActionIds.delete(id);
+        throw error;
+      }
     },
 
     deleteBooking: async (id) => {
-      localActionIds.add(id); // Mark as local
-      set((state) => ({ bookings: state.bookings.filter(b => b.id !== id) }));
-      await deleteDoc(doc(bookingsRef, id.toString()));
+      if (useDemoStore.getState().isDemoMode) {
+        set((state) => ({ bookings: state.bookings.filter((booking) => booking.id !== id) }));
+        return;
+      }
+
+      localActionIds.add(id);
+
+      try {
+        const batch = writeBatch(db);
+        batch.delete(doc(bookingsRef, id.toString()));
+        batch.delete(doc(publicBookingsRef, id.toString()));
+        await batch.commit();
+      } catch (error) {
+        localActionIds.delete(id);
+        throw error;
+      }
     },
 
     updateBookingStatus: async (id, newStatus) => {
-      localActionIds.add(id); // Mark as local
-      set((state) => ({
-        bookings: state.bookings.map(b => b.id === id ? { ...b, status: newStatus } : b)
-      }));
-      await updateDoc(doc(bookingsRef, id.toString()), { status: newStatus });
+      if (useDemoStore.getState().isDemoMode) {
+        set((state) => ({
+          bookings: state.bookings.map((booking) => (
+            booking.id === id ? { ...booking, status: newStatus } : booking
+          )),
+        }));
+        return;
+      }
+
+      localActionIds.add(id);
+
+      try {
+        const booking = get().bookings.find((b) => b.id === id);
+        const batch = writeBatch(db);
+        batch.update(doc(bookingsRef, id.toString()), { status: newStatus });
+        if (booking) {
+          batch.set(doc(publicBookingsRef, id.toString()), toPublicBooking({ ...booking, status: newStatus }));
+        }
+        await batch.commit();
+      } catch (error) {
+        localActionIds.delete(id);
+        throw error;
+      }
     },
 
     updateBooking: async (id, data) => {
-      localActionIds.add(id); // Mark as local
-      
-      let updatedBookingData = { ...data };
-      
-      set((state) => {
-        const newBookings = state.bookings.map(b => {
-          if (b.id !== id) return b;
-          
-          let newData = { ...data };
-          
-          // Auto-recalculate financial status if duration changed
-          if (newData.duration !== undefined && newData.duration !== b.duration && b.status !== 'maintenance') {
-             const currentPricePerHour = useSettingsStore.getState().pricePerHour;
-             const oldDuration = b.duration;
-             const newDuration = newData.duration;
-             
-             // Calculate how much was already paid
-             let paidAmount = 0;
-             const oldBase = b.type === 'recording' ? (b.sessionPrice || 0) : (oldDuration * currentPricePerHour);
-             
-             if (b.status === 'confirmed') {
-                paidAmount = oldBase - (b.discountAmount || 0);
-             } else if (b.status === 'dp') {
-                paidAmount = b.dpAmount || 0;
-             }
-             
-             const newBase = b.type === 'recording' ? (newData.sessionPrice || b.sessionPrice || 0) : (newDuration * currentPricePerHour);
-             const newTotalPrice = newBase - (b.discountAmount || 0);
-             
-             if (paidAmount > 0) {
-                if (paidAmount >= newTotalPrice) {
-                   // They paid MORE or EXACTLY the new total price
-                   newData.status = 'confirmed';
-                   newData.dpAmount = 0;
-                } else {
-                   // They paid LESS than the new total price
-                   newData.status = 'dp';
-                   newData.dpAmount = paidAmount;
-                }
-             }
+      if (useDemoStore.getState().isDemoMode) {
+        set((state) => ({
+          bookings: state.bookings.map((booking) => (
+            booking.id === id ? { ...booking, ...data } : booking
+          )),
+        }));
+        return;
+      }
+
+      localActionIds.add(id);
+
+      try {
+        const existingBooking = get().bookings.find((b) => b.id === id);
+        if (!existingBooking) throw new Error('Booking tidak ditemukan.');
+
+        const newData = { ...data };
+
+        if (newData.duration !== undefined && newData.duration !== existingBooking.duration && existingBooking.status !== 'maintenance') {
+          const currentPricePerHour = useSettingsStore.getState().pricePerHour;
+          const oldDuration = existingBooking.duration;
+          const newDuration = newData.duration;
+
+          let paidAmount = 0;
+          const oldBase = existingBooking.type === 'recording'
+            ? (existingBooking.sessionPrice || 0)
+            : (oldDuration * currentPricePerHour);
+
+          if (existingBooking.status === 'confirmed') {
+            paidAmount = oldBase - (existingBooking.discountAmount || 0);
+          } else if (existingBooking.status === 'dp') {
+            paidAmount = existingBooking.dpAmount || 0;
           }
-          
-          updatedBookingData = { ...b, ...newData }; // Save merged object for Firestore
-          return updatedBookingData;
-        });
-        return { bookings: newBookings };
-      });
-      
-      // Update Firestore with the calculated final data
-      // We strip the ID from the payload to avoid overwriting the document ID
-      const payload = { ...updatedBookingData };
-      delete payload.id;
-      await updateDoc(doc(bookingsRef, id.toString()), payload);
+
+          const newBase = existingBooking.type === 'recording'
+            ? (newData.sessionPrice || existingBooking.sessionPrice || 0)
+            : (newDuration * currentPricePerHour);
+          const newTotalPrice = newBase - (existingBooking.discountAmount || 0);
+
+          if (paidAmount > 0) {
+            if (paidAmount >= newTotalPrice) {
+              newData.status = 'confirmed';
+              newData.dpAmount = 0;
+            } else {
+              newData.status = 'dp';
+              newData.dpAmount = paidAmount;
+            }
+          }
+        }
+
+        const updatedBookingData = { ...existingBooking, ...newData };
+        const payload = { ...updatedBookingData };
+        delete payload.id;
+
+        const batch = writeBatch(db);
+        batch.update(doc(bookingsRef, id.toString()), payload);
+        batch.set(doc(publicBookingsRef, id.toString()), toPublicBooking(updatedBookingData));
+        await batch.commit();
+      } catch (error) {
+        localActionIds.delete(id);
+        throw error;
+      }
     },
 
     getMonthlyStats: (monthDate) => {
       const state = get();
       const currentPricePerHour = useSettingsStore.getState().pricePerHour;
       const monthStr = format(monthDate, 'yyyy-MM');
-      const monthBookings = state.bookings.filter(b => b.date.startsWith(monthStr));
+      const monthBookings = state.bookings.filter((b) => b.date?.startsWith(monthStr));
       const totalBookings = monthBookings.length;
       const totalHours = monthBookings.reduce((sum, b) => sum + b.duration, 0);
-      
+
       let totalRevenue = 0;
       let totalPaidFull = 0;
-      
-      monthBookings.forEach(b => {
+
+      monthBookings.forEach((b) => {
         if (b.status !== 'maintenance') {
           const base = b.type === 'recording' ? (b.sessionPrice || 0) : (b.duration * currentPricePerHour);
           const finalPrice = base - (b.discountAmount || 0);
           totalRevenue += finalPrice;
-          
+
           if (b.status === 'confirmed') {
             totalPaidFull += finalPrice;
           }
         }
       });
-      
+
       const totalDpReceived = monthBookings.reduce((sum, b) => sum + (b.dpAmount || 0), 0);
-      const confirmed = monthBookings.filter(b => b.status === 'confirmed').length;
-      const dp = monthBookings.filter(b => b.status === 'dp').length;
-      const pending = monthBookings.filter(b => b.status === 'pending').length;
+      const confirmed = monthBookings.filter((b) => b.status === 'confirmed').length;
+      const dp = monthBookings.filter((b) => b.status === 'dp').length;
+      const pending = monthBookings.filter((b) => b.status === 'pending').length;
       return { totalBookings, totalHours, totalRevenue, totalDpReceived, totalPaidFull, confirmed, dp, pending };
-    }
+    },
   };
 });
-

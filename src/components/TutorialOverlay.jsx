@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { X, ChevronRight, ChevronLeft, Check } from 'lucide-react';
 
 const TutorialOverlay = ({ steps, currentStep, onNext, onPrev, onClose, onComplete }) => {
@@ -161,8 +161,6 @@ const TutorialOverlay = ({ steps, currentStep, onNext, onPrev, onClose, onComple
 
   const isFirst = currentStep === 0;
   const isLast = currentStep === steps.length - 1;
-  const isCentered = !targetRect;
-
   return (
     <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', zIndex: 99999, pointerEvents: 'none' }}>
       <svg width="100%" height="100%" style={{ position: 'absolute', top: 0, left: 0 }}>

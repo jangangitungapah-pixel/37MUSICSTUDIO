@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useSettingsStore } from '../store/useSettingsStore';
 import { useDemoStore } from '../store/useDemoStore';
 import {
@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { collection, getDocs, deleteDoc } from 'firebase/firestore';
 import { db } from '../firebase';
+import { toast } from 'sonner';
 import './SettingsPage.css';
 
 const SettingsPage = () => {
@@ -74,7 +75,7 @@ const SettingsPage = () => {
     const amount = parseInt(newDiscountAmount);
     
     if (isNaN(hours) || hours <= 0 || isNaN(amount) || amount < 0) {
-      alert("Masukkan durasi jam dan nominal diskon yang valid.");
+      toast.error("Masukkan durasi jam dan nominal diskon yang valid.");
       return;
     }
 
@@ -144,7 +145,7 @@ const SettingsPage = () => {
     const price = parseInt(newRecSessionPrice);
     
     if (!newRecSessionName || isNaN(hours) || hours <= 0 || isNaN(price) || price < 0) {
-      alert("Masukkan nama sesi, durasi jam, dan harga yang valid.");
+      toast.error("Masukkan nama sesi, durasi jam, dan harga yang valid.");
       return;
     }
 
@@ -215,6 +216,7 @@ const SettingsPage = () => {
     setIsResetting(true);
     try {
       const selected = Object.keys(resetOptions).filter(k => resetOptions[k]);
+      if (resetOptions.bookings) selected.push('publicBookings');
       const promises = [];
       for (const colName of selected) {
         const snapshot = await getDocs(collection(db, colName));
@@ -222,10 +224,10 @@ const SettingsPage = () => {
       }
       await Promise.all(promises);
       localStorage.clear();
-      alert('Data berhasil dihapus! Aplikasi akan dimuat ulang.');
-      window.location.reload();
+      toast.success('Data berhasil dihapus. Aplikasi akan dimuat ulang.');
+      window.setTimeout(() => window.location.reload(), 700);
     } catch {
-      alert('Terjadi kesalahan saat menghapus data.');
+      toast.error('Terjadi kesalahan saat menghapus data.');
       setIsResetting(false);
       setResetConfirmStep(0);
     }

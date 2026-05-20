@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuthStore } from '../store/useAuthStore';
 import { Music, AlertCircle, Loader2 } from 'lucide-react';
@@ -37,8 +37,8 @@ const RegisterPage = () => {
     try {
       await register(email, password, username, phone);
       navigate('/');
-    } catch (err) {
-      // Error handled by store
+    } catch {
+      return;
     }
   };
 

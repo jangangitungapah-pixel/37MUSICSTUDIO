@@ -104,7 +104,14 @@ const CalendarPage = () => {
   };
 
   const handleSendReminder = () => {
-    if (!selectedBooking.phone) { alert("Nomor telepon tidak tersedia."); return; }
+    if (!selectedBooking.phone) {
+      useNotificationStore.getState().addNotification({
+        title: 'Nomor telepon tidak tersedia',
+        message: 'Jadwal ini belum memiliki nomor WhatsApp pelanggan.',
+        type: 'error'
+      });
+      return;
+    }
     const message = `Halo ${selectedBooking.band}, sekadar mengingatkan ada jadwal latihan ${format(new Date(selectedBooking.date), 'dd MMM yyyy')} jam ${String(selectedBooking.hour).padStart(2, '0')}:00 WIB di ${studioName}. Terima kasih!`;
     let phone = selectedBooking.phone.replace(/\D/g, '');
     if (phone.startsWith('0')) phone = '62' + phone.substring(1);

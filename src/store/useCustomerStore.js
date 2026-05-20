@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { db } from '../firebase';
 import { collection, doc, onSnapshot, setDoc, deleteDoc, updateDoc } from 'firebase/firestore';
-import { format, subDays } from 'date-fns';
+import { format } from 'date-fns';
 import { useDemoStore } from './useDemoStore';
 
 export const useCustomerStore = create((set, get) => {
@@ -41,6 +41,7 @@ export const useCustomerStore = create((set, get) => {
         lastBooking: '-'
       };
       set((state) => ({ customers: [...state.customers, customerData] }));
+      if (useDemoStore.getState().isDemoMode) return;
       await setDoc(doc(customersRef, id.toString()), customerData);
     },
 
@@ -48,11 +49,13 @@ export const useCustomerStore = create((set, get) => {
       set((state) => ({
         customers: state.customers.map(c => c.id === id ? { ...c, ...updatedData } : c)
       }));
+      if (useDemoStore.getState().isDemoMode) return;
       await updateDoc(doc(customersRef, id.toString()), updatedData);
     },
 
     deleteCustomer: async (id) => {
       set((state) => ({ customers: state.customers.filter(c => c.id !== id) }));
+      if (useDemoStore.getState().isDemoMode) return;
       await deleteDoc(doc(customersRef, id.toString()));
     },
 
@@ -76,6 +79,7 @@ export const useCustomerStore = create((set, get) => {
         set((state) => ({
           customers: state.customers.map(c => c.id === customer.id ? { ...c, ...updatedData } : c)
         }));
+        if (useDemoStore.getState().isDemoMode) return;
         await updateDoc(doc(customersRef, customer.id.toString()), updatedData);
       } else {
         // Customer doesn't exist — auto-create
@@ -96,6 +100,7 @@ export const useCustomerStore = create((set, get) => {
           lastBooking: format(new Date(), 'yyyy-MM-dd')
         };
         set((state) => ({ customers: [...state.customers, newCustomer] }));
+        if (useDemoStore.getState().isDemoMode) return;
         await setDoc(doc(customersRef, id.toString()), newCustomer);
       }
     },

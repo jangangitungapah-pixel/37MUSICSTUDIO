@@ -2,6 +2,27 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 
+const allowedHosts = (process.env.VITE_ALLOWED_HOSTS || '')
+  .split(',')
+  .map(host => host.trim())
+  .filter(Boolean)
+
+const splitVendorChunk = (id) => {
+  if (!id.includes('node_modules')) return undefined
+  if (id.includes('react') || id.includes('scheduler')) return 'vendor-react'
+  if (id.includes('react-router')) return 'vendor-router'
+  if (id.includes('lucide-react')) return 'vendor-icons'
+  if (id.includes('date-fns')) return 'vendor-date'
+  if (id.includes('zustand')) return 'vendor-state'
+  if (id.includes('sonner')) return 'vendor-sonner'
+  if (id.includes('html2canvas')) return 'vendor-capture'
+  if (id.includes('firebase')) return 'vendor-firebase'
+  if (id.includes('framer-motion')) return 'vendor-motion'
+  if (id.includes('recharts') || id.includes('d3-')) return 'vendor-charts'
+  if (id.includes('exceljs')) return 'vendor-excel'
+  return 'vendor'
+}
+
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
@@ -40,12 +61,21 @@ export default defineConfig({
         ]
       },
       injectManifest: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}']
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+        globIgnores: ['**/vendor-excel-*.js']
       }
     })
   ],
   server: {
     host: true,
-    allowedHosts: true,
+    ...(allowedHosts.length ? { allowedHosts } : {}),
+  },
+  build: {
+    chunkSizeWarningLimit: 1000,
+    rollupOptions: {
+      output: {
+        manualChunks: splitVendorChunk,
+      },
+    },
   }
 })

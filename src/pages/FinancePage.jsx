@@ -1,13 +1,19 @@
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { useFinanceStore } from '../store/useFinanceStore';
 import { useBookingStore } from '../store/useBookingStore';
 import { useSettingsStore } from '../store/useSettingsStore';
-import { format, isSameDay, isSameWeek, isSameMonth, isSameYear } from 'date-fns';
+import { format } from 'date-fns';
 import { Wallet, TrendingUp, TrendingDown, Plus, Trash2, Search, Download, Printer } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
-import ExcelJS from 'exceljs';
-import { saveAs } from 'file-saver';
+import { toast } from 'sonner';
 import Modal from '../components/Modal';
+import {
+  PERIOD_LABELS,
+  buildCombinedLedger,
+  buildExpensePieData,
+  buildFinanceLineChartData,
+  filterLedgerByPeriod
+} from '../lib/finance';
 import './FinancePage.css';
 
 const CATEGORIES = {
@@ -31,139 +37,50 @@ const FinancePage = () => {
   const [filterPeriod, setFilterPeriod] = useState('month'); // 'day', 'week', 'month', 'year', 'all'
   const [searchQuery, setSearchQuery] = useState('');
   const [receiptToPrint, setReceiptToPrint] = useState(null);
+  const [isExporting, setIsExporting] = useState(false);
 
   // Combine bookings and manual transactions
-  const combinedData = useMemo(() => {
-    let allEntries = [...transactions];
-
-    // Map bookings to income entries
-    bookings.forEach(b => {
-      if (b.status === 'maintenance') return;
-      
-      // Confirmed bookings contribute total price
-      if (b.status === 'confirmed') {
-        const base = b.type === 'recording' ? (b.sessionPrice || 0) : (b.duration * pricePerHour);
-        const total = base - (b.discountAmount || 0);
-        allEntries.push({
-          id: `book-${b.id}`,
-          date: b.date,
-          type: 'income',
-          category: 'Sewa Studio',
-          amount: total,
-          description: `Sewa oleh ${b.band} (${b.duration} Jam)${b.discountAmount > 0 ? ' [VIP]' : ''}`,
-          isManual: false
-        });
-      } 
-      // DP bookings contribute DP amount only
-      else if (b.status === 'dp' && b.dpAmount > 0) {
-        allEntries.push({
-          id: `dp-${b.id}`,
-          date: b.date,
-          type: 'income',
-          category: 'Sewa Studio',
-          amount: b.dpAmount,
-          description: `DP Sewa oleh ${b.band}`,
-          isManual: false
-        });
-      }
-    });
-
-    // Sort chronologically (oldest first) to calculate running balance
-    allEntries.sort((a, b) => new Date(a.date) - new Date(b.date) || (a.id > b.id ? 1 : -1));
-
-    let runningBalance = 0;
-    return allEntries.map(entry => {
-      if (entry.type === 'income') {
-        runningBalance += entry.amount;
-      } else {
-        runningBalance -= entry.amount;
-      }
-      return { ...entry, balance: runningBalance };
-    }).reverse(); // Reverse so newest is on top
-  }, [transactions, bookings, pricePerHour]);
+  const combinedData = useMemo(
+    () => buildCombinedLedger({ transactions, bookings, pricePerHour }),
+    [transactions, bookings, pricePerHour]
+  );
 
   // Filter Data based on selected period
-  const filteredData = useMemo(() => {
-    if (filterPeriod === 'all') return combinedData;
-    
-    const now = new Date();
-    return combinedData.filter(entry => {
-      const entryDate = new Date(entry.date);
-      if (filterPeriod === 'day') return isSameDay(entryDate, now);
-      if (filterPeriod === 'week') return isSameWeek(entryDate, now, { weekStartsOn: 1 });
-      if (filterPeriod === 'month') return isSameMonth(entryDate, now);
-      if (filterPeriod === 'year') return isSameYear(entryDate, now);
-      return true;
-    }).filter(entry => {
-      if (!searchQuery) return true;
-      const lowerQ = searchQuery.toLowerCase();
-      return entry.description.toLowerCase().includes(lowerQ) || entry.category.toLowerCase().includes(lowerQ);
-    });
-  }, [combinedData, filterPeriod, searchQuery]);
+  const filteredData = useMemo(
+    () => filterLedgerByPeriod(combinedData, filterPeriod, searchQuery),
+    [combinedData, filterPeriod, searchQuery]
+  );
   
   const totalIncomeFiltered = filteredData.filter(d => d.type === 'income').reduce((sum, d) => sum + d.amount, 0);
   const totalExpenseFiltered = filteredData.filter(d => d.type === 'expense').reduce((sum, d) => sum + d.amount, 0);
   
   const totalBalance = combinedData.length > 0 ? combinedData[0].balance : 0; // Newest entry has final balance
 
-  const periodLabel = {
-    'day': 'Hari Ini',
-    'week': 'Minggu Ini',
-    'month': 'Bulan Ini',
-    'year': 'Tahun Ini',
-    'all': 'Semua Waktu'
-  }[filterPeriod];
+  const periodLabel = PERIOD_LABELS[filterPeriod];
 
   const formatCurrency = (num) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(num);
 
   // Chart Data preparation
-  const lineChartData = useMemo(() => {
-    const grouped = {};
-    
-    filteredData.forEach(d => {
-      const dDate = new Date(d.date);
-      let dateKey, displayDate;
-      
-      if (filterPeriod === 'all') {
-        dateKey = format(dDate, 'yyyy-MM');
-        displayDate = format(dDate, 'MMM yyyy');
-      } else if (filterPeriod === 'year') {
-        dateKey = format(dDate, 'yyyy-MM');
-        displayDate = format(dDate, 'MMM');
-      } else {
-        dateKey = format(dDate, 'yyyy-MM-dd');
-        displayDate = format(dDate, 'dd MMM');
-      }
+  const lineChartData = useMemo(
+    () => buildFinanceLineChartData(filteredData, filterPeriod),
+    [filteredData, filterPeriod]
+  );
 
-      if (!grouped[dateKey]) {
-        grouped[dateKey] = { 
-          sortKey: dateKey,
-          date: displayDate, 
-          Pemasukan: 0, 
-          Pengeluaran: 0 
-        };
-      }
-      
-      if (d.type === 'income') grouped[dateKey].Pemasukan += d.amount;
-      else grouped[dateKey].Pengeluaran += d.amount;
-    });
-    
-    // Sort chronologically based on the YYYY-MM-DD or YYYY-MM sortKey
-    return Object.values(grouped).sort((a, b) => a.sortKey.localeCompare(b.sortKey));
-  }, [filteredData, filterPeriod]);
-
-  const pieChartData = useMemo(() => {
-    const grouped = {};
-    filteredData.filter(d => d.type === 'expense').forEach(d => {
-      if (!grouped[d.category]) grouped[d.category] = 0;
-      grouped[d.category] += d.amount;
-    });
-    return Object.keys(grouped).map(k => ({ name: k, value: grouped[k] }));
-  }, [filteredData]);
+  const pieChartData = useMemo(
+    () => buildExpensePieData(filteredData),
+    [filteredData]
+  );
 
   const PIE_COLORS = ['#ff2a5f', '#00f0ff', '#a855f7', '#4CAF50', '#FF9800', '#E91E63', '#9C27B0'];
 
   const handleExportExcel = async () => {
+    setIsExporting(true);
+    try {
+    const [{ default: ExcelJS }, fileSaver] = await Promise.all([
+      import('exceljs'),
+      import('file-saver')
+    ]);
+    const saveAsFile = fileSaver.saveAs || fileSaver.default?.saveAs || fileSaver.default;
     const workbook = new ExcelJS.Workbook();
     workbook.creator = '37 Music Studio';
     workbook.created = new Date();
@@ -386,7 +303,13 @@ const FinancePage = () => {
     // ── Download ─────────────────────────────────────────────────────
     const buffer = await workbook.xlsx.writeBuffer();
     const blob   = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-    saveAs(blob, `Laporan_Keuangan_37Studio_${filterPeriod}_${format(new Date(), 'yyyy-MM-dd')}.xlsx`);
+    saveAsFile(blob, `Laporan_Keuangan_37Studio_${filterPeriod}_${format(new Date(), 'yyyy-MM-dd')}.xlsx`);
+    } catch (error) {
+      console.error('Error exporting finance report:', error);
+      toast.error('Gagal export Excel.');
+    } finally {
+      setIsExporting(false);
+    }
   };
 
   const handlePrint = (transaction) => {
@@ -449,9 +372,9 @@ const FinancePage = () => {
           </div>
 
           {/* Export */}
-          <button className="btn-export hide-on-print" onClick={handleExportExcel} title="Export ke Excel (.xlsx)">
+          <button className="btn-export hide-on-print" onClick={handleExportExcel} disabled={isExporting} title="Export ke Excel (.xlsx)">
             <Download size={15} />
-            <span className="hide-on-mobile">Export Excel</span>
+            <span className="hide-on-mobile">{isExporting ? 'Mengekspor...' : 'Export Excel'}</span>
           </button>
 
           {/* Add */}

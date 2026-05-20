@@ -11,10 +11,17 @@ import {
 } from 'firebase/auth';
 import { collection, query, where, getDocs, setDoc, doc, getDoc, updateDoc } from 'firebase/firestore';
 
+const DEFAULT_ADMIN_EMAIL = 'admin@37musicstudio.local';
+
 export const useAuthStore = create((set, get) => {
   // Setup listener
   onAuthStateChanged(auth, async (user) => {
     if (user) {
+      if (user.isAnonymous) {
+        set({ user, userProfile: null, isAuthLoaded: true });
+        return;
+      }
+
       try {
         // Fetch additional profile data from Firestore
         const docRef = doc(db, 'users', user.uid);
@@ -43,29 +50,13 @@ export const useAuthStore = create((set, get) => {
     login: async (identifier, password) => {
       set({ loading: true, error: null });
       try {
-        let loginEmail = identifier;
-        
-        // If identifier doesn't look like an email, lookup in Firestore
-        if (!identifier.includes('@')) {
-          const usersRef = collection(db, 'users');
-          
-          // First try username
-          const qUsername = query(usersRef, where('username', '==', identifier));
-          const usernameSnap = await getDocs(qUsername);
-          
-          if (!usernameSnap.empty) {
-            loginEmail = usernameSnap.docs[0].data().email;
-          } else {
-            // Try phone
-            const qPhone = query(usersRef, where('phone', '==', identifier));
-            const phoneSnap = await getDocs(qPhone);
-            
-            if (!phoneSnap.empty) {
-              loginEmail = phoneSnap.docs[0].data().email;
-            } else {
-              throw new Error("Akun dengan Username atau Nomor Telepon tersebut tidak ditemukan.");
-            }
-          }
+        const normalizedIdentifier = identifier.trim().toLowerCase();
+        const loginEmail = normalizedIdentifier === 'admin'
+          ? DEFAULT_ADMIN_EMAIL
+          : normalizedIdentifier;
+
+        if (!loginEmail.includes('@')) {
+          throw new Error('Gunakan username admin atau alamat email.');
         }
 
         await signInWithEmailAndPassword(auth, loginEmail, password);
@@ -74,7 +65,7 @@ export const useAuthStore = create((set, get) => {
         // Humanize common errors
         let msg = error.message;
         if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
-          msg = 'Email/Username/Telepon atau Password salah.';
+          msg = 'Username/email atau password salah.';
         }
         set({ error: msg, loading: false });
         throw error;
@@ -190,6 +181,38 @@ export const useAuthStore = create((set, get) => {
         let msg = error.message;
         if (error.code === 'auth/requires-recent-login') {
           msg = 'Sesi Anda sudah terlalu lama. Silakan logout dan login kembali sebelum mengganti password.';
+        }
+        set({ error: msg, loading: false });
+        throw error;
+      }
+    },
+
+    completeRequiredPasswordChange: async (newPassword) => {
+      set({ loading: true, error: null });
+      try {
+        const { user } = get();
+        if (!user) throw new Error("Tidak ada user yang sedang login.");
+
+        await updatePassword(user, newPassword);
+
+        const passwordUpdatedAt = new Date().toISOString();
+        await updateDoc(doc(db, 'users', user.uid), {
+          requiresPasswordChange: false,
+          passwordUpdatedAt
+        });
+
+        set((state) => ({
+          userProfile: {
+            ...state.userProfile,
+            requiresPasswordChange: false,
+            passwordUpdatedAt
+          },
+          loading: false
+        }));
+      } catch (error) {
+        let msg = error.message;
+        if (error.code === 'auth/requires-recent-login') {
+          msg = 'Sesi Anda sudah terlalu lama. Silakan logout lalu login kembali sebelum mengganti password.';
         }
         set({ error: msg, loading: false });
         throw error;

@@ -3,6 +3,7 @@
   display: flex;
   flex-direction: column;
   gap: 20px;
+  padding-bottom: 28px;
 }
 
 /* ===== Greeting Banner ===== */
@@ -477,6 +478,7 @@
 }
 
 @media (max-width: 768px) {
+  .dashboard-page { padding-bottom: 20px; }
   .dash-stats-grid { grid-template-columns: repeat(2, 1fr); }
   .dash-main-grid { grid-template-columns: 1fr; }
   .span-2 { grid-column: span 1; }

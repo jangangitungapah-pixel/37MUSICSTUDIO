@@ -1,15 +1,16 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useBookingStore } from '../store/useBookingStore';
 import { useSettingsStore } from '../store/useSettingsStore';
 import { useTourStore } from '../store/useTourStore';
-import { CreditCard, Printer, CheckCircle, Clock, AlertCircle, FileText, Search, X, Share2, MessageCircle, Copy, Download, Check, Bell } from 'lucide-react';
+import { Printer, CheckCircle, AlertCircle, FileText, Search, X, Share2, MessageCircle, Copy, Download, Check, Bell } from 'lucide-react';
 import { format } from 'date-fns';
 import html2canvas from 'html2canvas';
+import { toast } from 'sonner';
 import Modal from '../components/Modal';
 import './BillingPage.css';
 
 const BillingPage = () => {
-  const { bookings, updateBookingStatus, updateBooking } = useBookingStore();
+  const { bookings, updateBookingStatus } = useBookingStore();
   const { pricePerHour, studioName, studioAddress, studioPhone } = useSettingsStore();
   const { currentStep, nextStep, run } = useTourStore();
   const [activeTab, setActiveTab] = useState('Semua');
@@ -27,7 +28,14 @@ const BillingPage = () => {
   }, [run, currentStep, isInvoiceModalOpen]);
 
   // Helper functions
-  const calculateTotal = (booking) => (booking.duration * pricePerHour) - (booking.discountAmount || 0);
+  const calculateSubtotal = (booking) => (
+    booking.type === 'recording'
+      ? (booking.sessionPrice || 0)
+      : (booking.duration * pricePerHour)
+  );
+  const calculateTotal = (booking) => calculateSubtotal(booking) - (booking.discountAmount || 0);
+  const getServiceName = (booking) => (booking.type === 'recording' ? 'Sesi Recording' : 'Sewa Studio Latihan');
+  const getRateLabel = (booking) => (booking.type === 'recording' ? 'Harga Paket' : formatCurrency(pricePerHour));
   const calculateRemaining = (booking) => {
     if (booking.status === 'confirmed') return 0;
     const total = calculateTotal(booking);
@@ -84,7 +92,7 @@ const BillingPage = () => {
 
   // Build invoice text for sharing
   const buildInvoiceText = (inv) => {
-    const subtotal = inv.duration * pricePerHour;
+    const subtotal = calculateSubtotal(inv);
     const discount = inv.discountAmount || 0;
     const total = calculateTotal(inv);
     const dp = inv.dpAmount || 0;
@@ -100,9 +108,9 @@ const BillingPage = () => {
       `Pelanggan: ${inv.band}`,
       inv.phone ? `Telp: ${inv.phone}` : null,
       ``,
-      `Layanan: Sewa Studio Latihan`,
+      `Layanan: ${getServiceName(inv)}`,
       `Jadwal: ${format(new Date(inv.date), 'dd MMM yyyy')} • ${String(inv.hour).padStart(2, '0')}:00-${String(inv.hour + inv.duration).padStart(2, '0')}:00`,
-      `Durasi: ${inv.duration} jam × ${formatCurrency(pricePerHour)}`,
+      `Durasi: ${inv.duration} jam - ${getRateLabel(inv)}`,
       ``,
       `Subtotal: ${formatCurrency(subtotal)}`,
       discount > 0 ? `Diskon VIP: -${formatCurrency(discount)}` : null,
@@ -129,7 +137,7 @@ const BillingPage = () => {
 
   const handleSendReminder = (inv) => {
     if (!inv.phone) {
-      alert("Nomor telepon tidak tersedia untuk jadwal ini.");
+      toast.error("Nomor telepon tidak tersedia untuk jadwal ini.");
       return;
     }
     const message = `Halo ${inv.band}, sekadar mengingatkan Anda ada jadwal latihan besok tanggal ${format(new Date(inv.date), 'dd MMM yyyy')} jam ${String(inv.hour).padStart(2, '0')}:00 WIB di ${studioName}. Mohon datang tepat waktu ya! Terima kasih.`;
@@ -144,7 +152,7 @@ const BillingPage = () => {
       await navigator.clipboard.writeText(text);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    } catch (e) {
+    } catch {
       // Fallback
       const ta = document.createElement('textarea');
       ta.value = text;
@@ -169,8 +177,8 @@ const BillingPage = () => {
       link.download = `invoice-${selectedInvoice.id.toString().padStart(5, '0')}.png`;
       link.href = canvas.toDataURL('image/png');
       link.click();
-    } catch (e) {
-      console.error('Screenshot failed:', e);
+    } catch (error) {
+      console.error('Screenshot failed:', error);
     }
   };
 
@@ -203,8 +211,8 @@ const BillingPage = () => {
           });
         }
       }, 'image/png');
-    } catch (e) {
-      console.error('Share failed:', e);
+    } catch (error) {
+      console.error('Share failed:', error);
     }
   };
 
@@ -347,8 +355,6 @@ const BillingPage = () => {
           ) : filteredBookings.map(b => {
             const remaining = calculateRemaining(b);
             const total = calculateTotal(b);
-            const statusLabel = b.status === 'confirmed' ? 'Lunas' : b.status === 'dp' ? 'DP' : 'Belum Bayar';
-            const statusClass = b.status === 'confirmed' ? 'paid' : b.status === 'dp' ? 'partial' : 'unpaid';
             return (
               <div key={b.id} className="mobile-billing-card" onClick={() => handleOpenInvoice(b)}>
                 <div className="mobile-bill-top">
@@ -387,7 +393,7 @@ const BillingPage = () => {
 
       {/* ── Invoice Modal — Premium Redesign ── */}
       {selectedInvoice && (() => {
-        const subtotal    = selectedInvoice.duration * pricePerHour;
+        const subtotal    = calculateSubtotal(selectedInvoice);
         const discount    = selectedInvoice.discountAmount || 0;
         const total       = subtotal - discount;
         const dpPaid      = selectedInvoice.dpAmount || 0;
@@ -459,14 +465,14 @@ const BillingPage = () => {
                   <tr>
                     <th>Deskripsi Layanan</th>
                     <th>Durasi</th>
-                    <th>Tarif/Jam</th>
+                    <th>Tarif</th>
                     <th>Jumlah</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr>
                     <td>
-                      <div className="inv2-item-name">Sewa Studio Latihan</div>
+                      <div className="inv2-item-name">{getServiceName(selectedInvoice)}</div>
                       <div className="inv2-item-time">
                         {format(new Date(selectedInvoice.date), 'EEEE, dd MMMM yyyy')}
                       </div>
@@ -475,7 +481,7 @@ const BillingPage = () => {
                       </div>
                     </td>
                     <td className="inv2-td-c">{selectedInvoice.duration} jam</td>
-                    <td className="inv2-td-c">{formatCurrency(pricePerHour)}</td>
+                    <td className="inv2-td-c">{getRateLabel(selectedInvoice)}</td>
                     <td className="inv2-td-r">{formatCurrency(subtotal)}</td>
                   </tr>
                   {discount > 0 && (

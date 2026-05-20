@@ -3,7 +3,7 @@ import { db } from '../firebase';
 import { collection, doc, onSnapshot, setDoc, deleteDoc } from 'firebase/firestore';
 import { useDemoStore } from './useDemoStore';
 
-export const useFinanceStore = create((set, get) => {
+export const useFinanceStore = create((set) => {
   const financeRef = collection(db, 'finances');
   let realTransactions = [];
 
@@ -32,11 +32,13 @@ export const useFinanceStore = create((set, get) => {
       const id = Date.now();
       const txData = { ...newTx, id, isManual: true };
       set((state) => ({ transactions: [...state.transactions, txData] }));
+      if (useDemoStore.getState().isDemoMode) return;
       await setDoc(doc(financeRef, id.toString()), txData);
     },
 
     deleteTransaction: async (id) => {
       set((state) => ({ transactions: state.transactions.filter(t => t.id !== id) }));
+      if (useDemoStore.getState().isDemoMode) return;
       await deleteDoc(doc(financeRef, id.toString()));
     }
   };

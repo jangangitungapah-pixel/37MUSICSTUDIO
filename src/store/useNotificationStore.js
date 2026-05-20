@@ -4,7 +4,7 @@ import { toast } from 'sonner';
 
 export const useNotificationStore = create(
   persist(
-    (set, get) => ({
+    (set) => ({
       notifications: [], // Persistent history
       toastQueue: [],    // Ephemeral toasts
       
@@ -33,13 +33,13 @@ export const useNotificationStore = create(
           if (navigator.serviceWorker) {
             navigator.serviceWorker.ready.then(reg => {
               reg.showNotification(title, options).catch(() => {
-                try { new Notification(title, options); } catch(e) {}
+                try { new Notification(title, options); } catch { console.warn('Native notification failed'); }
               });
             }).catch(() => {
-              try { new Notification(title, options); } catch(e) {}
+              try { new Notification(title, options); } catch { console.warn('Native notification failed'); }
             });
           } else {
-            try { new Notification(title, options); } catch(e) {}
+            try { new Notification(title, options); } catch { console.warn('Native notification failed'); }
           }
         }
 
