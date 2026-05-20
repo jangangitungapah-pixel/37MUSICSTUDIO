@@ -24,6 +24,14 @@ const PublicCalendarPage = () => {
   const { studioName, studioPhone, pricePerHour, durationDiscounts = [] } = useSettingsStore();
 
   const [currentDate, setCurrentDate] = useState(new Date());
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   const [viewMode, setViewMode]       = useState('week');
   const gridWrapperRef = useRef(null);
 
@@ -142,6 +150,7 @@ const PublicCalendarPage = () => {
 
   const dayNames = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
   const colWidth = viewMode === 'day' ? '220px' : viewMode === 'week' ? '110px' : '60px';
+  const timeColWidth = isMobile ? '55px' : '100px';
 
   return (
     <div className="pc-page">
@@ -230,7 +239,7 @@ const PublicCalendarPage = () => {
           <div className="pc-grid-wrapper" ref={gridWrapperRef}>
             <div
               className="pc-grid"
-              style={{ gridTemplateColumns: `72px repeat(${daysArray.length}, minmax(${colWidth}, 1fr))` }}
+              style={{ gridTemplateColumns: `${timeColWidth} repeat(${daysArray.length}, minmax(${colWidth}, 1fr))` }}
             >
               {/* Corner */}
               <div className="pc-corner"><span>JAM</span></div>
@@ -254,7 +263,11 @@ const PublicCalendarPage = () => {
                 <React.Fragment key={hour}>
                   {/* Time label */}
                   <div className={`pc-time-label ${hIdx % 2 === 0 ? 'even' : ''}`}>
-                    <span>{String(hour).padStart(2,'0')}.00 - {String(hour + 1).padStart(2,'0')}.00</span>
+                    <span>
+                      {isMobile 
+                        ? `${String(hour).padStart(2, '0')}.00` 
+                        : `${String(hour).padStart(2, '0')}.00 - ${String(hour + 1).padStart(2, '0')}.00`}
+                    </span>
                   </div>
 
                   {/* Day cells */}

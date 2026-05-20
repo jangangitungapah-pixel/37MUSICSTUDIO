@@ -712,10 +712,10 @@
 .time-label {
   border-right: 1px solid var(--glass-border);
   border-bottom: 1px solid rgba(255, 255, 255, 0.02);
-  padding: 0 10px;
+  padding: 0 4px;
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: center;
   background: var(--bg-dark);
   min-height: 44px;
 }

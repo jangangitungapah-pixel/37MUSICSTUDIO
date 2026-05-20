@@ -177,9 +177,20 @@ option {
   overflow-y: auto;
   min-height: 0;
   background:
-    radial-gradient(circle at top right, rgba(255, 42, 95, 0.05), transparent 40%),
-    radial-gradient(circle at bottom left, rgba(0, 240, 255, 0.03), transparent 40%);
+    radial-gradient(circle at 80% 10%, rgba(255, 42, 95, 0.08), transparent 45%),
+    radial-gradient(circle at 10% 90%, rgba(0, 240, 255, 0.05), transparent 45%),
+    radial-gradient(circle at 50% 50%, rgba(168, 85, 247, 0.03), transparent 50%),
+    var(--bg-dark);
+  background-size: 200% 200%;
+  animation: auroraGrad 25s ease infinite alternate;
 }
+
+@keyframes auroraGrad {
+  0% { background-position: 0% 0%; }
+  50% { background-position: 50% 100%; }
+  100% { background-position: 100% 0%; }
+}
+
 
 /* ─── Glassmorphism ─── */
 .glass-panel {
@@ -830,3 +841,66 @@ option {
   background: rgba(255, 255, 255, 0.9);
   border-color: rgba(0, 0, 0, 0.07);
 }
+
+/* ─── Global Design System Polish ─── */
+.glass-panel {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
+}
+
+/* Tactile Primary Button */
+.btn-primary {
+  background: linear-gradient(135deg, var(--accent-pink), #e01f50) !important;
+  box-shadow: 0 4px 16px rgba(255, 42, 95, 0.25) !important;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+.btn-primary:hover {
+  box-shadow: 0 6px 20px rgba(255, 42, 95, 0.4), 0 0 0 2px rgba(255, 42, 95, 0.15) !important;
+  transform: translateY(-2px) scale(1.02) !important;
+}
+.btn-primary:active {
+  transform: translateY(0) scale(0.98) !important;
+}
+
+/* Tactile Secondary Button */
+.btn-secondary {
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+.btn-secondary:hover {
+  transform: translateY(-2px) scale(1.02) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+}
+.btn-secondary:active {
+  transform: translateY(0) scale(0.98) !important;
+}
+
+/* Global Form Focus Glow */
+input:focus, select:focus, textarea:focus, .bf-input:focus {
+  border-color: var(--accent-cyan) !important;
+  box-shadow: 0 0 0 3px rgba(0, 240, 255, 0.12), 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+  outline: none;
+}
+
+/* Sidebar Nav Item Micro-interaction */
+.nav-item {
+  transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+.nav-item:hover {
+  transform: translateX(4px) !important;
+}
+
+/* Card Hover Micro-interaction */
+.dash-stat-card, .upcoming-item, .top-cust-row, .card-interactive {
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+.dash-stat-card:hover, .upcoming-item:hover, .top-cust-row:hover, .card-interactive:hover {
+  transform: translateY(-2px) scale(1.01);
+  border-color: rgba(255, 42, 95, 0.18) !important;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35), 0 0 15px rgba(255, 42, 95, 0.08) !important;
+}
+

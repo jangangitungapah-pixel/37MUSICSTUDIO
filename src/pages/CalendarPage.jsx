@@ -138,7 +138,7 @@ const CalendarPage = () => {
   };
 
   const colWidth = viewMode === 'day' ? '200px' : viewMode === 'week' ? '120px' : isMobile ? '50px' : '60px';
-  const timeColWidth = isMobile ? '55px' : '80px';
+  const timeColWidth = isMobile ? '55px' : '100px';
 
   return (
     <div className="calendar-page">
@@ -273,7 +273,11 @@ const CalendarPage = () => {
             {hoursArray.map((hour, hourIdx) => (
               <React.Fragment key={hour}>
                 <div className={`time-label sticky-col ${hourIdx % 2 === 0 ? 'even-row' : ''}`}>
-                  <span className="time-range">{String(hour).padStart(2, '0')}.00 - {String(hour + 1).padStart(2, '0')}.00</span>
+                  <span className="time-range">
+                    {isMobile 
+                      ? `${String(hour).padStart(2, '0')}.00` 
+                      : `${String(hour).padStart(2, '0')}.00 - ${String(hour + 1).padStart(2, '0')}.00`}
+                  </span>
                 </div>
                 {daysArray.map((day, dayIdx) => {
                   const dateStr = format(day, 'yyyy-MM-dd');

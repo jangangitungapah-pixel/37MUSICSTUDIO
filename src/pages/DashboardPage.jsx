@@ -5,7 +5,7 @@ import { useInventoryStore } from '../store/useInventoryStore';
 import { useFinanceStore } from '../store/useFinanceStore';
 import { useSettingsStore } from '../store/useSettingsStore';
 import { format, subDays, addMonths, parseISO, isToday, isTomorrow } from 'date-fns';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import {
   TrendingUp, TrendingDown, Users, CalendarCheck, PackageOpen, Clock,
   ArrowRight, LayoutDashboard, Zap, AlertTriangle, CheckCircle2, Music2
@@ -189,23 +189,38 @@ const DashboardPage = () => {
             </button>
           </div>
           <ResponsiveContainer width="100%" height={220}>
-            <LineChart data={revenueChartData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
+            <AreaChart data={revenueChartData} margin={{ top: 10, right: 10, left: 10, bottom: 0 }}>
               <defs>
                 <linearGradient id="cyanGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#00f0ff" stopOpacity={0.2} />
+                  <stop offset="5%" stopColor="#00f0ff" stopOpacity={0.25} />
                   <stop offset="95%" stopColor="#00f0ff" stopOpacity={0} />
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" vertical={false} />
               <XAxis dataKey="name" stroke="var(--text-muted)" fontSize={11} tickLine={false} axisLine={false} />
-              <YAxis stroke="var(--text-muted)" fontSize={11} tickLine={false} axisLine={false} tickFormatter={formatK} width={40} />
+              <YAxis stroke="var(--text-muted)" fontSize={11} tickLine={false} axisLine={false} tickFormatter={formatK} width={50} />
               <Tooltip
-                contentStyle={{ backgroundColor: '#1a1a24', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '10px', fontSize: '0.8rem' }}
+                contentStyle={{ 
+                  backgroundColor: '#17171d', 
+                  border: '1px solid rgba(255, 255, 255, 0.08)', 
+                  borderRadius: '12px', 
+                  fontSize: '0.8rem',
+                  boxShadow: '0 10px 25px rgba(0, 0, 0, 0.3)'
+                }}
                 formatter={(v) => [formatCurrency(v), 'Pendapatan']}
-                labelStyle={{ color: 'var(--text-secondary)', marginBottom: '4px' }}
+                labelStyle={{ color: 'var(--text-secondary)', marginBottom: '4px', fontWeight: '600' }}
               />
-              <Line type="monotone" dataKey="Pendapatan" stroke="#00f0ff" strokeWidth={2.5} dot={{ r: 3, fill: '#00f0ff', strokeWidth: 0 }} activeDot={{ r: 5, fill: '#00f0ff' }} />
-            </LineChart>
+              <Area 
+                type="monotone" 
+                dataKey="Pendapatan" 
+                stroke="#00f0ff" 
+                strokeWidth={3} 
+                fillOpacity={1} 
+                fill="url(#cyanGrad)" 
+                dot={{ r: 4, stroke: '#00f0ff', strokeWidth: 2, fill: '#0c0c10' }} 
+                activeDot={{ r: 6, stroke: '#00f0ff', strokeWidth: 2, fill: '#00f0ff' }} 
+              />
+            </AreaChart>
           </ResponsiveContainer>
         </div>
 
@@ -262,10 +277,28 @@ const DashboardPage = () => {
           ) : (
             <ResponsiveContainer width="100%" height={200}>
               <PieChart>
-                <Pie data={inventoryChartData} cx="50%" cy="50%" innerRadius={50} outerRadius={75} paddingAngle={4} dataKey="value" strokeWidth={0}>
+                <Pie 
+                  data={inventoryChartData} 
+                  cx="50%" 
+                  cy="50%" 
+                  innerRadius={60} 
+                  outerRadius={80} 
+                  paddingAngle={5} 
+                  cornerRadius={4}
+                  dataKey="value" 
+                  strokeWidth={0}
+                >
                   {inventoryChartData.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
                 </Pie>
-                <Tooltip contentStyle={{ backgroundColor: '#1a1a24', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '10px', fontSize: '0.8rem' }} />
+                <Tooltip 
+                  contentStyle={{ 
+                    backgroundColor: '#17171d', 
+                    border: '1px solid rgba(255, 255, 255, 0.08)', 
+                    borderRadius: '12px', 
+                    fontSize: '0.8rem',
+                    boxShadow: '0 10px 25px rgba(0, 0, 0, 0.3)'
+                  }} 
+                />
               </PieChart>
             </ResponsiveContainer>
           )}
