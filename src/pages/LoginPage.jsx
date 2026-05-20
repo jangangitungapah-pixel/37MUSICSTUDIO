@@ -15,8 +15,8 @@ const FEATURES = [
 ];
 
 const LoginPage = () => {
-  const [identifier, setIdentifier] = useState('');
-  const [password, setPassword]     = useState('');
+  const [identifier, setIdentifier] = useState('admin');
+  const [password, setPassword]     = useState('123456');
   const [showPass, setShowPass]     = useState(false);
   const { login, loginGuest, error, loading, user, isAuthLoaded, clearError } = useAuthStore();
   const navigate = useNavigate();
@@ -180,8 +180,7 @@ const LoginPage = () => {
 
             {/* Footer */}
             <div className="auth-footer">
-              Belum punya akun?{' '}
-              <Link to="/register">Daftar di sini <ChevronRight size={13} style={{display:'inline',verticalAlign:'middle'}} /></Link>
+              Hanya akun yang telah didaftarkan oleh perusahaan yang dapat masuk.
             </div>
           </div>
         </div>

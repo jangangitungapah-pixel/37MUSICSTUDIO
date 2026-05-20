@@ -139,35 +139,38 @@
 .customers-table th {
   position: sticky;
   top: 0;
-  background: #14141a;
+  background: var(--bg-dark);
   color: var(--text-muted);
-  font-weight: 600;
-  font-size: 0.78rem;
+  font-weight: 800;
+  font-size: 0.65rem;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  padding: 12px 20px;
+  letter-spacing: 0.12em;
+  padding: 11px 20px;
   border-bottom: 1px solid var(--border-light);
   z-index: 10;
   white-space: nowrap;
+  backdrop-filter: blur(8px);
 }
 
 .customers-table td {
-  padding: 14px 20px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+  padding: 13px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.035);
   vertical-align: middle;
+  font-size: var(--text-base);
 }
 
 .customers-table tbody tr {
   cursor: pointer;
-  transition: background 0.1s;
+  transition: background 0.12s;
 }
 
 .customers-table tbody tr:hover td {
-  background: rgba(255, 255, 255, 0.025);
+  background: rgba(255, 255, 255, 0.03);
 }
 
 .customers-table tbody tr.row-selected td {
-  background: rgba(0, 240, 255, 0.04);
+  background: rgba(0, 240, 255, 0.05);
+  border-bottom-color: rgba(0, 240, 255, 0.08);
 }
 
 .customers-table tbody tr:last-child td {
@@ -201,19 +204,21 @@
 }
 
 .customer-name {
-  font-weight: 600;
+  font-weight: 700;
   color: var(--text-primary);
-  font-size: 0.9rem;
+  font-size: var(--text-base);
   white-space: nowrap;
+  letter-spacing: -0.01em;
 }
 
 .customer-note {
-  font-size: 0.72rem;
+  font-size: var(--text-xs);
   color: var(--text-muted);
   max-width: 180px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  margin-top: 1px;
 }
 
 .contact-info {
@@ -268,23 +273,27 @@
 }
 
 .status-badge {
-  padding: 4px 12px;
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
   border-radius: 20px;
-  font-size: 0.72rem;
-  font-weight: 600;
+  font-size: var(--text-xs);
+  font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.3px;
+  letter-spacing: 0.08em;
   white-space: nowrap;
 }
 
 .status-badge.active {
-  background: rgba(76, 175, 80, 0.12);
+  background: rgba(76, 175, 80, 0.1);
   color: #4CAF50;
+  border: 1px solid rgba(76, 175, 80, 0.18);
 }
 
 .status-badge.inactive {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.04);
   color: var(--text-muted);
+  border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .action-col {

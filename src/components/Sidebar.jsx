@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { CalendarDays, Users, Package, CreditCard, Settings, Music, BookOpen, PieChart, Menu, X, LogOut, HelpCircle, Bell, ChevronRight, FlaskConical } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { CalendarDays, Users, Package, CreditCard, Settings, Music, BookOpen, PieChart, Menu, X, LogOut, HelpCircle, Bell, ChevronRight, FlaskConical, Sun, Moon } from 'lucide-react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../store/useAuthStore';
 import { useTourStore } from '../store/useTourStore';
 import { useNotificationStore } from '../store/useNotificationStore';
+import { useThemeStore } from '../store/useThemeStore';
 import { useDemoStore } from '../store/useDemoStore';
 import ProfileModal from './ProfileModal';
 import NotificationPanel from './NotificationPanel';
@@ -18,6 +20,7 @@ const Sidebar = () => {
   const { startTour } = useTourStore();
   const { notifications } = useNotificationStore();
   const { isDemoMode, toggleDemoMode } = useDemoStore();
+  const { theme, toggleTheme } = useThemeStore();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -114,18 +117,29 @@ const Sidebar = () => {
         {/* Navigation */}
         <nav className="sidebar-nav">
           <span className="nav-section-label">MENU</span>
-          {menuItems.map((item, index) => (
-            <NavLink 
-              key={index} 
-              to={item.path} 
-              className={({ isActive }) => `nav-item ${item.tourClass} ${isActive ? 'active' : ''}`}
-              onClick={() => setMobileOpen(false)}
-            >
-              <span className="nav-icon">{item.icon}</span>
-              <span className="nav-label">{item.label}</span>
-              <ChevronRight size={14} className="nav-chevron" />
-            </NavLink>
-          ))}
+          <motion.div
+            initial="hidden"
+            animate="visible"
+            variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.06, delayChildren: 0.05 } } }}
+            style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}
+          >
+            {menuItems.map((item, index) => (
+              <motion.div
+                key={index}
+                variants={{ hidden: { opacity: 0, x: -14 }, visible: { opacity: 1, x: 0, transition: { duration: 0.25, ease: [0.4,0,0.2,1] } } }}
+              >
+                <NavLink 
+                  to={item.path} 
+                  className={({ isActive }) => `nav-item ${item.tourClass} ${isActive ? 'active' : ''}`}
+                  onClick={() => setMobileOpen(false)}
+                >
+                  <span className="nav-icon">{item.icon}</span>
+                  <span className="nav-label">{item.label}</span>
+                  <ChevronRight size={14} className="nav-chevron" />
+                </NavLink>
+              </motion.div>
+            ))}
+          </motion.div>
         </nav>
 
         {/* Footer */}
@@ -143,6 +157,14 @@ const Sidebar = () => {
               <span className="demo-badge-off" onClick={(e) => { e.stopPropagation(); toggleDemoMode(); }}>✕ OFF</span>
             </button>
           )}
+
+          {/* Theme Toggle */}
+          <button className="theme-toggle-btn" onClick={toggleTheme} title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}>
+            <span className="nav-icon">
+              {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+            </span>
+            <span className="nav-label">{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
+          </button>
 
           <button className="nav-item tour-guide-btn" onClick={handleRestartTour}>
             <span className="nav-icon"><HelpCircle size={19} /></span>

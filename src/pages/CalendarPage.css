@@ -251,21 +251,22 @@
   color: var(--text-muted);
   padding: 4px 12px;
   border-radius: 6px;
-  font-size: 0.85rem;
-  font-weight: 500;
+  font-size: var(--text-sm);
+  font-weight: var(--fw-semi);
+  letter-spacing: 0.01em;
   cursor: pointer;
   transition: all 0.2s;
 }
 
 .view-btn:hover {
-  color: var(--text-light);
+  color: var(--text-primary);
   background: rgba(255, 255, 255, 0.05);
 }
 
 .view-btn.active {
   background: var(--accent-cyan);
   color: #111117;
-  font-weight: 700;
+  font-weight: var(--fw-bold);
   box-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
 }
 
@@ -275,19 +276,7 @@
   align-items: center;
 }
 
-.page-title {
-  font-size: 1.6rem;
-  font-weight: 800;
-  color: var(--text-primary);
-  margin-bottom: 2px;
-  letter-spacing: -0.3px;
-}
-
-.page-subtitle {
-  color: var(--text-muted);
-  font-size: 0.85rem;
-  font-weight: 400;
-}
+/* page-title and page-subtitle are global in index.css */
 
 .header-actions {
   display: flex;
@@ -362,6 +351,34 @@
   transform: translateY(0);
 }
 
+.btn-secondary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-secondary);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 10px 16px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+  white-space: nowrap;
+}
+
+.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.09);
+  color: var(--text-primary);
+  border-color: rgba(255, 255, 255, 0.15);
+  transform: translateY(-1px);
+}
+
+.btn-secondary:active {
+  transform: translateY(0);
+}
+
 /* ===== Stats Summary Bar ===== */
 .stats-bar {
   display: grid;
@@ -400,25 +417,28 @@
 }
 
 .stat-value {
-  font-size: 1.35rem;
-  font-weight: 700;
+  font-size: var(--text-xl);
+  font-weight: var(--fw-black);
   color: var(--text-primary);
-  font-variant-numeric: tabular-nums;
-  line-height: 1.2;
+  letter-spacing: -0.035em;
+  line-height: 1.15;
 }
 
 .stat-value small {
-  font-size: 0.7rem;
-  font-weight: 500;
+  font-size: var(--text-xs);
+  font-weight: var(--fw-semi);
   color: var(--text-muted);
-  margin-left: 2px;
+  margin-left: 3px;
+  letter-spacing: 0;
 }
 
 .stat-label {
-  font-size: 0.75rem;
+  font-size: var(--text-xs);
   color: var(--text-muted);
-  font-weight: 500;
-  margin-top: 2px;
+  font-weight: var(--fw-semi);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-top: 3px;
 }
 
 .stat-breakdown {
@@ -461,9 +481,11 @@
   flex-direction: column;
   overflow: hidden;
   min-height: 400px;
-  border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  background: rgba(255, 255, 255, 0.015);
+  border-radius: 18px;
+  border: 1px solid var(--glass-border);
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
 .calendar-toolbar {
@@ -471,9 +493,9 @@
   justify-content: space-between;
   align-items: center;
   padding: 14px 20px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid var(--glass-border);
   flex-shrink: 0;
-  background: rgba(0, 0, 0, 0.15);
+  background: rgba(0, 0, 0, 0.08);
 }
 
 .date-navigation {
@@ -503,29 +525,32 @@
 }
 
 .current-month {
-  font-size: 1rem;
-  font-weight: 700;
+  font-size: 0.95rem;
+  font-weight: 800;
   min-width: 160px;
   text-align: center;
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 0.1em;
+  color: var(--text-primary);
 }
 
 .today-btn {
   background: transparent;
-  border: 1px solid var(--accent-cyan);
+  border: 1px solid rgba(0, 240, 255, 0.35);
   color: var(--accent-cyan);
-  padding: 6px 16px;
-  border-radius: 8px;
-  font-size: 0.82rem;
-  font-weight: 600;
+  padding: 5px 14px;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
   cursor: pointer;
-  transition: all 0.15s;
+  transition: all 0.18s;
   font-family: inherit;
 }
 
 .today-btn:hover {
   background: rgba(0, 240, 255, 0.1);
+  border-color: var(--accent-cyan);
 }
 
 /* Quick Filters */
@@ -605,10 +630,10 @@
   position: sticky;
   top: 0;
   left: 0;
-  z-index: 30;
-  background: #111117;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  z-index: 100;
+  background: var(--bg-dark);
+  border-bottom: 1px solid var(--glass-border);
+  border-right: 1px solid var(--glass-border);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -616,10 +641,10 @@
 }
 
 .corner-label {
-  font-size: 0.7rem;
-  font-weight: 700;
+  font-size: 0.6rem;
+  font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 2px;
+  letter-spacing: 0.15em;
   color: var(--text-muted);
 }
 
@@ -627,8 +652,8 @@
 .grid-header-cell {
   position: sticky;
   top: 0;
-  background: #111117;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--bg-dark);
+  border-bottom: 2px solid var(--glass-border);
   border-right: 1px solid rgba(255, 255, 255, 0.03);
   padding: 10px 4px;
   text-align: center;
@@ -636,44 +661,45 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 3px;
+  gap: 4px;
+  transition: background 0.2s;
 }
 
 .grid-header-cell .day-name {
-  font-size: 0.68rem;
+  font-size: 0.6rem;
   text-transform: uppercase;
-  font-weight: 600;
-  letter-spacing: 0.5px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
   color: var(--text-muted);
 }
 
 .grid-header-cell .day-number {
-  font-size: 1.05rem;
+  font-size: 1rem;
   font-weight: 700;
   color: var(--text-secondary);
-  width: 32px;
-  height: 32px;
+  width: 30px;
+  height: 30px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 10px;
-  transition: background 0.15s;
+  border-radius: 50%;
+  transition: all 0.15s;
 }
 
 .grid-header-cell.today {
-  background: rgba(0, 240, 255, 0.06);
+  background: rgba(0, 240, 255, 0.04);
 }
 
 .grid-header-cell.today .day-number {
-  color: #111117;
+  color: var(--bg-dark);
   background: var(--accent-cyan);
   font-weight: 800;
-  box-shadow: 0 0 12px rgba(0, 240, 255, 0.3);
+  box-shadow: 0 0 14px rgba(0, 240, 255, 0.4);
 }
 
 .grid-header-cell.weekend .day-name {
   color: var(--accent-pink);
-  opacity: 0.7;
+  opacity: 0.8;
 }
 
 /* Time label column */
@@ -684,50 +710,53 @@
 }
 
 .time-label {
-  border-right: 1px solid rgba(255, 255, 255, 0.08);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+  border-right: 1px solid var(--glass-border);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.02);
   padding: 0 10px;
   display: flex;
   align-items: center;
-  justify-content: center;
-  background: #16161c;
-  min-height: 40px;
+  justify-content: flex-end;
+  background: var(--bg-dark);
+  min-height: 44px;
 }
 
 .time-label.even-row {
-  background: #131319;
+  background: var(--bg-surface);
 }
 
 .time-range {
-  font-size: 0.68rem;
+  font-size: 0.65rem;
   color: var(--text-muted);
-  font-weight: 500;
+  font-weight: 700;
   white-space: nowrap;
   font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+  opacity: 0.8;
 }
 
 /* Grid Cells */
 .grid-cell {
   border-right: 1px solid rgba(255, 255, 255, 0.025);
   border-bottom: 1px solid rgba(255, 255, 255, 0.03);
-  min-height: 40px;
+  min-height: 44px;
   position: relative;
+  transition: background 0.12s;
 }
 
 .grid-cell.even-row {
-  background: rgba(255, 255, 255, 0.01);
+  background: rgba(255, 255, 255, 0.012);
 }
 
 .grid-cell.today-col-highlight {
-  background: rgba(0, 240, 255, 0.02) !important;
+  background: rgba(0, 240, 255, 0.025) !important;
 }
 
 .grid-cell.weekend-col {
-  background: rgba(255, 42, 95, 0.012);
+  background: rgba(255, 42, 95, 0.01);
 }
 
 .grid-cell.today-col-highlight.weekend-col {
-  background: rgba(0, 240, 255, 0.02) !important;
+  background: rgba(0, 240, 255, 0.025) !important;
 }
 
 /* Empty cell */
@@ -736,11 +765,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.15s;
+  transition: background 0.12s;
 }
 
 .empty-cell:hover {
-  background: rgba(255, 255, 255, 0.05) !important;
+  background: rgba(255, 255, 255, 0.04) !important;
 }
 
 .hover-plus {
@@ -752,7 +781,7 @@
 }
 
 .empty-cell:hover .hover-plus {
-  opacity: 0.6;
+  opacity: 0.5;
 }
 
 /* Booked cells */
@@ -764,76 +793,78 @@
 }
 
 .booked-cell:hover {
-  filter: brightness(1.3);
+  filter: brightness(1.15);
+  z-index: 2;
 }
 
 .booked-cell.status-confirmed {
-  background: rgba(0, 240, 255, 0.1);
+  background: linear-gradient(180deg, rgba(0, 240, 255, 0.14) 0%, rgba(0, 240, 255, 0.08) 100%);
   border-left: 3px solid var(--accent-cyan);
+  box-shadow: inset 0 0 0 0 transparent;
 }
 
 .booked-cell.status-dp {
-  background: rgba(255, 193, 7, 0.1);
+  background: linear-gradient(180deg, rgba(255, 193, 7, 0.16) 0%, rgba(255, 193, 7, 0.08) 100%);
   border-left: 3px solid #FFC107;
 }
 
 .booked-cell.status-pending {
-  background: rgba(255, 42, 95, 0.1);
+  background: linear-gradient(180deg, rgba(255, 42, 95, 0.14) 0%, rgba(255, 42, 95, 0.07) 100%);
   border-left: 3px solid var(--accent-pink);
 }
 
-.status-maintenance { 
+.status-maintenance {
   background: repeating-linear-gradient(
     45deg,
-    rgba(107, 107, 118, 0.1),
-    rgba(107, 107, 118, 0.1) 10px,
-    rgba(107, 107, 118, 0.2) 10px,
-    rgba(107, 107, 118, 0.2) 20px
+    rgba(107, 107, 118, 0.08),
+    rgba(107, 107, 118, 0.08) 8px,
+    rgba(107, 107, 118, 0.16) 8px,
+    rgba(107, 107, 118, 0.16) 16px
   );
   border-left: 3px solid #6b6b76;
 }
+
 .status-maintenance:hover {
-  background: repeating-linear-gradient(
-    45deg,
-    rgba(107, 107, 118, 0.15),
-    rgba(107, 107, 118, 0.15) 10px,
-    rgba(107, 107, 118, 0.25) 10px,
-    rgba(107, 107, 118, 0.25) 20px
-  );
+  filter: brightness(1.15);
 }
 
 .booked-cell.booking-start {
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 0 4px 0 0;
 }
 
 .booked-cell.booking-end {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 0 0 4px 0;
 }
 
 .booking-info {
   width: 100%;
-  padding: 4px 8px;
+  padding: 5px 8px;
   display: flex;
   flex-direction: column;
-  gap: 1px;
+  gap: 2px;
   overflow: hidden;
 }
 
 .booking-band-name {
   font-size: 0.72rem;
-  font-weight: 700;
+  font-weight: 800;
   color: var(--text-primary);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  line-height: 1.3;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
 }
 
 .booking-time-label {
-  font-size: 0.62rem;
+  font-size: 0.6rem;
   color: var(--text-secondary);
   white-space: nowrap;
   font-variant-numeric: tabular-nums;
+  opacity: 0.75;
+  font-weight: 600;
 }
 
 /* ===== Booking Detail Popup ===== */
@@ -842,11 +873,10 @@
   z-index: 100;
   width: 320px;
   max-height: calc(100vh - 16px);
-  background: #1a1a22;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 16px;
-  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.04);
-  animation: popupIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  background: var(--bg-surface);
+  border: 1px solid var(--glass-border);
+  border-radius: 18px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.04);
   overflow-y: auto;
 }
 
@@ -855,14 +885,15 @@
   justify-content: space-between;
   align-items: center;
   padding: 16px 18px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid var(--glass-border);
   background: rgba(255, 255, 255, 0.02);
 }
 
 .detail-header h4 {
-  font-size: 1.05rem;
-  font-weight: 700;
+  font-size: 1rem;
+  font-weight: 800;
   color: var(--text-primary);
+  letter-spacing: -0.02em;
 }
 
 .detail-close {

@@ -14,6 +14,7 @@ import {
 } from 'date-fns';
 import { id as localeId } from 'date-fns/locale';
 import { useNotificationStore } from '../store/useNotificationStore';
+import { AnimatePresence, motion } from 'framer-motion';
 import './PublicCalendarPage.css';
 
 const PublicCalendarPage = () => {
@@ -253,7 +254,7 @@ const PublicCalendarPage = () => {
                 <React.Fragment key={hour}>
                   {/* Time label */}
                   <div className={`pc-time-label ${hIdx % 2 === 0 ? 'even' : ''}`}>
-                    <span>{String(hour).padStart(2,'0')}.00</span>
+                    <span>{String(hour).padStart(2,'0')}.00 - {String(hour + 1).padStart(2,'0')}.00</span>
                   </div>
 
                   {/* Day cells */}
@@ -312,9 +313,24 @@ const PublicCalendarPage = () => {
       </div>
 
       {/* ── Booking Modal (Bottom-Sheet on mobile) ── */}
-      {modalOpen && (
-        <div className="pc-modal-overlay" onClick={() => setModalOpen(false)}>
-          <div className="pc-modal glass-panel" onClick={e => e.stopPropagation()}>
+      <AnimatePresence>
+        {modalOpen && (
+          <motion.div
+            className="pc-modal-overlay"
+            onClick={() => setModalOpen(false)}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.18 }}
+          >
+            <motion.div
+              className="pc-modal glass-panel"
+              onClick={e => e.stopPropagation()}
+              initial={{ y: 60, scale: 0.96, opacity: 0 }}
+              animate={{ y: 0, scale: 1, opacity: 1 }}
+              exit={{ y: 40, scale: 0.95, opacity: 0 }}
+              transition={{ type: 'spring', stiffness: 320, damping: 28 }}
+            >
             {/* Header */}
             <div className="pc-modal-header">
               <div className="pc-modal-header-info">
@@ -399,9 +415,10 @@ const PublicCalendarPage = () => {
                 <span>Kirim ke WhatsApp Admin</span>
               </button>
             </div>
-          </div>
-        </div>
-      )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

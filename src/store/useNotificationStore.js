@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { toast } from 'sonner';
 
 export const useNotificationStore = create(
   persist(
@@ -46,6 +47,14 @@ export const useNotificationStore = create(
           notifications: [newNotif, ...state.notifications].slice(0, 50), // History
           toastQueue: [newNotif, ...state.toastQueue].slice(0, 5) // Active toasts
         }));
+
+        // Bridge to sonner for modern toast UI
+        const msg = notification.message ? `${notification.title}: ${notification.message}` : notification.title;
+        if (notification.type === 'error') toast.error(msg);
+        else if (notification.type === 'warning') toast.warning(msg);
+        else if (notification.type === 'booking') toast.success(msg, { icon: '🎸' });
+        else if (notification.type === 'customer') toast.success(msg, { icon: '👤' });
+        else toast.info(msg);
 
         // Auto-dismiss the toast popup after 2 seconds
         setTimeout(() => {

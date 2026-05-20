@@ -160,37 +160,40 @@
 .inventory-table th {
   position: sticky;
   top: 0;
-  background: #14141a;
+  background: var(--bg-dark);
   color: var(--text-muted);
-  font-weight: 600;
-  font-size: 0.75rem;
+  font-weight: 800;
+  font-size: 0.62rem;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  padding: 11px 16px;
+  letter-spacing: 0.12em;
+  padding: 10px 16px;
   border-bottom: 1px solid var(--border-light);
   z-index: 10;
   white-space: nowrap;
+  backdrop-filter: blur(8px);
 }
 
 .inventory-table td {
   padding: 12px 16px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.035);
   vertical-align: middle;
   overflow: hidden;
   text-overflow: ellipsis;
+  font-size: var(--text-base);
 }
 
 .inventory-table tbody tr {
   cursor: pointer;
-  transition: background 0.1s;
+  transition: background 0.12s;
 }
 
 .inventory-table tbody tr:hover td {
-  background: rgba(255, 255, 255, 0.025);
+  background: rgba(255, 255, 255, 0.03);
 }
 
 .inventory-table tbody tr.row-selected td {
-  background: rgba(0, 240, 255, 0.04);
+  background: rgba(0, 240, 255, 0.05);
+  border-bottom-color: rgba(0, 240, 255, 0.08);
 }
 
 .inventory-table tbody tr.row-overdue td {
@@ -228,18 +231,23 @@
 }
 
 .item-name {
-  font-weight: 600;
+  font-weight: 700;
   color: var(--text-primary);
-  font-size: 0.9rem;
+  font-size: var(--text-base);
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .item-note {
-  font-size: 0.72rem;
+  font-size: var(--text-xs);
   color: var(--text-muted);
   max-width: 250px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  margin-top: 1px;
 }
 
 .category-info {
@@ -306,12 +314,15 @@
 }
 
 .condition-badge {
-  padding: 4px 10px;
-  border-radius: 6px;
-  font-size: 0.78rem;
-  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: var(--text-xs);
+  font-weight: 800;
   white-space: nowrap;
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
 .inventory-page .action-col {

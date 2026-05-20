@@ -37,16 +37,18 @@
 }
 
 .dash-greeting-title {
-  font-size: 1.1rem;
-  font-weight: 800;
+  font-size: var(--text-lg);
+  font-weight: var(--fw-black);
   color: var(--text-primary);
-  margin: 0 0 3px;
+  margin: 0 0 4px;
+  letter-spacing: -0.02em;
 }
 
 .dash-greeting-sub {
-  font-size: 0.8rem;
+  font-size: var(--text-sm);
   color: var(--text-muted);
   margin: 0;
+  font-weight: var(--fw-medium);
 }
 
 .dash-greeting-right {
@@ -138,26 +140,28 @@
 .dash-trend.down { background: rgba(255,42,95,0.1); color: var(--accent-pink); }
 
 .dash-stat-value {
-  font-size: 1.55rem;
-  font-weight: 800;
+  font-size: var(--text-2xl);
+  font-weight: var(--fw-black);
   color: var(--text-primary);
-  font-variant-numeric: tabular-nums;
-  letter-spacing: -0.5px;
-  line-height: 1;
+  letter-spacing: -0.04em;
+  line-height: 1.1;
 }
 .dash-stat-value.warn { color: #FF9800; }
-.dash-stat-unit { font-size: 0.85rem; font-weight: 500; color: var(--text-muted); }
+.dash-stat-unit { font-size: var(--text-sm); font-weight: var(--fw-semi); color: var(--text-muted); }
 
 .dash-stat-label {
-  font-size: 0.78rem;
+  font-size: var(--text-xs);
   color: var(--text-muted);
-  font-weight: 500;
+  font-weight: var(--fw-semi);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-top: 4px;
 }
 
 .dash-stat-sub {
-  font-size: 0.72rem;
+  font-size: var(--text-xs);
   color: var(--text-muted);
-  opacity: 0.7;
+  opacity: 0.6;
 }
 
 .dash-stat-pills {
@@ -200,16 +204,18 @@
 }
 
 .chart-title {
-  font-size: 0.95rem;
-  font-weight: 700;
+  font-size: var(--text-base);
+  font-weight: var(--fw-bold);
   color: var(--text-primary);
   margin: 0 0 2px;
+  letter-spacing: -0.01em;
 }
 
 .chart-sub {
-  font-size: 0.74rem;
+  font-size: var(--text-xs);
   color: var(--text-muted);
   margin: 0;
+  font-weight: var(--fw-medium);
 }
 
 .chart-link-btn {
@@ -412,7 +418,7 @@
 .top-cust-unit { font-size: 0.72rem; color: var(--text-muted); }
 
 /* ===== Responsive ===== */
-@media (max-width: 1024px) {
+@media (max-width: 1400px) {
   .dash-stats-grid { grid-template-columns: repeat(2, 1fr); }
   .dash-main-grid { grid-template-columns: repeat(2, 1fr); }
   .span-2 { grid-column: span 2; }

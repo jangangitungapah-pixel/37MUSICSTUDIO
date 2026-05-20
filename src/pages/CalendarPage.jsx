@@ -5,6 +5,7 @@ import { useBookingStore } from '../store/useBookingStore';
 import { useSettingsStore } from '../store/useSettingsStore';
 import { useTourStore } from '../store/useTourStore';
 import { useNotificationStore } from '../store/useNotificationStore';
+import { AnimatePresence, motion } from 'framer-motion';
 import Modal from '../components/Modal';
 import BookingForm from '../components/BookingForm';
 import './CalendarPage.css';
@@ -255,7 +256,7 @@ const CalendarPage = () => {
         {/* Grid */}
         <div className="monthly-grid-wrapper tour-calendar-grid" ref={gridWrapperRef}>
           <div className="monthly-grid" style={{ gridTemplateColumns: `${timeColWidth} repeat(${numDays}, minmax(${colWidth}, 1fr))` }}>
-            <div className="grid-corner-cell sticky-col"><span className="corner-label">JAM</span></div>
+            <div className="grid-corner-cell"><span className="corner-label">JAM</span></div>
 
             {daysArray.map((day, idx) => {
               const isToday = format(day, 'yyyy-MM-dd') === todayStr;
@@ -272,7 +273,7 @@ const CalendarPage = () => {
             {hoursArray.map((hour, hourIdx) => (
               <React.Fragment key={hour}>
                 <div className={`time-label sticky-col ${hourIdx % 2 === 0 ? 'even-row' : ''}`}>
-                  <span className="time-range">{String(hour).padStart(2, '0')}<small>:00</small></span>
+                  <span className="time-range">{String(hour).padStart(2, '0')}.00 - {String(hour + 1).padStart(2, '0')}.00</span>
                 </div>
                 {daysArray.map((day, dayIdx) => {
                   const dateStr = format(day, 'yyyy-MM-dd');
@@ -313,20 +314,26 @@ const CalendarPage = () => {
       </div>
 
       {/* Booking Detail — Bottom Sheet on mobile, Popup on desktop */}
-      {selectedBooking && (() => {
-        const b = bookings.find(x => x.id === selectedBooking.id) || selectedBooking;
-        const isRecording = b.type === 'recording';
-        const basePrice = isRecording ? (b.sessionPrice || 0) : (b.duration * pricePerHour);
-        const totalPrice = basePrice - (b.discountAmount || 0);
-        
-        return (
-          <>
-            {isMobile && <div className="detail-overlay" onClick={() => setSelectedBooking(null)} />}
-            <div
-              className={`booking-detail-popup glass-panel ${isMobile ? 'mobile-sheet' : ''}`}
-              style={!isMobile ? { top: detailPos.top, left: detailPos.left } : undefined}
-              onClick={e => e.stopPropagation()}
-            >
+      <AnimatePresence>
+        {(() => {
+          if (!selectedBooking) return null;
+          const b = bookings.find(x => x.id === selectedBooking.id) || selectedBooking;
+          const isRecording = b.type === 'recording';
+          const basePrice = isRecording ? (b.sessionPrice || 0) : (b.duration * pricePerHour);
+          const totalPrice = basePrice - (b.discountAmount || 0);
+          
+          return (
+            <>
+              {isMobile && <div className="detail-overlay" onClick={() => setSelectedBooking(null)} />}
+              <motion.div
+                className={`booking-detail-popup glass-panel ${isMobile ? 'mobile-sheet' : ''}`}
+                style={!isMobile ? { top: detailPos.top, left: detailPos.left } : undefined}
+                onClick={e => e.stopPropagation()}
+                initial={isMobile ? { y: 60, opacity: 0 } : { scale: 0.92, opacity: 0, y: -8 }}
+                animate={isMobile ? { y: 0, opacity: 1 } : { scale: 1, opacity: 1, y: 0 }}
+                exit={isMobile ? { y: 80, opacity: 0 } : { scale: 0.9, opacity: 0, y: -10 }}
+                transition={{ type: 'spring', stiffness: 340, damping: 28 }}
+              >
               {/* Header */}
               <div className="detail-header">
                 <div className="detail-header-info">
@@ -430,10 +437,11 @@ const CalendarPage = () => {
                   </button>
                 )}
               </div>
-            </div>
+            </motion.div>
           </>
         );
       })()}
+      </AnimatePresence>
 
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Booking Baru">
         <BookingForm onClose={() => setIsModalOpen(false)} initialDate={prefillDate} initialHour={prefillHour} />
