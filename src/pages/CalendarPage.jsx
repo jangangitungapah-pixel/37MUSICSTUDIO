@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useRef, useEffect, useCallback } from 'react';
-import { ChevronLeft, ChevronRight, Plus, Search, CalendarCheck, Clock, DollarSign, Trash2, Phone, StickyNote, X, MessageCircle, TrendingUp, Calendar, LayoutGrid, CalendarDays, Lightbulb, AlertTriangle, CheckCircle2, XCircle, RotateCcw } from 'lucide-react';
+import { ChevronDown, ChevronLeft, ChevronRight, ChevronUp, Plus, Search, CalendarCheck, Clock, DollarSign, Trash2, Phone, StickyNote, X, MessageCircle, TrendingUp, Calendar, LayoutGrid, CalendarDays, Lightbulb, AlertTriangle, CheckCircle2, XCircle, RotateCcw } from 'lucide-react';
 import { format, addMonths, subMonths, startOfMonth, endOfMonth, addDays, subDays, getDay, startOfWeek, endOfWeek, eachDayOfInterval, addWeeks, subWeeks } from 'date-fns';
 import { useBookingStore } from '../store/useBookingStore';
 import { useSettingsStore } from '../store/useSettingsStore';
@@ -28,6 +28,7 @@ const CalendarPage = () => {
   const gridWrapperRef = useRef(null);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [now, setNow] = useState(new Date());
+  const [areTopPanelsCollapsed, setAreTopPanelsCollapsed] = useState(false);
 
   // Swipe gesture state
   const touchStartRef = useRef(null);
@@ -51,6 +52,10 @@ const CalendarPage = () => {
       clearInterval(interval);
     };
   }, []);
+
+  useEffect(() => {
+    if (isMobile) setAreTopPanelsCollapsed(false);
+  }, [isMobile]);
 
   const { bookings, addBooking, deleteBooking, updateBookingStatus, updateBooking, cancelBooking, rescheduleBooking, getMonthlyStats } = useBookingStore();
   const { requests, updateRequestStatus } = useBookingRequestStore();
@@ -443,7 +448,7 @@ const CalendarPage = () => {
 
   return (
     <div className="calendar-page">
-      <div className={`calendar-main-content ${selectedBooking ? 'blurred' : ''}`}>
+      <div className={`calendar-main-content ${selectedBooking ? 'blurred' : ''} ${areTopPanelsCollapsed && !isMobile ? 'panels-collapsed' : ''}`}>
         {/* Header */}
       <header className="cal-header">
         <div className="cal-header-left">
@@ -461,6 +466,17 @@ const CalendarPage = () => {
             <input type="text" placeholder="Cari band / no HP..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
             {searchQuery && <button className="search-clear" onClick={() => setSearchQuery('')}><X size={13} /></button>}
           </div>
+          <button
+            className="btn-secondary cal-panel-toggle desktop-only"
+            type="button"
+            onClick={() => setAreTopPanelsCollapsed((value) => !value)}
+            aria-expanded={!areTopPanelsCollapsed}
+            aria-controls="calendar-top-panels"
+            title={areTopPanelsCollapsed ? 'Tampilkan panel atas' : 'Sembunyikan panel atas'}
+          >
+            {areTopPanelsCollapsed ? <ChevronDown size={16} /> : <ChevronUp size={16} />}
+            <span>{areTopPanelsCollapsed ? 'Tampilkan Panel' : 'Sembunyikan Panel'}</span>
+          </button>
           <button className="btn-secondary tour-calendar-print" onClick={() => window.print()} title="Cetak">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
             <span className="hide-on-mobile">Cetak</span>
@@ -471,117 +487,130 @@ const CalendarPage = () => {
         </div>
       </header>
 
-      {/* Stats Bar */}
-      <div className="stats-bar">
-        <div className="stat-card glass-panel">
-          <div className="stat-icon" style={{ background: 'rgba(0,240,255,0.1)' }}>
-            <CalendarCheck size={18} color="var(--accent-cyan)" />
-          </div>
-          <div className="stat-data">
-            <span className="stat-value">{stats.totalBookings}</span>
-            <span className="stat-label">Total Booking</span>
-          </div>
-        </div>
-        <div className="stat-card glass-panel">
-          <div className="stat-icon" style={{ background: 'rgba(255,42,95,0.1)' }}>
-            <Clock size={18} color="var(--accent-pink)" />
-          </div>
-          <div className="stat-data">
-            <span className="stat-value">{stats.totalHours}<small> jam</small></span>
-            <span className="stat-label">Jam Terpakai</span>
-          </div>
-        </div>
-        <div className="stat-card glass-panel">
-          <div className="stat-icon" style={{ background: 'rgba(76,175,80,0.1)' }}>
-            <DollarSign size={18} color="#4CAF50" />
-          </div>
-          <div className="stat-data">
-            <span className="stat-value">{formatCurrency(stats.totalRevenue)}</span>
-            <span className="stat-label">
-              Est. Pendapatan
-              {revTrend !== null && (
-                <span className={`trend-badge ${revTrend >= 0 ? 'up' : 'down'}`}>
-                  <TrendingUp size={10} />{revTrend >= 0 ? '+' : ''}{revTrend}%
-                </span>
-              )}
-            </span>
-          </div>
-        </div>
-        <div className="stat-card glass-panel stat-breakdown">
-          <div className="breakdown-items">
-            <span className="breakdown-item"><span className="dot confirmed" />  {stats.confirmed} Lunas</span>
-            <span className="breakdown-item"><span className="dot dp" />  {stats.dp} DP</span>
-            <span className="breakdown-item"><span className="dot pending" />  {stats.pending} Pending</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Smart Scheduling */}
-      <div className="cal-smart-panel glass-panel">
-        <div className="cal-smart-summary">
-          <div className="cal-smart-icon"><Lightbulb size={18} /></div>
-          <div>
-            <h3>Rekomendasi Slot</h3>
-            <p>
-              {demandInsights.busiestHour
-                ? `Jam ramai ${demandInsights.busiestHour}.00, hari sepi ${demandInsights.quietestDay}.`
-                : 'Saran akan makin akurat setelah ada lebih banyak booking.'}
-            </p>
-          </div>
-        </div>
-        <div className="cal-slot-list">
-          {slotRecommendations.length === 0 ? (
-            <span className="cal-slot-empty">Tidak ada slot kosong yang cocok.</span>
-          ) : slotRecommendations.map((slot) => (
-            <button
-              key={`${slot.date}-${slot.hour}`}
-              className="cal-slot-chip"
-              onClick={() => handleCellClick(slot.date, slot.hour)}
-              title="Pakai slot ini"
-            >
-              <strong>{slot.dayName}, {slot.date.slice(8, 10)}/{slot.date.slice(5, 7)}</strong>
-              <span>{String(slot.hour).padStart(2, '0')}.00-{String(slot.endHour).padStart(2, '0')}.00</span>
-              <small>{slot.reason}</small>
-            </button>
-          ))}
-        </div>
-        {scheduleAnomalies.length > 0 && (
-          <div className="cal-smart-alert">
-            <AlertTriangle size={15} />
-            <span>{scheduleAnomalies.length} anomali jadwal terdeteksi. Pertama: {scheduleAnomalies[0].detail}</span>
-          </div>
-        )}
-      </div>
-
-      {pendingRequests.length > 0 && (
-        <div className="cal-request-panel glass-panel">
-          <div className="cal-request-head">
-            <div>
-              <h3>Request Booking Publik</h3>
-              <p>{pendingRequests.length} request menunggu persetujuan admin.</p>
-            </div>
-          </div>
-          <div className="cal-request-list">
-            {pendingRequests.slice(0, 5).map((request) => (
-              <div key={request.id} className="cal-request-item">
-                <div className="cal-request-main">
-                  <strong>{request.band}</strong>
-                  <span>{request.date} &bull; {String(request.hour).padStart(2, '0')}.00-{String(Number(request.hour) + Number(request.duration || 1)).padStart(2, '0')}.00</span>
-                  {request.phone && <small>{request.phone}</small>}
+      <AnimatePresence initial={false}>
+        {(!areTopPanelsCollapsed || isMobile) && (
+          <motion.div
+            id="calendar-top-panels"
+            className="calendar-top-panels"
+            initial={!isMobile ? { height: 0, opacity: 0 } : false}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={!isMobile ? { height: 0, opacity: 0 } : undefined}
+            transition={{ duration: 0.22, ease: 'easeInOut' }}
+          >
+            {/* Stats Bar */}
+            <div className="stats-bar">
+              <div className="stat-card glass-panel">
+                <div className="stat-icon" style={{ background: 'rgba(0,240,255,0.1)' }}>
+                  <CalendarCheck size={18} color="var(--accent-cyan)" />
                 </div>
-                <div className="cal-request-actions">
-                  <button className="request-approve" onClick={() => handleApproveRequest(request)} title="Approve">
-                    <CheckCircle2 size={15} /> Approve
-                  </button>
-                  <button className="request-reject" onClick={() => handleRejectRequest(request)} title="Tolak">
-                    <XCircle size={15} /> Tolak
-                  </button>
+                <div className="stat-data">
+                  <span className="stat-value">{stats.totalBookings}</span>
+                  <span className="stat-label">Total Booking</span>
                 </div>
               </div>
-            ))}
-          </div>
-        </div>
-      )}
+              <div className="stat-card glass-panel">
+                <div className="stat-icon" style={{ background: 'rgba(255,42,95,0.1)' }}>
+                  <Clock size={18} color="var(--accent-pink)" />
+                </div>
+                <div className="stat-data">
+                  <span className="stat-value">{stats.totalHours}<small> jam</small></span>
+                  <span className="stat-label">Jam Terpakai</span>
+                </div>
+              </div>
+              <div className="stat-card glass-panel">
+                <div className="stat-icon" style={{ background: 'rgba(76,175,80,0.1)' }}>
+                  <DollarSign size={18} color="#4CAF50" />
+                </div>
+                <div className="stat-data">
+                  <span className="stat-value">{formatCurrency(stats.totalRevenue)}</span>
+                  <span className="stat-label">
+                    Est. Pendapatan
+                    {revTrend !== null && (
+                      <span className={`trend-badge ${revTrend >= 0 ? 'up' : 'down'}`}>
+                        <TrendingUp size={10} />{revTrend >= 0 ? '+' : ''}{revTrend}%
+                      </span>
+                    )}
+                  </span>
+                </div>
+              </div>
+              <div className="stat-card glass-panel stat-breakdown">
+                <div className="breakdown-items">
+                  <span className="breakdown-item"><span className="dot confirmed" />  {stats.confirmed} Lunas</span>
+                  <span className="breakdown-item"><span className="dot dp" />  {stats.dp} DP</span>
+                  <span className="breakdown-item"><span className="dot pending" />  {stats.pending} Pending</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Smart Scheduling */}
+            <div className="cal-smart-panel glass-panel">
+              <div className="cal-smart-summary">
+                <div className="cal-smart-icon"><Lightbulb size={18} /></div>
+                <div>
+                  <h3>Rekomendasi Slot</h3>
+                  <p>
+                    {demandInsights.busiestHour
+                      ? `Jam ramai ${demandInsights.busiestHour}.00, hari sepi ${demandInsights.quietestDay}.`
+                      : 'Saran akan makin akurat setelah ada lebih banyak booking.'}
+                  </p>
+                </div>
+              </div>
+              <div className="cal-slot-list">
+                {slotRecommendations.length === 0 ? (
+                  <span className="cal-slot-empty">Tidak ada slot kosong yang cocok.</span>
+                ) : slotRecommendations.map((slot) => (
+                  <button
+                    key={`${slot.date}-${slot.hour}`}
+                    className="cal-slot-chip"
+                    onClick={() => handleCellClick(slot.date, slot.hour)}
+                    title="Pakai slot ini"
+                  >
+                    <strong>{slot.dayName}, {slot.date.slice(8, 10)}/{slot.date.slice(5, 7)}</strong>
+                    <span>{String(slot.hour).padStart(2, '0')}.00-{String(slot.endHour).padStart(2, '0')}.00</span>
+                    <small>{slot.reason}</small>
+                  </button>
+                ))}
+              </div>
+              {scheduleAnomalies.length > 0 && (
+                <div className="cal-smart-alert">
+                  <AlertTriangle size={15} />
+                  <span>{scheduleAnomalies.length} anomali jadwal terdeteksi. Pertama: {scheduleAnomalies[0].detail}</span>
+                </div>
+              )}
+            </div>
+
+            {pendingRequests.length > 0 && (
+              <div className="cal-request-panel glass-panel">
+                <div className="cal-request-head">
+                  <div>
+                    <h3>Request Booking Publik</h3>
+                    <p>{pendingRequests.length} request menunggu persetujuan admin.</p>
+                  </div>
+                </div>
+                <div className="cal-request-list">
+                  {pendingRequests.slice(0, 5).map((request) => (
+                    <div key={request.id} className="cal-request-item">
+                      <div className="cal-request-main">
+                        <strong>{request.band}</strong>
+                        <span>{request.date} &bull; {String(request.hour).padStart(2, '0')}.00-{String(Number(request.hour) + Number(request.duration || 1)).padStart(2, '0')}.00</span>
+                        {request.phone && <small>{request.phone}</small>}
+                      </div>
+                      <div className="cal-request-actions">
+                        <button className="request-approve" onClick={() => handleApproveRequest(request)} title="Approve">
+                          <CheckCircle2 size={15} /> Approve
+                        </button>
+                        <button className="request-reject" onClick={() => handleRejectRequest(request)} title="Tolak">
+                          <XCircle size={15} /> Tolak
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Calendar Container */}
       <div className="calendar-container glass-panel">

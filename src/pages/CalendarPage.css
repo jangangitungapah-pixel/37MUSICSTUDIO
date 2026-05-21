@@ -22,6 +22,10 @@
   filter: none !important;
 }
 
+.calendar-main-content.panels-collapsed {
+  gap: 12px;
+}
+
 
 /* ══════════════════════════════════════════
    CALENDAR HEADER
@@ -59,6 +63,21 @@
   align-items: center;
   gap: 10px;
   flex-wrap: wrap;
+}
+
+.desktop-only {
+  display: inline-flex;
+}
+
+.cal-panel-toggle {
+  min-height: 40px !important;
+  padding: 0 14px !important;
+  border-radius: 10px !important;
+  white-space: nowrap;
+}
+
+.cal-panel-toggle svg {
+  flex-shrink: 0;
 }
 
 /* ══════════════════════════════════════════
@@ -373,6 +392,14 @@
   display: flex;
 }
 
+.calendar-top-panels {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
 /* ══════════════════════════════════════════
    STATS BAR (above calendar)
    ══════════════════════════════════════════ */
@@ -558,8 +585,9 @@
 .calendar-container {
   display: flex;
   flex-direction: column;
+  flex: 1;
   overflow: hidden;
-  min-height: 400px;
+  min-height: 0;
   border-radius: 18px;
   border: 1px solid var(--glass-border);
   background: var(--glass-bg);
@@ -1183,6 +1211,14 @@
     height: auto;
     min-height: 0;
     overflow: visible;
+  }
+
+  .desktop-only {
+    display: none !important;
+  }
+
+  .calendar-top-panels {
+    gap: 12px;
   }
 
   /* ── Header: single column layout ── */
