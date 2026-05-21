@@ -8,10 +8,11 @@ import { format } from 'date-fns';
 import { Music2, Mic, Wrench, User, Phone, Calendar, Clock, DollarSign, StickyNote, Star, AlertCircle, QrCode, Banknote, RefreshCw, Box } from 'lucide-react';
 import { generatePaymentLink, checkPaymentStatus } from '../lib/paymentGateway';
 import { useInventoryStore } from '../store/useInventoryStore';
+import { buildRecurringBookings, hasBookingOverlap } from '../lib/bookingWorkflows';
 import './BookingForm.css';
 
 const BookingForm = ({ onClose, initialDate, initialHour }) => {
-  const { bookings, addBooking } = useBookingStore();
+  const { bookings, addBooking, addBookings } = useBookingStore();
   const { pricePerHour, durationDiscounts = [], recordingSessions = [] } = useSettingsStore();
   const { customers, incrementBookingCount } = useCustomerStore();
   const { inventory } = useInventoryStore();
@@ -27,6 +28,7 @@ const BookingForm = ({ onClose, initialDate, initialHour }) => {
   
   const [rentedEquipment, setRentedEquipment] = useState([]);
   const [conflictSuggestion, setConflictSuggestion] = useState(null);
+  const [recurring, setRecurring] = useState({ enabled: false, frequency: 'weekly', count: 4 });
 
   const today = format(new Date(), 'yyyy-MM-dd');
 
@@ -39,6 +41,7 @@ const BookingForm = ({ onClose, initialDate, initialHour }) => {
     duration: 2,
     status: 'pending',
     dpAmount: 0,
+    depositDeadline: '',
     note: '',
     sessionId: recordingSessions.length > 0 ? recordingSessions[0].id : '',
     sessionPrice: recordingSessions.length > 0 ? recordingSessions[0].price : 0,
@@ -102,11 +105,7 @@ const BookingForm = ({ onClose, initialDate, initialHour }) => {
   const formatCurrency = (num) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(num);
 
   const checkOverlap = (d, h, dur) => {
-    return bookings.some(b => {
-      if (b.date !== d) return false;
-      const bH = Number(b.hour), bD = Number(b.duration);
-      return (bH < h + dur) && (h < bH + bD);
-    });
+    return hasBookingOverlap(bookings, { date: d, hour: h, duration: dur });
   };
 
   const findNearestAvailableSlot = (targetDate, targetHour, duration) => {
@@ -146,14 +145,32 @@ const BookingForm = ({ onClose, initialDate, initialHour }) => {
       const finalBookingData = {
         ...formData,
         rentedEquipment,
-        equipmentCost
+        equipmentCost,
+        equipmentUsageHours: rentedEquipment.length * formData.duration,
       };
 
       if (formData.type === 'maintenance') {
         await addBooking({ ...finalBookingData, status: 'maintenance' });
       } else {
-        await addBooking({ ...finalBookingData, isVIP, discountAmount });
-        await incrementBookingCount(formData.band, { phone: formData.phone, duration: formData.duration, totalPrice });
+        const enrichedBooking = { ...finalBookingData, isVIP, discountAmount };
+        if (recurring.enabled) {
+          const recurringBookings = buildRecurringBookings(enrichedBooking, recurring);
+          const conflict = recurringBookings.find((booking) => hasBookingOverlap(bookings, booking));
+          if (conflict) {
+            useNotificationStore.getState().addNotification({
+              title: 'Booking berulang bentrok',
+              message: `Bentrok pada ${conflict.date} jam ${conflict.hour}.00. Kurangi jumlah pengulangan atau ubah jadwal.`,
+              type: 'error',
+            });
+            setIsSubmitting(false);
+            return;
+          }
+          await addBookings(recurringBookings);
+          await incrementBookingCount(formData.band, { phone: formData.phone, duration: formData.duration * recurringBookings.length, totalPrice: totalPrice * recurringBookings.length });
+        } else {
+          await addBooking(enrichedBooking);
+          await incrementBookingCount(formData.band, { phone: formData.phone, duration: formData.duration, totalPrice });
+        }
       }
       onClose();
       if (run && currentStep === 10) setTimeout(() => nextStep(), 100);
@@ -355,6 +372,45 @@ const BookingForm = ({ onClose, initialDate, initialHour }) => {
           {formData.duration} jam
         </div>
 
+        {formData.type !== 'maintenance' && (
+          <div className="bf-recurring-panel">
+            <label className="bf-recurring-toggle">
+              <input
+                type="checkbox"
+                checked={recurring.enabled}
+                onChange={(event) => setRecurring((prev) => ({ ...prev, enabled: event.target.checked }))}
+              />
+              <span>Booking berulang</span>
+            </label>
+            {recurring.enabled && (
+              <div className="bf-row">
+                <div className="bf-field">
+                  <label className="bf-label">Frekuensi</label>
+                  <select
+                    className="bf-input"
+                    value={recurring.frequency}
+                    onChange={(event) => setRecurring((prev) => ({ ...prev, frequency: event.target.value }))}
+                  >
+                    <option value="weekly">Mingguan</option>
+                    <option value="monthly">Bulanan</option>
+                  </select>
+                </div>
+                <div className="bf-field">
+                  <label className="bf-label">Jumlah sesi</label>
+                  <input
+                    type="number"
+                    min="2"
+                    max="24"
+                    value={recurring.count}
+                    onChange={(event) => setRecurring((prev) => ({ ...prev, count: Number(event.target.value) }))}
+                    className="bf-input"
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Conflict Suggestion UI */}
         {conflictSuggestion && (
           <div style={{ marginTop: '12px', padding: '12px', background: 'rgba(255, 193, 7, 0.1)', border: '1px solid rgba(255, 193, 7, 0.3)', borderRadius: '8px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -449,6 +505,21 @@ const BookingForm = ({ onClose, initialDate, initialHour }) => {
               <span className="bf-total-val">{formatCurrency(totalPrice)}</span>
             </div>
           </div>
+
+          {(formData.status === 'pending' || formData.status === 'dp') && (
+            <div className="bf-deadline-field">
+              <label className="bf-label">Deadline DP / Pelunasan</label>
+              <input
+                type="date"
+                name="depositDeadline"
+                value={formData.depositDeadline}
+                min={today}
+                onChange={handleChange}
+                className="bf-input"
+              />
+              <span className="bf-field-hint">Dipakai oleh billing untuk menandai tagihan yang harus segera ditindaklanjuti.</span>
+            </div>
+          )}
 
           {/* DP Section */}
           {formData.status === 'dp' && (

@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { db } from '../firebase';
 import { collection, doc, onSnapshot, setDoc, deleteDoc } from 'firebase/firestore';
 import { useDemoStore } from './useDemoStore';
+import { useAuditLogStore } from './useAuditLogStore';
 
 export const useFinanceStore = create((set) => {
   const financeRef = collection(db, 'finances');
@@ -34,12 +35,25 @@ export const useFinanceStore = create((set) => {
       set((state) => ({ transactions: [...state.transactions, txData] }));
       if (useDemoStore.getState().isDemoMode) return;
       await setDoc(doc(financeRef, id.toString()), txData);
+      await useAuditLogStore.getState().addLog({
+        action: 'finance_create',
+        entityType: 'finance',
+        entityId: id,
+        summary: `${txData.type === 'income' ? 'Pemasukan' : 'Pengeluaran'} ${txData.description} dicatat`,
+        metadata: { amount: txData.amount, category: txData.category, type: txData.type },
+      });
     },
 
     deleteTransaction: async (id) => {
       set((state) => ({ transactions: state.transactions.filter(t => t.id !== id) }));
       if (useDemoStore.getState().isDemoMode) return;
       await deleteDoc(doc(financeRef, id.toString()));
+      await useAuditLogStore.getState().addLog({
+        action: 'finance_delete',
+        entityType: 'finance',
+        entityId: id,
+        summary: 'Transaksi pembukuan dihapus',
+      });
     }
   };
 });

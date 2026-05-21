@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { Search, Plus, Edit2, Trash2, Mail, Phone, Calendar as CalendarIcon, Users, UserCheck, DollarSign, X, AtSign, MapPin, Clock, Star, StickyNote, MessageCircle, Gift, Award } from 'lucide-react';
 import { useCustomerStore } from '../store/useCustomerStore';
+import { useBookingStore } from '../store/useBookingStore';
 import { useTourStore } from '../store/useTourStore';
 import { toast } from 'sonner';
 import Modal from '../components/Modal';
@@ -27,10 +28,18 @@ const formatCurrency = (num) => new Intl.NumberFormat('id-ID', { style: 'currenc
 
 const CustomersPage = () => {
   const { customers, addCustomer, updateCustomer, deleteCustomer, getStats } = useCustomerStore();
+  const { bookings } = useBookingStore();
   const { run, currentStep, nextStep } = useTourStore();
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState('all'); // 'all', 'Active', 'Inactive'
   const [selectedCustomer, setSelectedCustomer] = useState(null);
+  const selectedCustomerBookings = useMemo(() => {
+    if (!selectedCustomer) return [];
+    return bookings
+      .filter((booking) => booking.band?.toLowerCase() === selectedCustomer.name.toLowerCase() && booking.status !== 'maintenance')
+      .sort((a, b) => new Date(b.date) - new Date(a.date))
+      .slice(0, 8);
+  }, [bookings, selectedCustomer]);
   
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -495,6 +504,25 @@ const CustomersPage = () => {
                 <h4 className="section-title">Tanggal</h4>
                 <div className="detail-item"><CalendarIcon size={14} /> <span>Bergabung: {selectedCustomer.joinDate}</span></div>
                 <div className="detail-item"><Clock size={14} /> <span>Booking Terakhir: {selectedCustomer.lastBooking || '-'}</span></div>
+              </div>
+
+              <div className="detail-section">
+                <h4 className="section-title">Timeline Booking</h4>
+                {selectedCustomerBookings.length > 0 ? (
+                  <div className="customer-booking-timeline">
+                    {selectedCustomerBookings.map((booking) => (
+                      <div key={booking.id} className={`customer-booking-item ${booking.status}`}>
+                        <div>
+                          <strong>{booking.date}</strong>
+                          <span>{String(booking.hour).padStart(2, '0')}.00-{String(Number(booking.hour) + Number(booking.duration || 1)).padStart(2, '0')}.00</span>
+                        </div>
+                        <small>{booking.status === 'confirmed' ? 'Lunas' : booking.status === 'dp' ? 'DP' : booking.status === 'cancelled' ? 'Batal' : 'Belum Bayar'}</small>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="detail-notes">Belum ada histori booking yang tersambung.</p>
+                )}
               </div>
 
               {selectedCustomer.notes && (

@@ -486,6 +486,7 @@
 .dot.confirmed { background: var(--accent-cyan); }
 .dot.dp { background: #FFC107; }
 .dot.pending { background: var(--accent-pink); }
+.dot.cancelled { background: #ff5252; }
 
 /* ===== Smart Scheduling Panel ===== */
 .cal-smart-panel {
@@ -708,6 +709,7 @@
 .filter-chip.active.dp { border-color: #FFC107; background: rgba(255, 193, 7, 0.1); color: #FFC107; }
 .filter-chip.active.pending { border-color: var(--accent-pink); background: rgba(255, 42, 95, 0.1); color: var(--accent-pink); }
 .filter-chip.active.maintenance { border-color: #6b6b76; background: rgba(107, 107, 118, 0.2); color: #a0a0ab; }
+.filter-chip.active.cancelled { border-color: #ff5252; background: rgba(255, 82, 82, 0.1); color: #ff8a8a; }
 
 .legend {
   display: flex;
@@ -1827,5 +1829,118 @@
 
   .date-navigation {
     flex-wrap: wrap;
+  }
+}
+
+.cal-request-panel {
+  margin-bottom: 16px;
+  padding: 16px;
+  border-radius: 12px;
+}
+
+.cal-request-head h3 {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--text-primary);
+}
+
+.cal-request-head p {
+  margin: 4px 0 0;
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+}
+
+.cal-request-list {
+  display: grid;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.cal-request-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.cal-request-main {
+  display: grid;
+  gap: 3px;
+}
+
+.cal-request-main strong {
+  color: var(--text-primary);
+}
+
+.cal-request-main span,
+.cal-request-main small {
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+}
+
+.cal-request-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.request-approve,
+.request-reject {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.request-approve {
+  background: rgba(76, 175, 80, 0.14);
+  color: #4CAF50;
+}
+
+.request-reject,
+.danger-soft {
+  background: rgba(255, 82, 82, 0.12) !important;
+  color: #ff8a8a !important;
+}
+
+.detail-deadline-badge,
+.detail-cancelled-note {
+  margin-top: 8px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.detail-deadline-badge.upcoming {
+  background: rgba(0, 240, 255, 0.08);
+  color: var(--accent-cyan);
+}
+
+.detail-deadline-badge.today,
+.detail-deadline-badge.overdue,
+.detail-cancelled-note {
+  background: rgba(255, 152, 0, 0.1);
+  color: #FF9800;
+}
+
+.reschedule-form {
+  display: grid;
+  gap: 14px;
+}
+
+@media (max-width: 700px) {
+  .cal-request-item,
+  .cal-request-actions {
+    flex-direction: column;
+    align-items: stretch;
   }
 }

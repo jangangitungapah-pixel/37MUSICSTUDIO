@@ -5,9 +5,9 @@ import {
   Settings, Save, Building2, Phone, MapPin, DollarSign,
   Bell, Database, Trash2, CheckCircle2, XCircle, ShieldAlert,
   ChevronRight, Music2, Sparkles, Lock, ToggleLeft, ToggleRight,
-  AlertTriangle, RefreshCw, FlaskConical
+  AlertTriangle, RefreshCw, FlaskConical, Download, Upload
 } from 'lucide-react';
-import { collection, getDocs, deleteDoc } from 'firebase/firestore';
+import { collection, doc, getDocs, deleteDoc, writeBatch } from 'firebase/firestore';
 import { db } from '../firebase';
 import { toast } from 'sonner';
 import './SettingsPage.css';
@@ -49,6 +49,8 @@ const SettingsPage = () => {
     finances: false,
     inventory: false
   });
+  const [isBackingUp, setIsBackingUp] = useState(false);
+  const [isRestoring, setIsRestoring] = useState(false);
 
   useEffect(() => {
     setFormData({
@@ -207,6 +209,86 @@ const SettingsPage = () => {
   };
 
   const selectedCount = Object.values(resetOptions).filter(Boolean).length;
+
+  const backupCollections = ['bookings', 'publicBookings', 'customers', 'finances', 'inventory', 'bookingRequests', 'config'];
+
+  const handleBackupData = async () => {
+    setIsBackingUp(true);
+    try {
+      const backup = {
+        app: '37MUSICSTUDIO',
+        version: 1,
+        exportedAt: new Date().toISOString(),
+        collections: {},
+      };
+
+      for (const colName of backupCollections) {
+        const snapshot = await getDocs(collection(db, colName));
+        backup.collections[colName] = snapshot.docs.map((docSnap) => ({
+          id: docSnap.id,
+          data: docSnap.data(),
+        }));
+      }
+
+      const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `37musicstudio-backup-${new Date().toISOString().slice(0, 10)}.json`;
+      link.click();
+      URL.revokeObjectURL(url);
+      toast.success('Backup data berhasil dibuat.');
+    } catch {
+      toast.error('Gagal membuat backup data.');
+    } finally {
+      setIsBackingUp(false);
+    }
+  };
+
+  const commitBatchChunks = async (writes) => {
+    for (let i = 0; i < writes.length; i += 450) {
+      const batch = writeBatch(db);
+      writes.slice(i, i + 450).forEach(({ colName, item }) => {
+        batch.set(doc(db, colName, item.id.toString()), item.data, { merge: true });
+      });
+      await batch.commit();
+    }
+  };
+
+  const handleRestoreBackup = async (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setIsRestoring(true);
+    try {
+      const text = await file.text();
+      const parsed = JSON.parse(text);
+      if (parsed.app !== '37MUSICSTUDIO' || !parsed.collections) {
+        throw new Error('Format backup tidak valid.');
+      }
+      if (!window.confirm('Restore akan menimpa/menggabungkan data dari file backup ke server. Lanjutkan?')) {
+        setIsRestoring(false);
+        event.target.value = '';
+        return;
+      }
+
+      const writes = [];
+      backupCollections.forEach((colName) => {
+        (parsed.collections[colName] || []).forEach((item) => {
+          if (item?.id && item.data && typeof item.data === 'object') {
+            writes.push({ colName, item });
+          }
+        });
+      });
+      await commitBatchChunks(writes);
+      toast.success(`Restore selesai. ${writes.length} dokumen diproses.`);
+    } catch (error) {
+      toast.error(error.message || 'Gagal restore backup.');
+    } finally {
+      setIsRestoring(false);
+      event.target.value = '';
+    }
+  };
 
   const handleResetSelected = async () => {
     if (resetConfirmStep < 2) {
@@ -727,6 +809,22 @@ const SettingsPage = () => {
               </div>
 
               <div className="settings-form-body">
+                <div className="backup-restore-card">
+                  <div className="backup-restore-copy">
+                    <h4>Backup & Restore</h4>
+                    <p>Unduh salinan data operasional atau restore dari file backup JSON aplikasi ini.</p>
+                  </div>
+                  <div className="backup-restore-actions">
+                    <button type="button" className="btn-secondary" onClick={handleBackupData} disabled={isBackingUp}>
+                      <Download size={15} /> {isBackingUp ? 'Membuat...' : 'Download Backup'}
+                    </button>
+                    <label className={`restore-upload-btn ${isRestoring ? 'disabled' : ''}`}>
+                      <Upload size={15} /> {isRestoring ? 'Restore...' : 'Restore Backup'}
+                      <input type="file" accept="application/json,.json" onChange={handleRestoreBackup} disabled={isRestoring} />
+                    </label>
+                  </div>
+                </div>
+
                 <div className="reset-options-grid">
                   {[
                     { key: 'bookings', label: 'Jadwal Booking', desc: 'Semua data reservasi studio' },

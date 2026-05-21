@@ -37,6 +37,13 @@ const InventoryPage = () => {
 
   const stats = getStats();
   const maintenanceInsights = useMemo(() => getMaintenanceUsageInsights(inventory, bookings), [inventory, bookings]);
+  const selectedItemUsage = useMemo(() => {
+    if (!selectedItem) return [];
+    return bookings
+      .filter((booking) => booking.status !== 'cancelled' && booking.rentedEquipment?.includes(selectedItem.id))
+      .sort((a, b) => new Date(b.date) - new Date(a.date))
+      .slice(0, 8);
+  }, [bookings, selectedItem]);
 
   const filteredInventory = useMemo(() => {
     let result = inventory;
@@ -426,6 +433,29 @@ const InventoryPage = () => {
                     </span>
                   </div>
                 </div>
+              </div>
+
+              <div className="detail-section">
+                <h4 className="section-title">Pemakaian di Booking</h4>
+                {selectedItemUsage.length > 0 ? (
+                  <div className="inventory-usage-list">
+                    <div className="inventory-usage-summary">
+                      <strong>{selectedItemUsage.length}</strong>
+                      <span>booking terakhir &bull; {selectedItemUsage.reduce((sum, booking) => sum + Number(booking.duration || 0), 0)} jam pemakaian</span>
+                    </div>
+                    {selectedItemUsage.map((booking) => (
+                      <div key={booking.id} className="inventory-usage-item">
+                        <div>
+                          <strong>{booking.band}</strong>
+                          <span>{booking.date} &bull; {String(booking.hour).padStart(2, '0')}.00</span>
+                        </div>
+                        <small>{booking.duration} jam</small>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="detail-notes">Belum ada booking yang memakai alat ini.</p>
+                )}
               </div>
 
               {selectedItem.notes && (

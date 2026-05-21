@@ -6,6 +6,7 @@ import { format } from 'date-fns';
 import { useSettingsStore } from './useSettingsStore';
 import { useNotificationStore } from './useNotificationStore';
 import { useDemoStore } from './useDemoStore';
+import { useAuditLogStore } from './useAuditLogStore';
 
 const localActionIds = new Set();
 
@@ -140,8 +141,50 @@ export const useBookingStore = create((set, get) => {
         batch.set(doc(bookingsRef, id.toString()), bookingData);
         batch.set(doc(publicBookingsRef, id.toString()), toPublicBooking(bookingData));
         await batch.commit();
+        await useAuditLogStore.getState().addLog({
+          action: 'booking_create',
+          entityType: 'booking',
+          entityId: id,
+          summary: `Booking dibuat untuk ${bookingData.band || 'pelanggan'} pada ${bookingData.date}`,
+          metadata: { date: bookingData.date, hour: bookingData.hour, status: bookingData.status },
+        });
       } catch (error) {
         localActionIds.delete(id);
+        throw error;
+      }
+    },
+
+    addBookings: async (newBookings) => {
+      const baseId = Date.now();
+      const bookingData = newBookings.map((booking, index) => ({
+        ...booking,
+        id: booking.id || baseId + index,
+      }));
+
+      if (useDemoStore.getState().isDemoMode) {
+        set((state) => ({ bookings: [...state.bookings, ...bookingData] }));
+        return bookingData;
+      }
+
+      bookingData.forEach((booking) => localActionIds.add(booking.id));
+
+      try {
+        const batch = writeBatch(db);
+        bookingData.forEach((booking) => {
+          batch.set(doc(bookingsRef, booking.id.toString()), booking);
+          batch.set(doc(publicBookingsRef, booking.id.toString()), toPublicBooking(booking));
+        });
+        await batch.commit();
+        await useAuditLogStore.getState().addLog({
+          action: 'booking_recurring_create',
+          entityType: 'booking',
+          entityId: bookingData[0]?.recurringGroupId || bookingData[0]?.id,
+          summary: `${bookingData.length} booking berulang dibuat untuk ${bookingData[0]?.band || 'pelanggan'}`,
+          metadata: { count: bookingData.length, firstDate: bookingData[0]?.date },
+        });
+        return bookingData;
+      } catch (error) {
+        bookingData.forEach((booking) => localActionIds.delete(booking.id));
         throw error;
       }
     },
@@ -159,6 +202,12 @@ export const useBookingStore = create((set, get) => {
         batch.delete(doc(bookingsRef, id.toString()));
         batch.delete(doc(publicBookingsRef, id.toString()));
         await batch.commit();
+        await useAuditLogStore.getState().addLog({
+          action: 'booking_delete',
+          entityType: 'booking',
+          entityId: id,
+          summary: `Booking ${id} dihapus`,
+        });
       } catch (error) {
         localActionIds.delete(id);
         throw error;
@@ -185,10 +234,80 @@ export const useBookingStore = create((set, get) => {
           batch.set(doc(publicBookingsRef, id.toString()), toPublicBooking({ ...booking, status: newStatus }));
         }
         await batch.commit();
+        await useAuditLogStore.getState().addLog({
+          action: 'booking_status_update',
+          entityType: 'booking',
+          entityId: id,
+          summary: `Status booking diubah menjadi ${newStatus}`,
+          metadata: { status: newStatus },
+        });
       } catch (error) {
         localActionIds.delete(id);
         throw error;
       }
+    },
+
+    cancelBooking: async (id, reason = '') => {
+      const cancelledAt = new Date().toISOString();
+      const data = {
+        status: 'cancelled',
+        cancelReason: reason,
+        cancelledAt,
+      };
+
+      if (useDemoStore.getState().isDemoMode) {
+        set((state) => ({
+          bookings: state.bookings.map((booking) => (
+            booking.id === id ? { ...booking, ...data } : booking
+          )),
+        }));
+        return;
+      }
+
+      localActionIds.add(id);
+      try {
+        const booking = get().bookings.find((b) => b.id === id);
+        const batch = writeBatch(db);
+        batch.update(doc(bookingsRef, id.toString()), data);
+        if (booking) batch.set(doc(publicBookingsRef, id.toString()), toPublicBooking({ ...booking, ...data }));
+        await batch.commit();
+        await useAuditLogStore.getState().addLog({
+          action: 'booking_cancel',
+          entityType: 'booking',
+          entityId: id,
+          summary: `Booking ${booking?.band || id} dibatalkan`,
+          metadata: { reason },
+        });
+      } catch (error) {
+        localActionIds.delete(id);
+        throw error;
+      }
+    },
+
+    rescheduleBooking: async (id, { date, hour, reason = '' }) => {
+      const booking = get().bookings.find((b) => b.id === id);
+      if (!booking) throw new Error('Booking tidak ditemukan.');
+
+      const rescheduleHistory = [
+        ...(booking.rescheduleHistory || []),
+        {
+          fromDate: booking.date,
+          fromHour: booking.hour,
+          toDate: date,
+          toHour: hour,
+          reason,
+          at: new Date().toISOString(),
+        },
+      ];
+
+      await get().updateBooking(id, { date, hour: Number(hour), rescheduleHistory });
+      await useAuditLogStore.getState().addLog({
+        action: 'booking_reschedule',
+        entityType: 'booking',
+        entityId: id,
+        summary: `Booking ${booking.band || id} dipindah ke ${date} ${hour}.00`,
+        metadata: { fromDate: booking.date, fromHour: booking.hour, toDate: date, toHour: hour, reason },
+      });
     },
 
     updateBooking: async (id, data) => {
@@ -249,6 +368,13 @@ export const useBookingStore = create((set, get) => {
         batch.update(doc(bookingsRef, id.toString()), payload);
         batch.set(doc(publicBookingsRef, id.toString()), toPublicBooking(updatedBookingData));
         await batch.commit();
+        await useAuditLogStore.getState().addLog({
+          action: 'booking_update',
+          entityType: 'booking',
+          entityId: id,
+          summary: `Booking ${updatedBookingData.band || id} diperbarui`,
+          metadata: data,
+        });
       } catch (error) {
         localActionIds.delete(id);
         throw error;
@@ -259,7 +385,7 @@ export const useBookingStore = create((set, get) => {
       const state = get();
       const currentPricePerHour = useSettingsStore.getState().pricePerHour;
       const monthStr = format(monthDate, 'yyyy-MM');
-      const monthBookings = state.bookings.filter((b) => b.date?.startsWith(monthStr));
+      const monthBookings = state.bookings.filter((b) => b.date?.startsWith(monthStr) && b.status !== 'cancelled');
       const totalBookings = monthBookings.length;
       const totalHours = monthBookings.reduce((sum, b) => sum + b.duration, 0);
 

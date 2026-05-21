@@ -1137,6 +1137,54 @@
   }
 }
 
+.inventory-usage-list {
+  display: grid;
+  gap: 8px;
+}
+
+.inventory-usage-summary {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 10px;
+  border-radius: 9px;
+  background: rgba(0, 240, 255, 0.06);
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+}
+
+.inventory-usage-summary strong {
+  color: var(--accent-cyan);
+  font-size: 1.15rem;
+}
+
+.inventory-usage-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 9px 10px;
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.inventory-usage-item strong,
+.inventory-usage-item span,
+.inventory-usage-item small {
+  display: block;
+}
+
+.inventory-usage-item strong {
+  color: var(--text-primary);
+  font-size: 0.82rem;
+}
+
+.inventory-usage-item span,
+.inventory-usage-item small {
+  color: var(--text-secondary);
+  font-size: 0.74rem;
+}
+
 @media (max-width: 360px) {
   .inventory-page .stats-bar {
     grid-template-columns: 1fr;

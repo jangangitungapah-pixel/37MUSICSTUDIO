@@ -3,6 +3,7 @@ import { db } from '../firebase';
 import { collection, doc, onSnapshot, setDoc, deleteDoc, updateDoc } from 'firebase/firestore';
 import { format } from 'date-fns';
 import { useDemoStore } from './useDemoStore';
+import { useAuditLogStore } from './useAuditLogStore';
 
 export const useCustomerStore = create((set, get) => {
   const customersRef = collection(db, 'customers');
@@ -43,6 +44,12 @@ export const useCustomerStore = create((set, get) => {
       set((state) => ({ customers: [...state.customers, customerData] }));
       if (useDemoStore.getState().isDemoMode) return;
       await setDoc(doc(customersRef, id.toString()), customerData);
+      await useAuditLogStore.getState().addLog({
+        action: 'customer_create',
+        entityType: 'customer',
+        entityId: id,
+        summary: `Pelanggan ${customerData.name} ditambahkan`,
+      });
     },
 
     updateCustomer: async (id, updatedData) => {
@@ -51,12 +58,25 @@ export const useCustomerStore = create((set, get) => {
       }));
       if (useDemoStore.getState().isDemoMode) return;
       await updateDoc(doc(customersRef, id.toString()), updatedData);
+      await useAuditLogStore.getState().addLog({
+        action: 'customer_update',
+        entityType: 'customer',
+        entityId: id,
+        summary: 'Data pelanggan diperbarui',
+        metadata: updatedData,
+      });
     },
 
     deleteCustomer: async (id) => {
       set((state) => ({ customers: state.customers.filter(c => c.id !== id) }));
       if (useDemoStore.getState().isDemoMode) return;
       await deleteDoc(doc(customersRef, id.toString()));
+      await useAuditLogStore.getState().addLog({
+        action: 'customer_delete',
+        entityType: 'customer',
+        entityId: id,
+        summary: 'Pelanggan dihapus',
+      });
     },
 
     incrementBookingCount: async (name, bookingData = {}) => {

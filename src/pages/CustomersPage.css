@@ -1251,6 +1251,55 @@
   line-height: 1.35;
 }
 
+.customer-booking-timeline {
+  display: grid;
+  gap: 8px;
+}
+
+.customer-booking-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 9px 10px;
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.03);
+  border-left: 3px solid rgba(255, 255, 255, 0.16);
+}
+
+.customer-booking-item.confirmed {
+  border-left-color: #4CAF50;
+}
+
+.customer-booking-item.dp {
+  border-left-color: var(--accent-cyan);
+}
+
+.customer-booking-item.pending {
+  border-left-color: #FF9800;
+}
+
+.customer-booking-item.cancelled {
+  border-left-color: #ff5252;
+  opacity: 0.75;
+}
+
+.customer-booking-item strong,
+.customer-booking-item span,
+.customer-booking-item small {
+  display: block;
+}
+
+.customer-booking-item strong {
+  color: var(--text-primary);
+  font-size: 0.82rem;
+}
+
+.customer-booking-item span,
+.customer-booking-item small {
+  color: var(--text-secondary);
+  font-size: 0.74rem;
+}
+
 @media (max-width: 768px) {
   .customer-smart-grid {
     grid-template-columns: 1fr;

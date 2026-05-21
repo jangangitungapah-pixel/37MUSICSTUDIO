@@ -403,6 +403,37 @@ select.bf-input option {
   color: #4CAF50;
 }
 
+.bf-recurring-panel,
+.bf-deadline-field {
+  margin-top: 12px;
+  padding: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.bf-recurring-toggle {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.bf-recurring-toggle input {
+  accent-color: var(--accent-cyan);
+}
+
+.bf-field-hint {
+  display: block;
+  margin-top: 6px;
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  line-height: 1.4;
+}
+
 /* ===== Actions ===== */
 .bf-actions {
   display: flex;

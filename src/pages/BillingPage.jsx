@@ -8,6 +8,7 @@ import html2canvas from 'html2canvas';
 import { toast } from 'sonner';
 import Modal from '../components/Modal';
 import { getBillingInsights } from '../lib/smartInsights';
+import { getDepositDeadlineStatus } from '../lib/bookingWorkflows';
 import './BillingPage.css';
 
 const BillingPage = () => {
@@ -20,6 +21,7 @@ const BillingPage = () => {
   const [isInvoiceModalOpen, setIsInvoiceModalOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const invoiceRef = useRef(null);
+  const billableBookings = bookings.filter((booking) => !['maintenance', 'cancelled'].includes(booking.status));
 
   // Auto-close invoice modal if user clicks Lanjut on the print step (step 7 -> 8)
   useEffect(() => {
@@ -34,7 +36,7 @@ const BillingPage = () => {
       ? (booking.sessionPrice || 0)
       : (booking.duration * pricePerHour)
   );
-  const calculateTotal = (booking) => calculateSubtotal(booking) - (booking.discountAmount || 0);
+  const calculateTotal = (booking) => calculateSubtotal(booking) + (booking.equipmentCost || 0) - (booking.discountAmount || 0);
   const getServiceName = (booking) => (booking.type === 'recording' ? 'Sesi Recording' : 'Sewa Studio Latihan');
   const getRateLabel = (booking) => (booking.type === 'recording' ? 'Harga Paket' : formatCurrency(pricePerHour));
   const calculateRemaining = (booking) => {
@@ -45,18 +47,18 @@ const BillingPage = () => {
   const formatCurrency = (num) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(num);
 
   // Stats calculation
-  const totalPendapatan = bookings.reduce((sum, b) => {
+  const totalPendapatan = billableBookings.reduce((sum, b) => {
     if (b.status === 'confirmed') return sum + calculateTotal(b);
     if (b.status === 'dp') return sum + (b.dpAmount || 0);
     return sum;
   }, 0);
 
-  const totalPiutang = bookings.reduce((sum, b) => sum + calculateRemaining(b), 0);
-  const totalTransaksi = bookings.length;
-  const billingInsights = getBillingInsights(bookings, pricePerHour);
+  const totalPiutang = billableBookings.reduce((sum, b) => sum + calculateRemaining(b), 0);
+  const totalTransaksi = billableBookings.length;
+  const billingInsights = getBillingInsights(billableBookings, pricePerHour);
 
   // Filtering
-  const filteredBookings = bookings.filter(b => {
+  const filteredBookings = billableBookings.filter(b => {
     const matchesSearch = b.band.toLowerCase().includes(searchQuery.toLowerCase());
     if (!matchesSearch) return false;
     
@@ -351,6 +353,12 @@ const BillingPage = () => {
                       </td>
                       <td className={`inv-remaining ${remaining > 0 ? 'has-debt' : ''}`}>
                         {remaining > 0 ? formatCurrency(remaining) : '-'}
+                        {(() => {
+                          const deadline = getDepositDeadlineStatus(b);
+                          return deadline.state !== 'none' ? (
+                            <span className={`deadline-chip ${deadline.state}`}>{deadline.label}</span>
+                          ) : null;
+                        })()}
                       </td>
                       <td className="action-col">
                         <div className="row-actions">
@@ -399,6 +407,12 @@ const BillingPage = () => {
                   <span className="mobile-bill-tag date">{format(new Date(b.date), 'dd MMM yyyy')}</span>
                   <span className="mobile-bill-tag total">{formatCurrency(total)}</span>
                   {remaining > 0 && <span className="mobile-bill-tag debt">Sisa: {formatCurrency(remaining)}</span>}
+                  {(() => {
+                    const deadline = getDepositDeadlineStatus(b);
+                    return deadline.state !== 'none' ? (
+                      <span className={`mobile-bill-tag deadline ${deadline.state}`}>{deadline.label}</span>
+                    ) : null;
+                  })()}
                 </div>
                 <div className="mobile-bill-bottom" onClick={e => e.stopPropagation()}>
                   <select 

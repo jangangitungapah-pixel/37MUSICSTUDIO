@@ -1681,6 +1681,30 @@
   padding: 12px;
 }
 
+.deadline-chip {
+  display: inline-flex;
+  margin-left: 8px;
+  padding: 3px 7px;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.deadline-chip.upcoming,
+.mobile-bill-tag.deadline.upcoming {
+  background: rgba(0, 240, 255, 0.1);
+  color: var(--accent-cyan);
+}
+
+.deadline-chip.today,
+.deadline-chip.overdue,
+.mobile-bill-tag.deadline.today,
+.mobile-bill-tag.deadline.overdue {
+  background: rgba(255, 152, 0, 0.12);
+  color: #FF9800;
+}
+
 @media (max-width: 900px) {
   .billing-smart-panel {
     grid-template-columns: 1fr;

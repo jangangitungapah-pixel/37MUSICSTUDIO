@@ -3,6 +3,7 @@ import { db } from '../firebase';
 import { collection, doc, onSnapshot, setDoc, deleteDoc, updateDoc } from 'firebase/firestore';
 import { format, addDays } from 'date-fns';
 import { useDemoStore } from './useDemoStore';
+import { useAuditLogStore } from './useAuditLogStore';
 
 const today = new Date();
 
@@ -81,6 +82,12 @@ export const useInventoryStore = create((set, get) => {
       set((state) => ({ inventory: [...state.inventory, itemData] }));
       if (useDemoStore.getState().isDemoMode) return;
       await setDoc(doc(inventoryRef, id.toString()), itemData);
+      await useAuditLogStore.getState().addLog({
+        action: 'inventory_create',
+        entityType: 'inventory',
+        entityId: id,
+        summary: `Inventaris ${itemData.name} ditambahkan`,
+      });
     },
 
     updateEquipment: async (id, updatedData) => {
@@ -89,12 +96,25 @@ export const useInventoryStore = create((set, get) => {
       }));
       if (useDemoStore.getState().isDemoMode) return;
       await updateDoc(doc(inventoryRef, id.toString()), updatedData);
+      await useAuditLogStore.getState().addLog({
+        action: 'inventory_update',
+        entityType: 'inventory',
+        entityId: id,
+        summary: 'Inventaris diperbarui',
+        metadata: updatedData,
+      });
     },
 
     deleteEquipment: async (id) => {
       set((state) => ({ inventory: state.inventory.filter(item => item.id !== id) }));
       if (useDemoStore.getState().isDemoMode) return;
       await deleteDoc(doc(inventoryRef, id.toString()));
+      await useAuditLogStore.getState().addLog({
+        action: 'inventory_delete',
+        entityType: 'inventory',
+        entityId: id,
+        summary: 'Inventaris dihapus',
+      });
     },
 
     getStats: () => {

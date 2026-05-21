@@ -12,13 +12,13 @@ export const buildCombinedLedger = ({ transactions = [], bookings = [], pricePer
   const allEntries = [...transactions];
 
   bookings.forEach((booking) => {
-    if (booking.status === 'maintenance') return;
+    if (booking.status === 'maintenance' || booking.status === 'cancelled') return;
 
     if (booking.status === 'confirmed') {
       const base = booking.type === 'recording'
         ? (booking.sessionPrice || 0)
         : (booking.duration * pricePerHour);
-      const total = base - (booking.discountAmount || 0);
+      const total = base + (booking.equipmentCost || 0) - (booking.discountAmount || 0);
 
       allEntries.push({
         id: `book-${booking.id}`,

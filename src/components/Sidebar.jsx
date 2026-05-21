@@ -7,6 +7,7 @@ import { useTourStore } from '../store/useTourStore';
 import { useNotificationStore } from '../store/useNotificationStore';
 import { useThemeStore } from '../store/useThemeStore';
 import { useDemoStore } from '../store/useDemoStore';
+import { ROUTE_PERMISSIONS, hasPermission } from '../lib/permissions';
 import ProfileModal from './ProfileModal';
 import NotificationPanel from './NotificationPanel';
 import './Sidebar.css';
@@ -121,7 +122,7 @@ const Sidebar = () => {
             variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.06, delayChildren: 0.05 } } }}
             style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}
           >
-            {menuItems.map((item, index) => (
+            {menuItems.filter((item) => hasPermission(userProfile, ROUTE_PERMISSIONS[item.path])).map((item, index) => (
               <motion.div
                 key={index}
                 variants={{ hidden: { opacity: 0, x: -14 }, visible: { opacity: 1, x: 0, transition: { duration: 0.25, ease: [0.4,0,0.2,1] } } }}
@@ -175,7 +176,7 @@ const Sidebar = () => {
             <div className="avatar">{avatarLetter}</div>
             <div className="user-info">
               <span className="user-name" title={user?.email || ''}>{displayName}</span>
-              <span className="user-role">Administrator</span>
+              <span className="user-role">{userProfile?.role === 'admin' ? 'Administrator' : 'Staff'}</span>
             </div>
             <button 
               className="sidebar-logout-btn" 

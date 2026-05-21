@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/useAuthStore';
 import { useBookingStore } from '../store/useBookingStore';
+import { useBookingRequestStore } from '../store/useBookingRequestStore';
 import { useSettingsStore } from '../store/useSettingsStore';
 import {
   ChevronLeft, ChevronRight, LogOut, Music, Phone, MessageCircle,
@@ -21,6 +22,7 @@ const PublicCalendarPage = () => {
   const navigate = useNavigate();
   const { user, logout, loginGuest, isAuthLoaded, loading: authLoading } = useAuthStore();
   const { bookings } = useBookingStore();
+  const { addRequest } = useBookingRequestStore();
   const { studioName, studioPhone, pricePerHour, durationDiscounts = [] } = useSettingsStore();
 
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -40,7 +42,9 @@ const PublicCalendarPage = () => {
   const [modalOpen, setModalOpen]     = useState(false);
   const [selectedSlot, setSelectedSlot] = useState({ dateStr: '', hour: 0 });
   const [bandName, setBandName]       = useState('');
+  const [customerPhone, setCustomerPhone] = useState('');
   const [duration, setDuration]       = useState(2);
+  const [isSubmittingRequest, setIsSubmittingRequest] = useState(false);
 
   useEffect(() => {
     if (!isAuthLoaded || user) return;
@@ -131,14 +135,19 @@ const PublicCalendarPage = () => {
   const openModal = (dateStr, hour) => {
     setSelectedSlot({ dateStr, hour });
     setBandName('');
+    setCustomerPhone('');
     setDuration(2);
     setModalOpen(true);
   };
 
   // Send WA
-  const sendWA = () => {
+  const sendWA = async () => {
     if (!bandName.trim()) {
       useNotificationStore.getState().addNotification({ title: 'Nama Band kosong', message: 'Harap isi nama band Anda.', type: 'error' });
+      return;
+    }
+    if (!customerPhone.trim()) {
+      useNotificationStore.getState().addNotification({ title: 'Nomor WhatsApp kosong', message: 'Harap isi nomor yang bisa dihubungi admin.', type: 'error' });
       return;
     }
     const isOverlap = activeBookings.some(b => {
@@ -149,17 +158,45 @@ const PublicCalendarPage = () => {
       useNotificationStore.getState().addNotification({ title: 'Jadwal Bentrok', message: 'Durasi yang Anda pilih menabrak jadwal lain. Silakan kurangi durasi.', type: 'error' });
       return;
     }
+    setIsSubmittingRequest(true);
+    try {
+      await addRequest({
+        band: bandName.trim(),
+        phone: customerPhone.trim(),
+        date: selectedSlot.dateStr,
+        hour: selectedSlot.hour,
+        duration,
+        estimatedPrice: priceEst,
+        source: 'public-calendar',
+      });
+      useNotificationStore.getState().addNotification({
+        title: 'Permintaan terkirim',
+        message: 'Admin akan meninjau dan mengonfirmasi jadwal Anda.',
+        type: 'success',
+      });
+    } catch (error) {
+      useNotificationStore.getState().addNotification({
+        title: 'Gagal mengirim request',
+        message: error.message || 'Coba lagi beberapa saat lagi.',
+        type: 'error',
+      });
+      setIsSubmittingRequest(false);
+      return;
+    }
     const dateLabel = format(new Date(selectedSlot.dateStr + 'T00:00:00'), 'dd MMMM yyyy', { locale: localeId });
     const endHourLabel = selectedSlot.hour + duration;
-    const cleanMessage = `Halo Admin ${studioName}\n\nSaya dari band *${bandName.trim()}* ingin booking studio:\n\nTanggal : ${dateLabel}\nJam     : ${selectedSlot.hour}:00 - ${endHourLabel}:00\nDurasi  : ${duration} jam\n\nApakah slot tersebut masih tersedia?`;
+    const cleanMessage = `Halo Admin ${studioName}\n\nSaya dari band *${bandName.trim()}* ingin booking studio:\n\nTanggal : ${dateLabel}\nJam     : ${selectedSlot.hour}:00 - ${endHourLabel}:00\nDurasi  : ${duration} jam\nKontak  : ${customerPhone.trim()}\n\nSaya juga sudah mengirim request dari kalender publik.`;
     let phone = (studioPhone || '').replace(/\D/g, '');
     if (!phone) {
-      useNotificationStore.getState().addNotification({ title: 'Nomor admin belum tersedia', message: 'Silakan hubungi admin studio secara manual.', type: 'error' });
+      useNotificationStore.getState().addNotification({ title: 'Request tersimpan', message: 'Nomor admin belum tersedia untuk WhatsApp otomatis.', type: 'warning' });
+      setModalOpen(false);
+      setIsSubmittingRequest(false);
       return;
     }
     if (phone.startsWith('0')) phone = '62' + phone.substring(1);
     window.open(`https://wa.me/${phone}?text=${encodeURIComponent(cleanMessage)}`, '_blank');
     setModalOpen(false);
+    setIsSubmittingRequest(false);
   };
 
   const currentLabel = useMemo(() => {
@@ -417,6 +454,17 @@ const PublicCalendarPage = () => {
               </div>
 
               <div className="pc-form-group">
+                <label>No. WhatsApp</label>
+                <input
+                  type="tel"
+                  className="pc-form-input"
+                  value={customerPhone}
+                  onChange={e => setCustomerPhone(e.target.value)}
+                  placeholder="08xxxxxxxxxx"
+                />
+              </div>
+
+              <div className="pc-form-group">
                 <label>Durasi (Jam)</label>
                 <div className="pc-duration-grid">
                   {[1,2,3,4,5].map(h => (
@@ -453,9 +501,9 @@ const PublicCalendarPage = () => {
                 <span>Klik tombol di bawah untuk mengirim permintaan booking ke WhatsApp admin. Booking akan dikonfirmasi oleh admin.</span>
               </div>
 
-              <button className="pc-wa-send-btn" onClick={sendWA}>
+              <button className="pc-wa-send-btn" onClick={sendWA} disabled={isSubmittingRequest}>
                 <MessageCircle size={20} />
-                <span>Kirim ke WhatsApp Admin</span>
+                <span>{isSubmittingRequest ? 'Mengirim...' : 'Kirim Request & WhatsApp Admin'}</span>
               </button>
             </div>
             </motion.div>

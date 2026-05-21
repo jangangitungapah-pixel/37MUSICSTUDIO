@@ -15,6 +15,7 @@ import {
   filterLedgerByPeriod
 } from '../lib/finance';
 import { getRevenueForecast } from '../lib/smartInsights';
+import { getBookingTotal, getRemainingDue } from '../lib/bookingWorkflows';
 import './FinancePage.css';
 
 const CATEGORIES = {
@@ -75,6 +76,43 @@ const FinancePage = () => {
     () => getRevenueForecast(bookings, transactions, pricePerHour),
     [bookings, transactions, pricePerHour]
   );
+  const reconciliation = useMemo(() => {
+    const periodBookingIds = new Set(
+      filterLedgerByPeriod(
+        bookings
+          .filter((booking) => !['maintenance', 'cancelled'].includes(booking.status))
+          .map((booking) => ({
+            id: booking.id,
+            date: booking.date,
+            description: booking.band || '',
+            category: 'Booking',
+          })),
+        filterPeriod,
+        ''
+      ).map((entry) => entry.id)
+    );
+    const periodBookings = bookings.filter((booking) => periodBookingIds.has(booking.id));
+    const bookedValue = periodBookings.reduce((sum, booking) => sum + getBookingTotal(booking, pricePerHour), 0);
+    const bookingCash = periodBookings.reduce((sum, booking) => {
+      if (booking.status === 'confirmed') return sum + getBookingTotal(booking, pricePerHour);
+      if (booking.status === 'dp') return sum + Number(booking.dpAmount || 0);
+      return sum;
+    }, 0);
+    const openReceivable = periodBookings.reduce((sum, booking) => sum + getRemainingDue(booking, pricePerHour), 0);
+    const manualIncome = filterLedgerByPeriod(
+      transactions.filter((entry) => entry.type === 'income'),
+      filterPeriod,
+      ''
+    )
+      .reduce((sum, entry) => sum + entry.amount, 0);
+    return {
+      bookedValue,
+      bookingCash,
+      openReceivable,
+      manualIncome,
+      diff: totalIncomeFiltered - bookingCash - manualIncome,
+    };
+  }, [bookings, filterPeriod, pricePerHour, totalIncomeFiltered, transactions]);
 
   const PIE_COLORS = ['#ff2a5f', '#00f0ff', '#a855f7', '#4CAF50', '#FF9800', '#E91E63', '#9C27B0'];
 
@@ -440,6 +478,34 @@ const FinancePage = () => {
           <div>
             <span>Progress bulan</span>
             <strong>{revenueForecast.progressPercent}%</strong>
+          </div>
+        </div>
+      </div>
+
+      <div className="finance-reconcile-panel hide-on-print">
+        <div className="finance-reconcile-copy">
+          <Wallet size={18} />
+          <div>
+            <h3>Rekonsiliasi Kas Booking</h3>
+            <p>Cocokkan nilai booking, kas diterima, piutang, dan pemasukan manual pada {periodLabel.toLowerCase()}.</p>
+          </div>
+        </div>
+        <div className="finance-reconcile-metrics">
+          <div>
+            <span>Nilai booking</span>
+            <strong>{formatCurrency(reconciliation.bookedValue)}</strong>
+          </div>
+          <div>
+            <span>Kas dari booking</span>
+            <strong>{formatCurrency(reconciliation.bookingCash)}</strong>
+          </div>
+          <div>
+            <span>Piutang aktif</span>
+            <strong>{formatCurrency(reconciliation.openReceivable)}</strong>
+          </div>
+          <div className={reconciliation.diff === 0 ? 'ok' : 'warn'}>
+            <span>Selisih kas</span>
+            <strong>{formatCurrency(reconciliation.diff)}</strong>
           </div>
         </div>
       </div>

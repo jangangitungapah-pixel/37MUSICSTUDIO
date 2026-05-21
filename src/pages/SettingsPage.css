@@ -1117,6 +1117,60 @@
   font-size: 0.85rem;
 }
 
+.backup-restore-card {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: center;
+  padding: 16px;
+  margin-bottom: 18px;
+  border-radius: 12px;
+  background: rgba(0, 240, 255, 0.05);
+  border: 1px solid rgba(0, 240, 255, 0.14);
+}
+
+.backup-restore-copy h4 {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: 0.98rem;
+}
+
+.backup-restore-copy p {
+  margin: 5px 0 0;
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  line-height: 1.45;
+}
+
+.backup-restore-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.restore-upload-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 8px;
+  padding: 10px 14px;
+  background: rgba(0, 240, 255, 0.12);
+  color: var(--accent-cyan);
+  border: 1px solid rgba(0, 240, 255, 0.2);
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.restore-upload-btn.disabled {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.restore-upload-btn input {
+  display: none;
+}
+
 @media (max-width: 768px) {
   .duration-discount-form {
     flex-direction: column;
@@ -1124,5 +1178,9 @@
   }
   .btn-add-discount {
     margin-top: 8px;
+  }
+  .backup-restore-card {
+    flex-direction: column;
+    align-items: stretch;
   }
 }

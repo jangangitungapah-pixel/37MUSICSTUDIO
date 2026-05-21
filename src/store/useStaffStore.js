@@ -1,6 +1,8 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { useDemoStore } from './useDemoStore';
+import { getDefaultPermissionsForRole } from '../lib/permissions';
+import { useAuditLogStore } from './useAuditLogStore';
 
 export const useStaffStore = create(
   persist(
@@ -22,28 +24,71 @@ export const useStaffStore = create(
 
       return {
         staffMembers: [
-          { id: '1', name: 'Admin Utama', role: 'admin', phone: '08123456789', status: 'active' },
-          { id: '2', name: 'Budi Staff', role: 'staff', phone: '08198765432', status: 'active' },
+          { id: '1', name: 'Admin Utama', role: 'admin', phone: '08123456789', status: 'active', permissions: getDefaultPermissionsForRole('admin') },
+          { id: '2', name: 'Budi Staff', role: 'staff', phone: '08198765432', status: 'active', permissions: getDefaultPermissionsForRole('staff') },
         ],
         realStaffMembers: null,
         
-        addStaff: (staff) => set((state) => ({
-          staffMembers: [...state.staffMembers, { ...staff, id: Date.now().toString(), status: 'active' }]
-        })),
+        addStaff: (staff) => {
+          const newStaff = {
+            ...staff,
+            id: Date.now().toString(),
+            status: 'active',
+            permissions: staff.permissions || getDefaultPermissionsForRole(staff.role),
+          };
+          set((state) => ({
+            staffMembers: [...state.staffMembers, newStaff]
+          }));
+          useAuditLogStore.getState().addLog({
+            action: 'staff_create',
+            entityType: 'staff',
+            entityId: newStaff.id,
+            summary: `Staff ${newStaff.name} ditambahkan`,
+          });
+        },
 
-        updateStaff: (id, updatedData) => set((state) => ({
-          staffMembers: state.staffMembers.map(s => s.id === id ? { ...s, ...updatedData } : s)
-        })),
+        updateStaff: (id, updatedData) => {
+          const payload = {
+            ...updatedData,
+            permissions: updatedData.permissions || getDefaultPermissionsForRole(updatedData.role),
+          };
+          set((state) => ({
+            staffMembers: state.staffMembers.map(s => s.id === id ? { ...s, ...payload } : s)
+          }));
+          useAuditLogStore.getState().addLog({
+            action: 'staff_update',
+            entityType: 'staff',
+            entityId: id,
+            summary: 'Data staff diperbarui',
+            metadata: payload,
+          });
+        },
 
-        deleteStaff: (id) => set((state) => ({
-          staffMembers: state.staffMembers.filter(s => s.id !== id)
-        })),
+        deleteStaff: (id) => {
+          set((state) => ({
+            staffMembers: state.staffMembers.filter(s => s.id !== id)
+          }));
+          useAuditLogStore.getState().addLog({
+            action: 'staff_delete',
+            entityType: 'staff',
+            entityId: id,
+            summary: 'Staff dihapus',
+          });
+        },
         
-        toggleStaffStatus: (id) => set((state) => ({
-          staffMembers: state.staffMembers.map(s => 
-            s.id === id ? { ...s, status: s.status === 'active' ? 'inactive' : 'active' } : s
-          )
-        })),
+        toggleStaffStatus: (id) => {
+          set((state) => ({
+            staffMembers: state.staffMembers.map(s => 
+              s.id === id ? { ...s, status: s.status === 'active' ? 'inactive' : 'active' } : s
+            )
+          }));
+          useAuditLogStore.getState().addLog({
+            action: 'staff_status_toggle',
+            entityType: 'staff',
+            entityId: id,
+            summary: 'Status staff diperbarui',
+          });
+        },
       };
     },
     {

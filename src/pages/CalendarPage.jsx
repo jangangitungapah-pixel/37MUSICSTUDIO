@@ -1,15 +1,17 @@
 import React, { useState, useMemo, useRef, useEffect, useCallback } from 'react';
-import { ChevronLeft, ChevronRight, Plus, Search, CalendarCheck, Clock, DollarSign, Trash2, Phone, StickyNote, X, MessageCircle, TrendingUp, Calendar, LayoutGrid, CalendarDays, Lightbulb, AlertTriangle } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Plus, Search, CalendarCheck, Clock, DollarSign, Trash2, Phone, StickyNote, X, MessageCircle, TrendingUp, Calendar, LayoutGrid, CalendarDays, Lightbulb, AlertTriangle, CheckCircle2, XCircle, RotateCcw } from 'lucide-react';
 import { format, addMonths, subMonths, startOfMonth, endOfMonth, addDays, subDays, getDay, startOfWeek, endOfWeek, eachDayOfInterval, addWeeks, subWeeks } from 'date-fns';
 import { useBookingStore } from '../store/useBookingStore';
 import { useSettingsStore } from '../store/useSettingsStore';
 import { useInventoryStore } from '../store/useInventoryStore';
+import { useBookingRequestStore } from '../store/useBookingRequestStore';
 import { useTourStore } from '../store/useTourStore';
 import { useNotificationStore } from '../store/useNotificationStore';
 import { AnimatePresence, motion } from 'framer-motion';
 import Modal from '../components/Modal';
 import BookingForm from '../components/BookingForm';
 import { getAnomalies, getDemandInsights, getSlotRecommendations } from '../lib/smartInsights';
+import { getDepositDeadlineStatus, hasBookingOverlap } from '../lib/bookingWorkflows';
 import './CalendarPage.css';
 import './CalendarPrintStyles.css';
 
@@ -38,6 +40,7 @@ const CalendarPage = () => {
   const [initialResizeY, setInitialResizeY] = useState(0);
   const [resizeAddedHours, setResizeAddedHours] = useState(0);
   const [resizeConfirmData, setResizeConfirmData] = useState(null);
+  const [rescheduleDraft, setRescheduleDraft] = useState(null);
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth <= 768);
@@ -49,7 +52,8 @@ const CalendarPage = () => {
     };
   }, []);
 
-  const { bookings, deleteBooking, updateBookingStatus, updateBooking, getMonthlyStats } = useBookingStore();
+  const { bookings, addBooking, deleteBooking, updateBookingStatus, updateBooking, cancelBooking, rescheduleBooking, getMonthlyStats } = useBookingStore();
+  const { requests, updateRequestStatus } = useBookingRequestStore();
   const { pricePerHour, studioName, durationDiscounts = [], recordingSessions = [] } = useSettingsStore();
   const { inventory } = useInventoryStore();
   const { run, currentStep, nextStep } = useTourStore();
@@ -97,6 +101,12 @@ const CalendarPage = () => {
   );
   const demandInsights = useMemo(() => getDemandInsights(bookings), [bookings]);
   const scheduleAnomalies = useMemo(() => getAnomalies(bookings, pricePerHour), [bookings, pricePerHour]);
+  const pendingRequests = useMemo(
+    () => requests
+      .filter((request) => request.status === 'pending')
+      .sort((a, b) => (a.date || '').localeCompare(b.date || '') || Number(a.hour || 0) - Number(b.hour || 0)),
+    [requests]
+  );
 
   // Last month for trend
   const lastStats = getMonthlyStats(addMonths(currentDate, -1));
@@ -107,6 +117,7 @@ const CalendarPage = () => {
       const q = searchQuery.toLowerCase();
       if (!b.band.toLowerCase().includes(q) && !(b.phone && b.phone.includes(q))) return false;
     }
+    if (filterStatus === 'all' && b.status === 'cancelled') return false;
     if (filterStatus !== 'all' && b.status !== filterStatus) return false;
     return true;
   }), [bookings, searchQuery, filterStatus]);
@@ -189,6 +200,51 @@ const CalendarPage = () => {
         return;
       }
       updateBooking(draggedBooking.id, { date: dateStr, hour: hour });
+    }
+  };
+
+  const handleApproveRequest = async (request) => {
+    const candidate = {
+      date: request.date,
+      hour: Number(request.hour),
+      duration: Number(request.duration || 1),
+    };
+    if (hasBookingOverlap(bookings, candidate)) {
+      useNotificationStore.getState().addNotification({
+        title: 'Request bentrok',
+        message: 'Slot request sudah terisi. Tolak request atau pindahkan manual sebelum approve.',
+        type: 'error',
+      });
+      return;
+    }
+
+    try {
+      await addBooking({
+        type: 'booking',
+        band: request.band,
+        phone: request.phone || '',
+        date: request.date,
+        hour: Number(request.hour),
+        duration: Number(request.duration || 1),
+        status: 'pending',
+        dpAmount: 0,
+        note: 'Dibuat dari request kalender publik.',
+      });
+      await updateRequestStatus(request.id, 'approved', { approvedAt: new Date().toISOString() });
+      useNotificationStore.getState().addNotification({ title: 'Request disetujui', message: `${request.band} masuk ke kalender.`, type: 'success' });
+    } catch (error) {
+      useNotificationStore.getState().addNotification({ title: 'Gagal approve request', message: error.message || 'Coba lagi beberapa saat lagi.', type: 'error' });
+    }
+  };
+
+  const handleRejectRequest = async (request) => {
+    const reason = window.prompt('Alasan penolakan request booking:', 'Slot tidak tersedia');
+    if (reason === null) return;
+    try {
+      await updateRequestStatus(request.id, 'rejected', { rejectionReason: reason, rejectedAt: new Date().toISOString() });
+      useNotificationStore.getState().addNotification({ title: 'Request ditolak', message: `${request.band} dipindahkan dari antrean.`, type: 'success' });
+    } catch (error) {
+      useNotificationStore.getState().addNotification({ title: 'Gagal menolak request', message: error.message || 'Coba lagi beberapa saat lagi.', type: 'error' });
     }
   };
 
@@ -292,6 +348,55 @@ const CalendarPage = () => {
     if (run && currentStep === 12) setTimeout(() => nextStep(), 100);
   };
 
+  const handleCancelBooking = async (booking) => {
+    const reason = window.prompt('Alasan pembatalan booking:', 'Dibatalkan pelanggan');
+    if (reason === null) return;
+    try {
+      await cancelBooking(booking.id, reason);
+      setSelectedBooking(null);
+      useNotificationStore.getState().addNotification({ title: 'Booking dibatalkan', message: `${booking.band} ditandai batal.`, type: 'success' });
+    } catch (error) {
+      useNotificationStore.getState().addNotification({ title: 'Gagal membatalkan booking', message: error.message || 'Coba lagi beberapa saat lagi.', type: 'error' });
+    }
+  };
+
+  const openRescheduleModal = (booking) => {
+    setRescheduleDraft({
+      id: booking.id,
+      band: booking.band,
+      duration: booking.duration,
+      date: booking.date,
+      hour: booking.hour,
+      reason: '',
+    });
+  };
+
+  const handleRescheduleSubmit = async (event) => {
+    event.preventDefault();
+    if (!rescheduleDraft) return;
+    const candidate = {
+      date: rescheduleDraft.date,
+      hour: Number(rescheduleDraft.hour),
+      duration: Number(rescheduleDraft.duration || 1),
+    };
+    if (hasBookingOverlap(bookings, candidate, rescheduleDraft.id)) {
+      useNotificationStore.getState().addNotification({ title: 'Jadwal Bentrok!', message: 'Slot tujuan bertabrakan dengan booking lain.', type: 'error' });
+      return;
+    }
+    try {
+      await rescheduleBooking(rescheduleDraft.id, {
+        date: rescheduleDraft.date,
+        hour: Number(rescheduleDraft.hour),
+        reason: rescheduleDraft.reason,
+      });
+      setRescheduleDraft(null);
+      setSelectedBooking(null);
+      useNotificationStore.getState().addNotification({ title: 'Booking dipindahkan', message: `${rescheduleDraft.band} berhasil dijadwalkan ulang.`, type: 'success' });
+    } catch (error) {
+      useNotificationStore.getState().addNotification({ title: 'Gagal reschedule', message: error.message || 'Coba lagi beberapa saat lagi.', type: 'error' });
+    }
+  };
+
   const handleSendReminder = () => {
     if (!selectedBooking.phone) {
       useNotificationStore.getState().addNotification({
@@ -316,7 +421,7 @@ const CalendarPage = () => {
   }, [selectedBooking, run]);
 
   const formatCurrency = (num) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(num);
-  const getStatusLabel = (s) => ({ confirmed: 'Lunas', dp: 'DP', pending: 'Belum Bayar' }[s] || s);
+  const getStatusLabel = (s) => ({ confirmed: 'Lunas', dp: 'DP', pending: 'Belum Bayar', cancelled: 'Batal' }[s] || s);
   const todayStr = format(new Date(), 'yyyy-MM-dd');
   const dayNames = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
   let emptyCellAssigned = false;
@@ -447,6 +552,36 @@ const CalendarPage = () => {
         )}
       </div>
 
+      {pendingRequests.length > 0 && (
+        <div className="cal-request-panel glass-panel">
+          <div className="cal-request-head">
+            <div>
+              <h3>Request Booking Publik</h3>
+              <p>{pendingRequests.length} request menunggu persetujuan admin.</p>
+            </div>
+          </div>
+          <div className="cal-request-list">
+            {pendingRequests.slice(0, 5).map((request) => (
+              <div key={request.id} className="cal-request-item">
+                <div className="cal-request-main">
+                  <strong>{request.band}</strong>
+                  <span>{request.date} &bull; {String(request.hour).padStart(2, '0')}.00-{String(Number(request.hour) + Number(request.duration || 1)).padStart(2, '0')}.00</span>
+                  {request.phone && <small>{request.phone}</small>}
+                </div>
+                <div className="cal-request-actions">
+                  <button className="request-approve" onClick={() => handleApproveRequest(request)} title="Approve">
+                    <CheckCircle2 size={15} /> Approve
+                  </button>
+                  <button className="request-reject" onClick={() => handleRejectRequest(request)} title="Tolak">
+                    <XCircle size={15} /> Tolak
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Calendar Container */}
       <div className="calendar-container glass-panel">
         {/* Toolbar */}
@@ -476,6 +611,7 @@ const CalendarPage = () => {
                 { id: 'dp', label: 'DP' },
                 { id: 'confirmed', label: 'Lunas' },
                 { id: 'maintenance', label: 'Blokir' },
+                { id: 'cancelled', label: 'Batal' },
               ].map(({ id, label }) => (
                 <button key={id} className={`filter-chip ${filterStatus === id ? `active ${id}` : ''}`} onClick={() => setFilterStatus(id)}>
                   {id !== 'all' && <span className={`dot ${id}`} style={id === 'maintenance' ? { background: '#6b6b76' } : undefined} />}
@@ -683,11 +819,20 @@ const CalendarPage = () => {
                     )}
                     {b.status === 'confirmed' && <div className="detail-paid-badge">✓ Lunas</div>}
                     {b.status === 'pending' && <div className="detail-unpaid-badge">⚠ Belum Dibayar</div>}
+                    {(() => {
+                      const deadline = getDepositDeadlineStatus(b);
+                      return deadline.state !== 'none' ? (
+                        <div className={`detail-deadline-badge ${deadline.state}`}>Deadline: {deadline.label}</div>
+                      ) : null;
+                    })()}
+                    {b.status === 'cancelled' && (
+                      <div className="detail-cancelled-note">Dibatalkan{b.cancelReason ? `: ${b.cancelReason}` : ''}</div>
+                    )}
                   </div>
                 )}
 
                 {/* Status Change */}
-                {b.status !== 'maintenance' && (
+                {b.status !== 'maintenance' && b.status !== 'cancelled' && (
                   <div className="detail-status-section">
                     <label>Ubah Status</label>
                     <div className="status-buttons">
@@ -711,6 +856,16 @@ const CalendarPage = () => {
                     <MessageCircle size={14} /><span>Kirim Pengingat</span>
                   </button>
                 )}
+                {b.status !== 'maintenance' && b.status !== 'cancelled' && (
+                  <>
+                    <button className="btn-secondary" onClick={() => openRescheduleModal(b)}>
+                      <RotateCcw size={14} /><span>Reschedule</span>
+                    </button>
+                    <button className="btn-secondary danger-soft" onClick={() => handleCancelBooking(b)}>
+                      <XCircle size={14} /><span>Batalkan</span>
+                    </button>
+                  </>
+                )}
               </div>
             </motion.div>
           </>
@@ -720,6 +875,50 @@ const CalendarPage = () => {
 
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Booking Baru">
         <BookingForm onClose={() => setIsModalOpen(false)} initialDate={prefillDate} initialHour={prefillHour} />
+      </Modal>
+
+      <Modal isOpen={!!rescheduleDraft} onClose={() => setRescheduleDraft(null)} title="Reschedule Booking">
+        {rescheduleDraft && (
+          <form className="reschedule-form" onSubmit={handleRescheduleSubmit}>
+            <div className="form-group">
+              <label>Tanggal Baru</label>
+              <input
+                type="date"
+                className="form-input"
+                value={rescheduleDraft.date}
+                min={todayStr}
+                onChange={(event) => setRescheduleDraft((prev) => ({ ...prev, date: event.target.value }))}
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label>Jam Baru</label>
+              <select
+                className="form-input"
+                value={rescheduleDraft.hour}
+                onChange={(event) => setRescheduleDraft((prev) => ({ ...prev, hour: Number(event.target.value) }))}
+              >
+                {Array.from({ length: 13 }, (_, i) => i + 10).map((hour) => (
+                  <option key={hour} value={hour}>{String(hour).padStart(2, '0')}:00</option>
+                ))}
+              </select>
+            </div>
+            <div className="form-group">
+              <label>Catatan Perubahan</label>
+              <textarea
+                className="form-input"
+                rows="3"
+                value={rescheduleDraft.reason}
+                onChange={(event) => setRescheduleDraft((prev) => ({ ...prev, reason: event.target.value }))}
+                placeholder="Contoh: pelanggan minta pindah jam"
+              />
+            </div>
+            <div className="form-actions">
+              <button type="button" className="btn-secondary" onClick={() => setRescheduleDraft(null)}>Batal</button>
+              <button type="submit" className="btn-primary">Simpan Jadwal Baru</button>
+            </div>
+          </form>
+        )}
       </Modal>
 
       {/* Resize Confirmation Modal */}

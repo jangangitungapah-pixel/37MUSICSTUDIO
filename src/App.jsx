@@ -8,6 +8,7 @@ import NotificationToast from './components/NotificationToast';
 import PageTransition from './components/PageTransition';
 import { Toaster } from 'sonner';
 import { Loader2, LockKeyhole, LogOut, ShieldAlert } from 'lucide-react';
+import { ROUTE_PERMISSIONS, hasPermission } from './lib/permissions';
 import './index.css';
 import './pages/CalendarPage.css'; // Shared global utilities and grid styles
 import './components/BookingForm.css'; // Shared global form styles (.form-group, .form-input)
@@ -191,6 +192,7 @@ const AnimatedRoutes = () => {
 
 const ProtectedRoute = ({ children }) => {
   const { user, userProfile, isAuthLoaded } = useAuthStore();
+  const location = useLocation();
   
   if (!isAuthLoaded) {
     return <FullPageLoader />;
@@ -206,6 +208,10 @@ const ProtectedRoute = ({ children }) => {
   }
 
   if (!STAFF_ROLES.has(userProfile?.role)) {
+    return <AccessDenied />;
+  }
+
+  if (!hasPermission(userProfile, ROUTE_PERMISSIONS[location.pathname])) {
     return <AccessDenied />;
   }
 

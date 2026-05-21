@@ -1,18 +1,22 @@
 import { useState } from 'react';
 import { useStaffStore } from '../store/useStaffStore';
-import { UserPlus, Edit2, Trash2, Shield, User, Power } from 'lucide-react';
+import { useAuditLogStore } from '../store/useAuditLogStore';
+import { PERMISSIONS, PERMISSION_LABELS, getDefaultPermissionsForRole } from '../lib/permissions';
+import { UserPlus, Edit2, Trash2, Shield, User, Power, ClipboardList } from 'lucide-react';
 import Modal from '../components/Modal';
 import { toast } from 'sonner';
 import './StaffPage.css';
 
 const StaffPage = () => {
   const { staffMembers, addStaff, updateStaff, deleteStaff, toggleStaffStatus } = useStaffStore();
+  const { logs } = useAuditLogStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingStaff, setEditingStaff] = useState(null);
   const [formData, setFormData] = useState({
     name: '',
     role: 'staff',
     phone: '',
+    permissions: getDefaultPermissionsForRole('staff'),
   });
 
   const handleOpenModal = (staff = null) => {
@@ -22,6 +26,7 @@ const StaffPage = () => {
         name: staff.name,
         role: staff.role,
         phone: staff.phone,
+        permissions: staff.permissions || getDefaultPermissionsForRole(staff.role),
       });
     } else {
       setEditingStaff(null);
@@ -29,6 +34,7 @@ const StaffPage = () => {
         name: '',
         role: 'staff',
         phone: '',
+        permissions: getDefaultPermissionsForRole('staff'),
       });
     }
     setIsModalOpen(true);
@@ -58,6 +64,26 @@ const StaffPage = () => {
   const handleToggleStatus = (id) => {
     toggleStaffStatus(id);
     toast.success('Status staff diperbarui');
+  };
+
+  const handleRoleChange = (role) => {
+    setFormData((prev) => ({
+      ...prev,
+      role,
+      permissions: getDefaultPermissionsForRole(role),
+    }));
+  };
+
+  const handlePermissionToggle = (permission) => {
+    setFormData((prev) => {
+      const current = prev.permissions || [];
+      return {
+        ...prev,
+        permissions: current.includes(permission)
+          ? current.filter((item) => item !== permission)
+          : [...current, permission],
+      };
+    });
   };
 
   return (
@@ -101,6 +127,14 @@ const StaffPage = () => {
                 {staff.role === 'admin' ? 'Administrator' : 'Staff'}
               </span>
               <p className="staff-phone">📞 {staff.phone || '-'}</p>
+              <div className="staff-permission-chips">
+                {(staff.permissions || getDefaultPermissionsForRole(staff.role)).slice(0, 4).map((permission) => (
+                  <span key={permission}>{PERMISSION_LABELS[permission] || permission}</span>
+                ))}
+                {(staff.permissions || getDefaultPermissionsForRole(staff.role)).length > 4 && (
+                  <span>+{(staff.permissions || getDefaultPermissionsForRole(staff.role)).length - 4}</span>
+                )}
+              </div>
             </div>
             
             <div className="staff-status-bar">
@@ -140,12 +174,29 @@ const StaffPage = () => {
             <select
               className="form-input"
               value={formData.role}
-              onChange={e => setFormData({ ...formData, role: e.target.value })}
+              onChange={e => handleRoleChange(e.target.value)}
               required
             >
               <option value="staff">Staff (Akses Terbatas)</option>
               <option value="admin">Administrator (Akses Penuh)</option>
             </select>
+          </div>
+
+          <div className="form-group">
+            <label>Izin Menu</label>
+            <div className="permission-grid">
+              {Object.values(PERMISSIONS).map((permission) => (
+                <label key={permission} className={`permission-card ${formData.permissions?.includes(permission) ? 'selected' : ''}`}>
+                  <input
+                    type="checkbox"
+                    checked={formData.permissions?.includes(permission) || false}
+                    onChange={() => handlePermissionToggle(permission)}
+                    disabled={formData.role === 'admin'}
+                  />
+                  <span>{PERMISSION_LABELS[permission] || permission}</span>
+                </label>
+              ))}
+            </div>
           </div>
 
           <div className="form-actions">
@@ -156,6 +207,28 @@ const StaffPage = () => {
           </div>
         </form>
       </Modal>
+
+      <div className="audit-log-panel glass-panel">
+        <div className="audit-log-header">
+          <ClipboardList size={18} />
+          <div>
+            <h3>Audit Log Terbaru</h3>
+            <p>Jejak perubahan booking, pelanggan, inventaris, finance, dan staff.</p>
+          </div>
+        </div>
+        <div className="audit-log-list">
+          {logs.slice(0, 8).map((log) => (
+            <div key={log.id} className="audit-log-item">
+              <div>
+                <strong>{log.summary}</strong>
+                <span>{log.actorName} &bull; {log.action}</span>
+              </div>
+              <small>{new Date(log.createdAt).toLocaleString('id-ID')}</small>
+            </div>
+          ))}
+          {logs.length === 0 && <div className="audit-log-empty">Belum ada audit log.</div>}
+        </div>
+      </div>
     </div>
   );
 };

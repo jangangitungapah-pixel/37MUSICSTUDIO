@@ -64,6 +64,25 @@ service cloud.firestore {
       allow delete: if hasAdminAccess();
     }
 
+    match /bookingRequests/{requestId} {
+      allow read: if hasAdminAccess();
+      allow create: if signedInGuestOrStaff()
+        && request.resource.data.keys().hasOnly([
+          'id', 'band', 'phone', 'date', 'hour', 'duration',
+          'estimatedPrice', 'source', 'status', 'createdAt'
+        ])
+        && request.resource.data.status == 'pending'
+        && request.resource.data.band is string
+        && request.resource.data.date is string
+        && request.resource.data.hour is number
+        && request.resource.data.duration is number;
+      allow update, delete: if hasAdminAccess();
+    }
+
+    match /auditLogs/{document=**} {
+      allow read, write: if hasAdminAccess();
+    }
+
     match /users/{userId} {
       allow read: if hasAdminAccess() || isSelf(userId);
       allow create: if isSelf(userId)
