@@ -5,14 +5,18 @@ import { useCustomerStore } from '../store/useCustomerStore';
 import { useTourStore } from '../store/useTourStore';
 import { useNotificationStore } from '../store/useNotificationStore';
 import { format } from 'date-fns';
-import { Music2, Mic, Wrench, User, Phone, Calendar, Clock, DollarSign, StickyNote, Star, AlertCircle, QrCode, Banknote, RefreshCw } from 'lucide-react';
+import { Music2, Mic, Wrench, User, Phone, Calendar, Clock, DollarSign, StickyNote, Star, AlertCircle, QrCode, Banknote, RefreshCw, Box } from 'lucide-react';
 import { generatePaymentLink, checkPaymentStatus } from '../lib/paymentGateway';
+import { useInventoryStore } from '../store/useInventoryStore';
 import './BookingForm.css';
 
 const BookingForm = ({ onClose, initialDate, initialHour }) => {
   const { bookings, addBooking } = useBookingStore();
   const { pricePerHour, durationDiscounts = [], recordingSessions = [] } = useSettingsStore();
   const { customers, incrementBookingCount } = useCustomerStore();
+  const { inventory } = useInventoryStore();
+  const rentableInventory = inventory.filter(i => i.condition === 'Excellent' || i.condition === 'Good');
+
   const { run, currentStep, nextStep } = useTourStore();
   const [isSubmitting, setIsSubmitting] = useState(false);
   
@@ -20,6 +24,9 @@ const BookingForm = ({ onClose, initialDate, initialHour }) => {
   const [qrisData, setQrisData] = useState(null);
   const [isGeneratingQR, setIsGeneratingQR] = useState(false);
   const [paymentStatus, setPaymentStatus] = useState(null);
+  
+  const [rentedEquipment, setRentedEquipment] = useState([]);
+  const [conflictSuggestion, setConflictSuggestion] = useState(null);
 
   const today = format(new Date(), 'yyyy-MM-dd');
 
@@ -60,6 +67,13 @@ const BookingForm = ({ onClose, initialDate, initialHour }) => {
       if (name === 'status' && value !== 'dp') newData.dpAmount = 0;
       return newData;
     });
+    setConflictSuggestion(null); // Clear suggestion on change
+  };
+
+  const handleEquipmentToggle = (itemId) => {
+    setRentedEquipment(prev => 
+      prev.includes(itemId) ? prev.filter(id => id !== itemId) : [...prev, itemId]
+    );
   };
 
   const selectedCustomer = customers.find(c => c.name.toLowerCase() === formData.band.toLowerCase());
@@ -75,33 +89,70 @@ const BookingForm = ({ onClose, initialDate, initialHour }) => {
   
   const vipDiscountAmount = isVIP ? basePrice * 0.1 : 0;
   const discountAmount = vipDiscountAmount + durationDiscountAmount;
-  const totalPrice = basePrice - discountAmount;
+  
+  const equipmentCost = rentedEquipment.reduce((total, itemId) => {
+    const item = inventory.find(i => i.id === itemId);
+    return total + (item?.rentalPrice || 0);
+  }, 0);
+
+  const totalPrice = basePrice + equipmentCost - discountAmount;
   const remaining = totalPrice - formData.dpAmount;
   const dpPercent = totalPrice > 0 ? Math.min(100, Math.round((formData.dpAmount / totalPrice) * 100)) : 0;
 
   const formatCurrency = (num) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(num);
 
+  const checkOverlap = (d, h, dur) => {
+    return bookings.some(b => {
+      if (b.date !== d) return false;
+      const bH = Number(b.hour), bD = Number(b.duration);
+      return (bH < h + dur) && (h < bH + bD);
+    });
+  };
+
+  const findNearestAvailableSlot = (targetDate, targetHour, duration) => {
+    // Check same day later hours
+    for (let h = targetHour + 1; h <= 24 - duration; h++) {
+      if (!checkOverlap(targetDate, h, duration)) return { date: targetDate, hour: h };
+    }
+    // Check same day earlier hours
+    for (let h = targetHour - 1; h >= 10; h--) {
+      if (!checkOverlap(targetDate, h, duration)) return { date: targetDate, hour: h };
+    }
+    // Check next day
+    const nextDate = format(new Date(new Date(targetDate).getTime() + 86400000), 'yyyy-MM-dd');
+    for (let h = 10; h <= 24 - duration; h++) {
+      if (!checkOverlap(nextDate, h, duration)) return { date: nextDate, hour: h };
+    }
+    return null;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (isSubmitting) return;
 
-    const isOverlap = bookings.some(b => {
-      if (b.date !== formData.date) return false;
-      const bH = Number(b.hour), bD = Number(b.duration);
-      const fH = Number(formData.hour), fD = Number(formData.duration);
-      return (bH < fH + fD) && (fH < bH + bD);
-    });
-    if (isOverlap) {
-      useNotificationStore.getState().addNotification({ title: 'Jadwal Bentrok!', message: 'Jam yang dipilih menabrak jadwal band lain.', type: 'error' });
+    if (checkOverlap(formData.date, formData.hour, formData.duration)) {
+      const suggestion = findNearestAvailableSlot(formData.date, formData.hour, formData.duration);
+      if (suggestion) {
+        setConflictSuggestion(suggestion);
+        useNotificationStore.getState().addNotification({ title: 'Jadwal Bentrok!', message: 'Sistem menemukan jadwal kosong terdekat.', type: 'warning' });
+      } else {
+        useNotificationStore.getState().addNotification({ title: 'Jadwal Bentrok!', message: 'Jam yang dipilih menabrak jadwal lain.', type: 'error' });
+      }
       return;
     }
 
     setIsSubmitting(true);
     try {
+      const finalBookingData = {
+        ...formData,
+        rentedEquipment,
+        equipmentCost
+      };
+
       if (formData.type === 'maintenance') {
-        await addBooking({ ...formData, status: 'maintenance' });
+        await addBooking({ ...finalBookingData, status: 'maintenance' });
       } else {
-        await addBooking({ ...formData, isVIP, discountAmount });
+        await addBooking({ ...finalBookingData, isVIP, discountAmount });
         await incrementBookingCount(formData.band, { phone: formData.phone, duration: formData.duration, totalPrice });
       }
       onClose();
@@ -303,7 +354,49 @@ const BookingForm = ({ onClose, initialDate, initialHour }) => {
           <span className="bf-time-dot">·</span>
           {formData.duration} jam
         </div>
+
+        {/* Conflict Suggestion UI */}
+        {conflictSuggestion && (
+          <div style={{ marginTop: '12px', padding: '12px', background: 'rgba(255, 193, 7, 0.1)', border: '1px solid rgba(255, 193, 7, 0.3)', borderRadius: '8px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#FFC107', fontSize: '0.85rem', fontWeight: 'bold' }}>
+              <AlertCircle size={14} /> JADWAL BENTROK
+            </div>
+            <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+              Slot {String(formData.hour).padStart(2, '0')}:00 sudah terisi. Rekomendasi jadwal terdekat yang kosong: 
+              <strong style={{ color: 'var(--text-primary)' }}> {conflictSuggestion.date} pukul {String(conflictSuggestion.hour).padStart(2, '0')}:00</strong>.
+            </div>
+            <button type="button" className="btn-secondary" style={{ padding: '6px 12px', fontSize: '0.8rem', background: 'rgba(255, 193, 7, 0.2)', color: '#FFC107', border: 'none' }} onClick={() => {
+              setFormData(prev => ({ ...prev, date: conflictSuggestion.date, hour: conflictSuggestion.hour }));
+              setConflictSuggestion(null);
+            }}>
+              Gunakan Saran Ini
+            </button>
+          </div>
+        )}
       </div>
+
+      {/* Section: Equipment Rental (booking only) */}
+      {formData.type !== 'maintenance' && rentableInventory.length > 0 && (
+        <div className="bf-section">
+          <div className="bf-section-title"><Box size={13} /> Sewa Alat Tambahan</div>
+          <div className="bf-equipment-list" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            {rentableInventory.map(item => (
+              <label key={item.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 12px', background: 'rgba(255,255,255,0.03)', borderRadius: '8px', cursor: 'pointer', border: rentedEquipment.includes(item.id) ? '1px solid var(--accent-cyan)' : '1px solid transparent' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <input type="checkbox" checked={rentedEquipment.includes(item.id)} onChange={() => handleEquipmentToggle(item.id)} style={{ accentColor: 'var(--accent-cyan)' }} />
+                  <div>
+                    <div style={{ fontSize: '0.9rem', color: 'var(--text-primary)' }}>{item.name}</div>
+                    {item.brand && <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{item.brand}</div>}
+                  </div>
+                </div>
+                <div style={{ fontSize: '0.85rem', color: 'var(--accent-cyan)' }}>
+                  {item.rentalPrice > 0 ? `+${formatCurrency(item.rentalPrice)}` : 'Gratis'}
+                </div>
+              </label>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Section: Payment (booking only) */}
       {formData.type !== 'maintenance' && (
@@ -339,6 +432,12 @@ const BookingForm = ({ onClose, initialDate, initialHour }) => {
               <span>Subtotal {formData.type === 'recording' ? '(Paket Sesi)' : `(${formData.duration} jam)`}</span>
               <span>{formatCurrency(basePrice)}</span>
             </div>
+            {equipmentCost > 0 && (
+              <div className="bf-price-row">
+                <span>Sewa Alat Tambahan</span>
+                <span>{formatCurrency(equipmentCost)}</span>
+              </div>
+            )}
             {(isVIP || durationDiscountAmount > 0) && (
               <div className="bf-price-row after-disc">
                 <span>Setelah Diskon</span>

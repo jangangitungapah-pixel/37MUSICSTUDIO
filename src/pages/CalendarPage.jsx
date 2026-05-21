@@ -3,6 +3,7 @@ import { ChevronLeft, ChevronRight, Plus, Search, CalendarCheck, Clock, DollarSi
 import { format, addMonths, subMonths, startOfMonth, endOfMonth, addDays, subDays, getDay, startOfWeek, endOfWeek, eachDayOfInterval, addWeeks, subWeeks } from 'date-fns';
 import { useBookingStore } from '../store/useBookingStore';
 import { useSettingsStore } from '../store/useSettingsStore';
+import { useInventoryStore } from '../store/useInventoryStore';
 import { useTourStore } from '../store/useTourStore';
 import { useNotificationStore } from '../store/useNotificationStore';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -34,6 +35,8 @@ const CalendarPage = () => {
   // Resize state
   const [resizingBooking, setResizingBooking] = useState(null);
   const [initialResizeY, setInitialResizeY] = useState(0);
+  const [resizeAddedHours, setResizeAddedHours] = useState(0);
+  const [resizeConfirmData, setResizeConfirmData] = useState(null);
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth <= 768);
@@ -46,8 +49,29 @@ const CalendarPage = () => {
   }, []);
 
   const { bookings, deleteBooking, updateBookingStatus, updateBooking, getMonthlyStats } = useBookingStore();
-  const { pricePerHour, studioName } = useSettingsStore();
+  const { pricePerHour, studioName, durationDiscounts = [], recordingSessions = [] } = useSettingsStore();
+  const { inventory } = useInventoryStore();
   const { run, currentStep, nextStep } = useTourStore();
+
+  const calculatePrice = (b, dur) => {
+    let base = 0;
+    let durDisc = 0;
+    if (b.type === 'recording') {
+      const session = recordingSessions.find(s => s.id === b.sessionId);
+      const pkgHours = session ? session.hours : 6;
+      const pkgPrice = session ? session.price : (b.sessionPrice || 0);
+      base = dur <= pkgHours ? pkgPrice : pkgPrice + ((dur - pkgHours) * pricePerHour);
+    } else {
+      base = dur * pricePerHour;
+      const applicableDiscount = durationDiscounts
+        .filter(d => dur >= d.hours)
+        .sort((a, b) => b.discountAmount - a.discountAmount)[0];
+      if (applicableDiscount) durDisc = applicableDiscount.discountAmount;
+    }
+    const vipDisc = b.isVIP ? base * 0.1 : 0;
+    const equipmentCost = b.equipmentCost || 0;
+    return { base, durDisc, vipDisc, total: base + equipmentCost - (vipDisc + durDisc) };
+  };
 
   const daysArray = useMemo(() => {
     if (viewMode === 'day') return [currentDate];
@@ -75,6 +99,20 @@ const CalendarPage = () => {
     if (filterStatus !== 'all' && b.status !== filterStatus) return false;
     return true;
   }), [bookings, searchQuery, filterStatus]);
+
+  const displayBookings = useMemo(() => {
+    if (!resizingBooking) return filteredBookings;
+    return filteredBookings.map(b => {
+      if (b.id === resizingBooking.id) {
+        return { 
+          ...b, 
+          duration: Math.max(1, Math.min(12, b.duration + resizeAddedHours)),
+          isResizing: true 
+        };
+      }
+      return b;
+    });
+  }, [filteredBookings, resizingBooking, resizeAddedHours]);
 
   const handleCellClick = (dateStr, hour) => {
     setPrefillDate(dateStr); setPrefillHour(hour); setIsModalOpen(true);
@@ -149,33 +187,53 @@ const CalendarPage = () => {
     e.preventDefault();
     setResizingBooking(booking);
     setInitialResizeY(e.clientY || (e.touches && e.touches[0].clientY));
+    setResizeAddedHours(0);
   };
 
   useEffect(() => {
-    const handleResizeMove = () => {
+    const handleResizeMove = (e) => {
       if (!resizingBooking) return;
-      // Just prevent default if needed to stop scroll while resizing
+      const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+      const diffY = clientY - initialResizeY;
+      const cellHeight = 45; // Approximate height of 1 grid cell
+      const addedHours = Math.round(diffY / cellHeight);
+      setResizeAddedHours(addedHours);
     };
     const handleResizeEnd = (e) => {
       if (!resizingBooking) return;
       const clientY = e.clientY || (e.changedTouches && e.changedTouches[0].clientY);
       const diffY = clientY - initialResizeY;
-      const cellHeight = 44; // approximate height of 1 grid cell
+      const cellHeight = 45;
       const addedHours = Math.round(diffY / cellHeight);
       
       if (addedHours !== 0) {
         const newDur = Math.max(1, Math.min(12, resizingBooking.duration + addedHours));
         if (newDur !== resizingBooking.duration) {
-          updateBooking(resizingBooking.id, { duration: newDur });
+          if (resizingBooking.type === 'maintenance') {
+            updateBooking(resizingBooking.id, { duration: newDur });
+          } else {
+            const oldCalc = calculatePrice(resizingBooking, resizingBooking.duration);
+            const newCalc = calculatePrice(resizingBooking, newDur);
+            setResizeConfirmData({
+              booking: resizingBooking,
+              oldDuration: resizingBooking.duration,
+              newDuration: newDur,
+              oldPrice: oldCalc.total,
+              newPrice: newCalc.total,
+              newDiscountAmount: newCalc.durDisc + newCalc.vipDisc,
+              diff: newCalc.total - oldCalc.total
+            });
+          }
         }
       }
       setResizingBooking(null);
+      setResizeAddedHours(0);
     };
 
     if (resizingBooking) {
       document.addEventListener('mousemove', handleResizeMove);
       document.addEventListener('mouseup', handleResizeEnd);
-      document.addEventListener('touchmove', handleResizeMove);
+      document.addEventListener('touchmove', handleResizeMove, { passive: false });
       document.addEventListener('touchend', handleResizeEnd);
     }
     return () => {
@@ -184,7 +242,25 @@ const CalendarPage = () => {
       document.removeEventListener('touchmove', handleResizeMove);
       document.removeEventListener('touchend', handleResizeEnd);
     };
-  }, [resizingBooking, initialResizeY, updateBooking]);
+  }, [resizingBooking, initialResizeY, updateBooking, pricePerHour, durationDiscounts, recordingSessions]);
+
+  const confirmResize = () => {
+    if (!resizeConfirmData) return;
+    const { booking, newDuration, newPrice, newDiscountAmount } = resizeConfirmData;
+    let newStatus = booking.status;
+    
+    // Auto-downgrade status if price increases and it was confirmed, but dpAmount is now less than new total
+    if (booking.status === 'confirmed' && newPrice > (booking.dpAmount || 0) && newPrice > calculatePrice(booking, booking.duration).total) {
+      newStatus = 'dp';
+    }
+
+    updateBooking(booking.id, { 
+      duration: newDuration, 
+      status: newStatus,
+      discountAmount: newDiscountAmount
+    });
+    setResizeConfirmData(null);
+  };
 
   const handleBookingClick = (e, booking) => {
     e.stopPropagation();
@@ -393,7 +469,7 @@ const CalendarPage = () => {
                   const isToday = dateStr === todayStr;
                   const dow = getDay(day);
                   const isWeekend = dow === 0 || dow === 6;
-                  const cellBooking = filteredBookings.find(b => b.date === dateStr && b.hour <= hour && (b.hour + b.duration) > hour);
+                  const cellBooking = displayBookings.find(b => b.date === dateStr && b.hour <= hour && (b.hour + b.duration) > hour);
                   const isBookingStart = cellBooking && cellBooking.hour === hour;
                   const isBookingEnd = cellBooking && (cellBooking.hour + cellBooking.duration - 1) === hour;
                   const isTargetCell = run && currentStep === 4 && isToday && !cellBooking && !emptyCellAssigned;
@@ -410,7 +486,7 @@ const CalendarPage = () => {
                     return (
                       <div 
                         key={`${hour}-${dayIdx}`} 
-                        className={`${cellClasses} booked-cell status-${cellBooking.status} ${isBookingStart ? 'booking-start' : ''} ${isBookingEnd ? 'booking-end' : ''}`} 
+                        className={`${cellClasses} booked-cell status-${cellBooking.status} ${isBookingStart ? 'booking-start' : ''} ${isBookingEnd ? 'booking-end' : ''} ${cellBooking.isResizing ? 'is-resizing' : ''}`} 
                         onClick={e => handleBookingClick(e, cellBooking)}
                         draggable={isBookingStart && !isMobile}
                         onDragStart={(e) => handleDragStart(e, cellBooking)}
@@ -459,7 +535,8 @@ const CalendarPage = () => {
           const b = bookings.find(x => x.id === selectedBooking.id) || selectedBooking;
           const isRecording = b.type === 'recording';
           const basePrice = isRecording ? (b.sessionPrice || 0) : (b.duration * pricePerHour);
-          const totalPrice = basePrice - (b.discountAmount || 0);
+          const equipmentCost = b.equipmentCost || 0;
+          const totalPrice = basePrice + equipmentCost - (b.discountAmount || 0);
           
           return (
             <>
@@ -529,6 +606,17 @@ const CalendarPage = () => {
                       <span>Subtotal {isRecording ? '(Sesi Recording)' : `(${b.duration} jam)`}</span>
                       <span>{formatCurrency(basePrice)}</span>
                     </div>
+                    {b.rentedEquipment && b.rentedEquipment.length > 0 && (
+                      <div className="detail-price-row equipment">
+                        <div style={{ display: 'flex', flexDirection: 'column' }}>
+                          <span>Sewa Alat Tambahan</span>
+                          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                            {b.rentedEquipment.map(id => inventory.find(i => i.id === id)?.name || 'Alat').join(', ')}
+                          </span>
+                        </div>
+                        <span>{formatCurrency(equipmentCost)}</span>
+                      </div>
+                    )}
                     {(b.discountAmount || 0) > 0 && (
                       <div className="detail-price-row discount">
                         <span>Diskon VIP</span>
@@ -584,6 +672,56 @@ const CalendarPage = () => {
 
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Booking Baru">
         <BookingForm onClose={() => setIsModalOpen(false)} initialDate={prefillDate} initialHour={prefillHour} />
+      </Modal>
+
+      {/* Resize Confirmation Modal */}
+      <Modal isOpen={!!resizeConfirmData} onClose={() => setResizeConfirmData(null)} title="Konfirmasi Perubahan Jam">
+        {resizeConfirmData && (
+          <div className="resize-confirm-body" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <div className="resize-warning-box" style={{ padding: '14px', background: 'rgba(0,240,255,0.06)', border: '1px solid rgba(0,240,255,0.15)', borderRadius: '10px' }}>
+              <h4 style={{ margin: '0 0 8px', color: 'var(--text-primary)', fontSize: '0.95rem' }}>Perubahan Durasi & Biaya</h4>
+              <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                Durasi: <strong>{resizeConfirmData.oldDuration} jam</strong> ➔ <strong style={{ color: '#00f0ff' }}>{resizeConfirmData.newDuration} jam</strong>
+              </p>
+            </div>
+
+            <div className="resize-price-details" style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.9rem', color: 'var(--text-primary)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ color: 'var(--text-secondary)' }}>Total Biaya Sebelumnya</span>
+                <span>{formatCurrency(resizeConfirmData.oldPrice)}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 'bold' }}>
+                <span>Total Biaya Baru</span>
+                <span style={{ color: '#4CAF50' }}>{formatCurrency(resizeConfirmData.newPrice)}</span>
+              </div>
+            </div>
+
+            {resizeConfirmData.diff !== 0 && (
+              <div style={{ padding: '12px', background: resizeConfirmData.diff > 0 ? 'rgba(255,152,0,0.1)' : 'rgba(76,175,80,0.1)', borderRadius: '8px', fontSize: '0.8rem', color: resizeConfirmData.diff > 0 ? '#FF9800' : '#4CAF50' }}>
+                {resizeConfirmData.diff > 0 
+                  ? `Biaya bertambah sebesar ${formatCurrency(resizeConfirmData.diff)}.` 
+                  : `Terdapat kelebihan biaya (pengurangan) sebesar ${formatCurrency(Math.abs(resizeConfirmData.diff))}.`}
+              </div>
+            )}
+
+            {resizeConfirmData.booking.type === 'recording' && resizeConfirmData.newDuration > resizeConfirmData.oldDuration && (
+              <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.4)', marginTop: '-8px' }}>
+                * Sesi recording menggunakan harga paket. Penambahan jam dihitung sebagai overtime.
+              </div>
+            )}
+
+            {resizeConfirmData.booking.status === 'confirmed' && resizeConfirmData.diff > 0 && (
+              <div style={{ padding: '10px', background: 'rgba(255,42,95,0.1)', borderLeft: '3px solid #ff2a5f', borderRadius: '4px', fontSize: '0.8rem', color: '#ffb4b4' }}>
+                <strong>Perhatian:</strong> Booking ini sebelumnya berstatus <strong>Lunas</strong>. Karena ada penambahan durasi & biaya, status akan otomatis diubah menjadi <strong>DP</strong> (Kurang Bayar).
+              </div>
+            )}
+
+            <div style={{ display: 'flex', gap: '10px', marginTop: '8px' }}>
+              <button className="btn-secondary" style={{ flex: 1 }} onClick={() => setResizeConfirmData(null)}>Batal</button>
+              <button className="btn-primary" style={{ flex: 1 }} onClick={confirmResize}>Konfirmasi Perubahan</button>
+            </div>
+          </div>
+        )}
       </Modal>
     </div>
   );

@@ -25,7 +25,7 @@ const InventoryPage = () => {
   const [editingItem, setEditingItem] = useState(null);
   const [formData, setFormData] = useState({
     name: '', category: '', brand: '', qty: 1, condition: 'Excellent',
-    lastServiced: '', nextService: '', notes: ''
+    rentalPrice: 0, lastServiced: '', nextService: '', notes: ''
   });
 
   // Custom category input
@@ -53,7 +53,7 @@ const InventoryPage = () => {
   const handleOpenNew = () => {
     setEditingItem(null);
     const today = new Date().toISOString().split('T')[0];
-    setFormData({ name: '', category: categories[0] || '', brand: '', qty: 1, condition: 'Excellent', lastServiced: today, nextService: '', notes: '' });
+    setFormData({ name: '', category: categories[0] || '', brand: '', qty: 1, condition: 'Excellent', rentalPrice: 0, lastServiced: today, nextService: '', notes: '' });
     setShowNewCat(false);
     setNewCatName('');
     setIsModalOpen(true);
@@ -92,7 +92,7 @@ const InventoryPage = () => {
       setShowNewCat(true);
       return;
     }
-    setFormData(prev => ({ ...prev, [name]: name === 'qty' ? parseInt(value) || 1 : value }));
+    setFormData(prev => ({ ...prev, [name]: (name === 'qty' || name === 'rentalPrice') ? parseInt(value) || 0 : value }));
   };
 
   const handleAddNewCategory = () => {
@@ -239,8 +239,8 @@ const InventoryPage = () => {
                   <th>Nama Alat</th>
                   <th>Kategori & Merk</th>
                   <th>Qty</th>
+                  <th>Harga Sewa</th>
                   <th>Servis Terakhir</th>
-                  <th>Jadwal Servis</th>
                   <th>Kondisi</th>
                   <th className="action-col">Aksi</th>
                 </tr>
@@ -272,13 +272,10 @@ const InventoryPage = () => {
                           <span className="qty-badge">{item.qty || 1}</span>
                         </td>
                         <td>
-                          <span className="date-text">{item.lastServiced}</span>
+                          <span className="revenue-text">{new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(item.rentalPrice || 0)}/sesi</span>
                         </td>
                         <td>
-                          <span className={`date-text ${overdue ? 'date-overdue' : ''}`}>
-                            {item.nextService}
-                            {overdue && <AlertTriangle size={12} className="overdue-icon" />}
-                          </span>
+                          <span className="date-text">{item.lastServiced}</span>
                         </td>
                         <td>
                           <span className="condition-badge" style={{ background: condition.bg, color: condition.color }}>
@@ -433,6 +430,13 @@ const InventoryPage = () => {
               <div className="form-group">
                 <label>Jumlah Unit</label>
                 <input type="number" name="qty" value={formData.qty} onChange={handleChange} min="1" className="form-input" />
+              </div>
+            </div>
+
+            <div className="form-row">
+              <div className="form-group">
+                <label>Harga Sewa Tambahan / Sesi</label>
+                <input type="number" name="rentalPrice" value={formData.rentalPrice} onChange={handleChange} min="0" step="5000" className="form-input" placeholder="0 (Gratis)" />
               </div>
             </div>
 

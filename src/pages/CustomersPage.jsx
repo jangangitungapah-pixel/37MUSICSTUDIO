@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import { Search, Plus, Edit2, Trash2, Mail, Phone, Calendar as CalendarIcon, Users, UserCheck, DollarSign, X, AtSign, MapPin, Clock, Star, StickyNote, MessageCircle, Gift, Award } from 'lucide-react';
+import { differenceInDays } from 'date-fns';
 import { useCustomerStore } from '../store/useCustomerStore';
 import { useTourStore } from '../store/useTourStore';
 import { toast } from 'sonner';
@@ -44,13 +45,23 @@ const CustomersPage = () => {
     notes: ''
   });
 
+  const passiveCustomers = useMemo(() => {
+    return customers.filter(c => {
+      if (c.totalBookings === 0) return false;
+      if (!c.lastBooking || c.lastBooking === '-') return false;
+      return differenceInDays(new Date(), new Date(c.lastBooking)) > 30;
+    });
+  }, [customers]);
+
   const stats = getStats();
 
   const filteredCustomers = useMemo(() => {
     let result = customers;
     
     // Filter by status tab
-    if (activeFilter !== 'all') {
+    if (activeFilter === 'Passive') {
+      result = passiveCustomers;
+    } else if (activeFilter !== 'all') {
       result = result.filter(c => c.status === activeFilter);
     }
     
@@ -208,6 +219,24 @@ const CustomersPage = () => {
         </div>
       </div>
 
+      {/* Retention Alert Banner */}
+      {passiveCustomers.length > 0 && activeFilter !== 'Passive' && (
+        <div className="retention-alert-banner" style={{ background: 'rgba(0, 240, 255, 0.1)', border: '1px solid rgba(0, 240, 255, 0.3)', borderRadius: '12px', padding: '16px', margin: '0 24px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div style={{ background: 'var(--accent-cyan)', color: '#000', padding: '8px', borderRadius: '50%' }}>
+              <Users size={20} />
+            </div>
+            <div>
+              <h4 style={{ margin: '0 0 4px', color: 'var(--text-primary)' }}>Sistem Retensi Cerdas</h4>
+              <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Mendeteksi <strong>{passiveCustomers.length} pelanggan pasif</strong> (tidak booking > 30 hari). Pertimbangkan untuk mengirim promo via WhatsApp.</p>
+            </div>
+          </div>
+          <button className="btn-primary" onClick={() => setActiveFilter('Passive')} style={{ background: 'rgba(0, 240, 255, 0.15)', color: 'var(--accent-cyan)', border: '1px solid var(--accent-cyan)' }}>
+            Tampilkan Daftar
+          </button>
+        </div>
+      )}
+
       {/* Content Area */}
       <div className="customers-content-area">
         {/* Main Table */}
@@ -222,6 +251,9 @@ const CustomersPage = () => {
             </button>
             <button className={`filter-tab ${activeFilter === 'Inactive' ? 'active' : ''}`} onClick={() => setActiveFilter('Inactive')}>
               Tidak Aktif <span className="tab-count">{stats.inactive}</span>
+            </button>
+            <button className={`filter-tab ${activeFilter === 'Passive' ? 'active' : ''}`} onClick={() => setActiveFilter('Passive')}>
+              Pasif (>30 Hari) <span className="tab-count">{passiveCustomers.length}</span>
             </button>
           </div>
 

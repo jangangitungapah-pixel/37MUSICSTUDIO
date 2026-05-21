@@ -137,25 +137,32 @@
 
 /* Column widths — proportional */
 .inventory-table th:nth-child(1),
-.inventory-table td:nth-child(1) { width: 24%; }  /* Nama Alat */
+.inventory-table td:nth-child(1) { width: 22%; }  /* Nama Alat */
 
 .inventory-table th:nth-child(2),
-.inventory-table td:nth-child(2) { width: 16%; }  /* Kategori & Merk */
+.inventory-table td:nth-child(2) { width: 15%; }  /* Kategori & Merk */
 
 .inventory-table th:nth-child(3),
-.inventory-table td:nth-child(3) { width: 7%; text-align: center; }  /* Qty */
+.inventory-table td:nth-child(3) { width: 6%; text-align: center; }  /* Qty */
 
 .inventory-table th:nth-child(4),
-.inventory-table td:nth-child(4) { width: 15%; }  /* Servis Terakhir */
+.inventory-table td:nth-child(4) { width: 16%; }  /* Harga Sewa */
 
 .inventory-table th:nth-child(5),
-.inventory-table td:nth-child(5) { width: 15%; }  /* Jadwal Servis */
+.inventory-table td:nth-child(5) { width: 14%; }  /* Servis Terakhir */
 
 .inventory-table th:nth-child(6),
 .inventory-table td:nth-child(6) { width: 13%; }  /* Kondisi */
 
 .inventory-table th:nth-child(7),
 .inventory-table td:nth-child(7) { width: 10%; }  /* Aksi */
+
+.revenue-text {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #4CAF50;
+  font-variant-numeric: tabular-nums;
+}
 
 .inventory-table th {
   position: sticky;

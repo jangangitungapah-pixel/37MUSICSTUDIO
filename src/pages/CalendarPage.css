@@ -858,6 +858,8 @@
   transition: all 0.15s;
   overflow: hidden;
   border-bottom: none;
+  border-top: none;
+  border-right: 1px solid rgba(255, 255, 255, 0.05); /* subtle right border */
 }
 
 .booked-cell[draggable="true"] {
@@ -868,25 +870,30 @@
 }
 
 .booked-cell:hover {
-  filter: brightness(1.15);
+  filter: brightness(1.2);
   z-index: 2;
 }
 
 .booked-cell.status-confirmed {
-  background: linear-gradient(180deg, rgba(0, 240, 255, 0.14) 0%, rgba(0, 240, 255, 0.08) 100%);
+  background: rgba(0, 240, 255, 0.12);
   border-left: 3px solid var(--accent-cyan);
-  box-shadow: inset 0 0 0 0 transparent;
 }
+.booked-cell.status-confirmed.booking-start { border-top: 1px solid rgba(0, 240, 255, 0.2); }
+.booked-cell.status-confirmed.booking-end { border-bottom: 1px solid rgba(0, 240, 255, 0.2); }
 
 .booked-cell.status-dp {
-  background: linear-gradient(180deg, rgba(255, 193, 7, 0.16) 0%, rgba(255, 193, 7, 0.08) 100%);
+  background: rgba(255, 193, 7, 0.12);
   border-left: 3px solid #FFC107;
 }
+.booked-cell.status-dp.booking-start { border-top: 1px solid rgba(255, 193, 7, 0.2); }
+.booked-cell.status-dp.booking-end { border-bottom: 1px solid rgba(255, 193, 7, 0.2); }
 
 .booked-cell.status-pending {
-  background: linear-gradient(180deg, rgba(255, 42, 95, 0.14) 0%, rgba(255, 42, 95, 0.07) 100%);
+  background: rgba(255, 42, 95, 0.12);
   border-left: 3px solid var(--accent-pink);
 }
+.booked-cell.status-pending.booking-start { border-top: 1px solid rgba(255, 42, 95, 0.2); }
+.booked-cell.status-pending.booking-end { border-bottom: 1px solid rgba(255, 42, 95, 0.2); }
 
 .status-maintenance {
   background: repeating-linear-gradient(
@@ -904,13 +911,26 @@
 }
 
 .booked-cell.booking-start {
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 0 4px 0 0;
+  border-radius: 6px 6px 0 0;
 }
 
 .booked-cell.booking-end {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 0 0 4px 0;
+  border-radius: 0 0 6px 6px;
+}
+
+.booked-cell.booking-start.booking-end {
+  border-radius: 6px;
+}
+
+/* Drag resizing preview */
+.booked-cell.is-resizing {
+  opacity: 0.8;
+  filter: brightness(1.2);
+  border-right-style: dashed;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+}
+.booked-cell.is-resizing.booking-end {
+  border-bottom-style: dashed;
 }
 
 .booking-info {

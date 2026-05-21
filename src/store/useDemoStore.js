@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { format, addDays } from 'date-fns';
+import { format, addDays, subDays, subMonths, addMonths } from 'date-fns';
 
 // ─── Seed-based deterministic pseudo-random ───
 function makeSeedRand(seed) {
@@ -12,44 +12,51 @@ function makeSeedRand(seed) {
 }
 
 const PRICE_PER_HOUR = 120000;
-const DEMO_TODAY_STR = '2026-05-17';
+const today = new Date();
+const currentYear = today.getFullYear();
+const DEMO_TODAY_STR = format(today, 'yyyy-MM-dd');
 
 const BANDS = [
-  { name: 'Nocturno',       phone: '082122466133', isVIP: true  },
-  { name: 'Thunder Strike', phone: '081234567890', isVIP: true  },
-  { name: 'Iron Soul',      phone: '085678739042', isVIP: true  },
-  { name: 'The Phantom',    phone: '081344556677', isVIP: false },
-  { name: 'Rebel Hearts',   phone: '082345678901', isVIP: false },
-  { name: 'Dark Matter',    phone: '083456789012', isVIP: false },
-  { name: 'Solar Pulse',    phone: '084567890123', isVIP: false },
-  { name: 'Echo Chamber',   phone: '085678901234', isVIP: false },
-  { name: 'Red Frequency',  phone: '086789012345', isVIP: false },
-  { name: 'Gravity Wave',   phone: '087890123456', isVIP: false },
-  { name: 'Sonic Riot',     phone: '088901234567', isVIP: false },
-  { name: 'The Last Beat',  phone: '089012345678', isVIP: false },
-  { name: 'Neon Skyline',   phone: '081122334455', isVIP: false },
-  { name: 'Voltage Kings',  phone: '082233445566', isVIP: false },
-  { name: 'Midnight Crash', phone: '083344556677', isVIP: false },
+  { name: 'Nocturno',           phone: '082122466133', isVIP: true  },
+  { name: 'Thunder Strike',     phone: '081234567890', isVIP: true  },
+  { name: 'Iron Soul',          phone: '085678739042', isVIP: true  },
+  { name: 'Senja Di Jakarta',   phone: '081199887766', isVIP: true  },
+  { name: 'Melodi Fajar',       phone: '082233441122', isVIP: true  },
+  { name: 'The Phantom',        phone: '081344556677', isVIP: false },
+  { name: 'Rebel Hearts',       phone: '082345678901', isVIP: false },
+  { name: 'Dark Matter',        phone: '083456789012', isVIP: false },
+  { name: 'Solar Pulse',        phone: '084567890123', isVIP: false },
+  { name: 'Echo Chamber',       phone: '085678901234', isVIP: false },
+  { name: 'Red Frequency',      phone: '086789012345', isVIP: false },
+  { name: 'Gravity Wave',       phone: '087890123456', isVIP: false },
+  { name: 'Sonic Riot',         phone: '088901234567', isVIP: false },
+  { name: 'The Last Beat',      phone: '089012345678', isVIP: false },
+  { name: 'Neon Skyline',       phone: '081122334455', isVIP: false },
+  { name: 'Voltage Kings',      phone: '082233445566', isVIP: false },
+  { name: 'Midnight Crash',     phone: '083344556677', isVIP: false },
+  { name: 'Ruang Suara',        phone: '085566778899', isVIP: false },
+  { name: 'Distorsi Kota',      phone: '087788990011', isVIP: false },
+  { name: 'Langkah Kanan',      phone: '089900112233', isVIP: false },
 ];
 
-// ─── Generate ~200+ Bookings for full year 2026 ───
+// ─── Generate Bookings for Current Year ───
 function buildDemoBookings() {
-  const rand = makeSeedRand(20260101);
+  const rand = makeSeedRand(currentYear * 10000);
   const result = [];
   let id = 1700000100001;
 
-  let cursor = new Date(2026, 0, 1);
-  const endDate = new Date(2026, 11, 31);
+  let cursor = new Date(currentYear, 0, 1);
+  const endDate = new Date(currentYear, 11, 31);
 
   while (cursor <= endDate) {
     const dow = cursor.getDay();
     const isWeekend = dow === 0 || dow === 6;
-    const prob = isWeekend ? 0.82 : 0.52;
+    const prob = isWeekend ? 0.85 : 0.60; // Increased probability for more data
 
     if (rand() < prob) {
       const count = isWeekend
-        ? Math.floor(rand() * 3) + 2  // 2–4
-        : Math.floor(rand() * 2) + 1; // 1–2
+        ? Math.floor(rand() * 4) + 2  // 2–5
+        : Math.floor(rand() * 3) + 1; // 1–3
       const slots = [];
 
       for (let b = 0; b < count; b++) {
@@ -59,7 +66,7 @@ function buildDemoBookings() {
         while (!ok && tries < 25) {
           hour = Math.floor(rand() * 11) + 10;  // 10–20
           
-          const isRec = rand() < 0.2;
+          const isRec = rand() < 0.25;
           if (isRec) {
             type = 'recording';
             if (rand() < 0.5) { duration = 6; sessionId = 'demo-sesi-1'; sessionPrice = 450000; }
@@ -84,9 +91,9 @@ function buildDemoBookings() {
         const r = rand();
         let status;
         if (isPast) {
-          status = r < 0.72 ? 'confirmed' : r < 0.88 ? 'dp' : 'pending';
+          status = r < 0.80 ? 'confirmed' : r < 0.90 ? 'dp' : 'pending';
         } else {
-          status = r < 0.25 ? 'confirmed' : r < 0.55 ? 'dp' : 'pending';
+          status = r < 0.35 ? 'confirmed' : r < 0.65 ? 'dp' : 'pending';
         }
         const basePrice = type === 'recording' ? sessionPrice : (duration * PRICE_PER_HOUR);
         const dpAmount = status === 'dp'
@@ -125,7 +132,7 @@ function buildDemoCustomers(bookings) {
       status: bks.length > 0 ? 'Active' : 'Inactive',
       notes: band.isVIP ? 'Pelanggan VIP — diskon 10% aktif' : '',
       isVIP: band.isVIP,
-      joinDate: '2025-01-15',
+      joinDate: `${currentYear - 1}-01-15`, // Joined last year
       totalBookings: bks.length,
       totalHours,
       totalSpent,
@@ -134,69 +141,77 @@ function buildDemoCustomers(bookings) {
   });
 }
 
-// ─── Static Inventory ───
-const DEMO_INVENTORY_LIST = [
-  { id: 1700000300001, name: 'Pearl Export EXX725SBC', category: 'Drum', brand: 'Pearl', qty: 1, condition: 'Good', lastServiced: '2026-01-10', nextService: '2026-07-10', notes: 'Pedal bass perlu dikencangkan' },
-  { id: 1700000300002, name: 'Hi-Hat Zildjian A Custom 14"', category: 'Drum', brand: 'Zildjian', qty: 1, condition: 'Excellent', lastServiced: '2026-03-01', nextService: '2026-09-01', notes: '' },
-  { id: 1700000300003, name: 'Crash Cymbal 16"', category: 'Drum', brand: 'Zildjian', qty: 2, condition: 'Good', lastServiced: '2026-02-15', nextService: '2026-08-15', notes: '' },
-  { id: 1700000300004, name: 'Marshall DSL40CR', category: 'Amps', brand: 'Marshall', qty: 1, condition: 'Excellent', lastServiced: '2026-01-20', nextService: '2026-07-20', notes: '' },
-  { id: 1700000300005, name: 'Fender Frontman 212R', category: 'Amps', brand: 'Fender', qty: 2, condition: 'Good', lastServiced: '2026-02-01', nextService: '2026-05-01', notes: 'Jadwal servis hampir tiba' },
-  { id: 1700000300006, name: 'Bass Amp Ampeg BA-108', category: 'Amps', brand: 'Ampeg', qty: 1, condition: 'Needs Repair', lastServiced: '2025-11-10', nextService: '2026-03-10', notes: 'Volume knob goyang, perlu ganti potensiometer' },
-  { id: 1700000300007, name: 'Shure SM58', category: 'Microphones', brand: 'Shure', qty: 4, condition: 'Excellent', lastServiced: '2026-04-01', nextService: '2026-10-01', notes: '' },
-  { id: 1700000300008, name: 'AKG C1000 S', category: 'Microphones', brand: 'AKG', qty: 2, condition: 'Good', lastServiced: '2026-01-15', nextService: '2026-07-15', notes: '' },
-  { id: 1700000300009, name: 'Yamaha MG16XU Mixer', category: 'Accessories', brand: 'Yamaha', qty: 1, condition: 'Excellent', lastServiced: '2026-03-15', nextService: '2026-09-15', notes: '' },
-  { id: 1700000300010, name: 'JBL EON615 Speaker', category: 'Accessories', brand: 'JBL', qty: 2, condition: 'Good', lastServiced: '2026-02-20', nextService: '2026-08-20', notes: '' },
-  { id: 1700000300011, name: 'Kabel XLR 6m', category: 'Accessories', brand: 'Belden', qty: 8, condition: 'Good', lastServiced: '2026-01-01', nextService: '2026-06-01', notes: '2 kabel ujungnya longgar, perlu diganti' },
-  { id: 1700000300012, name: 'DI Box Behringer', category: 'Accessories', brand: 'Behringer', qty: 3, condition: 'Broken', lastServiced: '2025-12-01', nextService: '2026-01-01', notes: 'Perlu penggantian unit baru' },
-];
+// ─── Dynamic Inventory ───
+function buildDemoInventory() {
+  return [
+    { id: 1700000300001, name: 'Pearl Export EXX725SBC', category: 'Drum', brand: 'Pearl', qty: 1, condition: 'Good', lastServiced: format(subMonths(today, 2), 'yyyy-MM-dd'), nextService: format(addMonths(today, 4), 'yyyy-MM-dd'), notes: 'Pedal bass perlu dikencangkan' },
+    { id: 1700000300002, name: 'Hi-Hat Zildjian A Custom 14"', category: 'Drum', brand: 'Zildjian', qty: 1, condition: 'Excellent', lastServiced: format(subMonths(today, 1), 'yyyy-MM-dd'), nextService: format(addMonths(today, 5), 'yyyy-MM-dd'), notes: '' },
+    { id: 1700000300003, name: 'Crash Cymbal 16"', category: 'Drum', brand: 'Zildjian', qty: 2, condition: 'Good', lastServiced: format(subDays(today, 45), 'yyyy-MM-dd'), nextService: format(addDays(today, 135), 'yyyy-MM-dd'), notes: '' },
+    { id: 1700000300004, name: 'Marshall DSL40CR', category: 'Amps', brand: 'Marshall', qty: 1, condition: 'Excellent', lastServiced: format(subMonths(today, 3), 'yyyy-MM-dd'), nextService: format(addMonths(today, 3), 'yyyy-MM-dd'), notes: '' },
+    { id: 1700000300005, name: 'Fender Frontman 212R', category: 'Amps', brand: 'Fender', qty: 2, condition: 'Good', lastServiced: format(subDays(today, 150), 'yyyy-MM-dd'), nextService: format(addDays(today, 10), 'yyyy-MM-dd'), notes: 'Jadwal servis hampir tiba' },
+    { id: 1700000300006, name: 'Bass Amp Ampeg BA-108', category: 'Amps', brand: 'Ampeg', qty: 1, condition: 'Needs Repair', lastServiced: format(subMonths(today, 8), 'yyyy-MM-dd'), nextService: format(subDays(today, 15), 'yyyy-MM-dd'), notes: 'Volume knob goyang, perlu ganti potensiometer' },
+    { id: 1700000300007, name: 'Shure SM58', category: 'Microphones', brand: 'Shure', qty: 4, condition: 'Excellent', lastServiced: format(subMonths(today, 1), 'yyyy-MM-dd'), nextService: format(addMonths(today, 5), 'yyyy-MM-dd'), notes: '' },
+    { id: 1700000300008, name: 'AKG C1000 S', category: 'Microphones', brand: 'AKG', qty: 2, condition: 'Good', lastServiced: format(subMonths(today, 4), 'yyyy-MM-dd'), nextService: format(addMonths(today, 2), 'yyyy-MM-dd'), notes: '' },
+    { id: 1700000300009, name: 'Audio-Technica AT2020', category: 'Microphones', brand: 'Audio-Technica', qty: 2, condition: 'Excellent', lastServiced: format(subDays(today, 20), 'yyyy-MM-dd'), nextService: format(addMonths(today, 6), 'yyyy-MM-dd'), notes: 'Baru dibeli' },
+    { id: 1700000300010, name: 'Yamaha MG16XU Mixer', category: 'Accessories', brand: 'Yamaha', qty: 1, condition: 'Excellent', lastServiced: format(subMonths(today, 2), 'yyyy-MM-dd'), nextService: format(addMonths(today, 4), 'yyyy-MM-dd'), notes: '' },
+    { id: 1700000300011, name: 'JBL EON615 Speaker', category: 'Accessories', brand: 'JBL', qty: 2, condition: 'Good', lastServiced: format(subMonths(today, 3), 'yyyy-MM-dd'), nextService: format(addMonths(today, 3), 'yyyy-MM-dd'), notes: '' },
+    { id: 1700000300012, name: 'Kabel XLR 6m', category: 'Accessories', brand: 'Belden', qty: 8, condition: 'Good', lastServiced: format(subMonths(today, 5), 'yyyy-MM-dd'), nextService: format(addDays(today, 30), 'yyyy-MM-dd'), notes: '2 kabel ujungnya longgar, perlu diganti' },
+    { id: 1700000300013, name: 'DI Box Behringer', category: 'Accessories', brand: 'Behringer', qty: 3, condition: 'Broken', lastServiced: format(subMonths(today, 6), 'yyyy-MM-dd'), nextService: format(subDays(today, 50), 'yyyy-MM-dd'), notes: 'Perlu penggantian unit baru' },
+    { id: 1700000300014, name: 'Stand Mic Boom', category: 'Accessories', brand: 'Hercules', qty: 5, condition: 'Good', lastServiced: format(subMonths(today, 1), 'yyyy-MM-dd'), nextService: format(addMonths(today, 11), 'yyyy-MM-dd'), notes: '' },
+  ];
+}
 
-// ─── Monthly Operational Expenses (Full Year 2026) ───
+// ─── Monthly Operational Expenses (Current Year) ───
 function buildDemoTransactions() {
   const txs = [];
   let id = 1700000400001;
-  const rand = makeSeedRand(20260404);
+  const rand = makeSeedRand(currentYear * 500);
   
   for (let m = 0; m < 12; m++) {   // Jan–Dec
     const mm = String(m + 1).padStart(2, '0');
     
     // Fixed / Semi-fixed monthly expenses
-    const baseListrik = 800000 + (rand() * 200000); // 800k - 1m
-    const baseGaji = 3500000;
+    const baseListrik = 800000 + (rand() * 300000); // 800k - 1.1m
+    const baseGaji = 4500000;
     const baseInternet = 450000;
     const baseCicilan = 1250000;
+    const baseSewa = 5000000; // Added rent
     
-    // 1. Tagihan Listrik (around 5th of month)
-    txs.push({ id: id++, date: `2026-${mm}-05`, type: 'expense', category: 'Listrik / Air', amount: Math.round(baseListrik/1000)*1000, description: `Tagihan PLN & PDAM`, isManual: true });
+    // 1. Sewa Tempat (around 1st of month)
+    txs.push({ id: id++, date: `${currentYear}-${mm}-01`, type: 'expense', category: 'Sewa Gedung', amount: baseSewa, description: `Biaya Sewa Ruko / Studio`, isManual: true });
+
+    // 2. Tagihan Listrik (around 5th of month)
+    txs.push({ id: id++, date: `${currentYear}-${mm}-05`, type: 'expense', category: 'Listrik / Air', amount: Math.round(baseListrik/1000)*1000, description: `Tagihan PLN & PDAM`, isManual: true });
     
-    // 2. Internet (around 10th)
-    txs.push({ id: id++, date: `2026-${mm}-10`, type: 'expense', category: 'Listrik / Air', amount: baseInternet, description: `Tagihan Internet Indihome`, isManual: true });
+    // 3. Internet (around 10th)
+    txs.push({ id: id++, date: `${currentYear}-${mm}-10`, type: 'expense', category: 'Internet', amount: baseInternet, description: `Tagihan Internet Biznet / Indihome`, isManual: true });
     
-    // 3. Cicilan Alat (around 15th)
-    txs.push({ id: id++, date: `2026-${mm}-15`, type: 'expense', category: 'Alat Baru', amount: baseCicilan, description: `Cicilan alat musik & perlengkapan`, isManual: true });
+    // 4. Cicilan Alat (around 15th)
+    txs.push({ id: id++, date: `${currentYear}-${mm}-15`, type: 'expense', category: 'Alat Baru', amount: baseCicilan, description: `Cicilan alat musik & perlengkapan`, isManual: true });
     
-    // 4. Gaji Karyawan (around 28th)
-    txs.push({ id: id++, date: `2026-${mm}-28`, type: 'expense', category: 'Gaji', amount: baseGaji, description: `Gaji teknisi & staf studio`, isManual: true });
+    // 5. Gaji Karyawan (around 28th)
+    txs.push({ id: id++, date: `${currentYear}-${mm}-28`, type: 'expense', category: 'Gaji', amount: baseGaji, description: `Gaji teknisi & staf studio`, isManual: true });
 
     // Variable expenses (Random amounts and days)
     // Operasional (Air minum, kebersihan)
-    if (rand() > 0.2) {
-       const opAmt = 150000 + (rand() * 200000);
+    if (rand() > 0.1) {
+       const opAmt = 200000 + (rand() * 250000);
        const opDay = String(Math.floor(rand() * 25) + 1).padStart(2, '0');
-       txs.push({ id: id++, date: `2026-${mm}-${opDay}`, type: 'expense', category: 'Operasional', amount: Math.round(opAmt/1000)*1000, description: `Perlengkapan kebersihan & air minum`, isManual: true });
+       txs.push({ id: id++, date: `${currentYear}-${mm}-${opDay}`, type: 'expense', category: 'Operasional', amount: Math.round(opAmt/1000)*1000, description: `Perlengkapan kebersihan & air minum`, isManual: true });
     }
 
     // Perawatan (Servis, beli senar/stick)
-    if (rand() > 0.4) {
-       const pAmt = 200000 + (rand() * 400000);
+    if (rand() > 0.3) {
+       const pAmt = 250000 + (rand() * 500000);
        const pDay = String(Math.floor(rand() * 25) + 1).padStart(2, '0');
-       txs.push({ id: id++, date: `2026-${mm}-${pDay}`, type: 'expense', category: 'Perawatan', amount: Math.round(pAmt/1000)*1000, description: rand() > 0.5 ? `Beli senar gitar & stick drum` : `Servis ampli / AC`, isManual: true });
+       txs.push({ id: id++, date: `${currentYear}-${mm}-${pDay}`, type: 'expense', category: 'Perawatan', amount: Math.round(pAmt/1000)*1000, description: rand() > 0.5 ? `Beli senar gitar & drum stick` : `Servis ampli / AC / Drum`, isManual: true });
     }
 
     // Lainnya (Lain-lain)
-    if (rand() > 0.7) {
-       const lAmt = 50000 + (rand() * 150000);
+    if (rand() > 0.6) {
+       const lAmt = 50000 + (rand() * 200000);
        const lDay = String(Math.floor(rand() * 25) + 1).padStart(2, '0');
-       txs.push({ id: id++, date: `2026-${mm}-${lDay}`, type: 'expense', category: 'Lainnya', amount: Math.round(lAmt/1000)*1000, description: `Konsumsi lembur / tak terduga`, isManual: true });
+       txs.push({ id: id++, date: `${currentYear}-${mm}-${lDay}`, type: 'expense', category: 'Lainnya', amount: Math.round(lAmt/1000)*1000, description: `Konsumsi lembur / tak terduga`, isManual: true });
     }
   }
   
@@ -204,10 +219,18 @@ function buildDemoTransactions() {
   return txs.sort((a, b) => a.date.localeCompare(b.date) || a.id - b.id);
 }
 
+// ─── Demo Staff ───
+const demoStaffMembers = [
+  { id: 'demo-admin-1', name: 'Dewi Admin', role: 'admin', phone: '081234567890', status: 'active', joinDate: `${currentYear - 2}-05-10` },
+  { id: 'demo-staff-1', name: 'Budi Teknisi', role: 'staff', phone: '081987654321', status: 'active', joinDate: `${currentYear - 1}-08-15` },
+  { id: 'demo-staff-2', name: 'Siti Resepsionis', role: 'staff', phone: '082111223344', status: 'active', joinDate: `${currentYear}-02-01` },
+  { id: 'demo-staff-3', name: 'Andi Freelance', role: 'staff', phone: '083344556677', status: 'inactive', joinDate: `${currentYear}-01-10` },
+];
+
 // ─── Pre-build all demo data (runs once at import) ───
 const demoBookings    = buildDemoBookings();
 const demoCustomers   = buildDemoCustomers(demoBookings);
-const demoInventory   = DEMO_INVENTORY_LIST;
+const demoInventory   = buildDemoInventory();
 const demoTransactions = buildDemoTransactions();
 
 // ─── Store ───
@@ -217,6 +240,7 @@ export const useDemoStore = create((set) => ({
   demoCustomers,
   demoInventory,
   demoTransactions,
+  demoStaff: demoStaffMembers,
   toggleDemoMode: () => set(state => ({ isDemoMode: !state.isDemoMode })),
   setDemoMode: (val) => set({ isDemoMode: val }),
 }));
