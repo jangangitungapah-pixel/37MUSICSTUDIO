@@ -1319,6 +1319,68 @@ input:not([type="checkbox"]):not([type="radio"]):focus, select:focus, textarea:f
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35), 0 0 15px rgba(255, 42, 95, 0.08) !important;
 }
 
+/* Card Hover Clipping Guard */
+.stats-bar,
+.dash-smart-grid,
+.dash-stats-grid,
+.dash-main-grid,
+.upcoming-list,
+.top-customers-list,
+.finance-stats,
+.finance-insights-grid,
+.finance-charts-grid,
+.billing-stats-bar,
+.inventory-page .stats-bar,
+.inventory-smart-list,
+.inventory-usage-list,
+.customers-page .stats-bar,
+.customer-smart-grid,
+.cf-status-cards,
+.staff-grid,
+.maint-stats-bar,
+.maint-smart-list,
+.features-grid,
+.reset-options-grid,
+.pricing-info-grid,
+.bf-status-grid {
+  overflow: visible !important;
+  padding-block-start: 6px !important;
+  margin-block-start: -6px !important;
+}
+
+.cal-slot-list {
+  padding-block-start: 6px !important;
+  margin-block-start: -6px !important;
+}
+
+.stat-card,
+.dash-stat-card,
+.dash-smart-card,
+.upcoming-item,
+.top-cust-row,
+.finance-stat-card,
+.billing-stat-card,
+.maint-stat-card,
+.maint-smart-item,
+.inventory-smart-item,
+.inventory-usage-item,
+.usage-insight-card,
+.staff-card,
+.feature-card,
+.reset-option-card,
+.pricing-info-card,
+.cf-status-card,
+.bf-status-card,
+.cal-slot-chip,
+.mobile-customer-card,
+.mobile-inv-card,
+.mobile-billing-card,
+.mobile-ledger-card,
+.card-interactive {
+  transform-origin: center top !important;
+  will-change: transform;
+}
+
 /* ════════════════════════════════════════════
    LIGHT THEME ADDITIONAL COMPONENT OVERRIDES
    ════════════════════════════════════════════ */

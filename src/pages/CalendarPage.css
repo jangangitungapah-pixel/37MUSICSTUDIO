@@ -398,6 +398,10 @@
   gap: 18px;
   overflow: hidden;
   flex-shrink: 0;
+  padding-block-start: 6px;
+  margin-block-start: -6px;
+  padding-inline: 1px;
+  margin-inline: -1px;
 }
 
 /* ══════════════════════════════════════════
@@ -1219,6 +1223,8 @@
 
   .calendar-top-panels {
     gap: 12px;
+    padding-block-start: 4px;
+    margin-block-start: -4px;
   }
 
   /* ── Header: single column layout ── */
