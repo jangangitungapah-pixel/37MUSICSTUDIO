@@ -3,6 +3,10 @@ import { persist } from 'zustand/middleware';
 import { useDemoStore } from './useDemoStore';
 import { getDefaultPermissionsForRole } from '../lib/permissions';
 import { useAuditLogStore } from './useAuditLogStore';
+import { initializeApp, deleteApp } from 'firebase/app';
+import { getAuth, createUserWithEmailAndPassword, signOut } from 'firebase/auth';
+import { getFirestore, setDoc, doc, updateDoc } from 'firebase/firestore';
+import { db, firebaseConfig } from '../firebase';
 
 export const useStaffStore = create(
   persist(
@@ -45,6 +49,68 @@ export const useStaffStore = create(
             entityId: newStaff.id,
             summary: `Staff ${newStaff.name} ditambahkan`,
           });
+        },
+
+        createStaffAccount: async (staffData, email, password) => {
+          let secondaryApp;
+          try {
+            // 1. Initialize secondary app to avoid logging out the admin
+            secondaryApp = initializeApp(firebaseConfig, "SecondaryApp");
+            const secondaryAuth = getAuth(secondaryApp);
+            const secondaryDb = getFirestore(secondaryApp);
+
+            // 2. Create the user
+            const userCredential = await createUserWithEmailAndPassword(secondaryAuth, email, password);
+            const newUser = userCredential.user;
+
+            // 3. Create the basic user profile using secondaryDb (allowed because isSelf matches)
+            const newProfile = {
+              uid: newUser.uid,
+              email: email,
+              username: staffData.name.toLowerCase().replace(/\s+/g, ''),
+              phone: staffData.phone || '',
+              createdAt: new Date().toISOString()
+            };
+            await setDoc(doc(secondaryDb, 'users', newUser.uid), newProfile);
+
+            // 4. Sign out the secondary auth
+            await signOut(secondaryAuth);
+
+            // 5. Clean up the secondary app
+            await deleteApp(secondaryApp);
+
+            // 6. Update the user document to set the 'role' using the primary db (admin access allowed)
+            await updateDoc(doc(db, 'users', newUser.uid), {
+              role: staffData.role,
+              permissions: staffData.permissions || getDefaultPermissionsForRole(staffData.role)
+            });
+
+            // 7. Update local state
+            const newStaff = {
+              ...staffData,
+              id: newUser.uid, // Use actual Firebase UID
+              status: 'active',
+              permissions: staffData.permissions || getDefaultPermissionsForRole(staffData.role),
+            };
+            
+            set((state) => ({
+              staffMembers: [...state.staffMembers, newStaff]
+            }));
+
+            useAuditLogStore.getState().addLog({
+              action: 'staff_create_auth',
+              entityType: 'staff',
+              entityId: newStaff.id,
+              summary: `Akun Staff ${newStaff.name} berhasil dibuat`,
+            });
+            
+            return newStaff;
+          } catch (error) {
+            if (secondaryApp) {
+              try { await deleteApp(secondaryApp); } catch (e) { /* ignore */ }
+            }
+            throw error;
+          }
         },
 
         updateStaff: (id, updatedData) => {

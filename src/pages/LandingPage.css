@@ -73,12 +73,266 @@
   align-items: center;
 }
 
+/* Nav Buttons */
 .nav-login-btn, .nav-book-btn {
   text-decoration: none;
   padding: 8px 20px;
   border-radius: 8px;
   font-size: 0.9rem;
   font-weight: 600;
+  cursor: pointer;
+}
+
+
+/* Login trigger button */
+.nav-login-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 18px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  letter-spacing: 0.01em;
+}
+
+.nav-login-btn:hover {
+  background: rgba(255, 42, 95, 0.1);
+  border-color: rgba(255, 42, 95, 0.4);
+  color: var(--accent-pink);
+}
+
+.nav-login-btn.active {
+  background: rgba(255, 42, 95, 0.12);
+  border-color: rgba(255, 42, 95, 0.5);
+  color: var(--accent-pink);
+}
+
+/* Dropdown wrapper */
+.nav-login-wrapper {
+  position: relative;
+}
+
+/* The dropdown card */
+.nav-login-dropdown {
+  position: fixed;
+  top: 78px;
+  right: 5%;
+  width: 320px;
+  padding: 0;
+  border-radius: 18px;
+  background: rgba(14, 14, 22, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.6),
+    0 0 0 1px rgba(255, 42, 95, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(32px) saturate(180%);
+  -webkit-backdrop-filter: blur(32px) saturate(180%);
+  overflow: hidden;
+  z-index: 200;
+}
+
+/* Subtle pink top accent line */
+.nav-login-dropdown::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent-pink), var(--accent-cyan));
+  opacity: 0.8;
+}
+
+/* Header area */
+.login-dropdown-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 20px 24px 16px;
+}
+
+.login-dropdown-icon-wrap {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: rgba(255, 42, 95, 0.12);
+  border: 1px solid rgba(255, 42, 95, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.login-dropdown-brand {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--accent-pink);
+  text-transform: uppercase;
+  margin: 0 0 2px;
+}
+
+.login-dropdown-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+  line-height: 1;
+}
+
+/* Divider line */
+.login-dropdown-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.1);
+  margin: 0;
+}
+
+/* Form area */
+.login-dropdown-form {
+  padding: 20px 24px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* Error message */
+.login-dropdown-error {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px 12px;
+  background: rgba(255, 82, 82, 0.08);
+  border: 1px solid rgba(255, 82, 82, 0.2);
+  border-radius: 10px;
+  color: #ff6b6b;
+  font-size: 0.82rem;
+  line-height: 1.4;
+}
+
+.login-dropdown-error svg {
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+/* Field group */
+.login-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.login-field-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.login-field-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.login-field-icon {
+  position: absolute;
+  left: 12px;
+  color: var(--text-muted);
+  pointer-events: none;
+  transition: color 0.2s;
+}
+
+.login-field-input {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 10px;
+  padding: 11px 40px 11px 38px;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  font-family: 'Outfit', sans-serif;
+  transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+  outline: none;
+}
+
+.login-field-input::placeholder {
+  color: rgba(255, 255, 255, 0.25);
+}
+
+.login-field-input:focus {
+  border-color: rgba(255, 42, 95, 0.5);
+  background: rgba(255, 42, 95, 0.04);
+  box-shadow: 0 0 0 3px rgba(255, 42, 95, 0.1);
+}
+
+.login-field-wrap:focus-within .login-field-icon {
+  color: var(--accent-pink);
+}
+
+.login-field-toggle {
+  position: absolute;
+  right: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: color 0.2s, background 0.2s;
+}
+
+.login-field-toggle:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+/* Submit button */
+.login-dropdown-submit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px 20px;
+  margin-top: 4px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--accent-pink), #c41e50);
+  border: none;
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 700;
+  font-family: 'Outfit', sans-serif;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s;
+  box-shadow: 0 4px 16px rgba(255, 42, 95, 0.35);
+  letter-spacing: 0.02em;
+}
+
+.login-dropdown-submit:hover:not(:disabled) {
+  opacity: 0.92;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 22px rgba(255, 42, 95, 0.45);
+}
+
+.login-dropdown-submit:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.login-dropdown-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 /* Hero Section */
@@ -379,11 +633,25 @@
   .hide-on-mobile {
     display: none;
   }
-  
-  .nav-login-btn {
+
+  /* On mobile: button shows icon only */
+  .nav-login-btn span {
     display: none;
   }
-  
+
+  .nav-login-btn {
+    padding: 9px 12px;
+    gap: 0;
+  }
+
+  /* Dropdown full-width on mobile, offset from 64px nav */
+  .nav-login-dropdown {
+    top: 72px;
+    left: 12px;
+    right: 12px;
+    width: auto;
+  }
+
   .hero-title {
     font-size: 2rem;
   }
@@ -397,6 +665,8 @@
     height: 64px;
     padding: 0 16px;
   }
+
+
 
   .nav-brand .brand-text {
     font-size: 1rem;
@@ -424,3 +694,4 @@
     font-size: 3rem;
   }
 }
+

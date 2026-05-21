@@ -54,7 +54,7 @@ const CalendarPage = () => {
 
   const { bookings, addBooking, deleteBooking, updateBookingStatus, updateBooking, cancelBooking, rescheduleBooking, getMonthlyStats } = useBookingStore();
   const { requests, updateRequestStatus } = useBookingRequestStore();
-  const { pricePerHour, studioName, durationDiscounts = [], recordingSessions = [] } = useSettingsStore();
+  const { pricePerHour, studioName, durationDiscounts = [], recordingSessions = [], operationalHours = { start: 10, end: 23 }, blockedDates = [] } = useSettingsStore();
   const { inventory } = useInventoryStore();
   const { run, currentStep, nextStep } = useTourStore();
 
@@ -87,8 +87,8 @@ const CalendarPage = () => {
   }, [currentDate, viewMode]);
 
   const numDays = daysArray.length;
-  const startHour = 10;
-  const endHour = 23;
+  const startHour = operationalHours.start;
+  const endHour = operationalHours.end;
   const hoursArray = Array.from({ length: endHour - startHour }).map((_, i) => startHour + i);
   const stats = getMonthlyStats(currentDate);
   const slotRecommendations = useMemo(
@@ -128,7 +128,7 @@ const CalendarPage = () => {
       if (b.id === resizingBooking.id) {
         return { 
           ...b, 
-          duration: Math.max(1, Math.min(12, b.duration + resizeAddedHours)),
+          duration: Math.max(1, Math.min(13, b.duration + resizeAddedHours)),
           isResizing: true 
         };
       }
@@ -274,7 +274,7 @@ const CalendarPage = () => {
       const addedHours = Math.round(diffY / cellHeight);
       
       if (addedHours !== 0) {
-        const newDur = Math.max(1, Math.min(12, resizingBooking.duration + addedHours));
+        const newDur = Math.max(1, Math.min(13, resizingBooking.duration + addedHours));
         if (newDur !== resizingBooking.duration) {
           if (resizingBooking.type === 'maintenance') {
             updateBooking(resizingBooking.id, { duration: newDur });
@@ -443,7 +443,8 @@ const CalendarPage = () => {
 
   return (
     <div className="calendar-page">
-      {/* Header */}
+      <div className={`calendar-main-content ${selectedBooking ? 'blurred' : ''}`}>
+        {/* Header */}
       <header className="cal-header">
         <div className="cal-header-left">
           <div className="cal-header-icon">
@@ -631,9 +632,10 @@ const CalendarPage = () => {
               const isToday = format(day, 'yyyy-MM-dd') === todayStr;
               const dow = getDay(day);
               const isWeekend = dow === 0 || dow === 6;
+              const isBlocked = blockedDates.includes(format(day, 'yyyy-MM-dd'));
               return (
                 <div key={idx} className={`grid-header-cell ${isToday ? 'today' : ''} ${isWeekend ? 'weekend' : ''}`}>
-                  <span className="day-name">{dayNames[dow]}</span>
+                  <span className="day-name">{dayNames[dow]} {isBlocked && <AlertTriangle size={12} color="var(--accent-pink)" style={{marginLeft: 4, display: 'inline'}} />}</span>
                   <span className={`day-number ${isToday ? 'today-circle' : ''}`}>{format(day, 'd')}</span>
                 </div>
               );
@@ -653,6 +655,7 @@ const CalendarPage = () => {
                   const isToday = dateStr === todayStr;
                   const dow = getDay(day);
                   const isWeekend = dow === 0 || dow === 6;
+                  const isBlocked = blockedDates.includes(dateStr);
                   const cellBooking = displayBookings.find(b => b.date === dateStr && b.hour <= hour && (b.hour + b.duration) > hour);
                   const isBookingStart = cellBooking && cellBooking.hour === hour;
                   const isBookingEnd = cellBooking && (cellBooking.hour + cellBooking.duration - 1) === hour;
@@ -660,7 +663,7 @@ const CalendarPage = () => {
                   if (isTargetCell) emptyCellAssigned = true;
                   const isTutorialBooking = cellBooking && cellBooking.band === 'Band Tutorial' && run && currentStep === 11;
 
-                  const cellClasses = ['grid-cell', hourIdx % 2 === 0 ? 'even-row' : '', isToday ? 'today-col-highlight' : '', isWeekend ? 'weekend-col' : '', isTargetCell ? 'tour-target-cell' : '', isTutorialBooking ? 'tour-new-booking' : ''].filter(Boolean).join(' ');
+                  const cellClasses = ['grid-cell', hourIdx % 2 === 0 ? 'even-row' : '', isToday ? 'today-col-highlight' : '', isWeekend ? 'weekend-col' : '', isTargetCell ? 'tour-target-cell' : '', isTutorialBooking ? 'tour-new-booking' : '', isBlocked && !cellBooking ? 'blocked-cell' : ''].filter(Boolean).join(' ');
 
                   // Current time line logic
                   const isCurrentHour = isToday && now.getHours() === hour;
@@ -711,6 +714,7 @@ const CalendarPage = () => {
           </div>
         </div>
       </div>
+      </div>
 
       {/* Booking Detail — Bottom Sheet on mobile, Popup on desktop */}
       <AnimatePresence>
@@ -724,15 +728,24 @@ const CalendarPage = () => {
           
           return (
             <>
-              {isMobile && <div className="detail-overlay" onClick={() => setSelectedBooking(null)} />}
+              {isMobile && (
+                <motion.div
+                  className="detail-overlay"
+                  onClick={() => setSelectedBooking(null)}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.15, ease: 'easeInOut' }}
+                />
+              )}
               <motion.div
-                className={`booking-detail-popup glass-panel ${isMobile ? 'mobile-sheet' : ''}`}
+                className={`booking-detail-popup ${isMobile ? 'mobile-sheet' : ''}`}
                 style={!isMobile ? { top: detailPos.top, left: detailPos.left } : undefined}
                 onClick={e => e.stopPropagation()}
-                initial={isMobile ? { y: 60, opacity: 0 } : { scale: 0.92, opacity: 0, y: -8 }}
+                initial={isMobile ? { y: 80, opacity: 0 } : { scale: 0.95, opacity: 0, y: -4 }}
                 animate={isMobile ? { y: 0, opacity: 1 } : { scale: 1, opacity: 1, y: 0 }}
-                exit={isMobile ? { y: 80, opacity: 0 } : { scale: 0.9, opacity: 0, y: -10 }}
-                transition={{ type: 'spring', stiffness: 340, damping: 28 }}
+                exit={isMobile ? { y: 80, opacity: 0 } : { scale: 0.95, opacity: 0, y: -4 }}
+                transition={{ duration: 0.15, ease: 'easeInOut' }}
               >
               {/* Header */}
               <div className="detail-header">
@@ -760,8 +773,8 @@ const CalendarPage = () => {
                       <div className="duration-controls">
                         <button className="dur-btn" onClick={() => updateBooking(b.id, { duration: Math.max(1, b.duration - 1) })} disabled={b.duration <= 1}>−</button>
                         <span className="dur-label">{b.duration} jam</span>
-                      <button className="dur-btn" onClick={() => {
-                        const newDur = Math.min(12, b.duration + 1);
+                        <button className="dur-btn" onClick={() => {
+                        const newDur = Math.min(13, b.duration + 1);
                         if (newDur > b.duration) {
                           const isOverlap = bookings.some(x => x.id !== b.id && x.date === b.date && (Number(x.hour) < Number(b.hour) + newDur) && (Number(b.hour) < Number(x.hour) + Number(x.duration)));
                           if (isOverlap) { useNotificationStore.getState().addNotification({ title: 'Jadwal Bentrok!', message: 'Durasi bertabrakan dengan booking lain.', type: 'error' }); return; }

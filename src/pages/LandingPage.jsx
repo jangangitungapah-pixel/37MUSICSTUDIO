@@ -1,15 +1,35 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { Music2, Calendar, MapPin, Mic2, Star, ChevronRight, Activity, Clock3, Headphones, MessageCircle } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Music2, Calendar, MapPin, Mic2, Star, ChevronRight, Activity, Clock3, Headphones, MessageCircle, Mail, Lock, Eye, EyeOff, AlertCircle, Loader2 } from 'lucide-react';
 import { useSettingsStore } from '../store/useSettingsStore';
 import { useAuthStore } from '../store/useAuthStore';
 import './LandingPage.css';
 
 const LandingPage = () => {
   const { studioName, studioAddress, studioPhone, pricePerHour } = useSettingsStore();
-  const { user, isAuthLoaded } = useAuthStore();
+  const { user, isAuthLoaded, login, error, loading, clearError } = useAuthStore();
   const navigate = useNavigate();
+
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const [identifier, setIdentifier] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPass, setShowPass] = useState(false);
+
+  // Clear auth errors when modal is opened/closed
+  useEffect(() => {
+    clearError();
+  }, [isLoginOpen, clearError]);
+
+  const handleLoginSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await login(identifier, password);
+      // Let the existing useEffect handle redirect to dashboard
+    } catch {
+      // Error handled by store
+    }
+  };
 
   // If user is already logged in and is staff/admin, redirect them to dashboard
   useEffect(() => {
@@ -51,14 +71,102 @@ const LandingPage = () => {
           <a href="#location">Lokasi</a>
         </div>
         <div className="nav-actions">
-          <Link to="/login" className="btn-secondary nav-login-btn">
-            Login Staff
-          </Link>
+          <button 
+            type="button"
+            className={`nav-login-btn ${isLoginOpen ? 'active' : ''}`}
+            onClick={() => setIsLoginOpen(!isLoginOpen)}
+          >
+            <Lock size={14} />
+            <span>Login Staff</span>
+          </button>
           <Link to="/jadwal-publik" className="btn-primary nav-book-btn">
             Booking Sekarang
           </Link>
         </div>
       </nav>
+
+      {/* Login Dropdown — rendered outside nav so backdrop-filter:blur works */}
+      <AnimatePresence>
+        {isLoginOpen && (
+          <motion.div 
+            className="nav-login-dropdown"
+            initial={{ opacity: 0, y: -8, scale: 0.97 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -8, scale: 0.97 }}
+            transition={{ duration: 0.18, ease: 'easeOut' }}
+          >
+            {/* Dropdown header */}
+            <div className="login-dropdown-header">
+              <div className="login-dropdown-icon-wrap">
+                <Music2 size={18} color="#ff2a5f" />
+              </div>
+              <div>
+                <p className="login-dropdown-brand">37 MUSIC STUDIO</p>
+                <h4 className="login-dropdown-title">Akses Staff</h4>
+              </div>
+            </div>
+
+            <div className="login-dropdown-divider" />
+
+            <form onSubmit={handleLoginSubmit} className="login-dropdown-form">
+              {error && (
+                <div className="login-dropdown-error">
+                  <AlertCircle size={13} />
+                  <span>{error}</span>
+                </div>
+              )}
+
+              <div className="login-field">
+                <label className="login-field-label">Username / Email</label>
+                <div className="login-field-wrap">
+                  <Mail size={15} className="login-field-icon" />
+                  <input
+                    type="text"
+                    value={identifier}
+                    onChange={e => setIdentifier(e.target.value)}
+                    className="login-field-input"
+                    placeholder="admin"
+                    autoComplete="username"
+                    autoFocus
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="login-field">
+                <label className="login-field-label">Password</label>
+                <div className="login-field-wrap">
+                  <Lock size={15} className="login-field-icon" />
+                  <input
+                    type={showPass ? 'text' : 'password'}
+                    value={password}
+                    onChange={e => setPassword(e.target.value)}
+                    className="login-field-input"
+                    placeholder="••••••••"
+                    autoComplete="current-password"
+                    required
+                  />
+                  <button
+                    type="button"
+                    className="login-field-toggle"
+                    onClick={() => setShowPass(v => !v)}
+                    tabIndex={-1}
+                    title={showPass ? 'Sembunyikan' : 'Tampilkan'}
+                  >
+                    {showPass ? <EyeOff size={14} /> : <Eye size={14} />}
+                  </button>
+                </div>
+              </div>
+
+              <button type="submit" className="login-dropdown-submit" disabled={loading}>
+                {loading
+                  ? <><Loader2 className="spinner" size={15} /><span>Memverifikasi...</span></>
+                  : <><span>Masuk ke Dashboard</span><ChevronRight size={15} /></>}
+              </button>
+            </form>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Hero Section */}
       <section className="hero-section">

@@ -19,6 +19,7 @@ const BillingPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedInvoice, setSelectedInvoice] = useState(null);
   const [isInvoiceModalOpen, setIsInvoiceModalOpen] = useState(false);
+  const [isThermalMode, setIsThermalMode] = useState(false);
   const [copied, setCopied] = useState(false);
   const invoiceRef = useRef(null);
   const billableBookings = bookings.filter((booking) => !['maintenance', 'cancelled'].includes(booking.status));
@@ -459,7 +460,7 @@ const BillingPage = () => {
         >
           <div className="inv2-shell">
             {/* ════ LEFT: Print-ready Invoice ════ */}
-            <div className="inv2-paper" ref={invoiceRef}>
+            <div className={`inv2-paper ${isThermalMode ? 'thermal-mode' : ''}`} ref={invoiceRef}>
 
               {/* Gradient top accent */}
               <div className="inv2-accent" />
@@ -597,6 +598,24 @@ const BillingPage = () => {
               <div className="inv2-actions-header">
                 <span className="inv2-actions-title">Bagikan Invoice</span>
                 <span className="inv2-actions-sub">{invNo} · {selectedInvoice.band}</span>
+              </div>
+
+              {/* Format Toggle */}
+              <div className="inv2-format-toggle" style={{ display: 'flex', gap: '8px', marginBottom: '16px', background: 'rgba(255,255,255,0.02)', padding: '6px', borderRadius: '12px' }}>
+                <button 
+                  style={{ flex: 1, padding: '8px', borderRadius: '8px', border: 'none', background: !isThermalMode ? 'rgba(255,42,95,0.15)' : 'transparent', color: !isThermalMode ? 'var(--accent-pink)' : 'var(--text-muted)', fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s', fontSize: '0.8rem' }}
+                  onClick={() => setIsThermalMode(false)}
+                >
+                  <FileText size={14} style={{ display: 'inline', verticalAlign: 'text-bottom', marginRight: '4px' }} />
+                  A4 Invoice
+                </button>
+                <button 
+                  style={{ flex: 1, padding: '8px', borderRadius: '8px', border: 'none', background: isThermalMode ? 'rgba(0,240,255,0.15)' : 'transparent', color: isThermalMode ? 'var(--accent-cyan)' : 'var(--text-muted)', fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s', fontSize: '0.8rem' }}
+                  onClick={() => setIsThermalMode(true)}
+                >
+                  <Printer size={14} style={{ display: 'inline', verticalAlign: 'text-bottom', marginRight: '4px' }} />
+                  Thermal Struk
+                </button>
               </div>
 
               {/* Share grid */}

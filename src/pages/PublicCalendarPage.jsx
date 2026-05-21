@@ -23,7 +23,7 @@ const PublicCalendarPage = () => {
   const { user, logout, loginGuest, isAuthLoaded, loading: authLoading } = useAuthStore();
   const { bookings } = useBookingStore();
   const { addRequest } = useBookingRequestStore();
-  const { studioName, studioPhone, pricePerHour, durationDiscounts = [] } = useSettingsStore();
+  const { studioName, studioPhone, pricePerHour, durationDiscounts = [], operationalHours = { start: 10, end: 23 }, blockedDates = [] } = useSettingsStore();
 
   const [currentDate, setCurrentDate] = useState(new Date());
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
@@ -106,8 +106,8 @@ const PublicCalendarPage = () => {
     return eachDayOfInterval({ start: startOfMonth(currentDate), end: endOfMonth(currentDate) });
   }, [currentDate, viewMode]);
 
-  const startHour = 10;
-  const endHour   = 23;
+  const startHour = operationalHours.start;
+  const endHour   = operationalHours.end;
   const hoursArray = Array.from({ length: endHour - startHour }, (_, i) => startHour + i);
   const todayStr   = format(new Date(), 'yyyy-MM-dd');
   const nowHour    = new Date().getHours();
@@ -343,6 +343,7 @@ const PublicCalendarPage = () => {
                     const isToday = dateStr === todayStr;
                     const dow = getDay(day);
                     const isWknd = dow === 0 || dow === 6;
+                    const isBlocked = blockedDates.includes(dateStr);
 
                     const booking = activeBookings.find(b => {
                       if (b.date !== dateStr) return false;
@@ -350,7 +351,7 @@ const PublicCalendarPage = () => {
                     });
 
                     const isPast = dateStr < todayStr || (isToday && hour < nowHour);
-                    const canBook = !booking && !isPast;
+                    const canBook = !booking && !isPast && !isBlocked;
                     const isBlockStart = booking && hour === booking.hour;
 
                     const classes = [
@@ -362,7 +363,7 @@ const PublicCalendarPage = () => {
                       booking && isBlockStart ? 'block-start' : '',
                       booking && hour === booking.hour + booking.duration - 1 ? 'block-end' : '',
                       canBook ? 'available' : '',
-                      isPast && !booking ? 'past' : '',
+                      (isPast || isBlocked) && !booking ? 'past' : '',
                     ].filter(Boolean).join(' ');
 
                     return (
@@ -370,7 +371,14 @@ const PublicCalendarPage = () => {
                         key={`${dateStr}-${hour}`}
                         className={classes}
                         onClick={() => canBook && openModal(dateStr, hour)}
+                        style={isBlocked && !booking ? { background: 'rgba(255, 42, 95, 0.05)' } : {}}
                       >
+                        {isBlocked && hour === startHour + 2 && !booking && (
+                          <div className="pc-booked-tag" style={{ background: 'var(--accent-pink)', opacity: 0.8, color: '#fff' }}>
+                            <XCircle size={11} />
+                            <span>TUTUP</span>
+                          </div>
+                        )}
                         {booking && isBlockStart && (
                           <div className="pc-booked-tag">
                             <XCircle size={11} />

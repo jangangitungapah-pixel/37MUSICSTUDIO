@@ -2,7 +2,7 @@ import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 
-const firebaseConfig = {
+export const firebaseConfig = {
   apiKey: "AIzaSyDyd_OUnPDzmuAyzL6pMfGlB7CRuwllnfc",
   authDomain: "music-studio-2.firebaseapp.com",
   projectId: "music-studio-2",

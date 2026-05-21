@@ -2,20 +2,23 @@ import { useState } from 'react';
 import { useStaffStore } from '../store/useStaffStore';
 import { useAuditLogStore } from '../store/useAuditLogStore';
 import { PERMISSIONS, PERMISSION_LABELS, getDefaultPermissionsForRole } from '../lib/permissions';
-import { UserPlus, Edit2, Trash2, Shield, User, Power, ClipboardList } from 'lucide-react';
+import { UserPlus, Edit2, Trash2, Shield, User, Power, ClipboardList, Loader2 } from 'lucide-react';
 import Modal from '../components/Modal';
 import { toast } from 'sonner';
 import './StaffPage.css';
 
 const StaffPage = () => {
-  const { staffMembers, addStaff, updateStaff, deleteStaff, toggleStaffStatus } = useStaffStore();
+  const { staffMembers, addStaff, updateStaff, deleteStaff, toggleStaffStatus, createStaffAccount } = useStaffStore();
   const { logs } = useAuditLogStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingStaff, setEditingStaff] = useState(null);
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     role: 'staff',
     phone: '',
+    email: '',
+    password: '',
     permissions: getDefaultPermissionsForRole('staff'),
   });
 
@@ -26,6 +29,8 @@ const StaffPage = () => {
         name: staff.name,
         role: staff.role,
         phone: staff.phone,
+        email: '',
+        password: '',
         permissions: staff.permissions || getDefaultPermissionsForRole(staff.role),
       });
     } else {
@@ -34,24 +39,41 @@ const StaffPage = () => {
         name: '',
         role: 'staff',
         phone: '',
+        email: '',
+        password: '',
         permissions: getDefaultPermissionsForRole('staff'),
       });
     }
     setIsModalOpen(true);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.name.trim()) return;
 
     if (editingStaff) {
       updateStaff(editingStaff.id, formData);
       toast.success('Data staff berhasil diperbarui');
+      setIsModalOpen(false);
     } else {
-      addStaff(formData);
-      toast.success('Staff baru berhasil ditambahkan');
+      if (!formData.email || !formData.password || formData.password.length < 6) {
+         toast.error('Email dan password (minimal 6 karakter) wajib diisi');
+         return;
+      }
+      setLoading(true);
+      try {
+        await createStaffAccount(formData, formData.email, formData.password);
+        toast.success('Staff baru berhasil ditambahkan');
+        setIsModalOpen(false);
+      } catch (error) {
+        let msg = error.message;
+        if (error.code === 'auth/email-already-in-use') msg = 'Email sudah digunakan.';
+        if (error.code === 'auth/weak-password') msg = 'Password terlalu lemah (minimal 6 karakter).';
+        toast.error(msg);
+      } finally {
+        setLoading(false);
+      }
     }
-    setIsModalOpen(false);
   };
 
   const handleDelete = (id) => {
@@ -168,6 +190,32 @@ const StaffPage = () => {
               onChange={e => setFormData({ ...formData, phone: e.target.value })}
             />
           </div>
+
+          {!editingStaff && (
+            <>
+              <div className="form-group">
+                <label>Email Login <span className="required">*</span></label>
+                <input
+                  type="email"
+                  className="form-input"
+                  value={formData.email}
+                  onChange={e => setFormData({ ...formData, email: e.target.value })}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label>Password <span className="required">*</span></label>
+                <input
+                  type="password"
+                  className="form-input"
+                  value={formData.password}
+                  onChange={e => setFormData({ ...formData, password: e.target.value })}
+                  minLength="6"
+                  required
+                />
+              </div>
+            </>
+          )}
           
           <div className="form-group">
             <label>Role Akses <span className="required">*</span></label>
@@ -200,9 +248,10 @@ const StaffPage = () => {
           </div>
 
           <div className="form-actions">
-            <button type="button" className="btn-secondary" onClick={() => setIsModalOpen(false)}>Batal</button>
-            <button type="submit" className="btn-primary">
-              {editingStaff ? 'Simpan Perubahan' : 'Tambahkan'}
+            <button type="button" className="btn-secondary" onClick={() => setIsModalOpen(false)} disabled={loading}>Batal</button>
+            <button type="submit" className="btn-primary" disabled={loading}>
+              {loading ? <Loader2 size={16} className="spinner" /> : null}
+              {loading ? ' Memproses...' : editingStaff ? 'Simpan Perubahan' : 'Tambahkan'}
             </button>
           </div>
         </form>

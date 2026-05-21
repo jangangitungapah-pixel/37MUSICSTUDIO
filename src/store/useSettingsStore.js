@@ -11,6 +11,8 @@ const DEFAULT_SETTINGS = {
   recordingSessions: [
     { id: 'default-6h', name: 'Sesi Recording 6 Jam', hours: 6, price: 600000 }
   ],
+  operationalHours: { start: 10, end: 23 },
+  blockedDates: [],
 };
 
 export const useSettingsStore = create((set) => {

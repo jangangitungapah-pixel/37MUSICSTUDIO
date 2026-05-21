@@ -80,87 +80,14 @@
 
 /* ===== Search Bar ===== */
 .finance-search-wrap {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-.finance-search-wrap .search-icon {
-  position: absolute;
-  left: 11px;
-  color: var(--text-muted);
-  pointer-events: none;
-}
-
-.finance-search-wrap input {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 10px;
-  padding: 8px 12px 8px 34px;
-  color: var(--text-primary);
-  font-size: 0.84rem;
-  font-family: inherit;
-  outline: none;
   width: 210px;
-  transition: border-color 0.2s, box-shadow 0.2s, width 0.3s;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
-.finance-search-wrap input:focus {
-  border-color: var(--accent-cyan);
-  box-shadow: 0 0 0 3px rgba(0, 240, 255, 0.08);
+.finance-search-wrap:focus-within {
   width: 240px;
 }
 
-.finance-search-wrap input::placeholder {
-  color: var(--text-muted);
-}
-
-/* ===== Action Buttons ===== */
-.finance-header-actions .btn-export {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  padding: 8px 16px;
-  border-radius: 10px;
-  font-size: 0.82rem;
-  font-weight: 600;
-  cursor: pointer;
-  font-family: inherit;
-  transition: all 0.2s;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: var(--text-secondary);
-  white-space: nowrap;
-}
-
-.finance-header-actions .btn-export:hover {
-  background: rgba(255, 255, 255, 0.09);
-  color: var(--text-primary);
-  transform: translateY(-1px);
-}
-
-.finance-header-actions .btn-add {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  padding: 8px 18px;
-  border-radius: 10px;
-  font-size: 0.84rem;
-  font-weight: 700;
-  cursor: pointer;
-  font-family: inherit;
-  transition: all 0.2s;
-  background: linear-gradient(135deg, var(--accent-cyan), #00a8b5);
-  border: none;
-  color: #000;
-  white-space: nowrap;
-  box-shadow: 0 4px 15px rgba(0, 240, 255, 0.25);
-}
-
-.finance-header-actions .btn-add:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0, 240, 255, 0.35);
-}
 
 /* ===== Stats Cards ===== */
 .finance-stats {
@@ -169,23 +96,6 @@
   gap: 16px;
 }
 
-.finance-stat-card {
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  padding: 20px 22px;
-  border-radius: 18px;
-  background: rgba(255, 255, 255, 0.035);
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  backdrop-filter: blur(12px);
-  overflow: hidden;
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.finance-stat-card:hover {
-  transform: translateY(-2px);
-}
 
 /* Glowing accent line at top */
 .finance-stat-card::before {
@@ -504,14 +414,7 @@
   overflow: auto;
 }
 
-.finance-table {
-  width: 100%;
-  border-collapse: collapse;
-  text-align: left;
-  table-layout: fixed;
-}
-
-/* Column widths */
+/* Column widths & text alignment */
 .finance-table th:nth-child(1),
 .finance-table td:nth-child(1) { width: 13%; }
 
@@ -533,43 +436,6 @@
 .finance-table th:nth-child(7),
 .finance-table td:nth-child(7) { width: 4%; }
 
-.finance-table th {
-  position: sticky;
-  top: 0;
-  background: rgba(14, 14, 22, 0.95);
-  backdrop-filter: blur(10px);
-  color: var(--text-muted);
-  font-weight: 700;
-  font-size: 0.7rem;
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-  padding: 12px 16px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  z-index: 10;
-  white-space: nowrap;
-}
-
-.finance-table td {
-  padding: 12px 16px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
-  vertical-align: middle;
-  font-size: 0.86rem;
-  color: var(--text-secondary);
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.finance-table tbody tr {
-  transition: background 0.15s;
-}
-
-.finance-table tbody tr:hover td {
-  background: rgba(255, 255, 255, 0.03);
-}
-
-.finance-table tbody tr:last-child td {
-  border-bottom: none;
-}
 
 /* ===== Cell Styles ===== */
 .cat-badge {
@@ -827,24 +693,6 @@
   color: var(--accent-pink);
 }
 
-.finance-form .form-input {
-  background: rgba(0, 0, 0, 0.25);
-  border: 1px solid var(--border-light);
-  border-radius: 9px;
-  padding: 10px 14px;
-  color: var(--text-primary);
-  font-size: 0.9rem;
-  transition: border-color 0.2s, box-shadow 0.2s;
-  font-family: inherit;
-  outline: none;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-.finance-form .form-input:focus {
-  border-color: var(--accent-cyan);
-  box-shadow: 0 0 0 3px rgba(0, 240, 255, 0.08);
-}
 
 .finance-form .form-textarea {
   resize: vertical;

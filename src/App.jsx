@@ -12,8 +12,6 @@ import { ROUTE_PERMISSIONS, hasPermission } from './lib/permissions';
 import './index.css';
 import './pages/CalendarPage.css'; // Shared global utilities and grid styles
 import './components/BookingForm.css'; // Shared global form styles (.form-group, .form-input)
-
-import LoginPage from './pages/LoginPage';
 import PublicCalendarPage from './pages/PublicCalendarPage';
 import LandingPage from './pages/LandingPage';
 
@@ -199,7 +197,7 @@ const ProtectedRoute = ({ children }) => {
   }
   
   if (!user) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/" replace />;
   }
 
   // Prevent anonymous users from accessing admin routes
@@ -256,7 +254,6 @@ function App() {
       />
         <Routes>
           <Route path="/" element={<LandingPage />} />
-          <Route path="/login" element={<LoginPage />} />
           <Route path="/jadwal-publik" element={<PublicCalendarPage />} />
           
           {/* Protected Routes */}

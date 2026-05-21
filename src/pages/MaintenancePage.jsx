@@ -233,38 +233,65 @@ const MaintenancePage = () => {
       </div>
 
       {/* Detail / Edit Modal */}
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Update Log Maintenance">
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Detail Log Maintenance">
         {selectedLog && (
           <form onSubmit={handleSaveCost} className="maint-form">
             <div className="maint-modal-info">
-              <div className="maint-modal-row">
-                <span>Jadwal</span>
-                <strong>{format(new Date(selectedLog.date), 'dd MMMM yyyy')}, {String(selectedLog.hour).padStart(2, '0')}:00 – {String(Number(selectedLog.hour) + Number(selectedLog.duration)).padStart(2, '0')}:00</strong>
+              <div className="maint-info-header">
+                <div className="maint-info-icon">
+                  <Wrench size={18} />
+                </div>
+                <div className="maint-info-title-container">
+                  <span className="maint-info-tag">Nama Alat / Area</span>
+                  <h4 className="maint-info-title">{selectedLog.band || 'Pemeliharaan Studio'}</h4>
+                </div>
+              </div>
+              
+              <div className="maint-info-grid">
+                <div className="maint-info-grid-item">
+                  <span className="maint-info-label">Tanggal Pelaksanaan</span>
+                  <span className="maint-info-val">
+                    {format(new Date(selectedLog.date), 'dd MMMM yyyy')}
+                  </span>
+                </div>
+                <div className="maint-info-grid-item">
+                  <span className="maint-info-label">Waktu & Durasi</span>
+                  <span className="maint-info-val">
+                    {String(selectedLog.hour).padStart(2, '0')}:00 – {String(Number(selectedLog.hour) + Number(selectedLog.duration)).padStart(2, '0')}:00 ({selectedLog.duration} jam)
+                  </span>
+                </div>
               </div>
             </div>
 
             <div className="form-group">
-              <label>Status Pengerjaan</label>
+              <label className="form-label-with-icon">
+                <Clock size={13} />
+                <span>Status Pengerjaan</span>
+              </label>
               <div className="maint-status-toggle">
                 {[
-                  { value: 'pending', label: '⏳ Pending' },
-                  { value: 'in_progress', label: '🔧 Proses' },
-                  { value: 'done', label: '✅ Selesai' },
+                  { value: 'pending', label: 'Pending', icon: <Clock size={14} /> },
+                  { value: 'in_progress', label: 'Proses', icon: <Wrench size={14} /> },
+                  { value: 'done', label: 'Selesai', icon: <CheckCircle size={14} /> },
                 ].map(opt => (
                   <button
                     key={opt.value}
                     type="button"
-                    className={`maint-toggle-btn ${formData.status === opt.value ? 'active' : ''}`}
+                    className={`maint-toggle-btn btn-${opt.value} ${formData.status === opt.value ? 'active' : ''}`}
                     onClick={() => setFormData(p => ({ ...p, status: opt.value }))}
                   >
-                    {opt.label}
+                    {opt.icon}
+                    <span>{opt.label}</span>
                   </button>
                 ))}
               </div>
             </div>
 
             <div className="form-group">
-              <label>Catatan / Deskripsi Kerusakan</label>
+              <label className="form-label-with-icon">
+                <FileText size={13} />
+                <span>Catatan / Deskripsi Kerusakan</span>
+              </label>
               <textarea
                 className="form-input"
                 value={formData.description}
@@ -275,15 +302,21 @@ const MaintenancePage = () => {
             </div>
 
             <div className="form-group">
-              <label>Biaya Perbaikan (Rp)</label>
-              <input
-                type="number"
-                className="form-input"
-                value={formData.cost}
-                onChange={e => setFormData(p => ({ ...p, cost: e.target.value }))}
-                placeholder="0"
-                min="0"
-              />
+              <label className="form-label-with-icon">
+                <DollarSign size={13} />
+                <span>Biaya Perbaikan</span>
+              </label>
+              <div className="maint-input-wrapper">
+                <span className="maint-input-prefix">Rp</span>
+                <input
+                  type="number"
+                  className="form-input maint-cost-input"
+                  value={formData.cost}
+                  onChange={e => setFormData(p => ({ ...p, cost: e.target.value }))}
+                  placeholder="0"
+                  min="0"
+                />
+              </div>
               {formData.status === 'done' && Number(formData.cost) > 0 && (
                 <small className="form-hint">✓ Biaya akan otomatis dicatat sebagai pengeluaran di Pembukuan</small>
               )}

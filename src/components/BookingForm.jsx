@@ -358,7 +358,7 @@ const BookingForm = ({ onClose, initialDate, initialHour }) => {
               <div className="bf-duration-picker">
                 <button type="button" className="bf-dur-btn" onClick={() => setFormData(p => ({ ...p, duration: Math.max(1, p.duration - 1) }))} disabled={formData.duration <= 1}>−</button>
                 <span className="bf-dur-val">{formData.duration} <small>jam</small></span>
-                <button type="button" className="bf-dur-btn" onClick={() => setFormData(p => ({ ...p, duration: Math.min(12, p.duration + 1) }))} disabled={formData.duration >= 12}>+</button>
+                <button type="button" className="bf-dur-btn" onClick={() => setFormData(p => ({ ...p, duration: Math.min(13, p.duration + 1) }))} disabled={formData.duration >= 13}>+</button>
               </div>
             </div>
           )}

@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useSettingsStore } from '../store/useSettingsStore';
 import { useDemoStore } from '../store/useDemoStore';
+import { useBookingStore } from '../store/useBookingStore';
 import {
   Settings, Save, Building2, Phone, MapPin, DollarSign,
   Bell, Database, Trash2, CheckCircle2, XCircle, ShieldAlert,
   ChevronRight, Music2, Sparkles, Lock, ToggleLeft, ToggleRight,
-  AlertTriangle, RefreshCw, FlaskConical, Download, Upload
+  AlertTriangle, RefreshCw, FlaskConical, Download, Upload,
+  Clock, CalendarX, Plus, X
 } from 'lucide-react';
 import { collection, doc, getDocs, deleteDoc, writeBatch } from 'firebase/firestore';
 import { db } from '../firebase';
@@ -15,13 +17,17 @@ import './SettingsPage.css';
 const SettingsPage = () => {
   const storeSettings = useSettingsStore();
   const { isDemoMode, toggleDemoMode } = useDemoStore();
+  const { bookings } = useBookingStore();
+
   const [formData, setFormData] = useState({
     studioName: '',
     studioAddress: '',
     studioPhone: '',
     pricePerHour: 0,
     durationDiscounts: [],
-    recordingSessions: []
+    recordingSessions: [],
+    operationalHours: { start: 10, end: 23 },
+    blockedDates: []
   });
 
   const [saveStatus, setSaveStatus] = useState('idle'); // 'idle' | 'saving' | 'saved' | 'error'
@@ -35,6 +41,9 @@ const SettingsPage = () => {
   const [newRecSessionName, setNewRecSessionName] = useState('');
   const [newRecSessionHours, setNewRecSessionHours] = useState('');
   const [newRecSessionPrice, setNewRecSessionPrice] = useState('');
+
+  // Block Date state
+  const [newBlockedDate, setNewBlockedDate] = useState('');
 
   const [notifPermission, setNotifPermission] = useState(
     'Notification' in window ? Notification.permission : 'unsupported'
@@ -59,9 +68,11 @@ const SettingsPage = () => {
       studioPhone: storeSettings.studioPhone,
       pricePerHour: storeSettings.pricePerHour,
       durationDiscounts: storeSettings.durationDiscounts || [],
-      recordingSessions: storeSettings.recordingSessions || []
+      recordingSessions: storeSettings.recordingSessions || [],
+      operationalHours: storeSettings.operationalHours || { start: 10, end: 23 },
+      blockedDates: storeSettings.blockedDates || []
     });
-  }, [storeSettings.studioName, storeSettings.studioAddress, storeSettings.studioPhone, storeSettings.pricePerHour, storeSettings.durationDiscounts, storeSettings.recordingSessions]);
+  }, [storeSettings.studioName, storeSettings.studioAddress, storeSettings.studioPhone, storeSettings.pricePerHour, storeSettings.durationDiscounts, storeSettings.recordingSessions, storeSettings.operationalHours, storeSettings.blockedDates]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -70,6 +81,82 @@ const SettingsPage = () => {
       [name]: name === 'pricePerHour' ? Number(value) : value
     }));
     if (saveStatus === 'saved') setSaveStatus('idle');
+  };
+
+  const handleOperationalHoursChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      operationalHours: {
+        ...prev.operationalHours,
+        [name]: Number(value)
+      }
+    }));
+    if (saveStatus === 'saved') setSaveStatus('idle');
+  };
+
+  const handleAddBlockedDate = async () => {
+    if (!newBlockedDate) return;
+
+    if (formData.blockedDates.includes(newBlockedDate)) {
+      toast.error('Tanggal ini sudah ada di daftar libur.');
+      return;
+    }
+
+    // Smart Scenario: Check for existing bookings
+    const bookingsOnDate = bookings.filter(b => b.date === newBlockedDate && b.status !== 'cancelled');
+    const confirmedCount = bookingsOnDate.filter(b => b.status === 'confirmed').length;
+    const dpCount = bookingsOnDate.filter(b => b.status === 'dp').length;
+    const pendingCount = bookingsOnDate.filter(b => b.status === 'pending').length;
+
+    if (bookingsOnDate.length > 0) {
+      const confirmMsg = `Perhatian: Ada ${confirmedCount} lunas, ${dpCount} DP, dan ${pendingCount} pending pada tanggal ini.\n\nTanggal tetap akan diliburkan untuk booking BARU, tapi booking yang sudah masuk tidak akan dihapus. Anda harus menghubungi pelanggan terkait untuk reschedule/refund secara manual.\n\nLanjutkan blokir tanggal?`;
+      if (!window.confirm(confirmMsg)) {
+        return;
+      }
+    }
+
+    const newData = {
+      ...formData,
+      blockedDates: [...formData.blockedDates, newBlockedDate].sort()
+    };
+
+    setFormData(newData);
+    setNewBlockedDate('');
+    
+    setSaveStatus('saving');
+    try {
+      await storeSettings.updateSettings(newData);
+      setSaveStatus('saved');
+      setTimeout(() => setSaveStatus('idle'), 3000);
+      if (bookingsOnDate.length > 0) {
+        toast.warning('Tanggal diblokir. Jangan lupa tangani jadwal yang sudah terlanjur masuk.');
+      } else {
+        toast.success('Hari libur berhasil ditambahkan.');
+      }
+    } catch {
+      setSaveStatus('error');
+      setTimeout(() => setSaveStatus('idle'), 3000);
+    }
+  };
+
+  const handleRemoveBlockedDate = async (dateStr) => {
+    const newData = {
+      ...formData,
+      blockedDates: formData.blockedDates.filter(d => d !== dateStr)
+    };
+    
+    setFormData(newData);
+
+    setSaveStatus('saving');
+    try {
+      await storeSettings.updateSettings(newData);
+      setSaveStatus('saved');
+      setTimeout(() => setSaveStatus('idle'), 3000);
+    } catch {
+      setSaveStatus('error');
+      setTimeout(() => setSaveStatus('idle'), 3000);
+    }
   };
 
   const handleAddDiscount = async () => {
@@ -329,6 +416,7 @@ const SettingsPage = () => {
   const sections = [
     { id: 'profile',       label: 'Profil Studio',    icon: Building2   },
     { id: 'pricing',       label: 'Tarif & Harga',    icon: DollarSign  },
+    { id: 'operational',   label: 'Jam & Libur',      icon: Clock       },
     { id: 'notifications', label: 'Notifikasi',        icon: Bell        },
     { id: 'demo',          label: 'Mode Demo',         icon: FlaskConical},
     { id: 'data',          label: 'Manajemen Data',    icon: Database    },
@@ -654,6 +742,103 @@ const SettingsPage = () => {
                   <span>Perubahan tarif hanya berlaku untuk booking baru. Booking yang sudah ada tidak berubah secara otomatis.</span>
                 </div>
               </form>
+            </div>
+          )}
+
+          {/* === SECTION: OPERATIONAL === */}
+          {activeSection === 'operational' && (
+            <div className="settings-panel glass-panel">
+              <div className="settings-panel-header">
+                <div className="panel-header-icon" style={{ background: 'rgba(255,42,95,0.1)', color: 'var(--accent-pink)' }}>
+                  <Clock size={20} />
+                </div>
+                <div>
+                  <h3 className="panel-title">Jam Operasional & Hari Libur</h3>
+                  <p className="panel-desc">Atur jam kerja harian dan blokir tanggal agar tidak bisa di-booking oleh publik.</p>
+                </div>
+              </div>
+
+              <div className="settings-form-body">
+                {/* Operational Hours */}
+                <div className="duration-discount-section">
+                  <h4 className="duration-discount-title">Jam Operasional Harian</h4>
+                  <p className="duration-discount-desc">Menentukan ketersediaan slot di Kalender Publik dan Admin.</p>
+                  
+                  <div className="duration-discount-form" style={{ gridTemplateColumns: '1fr 1fr' }}>
+                    <div className="dd-input-group">
+                      <label>Jam Buka</label>
+                      <select 
+                        name="start" 
+                        value={formData.operationalHours?.start || 10} 
+                        onChange={handleOperationalHoursChange}
+                        className="settings-input"
+                      >
+                        {Array.from({length: 24}).map((_, i) => (
+                          <option key={`start-${i}`} value={i}>{String(i).padStart(2, '0')}:00</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="dd-input-group">
+                      <label>Jam Tutup</label>
+                      <select 
+                        name="end" 
+                        value={formData.operationalHours?.end || 23} 
+                        onChange={handleOperationalHoursChange}
+                        className="settings-input"
+                      >
+                        {Array.from({length: 25}).map((_, i) => (
+                          <option key={`end-${i}`} value={i}>{String(i).padStart(2, '0')}:00</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                  <div className="settings-info-box mt-3">
+                    <AlertTriangle size={14} />
+                    <span>Jika jam diubah, pastikan tidak ada jadwal lunas/DP yang berada di luar jam operasional baru.</span>
+                  </div>
+                </div>
+
+                {/* Blocked Dates */}
+                <div className="duration-discount-section mt-4">
+                  <h4 className="duration-discount-title">Hari Libur (Block Dates)</h4>
+                  <p className="duration-discount-desc">Tanggal yang diblokir akan ditutup secara publik. Admin tetap dapat mengaksesnya jika dibutuhkan.</p>
+                  
+                  <div className="duration-discount-form" style={{ gridTemplateColumns: '1fr 100px' }}>
+                    <div className="dd-input-group">
+                      <label>Pilih Tanggal Libur</label>
+                      <input 
+                        type="date" 
+                        value={newBlockedDate} 
+                        onChange={e => setNewBlockedDate(e.target.value)} 
+                        className="settings-input"
+                      />
+                    </div>
+                    <button type="button" className="btn-add-discount" onClick={handleAddBlockedDate}>
+                      + Blokir
+                    </button>
+                  </div>
+
+                  {formData.blockedDates && formData.blockedDates.length > 0 ? (
+                    <div className="duration-discount-list">
+                      {formData.blockedDates.map((dateStr, idx) => (
+                        <div key={idx} className="duration-discount-item">
+                          <div className="dd-item-info">
+                            <CalendarX size={16} color="var(--accent-pink)" />
+                            <span className="dd-item-hours">{new Date(dateStr).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
+                          </div>
+                          <button type="button" className="btn-remove-discount" onClick={() => handleRemoveBlockedDate(dateStr)} title="Hapus Libur">
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="duration-discount-empty">
+                      Belum ada hari libur yang diatur.
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
           )}
 
