@@ -55,6 +55,7 @@ const FinancePage = () => {
   
   const totalIncomeFiltered = filteredData.filter(d => d.type === 'income').reduce((sum, d) => sum + d.amount, 0);
   const totalExpenseFiltered = filteredData.filter(d => d.type === 'expense').reduce((sum, d) => sum + d.amount, 0);
+  const netCashFiltered = totalIncomeFiltered - totalExpenseFiltered;
   
   const totalBalance = combinedData.length > 0 ? combinedData[0].balance : 0; // Newest entry has final balance
 
@@ -386,8 +387,16 @@ const FinancePage = () => {
       {/* ── Header ── */}
       <div className="finance-header">
         <div className="finance-header-left">
+          <span className="finance-eyebrow">Pembukuan Studio</span>
           <h2 className="page-title">Buku Kas</h2>
-          <p className="page-subtitle">Pantau arus kas masuk &amp; keluar operasional studio</p>
+          <p className="page-subtitle">Pantau kas masuk, pengeluaran, piutang booking, dan saldo operasional.</p>
+          <div className="finance-header-meta hide-on-print">
+            <span>{periodLabel}</span>
+            <span>{filteredData.length} transaksi</span>
+            <span className={netCashFiltered >= 0 ? 'is-positive' : 'is-negative'}>
+              Net {formatCurrency(netCashFiltered)}
+            </span>
+          </div>
         </div>
         <div className="finance-header-actions">
           {/* Period Pill Buttons */}
@@ -435,6 +444,7 @@ const FinancePage = () => {
           <div className="stat-data">
             <span className="stat-label">Total Saldo Bersih</span>
             <span className="stat-value">{formatCurrency(totalBalance)}</span>
+            <span className="stat-note">Akumulasi semua catatan kas</span>
           </div>
         </div>
         <div className="finance-stat-card income">
@@ -442,6 +452,7 @@ const FinancePage = () => {
           <div className="stat-data">
             <span className="stat-label">Pemasukan · {periodLabel}</span>
             <span className="stat-value">{formatCurrency(totalIncomeFiltered)}</span>
+            <span className="stat-note">Booking dan pemasukan manual</span>
           </div>
         </div>
         <div className="finance-stat-card expense">
@@ -449,13 +460,15 @@ const FinancePage = () => {
           <div className="stat-data">
             <span className="stat-label">Pengeluaran · {periodLabel}</span>
             <span className="stat-value">{formatCurrency(totalExpenseFiltered)}</span>
+            <span className="stat-note">Biaya operasional tercatat</span>
           </div>
         </div>
       </div>
 
       {/* ── Charts ── */}
-      <div className="finance-smart-panel hide-on-print">
-        <div className="finance-smart-copy">
+      <div className="finance-insights-grid hide-on-print">
+      <div className="finance-smart-panel">
+        <div className="finance-panel-copy">
           <TrendingUp size={18} />
           <div>
             <h3>Forecast Pendapatan Bulanan</h3>
@@ -482,8 +495,8 @@ const FinancePage = () => {
         </div>
       </div>
 
-      <div className="finance-reconcile-panel hide-on-print">
-        <div className="finance-reconcile-copy">
+      <div className="finance-reconcile-panel">
+        <div className="finance-panel-copy reconcile">
           <Wallet size={18} />
           <div>
             <h3>Rekonsiliasi Kas Booking</h3>
@@ -508,6 +521,7 @@ const FinancePage = () => {
             <strong>{formatCurrency(reconciliation.diff)}</strong>
           </div>
         </div>
+      </div>
       </div>
 
       <div className="finance-charts-grid hide-on-print">
@@ -582,8 +596,14 @@ const FinancePage = () => {
       <div className="finance-content">
         {/* Table Header Bar */}
         <div className="finance-table-header">
-          <span className="finance-table-title">Riwayat Transaksi</span>
-          <span className="finance-table-count">{filteredData.length} transaksi</span>
+          <div>
+            <span className="finance-table-title">Riwayat Transaksi</span>
+            <span className="finance-table-subtitle">Kas masuk, kas keluar, dan saldo berjalan</span>
+          </div>
+          <div className="finance-table-meta">
+            <span>{periodLabel}</span>
+            <span>{filteredData.length} transaksi</span>
+          </div>
         </div>
 
         {/* Desktop Table */}
