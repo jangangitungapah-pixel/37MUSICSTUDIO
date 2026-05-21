@@ -239,20 +239,21 @@ const DashboardPage = () => {
             <AreaChart data={revenueChartData} margin={{ top: 10, right: 10, left: 10, bottom: 0 }}>
               <defs>
                 <linearGradient id="cyanGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#00f0ff" stopOpacity={0.25} />
-                  <stop offset="95%" stopColor="#00f0ff" stopOpacity={0} />
+                  <stop offset="5%" stopColor="var(--accent-cyan)" stopOpacity={0.22} />
+                  <stop offset="95%" stopColor="var(--accent-cyan)" stopOpacity={0} />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" vertical={false} />
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--border-light)" vertical={false} />
               <XAxis dataKey="name" stroke="var(--text-muted)" fontSize={11} tickLine={false} axisLine={false} />
               <YAxis stroke="var(--text-muted)" fontSize={11} tickLine={false} axisLine={false} tickFormatter={formatK} width={50} />
               <Tooltip
                 contentStyle={{ 
-                  backgroundColor: '#17171d', 
-                  border: '1px solid rgba(255, 255, 255, 0.08)', 
+                  backgroundColor: 'var(--bg-surface)', 
+                  border: '1px solid var(--border-light)', 
                   borderRadius: '12px', 
                   fontSize: '0.8rem',
-                  boxShadow: '0 10px 25px rgba(0, 0, 0, 0.3)'
+                  boxShadow: '0 10px 25px rgba(0, 0, 0, 0.2)',
+                  color: 'var(--text-primary)'
                 }}
                 formatter={(v) => [formatCurrency(v), 'Pendapatan']}
                 labelStyle={{ color: 'var(--text-secondary)', marginBottom: '4px', fontWeight: '600' }}
@@ -260,12 +261,12 @@ const DashboardPage = () => {
               <Area 
                 type="monotone" 
                 dataKey="Pendapatan" 
-                stroke="#00f0ff" 
-                strokeWidth={3} 
+                stroke="var(--accent-cyan)" 
+                strokeWidth={2.5} 
                 fillOpacity={1} 
                 fill="url(#cyanGrad)" 
-                dot={{ r: 4, stroke: '#00f0ff', strokeWidth: 2, fill: '#0c0c10' }} 
-                activeDot={{ r: 6, stroke: '#00f0ff', strokeWidth: 2, fill: '#00f0ff' }} 
+                dot={{ r: 3.5, stroke: 'var(--accent-cyan)', strokeWidth: 2, fill: 'var(--bg-surface)' }} 
+                activeDot={{ r: 5.5, stroke: 'var(--accent-cyan)', strokeWidth: 2, fill: 'var(--accent-cyan)' }} 
               />
             </AreaChart>
           </ResponsiveContainer>
@@ -339,11 +340,12 @@ const DashboardPage = () => {
                 </Pie>
                 <Tooltip 
                   contentStyle={{ 
-                    backgroundColor: '#17171d', 
-                    border: '1px solid rgba(255, 255, 255, 0.08)', 
+                    backgroundColor: 'var(--bg-surface)', 
+                    border: '1px solid var(--border-light)', 
                     borderRadius: '12px', 
                     fontSize: '0.8rem',
-                    boxShadow: '0 10px 25px rgba(0, 0, 0, 0.3)'
+                    boxShadow: '0 10px 25px rgba(0, 0, 0, 0.2)',
+                    color: 'var(--text-primary)'
                   }} 
                 />
               </PieChart>
