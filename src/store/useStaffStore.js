@@ -4,7 +4,7 @@ import { useDemoStore } from './useDemoStore';
 
 export const useStaffStore = create(
   persist(
-    (set, get) => {
+    (set) => {
       // Subscribe to demo store
       useDemoStore.subscribe((demoState) => {
         if (demoState.isDemoMode) {

@@ -7,6 +7,7 @@ import { format } from 'date-fns';
 import html2canvas from 'html2canvas';
 import { toast } from 'sonner';
 import Modal from '../components/Modal';
+import { getBillingInsights } from '../lib/smartInsights';
 import './BillingPage.css';
 
 const BillingPage = () => {
@@ -52,6 +53,7 @@ const BillingPage = () => {
 
   const totalPiutang = bookings.reduce((sum, b) => sum + calculateRemaining(b), 0);
   const totalTransaksi = bookings.length;
+  const billingInsights = getBillingInsights(bookings, pricePerHour);
 
   // Filtering
   const filteredBookings = bookings.filter(b => {
@@ -240,6 +242,38 @@ const BillingPage = () => {
             <span className="stat-label">Total Transaksi</span>
             <span className="stat-value">{totalTransaksi} <small>trx</small></span>
           </div>
+        </div>
+      </div>
+
+      {/* Smart Billing Summary */}
+      <div className="billing-smart-panel">
+        <div className="billing-smart-main">
+          <Bell size={18} />
+          <div>
+            <h3>Reminder Pintar</h3>
+            <p>{billingInsights.summary}</p>
+          </div>
+        </div>
+        <div className="billing-smart-list">
+          {billingInsights.openInvoices.slice(0, 3).map((invoice) => (
+            <div key={invoice.id} className={`billing-smart-item ${invoice.urgency}`}>
+              <div>
+                <strong>{invoice.band}</strong>
+                <span>{invoice.daysUntil < 0 ? 'Lewat jadwal' : invoice.daysUntil === 0 ? 'Jadwal hari ini' : invoice.daysUntil === 1 ? 'Jadwal besok' : `H-${invoice.daysUntil}`}</span>
+              </div>
+              <small>{formatCurrency(invoice.remaining)}</small>
+              <button
+                className="billing-smart-btn"
+                onClick={() => handleSendReminder(invoice)}
+                title="Kirim reminder WhatsApp"
+              >
+                <MessageCircle size={14} />
+              </button>
+            </div>
+          ))}
+          {billingInsights.openInvoices.length === 0 && (
+            <div className="billing-smart-empty">Tidak ada tagihan yang perlu ditindaklanjuti.</div>
+          )}
         </div>
       </div>
 

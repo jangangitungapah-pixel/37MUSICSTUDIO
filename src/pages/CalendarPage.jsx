@@ -1,5 +1,5 @@
-import React, { useState, useMemo, useRef, useEffect } from 'react';
-import { ChevronLeft, ChevronRight, Plus, Search, CalendarCheck, Clock, DollarSign, Trash2, Phone, StickyNote, X, MessageCircle, TrendingUp, Calendar, LayoutGrid, CalendarDays } from 'lucide-react';
+import React, { useState, useMemo, useRef, useEffect, useCallback } from 'react';
+import { ChevronLeft, ChevronRight, Plus, Search, CalendarCheck, Clock, DollarSign, Trash2, Phone, StickyNote, X, MessageCircle, TrendingUp, Calendar, LayoutGrid, CalendarDays, Lightbulb, AlertTriangle } from 'lucide-react';
 import { format, addMonths, subMonths, startOfMonth, endOfMonth, addDays, subDays, getDay, startOfWeek, endOfWeek, eachDayOfInterval, addWeeks, subWeeks } from 'date-fns';
 import { useBookingStore } from '../store/useBookingStore';
 import { useSettingsStore } from '../store/useSettingsStore';
@@ -9,6 +9,7 @@ import { useNotificationStore } from '../store/useNotificationStore';
 import { AnimatePresence, motion } from 'framer-motion';
 import Modal from '../components/Modal';
 import BookingForm from '../components/BookingForm';
+import { getAnomalies, getDemandInsights, getSlotRecommendations } from '../lib/smartInsights';
 import './CalendarPage.css';
 import './CalendarPrintStyles.css';
 
@@ -53,8 +54,8 @@ const CalendarPage = () => {
   const { inventory } = useInventoryStore();
   const { run, currentStep, nextStep } = useTourStore();
 
-  const calculatePrice = (b, dur) => {
-    let base = 0;
+  const calculatePrice = useCallback((b, dur) => {
+    let base;
     let durDisc = 0;
     if (b.type === 'recording') {
       const session = recordingSessions.find(s => s.id === b.sessionId);
@@ -71,7 +72,7 @@ const CalendarPage = () => {
     const vipDisc = b.isVIP ? base * 0.1 : 0;
     const equipmentCost = b.equipmentCost || 0;
     return { base, durDisc, vipDisc, total: base + equipmentCost - (vipDisc + durDisc) };
-  };
+  }, [durationDiscounts, pricePerHour, recordingSessions]);
 
   const daysArray = useMemo(() => {
     if (viewMode === 'day') return [currentDate];
@@ -86,6 +87,16 @@ const CalendarPage = () => {
   const endHour = 23;
   const hoursArray = Array.from({ length: endHour - startHour }).map((_, i) => startHour + i);
   const stats = getMonthlyStats(currentDate);
+  const slotRecommendations = useMemo(
+    () => getSlotRecommendations(bookings, {
+      fromDate: currentDate < new Date() ? new Date() : currentDate,
+      duration: 2,
+      limit: 4,
+    }),
+    [bookings, currentDate]
+  );
+  const demandInsights = useMemo(() => getDemandInsights(bookings), [bookings]);
+  const scheduleAnomalies = useMemo(() => getAnomalies(bookings, pricePerHour), [bookings, pricePerHour]);
 
   // Last month for trend
   const lastStats = getMonthlyStats(addMonths(currentDate, -1));
@@ -242,7 +253,7 @@ const CalendarPage = () => {
       document.removeEventListener('touchmove', handleResizeMove);
       document.removeEventListener('touchend', handleResizeEnd);
     };
-  }, [resizingBooking, initialResizeY, updateBooking, pricePerHour, durationDiscounts, recordingSessions]);
+  }, [resizingBooking, initialResizeY, updateBooking, calculatePrice]);
 
   const confirmResize = () => {
     if (!resizeConfirmData) return;
@@ -397,6 +408,43 @@ const CalendarPage = () => {
             <span className="breakdown-item"><span className="dot pending" />  {stats.pending} Pending</span>
           </div>
         </div>
+      </div>
+
+      {/* Smart Scheduling */}
+      <div className="cal-smart-panel glass-panel">
+        <div className="cal-smart-summary">
+          <div className="cal-smart-icon"><Lightbulb size={18} /></div>
+          <div>
+            <h3>Rekomendasi Slot</h3>
+            <p>
+              {demandInsights.busiestHour
+                ? `Jam ramai ${demandInsights.busiestHour}.00, hari sepi ${demandInsights.quietestDay}.`
+                : 'Saran akan makin akurat setelah ada lebih banyak booking.'}
+            </p>
+          </div>
+        </div>
+        <div className="cal-slot-list">
+          {slotRecommendations.length === 0 ? (
+            <span className="cal-slot-empty">Tidak ada slot kosong yang cocok.</span>
+          ) : slotRecommendations.map((slot) => (
+            <button
+              key={`${slot.date}-${slot.hour}`}
+              className="cal-slot-chip"
+              onClick={() => handleCellClick(slot.date, slot.hour)}
+              title="Pakai slot ini"
+            >
+              <strong>{slot.dayName}, {slot.date.slice(8, 10)}/{slot.date.slice(5, 7)}</strong>
+              <span>{String(slot.hour).padStart(2, '0')}.00-{String(slot.endHour).padStart(2, '0')}.00</span>
+              <small>{slot.reason}</small>
+            </button>
+          ))}
+        </div>
+        {scheduleAnomalies.length > 0 && (
+          <div className="cal-smart-alert">
+            <AlertTriangle size={15} />
+            <span>{scheduleAnomalies.length} anomali jadwal terdeteksi. Pertama: {scheduleAnomalies[0].detail}</span>
+          </div>
+        )}
       </div>
 
       {/* Calendar Container */}

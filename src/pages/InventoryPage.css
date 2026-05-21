@@ -55,6 +55,90 @@
   font-weight: 500;
 }
 
+/* ===== Smart Maintenance ===== */
+.inventory-smart-panel {
+  display: grid;
+  grid-template-columns: minmax(240px, 0.8fr) 1.6fr;
+  gap: 12px;
+  padding: 14px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.inventory-smart-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(255, 193, 7, 0.08);
+  color: #FFC107;
+}
+
+.inventory-smart-head h3 {
+  margin: 0 0 3px;
+  font-size: 0.94rem;
+}
+
+.inventory-smart-head p {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+  line-height: 1.35;
+}
+
+.inventory-smart-list {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.inventory-smart-item {
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.025);
+  color: var(--text-primary);
+  border-radius: 12px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  align-items: flex-start;
+  min-width: 0;
+  cursor: pointer;
+}
+
+.inventory-smart-item.kritis,
+.inventory-smart-item.tinggi {
+  border-color: rgba(255, 152, 0, 0.26);
+  background: rgba(255, 152, 0, 0.06);
+}
+
+.inventory-smart-item strong,
+.inventory-smart-item span,
+.inventory-smart-item small {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.inventory-smart-item strong {
+  font-size: 0.82rem;
+  white-space: nowrap;
+}
+
+.inventory-smart-item span {
+  color: var(--text-secondary);
+  font-size: 0.72rem;
+  line-height: 1.25;
+}
+
+.inventory-smart-item small,
+.inventory-smart-empty {
+  color: var(--text-muted);
+  font-size: 0.7rem;
+}
+
 /* ===== Content Area ===== */
 .inventory-content-area {
   flex: 1;
@@ -455,6 +539,34 @@
   border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 10px;
   overflow: hidden;
+}
+
+.usage-insight-card {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(0, 240, 255, 0.05);
+  border: 1px solid rgba(0, 240, 255, 0.12);
+}
+
+.usage-insight-card.kritis,
+.usage-insight-card.tinggi {
+  background: rgba(255, 152, 0, 0.08);
+  border-color: rgba(255, 152, 0, 0.2);
+}
+
+.usage-insight-card strong {
+  font-size: 0.78rem;
+  color: var(--text-primary);
+}
+
+.usage-insight-card span,
+.usage-insight-card small {
+  font-size: 0.73rem;
+  color: var(--text-secondary);
+  line-height: 1.3;
 }
 
 .maintenance-row {
@@ -879,6 +991,21 @@
   .inventory-page .stats-bar .stat-card:nth-child(4),
   .inventory-page .stats-bar .stat-card:nth-child(5) {
     grid-column: span 1;
+  }
+
+  .inventory-smart-panel {
+    grid-template-columns: 1fr;
+    padding: 12px;
+  }
+
+  .inventory-smart-list {
+    display: flex;
+    overflow-x: auto;
+    padding-bottom: 3px;
+  }
+
+  .inventory-smart-item {
+    min-width: 170px;
   }
 
   .inventory-content-area {

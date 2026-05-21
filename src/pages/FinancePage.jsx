@@ -14,6 +14,7 @@ import {
   buildFinanceLineChartData,
   filterLedgerByPeriod
 } from '../lib/finance';
+import { getRevenueForecast } from '../lib/smartInsights';
 import './FinancePage.css';
 
 const CATEGORIES = {
@@ -69,6 +70,10 @@ const FinancePage = () => {
   const pieChartData = useMemo(
     () => buildExpensePieData(filteredData),
     [filteredData]
+  );
+  const revenueForecast = useMemo(
+    () => getRevenueForecast(bookings, transactions, pricePerHour),
+    [bookings, transactions, pricePerHour]
   );
 
   const PIE_COLORS = ['#ff2a5f', '#00f0ff', '#a855f7', '#4CAF50', '#FF9800', '#E91E63', '#9C27B0'];
@@ -411,6 +416,34 @@ const FinancePage = () => {
       </div>
 
       {/* ── Charts ── */}
+      <div className="finance-smart-panel hide-on-print">
+        <div className="finance-smart-copy">
+          <TrendingUp size={18} />
+          <div>
+            <h3>Forecast Pendapatan Bulanan</h3>
+            <p>Proyeksi berbasis kas masuk berjalan, booking bulan ini, dan piutang aktif.</p>
+          </div>
+        </div>
+        <div className="finance-smart-metrics">
+          <div>
+            <span>Kas saat ini</span>
+            <strong>{formatCurrency(revenueForecast.currentIncome)}</strong>
+          </div>
+          <div>
+            <span>Forecast konservatif</span>
+            <strong>{formatCurrency(revenueForecast.conservativeForecast)}</strong>
+          </div>
+          <div>
+            <span>Forecast optimistis</span>
+            <strong>{formatCurrency(revenueForecast.optimisticForecast)}</strong>
+          </div>
+          <div>
+            <span>Progress bulan</span>
+            <strong>{revenueForecast.progressPercent}%</strong>
+          </div>
+        </div>
+      </div>
+
       <div className="finance-charts-grid hide-on-print">
         {/* Line Chart */}
         <div className="finance-chart-card">

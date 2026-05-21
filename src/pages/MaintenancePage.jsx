@@ -1,15 +1,18 @@
 import { useState, useMemo } from 'react';
 import { useBookingStore } from '../store/useBookingStore';
 import { useFinanceStore } from '../store/useFinanceStore';
+import { useInventoryStore } from '../store/useInventoryStore';
 import { format } from 'date-fns';
 import { Wrench, AlertCircle, CheckCircle, Clock, DollarSign, Trash2, FileText } from 'lucide-react';
 import Modal from '../components/Modal';
 import { toast } from 'sonner';
+import { getMaintenanceUsageInsights } from '../lib/smartInsights';
 import './MaintenancePage.css';
 
 const MaintenancePage = () => {
   const { bookings, deleteBooking } = useBookingStore();
   const { addTransaction } = useFinanceStore();
+  const { inventory } = useInventoryStore();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedLog, setSelectedLog] = useState(null);
@@ -35,6 +38,7 @@ const MaintenancePage = () => {
     const totalCost = maintenanceLogs.reduce((sum, b) => sum + (Number(b.maintenanceCost) || 0), 0);
     return { total, done, pending, totalCost };
   }, [maintenanceLogs]);
+  const usageInsights = useMemo(() => getMaintenanceUsageInsights(inventory, bookings), [inventory, bookings]);
 
   const formatCurrency = (num) =>
     new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(num || 0);
@@ -131,6 +135,29 @@ const MaintenancePage = () => {
             <span className="stat-label">Total Biaya</span>
             <span className="stat-value">{formatCurrency(stats.totalCost)}</span>
           </div>
+        </div>
+      </div>
+
+      {/* Smart Usage Recommendations */}
+      <div className="maint-smart-panel">
+        <div className="maint-smart-head">
+          <Wrench size={18} />
+          <div>
+            <h3>Prioritas Servis Cerdas</h3>
+            <p>{usageInsights.studioHours30d} jam pemakaian studio dalam 30 hari terakhir.</p>
+          </div>
+        </div>
+        <div className="maint-smart-list">
+          {usageInsights.recommendations.slice(0, 3).map(({ item, label, reason, daysToService }) => (
+            <div key={item.id} className={`maint-smart-item ${label.toLowerCase()}`}>
+              <strong>{item.name}</strong>
+              <span>{label} - {reason}</span>
+              <small>{daysToService === null ? 'Belum ada jadwal servis' : daysToService < 0 ? `${Math.abs(daysToService)} hari terlambat` : `${daysToService} hari lagi`}</small>
+            </div>
+          ))}
+          {usageInsights.recommendations.length === 0 && (
+            <div className="maint-smart-empty">Belum ada inventaris yang bisa diprioritaskan.</div>
+          )}
         </div>
       </div>
 

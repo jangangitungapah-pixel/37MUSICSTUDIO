@@ -1,9 +1,11 @@
 import { useState, useMemo } from 'react';
-import { Search, Plus, Edit2, Trash2, Box, Package, AlertTriangle, AlertCircle, Wrench, X, Tag, Hash, StickyNote } from 'lucide-react';
+import { Search, Plus, Edit2, Trash2, Box, Package, AlertCircle, Wrench, X, Tag, Hash, StickyNote } from 'lucide-react';
 import { useInventoryStore } from '../store/useInventoryStore';
+import { useBookingStore } from '../store/useBookingStore';
 import { useTourStore } from '../store/useTourStore';
 import { toast } from 'sonner';
 import Modal from '../components/Modal';
+import { getMaintenanceUsageInsights } from '../lib/smartInsights';
 import './InventoryPage.css';
 
 const CONDITION_COLORS = {
@@ -15,6 +17,7 @@ const CONDITION_COLORS = {
 
 const InventoryPage = () => {
   const { inventory, categories, addCategory, addEquipment, updateEquipment, deleteEquipment, getStats } = useInventoryStore();
+  const { bookings } = useBookingStore();
   const { run, currentStep, nextStep } = useTourStore();
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('All');
@@ -33,6 +36,7 @@ const InventoryPage = () => {
   const [newCatName, setNewCatName] = useState('');
 
   const stats = getStats();
+  const maintenanceInsights = useMemo(() => getMaintenanceUsageInsights(inventory, bookings), [inventory, bookings]);
 
   const filteredInventory = useMemo(() => {
     let result = inventory;
@@ -207,6 +211,33 @@ const InventoryPage = () => {
         </div>
       </div>
 
+      {/* Smart Maintenance */}
+      <div className="inventory-smart-panel">
+        <div className="inventory-smart-head">
+          <Wrench size={18} />
+          <div>
+            <h3>Maintenance Berbasis Pemakaian</h3>
+            <p>{maintenanceInsights.studioHours30d} jam pemakaian studio dalam 30 hari terakhir.</p>
+          </div>
+        </div>
+        <div className="inventory-smart-list">
+          {maintenanceInsights.recommendations.slice(0, 4).map(({ item, label, usageHours, reason }) => (
+            <button
+              key={item.id}
+              className={`inventory-smart-item ${label.toLowerCase()}`}
+              onClick={() => handleRowClick(item)}
+            >
+              <strong>{item.name}</strong>
+              <span>{label} - {reason}</span>
+              <small>{usageHours} jam estimasi</small>
+            </button>
+          ))}
+          {maintenanceInsights.recommendations.length === 0 && (
+            <span className="inventory-smart-empty">Belum ada data inventaris untuk dianalisis.</span>
+          )}
+        </div>
+      </div>
+
       {/* Content Area */}
       <div className="inventory-content-area">
         <div className="inventory-container glass-panel">
@@ -372,6 +403,16 @@ const InventoryPage = () => {
 
               <div className="detail-section">
                 <h4 className="section-title">Maintenance</h4>
+                {(() => {
+                  const insight = maintenanceInsights.recommendations.find((rec) => rec.item.id === selectedItem.id);
+                  return insight ? (
+                    <div className={`usage-insight-card ${insight.label.toLowerCase()}`}>
+                      <strong>{insight.label}</strong>
+                      <span>{insight.reason}</span>
+                      <small>Estimasi pemakaian 30 hari: {insight.usageHours} jam</small>
+                    </div>
+                  ) : null;
+                })()}
                 <div className="maintenance-card">
                   <div className="maintenance-row">
                     <span className="m-label">Servis Terakhir</span>

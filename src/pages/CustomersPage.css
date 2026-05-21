@@ -1213,3 +1213,46 @@
   background: rgba(168, 85, 247, 0.2);
 }
 
+.customer-smart-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.customer-smart-card {
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.customer-smart-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--accent-cyan);
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.customer-smart-card strong {
+  color: var(--text-primary);
+  font-size: 1.05rem;
+}
+
+.customer-smart-card small {
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+  line-height: 1.35;
+}
+
+@media (max-width: 768px) {
+  .customer-smart-grid {
+    grid-template-columns: 1fr;
+  }
+}

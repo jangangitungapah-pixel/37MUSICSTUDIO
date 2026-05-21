@@ -8,9 +8,10 @@ import { format, subDays, addMonths } from 'date-fns';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import {
   TrendingUp, TrendingDown, Users, CalendarCheck, PackageOpen, Clock,
-  ArrowRight, AlertTriangle, CheckCircle2, Music2
+  ArrowRight, AlertTriangle, CheckCircle2, Music2, Lightbulb, Wallet, Activity
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { getAnomalies, getBillingInsights, getDemandInsights, getRevenueForecast } from '../lib/smartInsights';
 import './DashboardPage.css';
 
 const COLORS = ['#00f0ff', '#4CAF50', '#FFC107', '#ff2a5f'];
@@ -48,6 +49,14 @@ const DashboardPage = () => {
     });
     return allEntries;
   }, [transactions, bookings, pricePerHour]);
+
+  const demandInsights = useMemo(() => getDemandInsights(bookings), [bookings]);
+  const billingInsights = useMemo(() => getBillingInsights(bookings, pricePerHour), [bookings, pricePerHour]);
+  const revenueForecast = useMemo(
+    () => getRevenueForecast(bookings, transactions, pricePerHour, today),
+    [bookings, transactions, pricePerHour, today]
+  );
+  const anomalies = useMemo(() => getAnomalies(bookings, pricePerHour), [bookings, pricePerHour]);
 
   const revenueChartData = useMemo(() => {
     return Array.from({ length: 7 }, (_, i) => {
@@ -110,6 +119,42 @@ const DashboardPage = () => {
               <span>Semua berjalan lancar!</span>
             </div>
           )}
+        </div>
+      </div>
+
+      {/* ===== Smart Insights ===== */}
+      <div className="dash-smart-grid">
+        <div className="dash-smart-card glass-panel">
+          <div className="dash-smart-icon cyan"><Lightbulb size={18} /></div>
+          <div className="dash-smart-copy">
+            <span className="dash-smart-label">Pola Booking</span>
+            <strong>{demandInsights.busiestDayCount > 0 ? `${demandInsights.busiestDay}, ${demandInsights.busiestHour}.00` : 'Belum ada pola'}</strong>
+            <small>{demandInsights.favoriteDuration ? `Durasi favorit ${demandInsights.favoriteDuration} jam, okupansi ${demandInsights.occupancyPercent}%` : 'Butuh data booking untuk membaca tren.'}</small>
+          </div>
+        </div>
+        <div className="dash-smart-card glass-panel">
+          <div className="dash-smart-icon green"><Wallet size={18} /></div>
+          <div className="dash-smart-copy">
+            <span className="dash-smart-label">Forecast Bulan Ini</span>
+            <strong>{formatCurrency(revenueForecast.conservativeForecast)}</strong>
+            <small>Optimistis {formatCurrency(revenueForecast.optimisticForecast)} termasuk sisa tagihan.</small>
+          </div>
+        </div>
+        <div className="dash-smart-card glass-panel">
+          <div className="dash-smart-icon orange"><Clock size={18} /></div>
+          <div className="dash-smart-copy">
+            <span className="dash-smart-label">Follow-up Billing</span>
+            <strong>{billingInsights.followUpsToday.length} prioritas hari ini</strong>
+            <small>{billingInsights.summary}</small>
+          </div>
+        </div>
+        <div className="dash-smart-card glass-panel">
+          <div className={`dash-smart-icon ${anomalies.length ? 'red' : 'green'}`}><Activity size={18} /></div>
+          <div className="dash-smart-copy">
+            <span className="dash-smart-label">Anomali Data</span>
+            <strong>{anomalies.length ? `${anomalies.length} perlu dicek` : 'Tidak ada anomali'}</strong>
+            <small>{anomalies[0]?.detail || 'Harga, DP, jam, dan overlap jadwal terlihat normal.'}</small>
+          </div>
         </div>
       </div>
 

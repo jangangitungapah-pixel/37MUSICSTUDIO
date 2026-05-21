@@ -1576,3 +1576,117 @@
   .no-print { display: none !important; }
   html, body { background: white; }
 }
+/* ===== Smart Billing ===== */
+.billing-smart-panel {
+  display: grid;
+  grid-template-columns: minmax(240px, 0.75fr) 1.6fr;
+  gap: 12px;
+  align-items: stretch;
+  padding: 14px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.billing-smart-main {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(0, 240, 255, 0.06);
+  color: var(--accent-cyan);
+}
+
+.billing-smart-main h3 {
+  margin: 0 0 3px;
+  font-size: 0.94rem;
+}
+
+.billing-smart-main p {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+  line-height: 1.35;
+}
+
+.billing-smart-list {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.billing-smart-item {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.billing-smart-item.overdue,
+.billing-smart-item.today {
+  border-color: rgba(255, 152, 0, 0.26);
+  background: rgba(255, 152, 0, 0.06);
+}
+
+.billing-smart-item strong,
+.billing-smart-item span {
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.billing-smart-item strong {
+  color: var(--text-primary);
+  font-size: 0.82rem;
+}
+
+.billing-smart-item span {
+  color: var(--text-muted);
+  font-size: 0.7rem;
+}
+
+.billing-smart-item small {
+  color: var(--text-primary);
+  font-weight: 800;
+  font-size: 0.76rem;
+  white-space: nowrap;
+}
+
+.billing-smart-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 240, 255, 0.18);
+  background: rgba(0, 240, 255, 0.08);
+  color: var(--accent-cyan);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.billing-smart-empty {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  padding: 12px;
+}
+
+@media (max-width: 900px) {
+  .billing-smart-panel {
+    grid-template-columns: 1fr;
+  }
+
+  .billing-smart-list {
+    grid-template-columns: 1fr;
+  }
+}

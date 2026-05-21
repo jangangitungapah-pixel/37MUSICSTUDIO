@@ -287,6 +287,75 @@
   letter-spacing: -0.5px;
 }
 
+/* ===== Smart Forecast ===== */
+.finance-smart-panel {
+  display: grid;
+  grid-template-columns: minmax(250px, 0.8fr) 1.6fr;
+  gap: 12px;
+  padding: 14px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.finance-smart-copy {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(76, 175, 80, 0.08);
+  color: #4CAF50;
+}
+
+.finance-smart-copy h3 {
+  margin: 0 0 3px;
+  font-size: 0.94rem;
+}
+
+.finance-smart-copy p {
+  margin: 0;
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  line-height: 1.35;
+}
+
+.finance-smart-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.finance-smart-metrics div {
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  min-width: 0;
+}
+
+.finance-smart-metrics span {
+  display: block;
+  color: var(--text-muted);
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.finance-smart-metrics strong {
+  display: block;
+  margin-top: 5px;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 /* ===== Charts Section ===== */
 .finance-charts-grid {
   display: grid;
@@ -854,6 +923,14 @@
 
   .finance-stats .finance-stat-card:nth-child(1) {
     grid-column: 1 / -1;
+  }
+
+  .finance-smart-panel {
+    grid-template-columns: 1fr;
+  }
+
+  .finance-smart-metrics {
+    grid-template-columns: 1fr 1fr;
   }
 
   .finance-content {
