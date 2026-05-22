@@ -26,6 +26,10 @@ import { hasBookingOverlap } from '../lib/bookingWorkflows';
 import { buildDashboardWorkbook } from '../lib/dashboardWorkbook';
 import { useStaffStore } from '../store/useStaffStore';
 import { toast } from 'sonner';
+import MotionSection from '../components/animation/MotionSection';
+import MotionButton from '../components/animation/MotionButton';
+import { MotionList } from '../components/animation/MotionList';
+import { MotionListItem } from '../components/animation/MotionListItem';
 import './DashboardPage.css';
 
 const COLORS = ['#00f0ff', '#4CAF50', '#FFC107', '#ff2a5f'];
@@ -219,7 +223,7 @@ const DashboardPage = () => {
     <div className="dashboard-page">
 
       {/* ===== Greeting Banner ===== */}
-      <div className="dash-greeting glass-panel">
+      <MotionSection direction="down" className="dash-greeting glass-panel">
         <div className="dash-greeting-left">
           <div className="dash-greeting-icon"><Music2 size={22} /></div>
           <div>
@@ -252,51 +256,51 @@ const DashboardPage = () => {
               <span>Semua berjalan lancar!</span>
             </div>
           )}
-          <button onClick={handleExportExcel} className="btn-primary" style={{ marginLeft: 8, padding: '8px 16px', borderRadius: '12px' }} title="Unduh Semua Laporan (Excel)">
+          <MotionButton onClick={handleExportExcel} className="btn-primary" style={{ marginLeft: 8, padding: '8px 16px', borderRadius: '12px' }} title="Unduh Semua Laporan (Excel)">
             <Download size={16} />
             <span className="hide-on-mobile">Unduh Laporan</span>
-          </button>
+          </MotionButton>
         </div>
-      </div>
+      </MotionSection>
 
       {/* ===== Smart Insights ===== */}
-      <div className="dash-smart-grid">
-        <div className="dash-smart-card glass-panel">
+      <MotionList as="div" className="dash-smart-grid">
+        <MotionListItem as="div" className="dash-smart-card glass-panel">
           <div className="dash-smart-icon cyan"><Lightbulb size={18} /></div>
           <div className="dash-smart-copy">
             <span className="dash-smart-label">Pola Booking</span>
             <strong>{demandInsights.busiestDayCount > 0 ? `${demandInsights.busiestDay}, ${demandInsights.busiestHour}.00` : 'Belum ada pola'}</strong>
             <small>{demandInsights.favoriteDuration ? `Durasi favorit ${demandInsights.favoriteDuration} jam, okupansi ${demandInsights.occupancyPercent}%` : 'Butuh data booking untuk membaca tren.'}</small>
           </div>
-        </div>
-        <div className="dash-smart-card glass-panel">
+        </MotionListItem>
+        <MotionListItem as="div" className="dash-smart-card glass-panel">
           <div className="dash-smart-icon green"><Wallet size={18} /></div>
           <div className="dash-smart-copy">
             <span className="dash-smart-label">Forecast Bulan Ini</span>
             <strong>{formatCurrency(revenueForecast.conservativeForecast)}</strong>
             <small>Optimistis {formatCurrency(revenueForecast.optimisticForecast)} termasuk sisa tagihan.</small>
           </div>
-        </div>
-        <div className="dash-smart-card glass-panel">
+        </MotionListItem>
+        <MotionListItem as="div" className="dash-smart-card glass-panel">
           <div className="dash-smart-icon orange"><Clock size={18} /></div>
           <div className="dash-smart-copy">
             <span className="dash-smart-label">Follow-up Billing</span>
             <strong>{billingInsights.followUpsToday.length} prioritas hari ini</strong>
             <small>{billingInsights.summary}</small>
           </div>
-        </div>
-        <div className="dash-smart-card glass-panel">
+        </MotionListItem>
+        <MotionListItem as="div" className="dash-smart-card glass-panel">
           <div className={`dash-smart-icon ${anomalies.length ? 'red' : 'green'}`}><Activity size={18} /></div>
           <div className="dash-smart-copy">
             <span className="dash-smart-label">Anomali Data</span>
             <strong>{anomalies.length ? `${anomalies.length} perlu dicek` : 'Tidak ada anomali'}</strong>
             <small>{anomalies[0]?.detail || 'Harga, DP, jam, dan overlap jadwal terlihat normal.'}</small>
           </div>
-        </div>
-      </div>
+        </MotionListItem>
+      </MotionList>
 
       {/* ===== Operational Command Center ===== */}
-      <div className="dash-command-grid">
+      <MotionSection direction="up" delay={0.1} className="dash-command-grid">
         <section className="dash-command-panel glass-panel">
           <div className="dash-command-head">
             <div className="dash-command-title">
@@ -423,7 +427,7 @@ const DashboardPage = () => {
             </button>
           </div>
         </section>
-      </div>
+      </MotionSection>
 
       {/* ===== Stats Cards ===== */}
       <div className="dash-stats-grid tour-dashboard-stats">

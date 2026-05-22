@@ -1,5 +1,6 @@
 import { useEffect, Suspense, lazy, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { AnimatePresence } from 'framer-motion';
 import { useAuthStore } from './store/useAuthStore';
 import { useThemeStore } from './store/useThemeStore';
 import Sidebar from './components/Sidebar';
@@ -172,18 +173,20 @@ const AnimatedRoutes = () => {
     // The key on Routes causes React to remount the page component on navigation,
     // which triggers PageTransition's initial→animate enter animation.
     <Suspense fallback={null}>
-      <Routes location={location} key={location.pathname}>
-        <Route path="/dashboard" element={<PageTransition><DashboardPage /></PageTransition>} />
-        <Route path="/calendar" element={<PageTransition><CalendarPage /></PageTransition>} />
-        <Route path="/customers" element={<PageTransition><CustomersPage /></PageTransition>} />
-        <Route path="/inventory" element={<PageTransition><InventoryPage /></PageTransition>} />
-        <Route path="/billing" element={<PageTransition><BillingPage /></PageTransition>} />
-        <Route path="/finance" element={<PageTransition><FinancePage /></PageTransition>} />
-        <Route path="/staff" element={<PageTransition><StaffPage /></PageTransition>} />
-        <Route path="/maintenance" element={<PageTransition><MaintenancePage /></PageTransition>} />
-        <Route path="/settings" element={<PageTransition><SettingsPage /></PageTransition>} />
-        <Route path="*" element={<Navigate to="/dashboard" replace />} />
-      </Routes>
+      <AnimatePresence mode="wait">
+        <Routes location={location} key={location.pathname}>
+          <Route path="/dashboard" element={<PageTransition><DashboardPage /></PageTransition>} />
+          <Route path="/calendar" element={<PageTransition><CalendarPage /></PageTransition>} />
+          <Route path="/customers" element={<PageTransition><CustomersPage /></PageTransition>} />
+          <Route path="/inventory" element={<PageTransition><InventoryPage /></PageTransition>} />
+          <Route path="/billing" element={<PageTransition><BillingPage /></PageTransition>} />
+          <Route path="/finance" element={<PageTransition><FinancePage /></PageTransition>} />
+          <Route path="/staff" element={<PageTransition><StaffPage /></PageTransition>} />
+          <Route path="/maintenance" element={<PageTransition><MaintenancePage /></PageTransition>} />
+          <Route path="/settings" element={<PageTransition><SettingsPage /></PageTransition>} />
+          <Route path="*" element={<Navigate to="/dashboard" replace />} />
+        </Routes>
+      </AnimatePresence>
     </Suspense>
   );
 };

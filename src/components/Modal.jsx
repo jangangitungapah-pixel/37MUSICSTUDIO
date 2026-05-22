@@ -1,9 +1,15 @@
 import * as Dialog from '@radix-ui/react-dialog';
 import { AnimatePresence, motion } from 'framer-motion';
 import { X } from 'lucide-react';
+import { modalPreset, overlayVariants } from '../animations';
+import { useAppMotion } from '../hooks/useAppMotion';
 import './Modal.css';
 
 const Modal = ({ isOpen, onClose, title, children, className = '' }) => {
+  const { getMotionProps } = useAppMotion();
+  const overlayProps = getMotionProps({ variants: overlayVariants, initial: 'hidden', animate: 'visible', exit: 'exit' });
+  const contentProps = getMotionProps(modalPreset);
+
   return (
     <Dialog.Root open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <AnimatePresence>
@@ -12,10 +18,7 @@ const Modal = ({ isOpen, onClose, title, children, className = '' }) => {
             <Dialog.Overlay asChild>
               <motion.div
                 className="modal-overlay"
-                initial={{ opacity: 0, backdropFilter: 'blur(0px)' }}
-                animate={{ opacity: 1, backdropFilter: 'blur(12px)' }}
-                exit={{ opacity: 0, backdropFilter: 'blur(0px)' }}
-                transition={{ duration: 0.3, ease: 'easeOut' }}
+                {...overlayProps}
               />
             </Dialog.Overlay>
             
@@ -24,10 +27,7 @@ const Modal = ({ isOpen, onClose, title, children, className = '' }) => {
                 <motion.div
                   className={`modal-content glass-panel ${className}`}
                   style={{ pointerEvents: 'auto' }}
-                  initial={{ opacity: 0, scale: window.innerWidth <= 768 ? 1 : 0.95, y: window.innerWidth <= 768 ? "100%" : 10 }}
-                  animate={{ opacity: 1, scale: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: window.innerWidth <= 768 ? 1 : 0.95, y: window.innerWidth <= 768 ? "100%" : 10 }}
-                  transition={{ duration: 0.35, type: 'spring', bounce: 0.2 }}
+                  {...contentProps}
                 >
                   {title ? (
                     <div className="modal-header">
