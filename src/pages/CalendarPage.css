@@ -241,6 +241,19 @@
   letter-spacing: -0.02em;
   font-family: var(--font-display);
 }
+.recording-pill {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 6px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: var(--accent-cyan);
+  color: #000;
+  font-size: 0.7rem;
+  line-height: 1.1;
+  font-weight: 800;
+  vertical-align: middle;
+}
 .detail-header-actions { display: flex; align-items: center; gap: 8px; }
 
 /* Status dot */
@@ -293,6 +306,9 @@
   border-radius: 11px;
   padding: 4px 8px;
   align-self: flex-start;
+}
+.duration-controls.is-muted {
+  opacity: 0.8;
 }
 .dur-btn {
   background: rgba(255, 255, 255, 0.07);
@@ -1248,6 +1264,88 @@ body.calendar-move-lock .main-content {
 
 /* ── Reschedule form ── */
 .reschedule-form { display: grid; gap: 14px; }
+
+.resize-confirm-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.resize-warning-box {
+  padding: 14px;
+  background: rgba(0, 240, 255, 0.06);
+  border: 1px solid rgba(0, 240, 255, 0.15);
+  border-radius: 10px;
+}
+.resize-warning-box h4 {
+  margin: 0 0 8px;
+  color: var(--text-primary);
+  font-size: 0.95rem;
+}
+.resize-warning-box p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+.resize-arrow,
+.resize-new-duration {
+  color: var(--accent-cyan);
+}
+.resize-price-details {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+}
+.resize-price-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+}
+.resize-price-row > span:first-child {
+  color: var(--text-secondary);
+}
+.resize-price-row.is-total {
+  font-weight: 800;
+}
+.resize-price-row.is-total > span:last-child {
+  color: #4CAF50;
+}
+.resize-diff-note {
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+}
+.resize-diff-note.increase {
+  background: rgba(255, 152, 0, 0.1);
+  color: #FF9800;
+}
+.resize-diff-note.decrease {
+  background: rgba(76, 175, 80, 0.1);
+  color: #4CAF50;
+}
+.resize-recording-note {
+  margin-top: -8px;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.4);
+}
+.resize-status-warning {
+  padding: 10px;
+  background: rgba(255, 42, 95, 0.1);
+  border-left: 3px solid #ff2a5f;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  color: #ffb4b4;
+}
+.resize-confirm-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 8px;
+}
+.resize-confirm-actions .btn-secondary,
+.resize-confirm-actions .btn-primary {
+  flex: 1;
+}
 
 /* ══════════════════════════════════════════
    ANIMATIONS

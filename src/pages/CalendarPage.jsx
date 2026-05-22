@@ -13,6 +13,8 @@ import Modal from '../components/Modal';
 import BookingForm from '../components/BookingForm';
 import { getAnomalies, getDemandInsights, getSlotRecommendations } from '../lib/smartInsights';
 import { getDepositDeadlineStatus, hasBookingOverlap } from '../lib/bookingWorkflows';
+import { useCalendarBookingMove } from '../hooks/useCalendarBookingMove';
+import { useCalendarBookingResize } from '../hooks/useCalendarBookingResize';
 import './CalendarPage.css';
 import './CalendarPrintStyles.css';
 
@@ -37,27 +39,7 @@ const CalendarPage = () => {
   // Drag & drop state
   const [draggedBooking, setDraggedBooking] = useState(null);
 
-  // Resize state
-  const [resizingBooking, setResizingBooking] = useState(null);
-  const [initialResizeY, setInitialResizeY] = useState(0);
-  const [resizeAddedHours, setResizeAddedHours] = useState(0);
-  const [resizeConfirmData, setResizeConfirmData] = useState(null);
   const [rescheduleDraft, setRescheduleDraft] = useState(null);
-  const [movingBooking, setMovingBooking] = useState(null);
-  const [moveGhost, setMoveGhost] = useState(null);
-  const [moveTarget, setMoveTarget] = useState(null);
-  const longPressTimerRef = useRef(null);
-  const moveTargetRef = useRef(null);
-  const suppressNextBookingClickRef = useRef(false);
-
-  const getPointerPoint = useCallback((event) => {
-    const source = event.touches?.[0] || event.changedTouches?.[0] || event;
-    return { x: source.clientX ?? 0, y: source.clientY ?? 0 };
-  }, []);
-
-  const getPointerY = useCallback((event) => {
-    return getPointerPoint(event).y;
-  }, [getPointerPoint]);
 
   const getCalendarCellHeight = useCallback(() => {
     const cell = gridWrapperRef.current?.querySelector('.grid-cell');
@@ -71,7 +53,6 @@ const CalendarPage = () => {
     return () => {
       window.removeEventListener('resize', handleResize);
       clearInterval(interval);
-      if (longPressTimerRef.current) window.clearTimeout(longPressTimerRef.current);
       document.body.classList.remove('calendar-move-lock', 'calendar-resize-lock');
     };
   }, []);
@@ -88,65 +69,6 @@ const CalendarPage = () => {
   const { pricePerHour, studioName, durationDiscounts = [], recordingSessions = [], operationalHours = { start: 10, end: 23 }, blockedDates = [] } = useSettingsStore();
   const { inventory } = useInventoryStore();
   const { run, currentStep, nextStep } = useTourStore();
-
-  const getMoveTargetAtPoint = useCallback((point, booking) => {
-    const element = document.elementFromPoint(point.x, point.y)?.closest('[data-calendar-cell="true"]');
-    if (!element || !gridWrapperRef.current?.contains(element)) return null;
-
-    const date = element.dataset.date;
-    const hour = Number(element.dataset.hour);
-    if (!date || Number.isNaN(hour)) return null;
-
-    const candidate = { date, hour, duration: Number(booking.duration || 1) };
-    const isBlocked = blockedDates.includes(date);
-    const isOutsideHours = hour < Number(operationalHours.start) || hour + candidate.duration > Number(operationalHours.end);
-    const hasConflict = hasBookingOverlap(bookings, candidate, booking.id);
-    const isSameSlot = booking.date === date && Number(booking.hour) === hour;
-
-    return {
-      date,
-      hour,
-      duration: candidate.duration,
-      isSameSlot,
-      isValid: !isBlocked && !isOutsideHours && !hasConflict,
-      reason: isBlocked ? 'Tanggal diblokir' : isOutsideHours ? 'Di luar jam operasional' : hasConflict ? 'Slot bentrok' : 'Slot tersedia',
-    };
-  }, [blockedDates, bookings, operationalHours.end, operationalHours.start]);
-
-  const applyMoveTarget = useCallback((point, booking) => {
-    const target = getMoveTargetAtPoint(point, booking);
-    moveTargetRef.current = target;
-    setMoveTarget(target);
-  }, [getMoveTargetAtPoint]);
-
-  const finishMobileMove = useCallback((booking, target) => {
-    if (!target) {
-      useNotificationStore.getState().addNotification({
-        title: 'Pindah booking dibatalkan',
-        message: 'Lepaskan booking di area kalender yang valid.',
-        type: 'warning',
-      });
-      return;
-    }
-
-    if (!target.isValid) {
-      useNotificationStore.getState().addNotification({
-        title: target.reason,
-        message: 'Jam tujuan harus kosong sesuai durasi booking sebelumnya.',
-        type: 'error',
-      });
-      return;
-    }
-
-    if (target.isSameSlot) return;
-
-    updateBooking(booking.id, { date: target.date, hour: target.hour });
-    useNotificationStore.getState().addNotification({
-      title: 'Booking dipindahkan',
-      message: `${booking.band} dipindahkan ke ${target.date} jam ${String(target.hour).padStart(2, '0')}.00.`,
-      type: 'success',
-    });
-  }, [updateBooking]);
 
   const calculatePrice = useCallback((b, dur) => {
     let base;
@@ -167,6 +89,40 @@ const CalendarPage = () => {
     const equipmentCost = b.equipmentCost || 0;
     return { base, durDisc, vipDisc, total: base + equipmentCost - (vipDisc + durDisc) };
   }, [durationDiscounts, pricePerHour, recordingSessions]);
+
+  const {
+    resizingBooking,
+    resizeAddedHours,
+    resizeConfirmData,
+    setResizeConfirmData,
+    handleResizeStart,
+    confirmResize,
+  } = useCalendarBookingResize({
+    bookings,
+    updateBooking,
+    calculatePrice,
+    getCalendarCellHeight,
+    touchStartRef,
+  });
+
+  const {
+    movingBooking,
+    moveGhost,
+    moveTarget,
+    suppressNextBookingClickRef,
+    handleMobileBookingPointerDown,
+  } = useCalendarBookingMove({
+    isMobile,
+    resizingBooking,
+    gridWrapperRef,
+    bookings,
+    blockedDates,
+    operationalHours,
+    updateBooking,
+    touchStartRef,
+    setSelectedBooking,
+    getCalendarCellHeight,
+  });
 
   const daysArray = useMemo(() => {
     if (viewMode === 'day') return [currentDate];
@@ -289,104 +245,6 @@ const CalendarPage = () => {
     }
   };
 
-  const handleMobileBookingPointerDown = useCallback((event, booking) => {
-    if (!isMobile || resizingBooking || event.target.closest('.resize-handle')) return;
-    if (event.button !== undefined && event.button !== 0) return;
-
-    const startPoint = getPointerPoint(event);
-    const sourceRect = event.currentTarget.getBoundingClientRect();
-    const cellHeight = getCalendarCellHeight();
-    const ghostHeight = Math.max(cellHeight, cellHeight * Number(booking.duration || 1));
-    const ghostWidth = sourceRect.width;
-    let isActivated = false;
-    let hasDraggedAfterActivation = false;
-
-    const clearTimer = () => {
-      if (longPressTimerRef.current) {
-        window.clearTimeout(longPressTimerRef.current);
-        longPressTimerRef.current = null;
-      }
-    };
-
-    const setGhostAtPoint = (point) => {
-      setMoveGhost({
-        x: point.x - (ghostWidth / 2),
-        y: point.y - Math.min(28, ghostHeight / 2),
-        width: ghostWidth,
-        height: ghostHeight,
-      });
-    };
-
-    const activateMove = () => {
-      isActivated = true;
-      suppressNextBookingClickRef.current = true;
-      touchStartRef.current = null;
-      moveTargetRef.current = null;
-      document.body.classList.add('calendar-move-lock');
-      setSelectedBooking(null);
-      setMovingBooking(booking);
-      setGhostAtPoint(startPoint);
-      applyMoveTarget(startPoint, booking);
-      if (navigator.vibrate) navigator.vibrate(12);
-    };
-
-    const cleanup = () => {
-      clearTimer();
-      document.body.classList.remove('calendar-move-lock');
-      document.removeEventListener('pointermove', handlePointerMove);
-      document.removeEventListener('pointerup', handlePointerUp);
-      document.removeEventListener('pointercancel', handlePointerCancel);
-      setMovingBooking(null);
-      setMoveGhost(null);
-      setMoveTarget(null);
-      moveTargetRef.current = null;
-      if (isActivated) {
-        window.setTimeout(() => {
-          suppressNextBookingClickRef.current = false;
-        }, 500);
-      }
-    };
-
-    const handlePointerMove = (moveEvent) => {
-      const point = getPointerPoint(moveEvent);
-      const movedDistance = Math.hypot(point.x - startPoint.x, point.y - startPoint.y);
-
-      if (!isActivated && movedDistance > 12) {
-        cleanup();
-        return;
-      }
-
-      if (!isActivated) return;
-      if (moveEvent.cancelable) moveEvent.preventDefault();
-      moveEvent.stopPropagation();
-      if (movedDistance > 12) hasDraggedAfterActivation = true;
-      setGhostAtPoint(point);
-      applyMoveTarget(point, booking);
-    };
-
-    const handlePointerUp = (upEvent) => {
-      if (isActivated) {
-        if (upEvent.cancelable) upEvent.preventDefault();
-        upEvent.stopPropagation();
-        const target = moveTargetRef.current;
-        cleanup();
-        if (!hasDraggedAfterActivation) return;
-        finishMobileMove(booking, target);
-        return;
-      }
-      cleanup();
-    };
-
-    const handlePointerCancel = () => {
-      cleanup();
-    };
-
-    longPressTimerRef.current = window.setTimeout(activateMove, 360);
-    document.addEventListener('pointermove', handlePointerMove, { passive: false });
-    document.addEventListener('pointerup', handlePointerUp);
-    document.addEventListener('pointercancel', handlePointerCancel);
-  }, [applyMoveTarget, finishMobileMove, getCalendarCellHeight, getPointerPoint, isMobile, resizingBooking]);
-
   const handleApproveRequest = async (request) => {
     const candidate = {
       date: request.date,
@@ -430,110 +288,6 @@ const CalendarPage = () => {
     } catch (error) {
       useNotificationStore.getState().addNotification({ title: 'Gagal menolak request', message: error.message || 'Coba lagi beberapa saat lagi.', type: 'error' });
     }
-  };
-
-  // Resize handler
-  const handleResizeStart = (e, booking) => {
-    e.stopPropagation();
-    e.preventDefault();
-    touchStartRef.current = null;
-    setResizingBooking(booking);
-    setInitialResizeY(getPointerY(e));
-    setResizeAddedHours(0);
-  };
-
-  useEffect(() => {
-    const handleResizeMove = (e) => {
-      if (!resizingBooking) return;
-      if (e.cancelable) e.preventDefault();
-      e.stopPropagation();
-
-      const clientY = getPointerY(e);
-      const diffY = clientY - initialResizeY;
-      const cellHeight = getCalendarCellHeight();
-      const addedHours = Math.round(diffY / cellHeight);
-      setResizeAddedHours(addedHours);
-    };
-    const handleResizeEnd = (e) => {
-      if (!resizingBooking) return;
-      if (e.cancelable) e.preventDefault();
-      e.stopPropagation();
-
-      const clientY = getPointerY(e);
-      const diffY = clientY - initialResizeY;
-      const cellHeight = getCalendarCellHeight();
-      const addedHours = Math.round(diffY / cellHeight);
-      
-      if (addedHours !== 0) {
-        const newDur = Math.max(1, Math.min(13, resizingBooking.duration + addedHours));
-        if (newDur !== resizingBooking.duration) {
-          const candidate = { date: resizingBooking.date, hour: resizingBooking.hour, duration: newDur };
-          if (hasBookingOverlap(bookings, candidate, resizingBooking.id)) {
-            useNotificationStore.getState().addNotification({
-              title: 'Jadwal Bentrok!',
-              message: 'Perpanjangan waktu bertabrakan dengan jadwal lain.',
-              type: 'error',
-            });
-            setResizingBooking(null);
-            setResizeAddedHours(0);
-            return;
-          }
-
-          if (resizingBooking.type === 'maintenance') {
-            updateBooking(resizingBooking.id, { duration: newDur });
-          } else {
-            const oldCalc = calculatePrice(resizingBooking, resizingBooking.duration);
-            const newCalc = calculatePrice(resizingBooking, newDur);
-            setResizeConfirmData({
-              booking: resizingBooking,
-              oldDuration: resizingBooking.duration,
-              newDuration: newDur,
-              oldPrice: oldCalc.total,
-              newPrice: newCalc.total,
-              newDiscountAmount: newCalc.durDisc + newCalc.vipDisc,
-              diff: newCalc.total - oldCalc.total
-            });
-          }
-        }
-      }
-      setResizingBooking(null);
-      setResizeAddedHours(0);
-    };
-
-    if (resizingBooking) {
-      document.body.classList.add('calendar-resize-lock');
-      document.addEventListener('mousemove', handleResizeMove);
-      document.addEventListener('mouseup', handleResizeEnd);
-      document.addEventListener('touchmove', handleResizeMove, { passive: false });
-      document.addEventListener('touchend', handleResizeEnd);
-      document.addEventListener('touchcancel', handleResizeEnd);
-    }
-    return () => {
-      document.body.classList.remove('calendar-resize-lock');
-      document.removeEventListener('mousemove', handleResizeMove);
-      document.removeEventListener('mouseup', handleResizeEnd);
-      document.removeEventListener('touchmove', handleResizeMove);
-      document.removeEventListener('touchend', handleResizeEnd);
-      document.removeEventListener('touchcancel', handleResizeEnd);
-    };
-  }, [resizingBooking, initialResizeY, updateBooking, calculatePrice, bookings, getCalendarCellHeight, getPointerY]);
-
-  const confirmResize = () => {
-    if (!resizeConfirmData) return;
-    const { booking, newDuration, newPrice, newDiscountAmount } = resizeConfirmData;
-    let newStatus = booking.status;
-    
-    // Auto-downgrade status if price increases and it was confirmed, but dpAmount is now less than new total
-    if (booking.status === 'confirmed' && newPrice > (booking.dpAmount || 0) && newPrice > calculatePrice(booking, booking.duration).total) {
-      newStatus = 'dp';
-    }
-
-    updateBooking(booking.id, { 
-      duration: newDuration, 
-      status: newStatus,
-      discountAmount: newDiscountAmount
-    });
-    setResizeConfirmData(null);
   };
 
   const handleBookingClick = (e, booking) => {
@@ -1068,7 +822,7 @@ const CalendarPage = () => {
               <div className="detail-header">
                 <div className="detail-header-info">
                   <span className={`detail-status-dot status-${b.status}`} />
-                  <h4>{b.band} {isRecording && <span style={{fontSize:'0.7rem', background:'var(--accent-cyan)', color:'#000', padding:'2px 6px', borderRadius:'4px', marginLeft:'6px'}}>Recording</span>}</h4>
+                  <h4>{b.band} {isRecording && <span className="recording-pill">Recording</span>}</h4>
                 </div>
                 <div className="detail-header-actions">
                   <span className={`detail-status-badge status-${b.status}`}>{getStatusLabel(b.status)}</span>
@@ -1083,7 +837,7 @@ const CalendarPage = () => {
                   <div className="detail-info-content">
                     <span>{b.date} • {b.hour}.00 – {b.hour + b.duration}.00 WIB</span>
                     {isRecording ? (
-                      <div className="duration-controls" style={{ opacity: 0.8 }}>
+                      <div className="duration-controls is-muted">
                         <span className="dur-label">Paket Sesi ({b.duration} jam)</span>
                       </div>
                     ) : (
@@ -1257,27 +1011,27 @@ const CalendarPage = () => {
       {/* Resize Confirmation Modal */}
       <Modal isOpen={!!resizeConfirmData} onClose={() => setResizeConfirmData(null)} title="Konfirmasi Perubahan Jam">
         {resizeConfirmData && (
-          <div className="resize-confirm-body" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <div className="resize-warning-box" style={{ padding: '14px', background: 'rgba(0,240,255,0.06)', border: '1px solid rgba(0,240,255,0.15)', borderRadius: '10px' }}>
-              <h4 style={{ margin: '0 0 8px', color: 'var(--text-primary)', fontSize: '0.95rem' }}>Perubahan Durasi & Biaya</h4>
-              <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-                Durasi: <strong>{resizeConfirmData.oldDuration} jam</strong> ➔ <strong style={{ color: '#00f0ff' }}>{resizeConfirmData.newDuration} jam</strong>
+          <div className="resize-confirm-body">
+            <div className="resize-warning-box">
+              <h4>Perubahan Durasi & Biaya</h4>
+              <p>
+                Durasi: <strong>{resizeConfirmData.oldDuration} jam</strong> <span className="resize-arrow">{'->'}</span> <strong className="resize-new-duration">{resizeConfirmData.newDuration} jam</strong>
               </p>
             </div>
 
-            <div className="resize-price-details" style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.9rem', color: 'var(--text-primary)' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: 'var(--text-secondary)' }}>Total Biaya Sebelumnya</span>
+            <div className="resize-price-details">
+              <div className="resize-price-row">
+                <span>Total Biaya Sebelumnya</span>
                 <span>{formatCurrency(resizeConfirmData.oldPrice)}</span>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 'bold' }}>
+              <div className="resize-price-row is-total">
                 <span>Total Biaya Baru</span>
-                <span style={{ color: '#4CAF50' }}>{formatCurrency(resizeConfirmData.newPrice)}</span>
+                <span>{formatCurrency(resizeConfirmData.newPrice)}</span>
               </div>
             </div>
 
             {resizeConfirmData.diff !== 0 && (
-              <div style={{ padding: '12px', background: resizeConfirmData.diff > 0 ? 'rgba(255,152,0,0.1)' : 'rgba(76,175,80,0.1)', borderRadius: '8px', fontSize: '0.8rem', color: resizeConfirmData.diff > 0 ? '#FF9800' : '#4CAF50' }}>
+              <div className={`resize-diff-note ${resizeConfirmData.diff > 0 ? 'increase' : 'decrease'}`}>
                 {resizeConfirmData.diff > 0 
                   ? `Biaya bertambah sebesar ${formatCurrency(resizeConfirmData.diff)}.` 
                   : `Terdapat kelebihan biaya (pengurangan) sebesar ${formatCurrency(Math.abs(resizeConfirmData.diff))}.`}
@@ -1285,20 +1039,20 @@ const CalendarPage = () => {
             )}
 
             {resizeConfirmData.booking.type === 'recording' && resizeConfirmData.newDuration > resizeConfirmData.oldDuration && (
-              <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.4)', marginTop: '-8px' }}>
+              <div className="resize-recording-note">
                 * Sesi recording menggunakan harga paket. Penambahan jam dihitung sebagai overtime.
               </div>
             )}
 
             {resizeConfirmData.booking.status === 'confirmed' && resizeConfirmData.diff > 0 && (
-              <div style={{ padding: '10px', background: 'rgba(255,42,95,0.1)', borderLeft: '3px solid #ff2a5f', borderRadius: '4px', fontSize: '0.8rem', color: '#ffb4b4' }}>
+              <div className="resize-status-warning">
                 <strong>Perhatian:</strong> Booking ini sebelumnya berstatus <strong>Lunas</strong>. Karena ada penambahan durasi & biaya, status akan otomatis diubah menjadi <strong>DP</strong> (Kurang Bayar).
               </div>
             )}
 
-            <div style={{ display: 'flex', gap: '10px', marginTop: '8px' }}>
-              <button className="btn-secondary" style={{ flex: 1 }} onClick={() => setResizeConfirmData(null)}>Batal</button>
-              <button className="btn-primary" style={{ flex: 1 }} onClick={confirmResize}>Konfirmasi Perubahan</button>
+            <div className="resize-confirm-actions">
+              <button className="btn-secondary" onClick={() => setResizeConfirmData(null)}>Batal</button>
+              <button className="btn-primary" onClick={confirmResize}>Konfirmasi Perubahan</button>
             </div>
           </div>
         )}
