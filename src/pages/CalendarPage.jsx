@@ -43,6 +43,26 @@ const CalendarPage = () => {
   const [resizeAddedHours, setResizeAddedHours] = useState(0);
   const [resizeConfirmData, setResizeConfirmData] = useState(null);
   const [rescheduleDraft, setRescheduleDraft] = useState(null);
+  const [movingBooking, setMovingBooking] = useState(null);
+  const [moveGhost, setMoveGhost] = useState(null);
+  const [moveTarget, setMoveTarget] = useState(null);
+  const longPressTimerRef = useRef(null);
+  const moveTargetRef = useRef(null);
+  const suppressNextBookingClickRef = useRef(false);
+
+  const getPointerPoint = useCallback((event) => {
+    const source = event.touches?.[0] || event.changedTouches?.[0] || event;
+    return { x: source.clientX ?? 0, y: source.clientY ?? 0 };
+  }, []);
+
+  const getPointerY = useCallback((event) => {
+    return getPointerPoint(event).y;
+  }, [getPointerPoint]);
+
+  const getCalendarCellHeight = useCallback(() => {
+    const cell = gridWrapperRef.current?.querySelector('.grid-cell');
+    return cell?.getBoundingClientRect().height || (isMobile ? 36 : 45);
+  }, [isMobile]);
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth <= 768);
@@ -51,6 +71,8 @@ const CalendarPage = () => {
     return () => {
       window.removeEventListener('resize', handleResize);
       clearInterval(interval);
+      if (longPressTimerRef.current) window.clearTimeout(longPressTimerRef.current);
+      document.body.classList.remove('calendar-move-lock', 'calendar-resize-lock');
     };
   }, []);
 
@@ -66,6 +88,65 @@ const CalendarPage = () => {
   const { pricePerHour, studioName, durationDiscounts = [], recordingSessions = [], operationalHours = { start: 10, end: 23 }, blockedDates = [] } = useSettingsStore();
   const { inventory } = useInventoryStore();
   const { run, currentStep, nextStep } = useTourStore();
+
+  const getMoveTargetAtPoint = useCallback((point, booking) => {
+    const element = document.elementFromPoint(point.x, point.y)?.closest('[data-calendar-cell="true"]');
+    if (!element || !gridWrapperRef.current?.contains(element)) return null;
+
+    const date = element.dataset.date;
+    const hour = Number(element.dataset.hour);
+    if (!date || Number.isNaN(hour)) return null;
+
+    const candidate = { date, hour, duration: Number(booking.duration || 1) };
+    const isBlocked = blockedDates.includes(date);
+    const isOutsideHours = hour < Number(operationalHours.start) || hour + candidate.duration > Number(operationalHours.end);
+    const hasConflict = hasBookingOverlap(bookings, candidate, booking.id);
+    const isSameSlot = booking.date === date && Number(booking.hour) === hour;
+
+    return {
+      date,
+      hour,
+      duration: candidate.duration,
+      isSameSlot,
+      isValid: !isBlocked && !isOutsideHours && !hasConflict,
+      reason: isBlocked ? 'Tanggal diblokir' : isOutsideHours ? 'Di luar jam operasional' : hasConflict ? 'Slot bentrok' : 'Slot tersedia',
+    };
+  }, [blockedDates, bookings, operationalHours.end, operationalHours.start]);
+
+  const applyMoveTarget = useCallback((point, booking) => {
+    const target = getMoveTargetAtPoint(point, booking);
+    moveTargetRef.current = target;
+    setMoveTarget(target);
+  }, [getMoveTargetAtPoint]);
+
+  const finishMobileMove = useCallback((booking, target) => {
+    if (!target) {
+      useNotificationStore.getState().addNotification({
+        title: 'Pindah booking dibatalkan',
+        message: 'Lepaskan booking di area kalender yang valid.',
+        type: 'warning',
+      });
+      return;
+    }
+
+    if (!target.isValid) {
+      useNotificationStore.getState().addNotification({
+        title: target.reason,
+        message: 'Jam tujuan harus kosong sesuai durasi booking sebelumnya.',
+        type: 'error',
+      });
+      return;
+    }
+
+    if (target.isSameSlot) return;
+
+    updateBooking(booking.id, { date: target.date, hour: target.hour });
+    useNotificationStore.getState().addNotification({
+      title: 'Booking dipindahkan',
+      message: `${booking.band} dipindahkan ke ${target.date} jam ${String(target.hour).padStart(2, '0')}.00.`,
+      type: 'success',
+    });
+  }, [updateBooking]);
 
   const calculatePrice = useCallback((b, dur) => {
     let base;
@@ -208,6 +289,104 @@ const CalendarPage = () => {
     }
   };
 
+  const handleMobileBookingPointerDown = useCallback((event, booking) => {
+    if (!isMobile || resizingBooking || event.target.closest('.resize-handle')) return;
+    if (event.button !== undefined && event.button !== 0) return;
+
+    const startPoint = getPointerPoint(event);
+    const sourceRect = event.currentTarget.getBoundingClientRect();
+    const cellHeight = getCalendarCellHeight();
+    const ghostHeight = Math.max(cellHeight, cellHeight * Number(booking.duration || 1));
+    const ghostWidth = sourceRect.width;
+    let isActivated = false;
+    let hasDraggedAfterActivation = false;
+
+    const clearTimer = () => {
+      if (longPressTimerRef.current) {
+        window.clearTimeout(longPressTimerRef.current);
+        longPressTimerRef.current = null;
+      }
+    };
+
+    const setGhostAtPoint = (point) => {
+      setMoveGhost({
+        x: point.x - (ghostWidth / 2),
+        y: point.y - Math.min(28, ghostHeight / 2),
+        width: ghostWidth,
+        height: ghostHeight,
+      });
+    };
+
+    const activateMove = () => {
+      isActivated = true;
+      suppressNextBookingClickRef.current = true;
+      touchStartRef.current = null;
+      moveTargetRef.current = null;
+      document.body.classList.add('calendar-move-lock');
+      setSelectedBooking(null);
+      setMovingBooking(booking);
+      setGhostAtPoint(startPoint);
+      applyMoveTarget(startPoint, booking);
+      if (navigator.vibrate) navigator.vibrate(12);
+    };
+
+    const cleanup = () => {
+      clearTimer();
+      document.body.classList.remove('calendar-move-lock');
+      document.removeEventListener('pointermove', handlePointerMove);
+      document.removeEventListener('pointerup', handlePointerUp);
+      document.removeEventListener('pointercancel', handlePointerCancel);
+      setMovingBooking(null);
+      setMoveGhost(null);
+      setMoveTarget(null);
+      moveTargetRef.current = null;
+      if (isActivated) {
+        window.setTimeout(() => {
+          suppressNextBookingClickRef.current = false;
+        }, 500);
+      }
+    };
+
+    const handlePointerMove = (moveEvent) => {
+      const point = getPointerPoint(moveEvent);
+      const movedDistance = Math.hypot(point.x - startPoint.x, point.y - startPoint.y);
+
+      if (!isActivated && movedDistance > 12) {
+        cleanup();
+        return;
+      }
+
+      if (!isActivated) return;
+      if (moveEvent.cancelable) moveEvent.preventDefault();
+      moveEvent.stopPropagation();
+      if (movedDistance > 12) hasDraggedAfterActivation = true;
+      setGhostAtPoint(point);
+      applyMoveTarget(point, booking);
+    };
+
+    const handlePointerUp = (upEvent) => {
+      if (isActivated) {
+        if (upEvent.cancelable) upEvent.preventDefault();
+        upEvent.stopPropagation();
+        const target = moveTargetRef.current;
+        cleanup();
+        if (!hasDraggedAfterActivation) return;
+        finishMobileMove(booking, target);
+        return;
+      }
+      cleanup();
+    };
+
+    const handlePointerCancel = () => {
+      cleanup();
+    };
+
+    longPressTimerRef.current = window.setTimeout(activateMove, 360);
+    document.addEventListener('pointermove', handlePointerMove, { passive: false });
+    document.addEventListener('pointerup', handlePointerUp);
+    document.addEventListener('pointercancel', handlePointerCancel);
+  }, [applyMoveTarget, finishMobileMove, getCalendarCellHeight, getPointerPoint, isMobile, resizingBooking]);
+
   const handleApproveRequest = async (request) => {
     const candidate = {
       date: request.date,
@@ -257,25 +436,32 @@ const CalendarPage = () => {
   const handleResizeStart = (e, booking) => {
     e.stopPropagation();
     e.preventDefault();
+    touchStartRef.current = null;
     setResizingBooking(booking);
-    setInitialResizeY(e.clientY || (e.touches && e.touches[0].clientY));
+    setInitialResizeY(getPointerY(e));
     setResizeAddedHours(0);
   };
 
   useEffect(() => {
     const handleResizeMove = (e) => {
       if (!resizingBooking) return;
-      const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+      if (e.cancelable) e.preventDefault();
+      e.stopPropagation();
+
+      const clientY = getPointerY(e);
       const diffY = clientY - initialResizeY;
-      const cellHeight = 45; // Approximate height of 1 grid cell
+      const cellHeight = getCalendarCellHeight();
       const addedHours = Math.round(diffY / cellHeight);
       setResizeAddedHours(addedHours);
     };
     const handleResizeEnd = (e) => {
       if (!resizingBooking) return;
-      const clientY = e.clientY || (e.changedTouches && e.changedTouches[0].clientY);
+      if (e.cancelable) e.preventDefault();
+      e.stopPropagation();
+
+      const clientY = getPointerY(e);
       const diffY = clientY - initialResizeY;
-      const cellHeight = 45;
+      const cellHeight = getCalendarCellHeight();
       const addedHours = Math.round(diffY / cellHeight);
       
       if (addedHours !== 0) {
@@ -315,18 +501,22 @@ const CalendarPage = () => {
     };
 
     if (resizingBooking) {
+      document.body.classList.add('calendar-resize-lock');
       document.addEventListener('mousemove', handleResizeMove);
       document.addEventListener('mouseup', handleResizeEnd);
       document.addEventListener('touchmove', handleResizeMove, { passive: false });
       document.addEventListener('touchend', handleResizeEnd);
+      document.addEventListener('touchcancel', handleResizeEnd);
     }
     return () => {
+      document.body.classList.remove('calendar-resize-lock');
       document.removeEventListener('mousemove', handleResizeMove);
       document.removeEventListener('mouseup', handleResizeEnd);
       document.removeEventListener('touchmove', handleResizeMove);
       document.removeEventListener('touchend', handleResizeEnd);
+      document.removeEventListener('touchcancel', handleResizeEnd);
     };
-  }, [resizingBooking, initialResizeY, updateBooking, calculatePrice]);
+  }, [resizingBooking, initialResizeY, updateBooking, calculatePrice, bookings, getCalendarCellHeight, getPointerY]);
 
   const confirmResize = () => {
     if (!resizeConfirmData) return;
@@ -348,6 +538,10 @@ const CalendarPage = () => {
 
   const handleBookingClick = (e, booking) => {
     e.stopPropagation();
+    if (suppressNextBookingClickRef.current || movingBooking) {
+      suppressNextBookingClickRef.current = false;
+      return;
+    }
     if (isMobile) { setSelectedBooking(booking); return; }
     const rect = e.currentTarget.getBoundingClientRect();
     const popupHeight = 480;
@@ -697,7 +891,7 @@ const CalendarPage = () => {
         </div>
 
         {/* Grid */}
-        <div className="monthly-grid-wrapper tour-calendar-grid" ref={gridWrapperRef} onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
+        <div className={`monthly-grid-wrapper tour-calendar-grid ${resizingBooking ? 'is-resize-active' : ''} ${movingBooking ? 'is-move-active' : ''}`} ref={gridWrapperRef} onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
           <div className="monthly-grid" style={{ gridTemplateColumns: `${timeColWidth} repeat(${numDays}, minmax(${colWidth}, 1fr))` }}>
             <div className="grid-corner-cell"><span className="corner-label">JAM</span></div>
 
@@ -736,7 +930,10 @@ const CalendarPage = () => {
                   if (isTargetCell) emptyCellAssigned = true;
                   const isTutorialBooking = cellBooking && cellBooking.band === 'Band Tutorial' && run && currentStep === 11;
 
-                  const cellClasses = ['grid-cell', hourIdx % 2 === 0 ? 'even-row' : '', isToday ? 'today-col-highlight' : '', isWeekend ? 'weekend-col' : '', isTargetCell ? 'tour-target-cell' : '', isTutorialBooking ? 'tour-new-booking' : '', isBlocked && !cellBooking ? 'blocked-cell' : ''].filter(Boolean).join(' ');
+                  const isMoveTarget = moveTarget && moveTarget.date === dateStr && Number(moveTarget.hour) === hour;
+                  const moveTargetClass = isMoveTarget ? (moveTarget.isValid ? 'move-target-valid' : 'move-target-invalid') : '';
+                  const isMovingSource = movingBooking && cellBooking && movingBooking.id === cellBooking.id;
+                  const cellClasses = ['grid-cell', hourIdx % 2 === 0 ? 'even-row' : '', isToday ? 'today-col-highlight' : '', isWeekend ? 'weekend-col' : '', isTargetCell ? 'tour-target-cell' : '', isTutorialBooking ? 'tour-new-booking' : '', isBlocked && !cellBooking ? 'blocked-cell' : '', moveTargetClass].filter(Boolean).join(' ');
 
                   // Current time line logic
                   const isCurrentHour = isToday && now.getHours() === hour;
@@ -750,8 +947,12 @@ const CalendarPage = () => {
                         initial={{ opacity: 0, y: 8 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.25, ease: 'easeOut' }}
-                        className={`${cellClasses} booked-cell status-${cellBooking.status} ${isBookingStart ? 'booking-start' : ''} ${isBookingEnd ? 'booking-end' : ''} ${cellBooking.isResizing ? 'is-resizing' : ''}`} 
+                        className={`${cellClasses} booked-cell status-${cellBooking.status} ${isBookingStart ? 'booking-start' : ''} ${isBookingEnd ? 'booking-end' : ''} ${cellBooking.isResizing ? 'is-resizing' : ''} ${isMovingSource ? 'is-moving-source' : ''}`}
+                        data-calendar-cell="true"
+                        data-date={dateStr}
+                        data-hour={hour}
                         onClick={e => handleBookingClick(e, cellBooking)}
+                        onPointerDown={(e) => handleMobileBookingPointerDown(e, cellBooking)}
                         draggable={isBookingStart && !isMobile}
                         onDragStart={(e) => handleDragStart(e, cellBooking)}
                         onDragEnd={handleDragEnd}
@@ -777,6 +978,9 @@ const CalendarPage = () => {
                     <div 
                       key={`${hour}-${dayIdx}`} 
                       className={`${cellClasses} empty-cell`} 
+                      data-calendar-cell="true"
+                      data-date={dateStr}
+                      data-hour={hour}
                       onClick={() => handleCellClick(dateStr, hour)}
                       onDragOver={handleDragOver}
                       onDrop={(e) => handleDrop(e, dateStr, hour)}
@@ -790,6 +994,42 @@ const CalendarPage = () => {
             ))}
           </div>
         </div>
+
+        <AnimatePresence>
+          {movingBooking && moveGhost && (
+            <motion.div
+              className={`mobile-booking-drag-ghost status-${movingBooking.status}`}
+              style={{
+                left: moveGhost.x,
+                top: moveGhost.y,
+                width: moveGhost.width,
+                height: moveGhost.height,
+              }}
+              initial={{ opacity: 0, scale: 0.92, y: 8 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.94, y: 6 }}
+              transition={{ duration: 0.16, ease: 'easeOut' }}
+            >
+              <strong>{movingBooking.band}</strong>
+              <span>{movingBooking.hour}.00-{movingBooking.hour + movingBooking.duration}.00</span>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <AnimatePresence>
+          {movingBooking && moveTarget && (
+            <motion.div
+              className={`mobile-move-hint ${moveTarget.isValid ? 'valid' : 'invalid'}`}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 8 }}
+              transition={{ duration: 0.16, ease: 'easeOut' }}
+            >
+              <strong>{moveTarget.isValid ? 'Lepaskan untuk pindah' : moveTarget.reason}</strong>
+              <span>{moveTarget.date} - {String(moveTarget.hour).padStart(2, '0')}:00, durasi {moveTarget.duration} jam</span>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
       </div>
 
