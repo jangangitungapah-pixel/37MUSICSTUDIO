@@ -8,7 +8,7 @@ import {
   Bell, Database, Trash2, CheckCircle2, XCircle, ShieldAlert,
   ChevronRight, Music2, Sparkles, Lock, ToggleLeft, ToggleRight,
   AlertTriangle, RefreshCw, FlaskConical, Download, Upload,
-  Clock, CalendarX, Plus, X
+  Clock, CalendarX
 } from 'lucide-react';
 import { collection, doc, getDocs, deleteDoc, writeBatch } from 'firebase/firestore';
 import { db } from '../firebase';

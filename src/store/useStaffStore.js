@@ -113,7 +113,7 @@ export const useStaffStore = create(
             return newStaff;
           } catch (error) {
             if (secondaryApp) {
-              try { await deleteApp(secondaryApp); } catch (e) { /* ignore */ }
+              try { await deleteApp(secondaryApp); } catch { /* ignore */ }
             }
             throw error;
           }

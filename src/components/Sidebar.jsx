@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { CalendarDays, Users, Package, CreditCard, Settings, Music, BookOpen, PieChart, Menu, X, LogOut, HelpCircle, Bell, ChevronRight, ChevronLeft, FlaskConical, Sun, Moon, Shield, Hammer, MoreHorizontal } from 'lucide-react';
+import { useState } from 'react';
+import { motion } from 'framer-motion';
+import { CalendarDays, Users, Package, CreditCard, Settings, BookOpen, PieChart, LogOut, HelpCircle, Bell, ChevronRight, ChevronLeft, FlaskConical, Sun, Moon, Shield, Hammer, MoreHorizontal } from 'lucide-react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../store/useAuthStore';
 import { useTourStore } from '../store/useTourStore';
@@ -171,7 +171,7 @@ const Sidebar = () => {
             variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.06, delayChildren: 0.05 } } }}
             style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}
           >
-            {menuItems.filter((item) => hasPermission(userProfile, ROUTE_PERMISSIONS[item.path])).map((item, index) => {
+            {menuItems.filter((item) => hasPermission(userProfile, ROUTE_PERMISSIONS[item.path])).map((item) => {
               const isActive = location.pathname.startsWith(item.path) || (item.path === '/dashboard' && location.pathname === '/');
               return (
                 <motion.div

@@ -9,7 +9,7 @@ import { toast } from 'sonner';
 import './StaffPage.css';
 
 const StaffPage = () => {
-  const { staffMembers, addStaff, updateStaff, deleteStaff, toggleStaffStatus, createStaffAccount, resetStaffPassword } = useStaffStore();
+  const { staffMembers, updateStaff, deleteStaff, toggleStaffStatus, createStaffAccount, resetStaffPassword } = useStaffStore();
   const { logs } = useAuditLogStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);

@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { useBookingStore } from '../store/useBookingStore';
+import { useBookingRequestStore } from '../store/useBookingRequestStore';
 import { useCustomerStore } from '../store/useCustomerStore';
 import { useInventoryStore } from '../store/useInventoryStore';
 import { useFinanceStore } from '../store/useFinanceStore';
@@ -8,11 +9,21 @@ import { format, subDays, addMonths } from 'date-fns';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import {
   TrendingUp, TrendingDown, Users, CalendarCheck, PackageOpen, Clock,
-  ArrowRight, AlertTriangle, CheckCircle2, Music2, Lightbulb, Wallet, Activity, Download
+  ArrowRight, AlertTriangle, CheckCircle2, Music2, Lightbulb, Wallet, Activity, Download,
+  Inbox, MessageCircle, CalendarPlus, Wrench, Gift, XCircle, Send
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { getAnomalies, getBillingInsights, getDemandInsights, getRevenueForecast } from '../lib/smartInsights';
+import {
+  getAnomalies,
+  getBillingInsights,
+  getCustomerRetentionInsights,
+  getDemandInsights,
+  getMaintenanceUsageInsights,
+  getRevenueForecast,
+  getSlotRecommendations,
+} from '../lib/smartInsights';
 import { buildCombinedLedger } from '../lib/finance';
+import { hasBookingOverlap } from '../lib/bookingWorkflows';
 import { useStaffStore } from '../store/useStaffStore';
 import ExcelJS from 'exceljs/dist/exceljs.min.js';
 import saveAs from 'file-saver';
@@ -22,11 +33,12 @@ import './DashboardPage.css';
 const COLORS = ['#00f0ff', '#4CAF50', '#FFC107', '#ff2a5f'];
 
 const DashboardPage = () => {
-  const { bookings, getMonthlyStats } = useBookingStore();
+  const { bookings, getMonthlyStats, addBooking } = useBookingStore();
+  const { requests, updateRequestStatus } = useBookingRequestStore();
   const { customers } = useCustomerStore();
-  const { getStats: getInvStats } = useInventoryStore();
+  const { inventory, getStats: getInvStats } = useInventoryStore();
   const { transactions } = useFinanceStore();
-  const { pricePerHour, studioName, studioPhone } = useSettingsStore();
+  const { pricePerHour, studioName, operationalHours = { start: 10, end: 23 } } = useSettingsStore();
   const { staffMembers } = useStaffStore();
   const navigate = useNavigate();
 
@@ -63,6 +75,25 @@ const DashboardPage = () => {
     [bookings, transactions, pricePerHour, today]
   );
   const anomalies = useMemo(() => getAnomalies(bookings, pricePerHour), [bookings, pricePerHour]);
+  const pendingRequests = useMemo(
+    () => requests
+      .filter((request) => request.status === 'pending')
+      .sort((a, b) => (a.date || '').localeCompare(b.date || '') || Number(a.hour || 0) - Number(b.hour || 0)),
+    [requests]
+  );
+  const slotRecommendations = useMemo(
+    () => getSlotRecommendations(bookings, {
+      fromDate: today,
+      duration: 2,
+      startHour: operationalHours.start,
+      endHour: operationalHours.end,
+      limit: 3,
+    }),
+    [bookings, operationalHours.end, operationalHours.start, today]
+  );
+  const retentionInsights = useMemo(() => getCustomerRetentionInsights(customers), [customers]);
+  const maintenanceInsights = useMemo(() => getMaintenanceUsageInsights(inventory, bookings), [inventory, bookings]);
+  const priorityMaintenance = maintenanceInsights.recommendations.filter(({ priority }) => priority >= 3).slice(0, 3);
 
   const revenueChartData = useMemo(() => {
     return Array.from({ length: 7 }, (_, i) => {
@@ -91,12 +122,71 @@ const DashboardPage = () => {
 
   const formatCurrency = (num) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(num);
   const formatK = (num) => num >= 1000000 ? `${(num / 1000000).toFixed(1)}jt` : num >= 1000 ? `${Math.round(num / 1000)}k` : num;
+  const formatDateShort = (date) => date ? format(new Date(`${date}T00:00:00`), 'dd MMM') : '-';
 
   const getStatusColor = (s) => ({ confirmed: '#4CAF50', dp: '#00f0ff', pending: '#FF9800', maintenance: '#6b6b76' }[s] || '#6b6b76');
 
-  const handleExportExcel = async () => {
+  const handleApproveRequest = async (request) => {
+    const candidate = {
+      date: request.date,
+      hour: Number(request.hour),
+      duration: Number(request.duration || 1),
+    };
+
+    if (hasBookingOverlap(bookings, candidate)) {
+      toast.error('Slot request sudah terisi. Buka kalender untuk cek bentrok.');
+      navigate('/calendar');
+      return;
+    }
+
     try {
-      const toastId = toast.loading('Memproses dokumen Excel...');
+      await addBooking({
+        type: 'booking',
+        band: request.band,
+        phone: request.phone || '',
+        date: request.date,
+        hour: Number(request.hour),
+        duration: Number(request.duration || 1),
+        status: 'pending',
+        dpAmount: 0,
+        note: 'Dibuat dari request kalender publik via dashboard.',
+      });
+      await updateRequestStatus(request.id, 'approved', { approvedAt: new Date().toISOString() });
+      toast.success(`${request.band} masuk ke kalender.`);
+    } catch (error) {
+      toast.error(error.message || 'Gagal approve request.');
+    }
+  };
+
+  const handleRejectRequest = async (request) => {
+    const reason = window.prompt('Alasan penolakan request booking:', 'Slot tidak tersedia');
+    if (reason === null) return;
+
+    try {
+      await updateRequestStatus(request.id, 'rejected', { rejectionReason: reason, rejectedAt: new Date().toISOString() });
+      toast.success(`${request.band} dipindahkan dari antrean.`);
+    } catch (error) {
+      toast.error(error.message || 'Gagal menolak request.');
+    }
+  };
+
+  const handleSendBillingReminder = (invoice) => {
+    if (!invoice.phone) {
+      toast.error('Nomor telepon tidak tersedia untuk jadwal ini.');
+      return;
+    }
+
+    const remaining = formatCurrency(invoice.remaining);
+    const message = `Halo ${invoice.band}, mengingatkan masih ada sisa tagihan ${remaining} untuk jadwal ${formatDateShort(invoice.date)} jam ${String(invoice.hour).padStart(2, '0')}:00 di ${studioName}. Mohon konfirmasi pembayaran ya. Terima kasih.`;
+    const phone = invoice.phone.replace(/\D/g, '');
+    const url = `https://wa.me/${phone.startsWith('0') ? `62${phone.slice(1)}` : phone}?text=${encodeURIComponent(message)}`;
+    window.open(url, '_blank');
+  };
+
+  const handleExportExcel = async () => {
+    let toastId;
+    try {
+      toastId = toast.loading('Memproses dokumen Excel...');
       const workbook = new ExcelJS.Workbook();
       workbook.creator = studioName || '37 Music Studio';
       workbook.created = new Date();
@@ -614,7 +704,13 @@ const DashboardPage = () => {
               <span>{bookingStats.pending} booking belum bayar</span>
             </div>
           )}
-          {bookingStats.pending === 0 && invStats.serviceNeeded === 0 && (
+          {pendingRequests.length > 0 && (
+            <div className="dash-alert-chip info">
+              <Inbox size={13} />
+              <span>{pendingRequests.length} request publik</span>
+            </div>
+          )}
+          {bookingStats.pending === 0 && invStats.serviceNeeded === 0 && pendingRequests.length === 0 && (
             <div className="dash-alert-chip success">
               <CheckCircle2 size={13} />
               <span>Semua berjalan lancar!</span>
@@ -661,6 +757,136 @@ const DashboardPage = () => {
             <small>{anomalies[0]?.detail || 'Harga, DP, jam, dan overlap jadwal terlihat normal.'}</small>
           </div>
         </div>
+      </div>
+
+      {/* ===== Operational Command Center ===== */}
+      <div className="dash-command-grid">
+        <section className="dash-command-panel glass-panel">
+          <div className="dash-command-head">
+            <div className="dash-command-title">
+              <Inbox size={17} />
+              <div>
+                <h3>Request Publik</h3>
+                <p>{pendingRequests.length} menunggu keputusan</p>
+              </div>
+            </div>
+            <button className="dash-mini-link" onClick={() => navigate('/calendar')}>Kalender</button>
+          </div>
+          <div className="dash-work-list">
+            {pendingRequests.slice(0, 3).map((request) => (
+              <div className="dash-work-item" key={request.id}>
+                <div className="dash-work-main">
+                  <strong>{request.band}</strong>
+                  <span>{formatDateShort(request.date)} - {String(request.hour).padStart(2, '0')}:00, {request.duration || 1} jam</span>
+                </div>
+                <div className="dash-work-actions">
+                  <button className="dash-icon-action approve" onClick={() => handleApproveRequest(request)} title="Approve request">
+                    <CheckCircle2 size={14} />
+                  </button>
+                  <button className="dash-icon-action reject" onClick={() => handleRejectRequest(request)} title="Tolak request">
+                    <XCircle size={14} />
+                  </button>
+                </div>
+              </div>
+            ))}
+            {pendingRequests.length === 0 && (
+              <div className="dash-work-empty">
+                <CheckCircle2 size={18} />
+                <span>Tidak ada request baru.</span>
+              </div>
+            )}
+          </div>
+        </section>
+
+        <section className="dash-command-panel glass-panel">
+          <div className="dash-command-head">
+            <div className="dash-command-title">
+              <MessageCircle size={17} />
+              <div>
+                <h3>Tagihan Prioritas</h3>
+                <p>{billingInsights.openInvoices.length} invoice terbuka</p>
+              </div>
+            </div>
+            <button className="dash-mini-link" onClick={() => navigate('/billing')}>Billing</button>
+          </div>
+          <div className="dash-work-list">
+            {billingInsights.openInvoices.slice(0, 3).map((invoice) => (
+              <div className={`dash-work-item urgency-${invoice.urgency}`} key={invoice.id}>
+                <div className="dash-work-main">
+                  <strong>{invoice.band}</strong>
+                  <span>{invoice.daysUntil < 0 ? 'Lewat jadwal' : invoice.daysUntil === 0 ? 'Jadwal hari ini' : invoice.daysUntil === 1 ? 'Jadwal besok' : `H-${invoice.daysUntil}`} - {formatCurrency(invoice.remaining)}</span>
+                </div>
+                <button className="dash-icon-action send" onClick={() => handleSendBillingReminder(invoice)} title="Kirim reminder WhatsApp">
+                  <Send size={14} />
+                </button>
+              </div>
+            ))}
+            {billingInsights.openInvoices.length === 0 && (
+              <div className="dash-work-empty">
+                <CheckCircle2 size={18} />
+                <span>Semua tagihan tertangani.</span>
+              </div>
+            )}
+          </div>
+        </section>
+
+        <section className="dash-command-panel glass-panel">
+          <div className="dash-command-head">
+            <div className="dash-command-title">
+              <CalendarPlus size={17} />
+              <div>
+                <h3>Slot Kosong</h3>
+                <p>Rekomendasi 2 jam</p>
+              </div>
+            </div>
+            <button className="dash-mini-link" onClick={() => navigate('/calendar')}>Booking</button>
+          </div>
+          <div className="dash-work-list compact">
+            {slotRecommendations.map((slot) => (
+              <button className="dash-slot-item" key={`${slot.date}-${slot.hour}`} onClick={() => navigate('/calendar')} title="Buka kalender">
+                <strong>{slot.dayName}, {formatDateShort(slot.date)}</strong>
+                <span>{String(slot.hour).padStart(2, '0')}:00-{String(slot.endHour).padStart(2, '0')}:00 - {slot.reason}</span>
+              </button>
+            ))}
+            {slotRecommendations.length === 0 && (
+              <div className="dash-work-empty">
+                <CalendarCheck size={18} />
+                <span>Tidak ada slot kosong dekat.</span>
+              </div>
+            )}
+          </div>
+        </section>
+
+        <section className="dash-command-panel glass-panel">
+          <div className="dash-command-head">
+            <div className="dash-command-title">
+              <Wrench size={17} />
+              <div>
+                <h3>Operasional</h3>
+                <p>Servis dan retensi</p>
+              </div>
+            </div>
+            <button className="dash-mini-link" onClick={() => navigate('/maintenance')}>Detail</button>
+          </div>
+          <div className="dash-work-list">
+            {priorityMaintenance.slice(0, 2).map(({ item, label, reason }) => (
+              <button className="dash-work-item as-button" key={item.id} onClick={() => navigate('/maintenance')}>
+                <div className="dash-work-main">
+                  <strong>{item.name}</strong>
+                  <span>{label} - {reason}</span>
+                </div>
+                <Wrench size={14} />
+              </button>
+            ))}
+            <button className="dash-work-item as-button" onClick={() => navigate('/customers')}>
+              <div className="dash-work-main">
+                <strong>{retentionInsights.passiveCustomers.length} pelanggan pasif</strong>
+                <span>{retentionInsights.vipCandidates.length} kandidat VIP, {retentionInsights.promoTargets.length} target promo</span>
+              </div>
+              <Gift size={14} />
+            </button>
+          </div>
+        </section>
       </div>
 
       {/* ===== Stats Cards ===== */}

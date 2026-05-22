@@ -5,8 +5,8 @@ import { useBookingStore } from '../store/useBookingStore';
 import { useBookingRequestStore } from '../store/useBookingRequestStore';
 import { useSettingsStore } from '../store/useSettingsStore';
 import {
-  ChevronLeft, ChevronRight, LogOut, Music, Phone, MessageCircle,
-  Plus, CalendarDays, Clock, XCircle, Info, X
+  ChevronLeft, ChevronRight, LogOut, Phone, MessageCircle,
+  Plus, CalendarDays, Clock, Info, X
 } from 'lucide-react';
 import {
   format, addMonths, subMonths, startOfMonth, endOfMonth,
