@@ -1,8 +1,9 @@
 import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useStaffStore } from '../store/useStaffStore';
 import { useAuditLogStore } from '../store/useAuditLogStore';
 import { PERMISSIONS, PERMISSION_LABELS, getDefaultPermissionsForRole } from '../lib/permissions';
-import { UserPlus, Edit2, Trash2, Shield, User, Power, ClipboardList, Loader2 } from 'lucide-react';
+import { UserPlus, Edit2, Trash2, Shield, User, Power, ClipboardList, Loader2, Clock, CheckCircle2 } from 'lucide-react';
 import Modal from '../components/Modal';
 import { toast } from 'sonner';
 import './StaffPage.css';
@@ -123,104 +124,125 @@ const StaffPage = () => {
         </div>
       </div>
 
-      <div className="staff-grid">
-        {staffMembers.map(staff => (
-          <div key={staff.id} className={`staff-card glass-panel ${staff.status === 'inactive' ? 'inactive' : ''}`}>
-            <div className="staff-card-header">
-              <div className="staff-avatar">
-                {staff.role === 'admin' ? <Shield size={24} color="var(--accent-pink)" /> : <User size={24} color="var(--accent-cyan)" />}
+      <motion.div 
+        className="staff-grid"
+        initial="hidden"
+        animate="visible"
+        variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.1 } } }}
+      >
+        <AnimatePresence>
+          {staffMembers.map(staff => (
+            <motion.div 
+              layout
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: -20 }}
+              transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+              key={staff.id} 
+              className={`staff-card glass-panel ${staff.status === 'inactive' ? 'inactive' : ''}`}
+            >
+              <div className="staff-card-header">
+                <div className="staff-avatar">
+                  {staff.role === 'admin' ? <Shield size={24} className="avatar-icon-admin" /> : <User size={24} className="avatar-icon-staff" />}
+                </div>
+                <div className="staff-actions">
+                  <button className="icon-btn edit-btn" onClick={() => handleOpenModal(staff)} title="Edit">
+                    <Edit2 size={16} />
+                  </button>
+                  <button className="icon-btn delete-btn" onClick={() => handleDelete(staff.id)} title="Hapus">
+                    <Trash2 size={16} />
+                  </button>
+                  <button className="icon-btn toggle-btn" onClick={() => handleToggleStatus(staff.id)} title={staff.status === 'active' ? "Nonaktifkan" : "Aktifkan"}>
+                    <Power size={16} color={staff.status === 'active' ? '#4CAF50' : '#FF5252'} />
+                  </button>
+                </div>
               </div>
-              <div className="staff-actions">
-                <button className="icon-btn edit-btn" onClick={() => handleOpenModal(staff)} title="Edit">
-                  <Edit2 size={16} />
-                </button>
-                <button className="icon-btn delete-btn" onClick={() => handleDelete(staff.id)} title="Hapus">
-                  <Trash2 size={16} />
-                </button>
-                <button className="icon-btn toggle-btn" onClick={() => handleToggleStatus(staff.id)} title="Toggle Status">
-                  <Power size={16} color={staff.status === 'active' ? '#4CAF50' : '#FF5252'} />
-                </button>
+              
+              <div className="staff-info">
+                <h3>{staff.name}</h3>
+                <span className={`staff-role-badge ${staff.role}`}>
+                  {staff.role === 'admin' ? 'Administrator' : 'Staff'}
+                </span>
+                <p className="staff-phone">📞 {staff.phone || '-'}</p>
+                <div className="staff-permission-chips">
+                  {(staff.permissions || getDefaultPermissionsForRole(staff.role)).slice(0, 4).map((permission) => (
+                    <span key={permission}>{PERMISSION_LABELS[permission] || permission}</span>
+                  ))}
+                  {(staff.permissions || getDefaultPermissionsForRole(staff.role)).length > 4 && (
+                    <span className="chip-more">+{(staff.permissions || getDefaultPermissionsForRole(staff.role)).length - 4}</span>
+                  )}
+                </div>
               </div>
-            </div>
-            
-            <div className="staff-info">
-              <h3>{staff.name}</h3>
-              <span className={`staff-role-badge ${staff.role}`}>
-                {staff.role === 'admin' ? 'Administrator' : 'Staff'}
-              </span>
-              <p className="staff-phone">📞 {staff.phone || '-'}</p>
-              <div className="staff-permission-chips">
-                {(staff.permissions || getDefaultPermissionsForRole(staff.role)).slice(0, 4).map((permission) => (
-                  <span key={permission}>{PERMISSION_LABELS[permission] || permission}</span>
-                ))}
-                {(staff.permissions || getDefaultPermissionsForRole(staff.role)).length > 4 && (
-                  <span>+{(staff.permissions || getDefaultPermissionsForRole(staff.role)).length - 4}</span>
-                )}
+              
+              <div className="staff-status-bar">
+                <span className="status-indicator" style={{ background: staff.status === 'active' ? 'var(--accent-cyan)' : '#FF5252' }} />
+                <span>{staff.status === 'active' ? 'Akun Aktif' : 'Akun Nonaktif'}</span>
               </div>
-            </div>
-            
-            <div className="staff-status-bar">
-              <span className="status-indicator" style={{ background: staff.status === 'active' ? '#4CAF50' : '#FF5252' }} />
-              <span>{staff.status === 'active' ? 'Aktif' : 'Nonaktif'}</span>
-            </div>
-          </div>
-        ))}
-      </div>
+            </motion.div>
+          ))}
+        </AnimatePresence>
+      </motion.div>
 
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title={editingStaff ? "Edit Staff" : "Tambah Staff"}>
         <form className="staff-form" onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label>Nama Lengkap <span className="required">*</span></label>
-            <input
-              type="text"
-              className="form-input"
-              value={formData.name}
-              onChange={e => setFormData({ ...formData, name: e.target.value })}
-              required
-              autoFocus
-            />
-          </div>
-          
-          <div className="form-group">
-            <label>No. Telepon / WhatsApp</label>
-            <input
-              type="tel"
-              className="form-input"
-              value={formData.phone}
-              onChange={e => setFormData({ ...formData, phone: e.target.value })}
-            />
+          <div className="bf-row">
+            <div className="form-group">
+              <label className="bf-label">Nama Lengkap <span className="bf-required">*</span></label>
+              <input
+                type="text"
+                className="bf-input"
+                value={formData.name}
+                onChange={e => setFormData({ ...formData, name: e.target.value })}
+                required
+                autoFocus
+                placeholder="Misal: Budi Santoso"
+              />
+            </div>
+            
+            <div className="form-group">
+              <label className="bf-label">No. Telepon / WA</label>
+              <input
+                type="tel"
+                className="bf-input"
+                value={formData.phone}
+                onChange={e => setFormData({ ...formData, phone: e.target.value })}
+                placeholder="08..."
+              />
+            </div>
           </div>
 
           {!editingStaff && (
-            <>
+            <div className="bf-row">
               <div className="form-group">
-                <label>Email Login <span className="required">*</span></label>
+                <label className="bf-label">Email Login <span className="bf-required">*</span></label>
                 <input
                   type="email"
-                  className="form-input"
+                  className="bf-input"
                   value={formData.email}
                   onChange={e => setFormData({ ...formData, email: e.target.value })}
                   required
+                  placeholder="staff@37studio.com"
                 />
               </div>
               <div className="form-group">
-                <label>Password <span className="required">*</span></label>
+                <label className="bf-label">Password <span className="bf-required">*</span></label>
                 <input
                   type="password"
-                  className="form-input"
+                  className="bf-input"
                   value={formData.password}
                   onChange={e => setFormData({ ...formData, password: e.target.value })}
                   minLength="6"
                   required
+                  placeholder="Min. 6 karakter"
                 />
               </div>
-            </>
+            </div>
           )}
           
           <div className="form-group">
-            <label>Role Akses <span className="required">*</span></label>
+            <label className="bf-label">Role Akses <span className="bf-required">*</span></label>
             <select
-              className="form-input"
+              className="bf-input"
               value={formData.role}
               onChange={e => handleRoleChange(e.target.value)}
               required
@@ -231,27 +253,30 @@ const StaffPage = () => {
           </div>
 
           <div className="form-group">
-            <label>Izin Menu</label>
+            <label className="bf-label">Izin Akses Menu (Hanya Staff)</label>
             <div className="permission-grid">
               {Object.values(PERMISSIONS).map((permission) => (
-                <label key={permission} className={`permission-card ${formData.permissions?.includes(permission) ? 'selected' : ''}`}>
+                <label key={permission} className={`permission-card ${formData.permissions?.includes(permission) ? 'selected' : ''} ${formData.role === 'admin' ? 'disabled' : ''}`}>
                   <input
                     type="checkbox"
-                    checked={formData.permissions?.includes(permission) || false}
+                    checked={formData.role === 'admin' || (formData.permissions?.includes(permission) || false)}
                     onChange={() => handlePermissionToggle(permission)}
                     disabled={formData.role === 'admin'}
                   />
-                  <span>{PERMISSION_LABELS[permission] || permission}</span>
+                  <span className="permission-icon">
+                    {formData.role === 'admin' || formData.permissions?.includes(permission) ? <CheckCircle2 size={16} /> : <div className="empty-circle" />}
+                  </span>
+                  <span className="permission-label">{PERMISSION_LABELS[permission] || permission}</span>
                 </label>
               ))}
             </div>
           </div>
 
-          <div className="form-actions">
+          <div className="bf-actions">
             <button type="button" className="btn-secondary" onClick={() => setIsModalOpen(false)} disabled={loading}>Batal</button>
             <button type="submit" className="btn-primary" disabled={loading}>
               {loading ? <Loader2 size={16} className="spinner" /> : null}
-              {loading ? ' Memproses...' : editingStaff ? 'Simpan Perubahan' : 'Tambahkan'}
+              {loading ? ' Memproses...' : editingStaff ? 'Simpan Perubahan' : 'Tambahkan Staff'}
             </button>
           </div>
         </form>
@@ -259,23 +284,30 @@ const StaffPage = () => {
 
       <div className="audit-log-panel glass-panel">
         <div className="audit-log-header">
-          <ClipboardList size={18} />
+          <ClipboardList size={22} className="audit-icon" />
           <div>
-            <h3>Audit Log Terbaru</h3>
-            <p>Jejak perubahan booking, pelanggan, inventaris, finance, dan staff.</p>
+            <h3>Audit Log & Jejak Aktivitas</h3>
+            <p>Memantau aktivitas perubahan dari seluruh akun dalam sistem.</p>
           </div>
         </div>
-        <div className="audit-log-list">
-          {logs.slice(0, 8).map((log) => (
-            <div key={log.id} className="audit-log-item">
-              <div>
-                <strong>{log.summary}</strong>
-                <span>{log.actorName} &bull; {log.action}</span>
+        <div className="audit-log-timeline">
+          {logs.slice(0, 10).map((log) => (
+            <div key={log.id} className="timeline-item">
+              <div className="timeline-marker">
+                <Clock size={12} />
               </div>
-              <small>{new Date(log.createdAt).toLocaleString('id-ID')}</small>
+              <div className="timeline-content glass-panel">
+                <div className="timeline-meta">
+                  <span className="timeline-actor">{log.actorName}</span>
+                  <span className="timeline-time">{new Date(log.createdAt).toLocaleString('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}</span>
+                </div>
+                <div className="timeline-action">
+                  <strong>{log.action}</strong>: {log.summary}
+                </div>
+              </div>
             </div>
           ))}
-          {logs.length === 0 && <div className="audit-log-empty">Belum ada audit log.</div>}
+          {logs.length === 0 && <div className="audit-log-empty">Belum ada jejak aktivitas tercatat.</div>}
         </div>
       </div>
     </div>

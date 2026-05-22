@@ -167,6 +167,17 @@
   transition: all 0.18s;
   text-align: left;
   width: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.settings-nav-indicator {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 42, 95, 0.08);
+  border: 1px solid rgba(255, 42, 95, 0.12);
+  border-radius: 10px;
+  z-index: 0;
 }
 
 .settings-nav-item:hover {
@@ -175,9 +186,12 @@
 }
 
 .settings-nav-item.active {
-  background: rgba(255, 42, 95, 0.08);
   color: var(--accent-pink);
-  border-color: rgba(255, 42, 95, 0.12);
+}
+
+.settings-nav-icon, .settings-nav-label, .settings-nav-chevron {
+  position: relative;
+  z-index: 1;
 }
 
 .settings-nav-icon {
@@ -218,6 +232,11 @@
 /* ===== Right Panel ===== */
 .settings-content-area {
   min-width: 0;
+  position: relative;
+}
+
+.settings-panel-wrapper {
+  width: 100%;
 }
 
 .settings-panel {
@@ -225,12 +244,6 @@
   display: flex;
   flex-direction: column;
   gap: 24px;
-  animation: panelFadeIn 0.2s ease-out;
-}
-
-@keyframes panelFadeIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
 }
 
 .settings-panel-header {
@@ -268,16 +281,33 @@
   display: flex;
   flex-direction: column;
   gap: 20px;
+  max-width: 720px; /* Limit form width so it doesn't stretch too wide */
 }
 
-/* ===== Form Fields ===== */
+/* ===== Form Layout Helpers ===== */
+.settings-form-row {
+  display: grid;
+  grid-template-columns: 2fr 1.3fr; /* Studio name wider than Phone */
+  gap: 16px;
+  width: 100%;
+}
+
+.bf-row {
+  display: flex;
+  gap: 16px;
+  width: 100%;
+}
+.bf-row > * {
+  flex: 1;
+}
+
 .settings-field {
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
 
-.settings-label {
+.bf-label {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -287,35 +317,16 @@
   letter-spacing: 0.2px;
 }
 
-.settings-input {
-  background: rgba(0, 0, 0, 0.25);
-  border: 1px solid var(--border-light);
-  border-radius: 10px;
-  padding: 12px 16px;
-  color: var(--text-primary);
-  font-size: 0.95rem;
-  font-family: inherit;
-  transition: all 0.2s;
-  outline: none;
-  width: 100%;
-}
-
-.settings-input:focus {
-  border-color: var(--accent-cyan);
-  background: rgba(0, 240, 255, 0.03);
-  box-shadow: 0 0 0 3px rgba(0, 240, 255, 0.07);
+.settings-hint {
+  font-size: 0.74rem;
+  color: var(--text-muted);
+  line-height: 1.4;
 }
 
 .settings-textarea {
   resize: vertical;
   min-height: 80px;
   line-height: 1.6;
-}
-
-.settings-hint {
-  font-size: 0.74rem;
-  color: var(--text-muted);
-  line-height: 1.4;
 }
 
 /* Input with prefix */
@@ -347,18 +358,11 @@
   flex-shrink: 0;
 }
 
-.settings-input.with-prefix {
-  border: none;
-  border-radius: 0;
-  background: transparent;
-  padding: 12px 14px;
-  box-shadow: none;
-}
-
-.settings-input.with-prefix:focus {
-  border: none;
-  box-shadow: none;
-  background: transparent;
+.bf-input.with-prefix {
+  border: none !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
 }
 
 /* ===== Studio Preview Card ===== */
@@ -1172,6 +1176,89 @@
 }
 
 @media (max-width: 768px) {
+  /* Layout Transformation */
+  .settings-page {
+    padding-bottom: 90px !important;
+  }
+  .settings-layout {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  /* Header adjustments */
+  .settings-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+  .settings-header-info {
+    justify-content: space-between;
+  }
+  .settings-save-btn {
+    justify-content: center;
+    padding: 12px 20px;
+    font-size: 0.95rem;
+  }
+
+  /* Navigation becomes a horizontal scrollable tab row */
+  .settings-nav {
+    flex-direction: row;
+    position: static;
+    padding: 2px 0 12px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    margin: 0 -14px;
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+  .settings-nav::-webkit-scrollbar { display: none; }
+  .settings-nav::after {
+    content: '';
+    flex: 0 0 14px;
+  }
+
+  .settings-nav-brand,
+  .settings-nav-divider {
+    display: none; /* Hide brand & divider on mobile tabs */
+  }
+
+  /* Tab items */
+  .settings-nav-item {
+    padding: 8px 16px;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.05);
+    white-space: nowrap;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+  }
+  .settings-nav-item.active {
+    background: rgba(255, 42, 95, 0.1);
+    border-color: rgba(255, 42, 95, 0.2);
+  }
+  .settings-nav-indicator {
+    display: none; /* Hide vertical indicator */
+  }
+  .settings-nav-chevron {
+    display: none; /* Hide arrow on mobile tabs */
+  }
+
+  /* Form Layout */
+  .settings-form-row {
+    display: flex; /* Override grid */
+    flex-direction: column;
+    gap: 16px;
+  }
+  .bf-row {
+    flex-direction: column;
+    gap: 16px;
+  }
+  .settings-field {
+    width: 100%;
+  }
+
   .duration-discount-form {
     flex-direction: column;
     align-items: stretch;
@@ -1179,8 +1266,18 @@
   .btn-add-discount {
     margin-top: 8px;
   }
+
   .backup-restore-card {
     flex-direction: column;
     align-items: stretch;
   }
+  .backup-restore-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .backup-restore-actions .btn-secondary,
+  .restore-upload-btn {
+    justify-content: center;
+  }
 }
+

@@ -210,28 +210,26 @@ const PublicCalendarPage = () => {
   }, [currentDate, viewMode]);
 
   const dayNames = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
-  const colWidth = viewMode === 'day' ? '220px' : viewMode === 'week' ? '110px' : '60px';
-  const timeColWidth = isMobile ? '55px' : '100px';
+  const colWidth = viewMode === 'day' ? '240px' : viewMode === 'week' ? '120px' : '70px';
+  const timeColWidth = isMobile ? '60px' : '110px';
 
   return (
     <div className="pc-page">
-      {/* ── Hero Header ── */}
+      {/* ── Dynamic Hero Header ── */}
       <header className="pc-hero">
-        <div className="pc-hero-bg" />
+        <div className="pc-hero-bg">
+          <div className="pc-hero-blob-1" />
+          <div className="pc-hero-blob-2" />
+        </div>
+        
         <div className="pc-hero-inner">
-          {/* Brand */}
-          <div className="pc-hero-brand">
-            <div className="pc-hero-logo">
-              <Music size={22} color="#ff2a5f" />
-            </div>
-            <div>
-              <h1 className="pc-hero-title">{studioName || '37 MUSIC STUDIO'}</h1>
-              <p className="pc-hero-sub">Cek ketersediaan & booking via WhatsApp</p>
-            </div>
+          <div className="pc-hero-logo">
+            <Music size={32} color="#ff2a5f" />
           </div>
+          <h1 className="pc-hero-title">{studioName || '37 MUSIC STUDIO'}</h1>
+          <p className="pc-hero-sub">Cek ketersediaan jadwal secara real-time dan booking jadwal latihan atau rekaman band kamu dengan mudah.</p>
 
-          {/* Right: info + logout */}
-          <div className="pc-hero-right">
+          <div className="pc-hero-actions">
             {/* Today availability chip */}
             <div className="pc-avail-chip">
               <span className={`pc-avail-dot ${availableToday > 0 ? 'green' : 'red'}`} />
@@ -249,14 +247,14 @@ const PublicCalendarPage = () => {
                 rel="noopener noreferrer"
                 className="pc-wa-quick-btn"
               >
-                <Phone size={15} />
-                <span>Hubungi Kami</span>
+                <Phone size={16} />
+                <span>Chat Admin</span>
               </a>
             )}
 
             <button className="pc-logout-btn" onClick={handleExitPublic} title="Kembali ke beranda">
               <LogOut size={16} />
-              <span>Beranda</span>
+              <span>Kembali</span>
             </button>
           </div>
         </div>
@@ -265,22 +263,28 @@ const PublicCalendarPage = () => {
       {/* ── Calendar Container ── */}
       <div className="pc-body">
         {(authLoading || publicAccessError) && (
-          <div className={`pc-public-status glass-panel ${publicAccessError ? 'error' : ''}`}>
+          <div className={`pc-public-status ${publicAccessError ? 'error' : ''}`}>
             {publicAccessError || 'Menyiapkan akses jadwal publik...'}
           </div>
         )}
 
         {/* Toolbar */}
-        <div className="pc-toolbar glass-panel">
+        <div className="pc-toolbar">
           {/* Navigation */}
           <div className="pc-nav">
-            <button className="pc-icon-btn" onClick={handlePrev}><ChevronLeft size={20} /></button>
+            <button className="pc-icon-btn" onClick={handlePrev}><ChevronLeft size={22} /></button>
             <span className="pc-date-label">{currentLabel}</span>
-            <button className="pc-icon-btn" onClick={handleNext}><ChevronRight size={20} /></button>
+            <button className="pc-icon-btn" onClick={handleNext}><ChevronRight size={22} /></button>
             <button className="pc-today-btn" onClick={handleGoToday}>Hari Ini</button>
           </div>
 
           <div className="pc-toolbar-right">
+            {/* Legend */}
+            <div className="pc-legend">
+              <div className="pc-legend-item"><span className="pc-dot booked" /> Terisi / Tutup</div>
+              <div className="pc-legend-item"><span className="pc-dot available" /> Tersedia</div>
+            </div>
+            
             {/* View switcher */}
             <div className="pc-view-switch">
               {['day', 'week', 'month'].map(v => (
@@ -293,23 +297,18 @@ const PublicCalendarPage = () => {
                 </button>
               ))}
             </div>
-            {/* Legend */}
-            <div className="pc-legend">
-              <span className="pc-legend-item"><span className="pc-dot booked" />Terisi</span>
-              <span className="pc-legend-item"><span className="pc-dot available" />Kosong</span>
-            </div>
           </div>
         </div>
 
-        {/* Grid */}
-        <div className="pc-grid-panel glass-panel">
+        {/* Grid Panel */}
+        <div className="pc-grid-panel">
           <div className="pc-grid-wrapper" ref={gridWrapperRef}>
             <div
               className="pc-grid"
               style={{ gridTemplateColumns: `${timeColWidth} repeat(${daysArray.length}, minmax(${colWidth}, 1fr))` }}
             >
               {/* Corner */}
-              <div className="pc-corner"><span>JAM</span></div>
+              <div className="pc-corner"><span>WAKTU</span></div>
 
               {/* Day Headers */}
               {daysArray.map((day, idx) => {
@@ -326,14 +325,14 @@ const PublicCalendarPage = () => {
               })}
 
               {/* Hour rows */}
-              {hoursArray.map((hour, hIdx) => (
+              {hoursArray.map((hour) => (
                 <React.Fragment key={hour}>
                   {/* Time label */}
-                  <div className={`pc-time-label ${hIdx % 2 === 0 ? 'even' : ''}`}>
+                  <div className="pc-time-label">
                     <span>
                       {isMobile 
-                        ? `${String(hour).padStart(2, '0')}.00` 
-                        : `${String(hour).padStart(2, '0')}.00 - ${String(hour + 1).padStart(2, '0')}.00`}
+                        ? `${String(hour).padStart(2, '0')}:00` 
+                        : `${String(hour).padStart(2, '0')}:00 - ${String(hour + 1).padStart(2, '0')}:00`}
                     </span>
                   </div>
 
@@ -356,7 +355,6 @@ const PublicCalendarPage = () => {
 
                     const classes = [
                       'pc-cell',
-                      hIdx % 2 === 0 ? 'even' : '',
                       isToday ? 'today-col' : '',
                       isWknd ? 'weekend-col' : '',
                       booking ? 'booked' : '',
@@ -371,23 +369,16 @@ const PublicCalendarPage = () => {
                         key={`${dateStr}-${hour}`}
                         className={classes}
                         onClick={() => canBook && openModal(dateStr, hour)}
-                        style={isBlocked && !booking ? { background: 'rgba(255, 42, 95, 0.05)' } : {}}
                       >
                         {isBlocked && hour === startHour + 2 && !booking && (
-                          <div className="pc-booked-tag" style={{ background: 'var(--accent-pink)', opacity: 0.8, color: '#fff' }}>
-                            <XCircle size={11} />
-                            <span>TUTUP</span>
-                          </div>
+                          <div className="pc-booked-tag">TUTUP</div>
                         )}
                         {booking && isBlockStart && (
-                          <div className="pc-booked-tag">
-                            <XCircle size={11} />
-                            <span>TERISI</span>
-                          </div>
+                          <div className="pc-booked-tag">TERISI</div>
                         )}
                         {canBook && (
                           <div className="pc-plus-icon">
-                            <Plus size={14} />
+                            <Plus size={18} strokeWidth={2.5} />
                           </div>
                         )}
                       </div>
@@ -400,7 +391,7 @@ const PublicCalendarPage = () => {
         </div>
       </div>
 
-      {/* ── Booking Modal (Bottom-Sheet on mobile) ── */}
+      {/* ── Premium Booking Modal ── */}
       <AnimatePresence>
         {modalOpen && (
           <motion.div
@@ -409,111 +400,115 @@ const PublicCalendarPage = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.18 }}
+            transition={{ duration: 0.2 }}
           >
             <motion.div
-              className="pc-modal glass-panel"
+              className="pc-modal"
               onClick={e => e.stopPropagation()}
-              initial={{ y: 60, scale: 0.96, opacity: 0 }}
-              animate={{ y: 0, scale: 1, opacity: 1 }}
-              exit={{ y: 40, scale: 0.95, opacity: 0 }}
-              transition={{ type: 'spring', stiffness: 320, damping: 28 }}
+              initial={{ y: 60, opacity: 0, scale: 0.95 }}
+              animate={{ y: 0, opacity: 1, scale: 1 }}
+              exit={{ y: 40, opacity: 0, scale: 0.95 }}
+              transition={{ type: 'spring', stiffness: 300, damping: 25 }}
             >
-            {/* Header */}
-            <div className="pc-modal-header">
-              <div className="pc-modal-header-info">
-                <CalendarDays size={20} color="#00f0ff" />
-                <div>
-                  <h3>Pesan Studio</h3>
-                  <p>
-                    {selectedSlot.dateStr
-                      ? format(new Date(selectedSlot.dateStr + 'T00:00:00'), 'EEEE, dd MMMM yyyy', { locale: localeId })
-                      : ''}
-                  </p>
-                </div>
-              </div>
-              <button className="pc-modal-close" onClick={() => setModalOpen(false)}>
-                <X size={18} />
-              </button>
-            </div>
-
-            {/* Time chip */}
-            <div className="pc-time-chip">
-              <Clock size={14} />
-              <span>
-                {String(selectedSlot.hour).padStart(2,'0')}:00 -{' '}
-                {String(selectedSlot.hour + duration).padStart(2,'0')}:00
-                &nbsp;({duration} jam)
-              </span>
-            </div>
-
-            {/* Form */}
-            <div className="pc-modal-body">
-              <div className="pc-form-group">
-                <label>Nama Band / Artis</label>
-                <input
-                  type="text"
-                  className="pc-form-input"
-                  value={bandName}
-                  onChange={e => setBandName(e.target.value)}
-                  placeholder="Contoh: The Beatles"
-                  autoFocus
-                />
-              </div>
-
-              <div className="pc-form-group">
-                <label>No. WhatsApp</label>
-                <input
-                  type="tel"
-                  className="pc-form-input"
-                  value={customerPhone}
-                  onChange={e => setCustomerPhone(e.target.value)}
-                  placeholder="08xxxxxxxxxx"
-                />
-              </div>
-
-              <div className="pc-form-group">
-                <label>Durasi (Jam)</label>
-                <div className="pc-duration-grid">
-                  {[1,2,3,4,5].map(h => (
-                    <button
-                      key={h}
-                      type="button"
-                      className={`pc-dur-btn ${duration === h ? 'active' : ''}`}
-                      onClick={() => setDuration(h)}
-                    >
-                      {h}j
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Price estimate */}
-              <div className="pc-price-estimate">
-                <span className="pc-price-label">Estimasi harga</span>
-                <div className="pc-price-value-container">
-                  {durationDiscountEst > 0 && (
-                    <div className="pc-price-discount-label">
-                      Potongan Diskon: -{new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(durationDiscountEst)}
+              <div className="pc-modal-content">
+                {/* Header */}
+                <div className="pc-modal-header">
+                  <div className="pc-modal-header-info">
+                    <div className="pc-modal-header-icon">
+                      <CalendarDays size={24} />
                     </div>
-                  )}
-                  <span className="pc-price-value">
-                    {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(priceEst)}
+                    <div>
+                      <h3>Pesan Studio</h3>
+                      <p>
+                        {selectedSlot.dateStr
+                          ? format(new Date(selectedSlot.dateStr + 'T00:00:00'), 'EEEE, dd MMMM yyyy', { locale: localeId })
+                          : ''}
+                      </p>
+                    </div>
+                  </div>
+                  <button className="pc-modal-close" onClick={() => setModalOpen(false)}>
+                    <X size={20} />
+                  </button>
+                </div>
+
+                {/* Time chip */}
+                <div className="pc-time-chip">
+                  <Clock size={16} />
+                  <span>
+                    {String(selectedSlot.hour).padStart(2,'0')}:00 -{' '}
+                    {String(selectedSlot.hour + duration).padStart(2,'0')}:00
+                    &nbsp;({duration} jam)
                   </span>
                 </div>
-              </div>
 
-              {/* Info note */}
-              <div className="pc-modal-note">
-                <Info size={13} />
-                <span>Klik tombol di bawah untuk mengirim permintaan booking ke WhatsApp admin. Booking akan dikonfirmasi oleh admin.</span>
-              </div>
+                {/* Form */}
+                <div className="pc-modal-body">
+                  <div className="pc-form-group">
+                    <label>Nama Band / Artis</label>
+                    <input
+                      type="text"
+                      className="pc-form-input"
+                      value={bandName}
+                      onChange={e => setBandName(e.target.value)}
+                      placeholder="Contoh: The Beatles"
+                      autoFocus
+                    />
+                  </div>
 
-              <button className="pc-wa-send-btn" onClick={sendWA} disabled={isSubmittingRequest}>
-                <MessageCircle size={20} />
-                <span>{isSubmittingRequest ? 'Mengirim...' : 'Kirim Request & WhatsApp Admin'}</span>
-              </button>
-            </div>
+                  <div className="pc-form-group">
+                    <label>No. WhatsApp</label>
+                    <input
+                      type="tel"
+                      className="pc-form-input"
+                      value={customerPhone}
+                      onChange={e => setCustomerPhone(e.target.value)}
+                      placeholder="08xxxxxxxxxx"
+                    />
+                  </div>
+
+                  <div className="pc-form-group">
+                    <label>Pilih Durasi</label>
+                    <div className="pc-duration-grid">
+                      {[1,2,3,4,5].map(h => (
+                        <button
+                          key={h}
+                          type="button"
+                          className={`pc-dur-btn ${duration === h ? 'active' : ''}`}
+                          onClick={() => setDuration(h)}
+                        >
+                          {h} Jam
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Price estimate */}
+                  <div className="pc-price-estimate">
+                    <span className="pc-price-label">Estimasi Harga</span>
+                    <div className="pc-price-value-container">
+                      {durationDiscountEst > 0 && (
+                        <div className="pc-price-discount-label">
+                          Diskon: -{new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(durationDiscountEst)}
+                        </div>
+                      )}
+                      <span className="pc-price-value">
+                        {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(priceEst)}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Info note */}
+                  <div className="pc-modal-note">
+                    <Info size={16} />
+                    <span>Booking akan diajukan ke admin studio untuk ditinjau dan dikonfirmasi melalui pesan WhatsApp.</span>
+                  </div>
+
+                  <button className="pc-wa-send-btn" onClick={sendWA} disabled={isSubmittingRequest}>
+                    <MessageCircle size={22} />
+                    <span>{isSubmittingRequest ? 'Sedang Memproses...' : 'Kirim Booking via WhatsApp'}</span>
+                  </button>
+                </div>
+              </div>
             </motion.div>
           </motion.div>
         )}

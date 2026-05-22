@@ -63,6 +63,14 @@ const FinancePage = () => {
 
   const formatCurrency = (num) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(num);
 
+  // Derive short reference ID from entry id
+  const getRef = (entry) => {
+    const id = String(entry.id || '');
+    if (id.startsWith('book-')) return `INV-${id.replace('book-', '').slice(-5).padStart(5, '0')}`;
+    if (id.startsWith('dp-'))   return `DP-${id.replace('dp-', '').slice(-5).padStart(5, '0')}`;
+    return 'Manual';
+  };
+
   // Chart Data preparation
   const lineChartData = useMemo(
     () => buildFinanceLineChartData(filteredData, filterPeriod),
@@ -614,6 +622,7 @@ const FinancePage = () => {
                 <th>Tanggal</th>
                 <th>Kategori</th>
                 <th>Keterangan</th>
+                <th>Sumber</th>
                 <th className="col-money">Kas Masuk</th>
                 <th className="col-money">Kas Keluar</th>
                 <th className="col-money">Saldo</th>
@@ -623,7 +632,7 @@ const FinancePage = () => {
             <tbody>
               {filteredData.length === 0 ? (
                 <tr>
-                  <td colSpan="7" className="empty-state">Tidak ada catatan transaksi untuk periode ini.</td>
+                  <td colSpan="8" className="empty-state">Tidak ada catatan transaksi untuk periode ini.</td>
                 </tr>
               ) : (
                 filteredData.map(entry => (
@@ -635,6 +644,11 @@ const FinancePage = () => {
                       </span>
                     </td>
                     <td className="desc-cell">{entry.description}</td>
+                    <td>
+                      <span className={`source-badge ${entry.isManual ? 'manual' : 'booking'}`}>
+                        {getRef(entry)}
+                      </span>
+                    </td>
                     <td className="col-money text-income">
                       {entry.type === 'income' ? formatCurrency(entry.amount) : '—'}
                     </td>
@@ -674,6 +688,7 @@ const FinancePage = () => {
                 <div className="mobile-ledger-meta">
                   <span className={`cat-badge ${entry.type}`}>{entry.category}</span>
                   <span className="mobile-ledger-date">{format(new Date(entry.date), 'dd MMM yyyy')}</span>
+                  <span className={`source-badge ${entry.isManual ? 'manual' : 'booking'}`}>{getRef(entry)}</span>
                 </div>
               </div>
               <div className="mobile-ledger-right">

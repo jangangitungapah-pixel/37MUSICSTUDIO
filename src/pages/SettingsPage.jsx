@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useSettingsStore } from '../store/useSettingsStore';
 import { useDemoStore } from '../store/useDemoStore';
 import { useBookingStore } from '../store/useBookingStore';
@@ -12,6 +13,7 @@ import {
 import { collection, doc, getDocs, deleteDoc, writeBatch } from 'firebase/firestore';
 import { db } from '../firebase';
 import { toast } from 'sonner';
+import '../components/BookingForm.css'; // Import premium form styles
 import './SettingsPage.css';
 
 const SettingsPage = () => {
@@ -471,6 +473,9 @@ const SettingsPage = () => {
               className={`settings-nav-item ${activeSection === id ? 'active' : ''}`}
               onClick={() => setActiveSection(id)}
             >
+              {activeSection === id && (
+                <motion.div layoutId="settingsTabIndicator" className="settings-nav-indicator" />
+              )}
               <span className="settings-nav-icon"><Icon size={17} /></span>
               <span className="settings-nav-label">{label}</span>
               <ChevronRight size={14} className="settings-nav-chevron" />
@@ -480,10 +485,18 @@ const SettingsPage = () => {
 
         {/* Right Content */}
         <div className="settings-content-area">
-
-          {/* === SECTION: PROFILE === */}
-          {activeSection === 'profile' && (
-            <div className="settings-panel glass-panel tour-settings-profile">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeSection}
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              transition={{ duration: 0.25, ease: "easeInOut" }}
+              className="settings-panel-wrapper"
+            >
+              {/* === SECTION: PROFILE === */}
+              {activeSection === 'profile' && (
+                <div className="settings-panel glass-panel tour-settings-profile">
               <div className="settings-panel-header">
                 <div className="panel-header-icon" style={{ background: 'rgba(0,240,255,0.1)', color: 'var(--accent-cyan)' }}>
                   <Building2 size={20} />
@@ -495,47 +508,48 @@ const SettingsPage = () => {
               </div>
 
               <form onSubmit={handleSubmit} className="settings-form-body">
-                {/* Studio Name */}
-                <div className="settings-field">
-                  <label className="settings-label">
-                    <Music2 size={14} />
-                    Nama Studio
-                  </label>
-                  <input
-                    type="text"
-                    name="studioName"
-                    value={formData.studioName}
-                    onChange={handleChange}
-                    className="settings-input"
-                    placeholder="Contoh: 37 Music Studio"
-                    required
-                  />
-                  <span className="settings-hint">Nama ini akan muncul di semua dokumen & halaman publik</span>
-                </div>
-
-                {/* Phone */}
-                <div className="settings-field">
-                  <label className="settings-label">
-                    <Phone size={14} />
-                    Nomor Telepon / WhatsApp
-                  </label>
-                  <div className="settings-input-group">
-                    <span className="settings-input-prefix">+62</span>
+                {/* Studio Name & Phone */}
+                <div className="settings-form-row">
+                  <div className="settings-field">
+                    <label className="bf-label">
+                      <Music2 size={14} />
+                      Nama Studio
+                    </label>
                     <input
                       type="text"
-                      name="studioPhone"
-                      value={formData.studioPhone}
+                      name="studioName"
+                      value={formData.studioName}
                       onChange={handleChange}
-                      className="settings-input with-prefix"
-                      placeholder="81234567890"
+                      className="bf-input"
+                      placeholder="Contoh: 37 Music Studio"
+                      required
                     />
+                    <span className="settings-hint">Nama ini akan muncul di dokumen & publik</span>
                   </div>
-                  <span className="settings-hint">Digunakan untuk tautan WhatsApp booking pelanggan</span>
+
+                  <div className="settings-field">
+                    <label className="bf-label">
+                      <Phone size={14} />
+                      Nomor Telepon / WhatsApp
+                    </label>
+                    <div className="settings-input-group">
+                      <span className="settings-input-prefix">+62</span>
+                      <input
+                        type="text"
+                        name="studioPhone"
+                        value={formData.studioPhone}
+                        onChange={handleChange}
+                        className="bf-input with-prefix"
+                        placeholder="81234567890"
+                      />
+                    </div>
+                    <span className="settings-hint">Untuk tautan WhatsApp booking pelanggan</span>
+                  </div>
                 </div>
 
                 {/* Address */}
                 <div className="settings-field">
-                  <label className="settings-label">
+                  <label className="bf-label">
                     <MapPin size={14} />
                     Alamat Lengkap Studio
                   </label>
@@ -543,7 +557,7 @@ const SettingsPage = () => {
                     name="studioAddress"
                     value={formData.studioAddress}
                     onChange={handleChange}
-                    className="settings-input settings-textarea"
+                    className="bf-input settings-textarea"
                     placeholder="Jl. Contoh No. 37, Kota, Provinsi"
                     rows="3"
                   />
@@ -579,8 +593,8 @@ const SettingsPage = () => {
               </div>
 
               <form onSubmit={handleSubmit} className="settings-form-body">
-                <div className="settings-field">
-                  <label className="settings-label">
+                <div className="settings-field" style={{ maxWidth: '280px' }}>
+                  <label className="bf-label">
                     <DollarSign size={14} />
                     Tarif Sewa per Jam (Rupiah)
                   </label>
@@ -591,7 +605,7 @@ const SettingsPage = () => {
                       name="pricePerHour"
                       value={formData.pricePerHour}
                       onChange={handleChange}
-                      className="settings-input with-prefix"
+                      className="bf-input with-prefix"
                       min="0"
                       step="5000"
                       required
@@ -626,25 +640,25 @@ const SettingsPage = () => {
                   
                   <div className="duration-discount-form">
                     <div className="dd-input-group">
-                      <label>Durasi (Jam)</label>
+                      <label className="bf-label">Durasi (Jam)</label>
                       <input 
                         type="number" 
                         min="1" 
                         value={newDiscountHours} 
                         onChange={e => setNewDiscountHours(e.target.value)} 
                         placeholder="Contoh: 4" 
-                        className="settings-input"
+                        className="bf-input"
                       />
                     </div>
                     <div className="dd-input-group">
-                      <label>Potongan Diskon (Rp)</label>
+                      <label className="bf-label">Potongan Diskon (Rp)</label>
                       <input 
                         type="number" 
                         min="0" 
                         value={newDiscountAmount} 
                         onChange={e => setNewDiscountAmount(e.target.value)} 
                         placeholder="Contoh: 50000" 
-                        className="settings-input"
+                        className="bf-input"
                       />
                     </div>
                     <button type="button" className="btn-add-discount" onClick={handleAddDiscount}>
@@ -653,19 +667,29 @@ const SettingsPage = () => {
                   </div>
 
                   {formData.durationDiscounts && formData.durationDiscounts.length > 0 ? (
-                    <div className="duration-discount-list">
-                      {formData.durationDiscounts.map(d => (
-                        <div key={d.id} className="duration-discount-item">
-                          <div className="dd-item-info">
-                            <span className="dd-item-hours">≥ {d.hours} Jam</span>
-                            <span className="dd-item-amount">− {formatCurrency(d.discountAmount)}</span>
-                          </div>
-                          <button type="button" className="btn-remove-discount" onClick={() => handleRemoveDiscount(d.id)} title="Hapus">
-                            <Trash2 size={16} />
-                          </button>
-                        </div>
-                      ))}
-                    </div>
+                    <motion.div className="duration-discount-list" layout>
+                      <AnimatePresence>
+                        {formData.durationDiscounts.map(d => (
+                          <motion.div 
+                            key={d.id} 
+                            layout
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.95 }}
+                            transition={{ duration: 0.2 }}
+                            className="duration-discount-item"
+                          >
+                            <div className="dd-item-info">
+                              <span className="dd-item-hours">≥ {d.hours} Jam</span>
+                              <span className="dd-item-amount">− {formatCurrency(d.discountAmount)}</span>
+                            </div>
+                            <button type="button" className="btn-remove-discount" onClick={() => handleRemoveDiscount(d.id)} title="Hapus">
+                              <Trash2 size={16} />
+                            </button>
+                          </motion.div>
+                        ))}
+                      </AnimatePresence>
+                    </motion.div>
                   ) : (
                     <div className="duration-discount-empty">
                       Belum ada aturan diskon durasi.
@@ -680,35 +704,35 @@ const SettingsPage = () => {
                   
                   <div className="duration-discount-form" style={{ gridTemplateColumns: '1fr 80px 120px 100px' }}>
                     <div className="dd-input-group">
-                      <label>Nama Paket</label>
+                      <label className="bf-label">Nama Paket</label>
                       <input 
                         type="text" 
                         value={newRecSessionName} 
                         onChange={e => setNewRecSessionName(e.target.value)} 
                         placeholder="Cth: Sesi 6 Jam" 
-                        className="settings-input"
+                        className="bf-input"
                       />
                     </div>
                     <div className="dd-input-group">
-                      <label>Durasi (Jam)</label>
+                      <label className="bf-label">Durasi</label>
                       <input 
                         type="number" 
                         min="1" 
                         value={newRecSessionHours} 
                         onChange={e => setNewRecSessionHours(e.target.value)} 
                         placeholder="6" 
-                        className="settings-input"
+                        className="bf-input"
                       />
                     </div>
                     <div className="dd-input-group">
-                      <label>Harga Paket (Rp)</label>
+                      <label className="bf-label">Harga Paket</label>
                       <input 
                         type="number" 
                         min="0" 
                         value={newRecSessionPrice} 
                         onChange={e => setNewRecSessionPrice(e.target.value)} 
                         placeholder="600000" 
-                        className="settings-input"
+                        className="bf-input"
                       />
                     </div>
                     <button type="button" className="btn-add-discount" onClick={handleAddRecordingSession}>
@@ -717,19 +741,29 @@ const SettingsPage = () => {
                   </div>
 
                   {formData.recordingSessions && formData.recordingSessions.length > 0 ? (
-                    <div className="duration-discount-list">
-                      {formData.recordingSessions.map(s => (
-                        <div key={s.id} className="duration-discount-item">
-                          <div className="dd-item-info">
-                            <span className="dd-item-hours">{s.name} ({s.hours} Jam)</span>
-                            <span className="dd-item-amount">{formatCurrency(s.price)}</span>
-                          </div>
-                          <button type="button" className="btn-remove-discount" onClick={() => handleRemoveRecordingSession(s.id)} title="Hapus">
-                            <Trash2 size={16} />
-                          </button>
-                        </div>
-                      ))}
-                    </div>
+                    <motion.div className="duration-discount-list" layout>
+                      <AnimatePresence>
+                        {formData.recordingSessions.map(s => (
+                          <motion.div 
+                            key={s.id} 
+                            layout
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.95 }}
+                            transition={{ duration: 0.2 }}
+                            className="duration-discount-item"
+                          >
+                            <div className="dd-item-info">
+                              <span className="dd-item-hours">{s.name} ({s.hours} Jam)</span>
+                              <span className="dd-item-amount">{formatCurrency(s.price)}</span>
+                            </div>
+                            <button type="button" className="btn-remove-discount" onClick={() => handleRemoveRecordingSession(s.id)} title="Hapus">
+                              <Trash2 size={16} />
+                            </button>
+                          </motion.div>
+                        ))}
+                      </AnimatePresence>
+                    </motion.div>
                   ) : (
                     <div className="duration-discount-empty">
                       Belum ada paket sesi recording.
@@ -766,12 +800,12 @@ const SettingsPage = () => {
                   
                   <div className="duration-discount-form" style={{ gridTemplateColumns: '1fr 1fr' }}>
                     <div className="dd-input-group">
-                      <label>Jam Buka</label>
+                      <label className="bf-label">Jam Buka</label>
                       <select 
                         name="start" 
                         value={formData.operationalHours?.start || 10} 
                         onChange={handleOperationalHoursChange}
-                        className="settings-input"
+                        className="bf-input"
                       >
                         {Array.from({length: 24}).map((_, i) => (
                           <option key={`start-${i}`} value={i}>{String(i).padStart(2, '0')}:00</option>
@@ -779,12 +813,12 @@ const SettingsPage = () => {
                       </select>
                     </div>
                     <div className="dd-input-group">
-                      <label>Jam Tutup</label>
+                      <label className="bf-label">Jam Tutup</label>
                       <select 
                         name="end" 
                         value={formData.operationalHours?.end || 23} 
                         onChange={handleOperationalHoursChange}
-                        className="settings-input"
+                        className="bf-input"
                       >
                         {Array.from({length: 25}).map((_, i) => (
                           <option key={`end-${i}`} value={i}>{String(i).padStart(2, '0')}:00</option>
@@ -803,35 +837,45 @@ const SettingsPage = () => {
                   <h4 className="duration-discount-title">Hari Libur (Block Dates)</h4>
                   <p className="duration-discount-desc">Tanggal yang diblokir akan ditutup secara publik. Admin tetap dapat mengaksesnya jika dibutuhkan.</p>
                   
-                  <div className="duration-discount-form" style={{ gridTemplateColumns: '1fr 100px' }}>
+                  <div className="duration-discount-form" style={{ gridTemplateColumns: '1fr auto' }}>
                     <div className="dd-input-group">
-                      <label>Pilih Tanggal Libur</label>
+                      <label className="bf-label">Pilih Tanggal</label>
                       <input 
                         type="date" 
                         value={newBlockedDate} 
                         onChange={e => setNewBlockedDate(e.target.value)} 
-                        className="settings-input"
+                        className="bf-input"
                       />
                     </div>
-                    <button type="button" className="btn-add-discount" onClick={handleAddBlockedDate}>
+                    <button type="button" className="btn-add-discount" style={{ alignSelf: 'flex-end', height: '46px' }} onClick={handleAddBlockedDate}>
                       + Blokir
                     </button>
                   </div>
 
                   {formData.blockedDates && formData.blockedDates.length > 0 ? (
-                    <div className="duration-discount-list">
-                      {formData.blockedDates.map((dateStr, idx) => (
-                        <div key={idx} className="duration-discount-item">
-                          <div className="dd-item-info">
-                            <CalendarX size={16} color="var(--accent-pink)" />
-                            <span className="dd-item-hours">{new Date(dateStr).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
-                          </div>
-                          <button type="button" className="btn-remove-discount" onClick={() => handleRemoveBlockedDate(dateStr)} title="Hapus Libur">
-                            <Trash2 size={16} />
-                          </button>
-                        </div>
-                      ))}
-                    </div>
+                    <motion.div className="duration-discount-list" layout>
+                      <AnimatePresence>
+                        {formData.blockedDates.map(d => (
+                          <motion.div 
+                            key={d} 
+                            layout
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.95 }}
+                            transition={{ duration: 0.2 }}
+                            className="duration-discount-item"
+                          >
+                            <div className="dd-item-info">
+                              <CalendarX size={16} color="var(--accent-pink)" />
+                              <span className="dd-item-hours">{new Date(d).toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</span>
+                            </div>
+                            <button type="button" className="btn-remove-discount" onClick={() => handleRemoveBlockedDate(d)} title="Hapus dari daftar libur">
+                              <Trash2 size={16} />
+                            </button>
+                          </motion.div>
+                        ))}
+                      </AnimatePresence>
+                    </motion.div>
                   ) : (
                     <div className="duration-discount-empty">
                       Belum ada hari libur yang diatur.
@@ -1103,8 +1147,9 @@ const SettingsPage = () => {
               </div>
             </div>
           )}
-
-        </div>
+          </motion.div>
+        </AnimatePresence>
+      </div>
       </div>
     </div>
   );

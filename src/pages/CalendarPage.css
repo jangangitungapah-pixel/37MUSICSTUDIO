@@ -832,6 +832,57 @@
 }
 .empty-cell:hover .hover-plus { opacity: 0.5; }
 
+/* ===== Radix UI Components ===== */
+.radix-tooltip-content {
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--text-primary);
+  background-color: var(--surface-light);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  user-select: none;
+  animation-duration: 200ms;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, opacity;
+  z-index: 9999;
+}
+.radix-tooltip-content[data-state='delayed-open'][data-side='top'] {
+  animation-name: slideDownAndFade;
+}
+.radix-tooltip-content[data-state='delayed-open'][data-side='right'] {
+  animation-name: slideLeftAndFade;
+}
+.radix-tooltip-content[data-state='delayed-open'][data-side='bottom'] {
+  animation-name: slideUpAndFade;
+}
+.radix-tooltip-content[data-state='delayed-open'][data-side='left'] {
+  animation-name: slideRightAndFade;
+}
+
+.radix-tooltip-arrow {
+  fill: var(--surface-light);
+}
+
+@keyframes slideUpAndFade {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes slideRightAndFade {
+  from { opacity: 0; transform: translateX(-4px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes slideDownAndFade {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes slideLeftAndFade {
+  from { opacity: 0; transform: translateX(4px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
 /* Current Time Line */
 .current-time-line {
   position: absolute; left: 0; right: 0;
@@ -943,8 +994,25 @@
 }
 .booking-time-label {
   font-size: 0.6rem; color: var(--text-secondary);
-  white-space: nowrap; font-variant-numeric: tabular-nums;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  font-variant-numeric: tabular-nums;
   opacity: 0.75; font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  .booking-info {
+    padding: 3px 4px;
+    gap: 1px;
+    align-items: center;
+    text-align: center;
+  }
+  .booking-band-name {
+    font-size: 0.65rem;
+    width: 100%;
+  }
+  .booking-time-label {
+    display: none; /* Hide on mobile because 1:1 cells are too narrow for time */
+  }
 }
 
 /* ══════════════════════════════════════════
@@ -1390,25 +1458,17 @@
   }
   .quick-filters {
     display: flex;
-    flex-wrap: nowrap;
-    overflow-x: auto;
+    flex-wrap: wrap;
+    justify-content: flex-start;
     gap: 6px;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
     padding-bottom: 2px;
-    /* Full bleed scroll */
-    margin: 0 -14px;
-    padding: 0 14px 2px;
   }
   .quick-filters::after {
-    content: '';
-    flex: 0 0 1px;
-    padding-right: 14px;
+    display: none;
   }
-  .quick-filters::-webkit-scrollbar { display: none; }
   .filter-chip {
     flex-shrink: 0;
-    padding: 5px 13px;
+    padding: 5px 10px;
     font-size: 0.72rem;
     border-radius: 22px;
     white-space: nowrap;
@@ -1418,12 +1478,26 @@
   .legend { gap: 10px; flex-wrap: wrap; justify-content: center; }
   .legend-item { font-size: 0.7rem; }
 
+  /* Slot Recommendations */
+  .cal-slot-list {
+    flex-wrap: wrap;
+    overflow-x: visible;
+  }
+  .cal-slot-chip {
+    width: calc(50% - 4px); /* 2 columns */
+    padding: 8px;
+  }
+
   /* ── Grid ── */
   .monthly-grid-wrapper {
-    max-height: calc(100vh - 340px);
+    flex: 1;
     min-height: 220px;
+    max-height: none; /* Let flex handle the height */
   }
-  .monthly-grid { font-size: 0.82rem; }
+  .monthly-grid { 
+    font-size: 0.82rem; 
+    padding-bottom: 90px !important; /* Ensure last row clears the bottom nav */
+  }
   .grid-corner-cell { padding: 4px; }
   .corner-label { font-size: 0.55rem; letter-spacing: 0.5px; }
   .grid-header-cell { padding: 7px 2px; }

@@ -750,7 +750,7 @@
 }
 
 @media (max-width: 768px) {
-  .dashboard-page   { gap: 14px; padding-bottom: 20px; }
+  .dashboard-page   { gap: 14px; padding-bottom: 90px; }
   .dash-stats-grid  { grid-template-columns: repeat(2, 1fr); gap: 10px; }
   .dash-smart-grid  { grid-template-columns: 1fr; gap: 10px; }
   .dash-main-grid   { grid-template-columns: 1fr; gap: 12px; }

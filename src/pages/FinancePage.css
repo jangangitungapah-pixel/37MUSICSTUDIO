@@ -561,19 +561,21 @@
 }
 
 .finance-table th:nth-child(1),
-.finance-table td:nth-child(1) { width: 13%; }
+.finance-table td:nth-child(1) { width: 11%; }
 .finance-table th:nth-child(2),
-.finance-table td:nth-child(2) { width: 15%; }
+.finance-table td:nth-child(2) { width: 13%; }
 .finance-table th:nth-child(3),
-.finance-table td:nth-child(3) { width: 29%; }
+.finance-table td:nth-child(3) { width: 22%; }
 .finance-table th:nth-child(4),
-.finance-table td:nth-child(4) { width: 14%; text-align: right; }
+.finance-table td:nth-child(4) { width: 11%; text-align: center; }
 .finance-table th:nth-child(5),
-.finance-table td:nth-child(5) { width: 14%; text-align: right; }
+.finance-table td:nth-child(5) { width: 13%; text-align: right; }
 .finance-table th:nth-child(6),
-.finance-table td:nth-child(6) { width: 12%; text-align: right; }
+.finance-table td:nth-child(6) { width: 13%; text-align: right; }
 .finance-table th:nth-child(7),
-.finance-table td:nth-child(7) { width: 64px; }
+.finance-table td:nth-child(7) { width: 12%; text-align: right; }
+.finance-table th:nth-child(8),
+.finance-table td:nth-child(8) { width: 64px; }
 
 .cat-badge {
   display: inline-flex;
@@ -606,6 +608,31 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.source-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 22px;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 0.64rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.source-badge.booking {
+  border: 1px solid rgba(0, 240, 255, 0.2);
+  background: rgba(0, 240, 255, 0.07);
+  color: var(--accent-cyan);
+}
+
+.source-badge.manual {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-muted);
 }
 
 .col-money {
@@ -665,6 +692,7 @@
   flex-direction: column;
   gap: 8px;
   padding: 10px;
+  padding-bottom: 90px !important;
 }
 
 .mobile-ledger-card {

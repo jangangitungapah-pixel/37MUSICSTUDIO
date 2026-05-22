@@ -8,6 +8,7 @@ import { useBookingRequestStore } from '../store/useBookingRequestStore';
 import { useTourStore } from '../store/useTourStore';
 import { useNotificationStore } from '../store/useNotificationStore';
 import { AnimatePresence, motion } from 'framer-motion';
+import * as Tooltip from '@radix-ui/react-tooltip';
 import Modal from '../components/Modal';
 import BookingForm from '../components/BookingForm';
 import { getAnomalies, getDemandInsights, getSlotRecommendations } from '../lib/smartInsights';
@@ -54,7 +55,10 @@ const CalendarPage = () => {
   }, []);
 
   useEffect(() => {
-    if (isMobile) setAreTopPanelsCollapsed(false);
+    if (isMobile) {
+      setAreTopPanelsCollapsed(false);
+      setViewMode('week');
+    }
   }, [isMobile]);
 
   const { bookings, addBooking, deleteBooking, updateBookingStatus, updateBooking, cancelBooking, rescheduleBooking, getMonthlyStats } = useBookingStore();
@@ -191,12 +195,8 @@ const CalendarPage = () => {
   const handleDrop = (e, dateStr, hour) => {
     e.preventDefault();
     if (draggedBooking) {
-      const duration = Number(draggedBooking.duration);
-      const isOverlap = bookings.some(x => {
-        if (x.id === draggedBooking.id || x.date !== dateStr) return false;
-        return Number(x.hour) < hour + duration && hour < Number(x.hour) + Number(x.duration);
-      });
-      if (isOverlap) {
+      const candidate = { date: dateStr, hour, duration: draggedBooking.duration };
+      if (hasBookingOverlap(bookings, candidate, draggedBooking.id)) {
         useNotificationStore.getState().addNotification({
           title: 'Jadwal Bentrok!',
           message: 'Slot tujuan bertabrakan dengan booking lain.',
@@ -281,6 +281,18 @@ const CalendarPage = () => {
       if (addedHours !== 0) {
         const newDur = Math.max(1, Math.min(13, resizingBooking.duration + addedHours));
         if (newDur !== resizingBooking.duration) {
+          const candidate = { date: resizingBooking.date, hour: resizingBooking.hour, duration: newDur };
+          if (hasBookingOverlap(bookings, candidate, resizingBooking.id)) {
+            useNotificationStore.getState().addNotification({
+              title: 'Jadwal Bentrok!',
+              message: 'Perpanjangan waktu bertabrakan dengan jadwal lain.',
+              type: 'error',
+            });
+            setResizingBooking(null);
+            setResizeAddedHours(0);
+            return;
+          }
+
           if (resizingBooking.type === 'maintenance') {
             updateBooking(resizingBooking.id, { duration: newDur });
           } else {
@@ -443,58 +455,83 @@ const CalendarPage = () => {
     return format(currentDate, 'MMMM yyyy');
   };
 
-  const colWidth = viewMode === 'day' ? '200px' : viewMode === 'week' ? '120px' : isMobile ? '50px' : '60px';
-  const timeColWidth = isMobile ? '55px' : '100px';
+  const colWidth = isMobile 
+    ? (viewMode === 'day' ? '100%' : viewMode === 'week' ? '0' : '45px')
+    : (viewMode === 'day' ? '200px' : viewMode === 'week' ? '120px' : '60px');
+  const timeColWidth = isMobile ? '45px' : '100px';
 
   return (
-    <div className="calendar-page">
-      <div className={`calendar-main-content ${selectedBooking ? 'blurred' : ''} ${areTopPanelsCollapsed && !isMobile ? 'panels-collapsed' : ''}`}>
-        {/* Header */}
-      <header className="cal-header">
-        <div className="cal-header-left">
-          <div className="cal-header-icon">
-            <CalendarCheck size={20} />
+    <Tooltip.Provider delayDuration={200}>
+      <div className="calendar-page">
+        <div className={`calendar-main-content ${selectedBooking ? 'blurred' : ''} ${areTopPanelsCollapsed ? 'panels-collapsed' : ''}`}>
+          {/* Header */}
+        <header className="cal-header">
+          <div className="cal-header-left">
+            <div className="cal-header-icon">
+              <CalendarCheck size={20} />
+            </div>
+            <div>
+              <h2 className="page-title">Booking Calendar</h2>
+              <p className="page-subtitle">{studioName} — {format(currentDate, 'MMMM yyyy')}</p>
+            </div>
           </div>
-          <div>
-            <h2 className="page-title">Booking Calendar</h2>
-            <p className="page-subtitle">{studioName} — {format(currentDate, 'MMMM yyyy')}</p>
+          <div className="cal-header-right">
+            <div className="search-bar glass-panel tour-calendar-search">
+              <Search size={16} color="var(--text-muted)" />
+              <input type="text" placeholder="Cari band / no HP..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
+              {searchQuery && <button className="search-clear" onClick={() => setSearchQuery('')}><X size={13} /></button>}
+            </div>
+
+            <Tooltip.Root>
+              <Tooltip.Trigger asChild>
+                <button
+                  className="btn-secondary cal-panel-toggle"
+                  type="button"
+                  onClick={() => setAreTopPanelsCollapsed((value) => !value)}
+                  aria-expanded={!areTopPanelsCollapsed}
+                  aria-controls="calendar-top-panels"
+                >
+                  {areTopPanelsCollapsed ? <ChevronDown size={16} /> : <ChevronUp size={16} />}
+                  <span>{areTopPanelsCollapsed ? 'Tampilkan Panel' : 'Sembunyikan Panel'}</span>
+                </button>
+              </Tooltip.Trigger>
+              <Tooltip.Portal>
+                <Tooltip.Content className="radix-tooltip-content" sideOffset={5}>
+                  {areTopPanelsCollapsed ? 'Tampilkan statistik' : 'Sembunyikan statistik'}
+                  <Tooltip.Arrow className="radix-tooltip-arrow" />
+                </Tooltip.Content>
+              </Tooltip.Portal>
+            </Tooltip.Root>
+
+            <Tooltip.Root>
+              <Tooltip.Trigger asChild>
+                <button className="btn-secondary tour-calendar-print" onClick={() => window.print()}>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+                  <span className="hide-on-mobile">Cetak</span>
+                </button>
+              </Tooltip.Trigger>
+              <Tooltip.Portal>
+                <Tooltip.Content className="radix-tooltip-content" sideOffset={5}>
+                  Cetak jadwal kalender
+                  <Tooltip.Arrow className="radix-tooltip-arrow" />
+                </Tooltip.Content>
+              </Tooltip.Portal>
+            </Tooltip.Root>
+
+            <button className="btn-primary tour-calendar-new-btn" onClick={handleNewBooking}>
+              <Plus size={18} /><span>New Booking</span>
+            </button>
           </div>
-        </div>
-        <div className="cal-header-right">
-          <div className="search-bar glass-panel tour-calendar-search">
-            <Search size={16} color="var(--text-muted)" />
-            <input type="text" placeholder="Cari band / no HP..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
-            {searchQuery && <button className="search-clear" onClick={() => setSearchQuery('')}><X size={13} /></button>}
-          </div>
-          <button
-            className="btn-secondary cal-panel-toggle desktop-only"
-            type="button"
-            onClick={() => setAreTopPanelsCollapsed((value) => !value)}
-            aria-expanded={!areTopPanelsCollapsed}
-            aria-controls="calendar-top-panels"
-            title={areTopPanelsCollapsed ? 'Tampilkan panel atas' : 'Sembunyikan panel atas'}
-          >
-            {areTopPanelsCollapsed ? <ChevronDown size={16} /> : <ChevronUp size={16} />}
-            <span>{areTopPanelsCollapsed ? 'Tampilkan Panel' : 'Sembunyikan Panel'}</span>
-          </button>
-          <button className="btn-secondary tour-calendar-print" onClick={() => window.print()} title="Cetak">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
-            <span className="hide-on-mobile">Cetak</span>
-          </button>
-          <button className="btn-primary tour-calendar-new-btn" onClick={handleNewBooking}>
-            <Plus size={18} /><span>New Booking</span>
-          </button>
-        </div>
-      </header>
+        </header>
 
       <AnimatePresence initial={false}>
-        {(!areTopPanelsCollapsed || isMobile) && (
+        {!areTopPanelsCollapsed && (
           <motion.div
             id="calendar-top-panels"
             className="calendar-top-panels"
-            initial={!isMobile ? { height: 0, opacity: 0 } : false}
+            initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
-            exit={!isMobile ? { height: 0, opacity: 0 } : undefined}
+            exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.22, ease: 'easeInOut' }}
           >
             {/* Stats Bar */}
@@ -631,6 +668,13 @@ const CalendarPage = () => {
                 <button key={id} className={`view-btn ${viewMode === id ? 'active' : ''}`} onClick={() => setViewMode(id)}>
                   <Icon size={14} />
                   <span>{label}</span>
+                  {viewMode === id && (
+                    <motion.div 
+                      layoutId="view-indicator"
+                      className="view-btn-indicator"
+                      transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                    />
+                  )}
                 </button>
               ))}
             </div>
@@ -700,8 +744,12 @@ const CalendarPage = () => {
 
                   if (cellBooking) {
                     return (
-                      <div 
-                        key={`${hour}-${dayIdx}`} 
+                      <motion.div 
+                        layout
+                        key={`${hour}-${dayIdx}-${cellBooking.id}`}
+                        initial={{ opacity: 0, y: 8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.25, ease: 'easeOut' }}
                         className={`${cellClasses} booked-cell status-${cellBooking.status} ${isBookingStart ? 'booking-start' : ''} ${isBookingEnd ? 'booking-end' : ''} ${cellBooking.isResizing ? 'is-resizing' : ''}`} 
                         onClick={e => handleBookingClick(e, cellBooking)}
                         draggable={isBookingStart && !isMobile}
@@ -722,7 +770,7 @@ const CalendarPage = () => {
                             <div className="resize-line" />
                           </div>
                         )}
-                      </div>
+                      </motion.div>
                     );
                   }
                   return (
@@ -805,8 +853,11 @@ const CalendarPage = () => {
                         <button className="dur-btn" onClick={() => {
                         const newDur = Math.min(13, b.duration + 1);
                         if (newDur > b.duration) {
-                          const isOverlap = bookings.some(x => x.id !== b.id && x.date === b.date && (Number(x.hour) < Number(b.hour) + newDur) && (Number(b.hour) < Number(x.hour) + Number(x.duration)));
-                          if (isOverlap) { useNotificationStore.getState().addNotification({ title: 'Jadwal Bentrok!', message: 'Durasi bertabrakan dengan booking lain.', type: 'error' }); return; }
+                          const candidate = { date: b.date, hour: b.hour, duration: newDur };
+                          if (hasBookingOverlap(bookings, candidate, b.id)) {
+                            useNotificationStore.getState().addNotification({ title: 'Jadwal Bentrok!', message: 'Durasi bertabrakan dengan booking lain.', type: 'error' }); 
+                            return; 
+                          }
                           updateBooking(b.id, { duration: newDur });
                         }
                       }}>+</button>
@@ -1013,6 +1064,7 @@ const CalendarPage = () => {
         )}
       </Modal>
     </div>
+    </Tooltip.Provider>
   );
 };
 

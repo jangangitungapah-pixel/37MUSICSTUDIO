@@ -1,7 +1,7 @@
-import { useState } from 'react';
-import { motion } from 'framer-motion';
-import { CalendarDays, Users, Package, CreditCard, Settings, Music, BookOpen, PieChart, Menu, X, LogOut, HelpCircle, Bell, ChevronRight, FlaskConical, Sun, Moon, Shield, Hammer } from 'lucide-react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { CalendarDays, Users, Package, CreditCard, Settings, Music, BookOpen, PieChart, Menu, X, LogOut, HelpCircle, Bell, ChevronRight, ChevronLeft, FlaskConical, Sun, Moon, Shield, Hammer, MoreHorizontal } from 'lucide-react';
+import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../store/useAuthStore';
 import { useTourStore } from '../store/useTourStore';
 import { useNotificationStore } from '../store/useNotificationStore';
@@ -10,10 +10,12 @@ import { useDemoStore } from '../store/useDemoStore';
 import { ROUTE_PERMISSIONS, hasPermission } from '../lib/permissions';
 import ProfileModal from './ProfileModal';
 import NotificationPanel from './NotificationPanel';
+import Modal from './Modal';
 import './Sidebar.css';
 
 const Sidebar = () => {
-  const [mobileOpen, setMobileOpen] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false); // Used for the "More" bottom sheet now
+  const [isCollapsed, setIsCollapsed] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isNotifOpen, setIsNotifOpen] = useState(false);
   
@@ -23,6 +25,7 @@ const Sidebar = () => {
   const { isDemoMode, toggleDemoMode } = useDemoStore();
   const { theme, toggleTheme } = useThemeStore();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const unreadCount = notifications.filter(n => !n.isRead).length;
 
@@ -72,30 +75,76 @@ const Sidebar = () => {
   const avatarLetter = displayName.charAt(0).toUpperCase();
 
   // Get current page title for mobile header
+  
+  // Separate primary and secondary menus for Bottom Nav
+  const primaryMobileMenus = menuItems.slice(0, 4); // Dashboard, Calendar, Customers, Inventory
+  const secondaryMobileMenus = menuItems.slice(4); // Billing, Finance, Staff, Maintenance, Settings
+
   return (
     <>
-      {/* Mobile Header Bar */}
-      <div className="mobile-header">
-        <div className="mobile-header-brand">
-          <Music size={20} color="var(--accent-pink)" />
-          <span className="mobile-header-title">37 STUDIO</span>
-        </div>
-        <div style={{display: 'flex', gap: '8px', alignItems: 'center'}}>
-          <button className="notification-bell-btn" onClick={() => setIsNotifOpen(true)}>
-             <Bell size={22} color="var(--text-primary)" />
-             {unreadCount > 0 && <span className="notification-badge">{unreadCount > 99 ? '99+' : unreadCount}</span>}
-          </button>
-          <button className="mobile-menu-btn" onClick={() => setMobileOpen(!mobileOpen)}>
-            {mobileOpen ? <X size={22} /> : <Menu size={22} />}
-          </button>
-        </div>
-      </div>
+      {/* ===== BOTTOM NAV BAR (MOBILE ONLY) ===== */}
+      <nav className="bottom-nav-bar">
+        {primaryMobileMenus.filter((item) => hasPermission(userProfile, ROUTE_PERMISSIONS[item.path])).map((item) => {
+          const isActive = location.pathname.startsWith(item.path) || (item.path === '/dashboard' && location.pathname === '/');
+          return (
+            <NavLink 
+              key={item.path}
+              to={item.path} 
+              className={`bn-item ${isActive ? 'active' : ''}`}
+            >
+              <motion.div whileTap={{ scale: 0.85 }} className="bn-icon-wrapper">
+                {item.icon}
+                {isActive && <motion.div layoutId="bn-indicator" className="bn-indicator" />}
+              </motion.div>
+              <span className="bn-label">{item.label === 'Dashboard' ? 'Home' : item.label}</span>
+            </NavLink>
+          );
+        })}
+        <button className="bn-item" onClick={() => setMobileOpen(true)}>
+          <motion.div whileTap={{ scale: 0.85 }} className="bn-icon-wrapper">
+            <MoreHorizontal size={19} />
+          </motion.div>
+          <span className="bn-label">Lainnya</span>
+        </button>
+      </nav>
 
-      {/* Mobile Overlay */}
-      {mobileOpen && <div className="mobile-overlay" onClick={() => setMobileOpen(false)} />}
+      {/* ===== MOBILE "MORE" BOTTOM SHEET ===== */}
+      <Modal 
+        isOpen={mobileOpen} 
+        onClose={() => setMobileOpen(false)} 
+        className="mobile-bottom-sheet"
+      >
+        <div className="bottom-sheet-header">
+          <div className="sheet-drag-handle" />
+          <h3>Menu Lainnya</h3>
+        </div>
+        <div className="bottom-sheet-grid">
+          {secondaryMobileMenus.filter((item) => hasPermission(userProfile, ROUTE_PERMISSIONS[item.path])).map((item) => (
+            <NavLink 
+              key={item.path}
+              to={item.path} 
+              className="sheet-nav-item"
+              onClick={() => setMobileOpen(false)}
+            >
+              <div className="sheet-icon">{item.icon}</div>
+              <span>{item.label}</span>
+            </NavLink>
+          ))}
+          <button className="sheet-nav-item text-danger" onClick={handleLogout}>
+            <div className="sheet-icon"><LogOut size={19} /></div>
+            <span>Logout</span>
+          </button>
+        </div>
+      </Modal>
 
-      {/* Sidebar */}
-      <aside className={`sidebar glass-panel ${mobileOpen ? 'mobile-open' : ''}`}>
+      {/* ===== DESKTOP SIDEBAR ===== */}
+      <aside className={`sidebar glass-panel ${isCollapsed ? 'collapsed' : ''}`}>
+        
+        {/* Desktop Collapse Toggle */}
+        <div className="collapse-toggle" onClick={() => setIsCollapsed(!isCollapsed)}>
+          {isCollapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
+        </div>
+
         {/* Brand Header */}
         <div className="sidebar-header">
           <div className="sidebar-brand">
@@ -122,22 +171,33 @@ const Sidebar = () => {
             variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.06, delayChildren: 0.05 } } }}
             style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}
           >
-            {menuItems.filter((item) => hasPermission(userProfile, ROUTE_PERMISSIONS[item.path])).map((item, index) => (
-              <motion.div
-                key={index}
-                variants={{ hidden: { opacity: 0, x: -14 }, visible: { opacity: 1, x: 0, transition: { duration: 0.25, ease: [0.4,0,0.2,1] } } }}
-              >
-                <NavLink 
-                  to={item.path} 
-                  className={({ isActive }) => `nav-item ${item.tourClass} ${isActive ? 'active' : ''}`}
-                  onClick={() => setMobileOpen(false)}
+            {menuItems.filter((item) => hasPermission(userProfile, ROUTE_PERMISSIONS[item.path])).map((item, index) => {
+              const isActive = location.pathname.startsWith(item.path) || (item.path === '/dashboard' && location.pathname === '/');
+              return (
+                <motion.div
+                  key={item.path}
+                  variants={{ hidden: { opacity: 0, x: -14 }, visible: { opacity: 1, x: 0, transition: { duration: 0.25, ease: [0.4,0,0.2,1] } } }}
                 >
-                  <span className="nav-icon">{item.icon}</span>
-                  <span className="nav-label">{item.label}</span>
-                  <ChevronRight size={14} className="nav-chevron" />
-                </NavLink>
-              </motion.div>
-            ))}
+                  <NavLink 
+                    to={item.path} 
+                    className={`nav-item ${item.tourClass} ${isActive ? 'active' : ''}`}
+                    onClick={() => setMobileOpen(false)}
+                  >
+                    {isActive && (
+                      <motion.div 
+                        layoutId="sidebar-active-indicator"
+                        className="nav-active-bg"
+                        initial={false}
+                        transition={{ type: 'spring', stiffness: 350, damping: 30 }}
+                      />
+                    )}
+                    <span className="nav-icon" style={{ position: 'relative', zIndex: 1 }}>{item.icon}</span>
+                    <span className="nav-label" style={{ position: 'relative', zIndex: 1 }}>{item.label}</span>
+                    <ChevronRight size={14} className="nav-chevron" style={{ position: 'relative', zIndex: 1 }} />
+                  </NavLink>
+                </motion.div>
+              );
+            })}
           </motion.div>
         </nav>
 
@@ -159,14 +219,14 @@ const Sidebar = () => {
 
           {/* Theme Toggle */}
           <button className="theme-toggle-btn" onClick={toggleTheme} title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}>
-            <span className="nav-icon">
+            <span className="nav-icon" style={{ flexShrink: 0 }}>
               {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
             </span>
             <span className="nav-label">{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
           </button>
 
           <button className="nav-item tour-guide-btn" onClick={handleRestartTour}>
-            <span className="nav-icon"><HelpCircle size={19} /></span>
+            <span className="nav-icon" style={{ flexShrink: 0 }}><HelpCircle size={19} /></span>
             <span className="nav-label">Panduan Tour</span>
           </button>
           

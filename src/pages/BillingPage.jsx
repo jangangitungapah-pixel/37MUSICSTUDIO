@@ -460,137 +460,151 @@ const BillingPage = () => {
         >
           <div className="inv2-shell">
             {/* ════ LEFT: Print-ready Invoice ════ */}
-            <div className={`inv2-paper ${isThermalMode ? 'thermal-mode' : ''}`} ref={invoiceRef}>
+            <div className={`inv2-paper ${isThermalMode ? 'thermal-mode' : 'a4-mode'}`} ref={invoiceRef}>
+              
+              {/* Thermal jagges top (only visible in thermal mode) */}
+              <div className="thermal-edge top"></div>
 
-              {/* Gradient top accent */}
+              {/* Gradient top accent (A4 only) */}
               <div className="inv2-accent" />
 
               {/* Studio Header */}
               <div className="inv2-header">
                 <div className="inv2-brand">
-                  <div className="inv2-brand-icon">🎸</div>
-                  <div>
+                  <div className="inv2-brand-icon-wrap">
+                    <div className="inv2-brand-icon">🎸</div>
+                  </div>
+                  <div className="inv2-brand-text">
                     <div className="inv2-brand-name">{studioName}</div>
-                    {studioAddress && <div className="inv2-brand-sub">{studioAddress}</div>}
-                    {studioPhone  && <div className="inv2-brand-sub">📞 {studioPhone}</div>}
+                    <div className="inv2-brand-sub">{studioAddress}</div>
+                    {studioPhone && <div className="inv2-brand-sub">T: {studioPhone}</div>}
                   </div>
                 </div>
                 <div className="inv2-title-block">
                   <div className="inv2-title">INVOICE</div>
-                  <div className="inv2-number">{invNo}</div>
+                  <div className={`inv2-status-badge ${selectedInvoice.status}`}>
+                    {isLunas ? 'LUNAS' : isDP ? 'DP (SEBAGIAN)' : 'BELUM BAYAR'}
+                  </div>
                 </div>
               </div>
 
-              {/* Meta cards row */}
-              <div className="inv2-meta-row">
-                <div className="inv2-meta-card">
-                  <span className="inv2-meta-label">Tanggal</span>
-                  <span className="inv2-meta-val">{format(new Date(), 'dd MMM yyyy')}</span>
+              {/* Details Grid: Bill To & Meta */}
+              <div className="inv2-details-grid">
+                <div className="inv2-bill-to">
+                  <div className="inv2-label">DITAGIHKAN KEPADA</div>
+                  <div className="inv2-customer-name">{selectedInvoice.band}</div>
+                  {selectedInvoice.phone && (
+                    <div className="inv2-customer-phone">{selectedInvoice.phone}</div>
+                  )}
                 </div>
-                <div className="inv2-meta-card">
-                  <span className="inv2-meta-label">Jadwal</span>
-                  <span className="inv2-meta-val">{format(new Date(selectedInvoice.date), 'dd MMM yyyy')}</span>
+                <div className="inv2-meta-info">
+                  <div className="inv2-meta-item">
+                    <span className="inv2-label">NOMOR INVOICE</span>
+                    <span className="inv2-val-mono">{invNo}</span>
+                  </div>
+                  <div className="inv2-meta-item">
+                    <span className="inv2-label">TANGGAL CETAK</span>
+                    <span className="inv2-val">{format(new Date(), 'dd MMM yyyy')}</span>
+                  </div>
+                  <div className="inv2-meta-item">
+                    <span className="inv2-label">JADWAL STUDIO</span>
+                    <span className="inv2-val">{format(new Date(selectedInvoice.date), 'dd MMM yyyy')}</span>
+                  </div>
                 </div>
-                <div className={`inv2-meta-card status-card ${selectedInvoice.status}`}>
-                  <span className="inv2-meta-label">Status</span>
-                  <span className="inv2-status-val">
-                    {isLunas ? '✅ LUNAS' : isDP ? '🟡 DP' : '🔴 BELUM BAYAR'}
-                  </span>
-                </div>
-              </div>
-
-              {/* Customer */}
-              <div className="inv2-customer-section">
-                <div className="inv2-section-label">DITAGIHKAN KEPADA</div>
-                <div className="inv2-customer-name">{selectedInvoice.band}</div>
-                {selectedInvoice.phone && (
-                  <div className="inv2-customer-phone">📱 {selectedInvoice.phone}</div>
-                )}
               </div>
 
               {/* Line items */}
-              <table className="inv2-items">
-                <thead>
-                  <tr>
-                    <th>Deskripsi Layanan</th>
-                    <th>Durasi</th>
-                    <th>Tarif</th>
-                    <th>Jumlah</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>
-                      <div className="inv2-item-name">{getServiceName(selectedInvoice)}</div>
-                      <div className="inv2-item-time">
-                        {format(new Date(selectedInvoice.date), 'EEEE, dd MMMM yyyy')}
-                      </div>
-                      <div className="inv2-item-time">
-                        {String(selectedInvoice.hour).padStart(2,'0')}:00 – {String(selectedInvoice.hour + selectedInvoice.duration).padStart(2,'0')}:00 WIB
-                      </div>
-                    </td>
-                    <td className="inv2-td-c">{selectedInvoice.duration} jam</td>
-                    <td className="inv2-td-c">{getRateLabel(selectedInvoice)}</td>
-                    <td className="inv2-td-r">{formatCurrency(subtotal)}</td>
-                  </tr>
-                  {discount > 0 && (
-                    <tr className="inv2-discount-row">
-                      <td><div className="inv2-item-name inv2-discount-label">⭐ Diskon (VIP / Durasi)</div></td>
-                      <td className="inv2-td-c">—</td>
-                      <td className="inv2-td-c">—</td>
-                      <td className="inv2-td-r inv2-discount-val">−{formatCurrency(discount)}</td>
+              <div className="inv2-table-wrapper">
+                <table className="inv2-items">
+                  <thead>
+                    <tr>
+                      <th className="col-desc">DESKRIPSI LAYANAN</th>
+                      <th className="col-qty">DURASI</th>
+                      <th className="col-rate">TARIF</th>
+                      <th className="col-amt">JUMLAH</th>
                     </tr>
-                  )}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td className="col-desc">
+                        <div className="inv2-item-name">{getServiceName(selectedInvoice)}</div>
+                        <div className="inv2-item-time">
+                          {format(new Date(selectedInvoice.date), 'EEEE, dd MMMM yyyy')} • {String(selectedInvoice.hour).padStart(2,'0')}:00 – {String(selectedInvoice.hour + selectedInvoice.duration).padStart(2,'0')}:00 WIB
+                        </div>
+                      </td>
+                      <td className="col-qty">{selectedInvoice.duration} jam</td>
+                      <td className="col-rate">{getRateLabel(selectedInvoice)}</td>
+                      <td className="col-amt">{formatCurrency(subtotal)}</td>
+                    </tr>
+                    {discount > 0 && (
+                      <tr className="inv2-discount-row">
+                        <td className="col-desc"><div className="inv2-discount-label">↳ Diskon VIP / Promosi</div></td>
+                        <td className="col-qty">—</td>
+                        <td className="col-rate">—</td>
+                        <td className="col-amt inv2-discount-val">−{formatCurrency(discount)}</td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
 
-              {/* Summary */}
-              <div className="inv2-summary-wrap">
-                {/* LUNAS stamp */}
-                {isLunas && (
-                  <div className="inv2-stamp-wrap">
-                    <div className="inv2-stamp">LUNAS</div>
-                  </div>
-                )}
+              {/* Summary Section */}
+              <div className="inv2-summary-section">
+                <div className="inv2-notes">
+                  <div className="inv2-label">CATATAN PEMBAYARAN</div>
+                  <p>Mohon simpan invoice ini sebagai bukti pembayaran yang sah. Apabila ada kendala terkait layanan, harap hubungi staff kami maksimal 1x24 jam.</p>
+                </div>
 
-                <div className="inv2-summary">
+                <div className="inv2-summary-box">
                   {discount > 0 && (
                     <div className="inv2-sum-row">
-                      <span>Subtotal sebelum diskon</span>
-                      <span>{formatCurrency(subtotal)}</span>
+                      <span className="sum-label">Subtotal</span>
+                      <span className="sum-val">{formatCurrency(subtotal)}</span>
                     </div>
                   )}
                   {discount > 0 && (
-                    <div className="inv2-sum-row disct">
-                      <span>Diskon VIP</span>
-                      <span>−{formatCurrency(discount)}</span>
+                    <div className="inv2-sum-row highlight-discount">
+                      <span className="sum-label">Total Diskon</span>
+                      <span className="sum-val">−{formatCurrency(discount)}</span>
                     </div>
                   )}
-                  <div className="inv2-sum-row sub">
-                    <span>Total Tagihan</span>
-                    <span>{formatCurrency(total)}</span>
+                  <div className="inv2-sum-row">
+                    <span className="sum-label">Total Tagihan</span>
+                    <span className="sum-val">{formatCurrency(total)}</span>
                   </div>
                   {dpPaid > 0 && (
-                    <div className="inv2-sum-row dp">
-                      <span>DP Telah Dibayar</span>
-                      <span>−{formatCurrency(dpPaid)}</span>
+                    <div className="inv2-sum-row highlight-dp">
+                      <span className="sum-label">Telah Dibayar (DP)</span>
+                      <span className="sum-val">−{formatCurrency(dpPaid)}</span>
                     </div>
                   )}
-                  <div className={`inv2-sum-row grand ${isLunas ? 'paid' : 'due'}`}>
-                    <span>{isLunas ? '✅ Total Dibayar' : '⚠️ Sisa Tagihan'}</span>
-                    <span>{formatCurrency(isLunas ? total : remaining)}</span>
+                  
+                  <div className="inv2-divider"></div>
+                  
+                  <div className={`inv2-grand-total ${isLunas ? 'status-paid' : 'status-due'}`}>
+                    <div className="grand-label">{isLunas ? 'Total Dibayar' : 'Sisa Tagihan'}</div>
+                    <div className="grand-val">{formatCurrency(isLunas ? total : remaining)}</div>
                   </div>
                 </div>
+
+                {/* Watermark / Stamp */}
+                {isLunas && (
+                  <div className="inv2-watermark">
+                    <span>LUNAS</span>
+                  </div>
+                )}
               </div>
 
               {/* Footer */}
               <div className="inv2-footer">
-                <div className="inv2-footer-line" />
-                <div className="inv2-footer-inner">
-                  <span>🎵 Terima kasih atas kepercayaan Anda!</span>
-                  <span className="inv2-footer-studio">{studioName}</span>
+                <div className="inv2-footer-content">
+                  <div className="footer-thanks">Terima kasih atas kepercayaan Anda!</div>
+                  <div className="footer-brand">{studioName}</div>
                 </div>
               </div>
+
+              {/* Thermal jagges bottom (only visible in thermal mode) */}
+              <div className="thermal-edge bottom"></div>
             </div>
 
             {/* ════ RIGHT: Action Panel ════ */}
@@ -601,20 +615,18 @@ const BillingPage = () => {
               </div>
 
               {/* Format Toggle */}
-              <div className="inv2-format-toggle" style={{ display: 'flex', gap: '8px', marginBottom: '16px', background: 'rgba(255,255,255,0.02)', padding: '6px', borderRadius: '12px' }}>
+              <div className="inv2-format-toggle">
                 <button 
-                  style={{ flex: 1, padding: '8px', borderRadius: '8px', border: 'none', background: !isThermalMode ? 'rgba(255,42,95,0.15)' : 'transparent', color: !isThermalMode ? 'var(--accent-pink)' : 'var(--text-muted)', fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s', fontSize: '0.8rem' }}
+                  className={`format-btn ${!isThermalMode ? 'active' : ''}`}
                   onClick={() => setIsThermalMode(false)}
                 >
-                  <FileText size={14} style={{ display: 'inline', verticalAlign: 'text-bottom', marginRight: '4px' }} />
-                  A4 Invoice
+                  <FileText size={14} /> A4 Invoice
                 </button>
                 <button 
-                  style={{ flex: 1, padding: '8px', borderRadius: '8px', border: 'none', background: isThermalMode ? 'rgba(0,240,255,0.15)' : 'transparent', color: isThermalMode ? 'var(--accent-cyan)' : 'var(--text-muted)', fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s', fontSize: '0.8rem' }}
+                  className={`format-btn ${isThermalMode ? 'active' : ''}`}
                   onClick={() => setIsThermalMode(true)}
                 >
-                  <Printer size={14} style={{ display: 'inline', verticalAlign: 'text-bottom', marginRight: '4px' }} />
-                  Thermal Struk
+                  <Printer size={14} /> Thermal Struk
                 </button>
               </div>
 
