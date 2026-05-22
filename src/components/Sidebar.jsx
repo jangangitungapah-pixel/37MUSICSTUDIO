@@ -148,8 +148,8 @@ const Sidebar = () => {
         {/* Brand Header */}
         <div className="sidebar-header">
           <div className="sidebar-brand">
-            <div className="logo-icon">
-              <Music size={22} color="var(--accent-pink)" />
+            <div className="logo-icon" style={{ background: 'transparent', boxShadow: 'none', border: 'none', padding: 0 }}>
+              <img src="/logo.png" alt="Logo" style={{ width: '38px', height: '38px', objectFit: 'contain' }} />
             </div>
             <div className="logo-text-group">
               <h1 className="logo-text">37 STUDIO</h1>

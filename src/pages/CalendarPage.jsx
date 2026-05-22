@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useRef, useEffect, useCallback } from 'react';
-import { ChevronDown, ChevronLeft, ChevronRight, ChevronUp, Plus, Search, CalendarCheck, Clock, DollarSign, Trash2, Phone, StickyNote, X, MessageCircle, TrendingUp, Calendar, LayoutGrid, CalendarDays, Lightbulb, AlertTriangle, CheckCircle2, XCircle, RotateCcw } from 'lucide-react';
+import { ChevronDown, ChevronLeft, ChevronRight, ChevronUp, Plus, Search, CalendarCheck, Clock, DollarSign, Trash2, Phone, StickyNote, X, MessageCircle, TrendingUp, Calendar, LayoutGrid, CalendarDays, Lightbulb, AlertTriangle, CheckCircle2, XCircle, RotateCcw, Printer } from 'lucide-react';
 import { format, addMonths, subMonths, startOfMonth, endOfMonth, addDays, subDays, getDay, startOfWeek, endOfWeek, eachDayOfInterval, addWeeks, subWeeks } from 'date-fns';
 import { useBookingStore } from '../store/useBookingStore';
 import { useSettingsStore } from '../store/useSettingsStore';
@@ -492,7 +492,7 @@ const CalendarPage = () => {
                   aria-controls="calendar-top-panels"
                 >
                   {areTopPanelsCollapsed ? <ChevronDown size={16} /> : <ChevronUp size={16} />}
-                  <span>{areTopPanelsCollapsed ? 'Tampilkan Panel' : 'Sembunyikan Panel'}</span>
+                  <span className="hide-on-mobile">{areTopPanelsCollapsed ? 'Tampilkan Panel' : 'Sembunyikan Panel'}</span>
                 </button>
               </Tooltip.Trigger>
               <Tooltip.Portal>
@@ -506,7 +506,7 @@ const CalendarPage = () => {
             <Tooltip.Root>
               <Tooltip.Trigger asChild>
                 <button className="btn-secondary tour-calendar-print" onClick={() => window.print()}>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+                  <Printer size={16} />
                   <span className="hide-on-mobile">Cetak</span>
                 </button>
               </Tooltip.Trigger>

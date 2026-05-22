@@ -223,8 +223,8 @@ const PublicCalendarPage = () => {
         </div>
         
         <div className="pc-hero-inner">
-          <div className="pc-hero-logo">
-            <Music size={32} color="#ff2a5f" />
+          <div className="pc-hero-logo" style={{ background: 'transparent', boxShadow: 'none', border: 'none' }}>
+            <img src="/logo.png" alt="Logo" style={{ width: '64px', height: '64px', objectFit: 'contain' }} />
           </div>
           <h1 className="pc-hero-title">{studioName || '37 MUSIC STUDIO'}</h1>
           <p className="pc-hero-sub">Cek ketersediaan jadwal secara real-time dan booking jadwal latihan atau rekaman band kamu dengan mudah.</p>

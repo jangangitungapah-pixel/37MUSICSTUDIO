@@ -51,12 +51,20 @@ export const useAuthStore = create((set, get) => {
       set({ loading: true, error: null });
       try {
         const normalizedIdentifier = identifier.trim().toLowerCase();
-        const loginEmail = normalizedIdentifier === 'admin'
+        let loginEmail = normalizedIdentifier === 'admin'
           ? DEFAULT_ADMIN_EMAIL
           : normalizedIdentifier;
 
+        // If it's a username (no @), look up the email
         if (!loginEmail.includes('@')) {
-          throw new Error('Gunakan username admin atau alamat email.');
+          const docRef = doc(db, 'usernames', loginEmail);
+          const docSnap = await getDoc(docRef);
+          if (docSnap.exists()) {
+            loginEmail = docSnap.data().email;
+          } else {
+             // Let it fail naturally in signInWithEmailAndPassword or throw early
+             throw new Error('auth/user-not-found');
+          }
         }
 
         await signInWithEmailAndPassword(auth, loginEmail, password);

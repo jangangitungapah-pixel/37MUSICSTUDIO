@@ -3,22 +3,25 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useStaffStore } from '../store/useStaffStore';
 import { useAuditLogStore } from '../store/useAuditLogStore';
 import { PERMISSIONS, PERMISSION_LABELS, getDefaultPermissionsForRole } from '../lib/permissions';
-import { UserPlus, Edit2, Trash2, Shield, User, Power, ClipboardList, Loader2, Clock, CheckCircle2 } from 'lucide-react';
+import { UserPlus, Edit2, Trash2, Shield, User, Power, ClipboardList, Loader2, Clock, CheckCircle2, Key } from 'lucide-react';
 import Modal from '../components/Modal';
 import { toast } from 'sonner';
 import './StaffPage.css';
 
 const StaffPage = () => {
-  const { staffMembers, addStaff, updateStaff, deleteStaff, toggleStaffStatus, createStaffAccount } = useStaffStore();
+  const { staffMembers, addStaff, updateStaff, deleteStaff, toggleStaffStatus, createStaffAccount, resetStaffPassword } = useStaffStore();
   const { logs } = useAuditLogStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
+  const [resetTargetStaff, setResetTargetStaff] = useState(null);
+  const [newPassword, setNewPassword] = useState('');
   const [editingStaff, setEditingStaff] = useState(null);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
+    username: '',
     role: 'staff',
     phone: '',
-    email: '',
     password: '',
     permissions: getDefaultPermissionsForRole('staff'),
   });
@@ -28,9 +31,9 @@ const StaffPage = () => {
       setEditingStaff(staff);
       setFormData({
         name: staff.name,
+        username: staff.username || '',
         role: staff.role,
         phone: staff.phone,
-        email: '',
         password: '',
         permissions: staff.permissions || getDefaultPermissionsForRole(staff.role),
       });
@@ -38,9 +41,9 @@ const StaffPage = () => {
       setEditingStaff(null);
       setFormData({
         name: '',
+        username: '',
         role: 'staff',
         phone: '',
-        email: '',
         password: '',
         permissions: getDefaultPermissionsForRole('staff'),
       });
@@ -57,23 +60,47 @@ const StaffPage = () => {
       toast.success('Data staff berhasil diperbarui');
       setIsModalOpen(false);
     } else {
-      if (!formData.email || !formData.password || formData.password.length < 6) {
-         toast.error('Email dan password (minimal 6 karakter) wajib diisi');
+      if (!formData.username || !formData.password || formData.password.length < 6) {
+         toast.error('Username dan password (minimal 6 karakter) wajib diisi');
          return;
       }
       setLoading(true);
       try {
-        await createStaffAccount(formData, formData.email, formData.password);
+        await createStaffAccount(formData, '', formData.password, formData.username);
         toast.success('Staff baru berhasil ditambahkan');
         setIsModalOpen(false);
       } catch (error) {
         let msg = error.message;
-        if (error.code === 'auth/email-already-in-use') msg = 'Email sudah digunakan.';
+        if (error.code === 'auth/email-already-in-use') msg = 'Username sudah digunakan.';
         if (error.code === 'auth/weak-password') msg = 'Password terlalu lemah (minimal 6 karakter).';
         toast.error(msg);
       } finally {
         setLoading(false);
       }
+    }
+  };
+
+  const handleOpenResetPassword = (staff) => {
+    setResetTargetStaff(staff);
+    setNewPassword('');
+    setIsPasswordModalOpen(true);
+  };
+
+  const handleResetPasswordSubmit = async (e) => {
+    e.preventDefault();
+    if (!newPassword || newPassword.length < 6) {
+      toast.error('Password minimal 6 karakter');
+      return;
+    }
+    setLoading(true);
+    try {
+      await resetStaffPassword(resetTargetStaff, newPassword);
+      toast.success('Password berhasil di-reset');
+      setIsPasswordModalOpen(false);
+    } catch (e) {
+      toast.error('Gagal reset password: ' + e.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -146,6 +173,9 @@ const StaffPage = () => {
                   {staff.role === 'admin' ? <Shield size={24} className="avatar-icon-admin" /> : <User size={24} className="avatar-icon-staff" />}
                 </div>
                 <div className="staff-actions">
+                  <button className="icon-btn" onClick={() => handleOpenResetPassword(staff)} title="Ganti Password" style={{ color: 'var(--accent-pink)' }}>
+                    <Key size={16} />
+                  </button>
                   <button className="icon-btn edit-btn" onClick={() => handleOpenModal(staff)} title="Edit">
                     <Edit2 size={16} />
                   </button>
@@ -163,6 +193,7 @@ const StaffPage = () => {
                 <span className={`staff-role-badge ${staff.role}`}>
                   {staff.role === 'admin' ? 'Administrator' : 'Staff'}
                 </span>
+                {staff.username && <p className="staff-phone" style={{marginTop: 4}}>👤 @{staff.username}</p>}
                 <p className="staff-phone">📞 {staff.phone || '-'}</p>
                 <div className="staff-permission-chips">
                   {(staff.permissions || getDefaultPermissionsForRole(staff.role)).slice(0, 4).map((permission) => (
@@ -214,14 +245,14 @@ const StaffPage = () => {
           {!editingStaff && (
             <div className="bf-row">
               <div className="form-group">
-                <label className="bf-label">Email Login <span className="bf-required">*</span></label>
+                <label className="bf-label">Username Login <span className="bf-required">*</span></label>
                 <input
-                  type="email"
+                  type="text"
                   className="bf-input"
-                  value={formData.email}
-                  onChange={e => setFormData({ ...formData, email: e.target.value })}
+                  value={formData.username}
+                  onChange={e => setFormData({ ...formData, username: e.target.value.toLowerCase().replace(/\s+/g, '') })}
                   required
-                  placeholder="staff@37studio.com"
+                  placeholder="Budi123"
                 />
               </div>
               <div className="form-group">
@@ -277,6 +308,32 @@ const StaffPage = () => {
             <button type="submit" className="btn-primary" disabled={loading}>
               {loading ? <Loader2 size={16} className="spinner" /> : null}
               {loading ? ' Memproses...' : editingStaff ? 'Simpan Perubahan' : 'Tambahkan Staff'}
+            </button>
+          </div>
+        </form>
+      </Modal>
+
+      <Modal isOpen={isPasswordModalOpen} onClose={() => setIsPasswordModalOpen(false)} title={`Ganti Password: ${resetTargetStaff?.name}`}>
+        <form className="staff-form" onSubmit={handleResetPasswordSubmit}>
+          <div className="form-group">
+            <label className="bf-label">Password Baru <span className="bf-required">*</span></label>
+            <input
+              type="password"
+              className="bf-input"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              minLength="6"
+              required
+              placeholder="Minimal 6 karakter"
+              autoFocus
+            />
+          </div>
+          <div className="bf-actions">
+            <button type="button" className="btn-secondary" onClick={() => setIsPasswordModalOpen(false)} disabled={loading}>
+              Batal
+            </button>
+            <button type="submit" className="btn-primary" disabled={loading} style={{ background: 'var(--accent-pink)' }}>
+              {loading ? <Loader2 className="spinner" size={16} /> : 'Simpan Password Baru'}
             </button>
           </div>
         </form>
