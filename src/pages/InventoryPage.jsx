@@ -147,18 +147,7 @@ const InventoryPage = () => {
         </div>
         
         <div className="app-page-actions">
-          <div className="search-bar app-card tour-inv-search" style={{padding: '8px 16px', display: 'flex', alignItems: 'center', gap: '8px', minWidth: '200px'}}>
-            <Search size={18} color="var(--text-muted)" />
-            <input 
-              type="text" 
-              placeholder="Cari nama alat, merk..." 
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-            {searchQuery && (
-              <button className="search-clear" onClick={() => setSearchQuery('')}><X size={14} /></button>
-            )}
-          </div>
+
           <button className="btn-primary tour-inv-add-btn" onClick={() => {
             handleOpenNew();
             if (run && currentStep === 3) {
@@ -254,25 +243,46 @@ const InventoryPage = () => {
       <div className="inventory-content-area">
         <div className="inventory-container app-panel">
           {/* Category Tabs — dynamic from store */}
-          <div className="filter-tabs tour-inv-categories">
-            <button 
-              className={`filter-tab ${activeCategory === 'All' ? 'active' : ''}`} 
-              onClick={() => setActiveCategory('All')}
-            >
-              Semua <span className="tab-count">{inventory.length}</span>
-            </button>
-            {categories.map(cat => {
-              const count = inventory.filter(i => i.category === cat).length;
-              return (
+          <div className="app-table-toolbar">
+            <div className="app-table-toolbar-left" style={{ flex: 1, overflowX: 'auto' }}>
+              <div className="filter-tabs tour-inv-categories" style={{ margin: 0, borderBottom: 'none' }}>
                 <button 
-                  key={cat}
-                  className={`filter-tab ${activeCategory === cat ? 'active' : ''}`} 
-                  onClick={() => setActiveCategory(cat)}
+                  className={`filter-tab ${activeCategory === 'All' ? 'active' : ''}`} 
+                  onClick={() => setActiveCategory('All')}
                 >
-                  {cat} <span className="tab-count">{count}</span>
+                  Semua <span className="tab-count">{inventory.length}</span>
                 </button>
-              );
-            })}
+                {categories.map(cat => {
+                  const count = inventory.filter(i => i.category === cat).length;
+                  return (
+                    <button 
+                      key={cat}
+                      className={`filter-tab ${activeCategory === cat ? 'active' : ''}`} 
+                      onClick={() => setActiveCategory(cat)}
+                    >
+                      {cat} <span className="tab-count">{count}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+            <div className="app-table-toolbar-right">
+              <div className="app-search app-search-md tour-inv-search">
+                <Search className="app-search-icon" />
+                <input 
+                  type="text" 
+                  className="app-search-input"
+                  placeholder="Cari nama alat, merk..." 
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+                {searchQuery && (
+                  <button type="button" className="app-search-clear" onClick={() => setSearchQuery('')} aria-label="Bersihkan pencarian" title="Bersihkan pencarian">
+                    <X size={14} />
+                  </button>
+                )}
+              </div>
+            </div>
           </div>
 
           <div className="app-table-wrapper hide-on-mobile">

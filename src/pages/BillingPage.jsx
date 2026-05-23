@@ -284,27 +284,36 @@ const BillingPage = () => {
       </div>
 
       <div className="billing-content app-panel">
-        <div className="billing-toolbar">
-          <div className="billing-tabs tour-bill-tabs">
-            {['Semua', 'Lunas', 'Belum Lunas'].map(tab => (
-              <button 
-                key={tab} 
-                className={`billing-tab ${activeTab === tab ? 'active' : ''}`}
-                onClick={() => setActiveTab(tab)}
-              >
-                {tab}
-              </button>
-            ))}
+        <div className="app-table-toolbar">
+          <div className="app-table-toolbar-left" style={{ flex: 1, overflowX: 'auto' }}>
+            <div className="billing-tabs tour-bill-tabs" style={{ margin: 0, paddingBottom: 0, borderBottom: 'none' }}>
+              {['Semua', 'Lunas', 'Belum Lunas'].map(tab => (
+                <button 
+                  key={tab} 
+                  className={`billing-tab ${activeTab === tab ? 'active' : ''}`}
+                  onClick={() => setActiveTab(tab)}
+                >
+                  {tab}
+                </button>
+              ))}
+            </div>
           </div>
-          <div className="search-wrapper tour-bill-search">
-            <Search size={16} className="search-icon" />
-            <input 
-              type="text" 
-              placeholder="Cari nama band..." 
-              value={searchQuery} 
-              onChange={(e) => setSearchQuery(e.target.value)} 
-              className="search-input"
-            />
+          <div className="app-table-toolbar-right">
+            <div className="app-search app-search-md tour-bill-search">
+              <Search className="app-search-icon" />
+              <input 
+                type="text" 
+                className="app-search-input"
+                placeholder="Cari nama band..." 
+                value={searchQuery} 
+                onChange={(e) => setSearchQuery(e.target.value)} 
+              />
+              {searchQuery && (
+                <button type="button" className="app-search-clear" onClick={() => setSearchQuery('')} aria-label="Bersihkan pencarian" title="Bersihkan pencarian">
+                  <X size={14} />
+                </button>
+              )}
+            </div>
           </div>
         </div>
 

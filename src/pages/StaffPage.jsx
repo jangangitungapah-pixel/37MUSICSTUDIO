@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useStaffStore } from '../store/useStaffStore';
 import { useAuditLogStore } from '../store/useAuditLogStore';
 import { PERMISSIONS, PERMISSION_LABELS, getDefaultPermissionsForRole } from '../lib/permissions';
-import { UserPlus, Edit2, Trash2, Shield, User, Power, ClipboardList, Loader2, Clock, CheckCircle2, Key } from 'lucide-react';
+import { UserPlus, Edit2, Trash2, Shield, User, Power, ClipboardList, Loader2, Clock, CheckCircle2, Key, Search, X } from 'lucide-react';
 import Modal from '../components/Modal';
 import { toast } from 'sonner';
 import { staggerContainer, staggerItem } from '../animations';
@@ -12,6 +12,17 @@ import './StaffPage.css';
 const StaffPage = () => {
   const { staffMembers, updateStaff, deleteStaff, toggleStaffStatus, createStaffAccount, resetStaffPassword } = useStaffStore();
   const { logs } = useAuditLogStore();
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const filteredStaff = staffMembers.filter(staff => {
+    if (!searchQuery.trim()) return true;
+    const q = searchQuery.toLowerCase();
+    return (
+      (staff.name && staff.name.toLowerCase().includes(q)) ||
+      (staff.username && staff.username.toLowerCase().includes(q)) ||
+      (staff.role && staff.role.toLowerCase().includes(q))
+    );
+  });
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
   const [resetTargetStaff, setResetTargetStaff] = useState(null);
@@ -152,6 +163,32 @@ const StaffPage = () => {
         </div>
       </div>
 
+      <div className="app-table-toolbar" style={{ marginTop: '20px' }}>
+        <div className="app-table-toolbar-left">
+          <div>
+            <span className="app-table-toolbar-title">Daftar Tim</span>
+            <span className="app-table-toolbar-subtitle">{filteredStaff.length} anggota ditemukan</span>
+          </div>
+        </div>
+        <div className="app-table-toolbar-right">
+          <div className="app-search app-search-md">
+            <Search className="app-search-icon" />
+            <input 
+              type="text" 
+              className="app-search-input"
+              placeholder="Cari staff, username, role..." 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            {searchQuery && (
+              <button type="button" className="app-search-clear" onClick={() => setSearchQuery('')} aria-label="Bersihkan pencarian" title="Bersihkan pencarian">
+                <X size={14} />
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+
       <motion.div 
         className="app-stat-grid"
         variants={staggerContainer}
@@ -159,7 +196,7 @@ const StaffPage = () => {
         animate="visible"
       >
         <AnimatePresence>
-          {staffMembers.map(staff => (
+          {filteredStaff.map(staff => (
             <motion.div 
               layout
               variants={staggerItem}

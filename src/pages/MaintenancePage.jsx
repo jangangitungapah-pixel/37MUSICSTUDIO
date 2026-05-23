@@ -3,7 +3,7 @@ import { useBookingStore } from '../store/useBookingStore';
 import { useFinanceStore } from '../store/useFinanceStore';
 import { useInventoryStore } from '../store/useInventoryStore';
 import { format } from 'date-fns';
-import { Wrench, AlertCircle, CheckCircle, Clock, DollarSign, Trash2, FileText } from 'lucide-react';
+import { Wrench, AlertCircle, CheckCircle, Clock, DollarSign, Trash2, FileText, Search, X } from 'lucide-react';
 import Modal from '../components/Modal';
 import { toast } from 'sonner';
 import { getMaintenanceUsageInsights } from '../lib/smartInsights';
@@ -16,6 +16,7 @@ const MaintenancePage = () => {
   const { addTransaction } = useFinanceStore();
   const { inventory } = useInventoryStore();
 
+  const [searchQuery, setSearchQuery] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedLog, setSelectedLog] = useState(null);
   const [formData, setFormData] = useState({
@@ -32,6 +33,19 @@ const MaintenancePage = () => {
       .sort((a, b) => new Date(b.date) - new Date(a.date)),
     [bookings]
   );
+
+  const filteredMaintenanceLogs = useMemo(() => {
+    let result = maintenanceLogs;
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase();
+      result = result.filter(log => 
+        (log.band && log.band.toLowerCase().includes(q)) ||
+        (log.note && log.note.toLowerCase().includes(q)) ||
+        (log.maintenanceStatus && log.maintenanceStatus.toLowerCase().includes(q))
+      );
+    }
+    return result;
+  }, [maintenanceLogs, searchQuery]);
 
   const stats = useMemo(() => {
     const total = maintenanceLogs.length;
@@ -165,12 +179,33 @@ const MaintenancePage = () => {
 
       {/* Log Table */}
       <div className="app-panel maint-content">
-        <div className="maint-table-header">
-          <span className="maint-table-title">Riwayat Maintenance</span>
-          <span className="maint-table-hint">Klik baris untuk update status & biaya</span>
+        <div className="app-table-toolbar">
+          <div className="app-table-toolbar-left">
+            <div>
+              <span className="app-table-toolbar-title">Riwayat Maintenance</span>
+              <span className="app-table-toolbar-subtitle">Klik baris untuk update status & biaya</span>
+            </div>
+          </div>
+          <div className="app-table-toolbar-right">
+            <div className="app-search app-search-md">
+              <Search className="app-search-icon" />
+              <input 
+                type="text" 
+                className="app-search-input"
+                placeholder="Cari log, alat, status..." 
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+              {searchQuery && (
+                <button type="button" className="app-search-clear" onClick={() => setSearchQuery('')} aria-label="Bersihkan pencarian" title="Bersihkan pencarian">
+                  <X size={14} />
+                </button>
+              )}
+            </div>
+          </div>
         </div>
 
-        {maintenanceLogs.length === 0 ? (
+        {filteredMaintenanceLogs.length === 0 ? (
           <div className="maint-empty">
             <Wrench size={48} color="var(--text-muted)" />
             <p>Belum ada log maintenance.</p>
@@ -191,7 +226,7 @@ const MaintenancePage = () => {
                 </tr>
               </thead>
               <tbody>
-                {maintenanceLogs.map(log => {
+                {filteredMaintenanceLogs.map(log => {
                   const statusInfo = getStatusBadge(log);
                   return (
                     <tr key={log.id} className="maint-row" onClick={() => handleOpenDetail(log)}>

@@ -129,20 +129,9 @@
   color: var(--accent-cyan);
 }
 
-.finance-page .finance-search-wrap {
-  width: 230px;
-  min-height: 40px;
-  padding: 0 13px !important;
-  border-radius: 10px !important;
-  background: rgba(255, 255, 255, 0.035) !important;
-  box-shadow: none !important;
-}
 
-.finance-page .finance-search-wrap:focus-within {
-  width: 260px;
-  border-color: rgba(0, 240, 255, 0.28) !important;
-  box-shadow: 0 0 0 3px rgba(0, 240, 255, 0.08) !important;
-}
+
+
 
 
 
@@ -742,9 +731,7 @@
   }
 
   .finance-page .finance-search-wrap,
-  .finance-page .finance-search-wrap:focus-within {
-    width: 100%;
-  }
+  
 
   
 

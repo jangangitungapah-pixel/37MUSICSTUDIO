@@ -425,10 +425,20 @@ const CalendarPage = () => {
             </div>
           </div>
           <div className="app-page-actions">
-            <div className="search-bar app-card tour-calendar-search" style={{padding: '8px 16px', display: 'flex', alignItems: 'center', gap: '8px', minWidth: '200px'}}>
-              <Search size={16} color="var(--text-muted)" />
-              <input type="text" placeholder="Cari band / no HP..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
-              {searchQuery && <button className="search-clear" onClick={() => setSearchQuery('')}><X size={13} /></button>}
+            <div className="app-search app-search-lg tour-calendar-search">
+              <Search className="app-search-icon" />
+              <input 
+                type="text" 
+                className="app-search-input"
+                placeholder="Cari band / no HP..." 
+                value={searchQuery} 
+                onChange={e => setSearchQuery(e.target.value)} 
+              />
+              {searchQuery && (
+                <button type="button" className="app-search-clear" onClick={() => setSearchQuery('')} aria-label="Bersihkan pencarian" title="Bersihkan pencarian">
+                  <X size={14} />
+                </button>
+              )}
             </div>
 
             <Tooltip.Root>

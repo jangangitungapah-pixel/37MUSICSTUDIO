@@ -397,16 +397,9 @@
   align-items: center;
 }
 
-.search-bar { width: 260px; }
 
-.search-clear {
-  background: none;
-  border: none;
-  color: var(--text-muted);
-  cursor: pointer;
-  padding: 2px;
-  display: flex;
-}
+
+
 
 .calendar-top-panels {
   display: flex;
@@ -1467,13 +1460,8 @@ body.calendar-move-lock .main-content {
     flex-wrap: wrap;
     width: 100%;
   }
-  .search-bar {
-    flex: 1;
-    min-width: 0;
-    padding: 9px 12px;
-    border-radius: 11px;
-  }
-  .search-bar input { font-size: 0.84rem; }
+  
+  
   .btn-secondary .hide-on-mobile { display: none; }
   .btn-secondary.cal-panel-toggle,
   .btn-secondary.tour-calendar-print {

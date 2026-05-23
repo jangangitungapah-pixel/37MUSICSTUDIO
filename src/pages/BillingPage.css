@@ -743,7 +743,7 @@
   .billing-tabs  { width: 100%; overflow-x: auto; }
   .billing-tab   { padding: 10px 14px; font-size: 0.82rem; white-space: nowrap; }
 
-  .search-wrapper { width: 100%; }
+  
 
   .hide-on-mobile { display: none !important; }
   .show-on-mobile { display: flex !important; }

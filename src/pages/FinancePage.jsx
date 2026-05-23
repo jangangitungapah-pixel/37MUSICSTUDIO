@@ -3,7 +3,7 @@ import { useFinanceStore } from '../store/useFinanceStore';
 import { useBookingStore } from '../store/useBookingStore';
 import { useSettingsStore } from '../store/useSettingsStore';
 import { format } from 'date-fns';
-import { Wallet, TrendingUp, TrendingDown, Plus, Trash2, Search, Download, Printer } from 'lucide-react';
+import { Wallet, TrendingUp, TrendingDown, Plus, Trash2, Search, Download, Printer, X } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { toast } from 'sonner';
 import Modal from '../components/Modal';
@@ -422,16 +422,7 @@ const FinancePage = () => {
             ))}
           </div>
 
-          {/* Search */}
-          <div className="finance-search-wrap app-card hide-on-print" style={{padding: '8px 16px', display: 'flex', alignItems: 'center', gap: '8px', minWidth: '200px'}}>
-            <Search size={15} className="search-icon" />
-            <input
-              type="text"
-              placeholder="Cari transaksi..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-          </div>
+
 
           {/* Export */}
           <button className="btn-secondary hide-on-print" onClick={handleExportExcel} disabled={isExporting} title="Export ke Excel (.xlsx)">
@@ -611,14 +602,29 @@ const FinancePage = () => {
       {/* ── Ledger Table ── */}
       <div className="finance-content">
         {/* Table Header Bar */}
-        <div className="finance-table-header">
-          <div>
-            <span className="finance-table-title">Riwayat Transaksi</span>
-            <span className="finance-table-subtitle">Kas masuk, kas keluar, dan saldo berjalan</span>
+        <div className="app-table-toolbar">
+          <div className="app-table-toolbar-left">
+            <div>
+              <span className="app-table-toolbar-title">Riwayat Transaksi</span>
+              <span className="app-table-toolbar-subtitle">{periodLabel} • {filteredData.length} transaksi</span>
+            </div>
           </div>
-          <div className="finance-table-meta">
-            <span>{periodLabel}</span>
-            <span>{filteredData.length} transaksi</span>
+          <div className="app-table-toolbar-right hide-on-print">
+            <div className="app-search app-search-md">
+              <Search className="app-search-icon" />
+              <input 
+                type="text" 
+                className="app-search-input"
+                placeholder="Cari transaksi..." 
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+              {searchQuery && (
+                <button type="button" className="app-search-clear" onClick={() => setSearchQuery('')} aria-label="Bersihkan pencarian" title="Bersihkan pencarian">
+                  <X size={14} />
+                </button>
+              )}
+            </div>
           </div>
         </div>
 

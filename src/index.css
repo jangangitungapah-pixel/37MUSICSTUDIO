@@ -1955,3 +1955,210 @@ input:not([type="checkbox"]):not([type="radio"]):focus, select:focus, textarea:f
   border-color: rgba(0, 0, 0, 0.15);
   color: #111;
 }
+
+
+/* ==========================================================================
+   SEARCH DESIGN SYSTEM & TOOLBARS
+   ========================================================================== */
+
+/* ── Base Search Wrapper ── */
+.app-search,
+.search-bar,
+.search-wrapper,
+.finance-search-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  border-radius: 12px;
+  color: var(--text-primary);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+}
+
+/* Base sizing & padding inside */
+.app-search-input {
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  width: 100% !important;
+  padding: 0 !important;
+  font-size: 0.86rem;
+  color: var(--text-primary);
+}
+.app-search-input:focus {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+.app-search-input::placeholder {
+  color: var(--text-muted);
+}
+
+.app-search-icon {
+  color: var(--text-muted);
+  flex-shrink: 0;
+  transition: color 0.2s;
+}
+
+/* Hover & Focus States */
+.app-search:hover,
+.search-bar:hover,
+.search-wrapper:hover,
+.finance-search-wrap:hover {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+
+.app-search:focus-within,
+.search-bar:focus-within,
+.search-wrapper:focus-within,
+.finance-search-wrap:focus-within {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+
+.app-search:focus-within .app-search-icon,
+.search-bar:focus-within .app-search-icon,
+.search-wrapper:focus-within .app-search-icon,
+.finance-search-wrap:focus-within .app-search-icon {
+  color: var(--accent-pink);
+}
+
+/* ── Sizing Variants ── */
+.app-search-sm {
+  width: 180px;
+  height: 36px;
+  min-height: 36px;
+  padding: 0 12px;
+}
+.app-search-sm .app-search-icon { width: 14px; height: 14px; }
+
+.app-search-md {
+  width: clamp(220px, 24vw, 320px);
+  height: 40px;
+  min-height: 40px;
+  padding: 0 14px;
+}
+.app-search-md .app-search-icon { width: 16px; height: 16px; }
+
+.app-search-lg {
+  width: clamp(280px, 32vw, 420px);
+  height: 44px;
+  min-height: 44px;
+  padding: 0 16px;
+}
+.app-search-lg .app-search-icon { width: 18px; height: 18px; }
+
+.app-search-full {
+  width: 100%;
+  height: 40px;
+  min-height: 40px;
+  padding: 0 14px;
+}
+
+/* ── Clear Button ── */
+.app-search-clear,
+.search-clear {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 7px;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s;
+  flex-shrink: 0;
+  padding: 0;
+}
+.app-search-clear:hover,
+.search-clear:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+}
+
+/* Disabled State */
+.app-search.disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* ── Table Toolbar Structure ── */
+.app-table-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.app-table-toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.app-table-toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.app-table-toolbar-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  display: block;
+}
+
+.app-table-toolbar-subtitle {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  display: block;
+  margin-top: 2px;
+}
+
+/* ── Light Theme Adjustments ── */
+[data-theme="light"] .app-search,
+[data-theme="light"] .search-bar,
+[data-theme="light"] .search-wrapper,
+[data-theme="light"] .finance-search-wrap {
+  background: transparent !important;
+  border-color: transparent !important;
+}
+[data-theme="light"] .app-search:hover {
+  background: transparent !important;
+}
+[data-theme="light"] .app-search:focus-within {
+  background: transparent !important;
+}
+
+/* Mobile Adjustments */
+@media (max-width: 768px) {
+  .app-search-md, .app-search-lg {
+    width: 100%;
+  }
+  .app-table-toolbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .app-table-toolbar-left, .app-table-toolbar-right {
+    width: 100%;
+  }
+  .app-table-toolbar-right {
+    justify-content: space-between;
+  }
+}
