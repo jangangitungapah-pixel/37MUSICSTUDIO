@@ -7,6 +7,8 @@ import { toast } from 'sonner';
 import Modal from '../components/Modal';
 import { getMembershipTier, TIER_CONFIG, getLoyaltyPoints, sendWelcomeMessage, sendPromoMessage, sendMembershipUpgrade } from '../lib/whatsappService';
 import { getCustomerRetentionInsights } from '../lib/smartInsights';
+import { motion } from 'framer-motion';
+import { pagePreset } from '../animations';
 import './CustomersPage.css';
 
 const AVATAR_COLORS = [
@@ -142,15 +144,15 @@ const CustomersPage = () => {
   };
 
   return (
-    <div className="customers-page">
-      <header className="page-header">
+    <motion.div className="app-page customers-page" {...pagePreset}>
+      <header className="app-page-header">
         <div>
-          <h2 className="page-title">Database Pelanggan</h2>
-          <p className="page-subtitle">37 Music Studio — Kelola daftar band dan penyewa</p>
+          <h2 className="app-page-title">Database Pelanggan</h2>
+          <p className="app-page-subtitle">37 Music Studio — Kelola daftar band dan penyewa</p>
         </div>
         
-        <div className="header-actions">
-          <div className="search-bar glass-panel tour-cust-search">
+        <div className="app-page-actions">
+          <div className="search-bar app-card tour-cust-search" style={{padding: '8px 16px', display: 'flex', alignItems: 'center', gap: '8px', minWidth: '200px'}}>
             <Search size={18} color="var(--text-muted)" />
             <input 
               type="text" 
@@ -175,8 +177,8 @@ const CustomersPage = () => {
       </header>
 
       {/* Stats Bar */}
-      <div className="stats-bar tour-cust-stats">
-        <div className="stat-card glass-panel">
+      <div className="app-stat-grid tour-cust-stats">
+        <div className="app-stat-card">
           <div className="stat-icon" style={{ background: 'rgba(0, 240, 255, 0.1)' }}>
             <Users size={20} color="var(--accent-cyan)" />
           </div>
@@ -185,7 +187,7 @@ const CustomersPage = () => {
             <span className="stat-label">Total Pelanggan</span>
           </div>
         </div>
-        <div className="stat-card glass-panel">
+        <div className="app-stat-card">
           <div className="stat-icon" style={{ background: 'rgba(76, 175, 80, 0.1)' }}>
             <UserCheck size={20} color="#4CAF50" />
           </div>
@@ -194,7 +196,7 @@ const CustomersPage = () => {
             <span className="stat-label">Aktif</span>
           </div>
         </div>
-        <div className="stat-card glass-panel">
+        <div className="app-stat-card">
           <div className="stat-icon" style={{ background: 'rgba(255, 42, 95, 0.1)' }}>
             <Star size={20} color="var(--accent-pink)" />
           </div>
@@ -203,7 +205,7 @@ const CustomersPage = () => {
             <span className="stat-label">Total Booking</span>
           </div>
         </div>
-        <div className="stat-card glass-panel">
+        <div className="app-stat-card">
           <div className="stat-icon" style={{ background: 'rgba(156, 39, 176, 0.1)' }}>
             <Clock size={20} color="#9C27B0" />
           </div>
@@ -212,7 +214,7 @@ const CustomersPage = () => {
             <span className="stat-label">Total Jam</span>
           </div>
         </div>
-        <div className="stat-card glass-panel">
+        <div className="app-stat-card">
           <div className="stat-icon" style={{ background: 'rgba(255, 193, 7, 0.1)' }}>
             <DollarSign size={20} color="#FFC107" />
           </div>
@@ -224,30 +226,36 @@ const CustomersPage = () => {
       </div>
 
       {/* Smart Retention */}
-      <div className="customer-smart-grid">
-        <div className="customer-smart-card">
-          <div className="customer-smart-top">
-            <Clock size={16} />
-            <span>Perlu Retensi</span>
+      <div className="app-smart-panel">
+        <div className="smart-head">
+          <Users size={20} />
+          <div>
+            <h3>Smart Retention</h3>
+            <p>Sistem analitik cerdas pelanggan</p>
           </div>
-          <strong>{passiveCustomers.length} pelanggan</strong>
-          <small>{passiveCustomers[0] ? `${passiveCustomers[0].name} sudah ${passiveCustomers[0].daysSinceLastBooking} hari tidak booking.` : 'Belum ada pelanggan pasif.'}</small>
         </div>
-        <div className="customer-smart-card">
-          <div className="customer-smart-top">
-            <Star size={16} />
-            <span>Kandidat VIP</span>
+        <div className="smart-list" style={{display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px'}}>
+          <div className="smart-item" style={{display: 'block'}}>
+            <div style={{display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--accent-cyan)', marginBottom: '8px', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em'}}>
+              <Clock size={14} /> Perlu Retensi
+            </div>
+            <strong style={{fontSize: '1.1rem', color: 'var(--text-primary)', display: 'block', marginBottom: '4px'}}>{passiveCustomers.length} pelanggan</strong>
+            <small style={{fontSize: '0.75rem', color: 'var(--text-secondary)'}}>{passiveCustomers[0] ? `${passiveCustomers[0].name} sudah ${passiveCustomers[0].daysSinceLastBooking} hari tidak booking.` : 'Belum ada pelanggan pasif.'}</small>
           </div>
-          <strong>{retentionInsights.vipCandidates.length} pelanggan</strong>
-          <small>{retentionInsights.vipCandidates[0] ? `${retentionInsights.vipCandidates[0].name} cocok diberi benefit VIP.` : 'Semua kandidat sudah tertangani.'}</small>
-        </div>
-        <div className="customer-smart-card">
-          <div className="customer-smart-top">
-            <Gift size={16} />
-            <span>Target Promo</span>
+          <div className="smart-item" style={{display: 'block'}}>
+            <div style={{display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--accent-cyan)', marginBottom: '8px', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em'}}>
+              <Star size={14} /> Kandidat VIP
+            </div>
+            <strong style={{fontSize: '1.1rem', color: 'var(--text-primary)', display: 'block', marginBottom: '4px'}}>{retentionInsights.vipCandidates.length} pelanggan</strong>
+            <small style={{fontSize: '0.75rem', color: 'var(--text-secondary)'}}>{retentionInsights.vipCandidates[0] ? `${retentionInsights.vipCandidates[0].name} cocok diberi benefit VIP.` : 'Semua kandidat sudah tertangani.'}</small>
           </div>
-          <strong>{retentionInsights.promoTargets.length} kontak</strong>
-          <small>{retentionInsights.promoTargets.length ? 'Siap dikirimi promo personal via WhatsApp.' : 'Tidak ada kontak promo yang siap.'}</small>
+          <div className="smart-item" style={{display: 'block'}}>
+            <div style={{display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--accent-cyan)', marginBottom: '8px', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em'}}>
+              <Gift size={14} /> Target Promo
+            </div>
+            <strong style={{fontSize: '1.1rem', color: 'var(--text-primary)', display: 'block', marginBottom: '4px'}}>{retentionInsights.promoTargets.length} kontak</strong>
+            <small style={{fontSize: '0.75rem', color: 'var(--text-secondary)'}}>{retentionInsights.promoTargets.length ? 'Siap dikirimi promo personal via WhatsApp.' : 'Tidak ada kontak promo yang siap.'}</small>
+          </div>
         </div>
       </div>
 
@@ -272,7 +280,7 @@ const CustomersPage = () => {
       {/* Content Area */}
       <div className="customers-content-area">
         {/* Main Table */}
-        <div className="customers-container glass-panel">
+        <div className="customers-container app-panel">
           {/* Filter Tabs */}
           <div className="filter-tabs tour-cust-filters">
             <button className={`filter-tab ${activeFilter === 'all' ? 'active' : ''}`} onClick={() => setActiveFilter('all')}>
@@ -289,8 +297,8 @@ const CustomersPage = () => {
             </button>
           </div>
 
-          <div className="table-responsive hide-on-mobile">
-            <table className="customers-table tour-cust-table">
+          <div className="app-table-wrapper hide-on-mobile">
+            <table className="app-table customers-table tour-cust-table">
               <thead>
                 <tr>
                   <th>Nama Band / Pelanggan</th>
@@ -434,7 +442,7 @@ const CustomersPage = () => {
 
         {/* Detail Sidebar */}
         {selectedCustomer && (
-          <div className="customer-detail-panel glass-panel tour-cust-detail">
+          <div className="customer-detail-panel app-panel tour-cust-detail">
             <div className="detail-panel-header">
               <div className="detail-avatar" style={{ background: getAvatarColor(selectedCustomer.name).bg, color: getAvatarColor(selectedCustomer.name).color }}>
                 {selectedCustomer.name.charAt(0).toUpperCase()}
@@ -666,7 +674,7 @@ const CustomersPage = () => {
           </div>
         </form>
       </Modal>
-    </div>
+    </motion.div>
   );
 };
 

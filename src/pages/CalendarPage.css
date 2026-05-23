@@ -504,43 +504,6 @@
 /* ══════════════════════════════════════════
    SMART SCHEDULING PANEL
    ══════════════════════════════════════════ */
-.cal-smart-panel {
-  display: grid;
-  grid-template-columns: minmax(220px, 0.9fr) 1.8fr;
-  align-items: center;
-  gap: 14px;
-  padding: 15px 18px;
-}
-
-.cal-smart-summary {
-  display: flex; align-items: center; gap: 12px; min-width: 0;
-}
-
-.cal-smart-icon {
-  width: 38px; height: 38px;
-  border-radius: 11px;
-  background: rgba(0, 240, 255, 0.1);
-  border: 1px solid rgba(0, 240, 255, 0.18);
-  color: var(--accent-cyan);
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0;
-}
-
-.cal-smart-summary h3 {
-  margin: 0 0 3px;
-  font-size: 0.92rem;
-  color: var(--text-primary);
-  font-family: var(--font-display);
-  letter-spacing: -0.015em;
-}
-.cal-smart-summary p {
-  margin: 0;
-  font-size: 0.77rem;
-  line-height: 1.35;
-  color: var(--text-secondary);
-  font-family: var(--font-body);
-}
-
 .cal-slot-list {
   display: flex;
   overflow-x: auto;
@@ -628,21 +591,8 @@
   display: flex; align-items: center; gap: 10px;
 }
 
-.icon-btn {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  color: var(--text-secondary);
-  width: 34px; height: 34px;
-  border-radius: 10px;
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer;
-  transition: all 0.15s;
-}
-.icon-btn:hover {
-  background: rgba(255, 255, 255, 0.08);
-  color: var(--text-primary);
-  border-color: rgba(255, 255, 255, 0.14);
-}
+
+
 
 .current-month {
   font-size: 0.93rem;
@@ -1237,19 +1187,6 @@ body.calendar-move-lock .main-content {
 .detail-cancelled-note { background: rgba(255,152,0,0.1); color: #FF9800; border: 1px solid rgba(255,152,0,0.2); }
 
 /* ── Request Panel ── */
-.cal-request-panel { margin-bottom: 16px; padding: 16px; border-radius: 14px; }
-.cal-request-head h3 { margin: 0; font-size: 1rem; color: var(--text-primary); font-family: var(--font-display); }
-.cal-request-head p  { margin: 4px 0 0; color: var(--text-secondary); font-size: 0.82rem; }
-.cal-request-list    { display: grid; gap: 10px; margin-top: 12px; }
-.cal-request-item {
-  display: flex; justify-content: space-between; gap: 12px;
-  padding: 12px; border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 11px; background: rgba(255,255,255,0.03);
-}
-.cal-request-main { display: grid; gap: 3px; }
-.cal-request-main strong { color: var(--text-primary); }
-.cal-request-main span,
-.cal-request-main small { color: var(--text-secondary); font-size: 0.8rem; }
 .cal-request-actions { display: flex; align-items: center; gap: 8px; }
 .request-approve,
 .request-reject {
@@ -1342,10 +1279,6 @@ body.calendar-move-lock .main-content {
   gap: 10px;
   margin-top: 8px;
 }
-.resize-confirm-actions .btn-secondary,
-.resize-confirm-actions .btn-primary {
-  flex: 1;
-}
 
 /* ══════════════════════════════════════════
    ANIMATIONS
@@ -1412,15 +1345,8 @@ body.calendar-move-lock .main-content {
   background: rgba(0,0,0,0.03);
   border-bottom-color: rgba(0,0,0,0.08);
 }
-[data-theme="light"] .icon-btn {
-  background: rgba(0,0,0,0.04);
-  border-color: rgba(0,0,0,0.09);
-  color: var(--text-secondary);
-}
-[data-theme="light"] .icon-btn:hover {
-  background: rgba(0,0,0,0.07);
-  color: var(--text-primary);
-}
+[data-theme="light"] 
+[data-theme="light"] 
 [data-theme="light"] .today-btn {
   border-color: rgba(0,153,187,0.35);
   color: #0099bb;
@@ -1662,7 +1588,7 @@ body.calendar-move-lock .main-content {
     width: 100%;
     justify-content: center;
   }
-  .icon-btn { width: 34px; height: 34px; border-radius: 9px; }
+  
   .current-month {
     font-size: 0.9rem;
     min-width: 130px;

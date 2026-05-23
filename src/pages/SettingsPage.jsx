@@ -13,6 +13,7 @@ import {
 import { collection, doc, getDocs, deleteDoc, writeBatch } from 'firebase/firestore';
 import { db } from '../firebase';
 import { toast } from 'sonner';
+import { pagePreset } from '../animations';
 import '../components/BookingForm.css'; // Import premium form styles
 import './SettingsPage.css';
 
@@ -425,38 +426,40 @@ const SettingsPage = () => {
   ];
 
   return (
-    <div className="settings-page">
+    <div className="app-page settings-page">
       {/* Page Header */}
-      <header className="settings-header">
-        <div className="settings-header-info">
+      <header className="app-page-header">
+        <div style={{display: 'flex', alignItems: 'center', gap: '16px'}}>
           <div className="settings-header-icon">
             <Settings size={22} />
           </div>
           <div>
-            <h2 className="page-title">Pengaturan</h2>
-            <p className="page-subtitle">Konfigurasi sistem & preferensi aplikasi</p>
+            <h2 className="app-page-title">Pengaturan</h2>
+            <p className="app-page-subtitle">Konfigurasi sistem & preferensi aplikasi</p>
           </div>
         </div>
-        <button
-          className={`settings-save-btn ${saveStatus}`}
-          onClick={handleSubmit}
-          disabled={saveStatus === 'saving'}
-        >
-          {saveStatus === 'saving' && <RefreshCw size={16} className="spin" />}
-          {saveStatus === 'saved' && <CheckCircle2 size={16} />}
-          {saveStatus === 'error' && <XCircle size={16} />}
-          {saveStatus === 'idle' && <Save size={16} />}
-          <span>
-            {saveStatus === 'saving' ? 'Menyimpan...' :
-             saveStatus === 'saved' ? 'Tersimpan!' :
-             saveStatus === 'error' ? 'Gagal Simpan' : 'Simpan'}
-          </span>
-        </button>
+        <div className="app-page-actions">
+          <button
+            className={`settings-save-btn ${saveStatus}`}
+            onClick={handleSubmit}
+            disabled={saveStatus === 'saving'}
+          >
+            {saveStatus === 'saving' && <RefreshCw size={16} className="spin" />}
+            {saveStatus === 'saved' && <CheckCircle2 size={16} />}
+            {saveStatus === 'error' && <XCircle size={16} />}
+            {saveStatus === 'idle' && <Save size={16} />}
+            <span>
+              {saveStatus === 'saving' ? 'Menyimpan...' :
+               saveStatus === 'saved' ? 'Tersimpan!' :
+               saveStatus === 'error' ? 'Gagal Simpan' : 'Simpan'}
+            </span>
+          </button>
+        </div>
       </header>
 
       <div className="settings-layout">
         {/* Left Tab Navigation */}
-        <nav className="settings-nav glass-panel">
+        <nav className="settings-nav app-panel">
           <div className="settings-nav-brand">
             <div className="nav-brand-icon">
               <Music2 size={20} color="var(--accent-pink)" />
@@ -488,15 +491,12 @@ const SettingsPage = () => {
           <AnimatePresence mode="wait">
             <motion.div
               key={activeSection}
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -15 }}
-              transition={{ duration: 0.25, ease: "easeInOut" }}
+              {...pagePreset}
               className="settings-panel-wrapper"
             >
               {/* === SECTION: PROFILE === */}
               {activeSection === 'profile' && (
-                <div className="settings-panel glass-panel tour-settings-profile">
+                <div className="settings-panel app-panel tour-settings-profile">
               <div className="settings-panel-header">
                 <div className="panel-header-icon" style={{ background: 'rgba(0,240,255,0.1)', color: 'var(--accent-cyan)' }}>
                   <Building2 size={20} />
@@ -581,7 +581,7 @@ const SettingsPage = () => {
 
           {/* === SECTION: PRICING === */}
           {activeSection === 'pricing' && (
-            <div className="settings-panel glass-panel tour-settings-rate">
+            <div className="settings-panel app-panel tour-settings-rate">
               <div className="settings-panel-header">
                 <div className="panel-header-icon" style={{ background: 'rgba(76,175,80,0.1)', color: '#4CAF50' }}>
                   <DollarSign size={20} />
@@ -661,7 +661,7 @@ const SettingsPage = () => {
                         className="bf-input"
                       />
                     </div>
-                    <button type="button" className="btn-add-discount" onClick={handleAddDiscount}>
+                    <button type="button" className="btn-secondary" onClick={handleAddDiscount}>
                       + Tambah
                     </button>
                   </div>
@@ -683,7 +683,7 @@ const SettingsPage = () => {
                               <span className="dd-item-hours">≥ {d.hours} Jam</span>
                               <span className="dd-item-amount">− {formatCurrency(d.discountAmount)}</span>
                             </div>
-                            <button type="button" className="btn-remove-discount" onClick={() => handleRemoveDiscount(d.id)} title="Hapus">
+                            <button type="button" className="icon-btn delete" onClick={() => handleRemoveDiscount(d.id)} title="Hapus">
                               <Trash2 size={16} />
                             </button>
                           </motion.div>
@@ -735,7 +735,7 @@ const SettingsPage = () => {
                         className="bf-input"
                       />
                     </div>
-                    <button type="button" className="btn-add-discount" onClick={handleAddRecordingSession}>
+                    <button type="button" className="btn-secondary" onClick={handleAddRecordingSession}>
                       + Tambah
                     </button>
                   </div>
@@ -757,7 +757,7 @@ const SettingsPage = () => {
                               <span className="dd-item-hours">{s.name} ({s.hours} Jam)</span>
                               <span className="dd-item-amount">{formatCurrency(s.price)}</span>
                             </div>
-                            <button type="button" className="btn-remove-discount" onClick={() => handleRemoveRecordingSession(s.id)} title="Hapus">
+                            <button type="button" className="icon-btn delete" onClick={() => handleRemoveRecordingSession(s.id)} title="Hapus">
                               <Trash2 size={16} />
                             </button>
                           </motion.div>
@@ -781,7 +781,7 @@ const SettingsPage = () => {
 
           {/* === SECTION: OPERATIONAL === */}
           {activeSection === 'operational' && (
-            <div className="settings-panel glass-panel">
+            <div className="settings-panel app-panel">
               <div className="settings-panel-header">
                 <div className="panel-header-icon" style={{ background: 'rgba(255,42,95,0.1)', color: 'var(--accent-pink)' }}>
                   <Clock size={20} />
@@ -847,7 +847,7 @@ const SettingsPage = () => {
                         className="bf-input"
                       />
                     </div>
-                    <button type="button" className="btn-add-discount" style={{ alignSelf: 'flex-end', height: '46px' }} onClick={handleAddBlockedDate}>
+                    <button type="button" className="btn-secondary" style={{ alignSelf: 'flex-end', height: '46px' }} onClick={handleAddBlockedDate}>
                       + Blokir
                     </button>
                   </div>
@@ -869,7 +869,7 @@ const SettingsPage = () => {
                               <CalendarX size={16} color="var(--accent-pink)" />
                               <span className="dd-item-hours">{new Date(d).toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</span>
                             </div>
-                            <button type="button" className="btn-remove-discount" onClick={() => handleRemoveBlockedDate(d)} title="Hapus dari daftar libur">
+                            <button type="button" className="icon-btn delete" onClick={() => handleRemoveBlockedDate(d)} title="Hapus dari daftar libur">
                               <Trash2 size={16} />
                             </button>
                           </motion.div>
@@ -888,7 +888,7 @@ const SettingsPage = () => {
 
           {/* === SECTION: DEMO MODE === */}
           {activeSection === 'demo' && (
-            <div className="settings-panel glass-panel demo-mode-panel">
+            <div className="settings-panel app-panel demo-mode-panel">
               <div className="settings-panel-header">
                 <div className="panel-header-icon" style={{ background: 'rgba(138,43,226,0.15)', color: '#a855f7' }}>
                   <FlaskConical size={20} />
@@ -972,7 +972,7 @@ const SettingsPage = () => {
 
           {/* === SECTION: NOTIFICATIONS === */}
           {activeSection === 'notifications' && (
-            <div className="settings-panel glass-panel">
+            <div className="settings-panel app-panel">
               <div className="settings-panel-header">
                 <div className="panel-header-icon" style={{ background: 'rgba(255,193,7,0.1)', color: '#FFC107' }}>
                   <Bell size={20} />
@@ -1026,7 +1026,7 @@ const SettingsPage = () => {
 
           {/* === SECTION: DATA MANAGEMENT === */}
           {activeSection === 'data' && (
-            <div className="settings-panel glass-panel danger-zone tour-settings-danger">
+            <div className="settings-panel app-panel danger-zone tour-settings-danger">
               <div className="settings-panel-header">
                 <div className="panel-header-icon" style={{ background: 'rgba(255,68,68,0.1)', color: '#ff4444' }}>
                   <ShieldAlert size={20} />
@@ -1118,7 +1118,7 @@ const SettingsPage = () => {
 
                     <button
                       type="button"
-                      className={`btn-danger-action step-${resetConfirmStep}`}
+                      className={`btn-danger step-${resetConfirmStep}`}
                       onClick={handleResetSelected}
                       disabled={isResetting}
                     >
@@ -1136,7 +1136,7 @@ const SettingsPage = () => {
                     {resetConfirmStep > 0 && (
                       <button
                         type="button"
-                        className="btn-cancel-reset"
+                        className="btn-secondary"
                         onClick={() => setResetConfirmStep(0)}
                       >
                         Batal

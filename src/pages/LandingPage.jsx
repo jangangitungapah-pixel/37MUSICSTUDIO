@@ -7,6 +7,12 @@ import {
 } from 'lucide-react';
 import { useSettingsStore } from '../store/useSettingsStore';
 import { useAuthStore } from '../store/useAuthStore';
+import { dropdownPreset } from '../animations';
+import MotionButton from '../components/animation/MotionButton';
+import MotionSection from '../components/animation/MotionSection';
+import MotionCard from '../components/animation/MotionCard';
+import { MotionList } from '../components/animation/MotionList';
+import { MotionListItem } from '../components/animation/MotionListItem';
 import './LandingPage.css';
 
 const LandingPage = () => {
@@ -52,23 +58,7 @@ const LandingPage = () => {
     }
   }, [user, isAuthLoaded, navigate]);
 
-  // Framer motion variants
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: { 
-      opacity: 1, 
-      transition: { staggerChildren: 0.15, delayChildren: 0.1 } 
-    }
-  };
-
-  const itemVariants = {
-    hidden: { y: 30, opacity: 0 },
-    visible: { 
-      y: 0, 
-      opacity: 1,
-      transition: { type: 'spring', stiffness: 300, damping: 24 }
-    }
-  };
+  // Framer motion variants removed in favor of central animation system
 
   return (
     <div className="landing-container">
@@ -84,14 +74,14 @@ const LandingPage = () => {
           <a href="#location">Lokasi</a>
         </div>
         <div className="nav-actions">
-          <button 
+          <MotionButton 
             type="button"
             className={`nav-login-btn ${isLoginOpen ? 'active' : ''}`}
             onClick={() => setIsLoginOpen(!isLoginOpen)}
           >
             <Lock size={15} />
             <span>Login Staff</span>
-          </button>
+          </MotionButton>
           <Link to="/jadwal-publik" className="nav-book-btn">
             Booking
           </Link>
@@ -103,10 +93,7 @@ const LandingPage = () => {
         {isLoginOpen && (
           <motion.div 
             className="nav-login-dropdown"
-            initial={{ opacity: 0, y: -10, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -10, scale: 0.95 }}
-            transition={{ duration: 0.2, ease: 'easeOut' }}
+            {...dropdownPreset}
           >
             <div className="login-dropdown-header">
               <div className="login-dropdown-icon-wrap" style={{ background: 'transparent', border: 'none' }}>
@@ -169,11 +156,11 @@ const LandingPage = () => {
                 </div>
               </div>
 
-              <button type="submit" className="login-dropdown-submit" disabled={loading}>
+              <MotionButton type="submit" className="login-dropdown-submit" disabled={loading}>
                 {loading
                   ? <><Loader2 className="spinner" size={16} /><span>Memverifikasi...</span></>
                   : <><span>Masuk ke Dashboard</span><ChevronRight size={16} /></>}
-              </button>
+              </MotionButton>
             </form>
           </motion.div>
         )}
@@ -185,28 +172,22 @@ const LandingPage = () => {
         <div className="hero-bg-blob blob2" />
         <div className="hero-bg-logo" />
         
-        <motion.div 
-          className="hero-content"
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-        >
-
-          <motion.div variants={itemVariants} className="hero-badge">
+        <MotionList as="div" className="hero-content">
+          <MotionListItem as="div" className="hero-badge">
             <Activity size={15} />
             <span>Elevate Your Sound. Studio Musik Premium di Tangerang.</span>
-          </motion.div>
+          </MotionListItem>
           
-          <motion.h1 variants={itemVariants} className="hero-title">
+          <MotionListItem as="h1" className="hero-title">
             Bikin Karya Musikmu <br/>
             Naik Level <span className="text-gradient">Tanpa Batas</span>
-          </motion.h1>
+          </MotionListItem>
           
-          <motion.p variants={itemVariants} className="hero-subtitle">
+          <MotionListItem as="p" className="hero-subtitle">
             Dari jamming asik bareng band sampai produksi rekaman profesional. Nikmati ruang akustik premium dengan gear standar konser yang bikin sound kamu makin kickin'.
-          </motion.p>
+          </MotionListItem>
           
-          <motion.div variants={itemVariants} className="hero-buttons">
+          <MotionListItem as="div" className="hero-buttons">
             <Link to="/jadwal-publik" className="btn-primary btn-large">
               <Calendar size={20} /> Booking Studio Sekarang
             </Link>
@@ -216,37 +197,25 @@ const LandingPage = () => {
               </svg>
               Lihat Hasil Output Kami
             </a>
-          </motion.div>
+          </MotionListItem>
 
-          <motion.div variants={itemVariants} className="hero-quick-facts">
+          <MotionListItem as="div" className="hero-quick-facts">
             <div className="hero-fact"><Clock3 size={16} /> 10.00-23.00</div>
             <div className="hero-fact"><Headphones size={16} /> 1 Ruang Studio</div>
             <div className="hero-fact"><MessageCircle size={16} /> Booking via WA</div>
-          </motion.div>
-        </motion.div>
+          </MotionListItem>
+        </MotionList>
       </section>
 
       {/* Features Section */}
       <section id="features" className="features-section">
-        <motion.div 
-          className="section-header"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.6 }}
-        >
+        <MotionSection direction="up" className="section-header">
           <h2>Ultimate Studio Specs</h2>
           <p>Satu studio eksklusif dengan treatment akustik kelas industri. Ready buat rehearsal dan serious tracking.</p>
-        </motion.div>
+        </MotionSection>
         
         <div className="features-grid">
-          <motion.div 
-            className="feature-card studio"
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-          >
+          <MotionCard interactive={false} delay={0.1} className="feature-card studio">
             <div className="feature-icon" style={{ background: 'linear-gradient(135deg, rgba(0, 240, 255, 0.15), transparent)', border: '1px solid rgba(0, 240, 255, 0.3)' }}>
               <Music2 size={28} color="var(--accent-cyan)" />
             </div>
@@ -257,15 +226,9 @@ const LandingPage = () => {
               <li><ChevronRight size={16} /> Drum Set Premium</li>
               <li><ChevronRight size={16} /> Ampli Gitar dan Bass</li>
             </ul>
-          </motion.div>
+          </MotionCard>
 
-          <motion.div 
-            className="feature-card recording"
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-          >
+          <MotionCard interactive={false} delay={0.2} className="feature-card recording">
             <div className="feature-icon" style={{ background: 'linear-gradient(135deg, rgba(255, 42, 95, 0.15), transparent)', border: '1px solid rgba(255, 42, 95, 0.3)' }}>
               <Mic2 size={28} color="var(--accent-pink)" />
             </div>
@@ -276,15 +239,9 @@ const LandingPage = () => {
               <li><ChevronRight size={16} /> Audio Interface & DAW</li>
               <li><ChevronRight size={16} /> Monitoring Headphone</li>
             </ul>
-          </motion.div>
+          </MotionCard>
           
-          <motion.div 
-            className="feature-card operator"
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-          >
+          <MotionCard interactive={false} delay={0.3} className="feature-card operator">
             <div className="feature-icon" style={{ background: 'rgba(255, 152, 0, 0.1)', border: '1px solid rgba(255, 152, 0, 0.25)' }}>
               <Star size={28} color="#FF9800" />
             </div>
@@ -295,19 +252,13 @@ const LandingPage = () => {
               <li><ChevronRight size={16} /> Setup Instrumen</li>
               <li><ChevronRight size={16} /> Asisten Recording</li>
             </ul>
-          </motion.div>
+          </MotionCard>
         </div>
       </section>
 
       {/* Pricing Section */}
       <section id="pricing" className="pricing-section">
-        <motion.div 
-          className="pricing-container"
-          initial={{ opacity: 0, scale: 0.95 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.6 }}
-        >
+        <MotionSection direction="up" className="pricing-container">
           <div className="pricing-info">
             <h2>Harga Sewa Mulai Dari</h2>
             <div className="price-display">
@@ -320,7 +271,7 @@ const LandingPage = () => {
               Booking Studio Sekarang
             </Link>
           </div>
-        </motion.div>
+        </MotionSection>
       </section>
 
       {/* Footer */}

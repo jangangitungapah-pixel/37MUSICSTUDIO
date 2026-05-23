@@ -526,23 +526,14 @@ tr.row-overdue:hover td {
   gap: 5px;
 }
 
-.inventory-page .row-actions .icon-btn {
-  width: 30px;
-  height: 30px;
-  opacity: 0;
-  transition: opacity 0.15s ease, background 0.15s ease, transform 0.15s ease;
-}
+.inventory-page 
 
 tr:hover .inventory-page .row-actions .icon-btn,
-.inventory-page tr:hover .row-actions .icon-btn { opacity: 1; }
+.inventory-page tr:hover 
 
-.inventory-page .row-actions .icon-btn:hover { transform: scale(1.1); }
+.inventory-page 
 
-.inventory-page .row-actions .icon-btn.delete:hover {
-  background: rgba(255, 68, 68, 0.12);
-  color: #ff4444;
-  border-color: rgba(255, 68, 68, 0.22);
-}
+.inventory-page 
 
 /* =============================================
    DETAIL PANEL (right sidebar)
@@ -1248,17 +1239,9 @@ tr:hover .inventory-page .row-actions .icon-btn,
 
 .mobile-inv-actions { display: flex; gap: 4px; }
 
-.mobile-inv-actions .icon-btn {
-  width: 30px;
-  height: 30px;
-  border-radius: 8px;
-}
 
-.mobile-inv-actions .icon-btn.delete:hover {
-  background: rgba(255, 68, 68, 0.1);
-  color: #ff4444;
-  border-color: rgba(255, 68, 68, 0.2);
-}
+
+
 
 /* =============================================
    MOBILE RESPONSIVE ≤768px

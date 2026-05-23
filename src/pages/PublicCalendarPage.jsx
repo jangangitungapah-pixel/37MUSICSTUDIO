@@ -16,6 +16,8 @@ import {
 import { id as localeId } from 'date-fns/locale';
 import { useNotificationStore } from '../store/useNotificationStore';
 import { AnimatePresence, motion } from 'framer-motion';
+import { modalPreset, overlayVariants } from '../animations';
+import MotionSection from '../components/animation/MotionSection';
 import './PublicCalendarPage.css';
 
 const PublicCalendarPage = () => {
@@ -216,7 +218,7 @@ const PublicCalendarPage = () => {
   return (
     <div className="pc-page">
       {/* ── Dynamic Hero Header ── */}
-      <header className="pc-hero">
+      <MotionSection direction="down" className="pc-hero" as="header">
         <div className="pc-hero-bg">
           <div className="pc-hero-blob-1" />
           <div className="pc-hero-blob-2" />
@@ -252,13 +254,13 @@ const PublicCalendarPage = () => {
               </a>
             )}
 
-            <button className="pc-logout-btn" onClick={handleExitPublic} title="Kembali ke beranda">
+            <button className="btn-ghost" onClick={handleExitPublic} title="Kembali ke beranda">
               <LogOut size={16} />
               <span>Kembali</span>
             </button>
           </div>
         </div>
-      </header>
+      </MotionSection>
 
       {/* ── Calendar Container ── */}
       <div className="pc-body">
@@ -269,13 +271,13 @@ const PublicCalendarPage = () => {
         )}
 
         {/* Toolbar */}
-        <div className="pc-toolbar">
+        <MotionSection delay={0.1} className="pc-toolbar">
           {/* Navigation */}
           <div className="pc-nav">
-            <button className="pc-icon-btn" onClick={handlePrev}><ChevronLeft size={22} /></button>
+            <button className="icon-btn" onClick={handlePrev}><ChevronLeft size={22} /></button>
             <span className="pc-date-label">{currentLabel}</span>
-            <button className="pc-icon-btn" onClick={handleNext}><ChevronRight size={22} /></button>
-            <button className="pc-today-btn" onClick={handleGoToday}>Hari Ini</button>
+            <button className="icon-btn" onClick={handleNext}><ChevronRight size={22} /></button>
+            <button className="btn-secondary" onClick={handleGoToday}>Hari Ini</button>
           </div>
 
           <div className="pc-toolbar-right">
@@ -298,7 +300,7 @@ const PublicCalendarPage = () => {
               ))}
             </div>
           </div>
-        </div>
+        </MotionSection>
 
         {/* Grid Panel */}
         <div className="pc-grid-panel">
@@ -397,18 +399,15 @@ const PublicCalendarPage = () => {
           <motion.div
             className="pc-modal-overlay"
             onClick={() => setModalOpen(false)}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
+            variants={overlayVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
           >
             <motion.div
               className="pc-modal"
               onClick={e => e.stopPropagation()}
-              initial={{ y: 60, opacity: 0, scale: 0.95 }}
-              animate={{ y: 0, opacity: 1, scale: 1 }}
-              exit={{ y: 40, opacity: 0, scale: 0.95 }}
-              transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+              {...modalPreset}
             >
               <div className="pc-modal-content">
                 {/* Header */}
@@ -503,7 +502,7 @@ const PublicCalendarPage = () => {
                     <span>Booking akan diajukan ke admin studio untuk ditinjau dan dikonfirmasi melalui pesan WhatsApp.</span>
                   </div>
 
-                  <button className="pc-wa-send-btn" onClick={sendWA} disabled={isSubmittingRequest}>
+                  <button className="btn-success" style={{width: '100%', padding: '14px'}} onClick={sendWA} disabled={isSubmittingRequest}>
                     <MessageCircle size={22} />
                     <span>{isSubmittingRequest ? 'Sedang Memproses...' : 'Kirim Booking via WhatsApp'}</span>
                   </button>

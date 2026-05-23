@@ -6,6 +6,8 @@ import { useTourStore } from '../store/useTourStore';
 import { toast } from 'sonner';
 import Modal from '../components/Modal';
 import { getMaintenanceUsageInsights } from '../lib/smartInsights';
+import { motion } from 'framer-motion';
+import { pagePreset } from '../animations';
 import './InventoryPage.css';
 
 const CONDITION_COLORS = {
@@ -137,15 +139,15 @@ const InventoryPage = () => {
   };
 
   return (
-    <div className="inventory-page">
-      <header className="page-header">
+    <motion.div className="app-page inventory-page" {...pagePreset}>
+      <header className="app-page-header">
         <div>
-          <h2 className="page-title">Inventory Studio</h2>
-          <p className="page-subtitle">37 Music Studio — Kelola dan pantau kondisi alat-alat studio</p>
+          <h2 className="app-page-title">Inventory Studio</h2>
+          <p className="app-page-subtitle">37 Music Studio — Kelola dan pantau kondisi alat-alat studio</p>
         </div>
         
-        <div className="header-actions">
-          <div className="search-bar glass-panel tour-inv-search">
+        <div className="app-page-actions">
+          <div className="search-bar app-card tour-inv-search" style={{padding: '8px 16px', display: 'flex', alignItems: 'center', gap: '8px', minWidth: '200px'}}>
             <Search size={18} color="var(--text-muted)" />
             <input 
               type="text" 
@@ -170,8 +172,8 @@ const InventoryPage = () => {
       </header>
 
       {/* Stats Bar */}
-      <div className="stats-bar tour-inv-stats">
-        <div className="stat-card glass-panel">
+      <div className="app-stat-grid tour-inv-stats">
+        <div className="app-stat-card">
           <div className="stat-icon" style={{ background: 'rgba(0, 240, 255, 0.1)' }}>
             <Box size={20} color="var(--accent-cyan)" />
           </div>
@@ -180,7 +182,7 @@ const InventoryPage = () => {
             <span className="stat-label">Total Item</span>
           </div>
         </div>
-        <div className="stat-card glass-panel">
+        <div className="app-stat-card">
           <div className="stat-icon" style={{ background: 'rgba(156, 39, 176, 0.1)' }}>
             <Hash size={20} color="#CE93D8" />
           </div>
@@ -189,7 +191,7 @@ const InventoryPage = () => {
             <span className="stat-label">Total Unit</span>
           </div>
         </div>
-        <div className="stat-card glass-panel">
+        <div className="app-stat-card">
           <div className="stat-icon" style={{ background: 'rgba(76, 175, 80, 0.1)' }}>
             <Package size={20} color="#4CAF50" />
           </div>
@@ -198,7 +200,7 @@ const InventoryPage = () => {
             <span className="stat-label">Kondisi Baik</span>
           </div>
         </div>
-        <div className="stat-card glass-panel">
+        <div className="app-stat-card">
           <div className="stat-icon" style={{ background: 'rgba(255, 193, 7, 0.1)' }}>
             <Wrench size={20} color="#FFC107" />
           </div>
@@ -207,7 +209,7 @@ const InventoryPage = () => {
             <span className="stat-label">Perlu Perhatian</span>
           </div>
         </div>
-        <div className="stat-card glass-panel">
+        <div className="app-stat-card">
           <div className="stat-icon" style={{ background: 'rgba(255, 42, 95, 0.1)' }}>
             <AlertCircle size={20} color="var(--accent-pink)" />
           </div>
@@ -219,35 +221,38 @@ const InventoryPage = () => {
       </div>
 
       {/* Smart Maintenance */}
-      <div className="inventory-smart-panel">
-        <div className="inventory-smart-head">
+      <div className="app-smart-panel">
+        <div className="smart-head">
           <Wrench size={18} />
           <div>
             <h3>Maintenance Berbasis Pemakaian</h3>
             <p>{maintenanceInsights.studioHours30d} jam pemakaian studio dalam 30 hari terakhir.</p>
           </div>
         </div>
-        <div className="inventory-smart-list">
+        <div className="smart-list" style={{display: 'flex', flexDirection: 'row', flexWrap: 'wrap', gap: '12px'}}>
           {maintenanceInsights.recommendations.slice(0, 4).map(({ item, label, usageHours, reason }) => (
             <button
               key={item.id}
-              className={`inventory-smart-item ${label.toLowerCase()}`}
+              className={`smart-item ${label.toLowerCase()}`}
+              style={{flex: '1 1 calc(25% - 12px)', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', textAlign: 'left', minWidth: '200px', cursor: 'pointer', background: 'transparent', border: 'none', padding: 0}}
               onClick={() => handleRowClick(item)}
             >
-              <strong>{item.name}</strong>
-              <span>{label} - {reason}</span>
-              <small>{usageHours} jam estimasi</small>
+              <div style={{background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', padding: '12px 16px', width: '100%', transition: 'all 0.2s', ...(label === 'Overhaul' ? {background: 'rgba(255, 42, 95, 0.05)', borderColor: 'rgba(255, 42, 95, 0.2)'} : label === 'Cek Rutin' ? {background: 'rgba(255, 193, 7, 0.05)', borderColor: 'rgba(255, 193, 7, 0.2)'} : {})}}>
+                <strong style={{display: 'block', fontSize: '0.9rem', color: 'var(--text-primary)', marginBottom: '4px'}}>{item.name}</strong>
+                <span style={{display: 'block', fontSize: '0.75rem', color: label === 'Overhaul' ? 'var(--accent-pink)' : label === 'Cek Rutin' ? '#FFC107' : 'var(--text-secondary)', marginBottom: '4px'}}>{label} - {reason}</span>
+                <small style={{display: 'block', fontSize: '0.7rem', color: 'var(--text-muted)'}}>{usageHours} jam estimasi</small>
+              </div>
             </button>
           ))}
           {maintenanceInsights.recommendations.length === 0 && (
-            <span className="inventory-smart-empty">Belum ada data inventaris untuk dianalisis.</span>
+            <span style={{fontSize: '0.85rem', color: 'var(--text-muted)'}}>Belum ada data inventaris untuk dianalisis.</span>
           )}
         </div>
       </div>
 
       {/* Content Area */}
       <div className="inventory-content-area">
-        <div className="inventory-container glass-panel">
+        <div className="inventory-container app-panel">
           {/* Category Tabs — dynamic from store */}
           <div className="filter-tabs tour-inv-categories">
             <button 
@@ -270,8 +275,8 @@ const InventoryPage = () => {
             })}
           </div>
 
-          <div className="table-responsive hide-on-mobile">
-            <table className="inventory-table tour-inv-table">
+          <div className="app-table-wrapper hide-on-mobile">
+            <table className="app-table inventory-table tour-inv-table">
               <thead>
                 <tr>
                   <th>Nama Alat</th>
@@ -388,7 +393,7 @@ const InventoryPage = () => {
 
         {/* Detail Sidebar */}
         {selectedItem && (
-          <div className="item-detail-panel glass-panel">
+          <div className="item-detail-panel app-panel">
             <div className="detail-panel-header">
               <div className="detail-icon-large" style={{ background: (CONDITION_COLORS[selectedItem.condition] || CONDITION_COLORS['Good']).bg, color: (CONDITION_COLORS[selectedItem.condition] || CONDITION_COLORS['Good']).color }}>
                 <Box size={28} />
@@ -601,7 +606,7 @@ const InventoryPage = () => {
           </div>
         </form>
       </Modal>
-    </div>
+    </motion.div>
   );
 };
 

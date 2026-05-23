@@ -9,6 +9,8 @@ import { toast } from 'sonner';
 import Modal from '../components/Modal';
 import { getBillingInsights } from '../lib/smartInsights';
 import { getDepositDeadlineStatus } from '../lib/bookingWorkflows';
+import { motion } from 'framer-motion';
+import { pagePreset } from '../animations';
 import './BillingPage.css';
 
 const BillingPage = () => {
@@ -222,25 +224,25 @@ const BillingPage = () => {
   };
 
   return (
-    <div className="billing-page">
+    <motion.div className="app-page billing-page" {...pagePreset}>
       {/* Header Stats */}
-      <div className="billing-stats-bar tour-bill-stats">
-        <div className="billing-stat-card income">
-          <div className="stat-icon"><CheckCircle size={24} /></div>
+      <div className="app-stat-grid tour-bill-stats" style={{display: 'flex', gap: '20px', flexWrap: 'wrap'}}>
+        <div className="app-stat-card income" style={{flex: 1, minWidth: '250px'}}>
+          <div className="stat-icon" style={{background: 'rgba(76, 175, 80, 0.1)', color: '#4CAF50'}}><CheckCircle size={24} /></div>
           <div className="stat-data">
             <span className="stat-label">Total Pendapatan</span>
             <span className="stat-value">{formatCurrency(totalPendapatan)}</span>
           </div>
         </div>
-        <div className="billing-stat-card debt">
-          <div className="stat-icon"><AlertCircle size={24} /></div>
+        <div className="app-stat-card debt" style={{flex: 1, minWidth: '250px'}}>
+          <div className="stat-icon" style={{background: 'rgba(255, 42, 95, 0.1)', color: 'var(--accent-pink)'}}><AlertCircle size={24} /></div>
           <div className="stat-data">
             <span className="stat-label">Sisa Piutang (Belum Lunas)</span>
             <span className="stat-value">{formatCurrency(totalPiutang)}</span>
           </div>
         </div>
-        <div className="billing-stat-card total">
-          <div className="stat-icon"><FileText size={24} /></div>
+        <div className="app-stat-card total" style={{flex: 1, minWidth: '250px'}}>
+          <div className="stat-icon" style={{background: 'rgba(0, 240, 255, 0.1)', color: 'var(--accent-cyan)'}}><FileText size={24} /></div>
           <div className="stat-data">
             <span className="stat-label">Total Transaksi</span>
             <span className="stat-value">{totalTransaksi} <small>trx</small></span>
@@ -249,38 +251,39 @@ const BillingPage = () => {
       </div>
 
       {/* Smart Billing Summary */}
-      <div className="billing-smart-panel">
-        <div className="billing-smart-main">
-          <Bell size={18} />
+      <div className="app-smart-panel">
+        <div className="smart-head">
+          <Bell size={20} />
           <div>
             <h3>Reminder Pintar</h3>
             <p>{billingInsights.summary}</p>
           </div>
         </div>
-        <div className="billing-smart-list">
+        <div className="smart-list" style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '12px'}}>
           {billingInsights.openInvoices.slice(0, 3).map((invoice) => (
-            <div key={invoice.id} className={`billing-smart-item ${invoice.urgency}`}>
-              <div>
-                <strong>{invoice.band}</strong>
-                <span>{invoice.daysUntil < 0 ? 'Lewat jadwal' : invoice.daysUntil === 0 ? 'Jadwal hari ini' : invoice.daysUntil === 1 ? 'Jadwal besok' : `H-${invoice.daysUntil}`}</span>
+            <div key={invoice.id} className={`smart-item ${invoice.urgency}`} style={{display: 'flex', flexDirection: 'column', alignItems: 'flex-start', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', padding: '12px 16px', position: 'relative'}}>
+              <div style={{width: '100%'}}>
+                <strong style={{display: 'block', fontSize: '0.9rem', color: 'var(--text-primary)', marginBottom: '4px'}}>{invoice.band}</strong>
+                <span style={{display: 'block', fontSize: '0.75rem', color: invoice.urgency === 'high' ? 'var(--accent-pink)' : invoice.urgency === 'medium' ? '#FFC107' : 'var(--text-secondary)', marginBottom: '4px'}}>{invoice.daysUntil < 0 ? 'Lewat jadwal' : invoice.daysUntil === 0 ? 'Jadwal hari ini' : invoice.daysUntil === 1 ? 'Jadwal besok' : `H-${invoice.daysUntil}`}</span>
               </div>
-              <small>{formatCurrency(invoice.remaining)}</small>
+              <small style={{display: 'block', fontSize: '1.1rem', fontWeight: 'bold', color: 'var(--text-primary)', marginTop: '8px'}}>{formatCurrency(invoice.remaining)}</small>
               <button
                 className="billing-smart-btn"
+                style={{position: 'absolute', top: '16px', right: '16px', background: 'rgba(37, 211, 102, 0.1)', color: '#25d366', border: '1px solid rgba(37, 211, 102, 0.2)', borderRadius: '8px', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.2s'}}
                 onClick={() => handleSendReminder(invoice)}
                 title="Kirim reminder WhatsApp"
               >
-                <MessageCircle size={14} />
+                <MessageCircle size={16} />
               </button>
             </div>
           ))}
           {billingInsights.openInvoices.length === 0 && (
-            <div className="billing-smart-empty">Tidak ada tagihan yang perlu ditindaklanjuti.</div>
+            <div className="billing-smart-empty" style={{fontSize: '0.85rem', color: 'var(--text-muted)'}}>Tidak ada tagihan yang perlu ditindaklanjuti.</div>
           )}
         </div>
       </div>
 
-      <div className="billing-content glass-panel">
+      <div className="billing-content app-panel">
         <div className="billing-toolbar">
           <div className="billing-tabs tour-bill-tabs">
             {['Semua', 'Lunas', 'Belum Lunas'].map(tab => (
@@ -305,8 +308,8 @@ const BillingPage = () => {
           </div>
         </div>
 
-        <div className="table-responsive tour-bill-table hide-on-mobile">
-          <table className="billing-table">
+        <div className="app-table-wrapper tour-bill-table hide-on-mobile">
+          <table className="app-table billing-table">
             <thead>
               <tr>
                 <th>Invoice ID</th>
@@ -710,7 +713,7 @@ const BillingPage = () => {
         </Modal>
         );
       })()}
-    </div>
+    </motion.div>
   );
 };
 

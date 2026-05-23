@@ -178,12 +178,21 @@ export const tableRowVariants = {
   visible: { opacity: 1, x: 0 },
   exit: { opacity: 0, x: 10 }
 };
+export const sidebarContainerVariants = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.06, delayChildren: 0.05 } }
+};
 export const sidebarItemVariants = {
-  hidden: { opacity: 0, x: -10 },
-  visible: { opacity: 1, x: 0 }
+  hidden: { opacity: 0, x: -14 },
+  visible: { opacity: 1, x: 0, transition: { duration: 0.25, ease: [0.4, 0, 0.2, 1] } }
 };
 export const mobileMenuVariants = {
   hidden: { opacity: 0, height: 0 },
   visible: { opacity: 1, height: 'auto' },
   exit: { opacity: 0, height: 0 }
+};
+export const bottomSheetVariants = {
+  hidden: { y: '100%' },
+  visible: { y: 0 },
+  exit: { y: '100%' }
 };

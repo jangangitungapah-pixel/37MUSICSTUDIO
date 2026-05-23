@@ -6,6 +6,7 @@ import { PERMISSIONS, PERMISSION_LABELS, getDefaultPermissionsForRole } from '..
 import { UserPlus, Edit2, Trash2, Shield, User, Power, ClipboardList, Loader2, Clock, CheckCircle2, Key } from 'lucide-react';
 import Modal from '../components/Modal';
 import { toast } from 'sonner';
+import { staggerContainer, staggerItem } from '../animations';
 import './StaffPage.css';
 
 const StaffPage = () => {
@@ -137,13 +138,13 @@ const StaffPage = () => {
   };
 
   return (
-    <div className="staff-page">
-      <div className="page-header">
-        <div className="page-header-left">
-          <h2 className="page-title">Manajemen Staff</h2>
-          <p className="page-subtitle">Kelola akses dan data anggota tim Anda</p>
+    <div className="app-page staff-page">
+      <div className="app-page-header">
+        <div>
+          <h2 className="app-page-title">Manajemen Staff</h2>
+          <p className="app-page-subtitle">Kelola akses dan data anggota tim Anda</p>
         </div>
-        <div className="page-header-actions">
+        <div className="app-page-actions">
           <button className="btn-primary" onClick={() => handleOpenModal()}>
             <UserPlus size={16} />
             <span>Tambah Staff</span>
@@ -152,21 +153,19 @@ const StaffPage = () => {
       </div>
 
       <motion.div 
-        className="staff-grid"
+        className="app-stat-grid"
+        variants={staggerContainer}
         initial="hidden"
         animate="visible"
-        variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.1 } } }}
       >
         <AnimatePresence>
           {staffMembers.map(staff => (
             <motion.div 
               layout
-              initial={{ opacity: 0, scale: 0.9, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
+              variants={staggerItem}
               exit={{ opacity: 0, scale: 0.9, y: -20 }}
-              transition={{ type: 'spring', stiffness: 300, damping: 25 }}
               key={staff.id} 
-              className={`staff-card glass-panel ${staff.status === 'inactive' ? 'inactive' : ''}`}
+              className={`app-panel staff-card ${staff.status === 'inactive' ? 'inactive' : ''}`}
             >
               <div className="staff-card-header">
                 <div className="staff-avatar">
@@ -176,13 +175,13 @@ const StaffPage = () => {
                   <button className="icon-btn" onClick={() => handleOpenResetPassword(staff)} title="Ganti Password" style={{ color: 'var(--accent-pink)' }}>
                     <Key size={16} />
                   </button>
-                  <button className="icon-btn edit-btn" onClick={() => handleOpenModal(staff)} title="Edit">
+                  <button className="icon-btn edit" onClick={() => handleOpenModal(staff)} title="Edit">
                     <Edit2 size={16} />
                   </button>
-                  <button className="icon-btn delete-btn" onClick={() => handleDelete(staff.id)} title="Hapus">
+                  <button className="icon-btn delete" onClick={() => handleDelete(staff.id)} title="Hapus">
                     <Trash2 size={16} />
                   </button>
-                  <button className="icon-btn toggle-btn" onClick={() => handleToggleStatus(staff.id)} title={staff.status === 'active' ? "Nonaktifkan" : "Aktifkan"}>
+                  <button className="icon-btn" onClick={() => handleToggleStatus(staff.id)} title={staff.status === 'active' ? "Nonaktifkan" : "Aktifkan"}>
                     <Power size={16} color={staff.status === 'active' ? '#4CAF50' : '#FF5252'} />
                   </button>
                 </div>
@@ -339,7 +338,7 @@ const StaffPage = () => {
         </form>
       </Modal>
 
-      <div className="audit-log-panel glass-panel">
+      <div className="app-panel audit-log-panel">
         <div className="audit-log-header">
           <ClipboardList size={22} className="audit-icon" />
           <div>
@@ -353,7 +352,7 @@ const StaffPage = () => {
               <div className="timeline-marker">
                 <Clock size={12} />
               </div>
-              <div className="timeline-content glass-panel">
+              <div className="app-card timeline-content">
                 <div className="timeline-meta">
                   <span className="timeline-actor">{log.actorName}</span>
                   <span className="timeline-time">{new Date(log.createdAt).toLocaleString('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}</span>

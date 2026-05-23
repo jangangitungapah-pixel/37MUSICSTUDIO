@@ -11,6 +11,7 @@ import { ROUTE_PERMISSIONS, hasPermission } from '../lib/permissions';
 import ProfileModal from './ProfileModal';
 import NotificationPanel from './NotificationPanel';
 import Modal from './Modal';
+import { sidebarContainerVariants, sidebarItemVariants, bottomSheetVariants, activeIndicatorTransition, navTap } from '../animations';
 import './Sidebar.css';
 
 const Sidebar = () => {
@@ -92,16 +93,16 @@ const Sidebar = () => {
               to={item.path} 
               className={`bn-item ${isActive ? 'active' : ''}`}
             >
-              <motion.div whileTap={{ scale: 0.85 }} className="bn-icon-wrapper">
+              <motion.div whileTap={navTap} className="bn-icon-wrapper">
                 {item.icon}
-                {isActive && <motion.div layoutId="bn-indicator" className="bn-indicator" />}
+                {isActive && <motion.div layoutId="bn-indicator" className="bn-indicator" transition={activeIndicatorTransition} />}
               </motion.div>
               <span className="bn-label">{item.label === 'Dashboard' ? 'Home' : item.label}</span>
             </NavLink>
           );
         })}
         <button className="bn-item" onClick={() => setMobileOpen(true)}>
-          <motion.div whileTap={{ scale: 0.85 }} className="bn-icon-wrapper">
+          <motion.div whileTap={navTap} className="bn-icon-wrapper">
             <MoreHorizontal size={19} />
           </motion.div>
           <span className="bn-label">Lainnya</span>
@@ -113,6 +114,7 @@ const Sidebar = () => {
         isOpen={mobileOpen} 
         onClose={() => setMobileOpen(false)} 
         className="mobile-bottom-sheet"
+        preset={{ variants: bottomSheetVariants, initial: 'hidden', animate: 'visible', exit: 'exit', transition: { type: 'spring', stiffness: 300, damping: 30 } }}
       >
         <div className="bottom-sheet-header">
           <div className="sheet-drag-handle" />
@@ -168,7 +170,7 @@ const Sidebar = () => {
           <motion.div
             initial="hidden"
             animate="visible"
-            variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.06, delayChildren: 0.05 } } }}
+            variants={sidebarContainerVariants}
             style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}
           >
             {menuItems.filter((item) => hasPermission(userProfile, ROUTE_PERMISSIONS[item.path])).map((item) => {
@@ -176,7 +178,7 @@ const Sidebar = () => {
               return (
                 <motion.div
                   key={item.path}
-                  variants={{ hidden: { opacity: 0, x: -14 }, visible: { opacity: 1, x: 0, transition: { duration: 0.25, ease: [0.4,0,0.2,1] } } }}
+                  variants={sidebarItemVariants}
                 >
                   <NavLink 
                     to={item.path} 
@@ -188,7 +190,7 @@ const Sidebar = () => {
                         layoutId="sidebar-active-indicator"
                         className="nav-active-bg"
                         initial={false}
-                        transition={{ type: 'spring', stiffness: 350, damping: 30 }}
+                        transition={activeIndicatorTransition}
                       />
                     )}
                     <span className="nav-icon" style={{ position: 'relative', zIndex: 1 }}>{item.icon}</span>

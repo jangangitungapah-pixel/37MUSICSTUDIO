@@ -28,7 +28,6 @@ import { useStaffStore } from '../store/useStaffStore';
 import { toast } from 'sonner';
 import MotionSection from '../components/animation/MotionSection';
 import MotionButton from '../components/animation/MotionButton';
-import { MotionList } from '../components/animation/MotionList';
 import { MotionListItem } from '../components/animation/MotionListItem';
 import './DashboardPage.css';
 
@@ -220,7 +219,7 @@ const DashboardPage = () => {
     }
   };
   return (
-    <div className="dashboard-page">
+    <div className="app-page dashboard-page">
 
       {/* ===== Greeting Banner ===== */}
       <MotionSection direction="down" className="dash-greeting glass-panel">
@@ -264,40 +263,40 @@ const DashboardPage = () => {
       </MotionSection>
 
       {/* ===== Smart Insights ===== */}
-      <MotionList as="div" className="dash-smart-grid">
-        <MotionListItem as="div" className="dash-smart-card glass-panel">
-          <div className="dash-smart-icon cyan"><Lightbulb size={18} /></div>
-          <div className="dash-smart-copy">
-            <span className="dash-smart-label">Pola Booking</span>
-            <strong>{demandInsights.busiestDayCount > 0 ? `${demandInsights.busiestDay}, ${demandInsights.busiestHour}.00` : 'Belum ada pola'}</strong>
-            <small>{demandInsights.favoriteDuration ? `Durasi favorit ${demandInsights.favoriteDuration} jam, okupansi ${demandInsights.occupancyPercent}%` : 'Butuh data booking untuk membaca tren.'}</small>
+      <MotionSection direction="up" className="app-smart-panel dash-smart-grid" style={{flexDirection: 'row', gap: '12px', flexWrap: 'wrap'}}>
+        <MotionListItem as="div" className="smart-item" style={{flex: 1}}>
+          <div className="smart-head" style={{color: 'var(--accent-cyan)'}}>
+            <Lightbulb size={16} />
+            <span style={{fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em'}}>Pola Booking</span>
           </div>
+          <strong style={{fontSize: '0.92rem', color: 'var(--text-primary)'}}>{demandInsights.busiestDayCount > 0 ? `${demandInsights.busiestDay}, ${demandInsights.busiestHour}.00` : 'Belum ada pola'}</strong>
+          <small style={{fontSize: '0.72rem', color: 'var(--text-secondary)'}}>{demandInsights.favoriteDuration ? `Durasi favorit ${demandInsights.favoriteDuration} jam, okupansi ${demandInsights.occupancyPercent}%` : 'Butuh data booking untuk membaca tren.'}</small>
         </MotionListItem>
-        <MotionListItem as="div" className="dash-smart-card glass-panel">
-          <div className="dash-smart-icon green"><Wallet size={18} /></div>
-          <div className="dash-smart-copy">
-            <span className="dash-smart-label">Forecast Bulan Ini</span>
-            <strong>{formatCurrency(revenueForecast.conservativeForecast)}</strong>
-            <small>Optimistis {formatCurrency(revenueForecast.optimisticForecast)} termasuk sisa tagihan.</small>
+        <MotionListItem as="div" className="smart-item" style={{flex: 1}}>
+          <div className="smart-head" style={{color: '#4CAF50'}}>
+            <Wallet size={16} />
+            <span style={{fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em'}}>Forecast Bulan Ini</span>
           </div>
+          <strong style={{fontSize: '0.92rem', color: 'var(--text-primary)'}}>{formatCurrency(revenueForecast.conservativeForecast)}</strong>
+          <small style={{fontSize: '0.72rem', color: 'var(--text-secondary)'}}>Optimistis {formatCurrency(revenueForecast.optimisticForecast)} termasuk sisa tagihan.</small>
         </MotionListItem>
-        <MotionListItem as="div" className="dash-smart-card glass-panel">
-          <div className="dash-smart-icon orange"><Clock size={18} /></div>
-          <div className="dash-smart-copy">
-            <span className="dash-smart-label">Follow-up Billing</span>
-            <strong>{billingInsights.followUpsToday.length} prioritas hari ini</strong>
-            <small>{billingInsights.summary}</small>
+        <MotionListItem as="div" className="smart-item" style={{flex: 1}}>
+          <div className="smart-head" style={{color: '#FFA000'}}>
+            <Clock size={16} />
+            <span style={{fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em'}}>Follow-up Billing</span>
           </div>
+          <strong style={{fontSize: '0.92rem', color: 'var(--text-primary)'}}>{billingInsights.followUpsToday.length} prioritas hari ini</strong>
+          <small style={{fontSize: '0.72rem', color: 'var(--text-secondary)'}}>{billingInsights.summary}</small>
         </MotionListItem>
-        <MotionListItem as="div" className="dash-smart-card glass-panel">
-          <div className={`dash-smart-icon ${anomalies.length ? 'red' : 'green'}`}><Activity size={18} /></div>
-          <div className="dash-smart-copy">
-            <span className="dash-smart-label">Anomali Data</span>
-            <strong>{anomalies.length ? `${anomalies.length} perlu dicek` : 'Tidak ada anomali'}</strong>
-            <small>{anomalies[0]?.detail || 'Harga, DP, jam, dan overlap jadwal terlihat normal.'}</small>
+        <MotionListItem as="div" className="smart-item" style={{flex: 1}}>
+          <div className="smart-head" style={{color: anomalies.length ? 'var(--accent-pink)' : '#4CAF50'}}>
+            <Activity size={16} />
+            <span style={{fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em'}}>Anomali Data</span>
           </div>
+          <strong style={{fontSize: '0.92rem', color: 'var(--text-primary)'}}>{anomalies.length ? `${anomalies.length} perlu dicek` : 'Tidak ada anomali'}</strong>
+          <small style={{fontSize: '0.72rem', color: 'var(--text-secondary)'}}>{anomalies[0]?.detail || 'Harga, DP, jam, dan overlap jadwal terlihat normal.'}</small>
         </MotionListItem>
-      </MotionList>
+      </MotionSection>
 
       {/* ===== Operational Command Center ===== */}
       <MotionSection direction="up" delay={0.1} className="dash-command-grid">
@@ -320,10 +319,10 @@ const DashboardPage = () => {
                   <span>{formatDateShort(request.date)} - {String(request.hour).padStart(2, '0')}:00, {request.duration || 1} jam</span>
                 </div>
                 <div className="dash-work-actions">
-                  <button className="dash-icon-action approve" onClick={() => handleApproveRequest(request)} title="Approve request">
+                  <button className="icon-btn success dash-icon-action" onClick={() => handleApproveRequest(request)} title="Approve request">
                     <CheckCircle2 size={14} />
                   </button>
-                  <button className="dash-icon-action reject" onClick={() => handleRejectRequest(request)} title="Tolak request">
+                  <button className="icon-btn delete dash-icon-action" onClick={() => handleRejectRequest(request)} title="Tolak request">
                     <XCircle size={14} />
                   </button>
                 </div>
@@ -356,7 +355,7 @@ const DashboardPage = () => {
                   <strong>{invoice.band}</strong>
                   <span>{invoice.daysUntil < 0 ? 'Lewat jadwal' : invoice.daysUntil === 0 ? 'Jadwal hari ini' : invoice.daysUntil === 1 ? 'Jadwal besok' : `H-${invoice.daysUntil}`} - {formatCurrency(invoice.remaining)}</span>
                 </div>
-                <button className="dash-icon-action send" onClick={() => handleSendBillingReminder(invoice)} title="Kirim reminder WhatsApp">
+                <button className="icon-btn cyan dash-icon-action" onClick={() => handleSendBillingReminder(invoice)} title="Kirim reminder WhatsApp">
                   <Send size={14} />
                 </button>
               </div>
@@ -430,65 +429,73 @@ const DashboardPage = () => {
       </MotionSection>
 
       {/* ===== Stats Cards ===== */}
-      <div className="dash-stats-grid tour-dashboard-stats">
+      <div className="app-stat-grid tour-dashboard-stats">
         {/* Revenue */}
-        <div className="dash-stat-card glass-panel">
-          <div className="dash-stat-top">
-            <div className="stat-icon-wrapper blue"><TrendingUp size={20} /></div>
-            {revTrend !== null && (
-              <span className={`dash-trend ${revTrend >= 0 ? 'up' : 'down'}`}>
-                {revTrend >= 0 ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
-                {revTrend >= 0 ? '+' : ''}{revTrend}%
-              </span>
-            )}
+        <div className="app-stat-card">
+          <div className="stat-icon" style={{color: 'var(--accent-cyan)', background: 'rgba(0, 240, 255, 0.1)'}}>
+            <TrendingUp size={24} />
           </div>
-          <div className="dash-stat-value">{formatCurrency(bookingStats.totalRevenue)}</div>
-          <div className="dash-stat-label">Pendapatan Bulan Ini</div>
-          <div className="dash-stat-sub">vs {formatCurrency(lastMonthStats.totalRevenue)} bulan lalu</div>
+          <div className="stat-data">
+            <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+              <span className="stat-label">Pendapatan Bulan Ini</span>
+              {revTrend !== null && (
+                <span className={`dash-trend ${revTrend >= 0 ? 'up' : 'down'}`}>
+                  {revTrend >= 0 ? <TrendingUp size={10} /> : <TrendingDown size={10} />}
+                  {revTrend >= 0 ? '+' : ''}{revTrend}%
+                </span>
+              )}
+            </div>
+            <span className="stat-value">{formatCurrency(bookingStats.totalRevenue)}</span>
+            <span className="stat-note">vs {formatCurrency(lastMonthStats.totalRevenue)} bulan lalu</span>
+          </div>
         </div>
 
         {/* Bookings */}
-        <div className="dash-stat-card glass-panel">
-          <div className="dash-stat-top">
-            <div className="stat-icon-wrapper green"><CalendarCheck size={20} /></div>
-            {bookTrend !== null && (
-              <span className={`dash-trend ${bookTrend >= 0 ? 'up' : 'down'}`}>
-                {bookTrend >= 0 ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
-                {bookTrend >= 0 ? '+' : ''}{bookTrend}%
-              </span>
-            )}
+        <div className="app-stat-card">
+          <div className="stat-icon" style={{color: '#4CAF50', background: 'rgba(76, 175, 80, 0.1)'}}>
+            <CalendarCheck size={24} />
           </div>
-          <div className="dash-stat-value">{bookingStats.totalBookings}<span className="dash-stat-unit"> sesi</span></div>
-          <div className="dash-stat-label">Total Booking Bulan Ini</div>
-          <div className="dash-stat-pills">
-            <span className="dash-pill confirmed">{bookingStats.confirmed} Lunas</span>
-            <span className="dash-pill dp">{bookingStats.dp} DP</span>
-            <span className="dash-pill pending">{bookingStats.pending} Pending</span>
+          <div className="stat-data">
+            <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+              <span className="stat-label">Total Booking Bulan Ini</span>
+              {bookTrend !== null && (
+                <span className={`dash-trend ${bookTrend >= 0 ? 'up' : 'down'}`}>
+                  {bookTrend >= 0 ? <TrendingUp size={10} /> : <TrendingDown size={10} />}
+                  {bookTrend >= 0 ? '+' : ''}{bookTrend}%
+                </span>
+              )}
+            </div>
+            <span className="stat-value">{bookingStats.totalBookings}<span style={{fontSize: '0.6em', color: 'var(--text-muted)'}}> sesi</span></span>
+            <div className="dash-stat-pills" style={{marginTop: '4px'}}>
+              <span className="dash-pill confirmed">{bookingStats.confirmed} Lunas</span>
+              <span className="dash-pill dp">{bookingStats.dp} DP</span>
+              <span className="dash-pill pending">{bookingStats.pending} Pending</span>
+            </div>
           </div>
         </div>
 
         {/* Customers */}
-        <div className="dash-stat-card glass-panel">
-          <div className="dash-stat-top">
-            <div className="stat-icon-wrapper pink"><Users size={20} /></div>
+        <div className="app-stat-card">
+          <div className="stat-icon" style={{color: 'var(--accent-pink)', background: 'rgba(255, 42, 95, 0.1)'}}>
+            <Users size={24} />
           </div>
-          <div className="dash-stat-value">{customers.length}<span className="dash-stat-unit"> orang</span></div>
-          <div className="dash-stat-label">Total Pelanggan Terdaftar</div>
-          <div className="dash-stat-sub">{bookingStats.totalHours} jam terpakai bulan ini</div>
+          <div className="stat-data">
+            <span className="stat-label">Total Pelanggan Terdaftar</span>
+            <span className="stat-value">{customers.length}<span style={{fontSize: '0.6em', color: 'var(--text-muted)'}}> orang</span></span>
+            <span className="stat-note">{bookingStats.totalHours} jam terpakai bulan ini</span>
+          </div>
         </div>
 
         {/* Inventory Alert */}
-        <div className="dash-stat-card glass-panel">
-          <div className="dash-stat-top">
-            <div className={`stat-icon-wrapper ${invStats.serviceNeeded > 0 ? 'orange' : 'green'}`}>
-              <PackageOpen size={20} />
-            </div>
+        <div className="app-stat-card">
+          <div className="stat-icon" style={{color: invStats.serviceNeeded > 0 ? '#FFA000' : '#4CAF50', background: invStats.serviceNeeded > 0 ? 'rgba(255, 152, 0, 0.1)' : 'rgba(76, 175, 80, 0.1)'}}>
+            <PackageOpen size={24} />
           </div>
-          <div className={`dash-stat-value ${invStats.serviceNeeded > 0 ? 'warn' : ''}`}>
-            {invStats.serviceNeeded}<span className="dash-stat-unit"> item</span>
+          <div className="stat-data">
+            <span className="stat-label">Alat Perlu Perhatian</span>
+            <span className={`stat-value ${invStats.serviceNeeded > 0 ? 'warn' : ''}`}>{invStats.serviceNeeded}<span style={{fontSize: '0.6em', color: 'var(--text-muted)'}}> item</span></span>
+            <span className="stat-note">dari {invStats.totalItems} total alat inventaris</span>
           </div>
-          <div className="dash-stat-label">Alat Perlu Perhatian</div>
-          <div className="dash-stat-sub">dari {invStats.totalItems} total alat inventaris</div>
         </div>
       </div>
 
@@ -544,7 +551,7 @@ const DashboardPage = () => {
         </div>
 
         {/* Upcoming Bookings */}
-        <div className="dash-upcoming glass-panel">
+        <div className="dash-upcoming app-card tour-dashboard-upcoming">
           <div className="chart-header">
             <div>
               <h3 className="chart-title">Jadwal Mendatang</h3>
@@ -634,7 +641,7 @@ const DashboardPage = () => {
         </div>
 
         {/* Top Customers */}
-        <div className="dash-table-card glass-panel span-2 tour-dashboard-top-customers">
+        <div className="dash-table-card app-card span-2 tour-dashboard-top-customers">
           <div className="chart-header">
             <div>
               <h3 className="chart-title">Top Pelanggan</h3>

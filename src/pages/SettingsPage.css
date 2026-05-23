@@ -658,20 +658,7 @@
 .reset-confirm-msg.step1 svg { color: #FF9800; }
 .reset-confirm-msg.step2 svg { color: #ff4444; }
 
-.btn-danger-action {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 11px 20px;
-  border-radius: 10px;
-  font-size: 0.88rem;
-  font-weight: 700;
-  font-family: inherit;
-  cursor: pointer;
-  border: none;
-  transition: all 0.2s;
-}
+
 
 .btn-danger-action.step-0 {
   background: rgba(255, 68, 68, 0.1);
@@ -682,11 +669,7 @@
   background: rgba(255, 68, 68, 0.18);
 }
 
-.btn-danger-action.step-1 {
-  background: rgba(255, 152, 0, 0.12);
-  color: #FF9800;
-  border: 1px solid rgba(255, 152, 0, 0.25);
-}
+
 
 .btn-danger-action.step-2 {
   background: #ff4444;
@@ -702,21 +685,9 @@
   cursor: not-allowed;
 }
 
-.btn-cancel-reset {
-  background: transparent;
-  border: none;
-  color: var(--text-muted);
-  font-size: 0.8rem;
-  cursor: pointer;
-  padding: 4px;
-  font-family: inherit;
-  text-decoration: underline;
-  align-self: flex-start;
-}
 
-.btn-cancel-reset:hover {
-  color: var(--text-secondary);
-}
+
+
 
 /* ===== Danger Zone Styling ===== */
 .danger-zone {
@@ -1033,27 +1004,9 @@
   color: var(--text-secondary);
 }
 
-.btn-add-discount {
-  background: var(--accent-cyan);
-  color: #000;
-  border: none;
-  border-radius: 8px;
-  padding: 0 16px;
-  height: 42px;
-  font-size: 0.85rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.2s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
 
-.btn-add-discount:hover {
-  background: #00e0ef;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 240, 255, 0.25);
-}
+
+
 
 .duration-discount-list {
   display: flex;
@@ -1092,24 +1045,9 @@
   color: var(--accent-cyan);
 }
 
-.btn-remove-discount {
-  background: rgba(255, 68, 68, 0.1);
-  color: #ff4444;
-  border: none;
-  border-radius: 6px;
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.2s;
-}
 
-.btn-remove-discount:hover {
-  background: rgba(255, 68, 68, 0.2);
-  color: #ff6666;
-}
+
+
 
 .duration-discount-empty {
   text-align: center;
@@ -1152,19 +1090,7 @@
   flex-wrap: wrap;
 }
 
-.restore-upload-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  border-radius: 8px;
-  padding: 10px 14px;
-  background: rgba(0, 240, 255, 0.12);
-  color: var(--accent-cyan);
-  border: 1px solid rgba(0, 240, 255, 0.2);
-  font-size: 0.85rem;
-  font-weight: 700;
-  cursor: pointer;
-}
+
 
 .restore-upload-btn.disabled {
   opacity: 0.6;
@@ -1263,9 +1189,7 @@
     flex-direction: column;
     align-items: stretch;
   }
-  .btn-add-discount {
-    margin-top: 8px;
-  }
+  
 
   .backup-restore-card {
     flex-direction: column;
@@ -1274,10 +1198,6 @@
   .backup-restore-actions {
     flex-direction: column;
     align-items: stretch;
-  }
-  .backup-restore-actions .btn-secondary,
-  .restore-upload-btn {
-    justify-content: center;
   }
 }
 

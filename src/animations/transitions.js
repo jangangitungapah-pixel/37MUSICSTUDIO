@@ -73,3 +73,9 @@ export const microInteractionTransition = {
   duration: 0.15,
   ease: easings.smooth,
 };
+
+export const activeIndicatorTransition = {
+  type: 'spring',
+  stiffness: 350,
+  damping: 30,
+};

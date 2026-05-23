@@ -441,10 +441,7 @@ select.bf-input option {
   padding-top: 4px;
 }
 
-.bf-actions .btn-primary {
-  flex: 2;
-  justify-content: center;
-}
+
 
 .bf-actions .btn-secondary {
   flex: 1;

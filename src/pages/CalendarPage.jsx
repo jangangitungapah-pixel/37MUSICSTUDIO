@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useRef, useEffect, useCallback } from 'react';
-import { ChevronDown, ChevronLeft, ChevronRight, ChevronUp, Plus, Search, CalendarCheck, Clock, DollarSign, Trash2, Phone, StickyNote, X, MessageCircle, TrendingUp, Calendar, LayoutGrid, CalendarDays, Lightbulb, AlertTriangle, CheckCircle2, XCircle, RotateCcw, Printer } from 'lucide-react';
+import { Inbox, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, Plus, Search, CalendarCheck, Clock, DollarSign, Trash2, Phone, StickyNote, X, MessageCircle, TrendingUp, Calendar, LayoutGrid, CalendarDays, Lightbulb, AlertTriangle, CheckCircle2, XCircle, RotateCcw, Printer } from 'lucide-react';
 import { format, addMonths, subMonths, startOfMonth, endOfMonth, addDays, subDays, getDay, startOfWeek, endOfWeek, eachDayOfInterval, addWeeks, subWeeks } from 'date-fns';
 import { useBookingStore } from '../store/useBookingStore';
 import { useSettingsStore } from '../store/useSettingsStore';
@@ -15,6 +15,7 @@ import { getAnomalies, getDemandInsights, getSlotRecommendations } from '../lib/
 import { getDepositDeadlineStatus, hasBookingOverlap } from '../lib/bookingWorkflows';
 import { useCalendarBookingMove } from '../hooks/useCalendarBookingMove';
 import { useCalendarBookingResize } from '../hooks/useCalendarBookingResize';
+import { mobileMenuVariants, activeIndicatorTransition } from '../animations';
 import './CalendarPage.css';
 import './CalendarPrintStyles.css';
 
@@ -410,21 +411,21 @@ const CalendarPage = () => {
 
   return (
     <Tooltip.Provider delayDuration={200}>
-      <div className="calendar-page">
+      <div className="app-page calendar-page">
         <div className={`calendar-main-content ${selectedBooking ? 'blurred' : ''} ${areTopPanelsCollapsed ? 'panels-collapsed' : ''}`}>
           {/* Header */}
-        <header className="cal-header">
-          <div className="cal-header-left">
-            <div className="cal-header-icon">
+        <header className="app-page-header">
+          <div className="app-page-header-left">
+            <div className="cal-header-icon" style={{display: 'flex', alignItems: 'center', justifyContent: 'center', width: '36px', height: '36px', borderRadius: '10px', background: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255, 255, 255, 0.1)', color: 'var(--accent-pink)'}}>
               <CalendarCheck size={20} />
             </div>
             <div>
-              <h2 className="page-title">Booking Calendar</h2>
-              <p className="page-subtitle">{studioName} — {format(currentDate, 'MMMM yyyy')}</p>
+              <h2 className="app-page-title">Booking Calendar</h2>
+              <p className="app-page-subtitle">{studioName} — {format(currentDate, 'MMMM yyyy')}</p>
             </div>
           </div>
-          <div className="cal-header-right">
-            <div className="search-bar glass-panel tour-calendar-search">
+          <div className="app-page-actions">
+            <div className="search-bar app-card tour-calendar-search" style={{padding: '8px 16px', display: 'flex', alignItems: 'center', gap: '8px', minWidth: '200px'}}>
               <Search size={16} color="var(--text-muted)" />
               <input type="text" placeholder="Cari band / no HP..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
               {searchQuery && <button className="search-clear" onClick={() => setSearchQuery('')}><X size={13} /></button>}
@@ -477,14 +478,15 @@ const CalendarPage = () => {
           <motion.div
             id="calendar-top-panels"
             className="calendar-top-panels"
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
+            variants={mobileMenuVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
             transition={{ duration: 0.22, ease: 'easeInOut' }}
           >
             {/* Stats Bar */}
-            <div className="stats-bar">
-              <div className="stat-card glass-panel">
+            <div className="app-stat-grid">
+              <div className="app-stat-card">
                 <div className="stat-icon" style={{ background: 'rgba(0,240,255,0.1)' }}>
                   <CalendarCheck size={18} color="var(--accent-cyan)" />
                 </div>
@@ -493,7 +495,7 @@ const CalendarPage = () => {
                   <span className="stat-label">Total Booking</span>
                 </div>
               </div>
-              <div className="stat-card glass-panel">
+              <div className="app-stat-card">
                 <div className="stat-icon" style={{ background: 'rgba(255,42,95,0.1)' }}>
                   <Clock size={18} color="var(--accent-pink)" />
                 </div>
@@ -502,7 +504,7 @@ const CalendarPage = () => {
                   <span className="stat-label">Jam Terpakai</span>
                 </div>
               </div>
-              <div className="stat-card glass-panel">
+              <div className="app-stat-card">
                 <div className="stat-icon" style={{ background: 'rgba(76,175,80,0.1)' }}>
                   <DollarSign size={18} color="#4CAF50" />
                 </div>
@@ -518,7 +520,7 @@ const CalendarPage = () => {
                   </span>
                 </div>
               </div>
-              <div className="stat-card glass-panel stat-breakdown">
+              <div className="app-stat-card stat-breakdown">
                 <div className="breakdown-items">
                   <span className="breakdown-item"><span className="dot confirmed" />  {stats.confirmed} Lunas</span>
                   <span className="breakdown-item"><span className="dot dp" />  {stats.dp} DP</span>
@@ -528,9 +530,9 @@ const CalendarPage = () => {
             </div>
 
             {/* Smart Scheduling */}
-            <div className="cal-smart-panel glass-panel">
-              <div className="cal-smart-summary">
-                <div className="cal-smart-icon"><Lightbulb size={18} /></div>
+            <div className="app-smart-panel">
+              <div className="smart-head">
+                <Lightbulb size={20} />
                 <div>
                   <h3>Rekomendasi Slot</h3>
                   <p>
@@ -565,20 +567,21 @@ const CalendarPage = () => {
             </div>
 
             {pendingRequests.length > 0 && (
-              <div className="cal-request-panel glass-panel">
-                <div className="cal-request-head">
+              <div className="app-smart-panel">
+                <div className="smart-head">
+                  <Inbox size={20} />
                   <div>
                     <h3>Request Booking Publik</h3>
                     <p>{pendingRequests.length} request menunggu persetujuan admin.</p>
                   </div>
                 </div>
-                <div className="cal-request-list">
+                <div className="smart-list">
                   {pendingRequests.slice(0, 5).map((request) => (
-                    <div key={request.id} className="cal-request-item">
+                    <div key={request.id} className="smart-item" style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
                       <div className="cal-request-main">
-                        <strong>{request.band}</strong>
-                        <span>{request.date} &bull; {String(request.hour).padStart(2, '0')}.00-{String(Number(request.hour) + Number(request.duration || 1)).padStart(2, '0')}.00</span>
-                        {request.phone && <small>{request.phone}</small>}
+                        <strong style={{color: 'var(--text-primary)'}}>{request.band}</strong>
+                        <span style={{fontSize: '0.75rem', color: 'var(--text-muted)'}}>{request.date} &bull; {String(request.hour).padStart(2, '0')}.00-{String(Number(request.hour) + Number(request.duration || 1)).padStart(2, '0')}.00</span>
+                        {request.phone && <small style={{fontSize: '0.75rem', color: 'var(--text-secondary)'}}>{request.phone}</small>}
                       </div>
                       <div className="cal-request-actions">
                         <button className="request-approve" onClick={() => handleApproveRequest(request)} title="Approve">
@@ -598,7 +601,7 @@ const CalendarPage = () => {
       </AnimatePresence>
 
       {/* Calendar Container */}
-      <div className="calendar-container glass-panel">
+      <div className="calendar-container app-panel">
         {/* Toolbar */}
         <div className="calendar-toolbar">
           {/* Left: Navigation */}
@@ -620,7 +623,7 @@ const CalendarPage = () => {
                     <motion.div 
                       layoutId="view-indicator"
                       className="view-btn-indicator"
-                      transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                      transition={activeIndicatorTransition}
                     />
                   )}
                 </button>
@@ -935,7 +938,7 @@ const CalendarPage = () => {
 
               {/* Footer */}
               <div className="detail-footer">
-                <button className="delete-btn tour-btn-delete" onClick={() => handleDeleteBooking(b.id)}>
+                <button className="btn-danger tour-btn-delete" onClick={() => handleDeleteBooking(b.id)}>
                   <Trash2 size={14} /><span>{b.status === 'maintenance' ? 'Hapus Blokir' : 'Hapus'}</span>
                 </button>
                 {b.status !== 'maintenance' && (
@@ -948,8 +951,8 @@ const CalendarPage = () => {
                     <button className="btn-secondary" onClick={() => openRescheduleModal(b)}>
                       <RotateCcw size={14} /><span>Reschedule</span>
                     </button>
-                    <button className="btn-secondary danger-soft" onClick={() => handleCancelBooking(b)}>
-                      <XCircle size={14} /><span>Batalkan</span>
+                    <button className="btn-danger" onClick={() => handleCancelBooking(b)}>
+                      <X size={14} /><span>Batal Booking</span>
                     </button>
                   </>
                 )}

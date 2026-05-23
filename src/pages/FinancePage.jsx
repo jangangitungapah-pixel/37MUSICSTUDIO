@@ -16,6 +16,8 @@ import {
 } from '../lib/finance';
 import { getRevenueForecast } from '../lib/smartInsights';
 import { getBookingTotal, getRemainingDue } from '../lib/bookingWorkflows';
+import { motion } from 'framer-motion';
+import { pagePreset } from '../animations';
 import './FinancePage.css';
 
 const CATEGORIES = {
@@ -391,13 +393,13 @@ const FinancePage = () => {
   ];
 
   return (
-    <div className="finance-page">
+    <motion.div className="app-page finance-page" {...pagePreset}>
       {/* ── Header ── */}
-      <div className="finance-header">
-        <div className="finance-header-left">
+      <div className="app-page-header">
+        <div className="app-page-header-left">
           <span className="finance-eyebrow">Pembukuan Studio</span>
-          <h2 className="page-title">Buku Kas</h2>
-          <p className="page-subtitle">Pantau kas masuk, pengeluaran, piutang booking, dan saldo operasional.</p>
+          <h2 className="app-page-title">Buku Kas</h2>
+          <p className="app-page-subtitle">Pantau kas masuk, pengeluaran, piutang booking, dan saldo operasional.</p>
           <div className="finance-header-meta hide-on-print">
             <span>{periodLabel}</span>
             <span>{filteredData.length} transaksi</span>
@@ -406,7 +408,7 @@ const FinancePage = () => {
             </span>
           </div>
         </div>
-        <div className="finance-header-actions">
+        <div className="app-page-actions">
           {/* Period Pill Buttons */}
           <div className="toolbar-group hide-on-print">
             {PERIOD_OPTIONS.map(opt => (
@@ -421,7 +423,7 @@ const FinancePage = () => {
           </div>
 
           {/* Search */}
-          <div className="finance-search-wrap hide-on-print">
+          <div className="finance-search-wrap app-card hide-on-print" style={{padding: '8px 16px', display: 'flex', alignItems: 'center', gap: '8px', minWidth: '200px'}}>
             <Search size={15} className="search-icon" />
             <input
               type="text"
@@ -432,13 +434,13 @@ const FinancePage = () => {
           </div>
 
           {/* Export */}
-          <button className="btn-export hide-on-print" onClick={handleExportExcel} disabled={isExporting} title="Export ke Excel (.xlsx)">
+          <button className="btn-secondary hide-on-print" onClick={handleExportExcel} disabled={isExporting} title="Export ke Excel (.xlsx)">
             <Download size={15} />
             <span className="hide-on-mobile">{isExporting ? 'Mengekspor...' : 'Export Excel'}</span>
           </button>
 
           {/* Add */}
-          <button className="btn-add hide-on-print" onClick={() => setIsModalOpen(true)}>
+          <button className="btn-primary hide-on-print" onClick={() => setIsModalOpen(true)}>
             <Plus size={16} />
             <span className="hide-on-mobile">Catat Transaksi</span>
           </button>
@@ -446,25 +448,31 @@ const FinancePage = () => {
       </div>
 
       {/* ── Stats Cards ── */}
-      <div className="finance-stats">
-        <div className="finance-stat-card primary">
-          <div className="stat-icon"><Wallet size={22} /></div>
+      <div className="app-stat-grid finance-stats">
+        <div className="app-stat-card primary" style={{flex: 1}}>
+          <div className="stat-icon" style={{color: 'var(--accent-cyan)', background: 'rgba(0, 240, 255, 0.1)'}}>
+            <Wallet size={24} />
+          </div>
           <div className="stat-data">
             <span className="stat-label">Total Saldo Bersih</span>
             <span className="stat-value">{formatCurrency(totalBalance)}</span>
             <span className="stat-note">Akumulasi semua catatan kas</span>
           </div>
         </div>
-        <div className="finance-stat-card income">
-          <div className="stat-icon"><TrendingUp size={22} /></div>
+        <div className="app-stat-card income" style={{flex: 1}}>
+          <div className="stat-icon" style={{color: '#4CAF50', background: 'rgba(76, 175, 80, 0.1)'}}>
+            <TrendingUp size={24} />
+          </div>
           <div className="stat-data">
             <span className="stat-label">Pemasukan · {periodLabel}</span>
             <span className="stat-value">{formatCurrency(totalIncomeFiltered)}</span>
             <span className="stat-note">Booking dan pemasukan manual</span>
           </div>
         </div>
-        <div className="finance-stat-card expense">
-          <div className="stat-icon"><TrendingDown size={22} /></div>
+        <div className="app-stat-card expense" style={{flex: 1}}>
+          <div className="stat-icon" style={{color: 'var(--accent-pink)', background: 'rgba(255, 42, 95, 0.1)'}}>
+            <TrendingDown size={24} />
+          </div>
           <div className="stat-data">
             <span className="stat-label">Pengeluaran · {periodLabel}</span>
             <span className="stat-value">{formatCurrency(totalExpenseFiltered)}</span>
@@ -475,58 +483,58 @@ const FinancePage = () => {
 
       {/* ── Charts ── */}
       <div className="finance-insights-grid hide-on-print">
-      <div className="finance-smart-panel">
-        <div className="finance-panel-copy">
-          <TrendingUp size={18} />
+      <div className="app-smart-panel">
+        <div className="smart-head">
+          <TrendingUp size={20} />
           <div>
             <h3>Forecast Pendapatan Bulanan</h3>
             <p>Proyeksi berbasis kas masuk berjalan, booking bulan ini, dan piutang aktif.</p>
           </div>
         </div>
-        <div className="finance-smart-metrics">
-          <div>
-            <span>Kas saat ini</span>
-            <strong>{formatCurrency(revenueForecast.currentIncome)}</strong>
+        <div className="smart-list" style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px'}}>
+          <div className="smart-item">
+            <span style={{fontSize: '0.75rem', color: 'var(--text-muted)'}}>Kas saat ini</span>
+            <strong style={{fontSize: '1rem', color: 'var(--text-primary)'}}>{formatCurrency(revenueForecast.currentIncome)}</strong>
           </div>
-          <div>
-            <span>Forecast konservatif</span>
-            <strong>{formatCurrency(revenueForecast.conservativeForecast)}</strong>
+          <div className="smart-item">
+            <span style={{fontSize: '0.75rem', color: 'var(--text-muted)'}}>Forecast konservatif</span>
+            <strong style={{fontSize: '1rem', color: 'var(--text-primary)'}}>{formatCurrency(revenueForecast.conservativeForecast)}</strong>
           </div>
-          <div>
-            <span>Forecast optimistis</span>
-            <strong>{formatCurrency(revenueForecast.optimisticForecast)}</strong>
+          <div className="smart-item">
+            <span style={{fontSize: '0.75rem', color: 'var(--text-muted)'}}>Forecast optimistis</span>
+            <strong style={{fontSize: '1rem', color: 'var(--text-primary)'}}>{formatCurrency(revenueForecast.optimisticForecast)}</strong>
           </div>
-          <div>
-            <span>Progress bulan</span>
-            <strong>{revenueForecast.progressPercent}%</strong>
+          <div className="smart-item">
+            <span style={{fontSize: '0.75rem', color: 'var(--text-muted)'}}>Progress bulan</span>
+            <strong style={{fontSize: '1rem', color: 'var(--text-primary)'}}>{revenueForecast.progressPercent}%</strong>
           </div>
         </div>
       </div>
 
-      <div className="finance-reconcile-panel">
-        <div className="finance-panel-copy reconcile">
-          <Wallet size={18} />
+      <div className="app-smart-panel">
+        <div className="smart-head">
+          <Wallet size={20} />
           <div>
             <h3>Rekonsiliasi Kas Booking</h3>
             <p>Cocokkan nilai booking, kas diterima, piutang, dan pemasukan manual pada {periodLabel.toLowerCase()}.</p>
           </div>
         </div>
-        <div className="finance-reconcile-metrics">
-          <div>
-            <span>Nilai booking</span>
-            <strong>{formatCurrency(reconciliation.bookedValue)}</strong>
+        <div className="smart-list" style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px'}}>
+          <div className="smart-item">
+            <span style={{fontSize: '0.75rem', color: 'var(--text-muted)'}}>Nilai booking</span>
+            <strong style={{fontSize: '1rem', color: 'var(--text-primary)'}}>{formatCurrency(reconciliation.bookedValue)}</strong>
           </div>
-          <div>
-            <span>Kas dari booking</span>
-            <strong>{formatCurrency(reconciliation.bookingCash)}</strong>
+          <div className="smart-item">
+            <span style={{fontSize: '0.75rem', color: 'var(--text-muted)'}}>Kas dari booking</span>
+            <strong style={{fontSize: '1rem', color: 'var(--text-primary)'}}>{formatCurrency(reconciliation.bookingCash)}</strong>
           </div>
-          <div>
-            <span>Piutang aktif</span>
-            <strong>{formatCurrency(reconciliation.openReceivable)}</strong>
+          <div className="smart-item">
+            <span style={{fontSize: '0.75rem', color: 'var(--text-muted)'}}>Piutang aktif</span>
+            <strong style={{fontSize: '1rem', color: 'var(--text-primary)'}}>{formatCurrency(reconciliation.openReceivable)}</strong>
           </div>
-          <div className={reconciliation.diff === 0 ? 'ok' : 'warn'}>
-            <span>Selisih kas</span>
-            <strong>{formatCurrency(reconciliation.diff)}</strong>
+          <div className="smart-item" style={{borderColor: reconciliation.diff === 0 ? 'rgba(76, 175, 80, 0.2)' : 'rgba(255, 42, 95, 0.2)'}}>
+            <span style={{fontSize: '0.75rem', color: 'var(--text-muted)'}}>Selisih kas</span>
+            <strong style={{fontSize: '1rem', color: reconciliation.diff === 0 ? '#4CAF50' : 'var(--accent-pink)'}}>{formatCurrency(reconciliation.diff)}</strong>
           </div>
         </div>
       </div>
@@ -534,7 +542,7 @@ const FinancePage = () => {
 
       <div className="finance-charts-grid hide-on-print">
         {/* Line Chart */}
-        <div className="finance-chart-card">
+        <div className="app-card finance-chart-card">
           <div className="chart-card-header">
             <TrendingUp size={15} color="var(--accent-cyan)" />
             <h3>Tren Arus Kas</h3>
@@ -560,7 +568,7 @@ const FinancePage = () => {
         </div>
 
         {/* Pie Chart */}
-        <div className="finance-chart-card">
+        <div className="app-card finance-chart-card">
           <div className="chart-card-header">
             <TrendingDown size={15} color="var(--accent-pink)" />
             <h3>Pengeluaran per Kategori</h3>
@@ -615,8 +623,8 @@ const FinancePage = () => {
         </div>
 
         {/* Desktop Table */}
-        <div className="table-responsive hide-on-mobile" style={{ flex: 1, overflow: 'auto' }}>
-          <table className="finance-table">
+        <div className="app-table-wrapper hide-on-mobile" style={{ flex: 1, overflow: 'auto' }}>
+          <table className="app-table finance-table">
             <thead>
               <tr>
                 <th>Tanggal</th>
@@ -821,7 +829,7 @@ const FinancePage = () => {
           </div>
         </form>
       </Modal>
-    </div>
+    </motion.div>
   );
 };
 

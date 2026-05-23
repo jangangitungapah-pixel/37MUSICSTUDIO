@@ -7,6 +7,8 @@ import { Wrench, AlertCircle, CheckCircle, Clock, DollarSign, Trash2, FileText }
 import Modal from '../components/Modal';
 import { toast } from 'sonner';
 import { getMaintenanceUsageInsights } from '../lib/smartInsights';
+import { motion } from 'framer-motion';
+import { pagePreset } from '../animations';
 import './MaintenancePage.css';
 
 const MaintenancePage = () => {
@@ -98,39 +100,39 @@ const MaintenancePage = () => {
   };
 
   return (
-    <div className="maintenance-page">
-      <div className="page-header">
-        <div className="page-header-left">
-          <h2 className="page-title">Log Maintenance</h2>
-          <p className="page-subtitle">Pantau jadwal perawatan alat dan studio</p>
+    <motion.div className="app-page maintenance-page" {...pagePreset}>
+      <div className="app-page-header">
+        <div>
+          <h2 className="app-page-title">Log Maintenance</h2>
+          <p className="app-page-subtitle">Pantau jadwal perawatan alat dan studio</p>
         </div>
       </div>
 
       {/* Stats */}
-      <div className="maint-stats-bar">
-        <div className="maint-stat-card total">
-          <div className="stat-icon"><FileText size={22} /></div>
+      <div className="app-stat-grid maint-stats-bar">
+        <div className="app-stat-card total">
+          <div className="stat-icon" style={{background: 'rgba(0, 240, 255, 0.1)', color: 'var(--accent-cyan)'}}><FileText size={22} /></div>
           <div className="stat-data">
             <span className="stat-label">Total Log</span>
             <span className="stat-value">{stats.total}</span>
           </div>
         </div>
-        <div className="maint-stat-card pending">
-          <div className="stat-icon"><AlertCircle size={22} /></div>
+        <div className="app-stat-card pending">
+          <div className="stat-icon" style={{background: 'rgba(255, 193, 7, 0.1)', color: '#FFC107'}}><AlertCircle size={22} /></div>
           <div className="stat-data">
             <span className="stat-label">Pending / Proses</span>
             <span className="stat-value">{stats.pending}</span>
           </div>
         </div>
-        <div className="maint-stat-card done">
-          <div className="stat-icon"><CheckCircle size={22} /></div>
+        <div className="app-stat-card done">
+          <div className="stat-icon" style={{background: 'rgba(76, 175, 80, 0.1)', color: '#4CAF50'}}><CheckCircle size={22} /></div>
           <div className="stat-data">
             <span className="stat-label">Selesai</span>
             <span className="stat-value">{stats.done}</span>
           </div>
         </div>
-        <div className="maint-stat-card cost">
-          <div className="stat-icon"><DollarSign size={22} /></div>
+        <div className="app-stat-card cost">
+          <div className="stat-icon" style={{background: 'rgba(255, 42, 95, 0.1)', color: 'var(--accent-pink)'}}><DollarSign size={22} /></div>
           <div className="stat-data">
             <span className="stat-label">Total Biaya</span>
             <span className="stat-value">{formatCurrency(stats.totalCost)}</span>
@@ -139,30 +141,30 @@ const MaintenancePage = () => {
       </div>
 
       {/* Smart Usage Recommendations */}
-      <div className="maint-smart-panel">
-        <div className="maint-smart-head">
-          <Wrench size={18} />
+      <div className="app-smart-panel">
+        <div className="smart-head">
+          <Wrench size={20} />
           <div>
             <h3>Prioritas Servis Cerdas</h3>
             <p>{usageInsights.studioHours30d} jam pemakaian studio dalam 30 hari terakhir.</p>
           </div>
         </div>
-        <div className="maint-smart-list">
+        <div className="smart-list" style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '12px'}}>
           {usageInsights.recommendations.slice(0, 3).map(({ item, label, reason, daysToService }) => (
-            <div key={item.id} className={`maint-smart-item ${label.toLowerCase()}`}>
-              <strong>{item.name}</strong>
-              <span>{label} - {reason}</span>
-              <small>{daysToService === null ? 'Belum ada jadwal servis' : daysToService < 0 ? `${Math.abs(daysToService)} hari terlambat` : `${daysToService} hari lagi`}</small>
+            <div key={item.id} className={`smart-item ${label.toLowerCase()}`} style={{display: 'flex', flexDirection: 'column', alignItems: 'flex-start', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', padding: '12px 16px', position: 'relative'}}>
+              <strong style={{display: 'block', fontSize: '0.9rem', color: 'var(--text-primary)', marginBottom: '4px'}}>{item.name}</strong>
+              <span style={{display: 'block', fontSize: '0.75rem', color: label === 'Overhaul' ? 'var(--accent-pink)' : label === 'Cek Rutin' ? '#FFC107' : 'var(--text-secondary)', marginBottom: '4px'}}>{label} - {reason}</span>
+              <small style={{display: 'block', fontSize: '0.7rem', color: 'var(--text-muted)'}}>{daysToService === null ? 'Belum ada jadwal servis' : daysToService < 0 ? `${Math.abs(daysToService)} hari terlambat` : `${daysToService} hari lagi`}</small>
             </div>
           ))}
           {usageInsights.recommendations.length === 0 && (
-            <div className="maint-smart-empty">Belum ada inventaris yang bisa diprioritaskan.</div>
+            <div className="maint-smart-empty" style={{fontSize: '0.85rem', color: 'var(--text-muted)'}}>Belum ada inventaris yang bisa diprioritaskan.</div>
           )}
         </div>
       </div>
 
       {/* Log Table */}
-      <div className="maint-content glass-panel">
+      <div className="app-panel maint-content">
         <div className="maint-table-header">
           <span className="maint-table-title">Riwayat Maintenance</span>
           <span className="maint-table-hint">Klik baris untuk update status & biaya</span>
@@ -175,8 +177,8 @@ const MaintenancePage = () => {
             <small>Tambahkan jadwal maintenance melalui halaman <strong>Calendar</strong> → Blokir Jadwal.</small>
           </div>
         ) : (
-          <div className="table-responsive">
-            <table className="maint-table">
+          <div className="app-table-wrapper">
+            <table className="app-table maint-table">
               <thead>
                 <tr>
                   <th>Tanggal</th>
@@ -329,7 +331,7 @@ const MaintenancePage = () => {
           </form>
         )}
       </Modal>
-    </div>
+    </motion.div>
   );
 };
 

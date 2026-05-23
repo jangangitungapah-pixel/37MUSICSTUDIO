@@ -1,18 +1,3 @@
-.maintenance-page {
-  padding: 24px;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-/* Stats Bar */
-.maint-stats-bar {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 16px;
-  margin-bottom: 24px;
-}
-
-
 .maint-stat-card .stat-icon {
   width: 48px;
   height: 48px;

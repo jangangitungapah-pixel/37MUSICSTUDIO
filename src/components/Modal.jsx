@@ -5,10 +5,10 @@ import { modalPreset, overlayVariants } from '../animations';
 import { useAppMotion } from '../hooks/useAppMotion';
 import './Modal.css';
 
-const Modal = ({ isOpen, onClose, title, children, className = '' }) => {
+const Modal = ({ isOpen, onClose, title, children, className = '', preset = modalPreset }) => {
   const { getMotionProps } = useAppMotion();
   const overlayProps = getMotionProps({ variants: overlayVariants, initial: 'hidden', animate: 'visible', exit: 'exit' });
-  const contentProps = getMotionProps(modalPreset);
+  const contentProps = getMotionProps(preset);
 
   return (
     <Dialog.Root open={isOpen} onOpenChange={(open) => !open && onClose()}>
