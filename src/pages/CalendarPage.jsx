@@ -405,11 +405,11 @@ const CalendarPage = () => {
   return (
     <Tooltip.Provider delayDuration={200}>
       <div className="app-page calendar-page">
-        <div className={`calendar-main-content ${selectedBooking ? 'blurred' : ''} ${areTopPanelsCollapsed ? 'panels-collapsed' : ''}`}>
+        <div className={`calendar-shell ${selectedBooking ? 'blurred' : ''} ${areTopPanelsCollapsed ? 'panels-collapsed' : ''}`}>
           {/* Header */}
-        <header className="app-page-header">
+        <header className="calendar-page-header app-page-header">
           <div className="app-page-header-left">
-            <div className="cal-header-icon" style={{display: 'flex', alignItems: 'center', justifyContent: 'center', width: '36px', height: '36px', borderRadius: '10px', background: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255, 255, 255, 0.1)', color: 'var(--accent-pink)'}}>
+            <div className="calendar-header-icon">
               <CalendarCheck size={20} />
             </div>
             <div>
@@ -417,8 +417,8 @@ const CalendarPage = () => {
               <p className="app-page-subtitle">{studioName} — {format(currentDate, 'MMMM yyyy')}</p>
             </div>
           </div>
-          <div className="app-page-actions">
-            <div className="app-search app-search-lg tour-calendar-search">
+          <div className="calendar-header-actions app-page-actions">
+            <div className="app-search app-search-lg tour-calendar-search calendar-header-search">
               <Search className="app-search-icon" />
               <input 
                 type="text" 
@@ -482,7 +482,7 @@ const CalendarPage = () => {
         {!areTopPanelsCollapsed && (
           <motion.div
             id="calendar-top-panels"
-            className="calendar-top-panels"
+            className="calendar-overview"
             variants={mobileMenuVariants}
             initial="hidden"
             animate="visible"
@@ -490,32 +490,32 @@ const CalendarPage = () => {
             transition={{ duration: 0.22, ease: 'easeInOut' }}
           >
             {/* Stats Bar */}
-            <div className="app-stat-grid">
-              <div className="app-stat-card">
-                <div className="stat-icon" style={{ background: 'rgba(0,240,255,0.1)' }}>
+            <div className="calendar-stats-grid">
+              <div className="calendar-stat-card">
+                <div className="calendar-stat-icon" style={{ background: 'rgba(0,240,255,0.1)' }}>
                   <CalendarCheck size={18} color="var(--accent-cyan)" />
                 </div>
-                <div className="stat-data">
-                  <span className="stat-value">{stats.totalBookings}</span>
-                  <span className="stat-label">Total Booking</span>
+                <div className="calendar-stat-data">
+                  <span className="calendar-stat-value">{stats.totalBookings}</span>
+                  <span className="calendar-stat-label">Total Booking</span>
                 </div>
               </div>
-              <div className="app-stat-card">
-                <div className="stat-icon" style={{ background: 'rgba(255,42,95,0.1)' }}>
+              <div className="calendar-stat-card">
+                <div className="calendar-stat-icon" style={{ background: 'rgba(255,42,95,0.1)' }}>
                   <Clock size={18} color="var(--accent-pink)" />
                 </div>
-                <div className="stat-data">
-                  <span className="stat-value">{stats.totalHours}<small> jam</small></span>
-                  <span className="stat-label">Jam Terpakai</span>
+                <div className="calendar-stat-data">
+                  <span className="calendar-stat-value">{stats.totalHours}<small> jam</small></span>
+                  <span className="calendar-stat-label">Jam Terpakai</span>
                 </div>
               </div>
-              <div className="app-stat-card">
-                <div className="stat-icon" style={{ background: 'rgba(76,175,80,0.1)' }}>
+              <div className="calendar-stat-card">
+                <div className="calendar-stat-icon" style={{ background: 'rgba(76,175,80,0.1)' }}>
                   <DollarSign size={18} color="#4CAF50" />
                 </div>
-                <div className="stat-data">
-                  <span className="stat-value">{formatCurrency(stats.totalRevenue)}</span>
-                  <span className="stat-label">
+                <div className="calendar-stat-data">
+                  <span className="calendar-stat-value">{formatCurrency(stats.totalRevenue)}</span>
+                  <span className="calendar-stat-label">
                     Est. Pendapatan
                     {revTrend !== null && (
                       <span className={`trend-badge ${revTrend >= 0 ? 'up' : 'down'}`}>
@@ -525,11 +525,11 @@ const CalendarPage = () => {
                   </span>
                 </div>
               </div>
-              <div className="app-stat-card stat-breakdown">
-                <div className="breakdown-items">
-                  <span className="breakdown-item"><span className="dot confirmed" />  {stats.confirmed} Lunas</span>
-                  <span className="breakdown-item"><span className="dot dp" />  {stats.dp} DP</span>
-                  <span className="breakdown-item"><span className="dot pending" />  {stats.pending} Pending</span>
+              <div className="calendar-stat-card">
+                <div className="calendar-stat-legend">
+                  <span className="calendar-stat-legend-item"><span className="dot confirmed" /> {stats.confirmed} Lunas</span>
+                  <span className="calendar-stat-legend-item"><span className="dot dp" /> {stats.dp} DP</span>
+                  <span className="calendar-stat-legend-item"><span className="dot pending" /> {stats.pending} Pending</span>
                 </div>
               </div>
             </div>
@@ -556,11 +556,10 @@ const CalendarPage = () => {
                 </div>
                 <div className="smart-list">
                   {pendingRequests.slice(0, 5).map((request) => (
-                    <div key={request.id} className="smart-item" style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
-                      <div className="cal-request-main">
-                        <strong style={{color: 'var(--text-primary)'}}>{request.band}</strong>
-                        <span style={{fontSize: '0.75rem', color: 'var(--text-muted)'}}>{request.date} &bull; {String(request.hour).padStart(2, '0')}.00-{String(Number(request.hour) + Number(request.duration || 1)).padStart(2, '0')}.00</span>
-                        {request.phone && <small style={{fontSize: '0.75rem', color: 'var(--text-secondary)'}}>{request.phone}</small>}
+                    <div key={request.id} className="cal-request-chip">
+                      <div className="cal-request-info">
+                        <strong>{request.band}</strong>
+                        <span>{request.date} &bull; {String(request.hour).padStart(2, '0')}.00-{String(Number(request.hour) + Number(request.duration || 1)).padStart(2, '0')}.00</span>
                       </div>
                       <div className="cal-request-actions">
                         <button className="request-approve" onClick={() => handleApproveRequest(request)} title="Approve">
@@ -580,11 +579,11 @@ const CalendarPage = () => {
       </AnimatePresence>
 
       {/* Calendar Container */}
-      <div className="calendar-container app-panel">
+      <section className="calendar-workspace app-panel">
         {/* Toolbar */}
-        <div className="calendar-toolbar">
+        <div className="calendar-workspace-toolbar">
           {/* Left: Navigation */}
-          <div className="date-navigation tour-calendar-nav">
+          <div className="calendar-toolbar-left tour-calendar-nav">
             <button className="icon-btn nav-arrow" onClick={handlePrev}><ChevronLeft size={18} /></button>
             <span className="current-month">{getDateLabel()}</span>
             <button className="icon-btn nav-arrow" onClick={handleNext}><ChevronRight size={18} /></button>
@@ -592,7 +591,7 @@ const CalendarPage = () => {
           </div>
 
           {/* Right: View Switcher + Filters */}
-          <div className="toolbar-right">
+          <div className="calendar-toolbar-right">
             <div className="view-switcher tour-calendar-filters">
               {viewModes.map(({ id, label, icon: Icon }) => (
                 <button key={id} className={`view-btn ${viewMode === id ? 'active' : ''}`} onClick={() => setViewMode(id)}>
@@ -776,7 +775,7 @@ const CalendarPage = () => {
             </motion.div>
           )}
         </AnimatePresence>
-      </div>
+      </section>
       </div>
 
       {/* Booking Detail — Bottom Sheet on mobile, Popup on desktop */}
