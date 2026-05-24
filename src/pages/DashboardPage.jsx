@@ -20,7 +20,6 @@ import {
   getDemandInsights,
   getMaintenanceUsageInsights,
   getRevenueForecast,
-  getSlotRecommendations,
 } from '../lib/smartInsights';
 import { hasBookingOverlap } from '../lib/bookingWorkflows';
 import { buildDashboardWorkbook } from '../lib/dashboardWorkbook';
@@ -82,16 +81,7 @@ const DashboardPage = () => {
       .sort((a, b) => (a.date || '').localeCompare(b.date || '') || Number(a.hour || 0) - Number(b.hour || 0)),
     [requests]
   );
-  const slotRecommendations = useMemo(
-    () => getSlotRecommendations(bookings, {
-      fromDate: today,
-      duration: 2,
-      startHour: operationalHours.start,
-      endHour: operationalHours.end,
-      limit: 3,
-    }),
-    [bookings, operationalHours.end, operationalHours.start, today]
-  );
+
   const retentionInsights = useMemo(() => getCustomerRetentionInsights(customers), [customers]);
   const maintenanceInsights = useMemo(() => getMaintenanceUsageInsights(inventory, bookings), [inventory, bookings]);
   const priorityMaintenance = maintenanceInsights.recommendations.filter(({ priority }) => priority >= 3).slice(0, 3);
@@ -369,32 +359,7 @@ const DashboardPage = () => {
           </div>
         </section>
 
-        <section className="dash-command-panel glass-panel">
-          <div className="dash-command-head">
-            <div className="dash-command-title">
-              <CalendarPlus size={17} />
-              <div>
-                <h3>Slot Kosong</h3>
-                <p>Rekomendasi 2 jam</p>
-              </div>
-            </div>
-            <button className="dash-mini-link" onClick={() => navigate('/calendar')}>Booking</button>
-          </div>
-          <div className="dash-work-list compact">
-            {slotRecommendations.map((slot) => (
-              <button className="dash-slot-item" key={`${slot.date}-${slot.hour}`} onClick={() => navigate('/calendar')} title="Buka kalender">
-                <strong>{slot.dayName}, {formatDateShort(slot.date)}</strong>
-                <span>{String(slot.hour).padStart(2, '0')}:00-{String(slot.endHour).padStart(2, '0')}:00 - {slot.reason}</span>
-              </button>
-            ))}
-            {slotRecommendations.length === 0 && (
-              <div className="dash-work-empty">
-                <CalendarCheck size={18} />
-                <span>Tidak ada slot kosong dekat.</span>
-              </div>
-            )}
-          </div>
-        </section>
+
 
         <section className="dash-command-panel glass-panel">
           <div className="dash-command-head">

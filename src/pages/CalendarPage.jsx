@@ -11,7 +11,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import * as Tooltip from '@radix-ui/react-tooltip';
 import Modal from '../components/Modal';
 import BookingForm from '../components/BookingForm';
-import { getAnomalies, getDemandInsights, getSlotRecommendations } from '../lib/smartInsights';
+import { getAnomalies, getDemandInsights } from '../lib/smartInsights';
 import { getDepositDeadlineStatus, hasBookingOverlap } from '../lib/bookingWorkflows';
 import { useCalendarBookingMove } from '../hooks/useCalendarBookingMove';
 import { useCalendarBookingResize } from '../hooks/useCalendarBookingResize';
@@ -138,14 +138,7 @@ const CalendarPage = () => {
   const endHour = operationalHours.end;
   const hoursArray = Array.from({ length: endHour - startHour }).map((_, i) => startHour + i);
   const stats = getMonthlyStats(currentDate);
-  const slotRecommendations = useMemo(
-    () => getSlotRecommendations(bookings, {
-      fromDate: currentDate < new Date() ? new Date() : currentDate,
-      duration: 2,
-      limit: 4,
-    }),
-    [bookings, currentDate]
-  );
+
   const demandInsights = useMemo(() => getDemandInsights(bookings), [bookings]);
   const scheduleAnomalies = useMemo(() => getAnomalies(bookings, pricePerHour), [bookings, pricePerHour]);
   const pendingRequests = useMemo(
@@ -441,45 +434,47 @@ const CalendarPage = () => {
               )}
             </div>
 
-            <Tooltip.Root>
-              <Tooltip.Trigger asChild>
-                <button
-                  className="btn-secondary cal-panel-toggle"
-                  type="button"
-                  onClick={() => setAreTopPanelsCollapsed((value) => !value)}
-                  aria-expanded={!areTopPanelsCollapsed}
-                  aria-controls="calendar-top-panels"
-                >
-                  {areTopPanelsCollapsed ? <ChevronDown size={16} /> : <ChevronUp size={16} />}
-                  <span className="hide-on-mobile">{areTopPanelsCollapsed ? 'Tampilkan Panel' : 'Sembunyikan Panel'}</span>
-                </button>
-              </Tooltip.Trigger>
-              <Tooltip.Portal>
-                <Tooltip.Content className="radix-tooltip-content" sideOffset={5}>
-                  {areTopPanelsCollapsed ? 'Tampilkan statistik' : 'Sembunyikan statistik'}
-                  <Tooltip.Arrow className="radix-tooltip-arrow" />
-                </Tooltip.Content>
-              </Tooltip.Portal>
-            </Tooltip.Root>
+            <div className="app-page-actions-buttons">
+              <Tooltip.Root>
+                <Tooltip.Trigger asChild>
+                  <button
+                    className="btn-secondary cal-panel-toggle"
+                    type="button"
+                    onClick={() => setAreTopPanelsCollapsed((value) => !value)}
+                    aria-expanded={!areTopPanelsCollapsed}
+                    aria-controls="calendar-top-panels"
+                  >
+                    {areTopPanelsCollapsed ? <ChevronDown size={16} /> : <ChevronUp size={16} />}
+                    <span className="hide-on-mobile">{areTopPanelsCollapsed ? 'Tampilkan Panel' : 'Sembunyikan Panel'}</span>
+                  </button>
+                </Tooltip.Trigger>
+                <Tooltip.Portal>
+                  <Tooltip.Content className="radix-tooltip-content" sideOffset={5}>
+                    {areTopPanelsCollapsed ? 'Tampilkan statistik' : 'Sembunyikan statistik'}
+                    <Tooltip.Arrow className="radix-tooltip-arrow" />
+                  </Tooltip.Content>
+                </Tooltip.Portal>
+              </Tooltip.Root>
 
-            <Tooltip.Root>
-              <Tooltip.Trigger asChild>
-                <button className="btn-secondary tour-calendar-print" onClick={() => window.print()}>
-                  <Printer size={16} />
-                  <span className="hide-on-mobile">Cetak</span>
-                </button>
-              </Tooltip.Trigger>
-              <Tooltip.Portal>
-                <Tooltip.Content className="radix-tooltip-content" sideOffset={5}>
-                  Cetak jadwal kalender
-                  <Tooltip.Arrow className="radix-tooltip-arrow" />
-                </Tooltip.Content>
-              </Tooltip.Portal>
-            </Tooltip.Root>
+              <Tooltip.Root>
+                <Tooltip.Trigger asChild>
+                  <button className="btn-secondary tour-calendar-print" onClick={() => window.print()}>
+                    <Printer size={16} />
+                    <span className="hide-on-mobile">Cetak</span>
+                  </button>
+                </Tooltip.Trigger>
+                <Tooltip.Portal>
+                  <Tooltip.Content className="radix-tooltip-content" sideOffset={5}>
+                    Cetak jadwal kalender
+                    <Tooltip.Arrow className="radix-tooltip-arrow" />
+                  </Tooltip.Content>
+                </Tooltip.Portal>
+              </Tooltip.Root>
 
-            <button className="btn-primary tour-calendar-new-btn" onClick={handleNewBooking}>
-              <Plus size={18} /><span>New Booking</span>
-            </button>
+              <button className="btn-primary tour-calendar-new-btn" onClick={handleNewBooking}>
+                <Plus size={18} /><span className="hide-on-mobile">New Booking</span>
+              </button>
+            </div>
           </div>
         </header>
 
@@ -541,33 +536,7 @@ const CalendarPage = () => {
 
             {/* Smart Scheduling */}
             <div className="app-smart-panel">
-              <div className="smart-head">
-                <Lightbulb size={20} />
-                <div>
-                  <h3>Rekomendasi Slot</h3>
-                  <p>
-                    {demandInsights.busiestHour
-                      ? `Jam ramai ${demandInsights.busiestHour}.00, hari sepi ${demandInsights.quietestDay}.`
-                      : 'Saran akan makin akurat setelah ada lebih banyak booking.'}
-                  </p>
-                </div>
-              </div>
-              <div className="cal-slot-list">
-                {slotRecommendations.length === 0 ? (
-                  <span className="cal-slot-empty">Tidak ada slot kosong yang cocok.</span>
-                ) : slotRecommendations.map((slot) => (
-                  <button
-                    key={`${slot.date}-${slot.hour}`}
-                    className="cal-slot-chip"
-                    onClick={() => handleCellClick(slot.date, slot.hour)}
-                    title="Pakai slot ini"
-                  >
-                    <strong>{slot.dayName}, {slot.date.slice(8, 10)}/{slot.date.slice(5, 7)}</strong>
-                    <span>{String(slot.hour).padStart(2, '0')}.00-{String(slot.endHour).padStart(2, '0')}.00</span>
-                    <small>{slot.reason}</small>
-                  </button>
-                ))}
-              </div>
+
               {scheduleAnomalies.length > 0 && (
                 <div className="cal-smart-alert">
                   <AlertTriangle size={15} />
@@ -641,17 +610,27 @@ const CalendarPage = () => {
             </div>
             <div className="quick-filters">
               {[
-                { id: 'all', label: 'Semua' },
-                { id: 'pending', label: 'Pending' },
-                { id: 'dp', label: 'DP' },
-                { id: 'confirmed', label: 'Lunas' },
-                { id: 'maintenance', label: 'Blokir' },
-                { id: 'cancelled', label: 'Batal' },
-              ].map(({ id, label }) => (
-                <button key={id} className={`filter-chip ${filterStatus === id ? `active ${id}` : ''}`} onClick={() => setFilterStatus(id)}>
-                  {id !== 'all' && <span className={`dot ${id}`} style={id === 'maintenance' ? { background: '#6b6b76' } : undefined} />}
-                  {label}
-                </button>
+                { id: 'all', label: 'Semua', shortLabel: 'S' },
+                { id: 'pending', label: 'Pending', shortLabel: 'P' },
+                { id: 'dp', label: 'DP', shortLabel: 'DP' },
+                { id: 'confirmed', label: 'Lunas', shortLabel: 'L' },
+                { id: 'maintenance', label: 'Blokir', shortLabel: 'B' },
+                { id: 'cancelled', label: 'Batal', shortLabel: 'X' },
+              ].map(({ id, label, shortLabel }) => (
+                <Tooltip.Root key={id}>
+                  <Tooltip.Trigger asChild>
+                    <button className={`filter-chip ${filterStatus === id ? `active ${id}` : ''}`} onClick={() => setFilterStatus(id)}>
+                      {id !== 'all' && <span className={`dot ${id}`} style={id === 'maintenance' ? { background: '#6b6b76' } : undefined} />}
+                      {isMobile ? shortLabel : label}
+                    </button>
+                  </Tooltip.Trigger>
+                  <Tooltip.Portal>
+                    <Tooltip.Content className="radix-tooltip-content" sideOffset={5} side="bottom">
+                      {label}
+                      <Tooltip.Arrow className="radix-tooltip-arrow" />
+                    </Tooltip.Content>
+                  </Tooltip.Portal>
+                </Tooltip.Root>
               ))}
             </div>
           </div>

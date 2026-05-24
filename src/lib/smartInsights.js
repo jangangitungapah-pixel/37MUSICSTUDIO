@@ -74,60 +74,6 @@ export const getDemandInsights = (bookings = []) => {
   };
 };
 
-export const getSlotRecommendations = (
-  bookings = [],
-  {
-    fromDate = new Date(),
-    duration = 2,
-    startHour = 10,
-    endHour = 23,
-    daysAhead = 14,
-    limit = 5,
-  } = {}
-) => {
-  const baseDate = toDate(fromDate) || new Date();
-  const nowKey = toDateKey(new Date());
-  const nowHour = new Date().getHours();
-  const activeBookings = bookings.filter((b) => b.date && b.status !== 'cancelled');
-  const demand = getDemandInsights(bookings);
-  const suggestions = [];
-
-  for (let dayOffset = 0; dayOffset < daysAhead; dayOffset += 1) {
-    const date = new Date(baseDate);
-    date.setDate(baseDate.getDate() + dayOffset);
-    const dateKey = toDateKey(date);
-    const dayBookings = activeBookings.filter((b) => b.date === dateKey);
-
-    for (let hour = startHour; hour <= endHour - duration; hour += 1) {
-      if (dateKey === nowKey && hour <= nowHour) continue;
-      const hasOverlap = dayBookings.some((b) => overlaps(hour, hour + duration, b.hour, Number(b.hour) + Number(b.duration || 1)));
-      if (hasOverlap) continue;
-
-      const adjacentBefore = dayBookings.some((b) => Number(b.hour) + Number(b.duration || 1) === hour);
-      const adjacentAfter = dayBookings.some((b) => Number(b.hour) === hour + duration);
-      const midDayBonus = hour >= 13 && hour <= 18 ? 2 : 0;
-      const quietDayBonus = DAY_LABELS[date.getDay()] === demand.quietestDay ? 3 : 0;
-      const compactBonus = adjacentBefore || adjacentAfter ? 4 : 0;
-      const score = 10 - dayOffset + midDayBonus + quietDayBonus + compactBonus;
-
-      suggestions.push({
-        date: dateKey,
-        dayName: SHORT_DAY_LABELS[date.getDay()],
-        hour,
-        duration,
-        endHour: hour + duration,
-        score,
-        reason: compactBonus
-          ? 'rapat dengan jadwal lain'
-          : quietDayBonus
-            ? 'hari relatif sepi'
-            : 'slot kosong stabil',
-      });
-    }
-  }
-
-  return suggestions.sort((a, b) => b.score - a.score || a.date.localeCompare(b.date) || a.hour - b.hour).slice(0, limit);
-};
 
 export const getBillingInsights = (bookings = [], pricePerHour = 0) => {
   const todayKey = toDateKey(new Date());

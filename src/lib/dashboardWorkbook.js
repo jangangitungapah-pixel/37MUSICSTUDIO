@@ -9,7 +9,6 @@ import {
   getMaintenanceUsageInsights,
   getRemainingDue,
   getRevenueForecast,
-  getSlotRecommendations,
 } from './smartInsights';
 
 const THEME = {
@@ -264,13 +263,6 @@ const addSummarySheet = (workbook, context) => {
   const retention = getCustomerRetentionInsights(customers);
   const maintenance = getMaintenanceUsageInsights(inventory, bookings);
   const anomalies = getAnomalies(bookings, pricePerHour);
-  const slots = getSlotRecommendations(bookings, {
-    fromDate: today,
-    startHour: operationalHours.start,
-    endHour: operationalHours.end,
-    duration: 2,
-    limit: 4,
-  });
 
   setTitle(worksheet, {
     title: `Laporan Dashboard - ${studioName}`,
@@ -357,17 +349,7 @@ const addSummarySheet = (workbook, context) => {
     writeNote(worksheet, 14, 1, 8, 'Tidak ada tagihan terbuka.', 'green');
   }
 
-  const slotStartRow = openInvoices.length ? 22 : 17;
-  sectionHeader(slotStartRow, 'Slot Kosong Rekomendasi');
-  worksheet.getRow(slotStartRow + 1).values = ['Tanggal', 'Hari', 'Jam', 'Durasi', 'Alasan', 'Skor', '', ''];
-  styleHeaderRow(worksheet, slotStartRow + 1);
-  slots.forEach((slot, index) => {
-    const row = worksheet.getRow(slotStartRow + 2 + index);
-    row.values = [displayDate(slot.date), slot.dayName, `${slot.hour}.00-${slot.endHour}.00`, `${slot.duration} jam`, slot.reason, slot.score];
-    styleDataRow(row, index);
-  });
-
-  const maintenanceStartRow = slotStartRow + 8;
+  const maintenanceStartRow = openInvoices.length ? 22 : 17;
   sectionHeader(maintenanceStartRow, 'Perawatan Inventaris');
   worksheet.getRow(maintenanceStartRow + 1).values = ['Alat', 'Kategori', 'Prioritas', 'Estimasi Pakai 30 Hari', 'Jadwal Servis', 'Alasan', '', ''];
   styleHeaderRow(worksheet, maintenanceStartRow + 1);

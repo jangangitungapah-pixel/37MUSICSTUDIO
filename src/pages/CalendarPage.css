@@ -1084,13 +1084,13 @@ body.calendar-move-lock .main-content {
 
 @media (max-width: 768px) {
   .booking-info {
-    padding: 3px 4px;
+    padding: 3px 2px;
     gap: 1px;
     align-items: center;
     text-align: center;
   }
   .booking-band-name {
-    font-size: 0.65rem;
+    font-size: 0.58rem;
     width: 100%;
   }
   .booking-time-label {
@@ -1776,4 +1776,409 @@ body.calendar-move-lock .main-content {
 [data-theme="light"] .calendar-toolbar {
   background: rgba(238,240,246,0.95);
   border-bottom-color: rgba(0,0,0,0.08);
+}
+
+/* ==========================================================
+   DESKTOP SCOPED OVERRIDES
+   Targetted fixes applied only to .calendar-page context.
+   ========================================================== */
+
+/* Header: satu baris di desktop */
+.calendar-page .app-page-header {
+  min-height: 52px;
+  padding-bottom: 8px;
+  margin-bottom: 0;
+}
+.calendar-page .app-page-header-left {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 14px !important;
+}
+.calendar-page .app-page-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: nowrap;
+}
+.calendar-page .tour-calendar-search {
+  width: clamp(200px, 20vw, 320px);
+}
+
+/* Stats: 4 kolom di desktop */
+.calendar-page .app-stat-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+.calendar-page .app-stat-card {
+  min-height: 72px;
+  padding: 14px 16px;
+}
+.calendar-page .stat-icon {
+  width: 36px;
+  height: 36px;
+}
+.calendar-page .stat-value {
+  font-size: 1.15rem;
+}
+.calendar-page .stat-label {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+}
+.calendar-page .stat-breakdown {
+  justify-content: center;
+}
+.calendar-page .breakdown-items {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.calendar-page .breakdown-item {
+  margin-bottom: 0 !important;
+}
+
+/* Smart panel: chip horizontal scroll di desktop */
+.calendar-page .app-smart-panel {
+  padding: 16px 18px;
+  flex: 0 0 auto;
+}
+.calendar-page .app-smart-panel .smart-head {
+  margin-bottom: 12px;
+}
+.calendar-page .cal-slot-list {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  gap: 10px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 4px;
+  max-width: 100%;
+}
+.calendar-page .cal-slot-chip {
+  flex: 0 0 145px;
+  width: 145px;
+  min-width: 145px;
+  max-width: 145px;
+}
+
+/* Calendar container dominan */
+.calendar-page .calendar-top-panels {
+  flex-shrink: 0;
+  gap: 12px;
+  height: auto;
+}
+.calendar-page .calendar-container {
+  flex: 1 1 auto;
+  min-height: 520px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.calendar-page .monthly-grid-wrapper {
+  flex: 1 1 auto;
+  min-height: 420px;
+  overflow: hidden;
+  max-height: none !important;
+}
+.calendar-page .monthly-grid {
+  flex: 1;
+  overflow: auto;
+}
+
+/* Toolbar: satu baris di desktop */
+.calendar-page .calendar-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 60px;
+  padding: 12px 16px;
+}
+.calendar-page .toolbar-right {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  min-width: 0;
+}
+.calendar-page .quick-filters {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  gap: 6px;
+  max-width: min(46vw, 620px);
+  scrollbar-width: none;
+}
+.calendar-page .quick-filters::-webkit-scrollbar { display: none; }
+.calendar-page .view-switcher {
+  flex-shrink: 0;
+}
+
+/* ==========================================================
+   TABLET OVERRIDES — max-width: 1024px
+   ========================================================== */
+@media (max-width: 1024px) {
+  .calendar-page .app-stat-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ==========================================================
+   MOBILE OVERRIDES — max-width: 768px
+   Semua scoped ke .calendar-page agar tidak bocor ke halaman lain.
+   ========================================================== */
+@media (max-width: 768px) {
+  /* Prevent horizontal overflow on body, not page */
+  body {
+    overflow-x: hidden;
+  }
+  
+  .calendar-page {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+  
+  .calendar-page .calendar-main-content {
+    min-width: 0;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  /* ── Header: row compact ── */
+  .calendar-page .app-page-header {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    gap: 12px 0px !important;
+    padding-bottom: 4px !important;
+    margin-bottom: 0 !important;
+  }
+  .calendar-page .app-page-header-left {
+    order: 1 !important;
+    flex-shrink: 1 !important;
+    min-width: 0 !important;
+    gap: 12px !important;
+  }
+
+  /* Actions behavior: display contents so children behave as direct flex children */
+  .calendar-page .app-page-actions {
+    display: contents !important;
+  }
+
+  /* Action buttons container next to title */
+  .calendar-page .app-page-actions-buttons {
+    order: 2 !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+  }
+
+  /* Toggle button: 40px icon only */
+  .calendar-page .btn-secondary.cal-panel-toggle {
+    width: 40px !important;
+    height: 40px !important;
+    padding: 0 !important;
+    flex-shrink: 0;
+    justify-content: center;
+    display: flex !important;
+    align-items: center !important;
+  }
+  .calendar-page .btn-secondary.cal-panel-toggle .hide-on-mobile {
+    display: none !important;
+  }
+
+  /* Print button: hide completely on mobile */
+  .calendar-page .btn-secondary.tour-calendar-print {
+    display: none !important;
+  }
+
+  /* New Booking: 40px icon only */
+  .calendar-page .btn-primary.tour-calendar-new-btn {
+    width: 40px !important;
+    height: 40px !important;
+    padding: 0 !important;
+    min-width: unset !important;
+    flex: none !important;
+    justify-content: center;
+    align-items: center;
+    border-radius: 11px;
+  }
+
+  /* Search: full width on its own row */
+  .calendar-page .tour-calendar-search {
+    width: 100% !important;
+    order: 3 !important;
+    flex-basis: 100% !important;
+    height: 40px;
+    min-height: 40px;
+    margin-top: 0;
+  }
+  .calendar-page .app-search-lg {
+    height: 40px;
+  }
+
+  /* ── Stats: 2 columns grid with symmetrical cards ── */
+  .calendar-page .app-stat-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .calendar-page .app-stat-card {
+    min-height: 58px;
+    padding: 8px 12px;
+    gap: 8px;
+    border-radius: 12px;
+  }
+  .calendar-page .app-stat-card .stat-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
+  }
+  .calendar-page .app-stat-card .stat-value {
+    font-size: 0.95rem;
+    line-height: 1.1;
+  }
+  .calendar-page .app-stat-card .stat-label {
+    font-size: 0.58rem;
+    line-height: 1.1;
+  }
+  /* Est. Pendapatan & Breakdown: span 2 columns to avoid empty space */
+  .calendar-page .app-stat-grid > .app-stat-card:nth-child(3),
+  .calendar-page .app-stat-card.stat-breakdown {
+    grid-column: 1 / -1;
+  }
+
+  /* ── Smart Panel: horizontal chips flex row ── */
+  .calendar-page .app-smart-panel {
+    padding: 12px;
+    border-radius: 14px;
+    flex: 0 0 auto;
+  }
+  .calendar-page .app-smart-panel .smart-head {
+    margin-bottom: 8px;
+  }
+  .calendar-page .cal-slot-list {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: stretch !important;
+    gap: 8px !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    padding-bottom: 4px !important;
+    max-width: 100% !important;
+    scrollbar-width: none !important;
+  }
+  .calendar-page .cal-slot-list::-webkit-scrollbar {
+    display: none !important;
+  }
+  .calendar-page .cal-slot-chip {
+    flex: 0 0 130px !important;
+    width: 130px !important;
+    min-width: 130px !important;
+    max-width: 130px !important;
+    padding: 8px 10px !important;
+    border-radius: 10px;
+  }
+
+  /* ── Calendar: grid dominan dengan horizontal scroll ── */
+  .calendar-page .calendar-container {
+    min-width: 0;
+    width: 100%;
+    min-height: 0;
+    overflow: visible;
+    border-radius: 16px;
+    padding: 0;
+  }
+  .calendar-page .monthly-grid-wrapper {
+    min-width: 0;
+    width: 100%;
+    min-height: 380px;
+    max-height: none !important;
+    overflow-x: auto;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .calendar-page .monthly-grid {
+    padding-bottom: calc(90px + env(safe-area-inset-bottom, 0px));
+    min-width: 0;
+  }
+
+  /* ── Toolbar: sticky, compact column ── */
+  .calendar-page .calendar-toolbar {
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    flex-direction: column !important;
+    gap: 9px;
+    padding: 12px 14px 10px;
+    min-height: unset;
+    background: rgba(12, 12, 18, 0.94);
+    backdrop-filter: blur(16px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    border-radius: 16px 16px 0 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  }
+  .calendar-page .date-navigation {
+    gap: 8px;
+    width: 100%;
+    justify-content: center;
+  }
+  .calendar-page .current-month {
+    font-size: 0.9rem;
+    min-width: 130px;
+    text-align: center;
+  }
+  .calendar-page .today-btn {
+    padding: 5px 12px;
+    font-size: 0.75rem;
+    border-radius: 20px;
+  }
+  .calendar-page .toolbar-right {
+    flex-direction: column !important;
+    gap: 7px;
+    align-items: stretch;
+    justify-content: stretch;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+  }
+  .calendar-page .view-switcher {
+    width: 100%;
+    justify-content: stretch;
+    border-radius: 11px;
+    padding: 3px;
+  }
+  .calendar-page .view-btn {
+    flex: 1;
+    justify-content: center;
+    padding: 7px 8px;
+    font-size: 0.78rem;
+    border-radius: 8px;
+    gap: 4px;
+  }
+  .calendar-page .quick-filters {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: visible;
+    justify-content: flex-start;
+    gap: 6px;
+    padding-bottom: 2px;
+    max-width: 100%;
+  }
+  .calendar-page .quick-filters::-webkit-scrollbar { display: none; }
+  .calendar-page .filter-chip {
+    flex-shrink: 0;
+    padding: 5px 10px;
+    font-size: 0.72rem;
+    border-radius: 22px;
+    white-space: nowrap;
+    height: 30px;
+  }
 }
