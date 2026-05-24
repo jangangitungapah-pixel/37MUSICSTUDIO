@@ -1805,7 +1805,6 @@ body.calendar-move-lock .main-content {
   border-bottom-color: rgba(0,0,0,0.08);
 }
 
-<<<<<<< HEAD
 /* ==========================================================
    DESKTOP SCOPED OVERRIDES
    Targetted fixes applied only to .calendar-page context.
@@ -1859,7 +1858,7 @@ body.calendar-move-lock .main-content {
 .calendar-page .breakdown-items {
   display: flex;
   flex-direction: row;
-=======
+}
 
 /* ══════════════════════════════════════════
    CALENDAR HEADER
@@ -1875,12 +1874,11 @@ body.calendar-move-lock .main-content {
 
 .calendar-header-actions {
   display: flex;
->>>>>>> ff5a97bf8fef49f731b04be0adf8e953a53a2735
   align-items: center;
   gap: 12px;
   flex-wrap: wrap;
 }
-<<<<<<< HEAD
+
 .calendar-page .breakdown-item {
   margin-bottom: 0 !important;
 }
@@ -2226,7 +2224,7 @@ body.calendar-move-lock .main-content {
     border-radius: 22px;
     white-space: nowrap;
     height: 30px;
-=======
+  }
 
 .calendar-header-search {
   width: clamp(240px, 24vw, 360px);
@@ -2236,6 +2234,5 @@ body.calendar-move-lock .main-content {
   .calendar-header-search {
     width: 100%;
     order: 3;
->>>>>>> ff5a97bf8fef49f731b04be0adf8e953a53a2735
   }
 }

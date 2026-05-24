@@ -60,6 +60,24 @@
   --ls-caps:    0.12em;
 }
 
+[data-theme="light"] {
+  --bg-dark: #f0f2f5;
+  --bg-surface: #ffffff;
+  --bg-surface-hover: #f9fafb;
+
+  --text-primary: #1e293b;
+  --text-secondary: #475569;
+  --text-muted: #64748b;
+  --text-faint: #94a3b8;
+
+  --border-light: rgba(0, 0, 0, 0.08);
+  --border-focus: rgba(255, 42, 95, 0.4);
+
+  --glass-bg: rgba(255, 255, 255, 0.85);
+  --glass-border: rgba(0, 0, 0, 0.05);
+  --shadow-neon: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
 /* ─── Reset ─── */
 *, *::before, *::after {
   box-sizing: border-box;
@@ -1594,13 +1612,18 @@ input:not([type="checkbox"]):not([type="radio"]):focus, select:focus, textarea:f
 }
 
 .app-smart-panel {
-  background: linear-gradient(180deg, rgba(23, 23, 29, 0.8), rgba(20, 20, 26, 0.95));
+  background: var(--bg-surface);
   border: 1px solid var(--glass-border);
   border-radius: 16px;
   padding: 24px;
   display: flex;
   flex-direction: column;
   gap: 16px;
+}
+
+[data-theme="light"] .smart-item {
+  background: rgba(0, 0, 0, 0.03) !important;
+  border-color: rgba(0, 0, 0, 0.08) !important;
 }
 
 .app-table-panel {

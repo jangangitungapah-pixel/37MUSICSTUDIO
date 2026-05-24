@@ -15,7 +15,7 @@
   min-height: 100vh;
   background: var(--bg-color);
   color: var(--text-main);
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: var(--font-body);
   overflow-x: hidden;
   position: relative;
 }
@@ -79,6 +79,7 @@
 .nav-brand .brand-text {
   font-size: 1.3rem;
   font-weight: 800;
+  font-family: var(--font-display);
   letter-spacing: 0.5px;
   color: var(--text-main);
   background: linear-gradient(90deg, #fff, #a5b4fc);
@@ -406,11 +407,12 @@
 }
 
 .hero-title {
-  font-size: clamp(3rem, 7vw, 5.5rem);
-  font-weight: 800;
-  line-height: 1.1;
+  font-size: clamp(3.2rem, 7.5vw, 6rem);
+  font-weight: 900;
+  font-family: var(--font-display);
+  line-height: 1.05;
   margin-bottom: 24px;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.03em;
 }
 
 .text-gradient {
@@ -424,7 +426,8 @@
   color: var(--text-muted);
   margin-bottom: 48px;
   max-width: 650px;
-  line-height: 1.6;
+  line-height: 1.65;
+  font-weight: 400;
 }
 
 .hero-buttons {
@@ -516,8 +519,10 @@
   margin-bottom: 70px;
 }
 .section-header h2 {
-  font-size: 2.8rem;
+  font-size: 3rem;
   font-weight: 800;
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
   margin-bottom: 16px;
   color: var(--text-main);
 }
@@ -573,8 +578,10 @@
 }
 
 .feature-card h3 {
-  font-size: 1.4rem;
-  font-weight: 700;
+  font-size: 1.5rem;
+  font-weight: 800;
+  font-family: var(--font-display);
+  letter-spacing: -0.01em;
   margin-bottom: 16px;
   color: var(--text-main);
 }
@@ -634,8 +641,10 @@
 .pricing-info { position: relative; z-index: 2; }
 
 .pricing-info h2 {
-  font-size: 2.2rem;
+  font-size: 2.4rem;
   font-weight: 800;
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
   color: var(--text-main);
   margin-bottom: 24px;
 }
@@ -648,7 +657,7 @@
   margin-bottom: 32px;
 }
 .price-currency { font-size: 1.8rem; font-weight: 700; color: var(--text-muted); }
-.price-amount { font-size: 5rem; font-weight: 800; color: var(--accent-pink); line-height: 1; letter-spacing: -2px;}
+.price-amount { font-size: 5.5rem; font-weight: 900; font-family: var(--font-display); color: var(--accent-pink); line-height: 1; letter-spacing: -0.04em;}
 .price-unit { font-size: 1.2rem; font-weight: 600; color: var(--text-muted); }
 
 .pricing-info p {
