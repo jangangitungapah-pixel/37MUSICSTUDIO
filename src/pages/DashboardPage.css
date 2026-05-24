@@ -785,12 +785,12 @@
 [data-theme="light"] .dash-alert-chip.info    { background: rgba(0, 153, 187, 0.08); border-color: rgba(0, 153, 187, 0.2); color: #0089a8; }
 [data-theme="light"] .dash-alert-chip.success { background: rgba(56, 142, 60, 0.08); border-color: rgba(56, 142, 60, 0.2); color: #2e7d32; }
 
-[data-theme="light"] .dash-smart-card {
-  background: rgba(255, 255, 255, 0.9);
+[data-theme="light"] .dash-stat-card {
+  background: var(--bg-surface);
   border-color: rgba(0, 0, 0, 0.07);
   box-shadow: 0 2px 14px rgba(0, 0, 0, 0.05);
 }
-[data-theme="light"] .dash-smart-card:hover {
+[data-theme="light"] .dash-stat-card:hover {
   box-shadow: 0 8px 28px rgba(0, 0, 0, 0.1);
 }
 [data-theme="light"] .dash-smart-icon.cyan   { background: rgba(0, 153, 187, 0.1); color: #0099bb; border-color: rgba(0, 153, 187, 0.18); }

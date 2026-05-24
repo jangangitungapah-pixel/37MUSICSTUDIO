@@ -1879,10 +1879,28 @@ body.calendar-move-lock .main-content {
 .calendar-page .breakdown-items {
   display: flex;
   flex-direction: row;
+=======
+
+/* ══════════════════════════════════════════
+   CALENDAR HEADER
+   ══════════════════════════════════════════ */
+.calendar-page-header {
+  flex-shrink: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.calendar-header-actions {
+  display: flex;
+>>>>>>> ff5a97bf8fef49f731b04be0adf8e953a53a2735
   align-items: center;
   gap: 12px;
   flex-wrap: wrap;
 }
+<<<<<<< HEAD
 .calendar-page .breakdown-item {
   margin-bottom: 0 !important;
 }
@@ -2228,5 +2246,16 @@ body.calendar-move-lock .main-content {
     border-radius: 22px;
     white-space: nowrap;
     height: 30px;
+=======
+
+.calendar-header-search {
+  width: clamp(240px, 24vw, 360px);
+}
+
+@media (max-width: 768px) {
+  .calendar-header-search {
+    width: 100%;
+    order: 3;
+>>>>>>> ff5a97bf8fef49f731b04be0adf8e953a53a2735
   }
 }
