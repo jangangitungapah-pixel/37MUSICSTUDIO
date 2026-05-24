@@ -1132,8 +1132,6 @@
     position: static;
     padding: 2px 0 12px;
     overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
     background: transparent;
     border: none;
     box-shadow: none;

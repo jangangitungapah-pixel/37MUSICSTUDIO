@@ -163,7 +163,7 @@ const MaintenancePage = () => {
             <p>{usageInsights.studioHours30d} jam pemakaian studio dalam 30 hari terakhir.</p>
           </div>
         </div>
-        <div className="smart-list" style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '12px'}}>
+        <div className="smart-list app-smart-grid cols-auto">
           {usageInsights.recommendations.slice(0, 3).map(({ item, label, reason, daysToService }) => (
             <div key={item.id} className={`smart-item ${label.toLowerCase()}`} style={{display: 'flex', flexDirection: 'column', alignItems: 'flex-start', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', padding: '12px 16px', position: 'relative'}}>
               <strong style={{display: 'block', fontSize: '0.9rem', color: 'var(--text-primary)', marginBottom: '4px'}}>{item.name}</strong>

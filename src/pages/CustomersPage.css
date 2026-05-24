@@ -1074,8 +1074,8 @@ tr:hover
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 14px;
-  border-radius: 13px;
+  padding: 10px 12px;
+  border-radius: 12px;
   cursor: pointer;
   transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
   border: 1px solid rgba(255, 255, 255, 0.05);
@@ -1283,8 +1283,8 @@ tr:hover
   .detail-panel-footer { padding: 10px 16px 14px; }
   .btn-edit-full { padding: 10px; font-size: 0.82rem; border-radius: 10px; }
 
-  .filter-tabs { overflow-x: auto; padding: 0 12px; }
-  .filter-tab { padding: 10px 14px; font-size: 0.82rem; white-space: nowrap; }
+  .filter-tabs { overflow-x: auto !important; padding: 0 12px !important; margin: 0 -12px !important; }
+  .filter-tab { padding: 10px 14px !important; font-size: 0.82rem !important; white-space: nowrap; }
 
   .customer-avatar { width: 34px; height: 34px; font-size: 0.95rem; border-radius: 8px; }
 

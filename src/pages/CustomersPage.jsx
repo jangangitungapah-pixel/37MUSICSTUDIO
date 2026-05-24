@@ -223,7 +223,7 @@ const CustomersPage = () => {
             <p>Sistem analitik cerdas pelanggan</p>
           </div>
         </div>
-        <div className="smart-list" style={{display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px'}}>
+        <div className="smart-list app-smart-grid cols-3">
           <div className="smart-item" style={{display: 'block'}}>
             <div style={{display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--accent-cyan)', marginBottom: '8px', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em'}}>
               <Clock size={14} /> Perlu Retensi
@@ -425,7 +425,9 @@ const CustomersPage = () => {
                         {customer.name.charAt(0).toUpperCase()}
                       </div>
                       <div className="mobile-card-info">
-                        <span className="customer-name">{customer.name}</span>
+                        <div style={{display: 'flex', alignItems: 'center', gap: '6px'}}>
+                          <span className="customer-name">{customer.name}</span>
+                          </div>
                         <span className="mobile-card-phone"><Phone size={11} /> {customer.phone || '-'}</span>
                         <div className="mobile-card-meta">
                           <span className="mobile-meta-tag bookings">{customer.totalBookings}× booking</span>

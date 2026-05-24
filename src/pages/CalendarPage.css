@@ -114,8 +114,8 @@
   position: fixed;
   inset: 0;
   background: rgba(8, 8, 14, 0.7) !important;
-  backdrop-filter: blur(10px) !important;
   -webkit-backdrop-filter: blur(10px) !important;
+  backdrop-filter: blur(10px) !important;
   z-index: 10000;
   animation: calOverlayFadeIn 0.2s ease-out;
 }
@@ -666,7 +666,6 @@
   display: grid;
   flex: 1;
   overflow: auto;
-  -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
 }
 .monthly-grid-wrapper.is-resize-active,
@@ -676,6 +675,7 @@
   touch-action: none;
   overscroll-behavior: none;
   -webkit-overflow-scrolling: auto;
+  -webkit-user-select: none;
   user-select: none;
 }
 body.calendar-resize-lock,
@@ -796,6 +796,7 @@ body.calendar-move-lock .main-content {
   background-color: var(--surface-light);
   border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  -webkit-user-select: none;
   user-select: none;
   animation-duration: 200ms;
   animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
@@ -861,8 +862,8 @@ body.calendar-move-lock .main-content {
   z-index: 10;
   background: linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.1));
   touch-action: none;
-  user-select: none;
   -webkit-user-select: none;
+  user-select: none;
   -webkit-touch-callout: none;
   transition: background 0.16s ease, transform 0.16s ease;
 }
@@ -974,6 +975,7 @@ body.calendar-move-lock .main-content {
   gap: 4px;
   border: 1px solid rgba(255, 255, 255, 0.22);
   background: rgba(20, 20, 27, 0.92);
+  -webkit-backdrop-filter: blur(18px);
   backdrop-filter: blur(18px);
   box-shadow: 0 18px 45px rgba(0, 0, 0, 0.36), 0 0 22px rgba(0, 240, 255, 0.18);
   color: var(--text-primary);
@@ -1006,6 +1008,7 @@ body.calendar-move-lock .main-content {
   display: flex;
   flex-direction: column;
   gap: 3px;
+  -webkit-backdrop-filter: blur(18px);
   backdrop-filter: blur(18px);
   border: 1px solid rgba(255, 255, 255, 0.12);
   background: rgba(20, 20, 27, 0.92);
@@ -1300,11 +1303,11 @@ body.calendar-move-lock .main-content {
 [data-theme="light"] .view-btn.active   { background: var(--accent-pink); color: #fff; }
 
 [data-theme="light"] .stat-card {
-  background: rgba(255,255,255,0.9);
-  border-color: rgba(0,0,0,0.07);
-  box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+  background: #ffffff;
+  border-color: rgba(0,0,0,0.06);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.03);
 }
-[data-theme="light"] .stat-card:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
+[data-theme="light"] .stat-card:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.08); transform: translateY(-2px); }
 
 [data-theme="light"] .cal-smart-panel {
   background: rgba(255,255,255,0.88);
@@ -1326,14 +1329,15 @@ body.calendar-move-lock .main-content {
 }
 [data-theme="light"] .cal-slot-chip span { color: #0099bb; }
 [data-theme="light"] .cal-smart-alert {
-  background: rgba(230,81,0,0.07);
-  border-color: rgba(230,81,0,0.15);
-  color: #e65100;
+  background: rgba(255, 152, 0, 0.08);
+  border-color: rgba(255, 152, 0, 0.25);
+  color: #d84315;
 }
 
 [data-theme="light"] .calendar-container {
-  background: rgba(255,255,255,0.88);
-  border-color: rgba(0,0,0,0.08);
+  background: #ffffff;
+  border-color: rgba(0,0,0,0.06);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.04);
 }
 [data-theme="light"] .calendar-toolbar {
   background: rgba(0,0,0,0.03);
@@ -1350,29 +1354,29 @@ body.calendar-move-lock .main-content {
   border-color: #0099bb;
 }
 [data-theme="light"] .filter-chip {
-  background: rgba(0,0,0,0.04);
-  border-color: rgba(0,0,0,0.09);
+  background: transparent;
+  border-color: rgba(0,0,0,0.15);
   color: var(--text-secondary);
 }
 [data-theme="light"] .filter-chip:hover {
-  background: rgba(0,0,0,0.07);
+  background: rgba(0,0,0,0.04);
   color: var(--text-primary);
 }
-[data-theme="light"] .filter-chip.active { background: rgba(0,0,0,0.06); border-color: rgba(0,0,0,0.2); color: var(--text-primary); }
-[data-theme="light"] .filter-chip.active.confirmed { border-color: #388e3c; background: rgba(56,142,60,0.08); color: #388e3c; }
-[data-theme="light"] .filter-chip.active.dp        { border-color: #b8860b; background: rgba(184,134,11,0.08); color: #b8860b; }
+[data-theme="light"] .filter-chip.active { background: #ffffff; border-color: rgba(0,0,0,0.25); color: var(--text-primary); box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+[data-theme="light"] .filter-chip.active.confirmed { border-color: #2e7d32; background: #e8f5e9; color: #2e7d32; }
+[data-theme="light"] .filter-chip.active.dp        { border-color: #f57f17; background: #fff8e1; color: #f57f17; }
 [data-theme="light"] .filter-chip.active.pending   { border-color: #e8194e; background: rgba(232,25,78,0.08); color: #e8194e; }
 
 [data-theme="light"] .grid-corner-cell,
 [data-theme="light"] .grid-header-cell,
 [data-theme="light"] .time-label,
-[data-theme="light"] .time-label.even-row { background: #eef0f6; }
+[data-theme="light"] .time-label.even-row { background: #f8f9fa; color: var(--text-secondary); }
 
-[data-theme="light"] .grid-header-cell { border-bottom-color: rgba(0,0,0,0.1); border-right-color: rgba(0,0,0,0.04); }
-[data-theme="light"] .grid-header-cell.today { background: rgba(0,153,187,0.05); }
-[data-theme="light"] .grid-header-cell.today .day-number { background: #0099bb; color: #fff; box-shadow: 0 0 12px rgba(0,153,187,0.3); }
-[data-theme="light"] .grid-cell { border-right-color: rgba(0,0,0,0.04); border-bottom-color: rgba(0,0,0,0.04); }
-[data-theme="light"] .grid-cell.even-row { background: rgba(0,0,0,0.015); }
+[data-theme="light"] .grid-header-cell { border-bottom-color: rgba(0,0,0,0.08); border-right-color: rgba(0,0,0,0.06); }
+[data-theme="light"] .grid-header-cell.today { background: rgba(0,153,187,0.06); }
+[data-theme="light"] .grid-header-cell.today .day-number { background: #0099bb; color: #ffffff; box-shadow: 0 4px 12px rgba(0,153,187,0.3); }
+[data-theme="light"] .grid-cell { border-right-color: rgba(0,0,0,0.05); border-bottom-color: rgba(0,0,0,0.05); }
+[data-theme="light"] .grid-cell.even-row { background: rgba(0,0,0,0.01); }
 [data-theme="light"] .grid-cell.today-col-highlight { background: rgba(0,153,187,0.04) !important; }
 [data-theme="light"] .empty-cell:hover { background: rgba(0,0,0,0.03) !important; }
 
@@ -1530,8 +1534,6 @@ body.calendar-move-lock .main-content {
     overflow-x: auto;
     gap: 7px;
     padding-bottom: 4px;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
   }
   .cal-slot-list::-webkit-scrollbar { display: none; }
   .cal-slot-chip {
@@ -1564,8 +1566,8 @@ body.calendar-move-lock .main-content {
     gap: 9px;
     padding: 12px 14px 10px;
     background: rgba(12, 12, 18, 0.94);
-    backdrop-filter: blur(16px) saturate(180%);
     -webkit-backdrop-filter: blur(16px) saturate(180%);
+  backdrop-filter: blur(16px) saturate(180%);
     border-radius: 16px 16px 0 0;
     border-bottom: 1px solid rgba(255, 255, 255, 0.06);
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
@@ -1690,8 +1692,8 @@ body.calendar-move-lock .main-content {
     border-radius: 16px !important;
     box-shadow: 0 12px 40px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.08) !important;
     background: rgba(16,16,22,0.98) !important;
-    backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
     padding-bottom: 8px !important;
   }
   .booking-detail-popup::before { display: none !important; }
@@ -1977,7 +1979,6 @@ body.calendar-move-lock .main-content {
   overflow-x: auto;
   gap: 6px;
   max-width: min(46vw, 620px);
-  scrollbar-width: none;
 }
 .calendar-page .quick-filters::-webkit-scrollbar { display: none; }
 .calendar-page .view-switcher {
@@ -2168,8 +2169,7 @@ body.calendar-move-lock .main-content {
     max-height: none !important;
     overflow-x: auto;
     overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-  }
+    }
   .calendar-page .monthly-grid {
     padding-bottom: calc(90px + env(safe-area-inset-bottom, 0px));
     min-width: 0;
@@ -2185,8 +2185,8 @@ body.calendar-move-lock .main-content {
     padding: 12px 14px 10px;
     min-height: unset;
     background: rgba(12, 12, 18, 0.94);
-    backdrop-filter: blur(16px) saturate(180%);
     -webkit-backdrop-filter: blur(16px) saturate(180%);
+  backdrop-filter: blur(16px) saturate(180%);
     border-radius: 16px 16px 0 0;
     border-bottom: 1px solid rgba(255, 255, 255, 0.06);
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);

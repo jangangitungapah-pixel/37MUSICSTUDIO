@@ -482,7 +482,7 @@ const FinancePage = () => {
             <p>Proyeksi berbasis kas masuk berjalan, booking bulan ini, dan piutang aktif.</p>
           </div>
         </div>
-        <div className="smart-list" style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px'}}>
+        <div className="smart-list app-smart-grid cols-2">
           <div className="smart-item">
             <span style={{fontSize: '0.75rem', color: 'var(--text-muted)'}}>Kas saat ini</span>
             <strong style={{fontSize: '1rem', color: 'var(--text-primary)'}}>{formatCurrency(revenueForecast.currentIncome)}</strong>
@@ -510,7 +510,7 @@ const FinancePage = () => {
             <p>Cocokkan nilai booking, kas diterima, piutang, dan pemasukan manual pada {periodLabel.toLowerCase()}.</p>
           </div>
         </div>
-        <div className="smart-list" style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px'}}>
+        <div className="smart-list app-smart-grid cols-2">
           <div className="smart-item">
             <span style={{fontSize: '0.75rem', color: 'var(--text-muted)'}}>Nilai booking</span>
             <strong style={{fontSize: '1rem', color: 'var(--text-primary)'}}>{formatCurrency(reconciliation.bookedValue)}</strong>

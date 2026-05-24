@@ -216,6 +216,7 @@
   color: var(--text-muted);
   font-size: 0.88rem;
   font-weight: 600;
+  -webkit-user-select: none;
   user-select: none;
 }
 

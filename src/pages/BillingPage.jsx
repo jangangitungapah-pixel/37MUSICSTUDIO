@@ -259,7 +259,7 @@ const BillingPage = () => {
             <p>{billingInsights.summary}</p>
           </div>
         </div>
-        <div className="smart-list" style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '12px'}}>
+        <div className="smart-list app-smart-grid cols-auto">
           {billingInsights.openInvoices.slice(0, 3).map((invoice) => (
             <div key={invoice.id} className={`smart-item ${invoice.urgency}`} style={{display: 'flex', flexDirection: 'column', alignItems: 'flex-start', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', padding: '12px 16px', position: 'relative'}}>
               <div style={{width: '100%'}}>

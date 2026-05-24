@@ -252,147 +252,6 @@ const DashboardPage = () => {
         </div>
       </MotionSection>
 
-      {/* ===== Smart Insights ===== */}
-      <MotionSection direction="up" className="app-smart-panel dash-smart-grid" style={{flexDirection: 'row', gap: '12px', flexWrap: 'wrap'}}>
-        <MotionListItem as="div" className="smart-item" style={{flex: 1}}>
-          <div className="smart-head" style={{color: 'var(--accent-cyan)'}}>
-            <Lightbulb size={16} />
-            <span style={{fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em'}}>Pola Booking</span>
-          </div>
-          <strong style={{fontSize: '0.92rem', color: 'var(--text-primary)'}}>{demandInsights.busiestDayCount > 0 ? `${demandInsights.busiestDay}, ${demandInsights.busiestHour}.00` : 'Belum ada pola'}</strong>
-          <small style={{fontSize: '0.72rem', color: 'var(--text-secondary)'}}>{demandInsights.favoriteDuration ? `Durasi favorit ${demandInsights.favoriteDuration} jam, okupansi ${demandInsights.occupancyPercent}%` : 'Butuh data booking untuk membaca tren.'}</small>
-        </MotionListItem>
-        <MotionListItem as="div" className="smart-item" style={{flex: 1}}>
-          <div className="smart-head" style={{color: '#4CAF50'}}>
-            <Wallet size={16} />
-            <span style={{fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em'}}>Forecast Bulan Ini</span>
-          </div>
-          <strong style={{fontSize: '0.92rem', color: 'var(--text-primary)'}}>{formatCurrency(revenueForecast.conservativeForecast)}</strong>
-          <small style={{fontSize: '0.72rem', color: 'var(--text-secondary)'}}>Optimistis {formatCurrency(revenueForecast.optimisticForecast)} termasuk sisa tagihan.</small>
-        </MotionListItem>
-        <MotionListItem as="div" className="smart-item" style={{flex: 1}}>
-          <div className="smart-head" style={{color: '#FFA000'}}>
-            <Clock size={16} />
-            <span style={{fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em'}}>Follow-up Billing</span>
-          </div>
-          <strong style={{fontSize: '0.92rem', color: 'var(--text-primary)'}}>{billingInsights.followUpsToday.length} prioritas hari ini</strong>
-          <small style={{fontSize: '0.72rem', color: 'var(--text-secondary)'}}>{billingInsights.summary}</small>
-        </MotionListItem>
-        <MotionListItem as="div" className="smart-item" style={{flex: 1}}>
-          <div className="smart-head" style={{color: anomalies.length ? 'var(--accent-pink)' : '#4CAF50'}}>
-            <Activity size={16} />
-            <span style={{fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em'}}>Anomali Data</span>
-          </div>
-          <strong style={{fontSize: '0.92rem', color: 'var(--text-primary)'}}>{anomalies.length ? `${anomalies.length} perlu dicek` : 'Tidak ada anomali'}</strong>
-          <small style={{fontSize: '0.72rem', color: 'var(--text-secondary)'}}>{anomalies[0]?.detail || 'Harga, DP, jam, dan overlap jadwal terlihat normal.'}</small>
-        </MotionListItem>
-      </MotionSection>
-
-      {/* ===== Operational Command Center ===== */}
-      <MotionSection direction="up" delay={0.1} className="dash-command-grid">
-        <section className="dash-command-panel glass-panel">
-          <div className="dash-command-head">
-            <div className="dash-command-title">
-              <Inbox size={17} />
-              <div>
-                <h3>Request Publik</h3>
-                <p>{pendingRequests.length} menunggu keputusan</p>
-              </div>
-            </div>
-            <button className="dash-mini-link" onClick={() => navigate('/calendar')}>Kalender</button>
-          </div>
-          <div className="dash-work-list">
-            {pendingRequests.slice(0, 3).map((request) => (
-              <div className="dash-work-item" key={request.id}>
-                <div className="dash-work-main">
-                  <strong>{request.band}</strong>
-                  <span>{formatDateShort(request.date)} - {String(request.hour).padStart(2, '0')}:00, {request.duration || 1} jam</span>
-                </div>
-                <div className="dash-work-actions">
-                  <button className="icon-btn success dash-icon-action" onClick={() => handleApproveRequest(request)} title="Approve request">
-                    <CheckCircle2 size={14} />
-                  </button>
-                  <button className="icon-btn delete dash-icon-action" onClick={() => handleRejectRequest(request)} title="Tolak request">
-                    <XCircle size={14} />
-                  </button>
-                </div>
-              </div>
-            ))}
-            {pendingRequests.length === 0 && (
-              <div className="dash-work-empty">
-                <CheckCircle2 size={18} />
-                <span>Tidak ada request baru.</span>
-              </div>
-            )}
-          </div>
-        </section>
-
-        <section className="dash-command-panel glass-panel">
-          <div className="dash-command-head">
-            <div className="dash-command-title">
-              <MessageCircle size={17} />
-              <div>
-                <h3>Tagihan Prioritas</h3>
-                <p>{billingInsights.openInvoices.length} invoice terbuka</p>
-              </div>
-            </div>
-            <button className="dash-mini-link" onClick={() => navigate('/billing')}>Billing</button>
-          </div>
-          <div className="dash-work-list">
-            {billingInsights.openInvoices.slice(0, 3).map((invoice) => (
-              <div className={`dash-work-item urgency-${invoice.urgency}`} key={invoice.id}>
-                <div className="dash-work-main">
-                  <strong>{invoice.band}</strong>
-                  <span>{invoice.daysUntil < 0 ? 'Lewat jadwal' : invoice.daysUntil === 0 ? 'Jadwal hari ini' : invoice.daysUntil === 1 ? 'Jadwal besok' : `H-${invoice.daysUntil}`} - {formatCurrency(invoice.remaining)}</span>
-                </div>
-                <button className="icon-btn cyan dash-icon-action" onClick={() => handleSendBillingReminder(invoice)} title="Kirim reminder WhatsApp">
-                  <Send size={14} />
-                </button>
-              </div>
-            ))}
-            {billingInsights.openInvoices.length === 0 && (
-              <div className="dash-work-empty">
-                <CheckCircle2 size={18} />
-                <span>Semua tagihan tertangani.</span>
-              </div>
-            )}
-          </div>
-        </section>
-
-
-
-        <section className="dash-command-panel glass-panel">
-          <div className="dash-command-head">
-            <div className="dash-command-title">
-              <Wrench size={17} />
-              <div>
-                <h3>Operasional</h3>
-                <p>Servis dan retensi</p>
-              </div>
-            </div>
-            <button className="dash-mini-link" onClick={() => navigate('/maintenance')}>Detail</button>
-          </div>
-          <div className="dash-work-list">
-            {priorityMaintenance.slice(0, 2).map(({ item, label, reason }) => (
-              <button className="dash-work-item as-button" key={item.id} onClick={() => navigate('/maintenance')}>
-                <div className="dash-work-main">
-                  <strong>{item.name}</strong>
-                  <span>{label} - {reason}</span>
-                </div>
-                <Wrench size={14} />
-              </button>
-            ))}
-            <button className="dash-work-item as-button" onClick={() => navigate('/customers')}>
-              <div className="dash-work-main">
-                <strong>{retentionInsights.passiveCustomers.length} pelanggan pasif</strong>
-                <span>{retentionInsights.vipCandidates.length} kandidat VIP, {retentionInsights.promoTargets.length} target promo</span>
-              </div>
-              <Gift size={14} />
-            </button>
-          </div>
-        </section>
-      </MotionSection>
-
       {/* ===== Stats Cards ===== */}
       <div className="app-stat-grid tour-dashboard-stats">
         {/* Revenue */}
@@ -646,4 +505,147 @@ const DashboardPage = () => {
   );
 };
 
-export default DashboardPage;
+export default DashboardPage;
+
+      {/* ===== Smart Insights ===== */}
+      <MotionSection direction="up" className="app-smart-panel app-smart-grid cols-auto">
+        <MotionListItem as="div" className="smart-item">
+          <div className="smart-head" style={{color: 'var(--accent-cyan)'}}>
+            <Lightbulb size={16} />
+            <span style={{fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em'}}>Pola Booking</span>
+          </div>
+          <strong style={{fontSize: '0.92rem', color: 'var(--text-primary)'}}>{demandInsights.busiestDayCount > 0 ? `${demandInsights.busiestDay}, ${demandInsights.busiestHour}.00` : 'Belum ada pola'}</strong>
+          <small style={{fontSize: '0.72rem', color: 'var(--text-secondary)'}}>{demandInsights.favoriteDuration ? `Durasi favorit ${demandInsights.favoriteDuration} jam, okupansi ${demandInsights.occupancyPercent}%` : 'Butuh data booking untuk membaca tren.'}</small>
+        </MotionListItem>
+        <MotionListItem as="div" className="smart-item">
+          <div className="smart-head" style={{color: '#4CAF50'}}>
+            <Wallet size={16} />
+            <span style={{fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em'}}>Forecast Bulan Ini</span>
+          </div>
+          <strong style={{fontSize: '0.92rem', color: 'var(--text-primary)'}}>{formatCurrency(revenueForecast.conservativeForecast)}</strong>
+          <small style={{fontSize: '0.72rem', color: 'var(--text-secondary)'}}>Optimistis {formatCurrency(revenueForecast.optimisticForecast)} termasuk sisa tagihan.</small>
+        </MotionListItem>
+        <MotionListItem as="div" className="smart-item">
+          <div className="smart-head" style={{color: '#FFA000'}}>
+            <Clock size={16} />
+            <span style={{fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em'}}>Follow-up Billing</span>
+          </div>
+          <strong style={{fontSize: '0.92rem', color: 'var(--text-primary)'}}>{billingInsights.followUpsToday.length} prioritas hari ini</strong>
+          <small style={{fontSize: '0.72rem', color: 'var(--text-secondary)'}}>{billingInsights.summary}</small>
+        </MotionListItem>
+        <MotionListItem as="div" className="smart-item">
+          <div className="smart-head" style={{color: anomalies.length ? 'var(--accent-pink)' : '#4CAF50'}}>
+            <Activity size={16} />
+            <span style={{fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em'}}>Anomali Data</span>
+          </div>
+          <strong style={{fontSize: '0.92rem', color: 'var(--text-primary)'}}>{anomalies.length ? `${anomalies.length} perlu dicek` : 'Tidak ada anomali'}</strong>
+          <small style={{fontSize: '0.72rem', color: 'var(--text-secondary)'}}>{anomalies[0]?.detail || 'Harga, DP, jam, dan overlap jadwal terlihat normal.'}</small>
+        </MotionListItem>
+      </MotionSection>
+
+      {/* ===== Operational Command Center ===== */}
+      <MotionSection direction="up" delay={0.1} className="dash-command-grid">
+        <section className="dash-command-panel glass-panel">
+          <div className="dash-command-head">
+            <div className="dash-command-title">
+              <Inbox size={17} />
+              <div>
+                <h3>Request Publik</h3>
+                <p>{pendingRequests.length} menunggu keputusan</p>
+              </div>
+            </div>
+            <button className="dash-mini-link" onClick={() => navigate('/calendar')}>Kalender</button>
+          </div>
+          <div className="dash-work-list">
+            {pendingRequests.slice(0, 3).map((request) => (
+              <div className="dash-work-item" key={request.id}>
+                <div className="dash-work-main">
+                  <strong>{request.band}</strong>
+                  <span>{formatDateShort(request.date)} - {String(request.hour).padStart(2, '0')}:00, {request.duration || 1} jam</span>
+                </div>
+                <div className="dash-work-actions">
+                  <button className="icon-btn success dash-icon-action" onClick={() => handleApproveRequest(request)} title="Approve request">
+                    <CheckCircle2 size={14} />
+                  </button>
+                  <button className="icon-btn delete dash-icon-action" onClick={() => handleRejectRequest(request)} title="Tolak request">
+                    <XCircle size={14} />
+                  </button>
+                </div>
+              </div>
+            ))}
+            {pendingRequests.length === 0 && (
+              <div className="dash-work-empty">
+                <CheckCircle2 size={18} />
+                <span>Tidak ada request baru.</span>
+              </div>
+            )}
+          </div>
+        </section>
+
+        <section className="dash-command-panel glass-panel">
+          <div className="dash-command-head">
+            <div className="dash-command-title">
+              <MessageCircle size={17} />
+              <div>
+                <h3>Tagihan Prioritas</h3>
+                <p>{billingInsights.openInvoices.length} invoice terbuka</p>
+              </div>
+            </div>
+            <button className="dash-mini-link" onClick={() => navigate('/billing')}>Billing</button>
+          </div>
+          <div className="dash-work-list">
+            {billingInsights.openInvoices.slice(0, 3).map((invoice) => (
+              <div className={`dash-work-item urgency-${invoice.urgency}`} key={invoice.id}>
+                <div className="dash-work-main">
+                  <strong>{invoice.band}</strong>
+                  <span>{invoice.daysUntil < 0 ? 'Lewat jadwal' : invoice.daysUntil === 0 ? 'Jadwal hari ini' : invoice.daysUntil === 1 ? 'Jadwal besok' : `H-${invoice.daysUntil}`} - {formatCurrency(invoice.remaining)}</span>
+                </div>
+                <button className="icon-btn cyan dash-icon-action" onClick={() => handleSendBillingReminder(invoice)} title="Kirim reminder WhatsApp">
+                  <Send size={14} />
+                </button>
+              </div>
+            ))}
+            {billingInsights.openInvoices.length === 0 && (
+              <div className="dash-work-empty">
+                <CheckCircle2 size={18} />
+                <span>Semua tagihan tertangani.</span>
+              </div>
+            )}
+          </div>
+        </section>
+
+
+
+        <section className="dash-command-panel glass-panel">
+          <div className="dash-command-head">
+            <div className="dash-command-title">
+              <Wrench size={17} />
+              <div>
+                <h3>Operasional</h3>
+                <p>Servis dan retensi</p>
+              </div>
+            </div>
+            <button className="dash-mini-link" onClick={() => navigate('/maintenance')}>Detail</button>
+          </div>
+          <div className="dash-work-list">
+            {priorityMaintenance.slice(0, 2).map(({ item, label, reason }) => (
+              <button className="dash-work-item as-button" key={item.id} onClick={() => navigate('/maintenance')}>
+                <div className="dash-work-main">
+                  <strong>{item.name}</strong>
+                  <span>{label} - {reason}</span>
+                </div>
+                <Wrench size={14} />
+              </button>
+            ))}
+            <button className="dash-work-item as-button" onClick={() => navigate('/customers')}>
+              <div className="dash-work-main">
+                <strong>{retentionInsights.passiveCustomers.length} pelanggan pasif</strong>
+                <span>{retentionInsights.vipCandidates.length} kandidat VIP, {retentionInsights.promoTargets.length} target promo</span>
+              </div>
+              <Gift size={14} />
+            </button>
+          </div>
+        </section>
+      </MotionSection>
+
+      

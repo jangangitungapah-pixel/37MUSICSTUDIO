@@ -702,7 +702,7 @@ const SettingsPage = () => {
                   <h4 className="duration-discount-title">Paket Sesi Recording</h4>
                   <p className="duration-discount-desc">Tentukan paket kustom untuk sesi recording. Harga paket bersifat tetap dan tidak menggunakan perhitungan tarif per jam.</p>
                   
-                  <div className="duration-discount-form" style={{ gridTemplateColumns: '1fr 80px 120px 100px' }}>
+                  <div className="duration-discount-form">
                     <div className="dd-input-group">
                       <label className="bf-label">Nama Paket</label>
                       <input 
@@ -798,7 +798,7 @@ const SettingsPage = () => {
                   <h4 className="duration-discount-title">Jam Operasional Harian</h4>
                   <p className="duration-discount-desc">Menentukan ketersediaan slot di Kalender Publik dan Admin.</p>
                   
-                  <div className="duration-discount-form" style={{ gridTemplateColumns: '1fr 1fr' }}>
+                  <div className="duration-discount-form">
                     <div className="dd-input-group">
                       <label className="bf-label">Jam Buka</label>
                       <select 
@@ -837,7 +837,7 @@ const SettingsPage = () => {
                   <h4 className="duration-discount-title">Hari Libur (Block Dates)</h4>
                   <p className="duration-discount-desc">Tanggal yang diblokir akan ditutup secara publik. Admin tetap dapat mengaksesnya jika dibutuhkan.</p>
                   
-                  <div className="duration-discount-form" style={{ gridTemplateColumns: '1fr auto' }}>
+                  <div className="duration-discount-form">
                     <div className="dd-input-group">
                       <label className="bf-label">Pilih Tanggal</label>
                       <input 
