@@ -6,7 +6,7 @@ import { useBookingRequestStore } from '../store/useBookingRequestStore';
 import { useSettingsStore } from '../store/useSettingsStore';
 import {
   ChevronLeft, ChevronRight, LogOut, Phone, MessageCircle,
-  Plus, CalendarDays, Clock, Info, X
+  Plus, CalendarDays, Clock, Info, X, Moon, Sun
 } from 'lucide-react';
 import {
   format, addMonths, subMonths, startOfMonth, endOfMonth,
@@ -15,6 +15,7 @@ import {
 } from 'date-fns';
 import { id as localeId } from 'date-fns/locale';
 import { useNotificationStore } from '../store/useNotificationStore';
+import { useThemeStore } from '../store/useThemeStore';
 import { AnimatePresence, motion } from 'framer-motion';
 import { modalPreset, overlayVariants } from '../animations';
 import MotionSection from '../components/animation/MotionSection';
@@ -23,6 +24,7 @@ import './PublicCalendarPage.css';
 const PublicCalendarPage = () => {
   const navigate = useNavigate();
   const { user, logout, loginGuest, isAuthLoaded, loading: authLoading } = useAuthStore();
+  const { theme, toggleTheme } = useThemeStore();
   const { bookings } = useBookingStore();
   const { addRequest } = useBookingRequestStore();
   const { studioName, studioPhone, pricePerHour, durationDiscounts = [], operationalHours = { start: 10, end: 23 }, blockedDates = [] } = useSettingsStore();
@@ -257,6 +259,16 @@ const PublicCalendarPage = () => {
             <button className="btn-ghost" onClick={handleExitPublic} title="Kembali ke beranda">
               <LogOut size={16} />
               <span>Kembali</span>
+            </button>
+
+            <button
+              type="button"
+              className="pc-theme-btn"
+              onClick={toggleTheme}
+              title={theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
+              aria-label={theme === 'dark' ? 'Aktifkan Light Mode' : 'Aktifkan Dark Mode'}
+            >
+              {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
             </button>
           </div>
         </div>

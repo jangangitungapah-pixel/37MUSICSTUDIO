@@ -3,10 +3,12 @@ import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Music2, Calendar, MapPin, Mic2, Star, ChevronRight, Activity, 
-  Clock3, Headphones, MessageCircle, Mail, Lock, Eye, EyeOff, AlertCircle, Loader2
+  Clock3, Headphones, MessageCircle, Mail, Lock, Eye, EyeOff, AlertCircle, Loader2,
+  Moon, Sun
 } from 'lucide-react';
 import { useSettingsStore } from '../store/useSettingsStore';
 import { useAuthStore } from '../store/useAuthStore';
+import { useThemeStore } from '../store/useThemeStore';
 import { dropdownPreset } from '../animations';
 import MotionButton from '../components/animation/MotionButton';
 import MotionSection from '../components/animation/MotionSection';
@@ -18,6 +20,7 @@ import './LandingPage.css';
 const LandingPage = () => {
   const { studioName, studioAddress, studioPhone, pricePerHour } = useSettingsStore();
   const { user, isAuthLoaded, login, error, loading, clearError } = useAuthStore();
+  const { theme, toggleTheme } = useThemeStore();
   const navigate = useNavigate();
 
   const [isLoginOpen, setIsLoginOpen] = useState(false);
@@ -74,6 +77,15 @@ const LandingPage = () => {
           <a href="#location">Lokasi</a>
         </div>
         <div className="nav-actions">
+          <MotionButton
+            type="button"
+            className="nav-theme-btn"
+            onClick={toggleTheme}
+            title={theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
+            aria-label={theme === 'dark' ? 'Aktifkan Light Mode' : 'Aktifkan Dark Mode'}
+          >
+            {theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />}
+          </MotionButton>
           <MotionButton 
             type="button"
             className={`nav-login-btn ${isLoginOpen ? 'active' : ''}`}

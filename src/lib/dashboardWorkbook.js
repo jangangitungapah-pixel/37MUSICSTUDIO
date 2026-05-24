@@ -250,7 +250,6 @@ const addSummarySheet = (workbook, context) => {
     pricePerHour,
     studioName,
     today,
-    operationalHours,
   } = context;
 
   const worksheet = workbook.addWorksheet('Ringkasan', { views: [{ showGridLines: false }] });

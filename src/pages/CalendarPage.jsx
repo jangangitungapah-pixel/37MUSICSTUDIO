@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useRef, useEffect, useCallback } from 'react';
-import { Inbox, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, Plus, Search, CalendarCheck, Clock, DollarSign, Trash2, Phone, StickyNote, X, MessageCircle, TrendingUp, Calendar, LayoutGrid, CalendarDays, Lightbulb, AlertTriangle, CheckCircle2, XCircle, RotateCcw, Printer } from 'lucide-react';
+import { Inbox, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, Plus, Search, CalendarCheck, Clock, DollarSign, Trash2, Phone, StickyNote, X, MessageCircle, TrendingUp, Calendar, LayoutGrid, CalendarDays, AlertTriangle, CheckCircle2, XCircle, RotateCcw, Printer } from 'lucide-react';
 import { format, addMonths, subMonths, startOfMonth, endOfMonth, addDays, subDays, getDay, startOfWeek, endOfWeek, eachDayOfInterval, addWeeks, subWeeks } from 'date-fns';
 import { useBookingStore } from '../store/useBookingStore';
 import { useSettingsStore } from '../store/useSettingsStore';
@@ -11,7 +11,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import * as Tooltip from '@radix-ui/react-tooltip';
 import Modal from '../components/Modal';
 import BookingForm from '../components/BookingForm';
-import { getAnomalies, getDemandInsights } from '../lib/smartInsights';
+import { getAnomalies } from '../lib/smartInsights';
 import { getDepositDeadlineStatus, hasBookingOverlap } from '../lib/bookingWorkflows';
 import { useCalendarBookingMove } from '../hooks/useCalendarBookingMove';
 import { useCalendarBookingResize } from '../hooks/useCalendarBookingResize';
@@ -139,7 +139,6 @@ const CalendarPage = () => {
   const hoursArray = Array.from({ length: endHour - startHour }).map((_, i) => startHour + i);
   const stats = getMonthlyStats(currentDate);
 
-  const demandInsights = useMemo(() => getDemandInsights(bookings), [bookings]);
   const scheduleAnomalies = useMemo(() => getAnomalies(bookings, pricePerHour), [bookings, pricePerHour]);
   const pendingRequests = useMemo(
     () => requests

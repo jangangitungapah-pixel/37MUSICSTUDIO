@@ -247,10 +247,11 @@ function App() {
         richColors
         toastOptions={{
           style: {
-            background: 'rgba(22, 22, 28, 0.95)',
+            background: theme === 'light' ? 'rgba(255, 255, 255, 0.96)' : 'rgba(22, 22, 28, 0.95)',
             backdropFilter: 'blur(16px)',
-            border: '1px solid rgba(255,255,255,0.08)',
-            color: '#ffffff',
+            border: theme === 'light' ? '1px solid rgba(0,0,0,0.08)' : '1px solid rgba(255,255,255,0.08)',
+            color: theme === 'light' ? '#111128' : '#ffffff',
+            boxShadow: theme === 'light' ? '0 12px 32px rgba(17,17,40,0.12)' : 'none',
             fontFamily: 'Outfit, sans-serif',
           },
         }}

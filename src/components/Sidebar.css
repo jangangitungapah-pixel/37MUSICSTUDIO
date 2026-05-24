@@ -564,6 +564,37 @@
     background: rgba(255, 68, 68, 0.1);
   }
 
+  [data-theme="light"] .bottom-nav-bar {
+    background: rgba(255, 255, 255, 0.94);
+    border-top-color: rgba(17, 17, 40, 0.08);
+    box-shadow: 0 -12px 30px rgba(17, 17, 40, 0.08);
+  }
+
+  [data-theme="light"] .bn-indicator {
+    background: rgba(201, 20, 66, 0.1);
+  }
+
+  [data-theme="light"] .bottom-sheet-header {
+    border-bottom-color: rgba(17, 17, 40, 0.08);
+  }
+
+  [data-theme="light"] .sheet-drag-handle {
+    background: rgba(17, 17, 40, 0.18);
+  }
+
+  [data-theme="light"] .sheet-nav-item {
+    background: rgba(17, 17, 40, 0.035);
+    border-color: rgba(17, 17, 40, 0.08);
+  }
+
+  [data-theme="light"] .sheet-nav-item:active {
+    background: rgba(17, 17, 40, 0.07);
+  }
+
+  [data-theme="light"] .sheet-icon {
+    background: rgba(17, 17, 40, 0.05);
+  }
+
   /* Hide desktop sidebar completely on mobile since we use Bottom Nav */
   .sidebar {
     display: none !important;

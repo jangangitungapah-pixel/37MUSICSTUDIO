@@ -10,7 +10,7 @@ import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import {
   TrendingUp, TrendingDown, Users, CalendarCheck, PackageOpen, Clock,
   ArrowRight, AlertTriangle, CheckCircle2, Music2, Lightbulb, Wallet, Activity, Download,
-  Inbox, MessageCircle, CalendarPlus, Wrench, Gift, XCircle, Send
+  Inbox, MessageCircle, Wrench, Gift, XCircle, Send
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import {
