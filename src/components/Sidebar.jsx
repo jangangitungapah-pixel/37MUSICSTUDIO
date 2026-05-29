@@ -101,7 +101,13 @@ const Sidebar = () => {
             </NavLink>
           );
         })}
-        <button className="bn-item" onClick={() => setMobileOpen(true)}>
+        <button 
+          className="bn-item" 
+          onClick={() => setMobileOpen(true)}
+          aria-label="Menu Lainnya"
+          aria-haspopup="dialog"
+          aria-expanded={mobileOpen}
+        >
           <motion.div whileTap={navTap} className="bn-icon-wrapper">
             <MoreHorizontal size={19} />
           </motion.div>
@@ -143,9 +149,13 @@ const Sidebar = () => {
       <aside className={`sidebar glass-panel ${isCollapsed ? 'collapsed' : ''}`}>
         
         {/* Desktop Collapse Toggle */}
-        <div className="collapse-toggle" onClick={() => setIsCollapsed(!isCollapsed)}>
+        <button 
+          className="collapse-toggle" 
+          onClick={() => setIsCollapsed(!isCollapsed)}
+          aria-label={isCollapsed ? "Buka sidebar" : "Tutup sidebar"}
+        >
           {isCollapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
-        </div>
+        </button>
 
         {/* Brand Header */}
         <div className="sidebar-header">
@@ -158,7 +168,11 @@ const Sidebar = () => {
               <span className="logo-subtitle">Music Studio</span>
             </div>
           </div>
-          <button className="notification-bell-btn sidebar-bell" onClick={() => setIsNotifOpen(true)}>
+          <button 
+            className="notification-bell-btn sidebar-bell" 
+            onClick={() => setIsNotifOpen(true)}
+            aria-label="Buka panel notifikasi"
+          >
             <Bell size={18} />
             {unreadCount > 0 && <span className="notification-badge">{unreadCount > 99 ? '99+' : unreadCount}</span>}
           </button>
@@ -207,16 +221,26 @@ const Sidebar = () => {
         <div className="sidebar-footer">
           {/* Demo Mode Badge */}
           {isDemoMode && (
-            <button
-              className="demo-mode-badge"
-              onClick={() => { navigate('/settings'); setMobileOpen(false); }}
-              title="Mode Demo Aktif — klik untuk ke Settings"
-            >
-              <span className="demo-badge-dot" />
-              <FlaskConical size={13} color="#a855f7" />
-              <span className="demo-badge-text">Demo Mode</span>
-              <span className="demo-badge-off" onClick={(e) => { e.stopPropagation(); toggleDemoMode(); }}>✕ OFF</span>
-            </button>
+            <div className="demo-mode-badge">
+              <button
+                className="demo-badge-link"
+                onClick={() => { navigate('/settings'); setMobileOpen(false); }}
+                title="Mode Demo Aktif — klik untuk ke Settings"
+                aria-label="Mode Demo Aktif, klik untuk membuka Pengaturan"
+              >
+                <span className="demo-badge-dot" />
+                <FlaskConical size={13} color="#a855f7" />
+                <span className="demo-badge-text">Demo Mode</span>
+              </button>
+              <button 
+                className="demo-badge-off" 
+                onClick={toggleDemoMode}
+                title="Nonaktifkan Mode Demo"
+                aria-label="Nonaktifkan Mode Demo"
+              >
+                ✕ OFF
+              </button>
+            </div>
           )}
 
           {/* Theme Toggle */}
@@ -234,16 +258,24 @@ const Sidebar = () => {
           
           <div className="sidebar-divider" />
           
-          <div className="user-profile tour-profile" onClick={() => setIsProfileOpen(true)}>
-            <div className="avatar">{avatarLetter}</div>
-            <div className="user-info">
-              <span className="user-name" title={user?.email || ''}>{displayName}</span>
-              <span className="user-role">{userProfile?.role === 'admin' ? 'Administrator' : 'Staff'}</span>
-            </div>
+          <div className="user-profile tour-profile">
+            <button 
+              className="user-profile-btn" 
+              onClick={() => setIsProfileOpen(true)}
+              title="Edit Profil"
+              aria-label={`Buka Profil ${displayName}`}
+            >
+              <div className="avatar">{avatarLetter}</div>
+              <div className="user-info">
+                <span className="user-name" title={user?.email || ''}>{displayName}</span>
+                <span className="user-role">{userProfile?.role === 'admin' ? 'Administrator' : 'Staff'}</span>
+              </div>
+            </button>
             <button 
               className="sidebar-logout-btn" 
-              onClick={(e) => { e.stopPropagation(); handleLogout(); }} 
+              onClick={handleLogout} 
               title="Logout"
+              aria-label="Logout"
             >
               <LogOut size={16} />
             </button>
