@@ -307,7 +307,7 @@
 .finance-table th {
   top: 0 !important;
   padding: 12px 16px !important;
-  background: rgba(12, 12, 16, 0.92) !important;
+  background: rgba(var(--bg-surface-rgb), 0.92) !important;
   border-bottom: 1px solid rgba(255, 255, 255, 0.07) !important;
   color: var(--text-muted) !important;
   font-size: 0.64rem !important;

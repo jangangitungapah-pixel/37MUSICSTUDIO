@@ -1303,7 +1303,7 @@ tr:hover .inventory-page .row-actions .icon-btn,
     z-index: 1000;
     border-radius: 18px;
     animation: mobileDetailUp 0.32s cubic-bezier(0.16, 1, 0.3, 1);
-    background: #1a1a22 !important;
+    background: var(--bg-surface) !important;
     backdrop-filter: blur(24px) !important;
     -webkit-backdrop-filter: blur(24px) !important;
     border: 1px solid rgba(255, 255, 255, 0.08) !important;

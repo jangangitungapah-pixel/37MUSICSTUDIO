@@ -576,7 +576,7 @@ option {
 }
 
 [data-theme="light"] .auth-brand-name {
-  background: linear-gradient(135deg, #111128 0%, rgba(17,17,40,0.75) 100%);
+  background: linear-gradient(135deg, #111128 0%, rgba(var(--bg-surface-rgb), 0.75) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -588,18 +588,18 @@ option {
 
 [data-theme="light"] .auth-brand-desc,
 [data-theme="light"] .auth-brand-sub {
-  color: rgba(17,17,40,0.45);
+  color: rgba(var(--bg-surface-rgb), 0.45);
 }
 
 [data-theme="light"] .auth-feature-pill {
   background: rgba(0,0,0,0.04);
   border-color: rgba(0,0,0,0.07);
-  color: rgba(17,17,40,0.6);
+  color: rgba(var(--bg-surface-rgb), 0.6);
 }
 
 [data-theme="light"] .auth-header h1 { color: #111128; }
-[data-theme="light"] .auth-header p  { color: rgba(17,17,40,0.45); }
-[data-theme="light"] .auth-header-studio { color: rgba(17,17,40,0.4); }
+[data-theme="light"] .auth-header p  { color: rgba(var(--bg-surface-rgb), 0.45); }
+[data-theme="light"] .auth-header-studio { color: rgba(var(--bg-surface-rgb), 0.4); }
 
 [data-theme="light"] .form-input {
   background: rgba(0,0,0,0.04);
@@ -613,12 +613,12 @@ option {
   box-shadow: 0 0 0 3px rgba(232,25,78,0.08);
 }
 
-[data-theme="light"] .form-input::placeholder { color: rgba(17,17,40,0.25); }
+[data-theme="light"] .form-input::placeholder { color: rgba(var(--bg-surface-rgb), 0.25); }
 
 [data-theme="light"] .auth-guest-btn {
   background: rgba(0,0,0,0.04);
   border-color: rgba(0,0,0,0.1);
-  color: rgba(17,17,40,0.65);
+  color: rgba(var(--bg-surface-rgb), 0.65);
 }
 
 [data-theme="light"] .auth-guest-btn:hover {
@@ -628,7 +628,7 @@ option {
 }
 
 [data-theme="light"] .auth-footer {
-  color: rgba(17,17,40,0.4);
+  color: rgba(var(--bg-surface-rgb), 0.4);
 }
 
 /* ── Notification panel ── */
@@ -1599,7 +1599,7 @@ input:not([type="checkbox"]):not([type="radio"]):focus, select:focus, textarea:f
 }
 
 .app-stat-card {
-  background: linear-gradient(145deg, rgba(30, 30, 40, 0.4), rgba(20, 20, 30, 0.6));
+  background: linear-gradient(145deg, rgba(var(--bg-surface-rgb), 0.4), rgba(var(--bg-surface-rgb), 0.6));
   border: 1px solid var(--glass-border);
   border-radius: 16px;
   padding: 20px;
