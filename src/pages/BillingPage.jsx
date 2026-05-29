@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useBookingStore } from '../store/useBookingStore';
 import { useSettingsStore } from '../store/useSettingsStore';
 import { useTourStore } from '../store/useTourStore';
-import { Printer, CheckCircle, AlertCircle, FileText, Search, X, Share2, MessageCircle, Copy, Download, Check, Bell } from 'lucide-react';
+import { Printer, CheckCircle, AlertCircle, FileText, Search, X, Share2, MessageCircle, Copy, Download, Check, Bell, ChevronDown } from 'lucide-react';
 import { format } from 'date-fns';
 import html2canvas from 'html2canvas';
 import { toast } from 'sonner';
@@ -18,6 +18,7 @@ const BillingPage = () => {
   const { pricePerHour, studioName, studioAddress, studioPhone } = useSettingsStore();
   const { currentStep, nextStep, run } = useTourStore();
   const [activeTab, setActiveTab] = useState('Semua');
+  const [isFilterDropdownOpen, setIsFilterDropdownOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedInvoice, setSelectedInvoice] = useState(null);
   const [isInvoiceModalOpen, setIsInvoiceModalOpen] = useState(false);
@@ -226,23 +227,23 @@ const BillingPage = () => {
   return (
     <motion.div className="app-page billing-page" {...pagePreset}>
       {/* Header Stats */}
-      <div className="app-stat-grid tour-bill-stats" style={{display: 'flex', gap: '20px', flexWrap: 'wrap'}}>
-        <div className="app-stat-card income" style={{flex: 1, minWidth: '250px'}}>
-          <div className="stat-icon" style={{background: 'rgba(76, 175, 80, 0.1)', color: '#4CAF50'}}><CheckCircle size={24} /></div>
+      <div className="billing-stats-bar tour-bill-stats">
+        <div className="billing-stat-card income">
+          <div className="stat-icon"><CheckCircle size={24} /></div>
           <div className="stat-data">
             <span className="stat-label">Total Pendapatan</span>
             <span className="stat-value">{formatCurrency(totalPendapatan)}</span>
           </div>
         </div>
-        <div className="app-stat-card debt" style={{flex: 1, minWidth: '250px'}}>
-          <div className="stat-icon" style={{background: 'rgba(255, 42, 95, 0.1)', color: 'var(--accent-pink)'}}><AlertCircle size={24} /></div>
+        <div className="billing-stat-card debt">
+          <div className="stat-icon"><AlertCircle size={24} /></div>
           <div className="stat-data">
             <span className="stat-label">Sisa Piutang (Belum Lunas)</span>
             <span className="stat-value">{formatCurrency(totalPiutang)}</span>
           </div>
         </div>
-        <div className="app-stat-card total" style={{flex: 1, minWidth: '250px'}}>
-          <div className="stat-icon" style={{background: 'rgba(0, 240, 255, 0.1)', color: 'var(--accent-cyan)'}}><FileText size={24} /></div>
+        <div className="billing-stat-card total">
+          <div className="stat-icon"><FileText size={24} /></div>
           <div className="stat-data">
             <span className="stat-label">Total Transaksi</span>
             <span className="stat-value">{totalTransaksi} <small>trx</small></span>
@@ -251,54 +252,104 @@ const BillingPage = () => {
       </div>
 
       {/* Smart Billing Summary */}
-      <div className="app-smart-panel">
-        <div className="smart-head">
+      <div className="billing-smart-panel">
+        <div className="billing-smart-main">
           <Bell size={20} />
           <div>
             <h3>Reminder Pintar</h3>
             <p>{billingInsights.summary}</p>
           </div>
         </div>
-        <div className="smart-list app-smart-grid cols-auto">
+        <div className="billing-smart-list">
           {billingInsights.openInvoices.slice(0, 3).map((invoice) => (
-            <div key={invoice.id} className={`smart-item ${invoice.urgency}`} style={{display: 'flex', flexDirection: 'column', alignItems: 'flex-start', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', padding: '12px 16px', position: 'relative'}}>
-              <div style={{width: '100%'}}>
-                <strong style={{display: 'block', fontSize: '0.9rem', color: 'var(--text-primary)', marginBottom: '4px'}}>{invoice.band}</strong>
-                <span style={{display: 'block', fontSize: '0.75rem', color: invoice.urgency === 'high' ? 'var(--accent-pink)' : invoice.urgency === 'medium' ? '#FFC107' : 'var(--text-secondary)', marginBottom: '4px'}}>{invoice.daysUntil < 0 ? 'Lewat jadwal' : invoice.daysUntil === 0 ? 'Jadwal hari ini' : invoice.daysUntil === 1 ? 'Jadwal besok' : `H-${invoice.daysUntil}`}</span>
+            <div key={invoice.id} className={`billing-smart-item ${invoice.urgency}`}>
+              <div>
+                <strong>{invoice.band}</strong>
+                <span style={{color: invoice.urgency === 'high' ? 'var(--accent-pink)' : invoice.urgency === 'medium' ? '#FFC107' : 'var(--text-secondary)'}}>{invoice.daysUntil < 0 ? 'Lewat jadwal' : invoice.daysUntil === 0 ? 'Jadwal hari ini' : invoice.daysUntil === 1 ? 'Jadwal besok' : `H-${invoice.daysUntil}`}</span>
               </div>
-              <small style={{display: 'block', fontSize: '1.1rem', fontWeight: 'bold', color: 'var(--text-primary)', marginTop: '8px'}}>{formatCurrency(invoice.remaining)}</small>
+              <small>{formatCurrency(invoice.remaining)}</small>
               <button
+                type="button"
                 className="billing-smart-btn"
-                style={{position: 'absolute', top: '16px', right: '16px', background: 'rgba(37, 211, 102, 0.1)', color: '#25d366', border: '1px solid rgba(37, 211, 102, 0.2)', borderRadius: '8px', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.2s'}}
                 onClick={() => handleSendReminder(invoice)}
                 title="Kirim reminder WhatsApp"
+                aria-label={`Kirim pengingat WhatsApp ke ${invoice.band}`}
               >
                 <MessageCircle size={16} />
               </button>
             </div>
           ))}
           {billingInsights.openInvoices.length === 0 && (
-            <div className="billing-smart-empty" style={{fontSize: '0.85rem', color: 'var(--text-muted)'}}>Tidak ada tagihan yang perlu ditindaklanjuti.</div>
+            <div className="billing-smart-empty">Tidak ada tagihan yang perlu ditindaklanjuti.</div>
           )}
         </div>
       </div>
 
       <div className="billing-content app-panel">
         <div className="app-table-toolbar">
-          <div className="app-table-toolbar-left" style={{ flex: 1, overflowX: 'auto' }}>
-            <div className="billing-tabs tour-bill-tabs" style={{ margin: 0, paddingBottom: 0, borderBottom: 'none' }}>
-              {['Semua', 'Lunas', 'Belum Lunas'].map(tab => (
-                <button 
-                  key={tab} 
-                  className={`billing-tab ${activeTab === tab ? 'active' : ''}`}
-                  onClick={() => setActiveTab(tab)}
-                >
-                  {tab}
-                </button>
-              ))}
+          <div className="app-table-toolbar-left">
+            <div>
+              <span className="app-table-toolbar-title">Daftar Tagihan</span>
+              <span className="app-table-toolbar-subtitle">{filteredBookings.length} transaksi ditemukan</span>
             </div>
           </div>
           <div className="app-table-toolbar-right">
+            {/* Filter Dropdown */}
+            <div className="filter-dropdown-container tour-bill-tabs">
+              <button 
+                type="button"
+                className="filter-dropdown-toggle"
+                onClick={() => setIsFilterDropdownOpen(!isFilterDropdownOpen)}
+                aria-haspopup="listbox"
+                aria-expanded={isFilterDropdownOpen}
+                aria-label="Filter status pembayaran"
+              >
+                <FileText size={16} className="filter-dropdown-icon" />
+                <span className="filter-dropdown-label">
+                  {activeTab === 'Semua' ? `Semua Status (${billableBookings.length})` : activeTab === 'Lunas' ? `Lunas (${billableBookings.filter(b => b.status === 'confirmed').length})` : `Belum Lunas (${billableBookings.filter(b => b.status !== 'confirmed').length})`}
+                </span>
+                <ChevronDown size={16} className={`filter-dropdown-arrow ${isFilterDropdownOpen ? 'open' : ''}`} />
+              </button>
+              
+              {isFilterDropdownOpen && (
+                <>
+                  <div className="filter-dropdown-overlay" onClick={() => setIsFilterDropdownOpen(false)} />
+                  <div className="filter-dropdown-menu" role="listbox">
+                    <button 
+                      type="button" 
+                      className={`filter-dropdown-item ${activeTab === 'Semua' ? 'active' : ''}`}
+                      onClick={() => { setActiveTab('Semua'); setIsFilterDropdownOpen(false); }}
+                      role="option"
+                      aria-selected={activeTab === 'Semua'}
+                    >
+                      <span>Semua Status</span>
+                      <span className="tab-count">{billableBookings.length}</span>
+                    </button>
+                    <button 
+                      type="button" 
+                      className={`filter-dropdown-item ${activeTab === 'Lunas' ? 'active' : ''}`}
+                      onClick={() => { setActiveTab('Lunas'); setIsFilterDropdownOpen(false); }}
+                      role="option"
+                      aria-selected={activeTab === 'Lunas'}
+                    >
+                      <span>Lunas</span>
+                      <span className="tab-count">{billableBookings.filter(b => b.status === 'confirmed').length}</span>
+                    </button>
+                    <button 
+                      type="button" 
+                      className={`filter-dropdown-item ${activeTab === 'Belum Lunas' ? 'active' : ''}`}
+                      onClick={() => { setActiveTab('Belum Lunas'); setIsFilterDropdownOpen(false); }}
+                      role="option"
+                      aria-selected={activeTab === 'Belum Lunas'}
+                    >
+                      <span>Belum Lunas</span>
+                      <span className="tab-count">{billableBookings.filter(b => b.status !== 'confirmed').length}</span>
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
+
             <div className="app-search app-search-md tour-bill-search">
               <Search className="app-search-icon" />
               <input 
@@ -307,6 +358,7 @@ const BillingPage = () => {
                 placeholder="Cari nama band..." 
                 value={searchQuery} 
                 onChange={(e) => setSearchQuery(e.target.value)} 
+                aria-label="Cari nama band atau tagihan"
               />
               {searchQuery && (
                 <button type="button" className="app-search-clear" onClick={() => setSearchQuery('')} aria-label="Bersihkan pencarian" title="Bersihkan pencarian">
@@ -358,6 +410,7 @@ const BillingPage = () => {
                           className={`status-select ${b.status} ${isTutorialRow && currentStep === 8 ? 'tour-bill-status-select' : ''}`}
                           value={b.status}
                           onChange={(e) => handleStatusChange(e, b.id, e.target.value)}
+                          aria-label={`Ubah status pembayaran invoice ${b.band}`}
                         >
                           <option value="pending">Belum Bayar</option>
                           <option value="dp">DP {b.dpAmount > 0 ? `(${formatCurrency(b.dpAmount)})` : ''}</option>
@@ -380,6 +433,7 @@ const BillingPage = () => {
                               className={`btn-sm-pay ${isTutorialRow && currentStep === 4 ? 'tour-bill-btn-pay' : ''}`} 
                               onClick={(e) => handleMarkAsPaid(e, b.id)}
                               title="Tandai Lunas"
+                              aria-label={`Tandai lunas invoice band ${b.band}`}
                             >
                               Lunasi
                             </button>
@@ -388,6 +442,7 @@ const BillingPage = () => {
                             className="icon-btn" 
                             onClick={(e) => { e.stopPropagation(); handleOpenInvoice(b); }}
                             title="Lihat Invoice"
+                            aria-label={`Lihat detail invoice band ${b.band}`}
                           >
                             <Printer size={16} />
                           </button>
@@ -432,6 +487,7 @@ const BillingPage = () => {
                     className={`status-select ${b.status}`}
                     value={b.status}
                     onChange={(e) => handleStatusChange(e, b.id, e.target.value)}
+                    aria-label={`Ubah status pembayaran invoice ${b.band}`}
                   >
                     <option value="pending">Belum Bayar</option>
                     <option value="dp">DP {b.dpAmount > 0 ? `(${formatCurrency(b.dpAmount)})` : ''}</option>
@@ -439,9 +495,9 @@ const BillingPage = () => {
                   </select>
                   <div className="mobile-bill-actions" onClick={e => e.stopPropagation()}>
                     {remaining > 0 && (
-                      <button className="btn-sm-pay" onClick={(e) => handleMarkAsPaid(e, b.id)}>Lunasi</button>
+                      <button className="btn-sm-pay" onClick={(e) => handleMarkAsPaid(e, b.id)} aria-label={`Tandai lunas invoice band ${b.band}`}>Lunasi</button>
                     )}
-                    <button className="icon-btn" onClick={(e) => { e.stopPropagation(); handleOpenInvoice(b); }} title="Invoice">
+                    <button className="icon-btn" onClick={(e) => { e.stopPropagation(); handleOpenInvoice(b); }} title="Invoice" aria-label={`Lihat detail invoice band ${b.band}`}>
                       <Printer size={14} />
                     </button>
                   </div>
@@ -627,16 +683,24 @@ const BillingPage = () => {
               </div>
 
               {/* Format Toggle */}
-              <div className="inv2-format-toggle">
+              <div className="inv2-format-toggle" role="radiogroup" aria-label="Format invoice">
                 <button 
+                  type="button"
                   className={`format-btn ${!isThermalMode ? 'active' : ''}`}
                   onClick={() => setIsThermalMode(false)}
+                  role="radio"
+                  aria-checked={!isThermalMode}
+                  aria-label="Format A4 Invoice"
                 >
                   <FileText size={14} /> A4 Invoice
                 </button>
                 <button 
+                  type="button"
                   className={`format-btn ${isThermalMode ? 'active' : ''}`}
                   onClick={() => setIsThermalMode(true)}
+                  role="radio"
+                  aria-checked={isThermalMode}
+                  aria-label="Format Thermal Struk"
                 >
                   <Printer size={14} /> Thermal Struk
                 </button>
@@ -645,8 +709,10 @@ const BillingPage = () => {
               {/* Share grid */}
               <div className="inv2-share-grid">
                 <button
+                  type="button"
                   className="inv2-share-btn wa"
                   onClick={() => handleShareWhatsApp(selectedInvoice)}
+                  aria-label="Bagikan invoice lewat WhatsApp"
                 >
                   <MessageCircle size={20} />
                   <span>WhatsApp</span>
@@ -655,8 +721,10 @@ const BillingPage = () => {
 
                 {!isLunas && (
                   <button
+                    type="button"
                     className="inv2-share-btn remind"
                     onClick={() => handleSendReminder(selectedInvoice)}
+                    aria-label="Kirim pengingat jadwal lewat WhatsApp"
                   >
                     <Bell size={20} />
                     <span>Pengingat</span>
@@ -665,8 +733,10 @@ const BillingPage = () => {
                 )}
 
                 <button
+                  type="button"
                   className="inv2-share-btn dl"
                   onClick={handleDownloadImage}
+                  aria-label="Unduh invoice sebagai gambar"
                 >
                   <Download size={20} />
                   <span>Unduh</span>
@@ -674,8 +744,10 @@ const BillingPage = () => {
                 </button>
 
                 <button
+                  type="button"
                   className="inv2-share-btn cp"
                   onClick={() => handleCopyText(selectedInvoice)}
+                  aria-label="Salin teks invoice ke clipboard"
                 >
                   {copied ? <Check size={20} /> : <Copy size={20} />}
                   <span>{copied ? 'Tersalin!' : 'Salin Teks'}</span>
@@ -684,8 +756,10 @@ const BillingPage = () => {
 
                 {navigator.share && (
                   <button
+                    type="button"
                     className="inv2-share-btn more"
                     onClick={() => handleNativeShare(selectedInvoice)}
+                    aria-label="Bagikan invoice via aplikasi lainnya"
                   >
                     <Share2 size={20} />
                     <span>Lainnya</span>
@@ -697,8 +771,10 @@ const BillingPage = () => {
               {/* Status quick actions */}
               {!isLunas && (
                 <button
+                  type="button"
                   className="inv2-pay-btn"
                   onClick={(e) => { handleMarkAsPaid(e, selectedInvoice.id); setSelectedInvoice({ ...selectedInvoice, status: 'confirmed' }); }}
+                  aria-label="Tandai invoice ini sebagai lunas"
                 >
                   <CheckCircle size={18} />
                   Tandai Lunas Sekarang
@@ -707,12 +783,14 @@ const BillingPage = () => {
 
               {/* Print / Close */}
               <div className="inv2-main-btns">
-                <button className="inv2-btn-close" onClick={handleCloseInvoiceModal}>
+                <button type="button" className="inv2-btn-close" onClick={handleCloseInvoiceModal} aria-label="Tutup detail modal">
                   <X size={16} /> Tutup
                 </button>
                 <button
+                  type="button"
                   className={`inv2-btn-print ${run && currentStep === 7 ? 'tour-invoice-print' : ''}`}
                   onClick={handlePrint}
+                  aria-label="Cetak invoice atau simpan sebagai PDF"
                 >
                   <Printer size={16} /> Cetak / PDF
                 </button>
