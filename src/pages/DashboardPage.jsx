@@ -501,13 +501,8 @@ const DashboardPage = () => {
         </div>
 
       </div>
-    </div>
-  );
-};
 
-export default DashboardPage;
-
-      {/* ===== Smart Insights ===== */}
+{/* ===== Smart Insights ===== */}
       <MotionSection direction="up" className="app-smart-panel app-smart-grid cols-auto">
         <MotionListItem as="div" className="smart-item">
           <div className="smart-head" style={{color: 'var(--accent-cyan)'}}>
@@ -647,5 +642,8 @@ export default DashboardPage;
           </div>
         </section>
       </MotionSection>
+    </div>
+  );
+};
 
-      
+export default DashboardPage;

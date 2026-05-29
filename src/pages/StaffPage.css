@@ -23,8 +23,8 @@
   box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.02);
 }
 
-.avatar-icon-admin { color: var(--accent-pink); filter: drop-shadow(0 0 8px rgba(255, 42, 95, 0.5)); }
-.avatar-icon-staff { color: var(--accent-cyan); filter: drop-shadow(0 0 8px rgba(0, 240, 255, 0.5)); }
+.avatar-icon-admin { color: var(--accent-pink); filter: drop-shadow(0 0 8px rgba(var(--accent-pink-rgb), 0.5)); }
+.avatar-icon-staff { color: var(--accent-cyan); filter: drop-shadow(0 0 8px rgba(var(--accent-cyan-rgb), 0.5)); }
 
 .staff-actions {
   display: flex;
@@ -34,8 +34,6 @@
 .staff-actions 
 
 .staff-actions 
-
-
 
 .staff-info {
   position: relative;
@@ -60,15 +58,15 @@
 }
 
 .staff-role-badge.admin {
-  background: rgba(255, 42, 95, 0.15);
+  background: rgba(var(--accent-pink-rgb), 0.15);
   color: var(--accent-pink);
-  border: 1px solid rgba(255, 42, 95, 0.3);
+  border: 1px solid rgba(var(--accent-pink-rgb), 0.3);
 }
 
 .staff-role-badge.staff {
-  background: rgba(0, 240, 255, 0.15);
+  background: rgba(var(--accent-cyan-rgb), 0.15);
   color: var(--accent-cyan);
-  border: 1px solid rgba(0, 240, 255, 0.3);
+  border: 1px solid rgba(var(--accent-cyan-rgb), 0.3);
 }
 
 .staff-phone {
@@ -151,9 +149,9 @@
 }
 
 .permission-card.selected {
-  border-color: rgba(0, 240, 255, 0.3);
+  border-color: rgba(var(--accent-cyan-rgb), 0.3);
   color: var(--text-primary);
-  background: rgba(0, 240, 255, 0.05);
+  background: rgba(var(--accent-cyan-rgb), 0.05);
 }
 
 .permission-card.disabled {
@@ -226,7 +224,7 @@
   bottom: 0;
   left: 25px; /* Aligns exactly with the center of the 24px marker considering 14px padding left */
   width: 2px;
-  background: linear-gradient(180deg, rgba(0, 240, 255, 0.2) 0%, rgba(255, 255, 255, 0.05) 100%);
+  background: linear-gradient(180deg, rgba(var(--accent-cyan-rgb), 0.2) 0%, rgba(255, 255, 255, 0.05) 100%);
   border-radius: 2px;
 }
 
@@ -242,8 +240,8 @@
   width: 26px;
   height: 26px;
   border-radius: 50%;
-  background: rgba(0, 240, 255, 0.1);
-  border: 1px solid rgba(0, 240, 255, 0.3);
+  background: rgba(var(--accent-cyan-rgb), 0.1);
+  border: 1px solid rgba(var(--accent-cyan-rgb), 0.3);
   display: flex;
   align-items: center;
   justify-content: center;

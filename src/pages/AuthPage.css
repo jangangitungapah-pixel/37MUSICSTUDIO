@@ -13,7 +13,7 @@
 }
 .spinner {
   animation: spin 1s linear infinite;
-  color: #ff2a5f;
+  color: var(--accent-pink);
 }
 @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
@@ -57,13 +57,13 @@
 }
 .auth-bg-blob.blob1 {
   width: 500px; height: 500px;
-  background: radial-gradient(circle, rgba(255,42,95,0.18), transparent 70%);
+  background: radial-gradient(circle, rgba(var(--accent-pink-rgb),0.18), transparent 70%);
   top: -100px; right: -100px;
   animation-delay: 0s;
 }
 .auth-bg-blob.blob2 {
   width: 400px; height: 400px;
-  background: radial-gradient(circle, rgba(0,240,255,0.1), transparent 70%);
+  background: radial-gradient(circle, rgba(var(--accent-cyan-rgb),0.1), transparent 70%);
   bottom: -80px; left: -80px;
   animation-delay: -3s;
 }
@@ -99,9 +99,9 @@
   position: relative;
   overflow: hidden;
   background: linear-gradient(145deg,
-    rgba(255,42,95,0.04) 0%,
+    rgba(var(--accent-pink-rgb),0.04) 0%,
     rgba(0,0,0,0) 40%,
-    rgba(0,240,255,0.02) 100%);
+    rgba(var(--accent-cyan-rgb),0.02) 100%);
   border-right: 1px solid rgba(255,255,255,0.05);
 }
 
@@ -110,12 +110,12 @@
   align-items: center;
   gap: 8px;
   padding: 7px 14px;
-  background: rgba(255,42,95,0.08);
-  border: 1px solid rgba(255,42,95,0.2);
+  background: rgba(var(--accent-pink-rgb),0.08);
+  border: 1px solid rgba(var(--accent-pink-rgb),0.2);
   border-radius: 100px;
   font-size: 0.72rem;
   font-weight: 700;
-  color: #ff2a5f;
+  color: var(--accent-pink);
   letter-spacing: 1.5px;
   text-transform: uppercase;
   margin-bottom: 28px;
@@ -124,12 +124,12 @@
 .auth-badge-dot {
   width: 6px; height: 6px;
   border-radius: 50%;
-  background: #ff2a5f;
+  background: var(--accent-pink);
   animation: pulseDot 1.8s ease-in-out infinite;
 }
 @keyframes pulseDot {
-  0%,100% { box-shadow: 0 0 0 0 rgba(255,42,95,0.5); }
-  50%      { box-shadow: 0 0 0 5px rgba(255,42,95,0); }
+  0%,100% { box-shadow: 0 0 0 0 rgba(var(--accent-pink-rgb),0.5); }
+  50%      { box-shadow: 0 0 0 5px rgba(var(--accent-pink-rgb),0); }
 }
 
 .auth-brand-logo {
@@ -142,10 +142,10 @@
 .auth-logo-icon {
   width: 72px; height: 72px;
   border-radius: 20px;
-  background: linear-gradient(135deg, rgba(255,42,95,0.15), rgba(255,42,95,0.05));
-  border: 1px solid rgba(255,42,95,0.25);
+  background: linear-gradient(135deg, rgba(var(--accent-pink-rgb),0.15), rgba(var(--accent-pink-rgb),0.05));
+  border: 1px solid rgba(var(--accent-pink-rgb),0.25);
   display: flex; align-items: center; justify-content: center;
-  box-shadow: 0 0 30px rgba(255,42,95,0.15), inset 0 1px 0 rgba(255,255,255,0.05);
+  box-shadow: 0 0 30px rgba(var(--accent-pink-rgb),0.15), inset 0 1px 0 rgba(255,255,255,0.05);
 }
 .auth-brand-name {
   font-size: 2.6rem;
@@ -178,7 +178,7 @@
   animation: fadeSlideUp 0.6s 0.2s ease-out both;
 }
 .auth-brand-tagline span {
-  background: linear-gradient(90deg, #ff2a5f, #00f0ff);
+  background: linear-gradient(90deg, var(--accent-pink), var(--accent-cyan));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -239,7 +239,7 @@
   position: absolute;
   width: 300px; height: 300px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(255,42,95,0.1), transparent 70%);
+  background: radial-gradient(circle, rgba(var(--accent-pink-rgb),0.1), transparent 70%);
   bottom: -60px; right: -60px;
   pointer-events: none;
 }
@@ -278,8 +278,8 @@
 .auth-header-logo {
   width: 44px; height: 44px;
   border-radius: 12px;
-  background: rgba(255,42,95,0.1);
-  border: 1px solid rgba(255,42,95,0.2);
+  background: rgba(var(--accent-pink-rgb),0.1);
+  border: 1px solid rgba(var(--accent-pink-rgb),0.2);
   display: flex; align-items: center; justify-content: center;
 }
 .auth-header-studio {
@@ -310,8 +310,8 @@
   display: flex;
   align-items: flex-start;
   gap: 10px;
-  background: rgba(255,42,95,0.08);
-  border: 1px solid rgba(255,42,95,0.2);
+  background: rgba(var(--accent-pink-rgb),0.08);
+  border: 1px solid rgba(var(--accent-pink-rgb),0.2);
   color: #ff6b8a;
   padding: 12px 14px;
   border-radius: 10px;
@@ -368,14 +368,14 @@
   transition: all 0.2s;
 }
 .form-input:focus {
-  border-color: rgba(255,42,95,0.4);
-  background: rgba(255,42,95,0.04);
-  box-shadow: 0 0 0 3px rgba(255,42,95,0.08);
+  border-color: rgba(var(--accent-pink-rgb),0.4);
+  background: rgba(var(--accent-pink-rgb),0.04);
+  box-shadow: 0 0 0 3px rgba(var(--accent-pink-rgb),0.08);
 }
 .form-input::placeholder { color: rgba(255,255,255,0.2); }
 .form-input:focus + .form-input-icon,
 .form-input-wrap:focus-within .form-input-icon {
-  color: rgba(255,42,95,0.7);
+  color: rgba(var(--accent-pink-rgb),0.7);
 }
 .form-input-action {
   position: absolute;
@@ -402,7 +402,7 @@
   font-size: 0.95rem;
   font-weight: 700;
   font-family: inherit;
-  background: linear-gradient(135deg, #ff2a5f, #c4154a);
+  background: linear-gradient(135deg, var(--accent-pink), #c4154a);
   color: white;
   border: none;
   cursor: pointer;
@@ -412,7 +412,7 @@
   gap: 8px;
   margin-top: 8px;
   transition: all 0.25s;
-  box-shadow: 0 4px 20px rgba(255,42,95,0.25), 0 0 0 1px rgba(255,42,95,0.1);
+  box-shadow: 0 4px 20px rgba(var(--accent-pink-rgb),0.25), 0 0 0 1px rgba(var(--accent-pink-rgb),0.1);
   position: relative;
   overflow: hidden;
 }
@@ -427,7 +427,7 @@
 .auth-submit:hover::before { opacity: 1; }
 .auth-submit:hover {
   transform: translateY(-1px);
-  box-shadow: 0 8px 28px rgba(255,42,95,0.35), 0 0 0 1px rgba(255,42,95,0.15);
+  box-shadow: 0 8px 28px rgba(var(--accent-pink-rgb),0.35), 0 0 0 1px rgba(var(--accent-pink-rgb),0.15);
 }
 .auth-submit:active { transform: translateY(0); }
 .auth-submit:disabled {
@@ -490,12 +490,12 @@
   animation: fadeSlideUp 0.5s 0.2s ease-out both;
 }
 .auth-footer a {
-  color: rgba(0,240,255,0.8);
+  color: rgba(var(--accent-cyan-rgb),0.8);
   text-decoration: none;
   font-weight: 600;
   transition: color 0.2s;
 }
-.auth-footer a:hover { color: #00f0ff; text-decoration: underline; }
+.auth-footer a:hover { color: var(--accent-cyan); text-decoration: underline; }
 
 /* ── Entry Animations ── */
 @keyframes fadeSlideUp {

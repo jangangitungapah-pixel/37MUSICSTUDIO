@@ -63,14 +63,14 @@
   border-radius: 18px 18px 0 0;
 }
 
-.billing-stat-card.income::after { background: linear-gradient(90deg, #4CAF50, rgba(76,175,80,0.2)); }
-.billing-stat-card.debt::after   { background: linear-gradient(90deg, #FF9800, rgba(255,152,0,0.2)); }
-.billing-stat-card.total::after  { background: linear-gradient(90deg, var(--accent-cyan), rgba(0,240,255,0.2)); }
+.billing-stat-card.income::after { background: linear-gradient(90deg, rgb(var(--success-rgb)), rgba(var(--success-rgb),0.2)); }
+.billing-stat-card.debt::after   { background: linear-gradient(90deg, rgb(var(--warning-rgb)), rgba(var(--warning-rgb),0.2)); }
+.billing-stat-card.total::after  { background: linear-gradient(90deg, var(--accent-cyan), rgba(var(--accent-cyan-rgb),0.2)); }
 
 /* Hover border color */
-.billing-stat-card.income:hover { border-color: rgba(76, 175, 80, 0.22); }
-.billing-stat-card.debt:hover   { border-color: rgba(255, 152, 0, 0.22); }
-.billing-stat-card.total:hover  { border-color: rgba(0, 240, 255, 0.22); }
+.billing-stat-card.income:hover { border-color: rgba(var(--success-rgb), 0.22); }
+.billing-stat-card.debt:hover   { border-color: rgba(var(--warning-rgb), 0.22); }
+.billing-stat-card.total:hover  { border-color: rgba(var(--accent-cyan-rgb), 0.22); }
 
 /* Stat icon */
 .billing-stat-card .stat-icon {
@@ -99,18 +99,18 @@
 }
 
 .billing-stat-card.income .stat-icon {
-  color: #4CAF50;
-  background: rgba(76, 175, 80, 0.12);
+  color: rgb(var(--success-rgb));
+  background: rgba(var(--success-rgb), 0.12);
 }
 
 .billing-stat-card.debt .stat-icon {
-  color: #FF9800;
-  background: rgba(255, 152, 0, 0.12);
+  color: rgb(var(--warning-rgb));
+  background: rgba(var(--warning-rgb), 0.12);
 }
 
 .billing-stat-card.total .stat-icon {
   color: var(--accent-cyan);
-  background: rgba(0, 240, 255, 0.1);
+  background: rgba(var(--accent-cyan-rgb), 0.1);
 }
 
 /* Stat data */
@@ -170,12 +170,12 @@
   left: 0;
   right: 0;
   height: 2px;
-  background: linear-gradient(90deg, var(--accent-cyan), rgba(0,240,255,0.2), transparent);
+  background: linear-gradient(90deg, var(--accent-cyan), rgba(var(--accent-cyan-rgb),0.2), transparent);
   opacity: 0.8;
 }
 
 .billing-smart-panel:hover {
-  border-color: rgba(0, 240, 255, 0.14);
+  border-color: rgba(var(--accent-cyan-rgb), 0.14);
 }
 
 .billing-smart-main {
@@ -184,15 +184,15 @@
   align-items: flex-start;
   padding: 14px 16px;
   border-radius: 12px;
-  background: rgba(0, 240, 255, 0.06);
-  border: 1px solid rgba(0, 240, 255, 0.12);
+  background: rgba(var(--accent-cyan-rgb), 0.06);
+  border: 1px solid rgba(var(--accent-cyan-rgb), 0.12);
   color: var(--accent-cyan);
   transition: all 0.22s ease;
 }
 
 .billing-smart-main:hover {
-  background: rgba(0, 240, 255, 0.09);
-  border-color: rgba(0, 240, 255, 0.2);
+  background: rgba(var(--accent-cyan-rgb), 0.09);
+  border-color: rgba(var(--accent-cyan-rgb), 0.2);
 }
 
 .billing-smart-main svg { flex-shrink: 0; margin-top: 2px; }
@@ -255,18 +255,18 @@
 
 .billing-smart-item.overdue,
 .billing-smart-item.today {
-  border-color: rgba(255, 152, 0, 0.22);
-  background: rgba(255, 152, 0, 0.05);
+  border-color: rgba(var(--warning-rgb), 0.22);
+  background: rgba(var(--warning-rgb), 0.05);
 }
 
 .billing-smart-item.overdue::before,
-.billing-smart-item.today::before { background: #FF9800; }
+.billing-smart-item.today::before { background: rgb(var(--warning-rgb)); }
 
 .billing-smart-item.overdue:hover,
 .billing-smart-item.today:hover {
-  background: rgba(255, 152, 0, 0.09);
-  border-color: rgba(255, 152, 0, 0.32);
-  box-shadow: 0 6px 20px rgba(255, 152, 0, 0.1);
+  background: rgba(var(--warning-rgb), 0.09);
+  border-color: rgba(var(--warning-rgb), 0.32);
+  box-shadow: 0 6px 20px rgba(var(--warning-rgb), 0.1);
 }
 
 .billing-smart-item strong,
@@ -301,8 +301,8 @@
   width: 30px;
   height: 30px;
   border-radius: 8px;
-  border: 1px solid rgba(0, 240, 255, 0.18);
-  background: rgba(0, 240, 255, 0.07);
+  border: 1px solid rgba(var(--accent-cyan-rgb), 0.18);
+  background: rgba(var(--accent-cyan-rgb), 0.07);
   color: var(--accent-cyan);
   display: flex;
   align-items: center;
@@ -314,10 +314,10 @@
 }
 
 .billing-smart-btn:hover {
-  background: rgba(0, 240, 255, 0.16);
-  border-color: rgba(0, 240, 255, 0.4);
+  background: rgba(var(--accent-cyan-rgb), 0.16);
+  border-color: rgba(var(--accent-cyan-rgb), 0.4);
   transform: scale(1.1);
-  box-shadow: 0 4px 14px rgba(0, 240, 255, 0.2);
+  box-shadow: 0 4px 14px rgba(var(--accent-cyan-rgb), 0.2);
 }
 
 .billing-smart-empty {
@@ -418,7 +418,7 @@
 }
 
 .inv-remaining.has-debt {
-  color: #FF9800 !important;
+  color: rgb(var(--warning-rgb)) !important;
   font-weight: 800;
 }
 
@@ -453,21 +453,21 @@
 }
 
 .status-select.confirmed {
-  background-color: rgba(76, 175, 80, 0.1);
-  color: #4CAF50;
-  border-color: rgba(76, 175, 80, 0.22);
+  background-color: rgba(var(--success-rgb), 0.1);
+  color: rgb(var(--success-rgb));
+  border-color: rgba(var(--success-rgb), 0.22);
 }
 
 .status-select.dp {
-  background-color: rgba(255, 152, 0, 0.1);
-  color: #FF9800;
-  border-color: rgba(255, 152, 0, 0.22);
+  background-color: rgba(var(--warning-rgb), 0.1);
+  color: rgb(var(--warning-rgb));
+  border-color: rgba(var(--warning-rgb), 0.22);
 }
 
 .status-select.pending {
-  background-color: rgba(255, 42, 95, 0.09);
+  background-color: rgba(var(--accent-pink-rgb), 0.09);
   color: var(--accent-pink);
-  border-color: rgba(255, 42, 95, 0.2);
+  border-color: rgba(var(--accent-pink-rgb), 0.2);
 }
 
 .status-select:hover {
@@ -499,18 +499,18 @@
 
 .deadline-chip.upcoming,
 .mobile-bill-tag.deadline.upcoming {
-  background: rgba(0, 240, 255, 0.1);
+  background: rgba(var(--accent-cyan-rgb), 0.1);
   color: var(--accent-cyan);
-  border: 1px solid rgba(0, 240, 255, 0.18);
+  border: 1px solid rgba(var(--accent-cyan-rgb), 0.18);
 }
 
 .deadline-chip.today,
 .deadline-chip.overdue,
 .mobile-bill-tag.deadline.today,
 .mobile-bill-tag.deadline.overdue {
-  background: rgba(255, 152, 0, 0.1);
-  color: #FF9800;
-  border: 1px solid rgba(255, 152, 0, 0.22);
+  background: rgba(var(--warning-rgb), 0.1);
+  color: rgb(var(--warning-rgb));
+  border: 1px solid rgba(var(--warning-rgb), 0.22);
   animation: pulse 1.5s infinite;
 }
 
@@ -536,9 +536,9 @@
 
 /* "Lunasi" pay button */
 .btn-sm-pay {
-  background: rgba(76, 175, 80, 0.1);
-  border: 1px solid rgba(76, 175, 80, 0.25);
-  color: #4CAF50;
+  background: rgba(var(--success-rgb), 0.1);
+  border: 1px solid rgba(var(--success-rgb), 0.25);
+  color: rgb(var(--success-rgb));
   padding: 5px 12px;
   border-radius: 7px;
   font-size: 0.73rem;
@@ -551,11 +551,11 @@
 }
 
 .btn-sm-pay:hover {
-  background: #4CAF50;
-  border-color: #4CAF50;
+  background: rgb(var(--success-rgb));
+  border-color: rgb(var(--success-rgb));
   color: #fff;
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(76, 175, 80, 0.3);
+  box-shadow: 0 6px 16px rgba(var(--success-rgb), 0.3);
 }
 
 .btn-sm-pay:active { transform: translateY(0); }
@@ -660,16 +660,16 @@
 }
 
 .mobile-bill-tag.total {
-  background: rgba(0, 240, 255, 0.07);
+  background: rgba(var(--accent-cyan-rgb), 0.07);
   color: var(--accent-cyan);
-  border: 1px solid rgba(0, 240, 255, 0.1);
+  border: 1px solid rgba(var(--accent-cyan-rgb), 0.1);
   font-variant-numeric: tabular-nums;
 }
 
 .mobile-bill-tag.debt {
-  background: rgba(255, 152, 0, 0.08);
-  color: #FF9800;
-  border: 1px solid rgba(255, 152, 0, 0.14);
+  background: rgba(var(--warning-rgb), 0.08);
+  color: rgb(var(--warning-rgb));
+  border: 1px solid rgba(var(--warning-rgb), 0.14);
   font-variant-numeric: tabular-nums;
 }
 
@@ -743,8 +743,6 @@
   .billing-tabs  { width: 100%; overflow-x: auto; }
   .billing-tab   { padding: 10px 14px; font-size: 0.82rem; white-space: nowrap; }
 
-  
-
   .hide-on-mobile { display: none !important; }
   .show-on-mobile { display: flex !important; }
 }
@@ -799,7 +797,7 @@
 /* Gradient top stripe (A4 only) */
 .inv2-accent {
   height: 6px;
-  background: linear-gradient(90deg, #ff2a5f, #c62aff 50%, #00f0ff);
+  background: linear-gradient(90deg, var(--accent-pink), #c62aff 50%, var(--accent-cyan));
 }
 
 /* ── A4 Mode Styles ── */
@@ -1243,7 +1241,6 @@
 .thermal-mode .inv2-footer-content { flex-direction: column; gap: 8px; }
 .thermal-mode .footer-thanks, .thermal-mode .footer-brand { font-family: 'Courier New', monospace; font-size: 0.75rem; color: #111; }
 
-
 /* ── Action Panel (Right side) ── */
 .inv2-actions {
   width: 260px;
@@ -1309,19 +1306,18 @@
 }
 
 .format-btn.active {
-  background: rgba(0, 240, 255, 0.12);
-  border-color: rgba(0, 240, 255, 0.25);
+  background: rgba(var(--accent-cyan-rgb), 0.12);
+  border-color: rgba(var(--accent-cyan-rgb), 0.25);
   color: var(--accent-cyan);
-  box-shadow: 0 4px 12px rgba(0, 240, 255, 0.1);
+  box-shadow: 0 4px 12px rgba(var(--accent-cyan-rgb), 0.1);
 }
 
 .format-btn:first-child.active {
-  background: rgba(255, 42, 95, 0.12);
-  border-color: rgba(255, 42, 95, 0.25);
+  background: rgba(var(--accent-pink-rgb), 0.12);
+  border-color: rgba(var(--accent-pink-rgb), 0.25);
   color: var(--accent-pink);
-  box-shadow: 0 4px 12px rgba(255, 42, 95, 0.1);
+  box-shadow: 0 4px 12px rgba(var(--accent-pink-rgb), 0.1);
 }
-
 
 /* Share grid */
 .inv2-share-grid {
@@ -1401,14 +1397,14 @@
 }
 
 .inv2-share-btn.cp {
-  color: #00f0ff;
-  border-color: rgba(0, 240, 255, 0.18);
-  background: rgba(0, 240, 255, 0.06);
+  color: var(--accent-cyan);
+  border-color: rgba(var(--accent-cyan-rgb), 0.18);
+  background: rgba(var(--accent-cyan-rgb), 0.06);
 }
 .inv2-share-btn.cp:hover {
-  background: rgba(0, 240, 255, 0.12);
-  border-color: rgba(0, 240, 255, 0.38);
-  box-shadow: 0 8px 24px rgba(0, 240, 255, 0.18);
+  background: rgba(var(--accent-cyan-rgb), 0.12);
+  border-color: rgba(var(--accent-cyan-rgb), 0.38);
+  box-shadow: 0 8px 24px rgba(var(--accent-cyan-rgb), 0.18);
 }
 
 .inv2-share-btn.more {
@@ -1431,9 +1427,9 @@
   gap: 9px;
   padding: 13px 16px;
   border-radius: 12px;
-  border: 1px solid rgba(76, 175, 80, 0.35);
-  background: linear-gradient(135deg, rgba(76, 175, 80, 0.18), rgba(76, 175, 80, 0.08));
-  color: #4caf50;
+  border: 1px solid rgba(var(--success-rgb), 0.35);
+  background: linear-gradient(135deg, rgba(var(--success-rgb), 0.18), rgba(var(--success-rgb), 0.08));
+  color: rgb(var(--success-rgb));
   font-size: 0.88rem;
   font-weight: 800;
   font-family: inherit;
@@ -1443,10 +1439,10 @@
 }
 
 .inv2-pay-btn:hover {
-  background: rgba(76, 175, 80, 0.22);
-  border-color: rgba(76, 175, 80, 0.5);
+  background: rgba(var(--success-rgb), 0.22);
+  border-color: rgba(var(--success-rgb), 0.5);
   transform: translateY(-2px);
-  box-shadow: 0 8px 22px rgba(76, 175, 80, 0.25);
+  box-shadow: 0 8px 22px rgba(var(--success-rgb), 0.25);
 }
 
 .inv2-pay-btn:active { transform: translateY(0); }
@@ -1491,20 +1487,20 @@
   padding: 11px 14px;
   border-radius: 10px;
   border: none;
-  background: linear-gradient(135deg, #ff2a5f, #c4154a);
+  background: linear-gradient(135deg, var(--accent-pink), #c4154a);
   color: white;
   font-size: 0.86rem;
   font-weight: 800;
   font-family: inherit;
   cursor: pointer;
   transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 18px rgba(255, 42, 95, 0.28);
+  box-shadow: 0 4px 18px rgba(var(--accent-pink-rgb), 0.28);
   letter-spacing: 0.01em;
 }
 
 .inv2-btn-print:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 28px rgba(255, 42, 95, 0.4);
+  box-shadow: 0 8px 28px rgba(var(--accent-pink-rgb), 0.4);
 }
 
 .inv2-btn-print:active { transform: translateY(0); }
@@ -1558,117 +1554,4 @@
 /* =============================================
    LIGHT MODE OVERRIDES
    ============================================= */
-[data-theme="light"] .billing-stat-card {
-  background: rgba(255, 255, 255, 0.9);
-  border-color: rgba(0, 0, 0, 0.07);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
-}
 
-[data-theme="light"] .billing-stat-card.income:hover {
-  border-color: rgba(46, 125, 50, 0.2);
-}
-
-[data-theme="light"] .billing-stat-card.debt:hover {
-  border-color: rgba(230, 81, 0, 0.2);
-}
-
-[data-theme="light"] .billing-stat-card.total:hover {
-  border-color: rgba(0, 153, 187, 0.2);
-}
-
-[data-theme="light"] .billing-smart-panel {
-  background: rgba(0, 0, 0, 0.02);
-  border-color: rgba(0, 0, 0, 0.07);
-}
-
-[data-theme="light"] .billing-smart-main {
-  background: rgba(0, 153, 187, 0.05);
-  border-color: rgba(0, 153, 187, 0.12);
-}
-
-[data-theme="light"] .billing-smart-item {
-  background: rgba(0, 0, 0, 0.025);
-  border-color: rgba(0, 0, 0, 0.07);
-}
-
-[data-theme="light"] .billing-smart-item:hover {
-  background: rgba(0, 0, 0, 0.04);
-}
-
-[data-theme="light"] .billing-smart-item.overdue,
-[data-theme="light"] .billing-smart-item.today {
-  background: rgba(255, 152, 0, 0.04);
-  border-color: rgba(255, 152, 0, 0.18);
-}
-
-[data-theme="light"] .mobile-billing-card {
-  background: rgba(0, 0, 0, 0.02);
-  border-color: rgba(0, 0, 0, 0.07);
-}
-
-[data-theme="light"] .mobile-billing-card:hover {
-  background: rgba(0, 0, 0, 0.04);
-  border-color: rgba(0, 0, 0, 0.12);
-}
-
-[data-theme="light"] .mobile-bill-tag.date {
-  background: rgba(0, 0, 0, 0.05);
-  color: #4a4a66;
-  border-color: rgba(0,0,0,0.07);
-}
-
-[data-theme="light"] .mobile-bill-tag.total {
-  background: rgba(0, 153, 187, 0.07);
-  border-color: rgba(0, 153, 187, 0.12);
-}
-
-[data-theme="light"] .inv2-btn-close {
-  background: rgba(0, 0, 0, 0.04);
-  border-color: rgba(0, 0, 0, 0.1);
-  color: #4a4a66;
-}
-
-[data-theme="light"] .inv2-btn-close:hover {
-  background: rgba(0, 0, 0, 0.08);
-  color: #111128;
-}
-
-[data-theme="light"] .inv2-actions-header {
-  border-bottom-color: rgba(0, 0, 0, 0.08);
-}
-
-[data-theme="light"] .inv2-share-btn {
-  background: rgba(0, 0, 0, 0.03);
-  border-color: rgba(0, 0, 0, 0.08);
-}
-
-[data-theme="light"] .inv2-share-btn span { color: #4a4a66; }
-[data-theme="light"] .inv2-share-btn small { color: #8a8aa8; }
-
-[data-theme="light"] .status-select.confirmed {
-  background-color: rgba(46, 125, 50, 0.08);
-  color: #2e7d32;
-  border-color: rgba(46, 125, 50, 0.18);
-}
-
-[data-theme="light"] .status-select.dp {
-  background-color: rgba(230, 81, 0, 0.07);
-  color: #e65100;
-  border-color: rgba(230, 81, 0, 0.18);
-}
-
-[data-theme="light"] .status-select.pending {
-  background-color: rgba(232, 25, 78, 0.07);
-  color: var(--accent-pink);
-  border-color: rgba(232, 25, 78, 0.18);
-}
-
-[data-theme="light"] .billing-smart-btn {
-  background: rgba(0, 153, 187, 0.07);
-  border-color: rgba(0, 153, 187, 0.15);
-}
-
-[data-theme="light"] .billing-smart-btn:hover {
-  background: rgba(0, 153, 187, 0.14);
-  border-color: rgba(0, 153, 187, 0.3);
-}

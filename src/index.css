@@ -3,13 +3,21 @@
 
 :root {
   /* ─── Color Tokens ─── */
+  --bg-dark-rgb: 12, 12, 16;
   --bg-dark: #0c0c10;
+  --bg-surface-rgb: 23, 23, 29;
   --bg-surface: #17171d;
   --bg-surface-hover: #23232b;
 
+  --accent-pink-rgb: 255, 42, 95;
   --accent-pink: #ff2a5f;
   --accent-pink-hover: #ff4d79;
+  
+  --accent-cyan-rgb: 0, 240, 255;
   --accent-cyan: #00f0ff;
+  
+  --success-rgb: 76, 175, 80;
+  --warning-rgb: 255, 152, 0;
 
   --text-primary: #f0f0f5;
   --text-secondary: #9898a8;
@@ -17,11 +25,11 @@
   --text-faint: #3a3a4a;
 
   --border-light: rgba(255, 255, 255, 0.07);
-  --border-focus: rgba(255, 42, 95, 0.5);
+  --border-focus: rgba(var(--accent-pink-rgb), 0.5);
 
-  --glass-bg: rgba(23, 23, 29, 0.7);
+  --glass-bg: rgba(var(--bg-surface-rgb), 0.7);
   --glass-border: rgba(255, 255, 255, 0.06);
-  --shadow-neon: 0 0 15px rgba(255, 42, 95, 0.3);
+  --shadow-neon: 0 0 15px rgba(var(--accent-pink-rgb), 0.3);
 
   /* ─── Typography Tokens ─── */
   --font-display: 'Plus Jakarta Sans', system-ui, sans-serif;
@@ -60,23 +68,7 @@
   --ls-caps:    0.12em;
 }
 
-[data-theme="light"] {
-  --bg-dark: #f0f2f5;
-  --bg-surface: #ffffff;
-  --bg-surface-hover: #f9fafb;
 
-  --text-primary: #1e293b;
-  --text-secondary: #475569;
-  --text-muted: #64748b;
-  --text-faint: #94a3b8;
-
-  --border-light: rgba(0, 0, 0, 0.08);
-  --border-focus: rgba(255, 42, 95, 0.4);
-
-  --glass-bg: rgba(255, 255, 255, 0.85);
-  --glass-border: rgba(0, 0, 0, 0.05);
-  --shadow-neon: 0 4px 15px rgba(0, 0, 0, 0.05);
-}
 
 /* ─── Reset ─── */
 *, *::before, *::after {
@@ -255,7 +247,10 @@ option {
    ════════════════════════════════════════════ */
 [data-theme="light"] {
   /* Backgrounds */
+  --bg-dark-rgb: 238, 240, 246;
   --bg-dark:         #eef0f6;
+  
+  --bg-surface-rgb: 255, 255, 255;
   --bg-surface:      #ffffff;
   --bg-surface-hover: #e8eaf4;
 
@@ -267,16 +262,22 @@ option {
 
   /* Borders */
   --border-light:    rgba(0, 0, 0, 0.07);
-  --border-focus:    rgba(255, 42, 95, 0.4);
+  --border-focus:    rgba(var(--accent-pink-rgb), 0.4);
 
   /* Glass */
-  --glass-bg:        rgba(255, 255, 255, 0.80);
+  --glass-bg:        rgba(var(--bg-surface-rgb), 0.80);
   --glass-border:    rgba(0, 0, 0, 0.07);
 
   /* Keep accents */
-  --accent-pink:     #c91442;
-  --accent-pink-hover: #e8194e;
-  --accent-cyan:     #006f86;
+  --accent-pink-rgb: 232, 25, 78;
+  --accent-pink:     #e8194e;
+  --accent-pink-hover: #c91442;
+  
+  --accent-cyan-rgb: 0, 153, 187;
+  --accent-cyan:     #0099bb;
+  
+  --success-rgb: 46, 125, 50;
+  --warning-rgb: 255, 179, 0;
 }
 
 /* ── Base ── */
