@@ -301,6 +301,20 @@ const CalendarPage = () => {
     if (run && currentStep === 11 && booking.band === 'Band Tutorial') setTimeout(() => nextStep(), 100);
   };
 
+  const handleBookingKeyDown = (e, booking) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      handleBookingClick(e, booking);
+    }
+  };
+
+  const handleCellKeyDown = (e, dateStr, hour) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      handleCellClick(dateStr, hour);
+    }
+  };
+
   const handleDeleteBooking = (id) => {
     deleteBooking(id); setSelectedBooking(null);
     if (run && currentStep === 12) setTimeout(() => nextStep(), 100);
@@ -425,6 +439,7 @@ const CalendarPage = () => {
                 placeholder="Cari band / no HP..." 
                 value={searchQuery} 
                 onChange={e => setSearchQuery(e.target.value)} 
+                aria-label="Cari band atau nomor HP"
               />
               {searchQuery && (
                 <button type="button" className="app-search-clear" onClick={() => setSearchQuery('')} aria-label="Bersihkan pencarian" title="Bersihkan pencarian">
@@ -491,7 +506,7 @@ const CalendarPage = () => {
             {/* Stats Bar */}
             <div className="calendar-stats-grid">
               <div className="calendar-stat-card">
-                <div className="calendar-stat-icon" style={{ background: 'rgba(0,240,255,0.1)' }}>
+                <div className="calendar-stat-icon stat-icon-bookings">
                   <CalendarCheck size={18} color="var(--accent-cyan)" />
                 </div>
                 <div className="calendar-stat-data">
@@ -500,7 +515,7 @@ const CalendarPage = () => {
                 </div>
               </div>
               <div className="calendar-stat-card">
-                <div className="calendar-stat-icon" style={{ background: 'rgba(255,42,95,0.1)' }}>
+                <div className="calendar-stat-icon stat-icon-hours">
                   <Clock size={18} color="var(--accent-pink)" />
                 </div>
                 <div className="calendar-stat-data">
@@ -509,7 +524,7 @@ const CalendarPage = () => {
                 </div>
               </div>
               <div className="calendar-stat-card">
-                <div className="calendar-stat-icon" style={{ background: 'rgba(76,175,80,0.1)' }}>
+                <div className="calendar-stat-icon stat-icon-revenue">
                   <DollarSign size={18} color="#4CAF50" />
                 </div>
                 <div className="calendar-stat-data">
@@ -583,17 +598,23 @@ const CalendarPage = () => {
         <div className="calendar-workspace-toolbar">
           {/* Left: Navigation */}
           <div className="calendar-toolbar-left tour-calendar-nav">
-            <button className="icon-btn nav-arrow" onClick={handlePrev}><ChevronLeft size={18} /></button>
+            <button className="icon-btn nav-arrow" onClick={handlePrev} aria-label="Kembali ke periode sebelumnya"><ChevronLeft size={18} /></button>
             <span className="current-month">{getDateLabel()}</span>
-            <button className="icon-btn nav-arrow" onClick={handleNext}><ChevronRight size={18} /></button>
+            <button className="icon-btn nav-arrow" onClick={handleNext} aria-label="Lanjut ke periode berikutnya"><ChevronRight size={18} /></button>
             <button className="today-btn" onClick={handleGoToday}>Hari Ini</button>
           </div>
 
           {/* Right: View Switcher + Filters */}
           <div className="calendar-toolbar-right">
-            <div className="view-switcher tour-calendar-filters">
+            <div className="view-switcher tour-calendar-filters" role="tablist" aria-label="Pilih format tampilan kalender">
               {viewModes.map(({ id, label, icon: Icon }) => (
-                <button key={id} className={`view-btn ${viewMode === id ? 'active' : ''}`} onClick={() => setViewMode(id)}>
+                <button 
+                  key={id} 
+                  className={`view-btn ${viewMode === id ? 'active' : ''}`} 
+                  onClick={() => setViewMode(id)}
+                  role="tab"
+                  aria-selected={viewMode === id}
+                >
                   <Icon size={14} />
                   <span>{label}</span>
                   {viewMode === id && (
@@ -617,7 +638,12 @@ const CalendarPage = () => {
               ].map(({ id, label, shortLabel }) => (
                 <Tooltip.Root key={id}>
                   <Tooltip.Trigger asChild>
-                    <button className={`filter-chip ${filterStatus === id ? `active ${id}` : ''}`} onClick={() => setFilterStatus(id)}>
+                    <button 
+                      className={`filter-chip ${filterStatus === id ? `active ${id}` : ''}`} 
+                      onClick={() => setFilterStatus(id)}
+                      aria-pressed={filterStatus === id}
+                      aria-label={`Filter status ${label}`}
+                    >
                       {id !== 'all' && <span className={`dot ${id}`} style={id === 'maintenance' ? { background: '#6b6b76' } : undefined} />}
                       {isMobile ? shortLabel : label}
                     </button>
@@ -702,6 +728,10 @@ const CalendarPage = () => {
                         onDragEnd={handleDragEnd}
                         onDragOver={handleDragOver}
                         onDrop={(e) => handleDrop(e, dateStr, hour)}
+                        role="button"
+                        tabIndex={0}
+                        aria-label={`Jadwal ${cellBooking.band}, pukul ${cellBooking.hour}.00 durasi ${cellBooking.duration} jam tanggal ${format(day, 'dd MMMM yyyy')}. Status: ${getStatusLabel(cellBooking.status)}.`}
+                        onKeyDown={e => handleBookingKeyDown(e, cellBooking)}
                       >
                         {isCurrentHour && <div className="current-time-line" style={{ top: timeLineTop }} />}
                         {isBookingStart && (
@@ -728,6 +758,10 @@ const CalendarPage = () => {
                       onClick={() => handleCellClick(dateStr, hour)}
                       onDragOver={handleDragOver}
                       onDrop={(e) => handleDrop(e, dateStr, hour)}
+                      role="button"
+                      tabIndex={0}
+                      aria-label={`Slot kosong pukul ${hour}.00 tanggal ${format(day, 'dd MMMM yyyy')}. Tekan Enter untuk membuat booking baru.`}
+                      onKeyDown={e => handleCellKeyDown(e, dateStr, hour)}
                     >
                       {isCurrentHour && <div className="current-time-line" style={{ top: timeLineTop }} />}
                       <span className="hover-plus">+</span>
@@ -816,7 +850,7 @@ const CalendarPage = () => {
                 </div>
                 <div className="detail-header-actions">
                   <span className={`detail-status-badge status-${b.status}`}>{getStatusLabel(b.status)}</span>
-                  <button className="icon-btn detail-close" onClick={() => setSelectedBooking(null)}><X size={16} /></button>
+                  <button className="icon-btn detail-close" onClick={() => setSelectedBooking(null)} aria-label="Tutup detail booking"><X size={16} /></button>
                 </div>
               </div>
 
@@ -832,7 +866,7 @@ const CalendarPage = () => {
                       </div>
                     ) : (
                       <div className="duration-controls">
-                        <button className="dur-btn" onClick={() => updateBooking(b.id, { duration: Math.max(1, b.duration - 1) })} disabled={b.duration <= 1}>−</button>
+                        <button className="dur-btn" onClick={() => updateBooking(b.id, { duration: Math.max(1, b.duration - 1) })} disabled={b.duration <= 1} aria-label="Kurangi durasi">−</button>
                         <span className="dur-label">{b.duration} jam</span>
                         <button className="dur-btn" onClick={() => {
                         const newDur = Math.min(13, b.duration + 1);
@@ -844,7 +878,7 @@ const CalendarPage = () => {
                           }
                           updateBooking(b.id, { duration: newDur });
                         }
-                      }}>+</button>
+                      }} aria-label="Tambah durasi">+</button>
                       </div>
                     )}
                   </div>

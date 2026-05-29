@@ -65,8 +65,8 @@
    ══════════════════════════════════════════ */
 .view-switcher {
   display: flex;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  background: var(--glass-bg);
+  border: 1px solid var(--border-light);
   border-radius: 12px;
   padding: 3px;
   gap: 2px;
@@ -91,7 +91,7 @@
 }
 .view-btn:hover {
   color: var(--text-primary);
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--bg-surface-hover);
 }
 .view-btn.active {
   background: var(--accent-pink);
@@ -133,10 +133,10 @@
   border-radius: 18px;
   animation: popupIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   background: rgba(var(--bg-surface-rgb), 0.98);
-  border: 1px solid rgba(255, 255, 255, 0.09);
+  border: 1px solid var(--border-light);
   box-shadow:
-    0 20px 60px rgba(0, 0, 0, 0.6),
-    0 0 0 1px rgba(255, 255, 255, 0.04),
+    0 20px 60px rgba(0, 0, 0, 0.4),
+    0 0 0 1px var(--border-light),
     inset 0 1px 0 rgba(255, 255, 255, 0.06);
   transform: translateZ(0);
   backface-visibility: hidden;
@@ -153,14 +153,14 @@
   animation: sheetUp 0.32s cubic-bezier(0.16, 1, 0.3, 1);
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: 0 -20px 60px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.07);
+  box-shadow: 0 -20px 60px rgba(0, 0, 0, 0.3), 0 0 0 1px var(--border-light);
 }
 .booking-detail-popup.mobile-sheet::before {
   content: '';
   display: block;
   width: 36px;
   height: 4px;
-  background: rgba(255, 255, 255, 0.18);
+  background: var(--border-light);
   border-radius: 2px;
   margin: 10px auto 2px;
   flex-shrink: 0;
@@ -180,8 +180,8 @@
   align-items: center;
   justify-content: space-between;
   padding: 15px 18px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
-  background: rgba(255, 255, 255, 0.025);
+  border-bottom: 1px solid var(--border-light);
+  background: rgba(var(--bg-surface-rgb), 0.3);
 }
 .detail-header-info { display: flex; align-items: center; gap: 9px; }
 .detail-header-info h4 {
@@ -227,7 +227,7 @@
 .detail-status-badge.status-confirmed   { background: rgba(var(--success-rgb),0.12); color: rgb(var(--success-rgb)); border: 1px solid rgba(var(--success-rgb),0.22); }
 .detail-status-badge.status-dp          { background: rgba(var(--accent-cyan-rgb),0.1);  color: var(--accent-cyan); border: 1px solid rgba(var(--accent-cyan-rgb),0.2); }
 .detail-status-badge.status-pending     { background: rgba(var(--warning-rgb),0.1);  color: rgb(var(--warning-rgb)); border: 1px solid rgba(var(--warning-rgb),0.2); }
-.detail-status-badge.status-maintenance { background: rgba(255,255,255,0.05); color: var(--text-muted); border: 1px solid rgba(255,255,255,0.08); }
+.detail-status-badge.status-maintenance { background: rgba(var(--bg-surface-rgb), 0.3); color: var(--text-muted); border: 1px solid var(--border-light); }
 
 /* Detail Body */
 .detail-body {
@@ -252,8 +252,8 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.09);
+  background: var(--bg-surface-hover);
+  border: 1px solid var(--border-light);
   border-radius: 11px;
   padding: 4px 8px;
   align-self: flex-start;
@@ -262,8 +262,8 @@
   opacity: 0.8;
 }
 .dur-btn {
-  background: rgba(255, 255, 255, 0.07);
-  border: 1px solid rgba(255, 255, 255, 0.09);
+  background: rgba(var(--bg-surface-rgb), 0.4);
+  border: 1px solid var(--border-light);
   color: var(--text-primary);
   width: 24px; height: 24px;
   border-radius: 7px;
@@ -290,8 +290,8 @@
 
 /* Price Card */
 .detail-price-card {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(var(--bg-surface-rgb), 0.25);
+  border: 1px solid var(--border-light);
   border-radius: 13px;
   padding: 13px 15px;
   display: flex;
@@ -305,7 +305,7 @@
 .detail-price-row.total {
   font-weight: 700; color: var(--text-primary);
   padding-top: 7px; margin-top: 2px;
-  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  border-top: 1px solid var(--border-light);
 }
 .detail-price-row.discount { color: #FFC107; }
 .detail-price-row.dp       { color: var(--accent-cyan); }
@@ -327,7 +327,7 @@
   display: flex;
   gap: 8px;
   padding: 11px 18px 16px;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-top: 1px solid var(--border-light);
   flex-wrap: wrap;
 }
 .detail-footer .btn-secondary { flex: 1; justify-content: center; font-size: 0.82rem; }
@@ -398,15 +398,15 @@
   gap: 12px;
   padding: 12px 16px;
   border-radius: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid var(--border-light);
+  background: var(--glass-bg);
   transition: transform 0.2s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.2s;
   height: 76px;
 }
 .calendar-stat-card:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-  border-color: rgba(255, 255, 255, 0.1);
+  border-color: rgba(var(--accent-pink-rgb), 0.3);
 }
 
 .calendar-stat-icon {
@@ -414,6 +414,31 @@
   border-radius: 10px;
   display: flex; align-items: center; justify-content: center;
   flex-shrink: 0;
+}
+.stat-icon-bookings {
+  background: rgba(var(--accent-cyan-rgb), 0.12);
+  color: var(--accent-cyan);
+}
+.stat-icon-hours {
+  background: rgba(var(--accent-pink-rgb), 0.12);
+  color: var(--accent-pink);
+}
+.stat-icon-revenue {
+  background: rgba(var(--success-rgb), 0.12);
+  color: rgb(var(--success-rgb));
+}
+
+[data-theme="light"] .stat-icon-bookings {
+  background: rgba(var(--accent-cyan-rgb), 0.08);
+  color: var(--accent-cyan);
+}
+[data-theme="light"] .stat-icon-hours {
+  background: rgba(var(--accent-pink-rgb), 0.08);
+  color: var(--accent-pink);
+}
+[data-theme="light"] .stat-icon-revenue {
+  background: rgba(var(--success-rgb), 0.08);
+  color: rgb(var(--success-rgb));
 }
 
 .calendar-stat-data { display: flex; flex-direction: column; }
@@ -460,8 +485,8 @@
   display: flex;
   align-items: center;
   gap: 16px;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid var(--glass-border);
+  background: rgba(var(--bg-surface-rgb), 0.2);
+  border: 1px solid var(--border-light);
   border-radius: 12px;
   padding: 10px 16px;
 }
@@ -497,8 +522,8 @@
 
 .cal-slot-chip {
   flex-shrink: 0;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-light);
+  background: var(--bg-surface-hover);
   color: var(--text-primary);
   border-radius: 8px;
   padding: 6px 10px;
@@ -515,8 +540,8 @@
 
 .cal-request-chip {
   flex-shrink: 0;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-light);
+  background: var(--bg-surface-hover);
   border-radius: 8px;
   padding: 6px 10px;
   display: flex;
@@ -705,7 +730,7 @@ body.calendar-move-lock .main-content {
   position: sticky; top: 0;
   background: var(--bg-dark);
   border-bottom: 2px solid var(--glass-border);
-  border-right: 1px solid rgba(255, 255, 255, 0.03);
+  border-right: 1px solid var(--border-light);
   padding: 10px 4px;
   text-align: center;
   z-index: 10;
@@ -740,7 +765,7 @@ body.calendar-move-lock .main-content {
 
 .time-label {
   border-right: 1px solid var(--glass-border);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+  border-bottom: 1px solid var(--border-light);
   padding: 0 4px;
   display: flex; align-items: center; justify-content: center;
   background: var(--bg-dark);
@@ -757,12 +782,12 @@ body.calendar-move-lock .main-content {
 
 /* Grid Cells */
 .grid-cell {
-  border-right: 1px solid rgba(255, 255, 255, 0.025);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+  border-right: 1px solid var(--border-light);
+  border-bottom: 1px solid var(--border-light);
   min-height: 44px; position: relative;
   transition: background 0.12s;
 }
-.grid-cell.even-row { background: rgba(255, 255, 255, 0.012); }
+.grid-cell.even-row { background: rgba(var(--bg-surface-rgb), 0.15); }
 .grid-cell.today-col-highlight { background: rgba(var(--accent-cyan-rgb), 0.025) !important; }
 .grid-cell.weekend-col { background: rgba(var(--accent-pink-rgb), 0.01); }
 .grid-cell.today-col-highlight.weekend-col { background: rgba(var(--accent-cyan-rgb), 0.025) !important; }
@@ -773,7 +798,7 @@ body.calendar-move-lock .main-content {
   display: flex; align-items: center; justify-content: center;
   transition: background 0.12s;
 }
-.empty-cell:hover { background: rgba(255, 255, 255, 0.04) !important; }
+.empty-cell:hover { background: var(--bg-surface-hover) !important; }
 .hover-plus {
   opacity: 0; color: var(--text-muted);
   font-size: 1.1rem; font-weight: 300;
@@ -879,7 +904,7 @@ body.calendar-move-lock .main-content {
   transition: filter 0.16s ease, opacity 0.16s ease, box-shadow 0.18s ease, transform 0.18s ease, border-color 0.18s ease;
   overflow: hidden;
   border-bottom: none; border-top: none;
-  border-right: 1px solid rgba(255, 255, 255, 0.05);
+  border-right: 1px solid var(--border-light);
   will-change: filter, transform;
 }
 .booked-cell[draggable="true"] { cursor: grab; }
@@ -969,7 +994,7 @@ body.calendar-move-lock .main-content {
   flex-direction: column;
   justify-content: flex-start;
   gap: 4px;
-  border: 1px solid rgba(255, 255, 255, 0.22);
+  border: 1px solid var(--border-light);
   background: rgba(var(--bg-surface-rgb), 0.92);
   -webkit-backdrop-filter: blur(18px);
   backdrop-filter: blur(18px);
@@ -1006,7 +1031,7 @@ body.calendar-move-lock .main-content {
   gap: 3px;
   -webkit-backdrop-filter: blur(18px);
   backdrop-filter: blur(18px);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid var(--border-light);
   background: rgba(var(--bg-surface-rgb), 0.92);
   box-shadow: 0 14px 32px rgba(0, 0, 0, 0.32);
   pointer-events: none;
@@ -1138,8 +1163,8 @@ body.calendar-move-lock .main-content {
   border-radius: 10px; font-size: 0.77rem;
   font-weight: 700; cursor: pointer;
   transition: all 0.18s;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid var(--border-light);
+  background: var(--bg-surface-hover);
   color: var(--text-secondary);
   font-family: var(--font-display);
   letter-spacing: -0.01em;
@@ -1150,7 +1175,7 @@ body.calendar-move-lock .main-content {
 .status-btn.pending.active   { background: rgba(var(--accent-pink-rgb),0.1); color: var(--accent-pink); border-color: rgba(var(--accent-pink-rgb),0.4); box-shadow: 0 0 12px rgba(var(--accent-pink-rgb),0.1); }
 .status-btn.dp.active        { background: rgba(255,193,7,0.1); color: #FFC107; border-color: rgba(255,193,7,0.4); box-shadow: 0 0 12px rgba(255,193,7,0.1); }
 .status-btn.confirmed.active { background: rgba(var(--accent-cyan-rgb),0.1); color: var(--accent-cyan); border-color: rgba(var(--accent-cyan-rgb),0.4); box-shadow: 0 0 12px rgba(var(--accent-cyan-rgb),0.1); }
-.status-btn:hover { background: rgba(255,255,255,0.07); }
+.status-btn:hover { background: var(--bg-surface-hover); opacity: 0.95; }
 
 .delete-btn {
   display: flex; align-items: center; justify-content: center; gap: 6px;
@@ -1576,30 +1601,7 @@ body.calendar-move-lock .main-content {
   .detail-footer .btn-secondary { padding: 10px 14px; font-size: 0.8rem; border-radius: 10px; display: flex; gap: 6px; align-items: center; justify-content: center; flex: 1; min-width: 40%; }
 }
 
-@media (max-width: 1024px) {
-  .calendar-stats-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  .calendar-recommendation-strip,
-  .calendar-request-strip {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-  }
-  .calendar-strip-content {
-    width: 100%;
-  }
-}
-
-@media (max-width: 768px) {
-  .calendar-workspace-toolbar {
-    flex-direction: column;
-    align-items: stretch;
-  }
-  .calendar-toolbar-right {
-    justify-content: space-between;
-  }
-}
+/* Duplicate media query block removed to improve code quality */
 
 @media (max-width: 600px) {
   .hide-on-mobile { display: none !important; }
@@ -1684,6 +1686,12 @@ body.calendar-move-lock .main-content {
   align-items: center;
   gap: 12px;
   flex-wrap: wrap;
+}
+
+.app-page-actions-buttons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .calendar-header-search,

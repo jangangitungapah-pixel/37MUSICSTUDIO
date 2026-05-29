@@ -18,11 +18,12 @@
     padding: 0;
   }
   
-  .page-header .header-actions,
-  .stats-bar,
-  .calendar-toolbar .date-navigation .icon-btn,
-  .calendar-toolbar .today-btn,
-  .quick-filters,
+  .calendar-header-actions,
+  .calendar-overview,
+  .calendar-workspace-toolbar .nav-arrow,
+  .calendar-workspace-toolbar .today-btn,
+  .calendar-workspace-toolbar .view-switcher,
+  .calendar-workspace-toolbar .quick-filters,
   .hover-plus {
     display: none !important;
   }
