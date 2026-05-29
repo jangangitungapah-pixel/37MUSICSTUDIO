@@ -1277,8 +1277,8 @@ tr:hover
 
   .customer-avatar { width: 34px; height: 34px; font-size: 0.95rem; border-radius: 8px; }
 
-  .customer-smart-grid { grid-template-columns: 1fr; gap: 8px; }
-  .customer-smart-card { padding: 13px 14px; }
+  .customer-smart-grid, .smart-retention-grid { grid-template-columns: 1fr; gap: 8px; }
+  .customer-smart-card, .smart-retention-item { padding: 13px 14px; }
 }
 
 @media (max-width: 480px) {
@@ -1300,6 +1300,252 @@ tr:hover
 }
 
 /* =============================================
+   SMART RETENTION & STATS ICON STYLES
+   ============================================= */
+.smart-retention-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.smart-retention-item {
+  display: block;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 16px;
+  transition: all 0.2s ease;
+}
+
+.smart-retention-item:hover {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.1);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.smart-retention-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--accent-cyan);
+  margin-bottom: 8px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.smart-retention-value {
+  font-size: 1.1rem;
+  color: var(--text-primary);
+  display: block;
+  margin-bottom: 4px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.smart-retention-label {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+  display: block;
+}
+
+.retention-banner-btn {
+  background: rgba(0, 240, 255, 0.15) !important;
+  color: var(--accent-cyan) !important;
+  border: 1px solid var(--accent-cyan) !important;
+  transition: all 0.2s ease;
+}
+
+.retention-banner-btn:hover {
+  background: rgba(0, 240, 255, 0.25) !important;
+  box-shadow: 0 0 12px rgba(0, 240, 255, 0.2);
+}
+
+.stat-icon-total {
+  background: rgba(0, 240, 255, 0.1) !important;
+}
+.stat-icon-active {
+  background: rgba(76, 175, 80, 0.1) !important;
+}
+.stat-icon-bookings {
+  background: rgba(255, 42, 95, 0.1) !important;
+}
+.stat-icon-hours {
+  background: rgba(156, 39, 176, 0.1) !important;
+}
+.stat-icon-revenue {
+  background: rgba(255, 193, 7, 0.1) !important;
+}
+
+/* =============================================
    LIGHT MODE OVERRIDES
    ============================================= */
+[data-theme="light"] .customers-page .stat-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-sm);
+}
+
+[data-theme="light"] .smart-retention-item {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-sm);
+}
+
+[data-theme="light"] .smart-retention-item:hover {
+  background: var(--bg-surface-hover);
+  border-color: var(--border-medium);
+  box-shadow: var(--shadow-md);
+}
+
+[data-theme="light"] .smart-retention-value {
+  color: var(--text-primary);
+}
+
+[data-theme="light"] .smart-retention-label {
+  color: var(--text-secondary);
+}
+
+[data-theme="light"] .detail-panel-header {
+  border-bottom: 1px solid var(--border-light);
+}
+
+[data-theme="light"] .section-title {
+  border-bottom: 1px solid var(--border-light);
+  color: var(--text-muted);
+}
+
+[data-theme="light"] .detail-notes {
+  background: var(--bg-surface-hover);
+  border: 1px solid var(--border-light);
+  color: var(--text-primary);
+}
+
+[data-theme="light"] .mini-stat {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-light);
+}
+
+[data-theme="light"] .mini-stat:hover {
+  background: var(--bg-surface-hover);
+  border-color: var(--border-medium);
+}
+
+[data-theme="light"] .detail-panel-footer {
+  border-top: 1px solid var(--border-light);
+  background: var(--bg-surface-hover);
+}
+
+[data-theme="light"] .btn-edit-full {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-light);
+  color: var(--text-primary);
+}
+
+[data-theme="light"] .btn-edit-full:hover {
+  background: rgba(var(--accent-pink-rgb), 0.05);
+  border-color: rgba(var(--accent-pink-rgb), 0.25);
+  color: var(--accent-pink);
+}
+
+[data-theme="light"] .customer-booking-item {
+  background: var(--bg-surface);
+  border-left-width: 3px;
+  border-top: 1px solid var(--border-light);
+  border-right: 1px solid var(--border-light);
+  border-bottom: 1px solid var(--border-light);
+}
+
+[data-theme="light"] .customer-booking-item:hover {
+  background: var(--bg-surface-hover);
+}
+
+[data-theme="light"] .cf-input {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-medium);
+  color: var(--text-primary);
+}
+
+[data-theme="light"] .cf-input:focus {
+  background: var(--bg-surface) !important;
+}
+
+[data-theme="light"] .cf-prefix-input {
+  border: 1px solid var(--border-medium);
+  background: var(--bg-surface);
+}
+
+[data-theme="light"] .cf-prefix {
+  background: var(--bg-surface-hover);
+  border-right: 1px solid var(--border-medium);
+  color: var(--text-secondary);
+}
+
+[data-theme="light"] .cf-status-card {
+  background: var(--bg-surface);
+  border: 1.5px solid var(--border-medium);
+  color: var(--text-secondary);
+}
+
+[data-theme="light"] .cf-status-card:hover {
+  background: var(--bg-surface-hover);
+  border-color: var(--cs-color);
+}
+
+[data-theme="light"] .cf-status-card.selected {
+  background: rgba(var(--accent-cyan-rgb), 0.05);
+  border-color: var(--cs-color);
+  color: var(--text-primary);
+  box-shadow: var(--shadow-sm);
+}
+
+[data-theme="light"] .cf-toggle-switch {
+  background: rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+[data-theme="light"] .cf-toggle-switch.on {
+  background: rgba(255, 193, 7, 0.25);
+  border-color: rgba(255, 193, 7, 0.45);
+}
+
+[data-theme="light"] .cf-toggle-thumb {
+  background: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="light"] .cf-toggle-switch.on .cf-toggle-thumb {
+  background: #ffb300;
+}
+
+[data-theme="light"] .mobile-customer-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-sm);
+}
+
+[data-theme="light"] .mobile-customer-card:hover {
+  background: var(--bg-surface-hover);
+  border-color: var(--border-medium);
+}
+
+[data-theme="light"] .stat-icon-total {
+  background: rgba(0, 240, 255, 0.15) !important;
+}
+[data-theme="light"] .stat-icon-active {
+  background: rgba(76, 175, 80, 0.15) !important;
+}
+[data-theme="light"] .stat-icon-bookings {
+  background: rgba(255, 42, 95, 0.15) !important;
+}
+[data-theme="light"] .stat-icon-hours {
+  background: rgba(156, 39, 176, 0.15) !important;
+}
+[data-theme="light"] .stat-icon-revenue {
+  background: rgba(255, 193, 7, 0.15) !important;
+}
+
 

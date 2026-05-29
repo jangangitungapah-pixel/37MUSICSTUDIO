@@ -166,9 +166,9 @@ const CustomersPage = () => {
       </header>
 
       {/* Stats Bar */}
-      <div className="app-stat-grid tour-cust-stats">
-        <div className="app-stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(0, 240, 255, 0.1)' }}>
+      <div className="stats-bar tour-cust-stats">
+        <div className="stat-card">
+          <div className="stat-icon stat-icon-total">
             <Users size={20} color="var(--accent-cyan)" />
           </div>
           <div className="stat-data">
@@ -176,8 +176,8 @@ const CustomersPage = () => {
             <span className="stat-label">Total Pelanggan</span>
           </div>
         </div>
-        <div className="app-stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(76, 175, 80, 0.1)' }}>
+        <div className="stat-card">
+          <div className="stat-icon stat-icon-active">
             <UserCheck size={20} color="#4CAF50" />
           </div>
           <div className="stat-data">
@@ -185,8 +185,8 @@ const CustomersPage = () => {
             <span className="stat-label">Aktif</span>
           </div>
         </div>
-        <div className="app-stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(255, 42, 95, 0.1)' }}>
+        <div className="stat-card">
+          <div className="stat-icon stat-icon-bookings">
             <Star size={20} color="var(--accent-pink)" />
           </div>
           <div className="stat-data">
@@ -194,8 +194,8 @@ const CustomersPage = () => {
             <span className="stat-label">Total Booking</span>
           </div>
         </div>
-        <div className="app-stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(156, 39, 176, 0.1)' }}>
+        <div className="stat-card">
+          <div className="stat-icon stat-icon-hours">
             <Clock size={20} color="#9C27B0" />
           </div>
           <div className="stat-data">
@@ -203,8 +203,8 @@ const CustomersPage = () => {
             <span className="stat-label">Total Jam</span>
           </div>
         </div>
-        <div className="app-stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(255, 193, 7, 0.1)' }}>
+        <div className="stat-card">
+          <div className="stat-icon stat-icon-revenue">
             <DollarSign size={20} color="#FFC107" />
           </div>
           <div className="stat-data">
@@ -223,44 +223,44 @@ const CustomersPage = () => {
             <p>Sistem analitik cerdas pelanggan</p>
           </div>
         </div>
-        <div className="smart-list app-smart-grid cols-3">
-          <div className="smart-item" style={{display: 'block'}}>
-            <div style={{display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--accent-cyan)', marginBottom: '8px', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em'}}>
+        <div className="smart-list smart-retention-grid cols-3">
+          <div className="smart-retention-item">
+            <div className="smart-retention-badge">
               <Clock size={14} /> Perlu Retensi
             </div>
-            <strong style={{fontSize: '1.1rem', color: 'var(--text-primary)', display: 'block', marginBottom: '4px'}}>{passiveCustomers.length} pelanggan</strong>
-            <small style={{fontSize: '0.75rem', color: 'var(--text-secondary)'}}>{passiveCustomers[0] ? `${passiveCustomers[0].name} sudah ${passiveCustomers[0].daysSinceLastBooking} hari tidak booking.` : 'Belum ada pelanggan pasif.'}</small>
+            <strong className="smart-retention-value">{passiveCustomers.length} pelanggan</strong>
+            <small className="smart-retention-label">{passiveCustomers[0] ? `${passiveCustomers[0].name} sudah ${passiveCustomers[0].daysSinceLastBooking} hari tidak booking.` : 'Belum ada pelanggan pasif.'}</small>
           </div>
-          <div className="smart-item" style={{display: 'block'}}>
-            <div style={{display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--accent-cyan)', marginBottom: '8px', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em'}}>
+          <div className="smart-retention-item">
+            <div className="smart-retention-badge">
               <Star size={14} /> Kandidat VIP
             </div>
-            <strong style={{fontSize: '1.1rem', color: 'var(--text-primary)', display: 'block', marginBottom: '4px'}}>{retentionInsights.vipCandidates.length} pelanggan</strong>
-            <small style={{fontSize: '0.75rem', color: 'var(--text-secondary)'}}>{retentionInsights.vipCandidates[0] ? `${retentionInsights.vipCandidates[0].name} cocok diberi benefit VIP.` : 'Semua kandidat sudah tertangani.'}</small>
+            <strong className="smart-retention-value">{retentionInsights.vipCandidates.length} pelanggan</strong>
+            <small className="smart-retention-label">{retentionInsights.vipCandidates[0] ? `${retentionInsights.vipCandidates[0].name} cocok diberi benefit VIP.` : 'Semua kandidat sudah tertangani.'}</small>
           </div>
-          <div className="smart-item" style={{display: 'block'}}>
-            <div style={{display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--accent-cyan)', marginBottom: '8px', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em'}}>
+          <div className="smart-retention-item">
+            <div className="smart-retention-badge">
               <Gift size={14} /> Target Promo
             </div>
-            <strong style={{fontSize: '1.1rem', color: 'var(--text-primary)', display: 'block', marginBottom: '4px'}}>{retentionInsights.promoTargets.length} kontak</strong>
-            <small style={{fontSize: '0.75rem', color: 'var(--text-secondary)'}}>{retentionInsights.promoTargets.length ? 'Siap dikirimi promo personal via WhatsApp.' : 'Tidak ada kontak promo yang siap.'}</small>
+            <strong className="smart-retention-value">{retentionInsights.promoTargets.length} kontak</strong>
+            <small className="smart-retention-label">{retentionInsights.promoTargets.length ? 'Siap dikirimi promo personal via WhatsApp.' : 'Tidak ada kontak promo yang siap.'}</small>
           </div>
         </div>
       </div>
 
       {/* Retention Alert Banner */}
       {passiveCustomers.length > 0 && activeFilter !== 'Passive' && (
-        <div className="retention-alert-banner" style={{ background: 'rgba(0, 240, 255, 0.1)', border: '1px solid rgba(0, 240, 255, 0.3)', borderRadius: '12px', padding: '16px', margin: '0 24px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <div style={{ background: 'var(--accent-cyan)', color: '#000', padding: '8px', borderRadius: '50%' }}>
+        <div className="retention-alert-banner">
+          <div className="retention-banner-info">
+            <div className="retention-banner-icon">
               <Users size={20} />
             </div>
             <div>
-              <h4 style={{ margin: '0 0 4px', color: 'var(--text-primary)' }}>Sistem Retensi Cerdas</h4>
-              <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Mendeteksi <strong>{passiveCustomers.length} pelanggan pasif</strong> (tidak booking &gt; 30 hari). Pertimbangkan untuk mengirim promo via WhatsApp.</p>
+              <h4>Sistem Retensi Cerdas</h4>
+              <p>Mendeteksi <strong>{passiveCustomers.length} pelanggan pasif</strong> (tidak booking &gt; 30 hari). Pertimbangkan untuk mengirim promo via WhatsApp.</p>
             </div>
           </div>
-          <button className="btn-primary" onClick={() => setActiveFilter('Passive')} style={{ background: 'rgba(0, 240, 255, 0.15)', color: 'var(--accent-cyan)', border: '1px solid var(--accent-cyan)' }}>
+          <button className="btn-primary retention-banner-btn" onClick={() => setActiveFilter('Passive')}>
             Tampilkan Daftar
           </button>
         </div>
@@ -271,17 +271,37 @@ const CustomersPage = () => {
         {/* Main Table */}
         <div className="customers-container app-panel">
           {/* Filter Tabs */}
-          <div className="filter-tabs tour-cust-filters">
-            <button className={`filter-tab ${activeFilter === 'all' ? 'active' : ''}`} onClick={() => setActiveFilter('all')}>
+          <div className="filter-tabs tour-cust-filters" role="tablist" aria-label="Filter status pelanggan">
+            <button 
+              className={`filter-tab ${activeFilter === 'all' ? 'active' : ''}`} 
+              onClick={() => setActiveFilter('all')}
+              role="tab"
+              aria-selected={activeFilter === 'all'}
+            >
               Semua <span className="tab-count">{customers.length}</span>
             </button>
-            <button className={`filter-tab ${activeFilter === 'Active' ? 'active' : ''}`} onClick={() => setActiveFilter('Active')}>
+            <button 
+              className={`filter-tab ${activeFilter === 'Active' ? 'active' : ''}`} 
+              onClick={() => setActiveFilter('Active')}
+              role="tab"
+              aria-selected={activeFilter === 'Active'}
+            >
               Aktif <span className="tab-count">{stats.active}</span>
             </button>
-            <button className={`filter-tab ${activeFilter === 'Inactive' ? 'active' : ''}`} onClick={() => setActiveFilter('Inactive')}>
+            <button 
+              className={`filter-tab ${activeFilter === 'Inactive' ? 'active' : ''}`} 
+              onClick={() => setActiveFilter('Inactive')}
+              role="tab"
+              aria-selected={activeFilter === 'Inactive'}
+            >
               Tidak Aktif <span className="tab-count">{stats.inactive}</span>
             </button>
-            <button className={`filter-tab ${activeFilter === 'Passive' ? 'active' : ''}`} onClick={() => setActiveFilter('Passive')}>
+            <button 
+              className={`filter-tab ${activeFilter === 'Passive' ? 'active' : ''}`} 
+              onClick={() => setActiveFilter('Passive')}
+              role="tab"
+              aria-selected={activeFilter === 'Passive'}
+            >
               Pasif (&gt;30 Hari) <span className="tab-count">{passiveCustomers.length}</span>
             </button>
           </div>
@@ -302,6 +322,7 @@ const CustomersPage = () => {
                   placeholder="Cari nama, HP, email..." 
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
+                  aria-label="Cari nama, nomor HP, atau email pelanggan"
                 />
                 {searchQuery && (
                   <button type="button" className="app-search-clear" onClick={() => setSearchQuery('')} aria-label="Bersihkan pencarian" title="Bersihkan pencarian">
@@ -384,13 +405,28 @@ const CustomersPage = () => {
                         </td>
                         <td className="action-col" onClick={e => e.stopPropagation()}>
                           <div className="row-actions">
-                            <button className="icon-btn" onClick={() => handleToggleVIP(customer)} title={customer.isVIP ? "Hapus VIP" : "Jadikan VIP"}>
+                            <button 
+                              className="icon-btn" 
+                              onClick={() => handleToggleVIP(customer)} 
+                              title={customer.isVIP ? "Hapus VIP" : "Jadikan VIP"}
+                              aria-label={customer.isVIP ? `Hapus status VIP untuk ${customer.name}` : `Jadikan ${customer.name} sebagai VIP`}
+                            >
                               <Star size={15} color={customer.isVIP ? "#FFC107" : "currentColor"} fill={customer.isVIP ? "#FFC107" : "none"} />
                             </button>
-                            <button className="icon-btn" onClick={() => handleOpenEdit(customer)} title="Edit">
+                            <button 
+                              className="icon-btn" 
+                              onClick={() => handleOpenEdit(customer)} 
+                              title="Edit"
+                              aria-label={`Edit data ${customer.name}`}
+                            >
                               <Edit2 size={15} />
                             </button>
-                            <button className="icon-btn delete" onClick={() => handleDelete(customer.id)} title="Hapus">
+                            <button 
+                              className="icon-btn delete" 
+                              onClick={() => handleDelete(customer.id)} 
+                              title="Hapus"
+                              aria-label={`Hapus data ${customer.name}`}
+                            >
                               <Trash2 size={15} />
                             </button>
                           </div>
@@ -468,7 +504,7 @@ const CustomersPage = () => {
               <span className={`status-badge ${selectedCustomer.status.toLowerCase()}`}>
                 {selectedCustomer.status === 'Active' ? 'Aktif' : 'Tidak Aktif'}
               </span>
-              <button className="icon-btn detail-panel-close" onClick={() => setSelectedCustomer(null)}><X size={16} /></button>
+              <button className="icon-btn detail-panel-close" onClick={() => setSelectedCustomer(null)} aria-label="Tutup panel detail"><X size={16} /></button>
             </div>
 
             <div className="detail-panel-body">
@@ -565,6 +601,7 @@ const CustomersPage = () => {
                   className="wa-btn welcome"
                   onClick={() => sendWelcomeMessage(selectedCustomer)}
                   title="Kirim pesan sapaan"
+                  aria-label={`Kirim pesan WhatsApp sapaan selamat datang ke ${selectedCustomer.name}`}
                 >
                   <MessageCircle size={14} /> Sapaan
                 </button>
@@ -572,6 +609,7 @@ const CustomersPage = () => {
                   className="wa-btn promo"
                   onClick={() => sendPromoMessage(selectedCustomer, { title: 'Promo Spesial!', description: 'Diskon booking untuk pelanggan setia kami.' })}
                   title="Kirim promo"
+                  aria-label={`Kirim pesan WhatsApp promo ke ${selectedCustomer.name}`}
                 >
                   <Gift size={14} /> Promo
                 </button>
@@ -579,6 +617,7 @@ const CustomersPage = () => {
                   className="wa-btn tier"
                   onClick={() => sendMembershipUpgrade(selectedCustomer, getMembershipTier(selectedCustomer.totalBookings, selectedCustomer.totalSpent))}
                   title="Ingatkan membership tier"
+                  aria-label={`Kirim pesan WhatsApp status tier ke ${selectedCustomer.name}`}
                 >
                   <Award size={14} /> Tier
                 </button>
@@ -668,7 +707,20 @@ const CustomersPage = () => {
               </div>
               <label className="cf-vip-toggle">
                 <span className="cf-vip-label"><Star size={13} color="#FFC107" fill="#FFC107" /> VIP Member <span className="cf-vip-sub">Diskon 10%</span></span>
-                <div className={`cf-toggle-switch ${formData.isVIP ? 'on' : ''}`} onClick={() => setFormData(p => ({ ...p, isVIP: !p.isVIP }))}>
+                <div 
+                  className={`cf-toggle-switch ${formData.isVIP ? 'on' : ''}`} 
+                  onClick={() => setFormData(p => ({ ...p, isVIP: !p.isVIP }))}
+                  onKeyDown={(e) => {
+                    if (e.key === ' ' || e.key === 'Enter') {
+                      e.preventDefault();
+                      setFormData(p => ({ ...p, isVIP: !p.isVIP }));
+                    }
+                  }}
+                  role="switch"
+                  aria-checked={formData.isVIP || false}
+                  tabIndex={0}
+                  aria-label="VIP Member Toggle"
+                >
                   <div className="cf-toggle-thumb" />
                 </div>
               </label>
