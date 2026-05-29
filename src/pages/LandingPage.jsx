@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Music2, Calendar, MapPin, Mic2, Star, ChevronRight, Activity, 
   Clock3, Headphones, MessageCircle, Mail, Lock, Eye, EyeOff, AlertCircle, Loader2,
-  Moon, Sun
+  Moon, Sun, Menu, X, Phone, CheckCircle2
 } from 'lucide-react';
 import { useSettingsStore } from '../store/useSettingsStore';
 import { useAuthStore } from '../store/useAuthStore';
@@ -24,6 +24,7 @@ const LandingPage = () => {
   const navigate = useNavigate();
 
   const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [showPass, setShowPass] = useState(false);
@@ -71,10 +72,10 @@ const LandingPage = () => {
           <img src="/logo.png" alt="Logo" className="nav-brand-logo" style={{ width: '40px', height: '40px', objectFit: 'contain' }} />
           <span className="brand-text">{studioName || '37 MUSIC'}</span>
         </Link>
-        <div className="nav-links hide-on-mobile">
-          <a href="#features">Fasilitas</a>
-          <a href="#pricing">Harga</a>
-          <a href="#location">Lokasi</a>
+        <div className="nav-links hide-on-mobile" role="navigation" aria-label="Navigasi utama">
+          <a href="#features" aria-label="Lihat fasilitas studio">Fasilitas</a>
+          <a href="#pricing" aria-label="Lihat harga sewa">Harga</a>
+          <a href="#location" aria-label="Lihat lokasi studio">Lokasi</a>
         </div>
         <div className="nav-actions">
           <MotionButton
@@ -89,22 +90,56 @@ const LandingPage = () => {
           <MotionButton 
             type="button"
             className={`nav-login-btn ${isLoginOpen ? 'active' : ''}`}
-            onClick={() => setIsLoginOpen(!isLoginOpen)}
+            onClick={() => { setIsLoginOpen(!isLoginOpen); setIsMobileMenuOpen(false); }}
+            aria-label="Login Staff"
+            aria-expanded={isLoginOpen}
           >
             <Lock size={15} />
             <span>Login Staff</span>
           </MotionButton>
-          <Link to="/jadwal-publik" className="nav-book-btn">
+          <Link to="/jadwal-publik" className="nav-book-btn" aria-label="Booking studio sekarang">
             Booking
           </Link>
+          <button
+            type="button"
+            className={`nav-hamburger ${isMobileMenuOpen ? 'open' : ''}`}
+            onClick={() => { setIsMobileMenuOpen(!isMobileMenuOpen); setIsLoginOpen(false); }}
+            aria-label={isMobileMenuOpen ? 'Tutup menu navigasi' : 'Buka menu navigasi'}
+            aria-expanded={isMobileMenuOpen}
+          >
+            {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+          </button>
         </div>
       </nav>
+
+      {/* Mobile Navigation Menu */}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <motion.div
+            className="mobile-nav-menu"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.2 }}
+          >
+            <a href="#features" aria-label="Fasilitas studio" onClick={() => setIsMobileMenuOpen(false)}>Fasilitas</a>
+            <a href="#pricing" aria-label="Harga sewa" onClick={() => setIsMobileMenuOpen(false)}>Harga</a>
+            <a href="#location" aria-label="Lokasi studio" onClick={() => setIsMobileMenuOpen(false)}>Lokasi</a>
+            <Link to="/jadwal-publik" className="mobile-menu-booking" onClick={() => setIsMobileMenuOpen(false)}>
+              <Calendar size={16} /> Booking Studio
+            </Link>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Login Dropdown */}
       <AnimatePresence>
         {isLoginOpen && (
           <motion.div 
             className="nav-login-dropdown"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Login Staff"
             {...dropdownPreset}
           >
             <div className="login-dropdown-header">
@@ -121,7 +156,7 @@ const LandingPage = () => {
 
             <form onSubmit={handleLoginSubmit} className="login-dropdown-form">
               {error && (
-                <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="login-dropdown-error">
+                <motion.div id="login-error" role="alert" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="login-dropdown-error">
                   <AlertCircle size={14} />
                   <span>{error}</span>
                 </motion.div>
@@ -140,6 +175,7 @@ const LandingPage = () => {
                     autoComplete="username"
                     autoFocus
                     required
+                    aria-describedby={error ? 'login-error' : undefined}
                   />
                 </div>
               </div>
@@ -279,7 +315,13 @@ const LandingPage = () => {
               <span className="price-unit">/ jam</span>
             </div>
             <p>Kualitas audio maksimal nggak harus mahal. Amankan jadwal nge-jam atau take vokal kamu sekarang. Ada harga spesial buat booking durasi panjang!</p>
-            <Link to="/jadwal-publik" className="btn-primary btn-large" style={{ marginTop: '20px' }}>
+            <div className="pricing-includes" role="list" aria-label="Yang termasuk dalam harga">
+              <div className="pricing-include-item" role="listitem"><CheckCircle2 size={16} /><span>Sound Engineer Dedicated</span></div>
+              <div className="pricing-include-item" role="listitem"><CheckCircle2 size={16} /><span>Full AC &amp; Kedap Suara</span></div>
+              <div className="pricing-include-item" role="listitem"><CheckCircle2 size={16} /><span>Alat Musik Lengkap</span></div>
+              <div className="pricing-include-item" role="listitem"><CheckCircle2 size={16} /><span>Mic, Headphone &amp; Interface</span></div>
+            </div>
+            <Link to="/jadwal-publik" className="btn-primary btn-large" style={{ marginTop: '4px' }}>
               Booking Studio Sekarang
             </Link>
           </div>
@@ -298,8 +340,22 @@ const LandingPage = () => {
           </div>
           <div className="footer-contact">
             <h3>Hubungi Kami</h3>
-            <p><MapPin size={16} /> {studioAddress || 'Jl. Musik Indah No. 37, Kota Anda'}</p>
-            <p><Activity size={16} /> WhatsApp: {studioPhone || '0812-3456-7890'}</p>
+            <p>
+              <MapPin size={16} />
+              <span>{studioAddress || 'Jl. Musik Indah No. 37, Kota Anda'}</span>
+            </p>
+            <p>
+              <Phone size={16} />
+              <a
+                href={`https://wa.me/${(studioPhone || '08123456789').replace(/[-\s+()]/g, '')}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="footer-contact-link"
+                aria-label={`Hubungi via WhatsApp: ${studioPhone || '0812-3456-7890'}`}
+              >
+                WhatsApp: {studioPhone || '0812-3456-7890'}
+              </a>
+            </p>
           </div>
           <div className="footer-map">
             <h3>Lokasi Studio</h3>
