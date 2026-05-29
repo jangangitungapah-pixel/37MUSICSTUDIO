@@ -30,7 +30,12 @@ import MotionButton from '../components/animation/MotionButton';
 import { MotionListItem } from '../components/animation/MotionListItem';
 import './DashboardPage.css';
 
-const COLORS = ['#00f0ff', '#4CAF50', '#FFC107', '#ff2a5f'];
+const COLORS = [
+  'var(--accent-cyan)',
+  'rgb(var(--success-rgb))',
+  'rgb(var(--warning-rgb))',
+  'var(--accent-pink)'
+];
 
 const DashboardPage = () => {
   const { bookings, getMonthlyStats, addBooking } = useBookingStore();
@@ -245,7 +250,13 @@ const DashboardPage = () => {
               <span>Semua berjalan lancar!</span>
             </div>
           )}
-          <MotionButton onClick={handleExportExcel} className="btn-primary" style={{ marginLeft: 8, padding: '8px 16px', borderRadius: '12px' }} title="Unduh Semua Laporan (Excel)">
+          <MotionButton 
+            onClick={handleExportExcel} 
+            className="btn-primary" 
+            style={{ marginLeft: 8, padding: '8px 16px', borderRadius: '12px' }} 
+            title="Unduh Semua Laporan (Excel)"
+            aria-label="Unduh Semua Laporan Excel"
+          >
             <Download size={16} />
             <span className="hide-on-mobile">Unduh Laporan</span>
           </MotionButton>
@@ -253,73 +264,78 @@ const DashboardPage = () => {
       </MotionSection>
 
       {/* ===== Stats Cards ===== */}
-      <div className="app-stat-grid tour-dashboard-stats">
+      <div className="dash-stats-grid tour-dashboard-stats">
         {/* Revenue */}
-        <div className="app-stat-card">
-          <div className="stat-icon" style={{color: 'var(--accent-cyan)', background: 'rgba(0, 240, 255, 0.1)'}}>
-            <TrendingUp size={24} />
-          </div>
-          <div className="stat-data">
-            <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-              <span className="stat-label">Pendapatan Bulan Ini</span>
-              {revTrend !== null && (
-                <span className={`dash-trend ${revTrend >= 0 ? 'up' : 'down'}`}>
-                  {revTrend >= 0 ? <TrendingUp size={10} /> : <TrendingDown size={10} />}
-                  {revTrend >= 0 ? '+' : ''}{revTrend}%
-                </span>
-              )}
+        <div className="dash-stat-card glass-panel">
+          <div className="dash-stat-top">
+            <div className="stat-icon-wrapper blue">
+              <TrendingUp size={24} />
             </div>
-            <span className="stat-value">{formatCurrency(bookingStats.totalRevenue)}</span>
-            <span className="stat-note">vs {formatCurrency(lastMonthStats.totalRevenue)} bulan lalu</span>
+            {revTrend !== null && (
+              <span className={`dash-trend ${revTrend >= 0 ? 'up' : 'down'}`}>
+                {revTrend >= 0 ? <TrendingUp size={10} /> : <TrendingDown size={10} />}
+                {revTrend >= 0 ? '+' : ''}{revTrend}%
+              </span>
+            )}
           </div>
+          <span className="dash-stat-value">{formatCurrency(bookingStats.totalRevenue)}</span>
+          <span className="dash-stat-label">Pendapatan Bulan Ini</span>
+          <span className="dash-stat-sub">vs {formatCurrency(lastMonthStats.totalRevenue)} bulan lalu</span>
         </div>
 
         {/* Bookings */}
-        <div className="app-stat-card">
-          <div className="stat-icon" style={{color: '#4CAF50', background: 'rgba(76, 175, 80, 0.1)'}}>
-            <CalendarCheck size={24} />
+        <div className="dash-stat-card glass-panel">
+          <div className="dash-stat-top">
+            <div className="stat-icon-wrapper green">
+              <CalendarCheck size={24} />
+            </div>
+            {bookTrend !== null && (
+              <span className={`dash-trend ${bookTrend >= 0 ? 'up' : 'down'}`}>
+                {bookTrend >= 0 ? <TrendingUp size={10} /> : <TrendingDown size={10} />}
+                {bookTrend >= 0 ? '+' : ''}{bookTrend}%
+              </span>
+            )}
           </div>
-          <div className="stat-data">
-            <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-              <span className="stat-label">Total Booking Bulan Ini</span>
-              {bookTrend !== null && (
-                <span className={`dash-trend ${bookTrend >= 0 ? 'up' : 'down'}`}>
-                  {bookTrend >= 0 ? <TrendingUp size={10} /> : <TrendingDown size={10} />}
-                  {bookTrend >= 0 ? '+' : ''}{bookTrend}%
-                </span>
-              )}
-            </div>
-            <span className="stat-value">{bookingStats.totalBookings}<span style={{fontSize: '0.6em', color: 'var(--text-muted)'}}> sesi</span></span>
-            <div className="dash-stat-pills" style={{marginTop: '4px'}}>
-              <span className="dash-pill confirmed">{bookingStats.confirmed} Lunas</span>
-              <span className="dash-pill dp">{bookingStats.dp} DP</span>
-              <span className="dash-pill pending">{bookingStats.pending} Pending</span>
-            </div>
+          <div className="dash-stat-value">
+            {bookingStats.totalBookings}
+            <span className="dash-stat-unit"> sesi</span>
+          </div>
+          <span className="dash-stat-label">Total Booking Bulan Ini</span>
+          <div className="dash-stat-pills" style={{marginTop: '4px'}}>
+            <span className="dash-pill confirmed">{bookingStats.confirmed} Lunas</span>
+            <span className="dash-pill dp">{bookingStats.dp} DP</span>
+            <span className="dash-pill pending">{bookingStats.pending} Pending</span>
           </div>
         </div>
 
         {/* Customers */}
-        <div className="app-stat-card">
-          <div className="stat-icon" style={{color: 'var(--accent-pink)', background: 'rgba(255, 42, 95, 0.1)'}}>
-            <Users size={24} />
+        <div className="dash-stat-card glass-panel">
+          <div className="dash-stat-top">
+            <div className="stat-icon-wrapper pink">
+              <Users size={24} />
+            </div>
           </div>
-          <div className="stat-data">
-            <span className="stat-label">Total Pelanggan Terdaftar</span>
-            <span className="stat-value">{customers.length}<span style={{fontSize: '0.6em', color: 'var(--text-muted)'}}> orang</span></span>
-            <span className="stat-note">{bookingStats.totalHours} jam terpakai bulan ini</span>
+          <div className="dash-stat-value">
+            {customers.length}
+            <span className="dash-stat-unit"> orang</span>
           </div>
+          <span className="dash-stat-label">Total Pelanggan Terdaftar</span>
+          <span className="dash-stat-sub">{bookingStats.totalHours} jam terpakai bulan ini</span>
         </div>
 
         {/* Inventory Alert */}
-        <div className="app-stat-card">
-          <div className="stat-icon" style={{color: invStats.serviceNeeded > 0 ? '#FFA000' : '#4CAF50', background: invStats.serviceNeeded > 0 ? 'rgba(255, 152, 0, 0.1)' : 'rgba(76, 175, 80, 0.1)'}}>
-            <PackageOpen size={24} />
+        <div className="dash-stat-card glass-panel">
+          <div className="dash-stat-top">
+            <div className="stat-icon-wrapper orange">
+              <PackageOpen size={24} />
+            </div>
           </div>
-          <div className="stat-data">
-            <span className="stat-label">Alat Perlu Perhatian</span>
-            <span className={`stat-value ${invStats.serviceNeeded > 0 ? 'warn' : ''}`}>{invStats.serviceNeeded}<span style={{fontSize: '0.6em', color: 'var(--text-muted)'}}> item</span></span>
-            <span className="stat-note">dari {invStats.totalItems} total alat inventaris</span>
-          </div>
+          <span className={`dash-stat-value ${invStats.serviceNeeded > 0 ? 'warn' : ''}`}>
+            {invStats.serviceNeeded}
+            <span className="dash-stat-unit"> item</span>
+          </span>
+          <span className="dash-stat-label">Alat Perlu Perhatian</span>
+          <span className="dash-stat-sub">dari {invStats.totalItems} total alat inventaris</span>
         </div>
       </div>
 
@@ -559,10 +575,20 @@ const DashboardPage = () => {
                   <span>{formatDateShort(request.date)} - {String(request.hour).padStart(2, '0')}:00, {request.duration || 1} jam</span>
                 </div>
                 <div className="dash-work-actions">
-                  <button className="icon-btn success dash-icon-action" onClick={() => handleApproveRequest(request)} title="Approve request">
+                  <button 
+                    className="icon-btn success dash-icon-action approve" 
+                    onClick={() => handleApproveRequest(request)} 
+                    title="Approve request"
+                    aria-label={`Setujui request booking dari ${request.band}`}
+                  >
                     <CheckCircle2 size={14} />
                   </button>
-                  <button className="icon-btn delete dash-icon-action" onClick={() => handleRejectRequest(request)} title="Tolak request">
+                  <button 
+                    className="icon-btn delete dash-icon-action reject" 
+                    onClick={() => handleRejectRequest(request)} 
+                    title="Tolak request"
+                    aria-label={`Tolak request booking dari ${request.band}`}
+                  >
                     <XCircle size={14} />
                   </button>
                 </div>
@@ -595,7 +621,12 @@ const DashboardPage = () => {
                   <strong>{invoice.band}</strong>
                   <span>{invoice.daysUntil < 0 ? 'Lewat jadwal' : invoice.daysUntil === 0 ? 'Jadwal hari ini' : invoice.daysUntil === 1 ? 'Jadwal besok' : `H-${invoice.daysUntil}`} - {formatCurrency(invoice.remaining)}</span>
                 </div>
-                <button className="icon-btn cyan dash-icon-action" onClick={() => handleSendBillingReminder(invoice)} title="Kirim reminder WhatsApp">
+                <button 
+                  className="icon-btn cyan dash-icon-action send" 
+                  onClick={() => handleSendBillingReminder(invoice)} 
+                  title="Kirim reminder WhatsApp"
+                  aria-label={`Kirim pengingat tagihan WhatsApp ke ${invoice.band}`}
+                >
                   <Send size={14} />
                 </button>
               </div>
