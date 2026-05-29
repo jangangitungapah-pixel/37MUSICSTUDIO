@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Search, Plus, Edit2, Trash2, Mail, Phone, Calendar as CalendarIcon, Users, UserCheck, DollarSign, X, AtSign, MapPin, Clock, Star, StickyNote, MessageCircle, Gift, Award } from 'lucide-react';
+import { Search, Plus, Edit2, Trash2, Mail, Phone, Calendar as CalendarIcon, Users, UserCheck, DollarSign, X, AtSign, MapPin, Clock, Star, StickyNote, MessageCircle, Gift, Award, ChevronDown } from 'lucide-react';
 import { useCustomerStore } from '../store/useCustomerStore';
 import { useBookingStore } from '../store/useBookingStore';
 import { useTourStore } from '../store/useTourStore';
@@ -35,6 +35,7 @@ const CustomersPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState('all'); // 'all', 'Active', 'Inactive'
   const [selectedCustomer, setSelectedCustomer] = useState(null);
+  const [isFilterDropdownOpen, setIsFilterDropdownOpen] = useState(false);
   const selectedCustomerBookings = useMemo(() => {
     if (!selectedCustomer) return [];
     return bookings
@@ -141,6 +142,15 @@ const CustomersPage = () => {
 
   const handleRowClick = (customer) => {
     setSelectedCustomer(prev => prev && prev.id === customer.id ? null : customer);
+  };
+
+  const getFilterLabel = (filter) => {
+    switch(filter) {
+      case 'Active': return `Aktif (${stats.active})`;
+      case 'Inactive': return `Tidak Aktif (${stats.inactive})`;
+      case 'Passive': return `Pasif (>30 Hari) (${passiveCustomers.length})`;
+      default: return `Semua Pelanggan (${customers.length})`;
+    }
   };
 
   return (
@@ -270,42 +280,6 @@ const CustomersPage = () => {
       <div className="customers-content-area">
         {/* Main Table */}
         <div className="customers-container app-panel">
-          {/* Filter Tabs */}
-          <div className="filter-tabs tour-cust-filters" role="tablist" aria-label="Filter status pelanggan">
-            <button 
-              className={`filter-tab ${activeFilter === 'all' ? 'active' : ''}`} 
-              onClick={() => setActiveFilter('all')}
-              role="tab"
-              aria-selected={activeFilter === 'all'}
-            >
-              Semua <span className="tab-count">{customers.length}</span>
-            </button>
-            <button 
-              className={`filter-tab ${activeFilter === 'Active' ? 'active' : ''}`} 
-              onClick={() => setActiveFilter('Active')}
-              role="tab"
-              aria-selected={activeFilter === 'Active'}
-            >
-              Aktif <span className="tab-count">{stats.active}</span>
-            </button>
-            <button 
-              className={`filter-tab ${activeFilter === 'Inactive' ? 'active' : ''}`} 
-              onClick={() => setActiveFilter('Inactive')}
-              role="tab"
-              aria-selected={activeFilter === 'Inactive'}
-            >
-              Tidak Aktif <span className="tab-count">{stats.inactive}</span>
-            </button>
-            <button 
-              className={`filter-tab ${activeFilter === 'Passive' ? 'active' : ''}`} 
-              onClick={() => setActiveFilter('Passive')}
-              role="tab"
-              aria-selected={activeFilter === 'Passive'}
-            >
-              Pasif (&gt;30 Hari) <span className="tab-count">{passiveCustomers.length}</span>
-            </button>
-          </div>
-
           <div className="app-table-toolbar">
             <div className="app-table-toolbar-left">
               <div>
@@ -314,6 +288,70 @@ const CustomersPage = () => {
               </div>
             </div>
             <div className="app-table-toolbar-right">
+              {/* Filter Dropdown */}
+              <div className="filter-dropdown-container tour-cust-filters">
+                <button 
+                  type="button"
+                  className="filter-dropdown-toggle"
+                  onClick={() => setIsFilterDropdownOpen(!isFilterDropdownOpen)}
+                  aria-haspopup="listbox"
+                  aria-expanded={isFilterDropdownOpen}
+                  aria-label="Filter status pelanggan"
+                >
+                  <Users size={16} className="filter-dropdown-icon" />
+                  <span className="filter-dropdown-label">{getFilterLabel(activeFilter)}</span>
+                  <ChevronDown size={16} className={`filter-dropdown-arrow ${isFilterDropdownOpen ? 'open' : ''}`} />
+                </button>
+                
+                {isFilterDropdownOpen && (
+                  <>
+                    <div className="filter-dropdown-overlay" onClick={() => setIsFilterDropdownOpen(false)} />
+                    <div className="filter-dropdown-menu" role="listbox">
+                      <button 
+                        type="button" 
+                        className={`filter-dropdown-item ${activeFilter === 'all' ? 'active' : ''}`}
+                        onClick={() => { setActiveFilter('all'); setIsFilterDropdownOpen(false); }}
+                        role="option"
+                        aria-selected={activeFilter === 'all'}
+                      >
+                        <span>Semua</span>
+                        <span className="tab-count">{customers.length}</span>
+                      </button>
+                      <button 
+                        type="button" 
+                        className={`filter-dropdown-item ${activeFilter === 'Active' ? 'active' : ''}`}
+                        onClick={() => { setActiveFilter('Active'); setIsFilterDropdownOpen(false); }}
+                        role="option"
+                        aria-selected={activeFilter === 'Active'}
+                      >
+                        <span>Aktif</span>
+                        <span className="tab-count">{stats.active}</span>
+                      </button>
+                      <button 
+                        type="button" 
+                        className={`filter-dropdown-item ${activeFilter === 'Inactive' ? 'active' : ''}`}
+                        onClick={() => { setActiveFilter('Inactive'); setIsFilterDropdownOpen(false); }}
+                        role="option"
+                        aria-selected={activeFilter === 'Inactive'}
+                      >
+                        <span>Tidak Aktif</span>
+                        <span className="tab-count">{stats.inactive}</span>
+                      </button>
+                      <button 
+                        type="button" 
+                        className={`filter-dropdown-item ${activeFilter === 'Passive' ? 'active' : ''}`}
+                        onClick={() => { setActiveFilter('Passive'); setIsFilterDropdownOpen(false); }}
+                        role="option"
+                        aria-selected={activeFilter === 'Passive'}
+                      >
+                        <span>Pasif (&gt;30 Hari)</span>
+                        <span className="tab-count">{passiveCustomers.length}</span>
+                      </button>
+                    </div>
+                  </>
+                )}
+              </div>
+
               <div className="app-search app-search-md tour-cust-search">
                 <Search className="app-search-icon" />
                 <input 
