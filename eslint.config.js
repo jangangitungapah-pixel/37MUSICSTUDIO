@@ -23,7 +23,7 @@ export default defineConfig([
     },
   },
   {
-    files: ['test-firebase.js', 'vite.config.js'],
+    files: ['test-firebase.js', 'vite.config.js', 'fix_conflict.js'],
     languageOptions: {
       globals: {
         ...globals.browser,

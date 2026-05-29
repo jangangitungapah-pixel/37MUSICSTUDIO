@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Music2, Calendar, MapPin, Mic2, Star, ChevronRight, Activity, 
   Clock3, Headphones, MessageCircle, Mail, Lock, Eye, EyeOff, AlertCircle, Loader2,
-  Moon, Sun, Menu, X, Phone, CheckCircle2
+  Moon, Sun, Menu, X, Phone, CheckCircle2, ShieldCheck, SlidersHorizontal, RadioTower
 } from 'lucide-react';
 import { useSettingsStore } from '../store/useSettingsStore';
 import { useAuthStore } from '../store/useAuthStore';
@@ -43,6 +43,20 @@ const LandingPage = () => {
   useEffect(() => {
     clearError();
   }, [isLoginOpen, clearError]);
+
+  useEffect(() => {
+    if (!isMobileMenuOpen && !isLoginOpen) return undefined;
+
+    const handleEscape = (event) => {
+      if (event.key === 'Escape') {
+        setIsMobileMenuOpen(false);
+        setIsLoginOpen(false);
+      }
+    };
+
+    window.addEventListener('keydown', handleEscape);
+    return () => window.removeEventListener('keydown', handleEscape);
+  }, [isMobileMenuOpen, isLoginOpen]);
 
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
@@ -106,6 +120,7 @@ const LandingPage = () => {
             onClick={() => { setIsMobileMenuOpen(!isMobileMenuOpen); setIsLoginOpen(false); }}
             aria-label={isMobileMenuOpen ? 'Tutup menu navigasi' : 'Buka menu navigasi'}
             aria-expanded={isMobileMenuOpen}
+            aria-controls="landing-mobile-menu"
           >
             {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
@@ -115,20 +130,34 @@ const LandingPage = () => {
       {/* Mobile Navigation Menu */}
       <AnimatePresence>
         {isMobileMenuOpen && (
-          <motion.div
-            className="mobile-nav-menu"
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.2 }}
-          >
-            <a href="#features" aria-label="Fasilitas studio" onClick={() => setIsMobileMenuOpen(false)}>Fasilitas</a>
-            <a href="#pricing" aria-label="Harga sewa" onClick={() => setIsMobileMenuOpen(false)}>Harga</a>
-            <a href="#location" aria-label="Lokasi studio" onClick={() => setIsMobileMenuOpen(false)}>Lokasi</a>
-            <Link to="/jadwal-publik" className="mobile-menu-booking" onClick={() => setIsMobileMenuOpen(false)}>
-              <Calendar size={16} /> Booking Studio
-            </Link>
-          </motion.div>
+          <>
+            <motion.button
+              type="button"
+              className="mobile-nav-backdrop"
+              aria-label="Tutup menu navigasi"
+              onClick={() => setIsMobileMenuOpen(false)}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            />
+            <motion.div
+              id="landing-mobile-menu"
+              className="mobile-nav-menu"
+              role="navigation"
+              aria-label="Menu navigasi mobile"
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.2 }}
+            >
+              <a href="#features" aria-label="Fasilitas studio" onClick={() => setIsMobileMenuOpen(false)}>Fasilitas</a>
+              <a href="#pricing" aria-label="Harga sewa" onClick={() => setIsMobileMenuOpen(false)}>Harga</a>
+              <a href="#location" aria-label="Lokasi studio" onClick={() => setIsMobileMenuOpen(false)}>Lokasi</a>
+              <Link to="/jadwal-publik" className="mobile-menu-booking" onClick={() => setIsMobileMenuOpen(false)}>
+                <Calendar size={16} /> Booking Studio
+              </Link>
+            </motion.div>
+          </>
         )}
       </AnimatePresence>
 
@@ -163,10 +192,11 @@ const LandingPage = () => {
               )}
 
               <div className="login-field">
-                <label className="login-field-label">Username / Email</label>
+                <label className="login-field-label" htmlFor="staff-identifier">Username / Email</label>
                 <div className="login-field-wrap">
                   <Mail size={16} className="login-field-icon" />
                   <input
+                    id="staff-identifier"
                     type="text"
                     value={identifier}
                     onChange={e => setIdentifier(e.target.value)}
@@ -181,15 +211,16 @@ const LandingPage = () => {
               </div>
 
               <div className="login-field">
-                <label className="login-field-label">Password</label>
+                <label className="login-field-label" htmlFor="staff-password">Password</label>
                 <div className="login-field-wrap">
                   <Lock size={16} className="login-field-icon" />
                   <input
+                    id="staff-password"
                     type={showPass ? 'text' : 'password'}
                     value={password}
                     onChange={e => setPassword(e.target.value)}
                     className="login-field-input"
-                    placeholder="••••••••"
+                    placeholder="Password staff"
                     autoComplete="current-password"
                     required
                   />
@@ -197,7 +228,7 @@ const LandingPage = () => {
                     type="button"
                     className="login-field-toggle"
                     onClick={() => setShowPass(v => !v)}
-                    tabIndex={-1}
+                    aria-label={showPass ? 'Sembunyikan password' : 'Tampilkan password'}
                   >
                     {showPass ? <EyeOff size={16} /> : <Eye size={16} />}
                   </button>
@@ -216,50 +247,67 @@ const LandingPage = () => {
 
       {/* Hero Section */}
       <section className="hero-section">
-        <div className="hero-bg-blob blob1" />
-        <div className="hero-bg-blob blob2" />
-        <div className="hero-bg-logo" />
-        
-        <MotionList as="div" className="hero-content">
-          <MotionListItem as="div" className="hero-badge">
-            <Activity size={15} />
-            <span>Elevate Your Sound. Studio Musik Premium di Tangerang.</span>
-          </MotionListItem>
-          
-          <MotionListItem as="h1" className="hero-title">
-            Bikin Karya Musikmu <br/>
-            Naik Level <span className="text-gradient">Tanpa Batas</span>
-          </MotionListItem>
-          
-          <MotionListItem as="p" className="hero-subtitle">
-            Dari jamming asik bareng band sampai produksi rekaman profesional. Nikmati ruang akustik premium dengan gear standar konser yang bikin sound kamu makin kickin'.
-          </MotionListItem>
-          
-          <MotionListItem as="div" className="hero-buttons">
-            <Link to="/jadwal-publik" className="btn-primary btn-large">
-              <Calendar size={20} /> Booking Studio Sekarang
-            </Link>
-            <a href="https://youtube.com/@37musicstudio74?si=dq57yhCuJcph0pIf" target="_blank" rel="noopener noreferrer" className="btn-youtube btn-large">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
-              </svg>
-              Lihat Hasil Output Kami
-            </a>
-          </MotionListItem>
+        <div className="hero-stage" />
 
-          <MotionListItem as="div" className="hero-quick-facts">
-            <div className="hero-fact"><Clock3 size={16} /> 10.00-23.00</div>
-            <div className="hero-fact"><Headphones size={16} /> 1 Ruang Studio</div>
-            <div className="hero-fact"><MessageCircle size={16} /> Booking via WA</div>
-          </MotionListItem>
-        </MotionList>
+        <div className="hero-layout">
+          <MotionList as="div" className="hero-content">
+            <MotionListItem as="div" className="hero-badge">
+              <Activity size={15} />
+              <span>Studio musik premium di Tangerang</span>
+            </MotionListItem>
+            
+            <MotionListItem as="h1" className="hero-title">
+              Ruang latihan dan rekaman untuk sound yang lebih siap panggung.
+            </MotionListItem>
+            
+            <MotionListItem as="p" className="hero-subtitle">
+              Satu ruang studio eksklusif dengan treatment akustik, gear lengkap, dan bantuan operator untuk rehearsal, take vokal, sampai produksi demo.
+            </MotionListItem>
+            
+            <MotionListItem as="div" className="hero-buttons">
+              <Link to="/jadwal-publik" className="btn-primary btn-large">
+                <Calendar size={20} /> Booking Studio Sekarang
+              </Link>
+              <a href="https://youtube.com/@37musicstudio74?si=dq57yhCuJcph0pIf" target="_blank" rel="noopener noreferrer" className="btn-youtube btn-large">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
+                </svg>
+                Lihat Hasil Rekaman
+              </a>
+            </MotionListItem>
+
+            <MotionListItem as="div" className="hero-quick-facts" aria-label="Informasi singkat studio">
+              <div className="hero-fact"><Clock3 size={16} /> 10.00-23.00</div>
+              <div className="hero-fact"><Headphones size={16} /> 1 Ruang Studio</div>
+              <div className="hero-fact"><MessageCircle size={16} /> Booking via WA</div>
+            </MotionListItem>
+          </MotionList>
+
+          <MotionCard interactive={false} className="hero-media-card" aria-label="Visual studio musik">
+            <div className="hero-media-image">
+              <img src="/studio-hero.jpg" alt="Interior studio musik dengan drum, amplifier, mikrofon, dan panel akustik" />
+            </div>
+            <div className="hero-media-overlay">
+              <div>
+                <span>Siap rehearsal dan recording</span>
+                <strong>Setup operator + gear lengkap</strong>
+              </div>
+              <img src="/logo.png" alt="" aria-hidden="true" />
+            </div>
+            <div className="hero-proof-grid" aria-label="Keunggulan studio">
+              <div><ShieldCheck size={16} /><span>Kedap suara</span></div>
+              <div><SlidersHorizontal size={16} /><span>Sound check dibantu</span></div>
+              <div><RadioTower size={16} /><span>Output siap dipublikasi</span></div>
+            </div>
+          </MotionCard>
+        </div>
       </section>
 
       {/* Features Section */}
       <section id="features" className="features-section">
         <MotionSection direction="up" className="section-header">
-          <h2>Ultimate Studio Specs</h2>
-          <p>Satu studio eksklusif dengan treatment akustik kelas industri. Ready buat rehearsal dan serious tracking.</p>
+          <h2>Fasilitas Studio</h2>
+          <p>Satu studio eksklusif dengan treatment akustik, alat lengkap, dan workflow yang nyaman untuk latihan maupun rekaman.</p>
         </MotionSection>
         
         <div className="features-grid">
@@ -267,7 +315,7 @@ const LandingPage = () => {
             <div className="feature-icon" style={{ background: 'linear-gradient(135deg, rgba(0, 240, 255, 0.15), transparent)', border: '1px solid rgba(0, 240, 255, 0.3)' }}>
               <Music2 size={28} color="var(--accent-cyan)" />
             </div>
-            <h3>Premium Rehearsal Space</h3>
+            <h3>Ruang Latihan Premium</h3>
             <p>Vibe dapet, sound nendang. Ruang latihan full kedap suara dengan akustik seimbang buat jamming super intens.</p>
             <ul className="feature-list">
               <li><ChevronRight size={16} /> Full AC & Kedap Suara</li>
@@ -280,7 +328,7 @@ const LandingPage = () => {
             <div className="feature-icon" style={{ background: 'linear-gradient(135deg, rgba(255, 42, 95, 0.15), transparent)', border: '1px solid rgba(255, 42, 95, 0.3)' }}>
               <Mic2 size={28} color="var(--accent-pink)" />
             </div>
-            <h3>Pro Recording & Tracking</h3>
+            <h3>Recording & Tracking</h3>
             <p>Bawa pulang hasil rekaman proper. Gear kelas studio yang standby buat take vocal sampai bikin demo lagu.</p>
             <ul className="feature-list">
               <li><ChevronRight size={16} /> Mic Condenser & Dinamik</li>
@@ -293,8 +341,8 @@ const LandingPage = () => {
             <div className="feature-icon" style={{ background: 'rgba(255, 152, 0, 0.1)', border: '1px solid rgba(255, 152, 0, 0.25)' }}>
               <Star size={28} color="#FF9800" />
             </div>
-            <h3>Dedicated Sound Engineer</h3>
-            <p>Lo fokus berkarya aja, biar sound engineer kita yang urus routing, mixing, dan setup gear-nya.</p>
+            <h3>Operator Studio</h3>
+            <p>Kamu fokus bermain dan take vokal, operator membantu routing, sound check, dan setup gear.</p>
             <ul className="feature-list">
               <li><ChevronRight size={16} /> Bantuan Sound Check</li>
               <li><ChevronRight size={16} /> Setup Instrumen</li>
@@ -316,7 +364,7 @@ const LandingPage = () => {
             </div>
             <p>Kualitas audio maksimal nggak harus mahal. Amankan jadwal nge-jam atau take vokal kamu sekarang. Ada harga spesial buat booking durasi panjang!</p>
             <div className="pricing-includes" role="list" aria-label="Yang termasuk dalam harga">
-              <div className="pricing-include-item" role="listitem"><CheckCircle2 size={16} /><span>Sound Engineer Dedicated</span></div>
+              <div className="pricing-include-item" role="listitem"><CheckCircle2 size={16} /><span>Operator Studio</span></div>
               <div className="pricing-include-item" role="listitem"><CheckCircle2 size={16} /><span>Full AC &amp; Kedap Suara</span></div>
               <div className="pricing-include-item" role="listitem"><CheckCircle2 size={16} /><span>Alat Musik Lengkap</span></div>
               <div className="pricing-include-item" role="listitem"><CheckCircle2 size={16} /><span>Mic, Headphone &amp; Interface</span></div>
@@ -336,7 +384,7 @@ const LandingPage = () => {
               <img src="/logo.png" alt="Logo" style={{ width: '32px', height: '32px', objectFit: 'contain' }} />
               <span className="brand-text">{studioName || '37 MUSIC STUDIO'}</span>
             </div>
-            <p>Your sonic playground. Menggabungkan kualitas akustik premium dengan kemudahan booking secara digital.</p>
+            <p>Studio musik satu ruang dengan akustik premium, gear lengkap, dan booking digital yang mudah.</p>
           </div>
           <div className="footer-contact">
             <h3>Hubungi Kami</h3>
@@ -368,7 +416,7 @@ const LandingPage = () => {
                 allowFullScreen="" 
                 loading="lazy" 
                 referrerPolicy="no-referrer-when-downgrade"
-                title="Google Maps Location"
+                title="Lokasi 37 Music Studio di Google Maps"
               />
             </div>
           </div>

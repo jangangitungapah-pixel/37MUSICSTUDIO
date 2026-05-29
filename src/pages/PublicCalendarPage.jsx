@@ -49,6 +49,8 @@ const PublicCalendarPage = () => {
   const [customerPhone, setCustomerPhone] = useState('');
   const [duration, setDuration]       = useState(2);
   const [isSubmittingRequest, setIsSubmittingRequest] = useState(false);
+  const [formErrors, setFormErrors] = useState({});
+  const lastSlotButtonRef = useRef(null);
 
   useEffect(() => {
     if (!isAuthLoaded || user) return;
@@ -135,25 +137,56 @@ const PublicCalendarPage = () => {
   const durationDiscountEst = applicableDiscount ? applicableDiscount.discountAmount : 0;
   const priceEst = basePriceEst - durationDiscountEst;
 
+  const closeModal = () => {
+    setModalOpen(false);
+    setIsSubmittingRequest(false);
+    setTimeout(() => lastSlotButtonRef.current?.focus(), 0);
+  };
+
+  useEffect(() => {
+    if (!modalOpen) return undefined;
+
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') {
+        setModalOpen(false);
+        setIsSubmittingRequest(false);
+        setTimeout(() => lastSlotButtonRef.current?.focus(), 0);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [modalOpen]);
+
   // Open booking modal
-  const openModal = (dateStr, hour) => {
+  const openModal = (dateStr, hour, triggerElement) => {
+    lastSlotButtonRef.current = triggerElement || null;
     setSelectedSlot({ dateStr, hour });
     setBandName('');
     setCustomerPhone('');
     setDuration(2);
+    setFormErrors({});
     setModalOpen(true);
   };
 
   // Send WA
   const sendWA = async () => {
+    const nextErrors = {};
+
     if (!bandName.trim()) {
+      nextErrors.bandName = 'Nama band atau artis wajib diisi.';
       useNotificationStore.getState().addNotification({ title: 'Nama Band kosong', message: 'Harap isi nama band Anda.', type: 'error' });
-      return;
     }
     if (!customerPhone.trim()) {
+      nextErrors.customerPhone = 'Nomor WhatsApp wajib diisi.';
       useNotificationStore.getState().addNotification({ title: 'Nomor WhatsApp kosong', message: 'Harap isi nomor yang bisa dihubungi admin.', type: 'error' });
+    }
+    if (Object.keys(nextErrors).length > 0) {
+      setFormErrors(nextErrors);
       return;
     }
+
+    setFormErrors({});
     const isOverlap = activeBookings.some(b => {
       if (b.date !== selectedSlot.dateStr) return false;
       return Number(b.hour) < selectedSlot.hour + duration && selectedSlot.hour < Number(b.hour) + Number(b.duration);
@@ -193,14 +226,12 @@ const PublicCalendarPage = () => {
     let phone = (studioPhone || '').replace(/\D/g, '');
     if (!phone) {
       useNotificationStore.getState().addNotification({ title: 'Request tersimpan', message: 'Nomor admin belum tersedia untuk WhatsApp otomatis.', type: 'warning' });
-      setModalOpen(false);
-      setIsSubmittingRequest(false);
+      closeModal();
       return;
     }
     if (phone.startsWith('0')) phone = '62' + phone.substring(1);
     window.open(`https://wa.me/${phone}?text=${encodeURIComponent(cleanMessage)}`, '_blank');
-    setModalOpen(false);
-    setIsSubmittingRequest(false);
+    closeModal();
   };
 
   const currentLabel = useMemo(() => {
@@ -208,7 +239,7 @@ const PublicCalendarPage = () => {
     if (viewMode === 'week') {
       const s = startOfWeek(currentDate, { weekStartsOn: 0 });
       const e = endOfWeek(currentDate, { weekStartsOn: 0 });
-      return `${format(s, 'dd MMM')} - ${format(e, 'dd MMM yyyy')}`;
+      return `${format(s, 'dd MMM', { locale: localeId })} - ${format(e, 'dd MMM yyyy', { locale: localeId })}`;
     }
     return format(currentDate, 'MMMM yyyy', { locale: localeId });
   }, [currentDate, viewMode]);
@@ -286,10 +317,10 @@ const PublicCalendarPage = () => {
         <MotionSection delay={0.1} className="pc-toolbar">
           {/* Navigation */}
           <div className="pc-nav">
-            <button className="icon-btn" onClick={handlePrev}><ChevronLeft size={22} /></button>
+            <button className="icon-btn" type="button" onClick={handlePrev} aria-label="Lihat periode sebelumnya" title="Sebelumnya"><ChevronLeft size={22} /></button>
             <span className="pc-date-label">{currentLabel}</span>
-            <button className="icon-btn" onClick={handleNext}><ChevronRight size={22} /></button>
-            <button className="btn-secondary" onClick={handleGoToday}>Hari Ini</button>
+            <button className="icon-btn" type="button" onClick={handleNext} aria-label="Lihat periode berikutnya" title="Berikutnya"><ChevronRight size={22} /></button>
+            <button className="btn-secondary" type="button" onClick={handleGoToday}>Hari Ini</button>
           </div>
 
           <div className="pc-toolbar-right">
@@ -305,6 +336,8 @@ const PublicCalendarPage = () => {
                 <button
                   key={v}
                   className={`pc-view-btn ${viewMode === v ? 'active' : ''}`}
+                  type="button"
+                  aria-pressed={viewMode === v}
                   onClick={() => setViewMode(v)}
                 >
                   {v === 'day' ? 'Hari' : v === 'week' ? 'Minggu' : 'Bulan'}
@@ -316,13 +349,16 @@ const PublicCalendarPage = () => {
 
         {/* Grid Panel */}
         <div className="pc-grid-panel">
+          <div className="pc-scroll-hint" aria-hidden="true">Geser kalender untuk melihat tanggal lainnya</div>
           <div className="pc-grid-wrapper" ref={gridWrapperRef}>
             <div
               className="pc-grid"
+              role="grid"
+              aria-label="Kalender ketersediaan studio"
               style={{ gridTemplateColumns: `${timeColWidth} repeat(${daysArray.length}, minmax(${colWidth}, 1fr))` }}
             >
               {/* Corner */}
-              <div className="pc-corner"><span>WAKTU</span></div>
+              <div className="pc-corner" role="columnheader"><span>WAKTU</span></div>
 
               {/* Day Headers */}
               {daysArray.map((day, idx) => {
@@ -330,7 +366,7 @@ const PublicCalendarPage = () => {
                 const dow = getDay(day);
                 const isWknd = dow === 0 || dow === 6;
                 return (
-                  <div key={idx} className={`pc-header-cell ${isToday ? 'today' : ''} ${isWknd ? 'weekend' : ''}`}>
+                  <div key={idx} className={`pc-header-cell ${isToday ? 'today' : ''} ${isWknd ? 'weekend' : ''}`} role="columnheader">
                     <span className="pc-day-name">{dayNames[dow]}</span>
                     <span className="pc-day-num">{format(day, 'd')}</span>
                     {isToday && <span className="pc-today-dot" />}
@@ -342,7 +378,7 @@ const PublicCalendarPage = () => {
               {hoursArray.map((hour) => (
                 <React.Fragment key={hour}>
                   {/* Time label */}
-                  <div className="pc-time-label">
+                  <div className="pc-time-label" role="rowheader">
                     <span>
                       {isMobile 
                         ? `${String(hour).padStart(2, '0')}:00` 
@@ -366,6 +402,8 @@ const PublicCalendarPage = () => {
                     const isPast = dateStr < todayStr || (isToday && hour < nowHour);
                     const canBook = !booking && !isPast && !isBlocked;
                     const isBlockStart = booking && hour === booking.hour;
+                    const dayLabel = format(day, 'EEEE, dd MMMM yyyy', { locale: localeId });
+                    const timeLabel = `${String(hour).padStart(2, '0')}:00 - ${String(hour + 1).padStart(2, '0')}:00`;
 
                     const classes = [
                       'pc-cell',
@@ -378,12 +416,8 @@ const PublicCalendarPage = () => {
                       (isPast || isBlocked) && !booking ? 'past' : '',
                     ].filter(Boolean).join(' ');
 
-                    return (
-                      <div
-                        key={`${dateStr}-${hour}`}
-                        className={classes}
-                        onClick={() => canBook && openModal(dateStr, hour)}
-                      >
+                    const cellContent = (
+                      <>
                         {isBlocked && hour === startHour + 2 && !booking && (
                           <div className="pc-booked-tag">TUTUP</div>
                         )}
@@ -391,10 +425,38 @@ const PublicCalendarPage = () => {
                           <div className="pc-booked-tag">TERISI</div>
                         )}
                         {canBook && (
-                          <div className="pc-plus-icon">
-                            <Plus size={18} strokeWidth={2.5} />
-                          </div>
+                          <>
+                            <div className="pc-plus-icon" aria-hidden="true">
+                              <Plus size={18} strokeWidth={2.5} />
+                            </div>
+                            <span className="pc-available-label">Pilih</span>
+                          </>
                         )}
+                      </>
+                    );
+
+                    if (canBook) {
+                      return (
+                        <button
+                          key={`${dateStr}-${hour}`}
+                          type="button"
+                          className={classes}
+                          onClick={(event) => openModal(dateStr, hour, event.currentTarget)}
+                          aria-label={`Booking ${dayLabel}, jam ${timeLabel}`}
+                        >
+                          {cellContent}
+                        </button>
+                      );
+                    }
+
+                    return (
+                      <div
+                        key={`${dateStr}-${hour}`}
+                        className={classes}
+                        role="gridcell"
+                        aria-label={`${dayLabel}, jam ${timeLabel}, ${booking ? 'terisi' : isBlocked ? 'tutup' : 'tidak tersedia'}`}
+                      >
+                        {cellContent}
                       </div>
                     );
                   })}
@@ -410,7 +472,7 @@ const PublicCalendarPage = () => {
         {modalOpen && (
           <motion.div
             className="pc-modal-overlay"
-            onClick={() => setModalOpen(false)}
+            onClick={closeModal}
             variants={overlayVariants}
             initial="hidden"
             animate="visible"
@@ -419,6 +481,9 @@ const PublicCalendarPage = () => {
             <motion.div
               className="pc-modal"
               onClick={e => e.stopPropagation()}
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="pc-booking-title"
               {...modalPreset}
             >
               <div className="pc-modal-content">
@@ -429,7 +494,7 @@ const PublicCalendarPage = () => {
                       <CalendarDays size={24} />
                     </div>
                     <div>
-                      <h3>Pesan Studio</h3>
+                      <h3 id="pc-booking-title">Pesan Studio</h3>
                       <p>
                         {selectedSlot.dateStr
                           ? format(new Date(selectedSlot.dateStr + 'T00:00:00'), 'EEEE, dd MMMM yyyy', { locale: localeId })
@@ -437,7 +502,7 @@ const PublicCalendarPage = () => {
                       </p>
                     </div>
                   </div>
-                  <button className="pc-modal-close" onClick={() => setModalOpen(false)}>
+                  <button className="pc-modal-close" type="button" onClick={closeModal} aria-label="Tutup modal booking">
                     <X size={20} />
                   </button>
                 </div>
@@ -455,36 +520,52 @@ const PublicCalendarPage = () => {
                 {/* Form */}
                 <div className="pc-modal-body">
                   <div className="pc-form-group">
-                    <label>Nama Band / Artis</label>
+                    <label htmlFor="pc-band-name">Nama Band / Artis</label>
                     <input
+                      id="pc-band-name"
                       type="text"
                       className="pc-form-input"
                       value={bandName}
-                      onChange={e => setBandName(e.target.value)}
+                      onChange={e => {
+                        setBandName(e.target.value);
+                        setFormErrors(prev => ({ ...prev, bandName: '' }));
+                      }}
                       placeholder="Contoh: The Beatles"
                       autoFocus
+                      aria-invalid={Boolean(formErrors.bandName)}
+                      aria-describedby={formErrors.bandName ? 'pc-band-error' : undefined}
                     />
+                    {formErrors.bandName && <span id="pc-band-error" className="pc-field-error">{formErrors.bandName}</span>}
                   </div>
 
                   <div className="pc-form-group">
-                    <label>No. WhatsApp</label>
+                    <label htmlFor="pc-customer-phone">No. WhatsApp</label>
                     <input
+                      id="pc-customer-phone"
                       type="tel"
                       className="pc-form-input"
                       value={customerPhone}
-                      onChange={e => setCustomerPhone(e.target.value)}
+                      onChange={e => {
+                        setCustomerPhone(e.target.value);
+                        setFormErrors(prev => ({ ...prev, customerPhone: '' }));
+                      }}
                       placeholder="08xxxxxxxxxx"
+                      aria-invalid={Boolean(formErrors.customerPhone)}
+                      aria-describedby={formErrors.customerPhone ? 'pc-phone-error' : undefined}
                     />
+                    {formErrors.customerPhone && <span id="pc-phone-error" className="pc-field-error">{formErrors.customerPhone}</span>}
                   </div>
 
                   <div className="pc-form-group">
-                    <label>Pilih Durasi</label>
+                    <label id="pc-duration-label">Pilih Durasi</label>
                     <div className="pc-duration-grid">
                       {[1,2,3,4,5].map(h => (
                         <button
                           key={h}
                           type="button"
                           className={`pc-dur-btn ${duration === h ? 'active' : ''}`}
+                          aria-pressed={duration === h}
+                          aria-label={`Pilih durasi ${h} jam`}
                           onClick={() => setDuration(h)}
                         >
                           {h} Jam
@@ -514,7 +595,7 @@ const PublicCalendarPage = () => {
                     <span>Booking akan diajukan ke admin studio untuk ditinjau dan dikonfirmasi melalui pesan WhatsApp.</span>
                   </div>
 
-                  <button className="btn-success" style={{width: '100%', padding: '14px'}} onClick={sendWA} disabled={isSubmittingRequest}>
+                  <button className="btn-success" type="button" style={{width: '100%', padding: '14px'}} onClick={sendWA} disabled={isSubmittingRequest} aria-busy={isSubmittingRequest}>
                     <MessageCircle size={22} />
                     <span>{isSubmittingRequest ? 'Sedang Memproses...' : 'Kirim Booking via WhatsApp'}</span>
                   </button>
