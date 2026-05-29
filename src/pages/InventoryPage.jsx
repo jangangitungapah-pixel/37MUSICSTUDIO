@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Search, Plus, Edit2, Trash2, Box, Package, AlertCircle, Wrench, X, Tag, Hash, StickyNote } from 'lucide-react';
+import { Search, Plus, Edit2, Trash2, Box, Package, AlertCircle, Wrench, X, Tag, Hash, StickyNote, ChevronDown } from 'lucide-react';
 import { useInventoryStore } from '../store/useInventoryStore';
 import { useBookingStore } from '../store/useBookingStore';
 import { useTourStore } from '../store/useTourStore';
@@ -24,6 +24,7 @@ const InventoryPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('All');
   const [selectedItem, setSelectedItem] = useState(null);
+  const [isCatDropdownOpen, setIsCatDropdownOpen] = useState(false);
   
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -161,9 +162,9 @@ const InventoryPage = () => {
       </header>
 
       {/* Stats Bar */}
-      <div className="app-stat-grid tour-inv-stats">
-        <div className="app-stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(0, 240, 255, 0.1)' }}>
+      <div className="stats-bar tour-inv-stats">
+        <div className="stat-card">
+          <div className="stat-icon stat-icon-total">
             <Box size={20} color="var(--accent-cyan)" />
           </div>
           <div className="stat-data">
@@ -171,8 +172,8 @@ const InventoryPage = () => {
             <span className="stat-label">Total Item</span>
           </div>
         </div>
-        <div className="app-stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(156, 39, 176, 0.1)' }}>
+        <div className="stat-card">
+          <div className="stat-icon stat-icon-qty">
             <Hash size={20} color="#CE93D8" />
           </div>
           <div className="stat-data">
@@ -180,8 +181,8 @@ const InventoryPage = () => {
             <span className="stat-label">Total Unit</span>
           </div>
         </div>
-        <div className="app-stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(76, 175, 80, 0.1)' }}>
+        <div className="stat-card">
+          <div className="stat-icon stat-icon-good">
             <Package size={20} color="#4CAF50" />
           </div>
           <div className="stat-data">
@@ -189,8 +190,8 @@ const InventoryPage = () => {
             <span className="stat-label">Kondisi Baik</span>
           </div>
         </div>
-        <div className="app-stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(255, 193, 7, 0.1)' }}>
+        <div className="stat-card">
+          <div className="stat-icon stat-icon-warning">
             <Wrench size={20} color="#FFC107" />
           </div>
           <div className="stat-data">
@@ -198,8 +199,8 @@ const InventoryPage = () => {
             <span className="stat-label">Perlu Perhatian</span>
           </div>
         </div>
-        <div className="app-stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(255, 42, 95, 0.1)' }}>
+        <div className="stat-card">
+          <div className="stat-icon stat-icon-alert">
             <AlertCircle size={20} color="var(--accent-pink)" />
           </div>
           <div className="stat-data">
@@ -210,31 +211,32 @@ const InventoryPage = () => {
       </div>
 
       {/* Smart Maintenance */}
-      <div className="app-smart-panel">
-        <div className="smart-head">
+      <div className="inventory-smart-panel">
+        <div className="inventory-smart-head">
           <Wrench size={18} />
           <div>
             <h3>Maintenance Berbasis Pemakaian</h3>
             <p>{maintenanceInsights.studioHours30d} jam pemakaian studio dalam 30 hari terakhir.</p>
           </div>
         </div>
-        <div className="smart-list" style={{display: 'flex', flexDirection: 'row', flexWrap: 'wrap', gap: '12px'}}>
-          {maintenanceInsights.recommendations.slice(0, 4).map(({ item, label, usageHours, reason }) => (
-            <button
-              key={item.id}
-              className={`smart-item ${label.toLowerCase()}`}
-              style={{flex: '1 1 calc(25% - 12px)', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', textAlign: 'left', minWidth: '200px', cursor: 'pointer', background: 'transparent', border: 'none', padding: 0}}
-              onClick={() => handleRowClick(item)}
-            >
-              <div style={{background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', padding: '12px 16px', width: '100%', transition: 'all 0.2s', ...(label === 'Overhaul' ? {background: 'rgba(255, 42, 95, 0.05)', borderColor: 'rgba(255, 42, 95, 0.2)'} : label === 'Cek Rutin' ? {background: 'rgba(255, 193, 7, 0.05)', borderColor: 'rgba(255, 193, 7, 0.2)'} : {})}}>
-                <strong style={{display: 'block', fontSize: '0.9rem', color: 'var(--text-primary)', marginBottom: '4px'}}>{item.name}</strong>
-                <span style={{display: 'block', fontSize: '0.75rem', color: label === 'Overhaul' ? 'var(--accent-pink)' : label === 'Cek Rutin' ? '#FFC107' : 'var(--text-secondary)', marginBottom: '4px'}}>{label} - {reason}</span>
-                <small style={{display: 'block', fontSize: '0.7rem', color: 'var(--text-muted)'}}>{usageHours} jam estimasi</small>
-              </div>
-            </button>
-          ))}
+        <div className="inventory-smart-list">
+          {maintenanceInsights.recommendations.slice(0, 4).map(({ item, label, usageHours, reason }) => {
+            const complexityClass = label === 'Overhaul' ? 'kritis' : label === 'Cek Rutin' ? 'tinggi' : 'normal';
+            return (
+              <button
+                key={item.id}
+                type="button"
+                className={`inventory-smart-item ${complexityClass}`}
+                onClick={() => handleRowClick(item)}
+              >
+                <strong>{item.name}</strong>
+                <span>{label} - {reason}</span>
+                <small>{usageHours} jam estimasi</small>
+              </button>
+            );
+          })}
           {maintenanceInsights.recommendations.length === 0 && (
-            <span style={{fontSize: '0.85rem', color: 'var(--text-muted)'}}>Belum ada data inventaris untuk dianalisis.</span>
+            <span className="inventory-smart-empty">Belum ada data inventaris untuk dianalisis.</span>
           )}
         </div>
       </div>
@@ -242,31 +244,66 @@ const InventoryPage = () => {
       {/* Content Area */}
       <div className="inventory-content-area">
         <div className="inventory-container app-panel">
-          {/* Category Tabs — dynamic from store */}
           <div className="app-table-toolbar">
-            <div className="app-table-toolbar-left" style={{ flex: 1, overflowX: 'auto' }}>
-              <div className="filter-tabs tour-inv-categories" style={{ margin: 0, borderBottom: 'none' }}>
-                <button 
-                  className={`filter-tab ${activeCategory === 'All' ? 'active' : ''}`} 
-                  onClick={() => setActiveCategory('All')}
-                >
-                  Semua <span className="tab-count">{inventory.length}</span>
-                </button>
-                {categories.map(cat => {
-                  const count = inventory.filter(i => i.category === cat).length;
-                  return (
-                    <button 
-                      key={cat}
-                      className={`filter-tab ${activeCategory === cat ? 'active' : ''}`} 
-                      onClick={() => setActiveCategory(cat)}
-                    >
-                      {cat} <span className="tab-count">{count}</span>
-                    </button>
-                  );
-                })}
+            <div className="app-table-toolbar-left">
+              <div>
+                <span className="app-table-toolbar-title">Daftar Inventaris</span>
+                <span className="app-table-toolbar-subtitle">{filteredInventory.length} item ditemukan</span>
               </div>
             </div>
             <div className="app-table-toolbar-right">
+              {/* Filter Dropdown */}
+              <div className="filter-dropdown-container tour-inv-categories">
+                <button 
+                  type="button"
+                  className="filter-dropdown-toggle"
+                  onClick={() => setIsCatDropdownOpen(!isCatDropdownOpen)}
+                  aria-haspopup="listbox"
+                  aria-expanded={isCatDropdownOpen}
+                  aria-label="Filter kategori inventaris"
+                >
+                  <Package size={16} className="filter-dropdown-icon" />
+                  <span className="filter-dropdown-label">
+                    {activeCategory === 'All' ? `Semua Kategori (${inventory.length})` : `${activeCategory} (${inventory.filter(i => i.category === activeCategory).length})`}
+                  </span>
+                  <ChevronDown size={16} className={`filter-dropdown-arrow ${isCatDropdownOpen ? 'open' : ''}`} />
+                </button>
+                
+                {isCatDropdownOpen && (
+                  <>
+                    <div className="filter-dropdown-overlay" onClick={() => setIsCatDropdownOpen(false)} />
+                    <div className="filter-dropdown-menu" role="listbox">
+                      <button 
+                        type="button" 
+                        className={`filter-dropdown-item ${activeCategory === 'All' ? 'active' : ''}`}
+                        onClick={() => { setActiveCategory('All'); setIsCatDropdownOpen(false); }}
+                        role="option"
+                        aria-selected={activeCategory === 'All'}
+                      >
+                        <span>Semua Kategori</span>
+                        <span className="tab-count">{inventory.length}</span>
+                      </button>
+                      {categories.map(cat => {
+                        const count = inventory.filter(i => i.category === cat).length;
+                        return (
+                          <button 
+                            key={cat}
+                            type="button" 
+                            className={`filter-dropdown-item ${activeCategory === cat ? 'active' : ''}`}
+                            onClick={() => { setActiveCategory(cat); setIsCatDropdownOpen(false); }}
+                            role="option"
+                            aria-selected={activeCategory === cat}
+                          >
+                            <span>{cat}</span>
+                            <span className="tab-count">{count}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </>
+                )}
+              </div>
+
               <div className="app-search app-search-md tour-inv-search">
                 <Search className="app-search-icon" />
                 <input 
@@ -275,6 +312,7 @@ const InventoryPage = () => {
                   placeholder="Cari nama alat, merk..." 
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
+                  aria-label="Cari nama alat atau merk inventaris"
                 />
                 {searchQuery && (
                   <button type="button" className="app-search-clear" onClick={() => setSearchQuery('')} aria-label="Bersihkan pencarian" title="Bersihkan pencarian">
@@ -337,10 +375,20 @@ const InventoryPage = () => {
                         </td>
                         <td className="action-col" onClick={e => e.stopPropagation()}>
                           <div className="row-actions">
-                            <button className="icon-btn" onClick={() => handleOpenEdit(item)} title="Edit">
+                            <button 
+                              className="icon-btn" 
+                              onClick={() => handleOpenEdit(item)} 
+                              title="Edit"
+                              aria-label={`Edit data ${item.name}`}
+                            >
                               <Edit2 size={15} />
                             </button>
-                            <button className="icon-btn delete" onClick={() => handleDelete(item.id)} title="Hapus">
+                            <button 
+                              className="icon-btn delete" 
+                              onClick={() => handleDelete(item.id)} 
+                              title="Hapus"
+                              aria-label={`Hapus data ${item.name}`}
+                            >
                               <Trash2 size={15} />
                             </button>
                           </div>
@@ -382,10 +430,20 @@ const InventoryPage = () => {
                         {condition.label}
                       </span>
                       <div className="mobile-inv-actions" onClick={e => e.stopPropagation()}>
-                        <button className="icon-btn" onClick={() => handleOpenEdit(item)} title="Edit">
+                        <button 
+                          className="icon-btn" 
+                          onClick={() => handleOpenEdit(item)} 
+                          title="Edit"
+                          aria-label={`Edit data ${item.name}`}
+                        >
                           <Edit2 size={14} />
                         </button>
-                        <button className="icon-btn delete" onClick={() => handleDelete(item.id)} title="Hapus">
+                        <button 
+                          className="icon-btn delete" 
+                          onClick={() => handleDelete(item.id)} 
+                          title="Hapus"
+                          aria-label={`Hapus data ${item.name}`}
+                        >
                           <Trash2 size={14} />
                         </button>
                       </div>
@@ -412,7 +470,7 @@ const InventoryPage = () => {
               <span className="condition-badge" style={{ background: (CONDITION_COLORS[selectedItem.condition] || CONDITION_COLORS['Good']).bg, color: (CONDITION_COLORS[selectedItem.condition] || CONDITION_COLORS['Good']).color }}>
                 {(CONDITION_COLORS[selectedItem.condition] || CONDITION_COLORS['Good']).label}
               </span>
-              <button className="icon-btn detail-panel-close" onClick={() => setSelectedItem(null)}><X size={16} /></button>
+              <button className="icon-btn detail-panel-close" onClick={() => setSelectedItem(null)} aria-label="Tutup panel detail"><X size={16} /></button>
             </div>
 
             <div className="detail-panel-body">
@@ -544,8 +602,8 @@ const InventoryPage = () => {
                       onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); handleAddNewCategory(); } }}
                       style={{ minWidth: 0 }}
                     />
-                    <button type="button" className="btn-icon-sm confirm" onClick={handleAddNewCategory} title="Simpan"><Plus size={16} /></button>
-                    <button type="button" className="btn-icon-sm cancel" onClick={() => { setShowNewCat(false); setFormData(prev => ({ ...prev, category: categories[0] || '' })); }} title="Batal"><X size={16} /></button>
+                    <button type="button" className="btn-icon-sm confirm" onClick={handleAddNewCategory} title="Simpan" aria-label="Simpan kategori baru"><Plus size={16} /></button>
+                    <button type="button" className="btn-icon-sm cancel" onClick={() => { setShowNewCat(false); setFormData(prev => ({ ...prev, category: categories[0] || '' })); }} title="Batal" aria-label="Batal tambah kategori baru"><X size={16} /></button>
                   </div>
                 )}
               </div>
@@ -562,13 +620,16 @@ const InventoryPage = () => {
               <AlertCircle size={16} />
               <span>Kondisi Alat</span>
             </div>
-            <div className="condition-selector">
+            <div className="condition-selector" role="radiogroup" aria-label="Kondisi alat">
               {Object.entries(CONDITION_COLORS).map(([key, val]) => (
                 <button
                   key={key} type="button"
                   className={`condition-option ${formData.condition === key ? 'selected' : ''}`}
                   style={{ '--cond-color': val.color, '--cond-bg': val.bg }}
                   onClick={() => setFormData(prev => ({ ...prev, condition: key }))}
+                  role="radio"
+                  aria-checked={formData.condition === key}
+                  aria-label={`Kondisi ${val.label}`}
                 >
                   <span className="cond-dot" style={{ background: val.color }} />
                   {val.label}
