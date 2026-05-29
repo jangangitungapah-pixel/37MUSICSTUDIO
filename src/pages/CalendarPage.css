@@ -2078,11 +2078,12 @@ body.calendar-move-lock .main-content {
   .calendar-page .quick-filters {
     display: flex;
     flex-wrap: nowrap;
-    overflow-x: visible;
+    overflow-x: auto;
     justify-content: flex-start;
     gap: 6px;
     padding-bottom: 2px;
     max-width: 100%;
+    -webkit-overflow-scrolling: touch;
   }
   .calendar-page .quick-filters::-webkit-scrollbar { display: none; }
   .calendar-page .filter-chip {
