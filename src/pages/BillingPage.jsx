@@ -5,7 +5,10 @@ import { Printer, CheckCircle, AlertCircle, FileText, Search, X, Share2, Message
 import { format } from 'date-fns';
 import html2canvas from 'html2canvas';
 import { toast } from 'sonner';
+import confetti from 'canvas-confetti';
 import Modal from '../components/Modal';
+import { PDFDownloadLink } from '@react-pdf/renderer';
+import { InvoicePDF } from '../components/InvoicePDF';
 import { getBillingInsights } from '../lib/smartInsights';
 import { getDepositDeadlineStatus } from '../lib/bookingWorkflows';
 import { motion } from 'framer-motion';
@@ -68,23 +71,36 @@ const BillingPage = () => {
   const handleMarkAsPaid = (e, id) => {
     e.stopPropagation();
     updateBookingStatus(id, 'confirmed');
-    if (run && currentStep === 4) setTimeout(() => nextStep(), 100);
+    confetti({
+      particleCount: 150,
+      spread: 80,
+      origin: { y: 0.6 },
+      colors: ['#00f0ff', '#ff2a5f', '#FFC107', '#4CAF50']
+    });
+    toast.success('Pembayaran ditandai sebagai lunas! 🎉');
   };
 
   const handleStatusChange = (e, id, newStatus) => {
     e.stopPropagation();
     updateBookingStatus(id, newStatus);
+    if (newStatus === 'confirmed') {
+      confetti({
+        particleCount: 150,
+        spread: 80,
+        origin: { y: 0.6 },
+        colors: ['#00f0ff', '#ff2a5f', '#FFC107', '#4CAF50']
+      });
+      toast.success('Status pembayaran diubah menjadi Lunas! 🎉');
+    }
   };
 
   const handleOpenInvoice = (booking) => {
     setSelectedInvoice(booking);
     setIsInvoiceModalOpen(true);
-    if (run && currentStep === 5) setTimeout(() => nextStep(), 100);
   };
   
   const handleCloseInvoiceModal = () => {
     setIsInvoiceModalOpen(false);
-    if (run && currentStep === 7) setTimeout(() => nextStep(), 100);
   };
 
   const handlePrint = () => {
@@ -379,16 +395,12 @@ const BillingPage = () => {
               {filteredBookings.length === 0 ? (
                 <tr><td colSpan="7" className="empty-state">Tidak ada data transaksi.</td></tr>
               ) : (() => {
-                const firstUnpaidIdx = filteredBookings.findIndex(b => b.status !== 'confirmed');
-                const tutorialTargetIdx = firstUnpaidIdx !== -1 ? firstUnpaidIdx : 0;
-
-                return filteredBookings.map((b, index) => {
+                return filteredBookings.map((b) => {
                   const remaining = calculateRemaining(b);
                   const total = calculateTotal(b);
-                  const isTutorialRow = run && index === tutorialTargetIdx;
 
                   return (
-                    <tr key={b.id} className={isTutorialRow && currentStep === 5 ? 'tour-bill-row' : ''} onClick={() => handleOpenInvoice(b)}>
+                    <tr key={b.id} onClick={() => handleOpenInvoice(b)}>
                       <td className="inv-id">INV-{b.id.toString().padStart(5, '0')}</td>
                       <td>{format(new Date(b.date), 'dd MMM yyyy')}</td>
                       <td className="inv-band">
@@ -400,7 +412,7 @@ const BillingPage = () => {
                       <td className="inv-total">{formatCurrency(total)}</td>
                       <td onClick={(e) => e.stopPropagation()}>
                         <select 
-                          className={`status-select ${b.status} ${isTutorialRow && currentStep === 8 ? 'tour-bill-status-select' : ''}`}
+                          className={`status-select ${b.status}`}
                           value={b.status}
                           onChange={(e) => handleStatusChange(e, b.id, e.target.value)}
                           aria-label={`Ubah status pembayaran invoice ${b.band}`}
@@ -423,7 +435,7 @@ const BillingPage = () => {
                         <div className="row-actions">
                           {remaining > 0 && (
                             <button 
-                              className={`btn-sm-pay ${isTutorialRow && currentStep === 4 ? 'tour-bill-btn-pay' : ''}`} 
+                              className="btn-sm-pay" 
                               onClick={(e) => handleMarkAsPaid(e, b.id)}
                               title="Tandai Lunas"
                               aria-label={`Tandai lunas invoice band ${b.band}`}
@@ -700,7 +712,7 @@ const BillingPage = () => {
               </div>
 
               {/* Share grid */}
-              <div className="inv2-share-grid tour-invoice-share">
+              <div className="inv2-share-grid">
                 <button
                   type="button"
                   className="inv2-share-btn wa"
@@ -779,9 +791,26 @@ const BillingPage = () => {
                 <button type="button" className="inv2-btn-close" onClick={handleCloseInvoiceModal} aria-label="Tutup detail modal">
                   <X size={16} /> Tutup
                 </button>
+                <PDFDownloadLink
+                  document={<InvoicePDF invoice={selectedInvoice} settings={{ studioName, studioAddress, studioPhone, pricePerHour }} />}
+                  fileName={`invoice-${selectedInvoice.id.toString().padStart(5, '0')}.pdf`}
+                  style={{ textDecoration: 'none' }}
+                >
+                  {({ loading }) => (
+                    <button
+                      type="button"
+                      className="inv2-btn-print"
+                      disabled={loading}
+                      aria-label="Unduh invoice PDF"
+                    >
+                      <Download size={16} />
+                      <span>{loading ? 'PDF...' : 'Unduh PDF'}</span>
+                    </button>
+                  )}
+                </PDFDownloadLink>
                 <button
                   type="button"
-                  className={`inv2-btn-print ${run && currentStep === 7 ? 'tour-invoice-print' : ''}`}
+                  className="inv2-btn-print"
                   onClick={handlePrint}
                   aria-label="Cetak invoice atau simpan sebagai PDF"
                 >

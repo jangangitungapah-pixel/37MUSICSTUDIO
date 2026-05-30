@@ -8,7 +8,41 @@ import { Music2, Mic, Wrench, User, Phone, Calendar, Clock, DollarSign, StickyNo
 import { generatePaymentLink, checkPaymentStatus } from '../lib/paymentGateway';
 import { useInventoryStore } from '../store/useInventoryStore';
 import { buildRecurringBookings, hasBookingOverlap } from '../lib/bookingWorkflows';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import confetti from 'canvas-confetti';
 import './BookingForm.css';
+
+const bookingSchema = z.object({
+  type: z.enum(['booking', 'recording', 'maintenance']),
+  band: z.string().min(1, 'Nama wajib diisi'),
+  phone: z.string().optional(),
+  date: z.string().min(1, 'Tanggal wajib diisi'),
+  hour: z.preprocess((val) => Number(val), z.number().min(0).max(23)),
+  duration: z.preprocess((val) => Number(val), z.number().min(1).max(24)),
+  status: z.enum(['pending', 'dp', 'confirmed', 'maintenance']),
+  dpAmount: z.preprocess((val) => Number(val || 0), z.number().min(0, 'DP tidak boleh negatif')),
+  depositDeadline: z.string().optional(),
+  note: z.string().optional(),
+  sessionId: z.string().optional(),
+  sessionPrice: z.preprocess((val) => Number(val || 0), z.number().min(0)),
+}).refine((data) => {
+  if (data.type !== 'maintenance') {
+    return data.band.trim().length >= 2;
+  }
+  return true;
+}, {
+  message: 'Nama band/pelanggan minimal 2 karakter',
+  path: ['band']
+}).refine((data) => {
+  if (data.type !== 'maintenance' && data.phone) {
+    return /^[0-9]{10,15}$/.test(data.phone);
+  }
+  return true;
+}, {
+  message: 'Nomor HP harus berupa angka 10-15 digit',
+  path: ['phone']
+});
 
 const BookingForm = ({ onClose, initialDate, initialHour }) => {
   const { bookings, addBooking, addBookings } = useBookingStore();
@@ -30,45 +64,58 @@ const BookingForm = ({ onClose, initialDate, initialHour }) => {
 
   const today = format(new Date(), 'yyyy-MM-dd');
 
-  const [formData, setFormData] = useState({
-    type: 'booking',
-    band: '',
-    phone: '',
-    date: initialDate || today,
-    hour: initialHour || 10,
-    duration: 2,
-    status: 'pending',
-    dpAmount: 0,
-    depositDeadline: '',
-    note: '',
-    sessionId: recordingSessions.length > 0 ? recordingSessions[0].id : '',
-    sessionPrice: recordingSessions.length > 0 ? recordingSessions[0].price : 0,
+  const { register, handleSubmit: handleFormSubmit, reset, setValue, watch, formState: { errors } } = useForm({
+    defaultValues: {
+      type: 'booking',
+      band: '',
+      phone: '',
+      date: initialDate || today,
+      hour: initialHour || 10,
+      duration: 2,
+      status: 'pending',
+      dpAmount: 0,
+      depositDeadline: '',
+      note: '',
+      sessionId: recordingSessions.length > 0 ? recordingSessions[0].id : '',
+      sessionPrice: recordingSessions.length > 0 ? recordingSessions[0].price : 0,
+    }
   });
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => {
-      const newData = {
-        ...prev,
-        [name]: (name === 'hour' || name === 'duration' || name === 'dpAmount') ? Number(value) : value
-      };
-      
-      if (name === 'sessionId') {
-        const session = recordingSessions.find(s => s.id === value);
-        if (session) {
-          newData.duration = session.hours;
-          newData.sessionPrice = session.price;
-        }
-      }
+  const formData = watch();
 
-      if (name === 'band') {
-        const found = customers.find(c => c.name.toLowerCase() === value.toLowerCase());
-        if (found && !prev.phone) newData.phone = found.phone;
+  const validateBookingWithZod = (fieldName) => (value) => {
+    const currentValues = watch();
+    const result = bookingSchema.safeParse({ ...currentValues, [fieldName]: value });
+    if (result.success) return true;
+    const error = result.error.errors.find(e => e.path[0] === fieldName);
+    return error ? error.message : true;
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    let val = (name === 'hour' || name === 'duration' || name === 'dpAmount') ? Number(value) : value;
+    
+    if (name === 'sessionId') {
+      const session = recordingSessions.find(s => s.id === value);
+      if (session) {
+        setValue('duration', session.hours);
+        setValue('sessionPrice', session.price);
       }
-      if (name === 'status' && value !== 'dp') newData.dpAmount = 0;
-      return newData;
-    });
-    setConflictSuggestion(null); // Clear suggestion on change
+    }
+
+    if (name === 'band') {
+      const found = customers.find(c => c.name.toLowerCase() === value.toLowerCase());
+      const currentPhone = watch('phone');
+      if (found && !currentPhone) {
+        setValue('phone', found.phone);
+      }
+    }
+
+    if (name === 'status' && value !== 'dp') {
+      setValue('dpAmount', 0);
+    }
+
+    setConflictSuggestion(null);
   };
 
   const handleEquipmentToggle = (itemId) => {
@@ -123,12 +170,11 @@ const BookingForm = ({ onClose, initialDate, initialHour }) => {
     return null;
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const onSubmit = async (data) => {
     if (isSubmitting) return;
 
-    if (checkOverlap(formData.date, formData.hour, formData.duration)) {
-      const suggestion = findNearestAvailableSlot(formData.date, formData.hour, formData.duration);
+    if (checkOverlap(data.date, data.hour, data.duration)) {
+      const suggestion = findNearestAvailableSlot(data.date, data.hour, data.duration);
       if (suggestion) {
         setConflictSuggestion(suggestion);
         useNotificationStore.getState().addNotification({ title: 'Jadwal Bentrok!', message: 'Sistem menemukan jadwal kosong terdekat.', type: 'warning' });
@@ -141,13 +187,13 @@ const BookingForm = ({ onClose, initialDate, initialHour }) => {
     setIsSubmitting(true);
     try {
       const finalBookingData = {
-        ...formData,
+        ...data,
         rentedEquipment,
         equipmentCost,
-        equipmentUsageHours: rentedEquipment.length * formData.duration,
+        equipmentUsageHours: rentedEquipment.length * data.duration,
       };
 
-      if (formData.type === 'maintenance') {
+      if (data.type === 'maintenance') {
         await addBooking({ ...finalBookingData, status: 'maintenance' });
       } else {
         const enrichedBooking = { ...finalBookingData, isVIP, discountAmount };
@@ -164,14 +210,19 @@ const BookingForm = ({ onClose, initialDate, initialHour }) => {
             return;
           }
           await addBookings(recurringBookings);
-          await incrementBookingCount(formData.band, { phone: formData.phone, duration: formData.duration * recurringBookings.length, totalPrice: totalPrice * recurringBookings.length });
+          await incrementBookingCount(data.band, { phone: data.phone, duration: data.duration * recurringBookings.length, totalPrice: totalPrice * recurringBookings.length });
         } else {
           await addBooking(enrichedBooking);
-          await incrementBookingCount(formData.band, { phone: formData.phone, duration: formData.duration, totalPrice });
+          await incrementBookingCount(data.band, { phone: data.phone, duration: data.duration, totalPrice });
         }
+        confetti({
+          particleCount: 150,
+          spread: 80,
+          origin: { y: 0.6 },
+          colors: ['#00f0ff', '#ff2a5f', '#FFC107', '#4CAF50']
+        });
       }
       onClose();
-      if (run && currentStep === 10) setTimeout(() => nextStep(), 100);
     } catch (error) {
       useNotificationStore.getState().addNotification({
         title: 'Gagal menyimpan booking',
@@ -207,10 +258,26 @@ const BookingForm = ({ onClose, initialDate, initialHour }) => {
     setPaymentStatus(res.status);
     if (res.status === 'paid') {
       useNotificationStore.getState().addNotification({ title: 'Berhasil', message: 'Pembayaran QRIS berhasil dikonfirmasi.', type: 'success' });
-      setFormData(prev => ({ ...prev, note: `${prev.note ? prev.note + '\n' : ''}[PAID VIA QRIS ${res.invoiceId}]` }));
+      setValue('note', `${formData.note ? formData.note + '\n' : ''}[PAID VIA QRIS ${res.invoiceId}]`);
     } else {
       useNotificationStore.getState().addNotification({ title: 'Pending', message: 'Pembayaran belum diterima.', type: 'warning' });
     }
+  };
+
+  const handleTypeChange = (typeVal) => {
+    setValue('type', typeVal);
+    if (typeVal === 'booking') {
+      setValue('band', '');
+    } else if (typeVal === 'recording') {
+      const defaultSession = recordingSessions.length > 0 ? recordingSessions[0] : null;
+      setValue('band', '');
+      setValue('sessionId', defaultSession ? defaultSession.id : '');
+      setValue('sessionPrice', defaultSession ? defaultSession.price : 0);
+      setValue('duration', defaultSession ? defaultSession.hours : 6);
+    } else if (typeVal === 'maintenance') {
+      setValue('band', 'Maintenance');
+    }
+    setConflictSuggestion(null);
   };
 
   const statusOptions = [
@@ -220,14 +287,14 @@ const BookingForm = ({ onClose, initialDate, initialHour }) => {
   ];
 
   return (
-    <form className="booking-form" onSubmit={handleSubmit}>
+    <form className="booking-form" onSubmit={handleFormSubmit(onSubmit)}>
 
       {/* Type Toggle */}
       <div className="bf-type-toggle">
         <button
           type="button"
           className={`bf-type-btn ${formData.type === 'booking' ? 'active booking' : ''}`}
-          onClick={() => setFormData(p => ({ ...p, type: 'booking', band: '' }))}
+          onClick={() => handleTypeChange('booking')}
         >
           <Music2 size={16} />
           Latihan
@@ -236,17 +303,7 @@ const BookingForm = ({ onClose, initialDate, initialHour }) => {
           type="button"
           className={`bf-type-btn ${formData.type === 'recording' ? 'active recording' : ''}`}
           style={formData.type === 'recording' ? { background: 'rgba(255, 152, 0, 0.15)', color: '#FF9800', borderColor: 'rgba(255, 152, 0, 0.3)' } : {}}
-          onClick={() => {
-            const defaultSession = recordingSessions.length > 0 ? recordingSessions[0] : null;
-            setFormData(p => ({ 
-              ...p, 
-              type: 'recording', 
-              band: '',
-              sessionId: defaultSession ? defaultSession.id : '',
-              sessionPrice: defaultSession ? defaultSession.price : 0,
-              duration: defaultSession ? defaultSession.hours : 6
-            }));
-          }}
+          onClick={() => handleTypeChange('recording')}
         >
           <Mic size={16} />
           Recording
@@ -254,7 +311,7 @@ const BookingForm = ({ onClose, initialDate, initialHour }) => {
         <button
           type="button"
           className={`bf-type-btn ${formData.type === 'maintenance' ? 'active maintenance' : ''}`}
-          onClick={() => setFormData(p => ({ ...p, type: 'maintenance', band: 'Maintenance' }))}
+          onClick={() => handleTypeChange('maintenance')}
         >
           <Wrench size={16} />
           Blokir Jadwal
@@ -276,20 +333,17 @@ const BookingForm = ({ onClose, initialDate, initialHour }) => {
             <div className="bf-input-wrap">
               <input
                 type="text"
-                name="band"
-                list="customer-list"
-                value={formData.band}
-                onChange={handleChange}
                 placeholder={formData.type === 'maintenance' ? 'contoh: Perbaikan Drum' : 'contoh: The Rockers'}
-                required
                 className="bf-input tour-input-band"
                 autoFocus
                 autoComplete="off"
+                {...register('band', { validate: validateBookingWithZod('band'), onChange: handleInputChange })}
               />
               {isVIP && (
                 <span className="bf-vip-badge"><Star size={11} /> VIP</span>
               )}
             </div>
+            {errors.band && <span className="cf-error-message" style={{ color: 'var(--accent-pink)', fontSize: '11px', marginTop: '4px', display: 'block' }}>{errors.band.message}</span>}
             {formData.type !== 'maintenance' && (
               <datalist id="customer-list">
                 {customers.map(c => <option key={c.id} value={c.name} />)}
@@ -302,12 +356,11 @@ const BookingForm = ({ onClose, initialDate, initialHour }) => {
               <label className="bf-label"><Phone size={12} /> No. HP / WhatsApp</label>
               <input
                 type="tel"
-                name="phone"
-                value={formData.phone}
-                onChange={handleChange}
                 placeholder="08xxxxxxxxxx"
                 className="bf-input tour-input-phone"
+                {...register('phone', { validate: validateBookingWithZod('phone'), onChange: handleInputChange })}
               />
+              {errors.phone && <span className="cf-error-message" style={{ color: 'var(--accent-pink)', fontSize: '11px', marginTop: '4px', display: 'block' }}>{errors.phone.message}</span>}
             </div>
           )}
         </div>
@@ -321,16 +374,14 @@ const BookingForm = ({ onClose, initialDate, initialHour }) => {
             <label className="bf-label">Tanggal <span className="bf-required">*</span></label>
             <input
               type="date"
-              name="date"
-              value={formData.date}
-              onChange={handleChange}
               className="bf-input tour-input-date"
-              required
+              {...register('date', { validate: validateBookingWithZod('date'), onChange: handleInputChange })}
             />
+            {errors.date && <span className="cf-error-message" style={{ color: 'var(--accent-pink)', fontSize: '11px', marginTop: '4px', display: 'block' }}>{errors.date.message}</span>}
           </div>
           <div className="bf-field">
             <label className="bf-label"><Clock size={12} /> Jam Mulai <span className="bf-required">*</span></label>
-            <select name="hour" value={formData.hour} onChange={handleChange} className="bf-input tour-input-hour">
+            <select className="bf-input tour-input-hour" {...register('hour', { onChange: handleInputChange })}>
               {Array.from({ length: 13 }, (_, i) => i + 10).map(h => (
                 <option key={h} value={h}>{String(h).padStart(2, '0')}:00</option>
               ))}
@@ -340,7 +391,7 @@ const BookingForm = ({ onClose, initialDate, initialHour }) => {
           {formData.type === 'recording' ? (
             <div className="bf-field" style={{ flex: 1.5 }}>
               <label className="bf-label">Paket Sesi <span className="bf-required">*</span></label>
-              <select name="sessionId" value={formData.sessionId} onChange={handleChange} className="bf-input" required>
+              <select className="bf-input" {...register('sessionId', { onChange: handleInputChange })}>
                 {recordingSessions.length === 0 ? (
                    <option value="">Belum ada sesi diatur</option>
                 ) : (
@@ -354,9 +405,9 @@ const BookingForm = ({ onClose, initialDate, initialHour }) => {
             <div className="bf-field">
               <label className="bf-label">Durasi <span className="bf-required">*</span></label>
               <div className="bf-duration-picker tour-input-duration">
-                <button type="button" className="bf-dur-btn" onClick={() => setFormData(p => ({ ...p, duration: Math.max(1, p.duration - 1) }))} disabled={formData.duration <= 1}>−</button>
+                <button type="button" className="bf-dur-btn" onClick={() => { setValue('duration', Math.max(1, formData.duration - 1)); setConflictSuggestion(null); }} disabled={formData.duration <= 1}>−</button>
                 <span className="bf-dur-val">{formData.duration} <small>jam</small></span>
-                <button type="button" className="bf-dur-btn" onClick={() => setFormData(p => ({ ...p, duration: Math.min(13, p.duration + 1) }))} disabled={formData.duration >= 13}>+</button>
+                <button type="button" className="bf-dur-btn" onClick={() => { setValue('duration', Math.min(13, formData.duration + 1)); setConflictSuggestion(null); }} disabled={formData.duration >= 13}>+</button>
               </div>
             </div>
           )}
@@ -420,7 +471,8 @@ const BookingForm = ({ onClose, initialDate, initialHour }) => {
               <strong style={{ color: 'var(--text-primary)' }}> {conflictSuggestion.date} pukul {String(conflictSuggestion.hour).padStart(2, '0')}:00</strong>.
             </div>
             <button type="button" className="btn-secondary" style={{ padding: '6px 12px', fontSize: '0.8rem', background: 'rgba(255, 193, 7, 0.2)', color: '#FFC107', border: 'none' }} onClick={() => {
-              setFormData(prev => ({ ...prev, date: conflictSuggestion.date, hour: conflictSuggestion.hour }));
+              setValue('date', conflictSuggestion.date);
+              setValue('hour', conflictSuggestion.hour);
               setConflictSuggestion(null);
             }}>
               Gunakan Saran Ini
@@ -461,7 +513,7 @@ const BookingForm = ({ onClose, initialDate, initialHour }) => {
           <div className="bf-status-grid tour-input-status">
             {statusOptions.map(opt => (
               <label key={opt.value} className={`bf-status-card ${formData.status === opt.value ? 'selected' : ''}`} style={{ '--status-color': opt.color }}>
-                <input type="radio" name="status" value={opt.value} checked={formData.status === opt.value} onChange={handleChange} className="bf-status-radio" />
+                <input type="radio" value={opt.value} className="bf-status-radio" {...register('status', { onChange: handleInputChange })} />
                 <span className="bf-status-dot" style={{ background: opt.color }} />
                 <span className="bf-status-label">{opt.label}</span>
               </label>
@@ -509,11 +561,9 @@ const BookingForm = ({ onClose, initialDate, initialHour }) => {
               <label className="bf-label">Deadline DP / Pelunasan</label>
               <input
                 type="date"
-                name="depositDeadline"
-                value={formData.depositDeadline}
                 min={today}
-                onChange={handleChange}
                 className="bf-input"
+                {...register('depositDeadline', { onChange: handleInputChange })}
               />
               <span className="bf-field-hint">Dipakai oleh billing untuk menandai tagihan yang harus segera ditindaklanjuti.</span>
             </div>
@@ -527,15 +577,13 @@ const BookingForm = ({ onClose, initialDate, initialHour }) => {
                   <label className="bf-label">Nominal DP <span className="bf-required">*</span></label>
                   <input
                     type="number"
-                    name="dpAmount"
                     min="0"
                     max={totalPrice}
-                    value={formData.dpAmount}
-                    onChange={handleChange}
                     className="bf-input tour-input-dp"
                     placeholder="0"
-                    required
+                    {...register('dpAmount', { validate: validateBookingWithZod('dpAmount'), onChange: handleInputChange })}
                   />
+                  {errors.dpAmount && <span className="cf-error-message" style={{ color: 'var(--accent-pink)', fontSize: '11px', marginTop: '4px', display: 'block' }}>{errors.dpAmount.message}</span>}
                 </div>
                 <div className="bf-field">
                   <label className="bf-label">Sisa Tagihan</label>
@@ -615,12 +663,10 @@ const BookingForm = ({ onClose, initialDate, initialHour }) => {
         <div className="bf-field">
           <label className="bf-label"><StickyNote size={12} /> Catatan (opsional)</label>
           <textarea
-            name="note"
-            value={formData.note}
-            onChange={handleChange}
             placeholder="Catatan tambahan..."
             className="bf-input bf-textarea"
             rows="2"
+            {...register('note', { onChange: handleInputChange })}
           />
         </div>
       </div>

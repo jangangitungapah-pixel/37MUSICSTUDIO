@@ -8,6 +8,10 @@ import { getMembershipTier, TIER_CONFIG, getLoyaltyPoints, sendWelcomeMessage, s
 import { getCustomerRetentionInsights } from '../lib/smartInsights';
 import { motion } from 'framer-motion';
 import { pagePreset } from '../animations';
+import confetti from 'canvas-confetti';
+import Fuse from 'fuse.js';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 import './CustomersPage.css';
 
 const AVATAR_COLORS = [
@@ -27,6 +31,27 @@ const getAvatarColor = (name) => {
 
 const formatCurrency = (num) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(num);
 
+const customerSchema = z.object({
+  name: z.string().min(2, 'Nama minimal 2 karakter'),
+  phone: z.string()
+    .min(10, 'Nomor HP minimal 10 digit')
+    .max(15, 'Nomor HP maksimal 15 digit')
+    .regex(/^[0-9]+$/, 'Nomor HP harus berupa angka'),
+  email: z.string().email('Format email tidak valid').or(z.literal('')),
+  instagram: z.string().optional(),
+  address: z.string().optional(),
+  status: z.enum(['Active', 'Inactive']),
+  isVIP: z.boolean().optional(),
+  notes: z.string().optional()
+});
+
+const validateWithZod = (fieldName) => (value) => {
+  const fieldSchema = customerSchema.shape[fieldName];
+  if (!fieldSchema) return true;
+  const result = fieldSchema.safeParse(value);
+  return result.success ? true : result.error.errors[0].message;
+};
+
 const CustomersPage = () => {
   const { customers, addCustomer, updateCustomer, deleteCustomer, getStats } = useCustomerStore();
   const { bookings } = useBookingStore();
@@ -45,15 +70,23 @@ const CustomersPage = () => {
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCustomer, setEditingCustomer] = useState(null);
-  const [formData, setFormData] = useState({
-    name: '',
-    phone: '',
-    email: '',
-    instagram: '',
-    address: '',
-    status: 'Active',
-    notes: ''
+
+  const { register, handleSubmit: handleFormSubmit, reset, setValue, watch, formState: { errors } } = useForm({
+    defaultValues: {
+      name: '',
+      phone: '',
+      email: '',
+      instagram: '',
+      address: '',
+      status: 'Active',
+      isVIP: false,
+      notes: ''
+    }
   });
+
+  const watchedName = watch('name');
+  const watchedStatus = watch('status');
+  const watchedIsVIP = watch('isVIP');
 
   const retentionInsights = useMemo(() => getCustomerRetentionInsights(customers), [customers]);
   const passiveCustomers = retentionInsights.passiveCustomers;
@@ -70,15 +103,14 @@ const CustomersPage = () => {
       result = result.filter(c => c.status === activeFilter);
     }
     
-    // Filter by search query
+    // Filter by search query with Fuse.js for fuzzy matching
     if (searchQuery.trim()) {
-      const q = searchQuery.toLowerCase();
-      result = result.filter(c => 
-        c.name.toLowerCase().includes(q) || 
-        c.phone.includes(q) || 
-        c.email.toLowerCase().includes(q) ||
-        (c.instagram && c.instagram.toLowerCase().includes(q))
-      );
+      const fuse = new Fuse(result, {
+        keys: ['name', 'phone', 'email', 'instagram'],
+        threshold: 0.35,
+        ignoreLocation: true
+      });
+      result = fuse.search(searchQuery).map(r => r.item);
     }
     
     return result;
@@ -86,17 +118,38 @@ const CustomersPage = () => {
 
   const handleOpenNew = () => {
     setEditingCustomer(null);
-    setFormData({ name: '', phone: '', email: '', instagram: '', address: '', status: 'Active', notes: '' });
+    reset({ name: '', phone: '', email: '', instagram: '', address: '', status: 'Active', isVIP: false, notes: '' });
     setIsModalOpen(true);
   };
 
   const handleToggleVIP = (customer) => {
-    updateCustomer(customer.id, { ...customer, isVIP: !customer.isVIP });
+    const nextVIP = !customer.isVIP;
+    updateCustomer(customer.id, { ...customer, isVIP: nextVIP });
+    if (nextVIP) {
+      confetti({
+        particleCount: 150,
+        spread: 80,
+        origin: { y: 0.6 },
+        colors: ['#00f0ff', '#ff2a5f', '#FFC107', '#4CAF50']
+      });
+      toast.success(`${customer.name} sekarang menjadi VIP Member! 🌟`);
+    } else {
+      toast.info(`Status VIP ${customer.name} dihapus.`);
+    }
   };
 
   const handleOpenEdit = (customer) => {
     setEditingCustomer(customer);
-    setFormData({ ...customer });
+    reset({ 
+      name: customer.name || '',
+      phone: customer.phone || '',
+      email: customer.email || '',
+      instagram: customer.instagram || '',
+      address: customer.address || '',
+      status: customer.status || 'Active',
+      isVIP: customer.isVIP || false,
+      notes: customer.notes || ''
+    });
     setIsModalOpen(true);
     setSelectedCustomer(null);
   };
@@ -119,17 +172,35 @@ const CustomersPage = () => {
     });
   };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const onSubmitForm = (data) => {
     if (editingCustomer) {
-      updateCustomer(editingCustomer.id, formData);
+      updateCustomer(editingCustomer.id, { ...editingCustomer, ...data });
+      if (data.isVIP && !editingCustomer.isVIP) {
+        confetti({
+          particleCount: 150,
+          spread: 80,
+          origin: { y: 0.6 },
+          colors: ['#00f0ff', '#ff2a5f', '#FFC107', '#4CAF50']
+        });
+      }
+      toast.success('Data pelanggan berhasil diperbarui!');
     } else {
-      addCustomer(formData);
+      addCustomer({
+        ...data,
+        joinDate: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }),
+        totalBookings: 0,
+        totalHours: 0,
+        totalSpent: 0
+      });
+      if (data.isVIP) {
+        confetti({
+          particleCount: 150,
+          spread: 80,
+          origin: { y: 0.6 },
+          colors: ['#00f0ff', '#ff2a5f', '#FFC107', '#4CAF50']
+        });
+      }
+      toast.success('Pelanggan baru berhasil ditambahkan!');
     }
     setIsModalOpen(false);
   };
@@ -660,29 +731,27 @@ const CustomersPage = () => {
         onClose={() => setIsModalOpen(false)} 
         title={editingCustomer ? "Edit Pelanggan" : "Pelanggan Baru"}
       >
-        <form className="customer-form" onSubmit={handleSubmit}>
+        <form className="customer-form" onSubmit={handleFormSubmit(onSubmitForm)}>
 
           {/* Avatar Preview + Name */}
           <div className="cf-identity-section">
             <div className="cf-avatar-preview" style={{
-              background: formData.name ? getAvatarColor(formData.name).bg : 'rgba(255,255,255,0.06)',
-              color: formData.name ? getAvatarColor(formData.name).color : 'var(--text-muted)',
-              border: formData.name ? `1.5px solid ${getAvatarColor(formData.name).color}30` : '1.5px solid rgba(255,255,255,0.08)'
+              background: watchedName ? getAvatarColor(watchedName).bg : 'rgba(255,255,255,0.06)',
+              color: watchedName ? getAvatarColor(watchedName).color : 'var(--text-muted)',
+              border: watchedName ? `1.5px solid ${getAvatarColor(watchedName).color}30` : '1.5px solid rgba(255,255,255,0.08)'
             }}>
-              {formData.name ? formData.name.charAt(0).toUpperCase() : <Users size={22} opacity={0.4} />}
+              {watchedName ? watchedName.charAt(0).toUpperCase() : <Users size={22} opacity={0.4} />}
             </div>
             <div className="cf-name-field">
               <label className="cf-label">Nama Band / Pelanggan <span className="cf-required">*</span></label>
               <input
                 type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
                 placeholder="contoh: The Rockers"
-                required
                 className="cf-input"
                 autoFocus
+                {...register('name', { validate: validateWithZod('name') })}
               />
+              {errors.name && <span className="cf-error-message" style={{ color: 'var(--accent-pink)', fontSize: '11px', marginTop: '4px', display: 'block' }}>{errors.name.message}</span>}
             </div>
           </div>
 
@@ -692,11 +761,23 @@ const CustomersPage = () => {
             <div className="cf-row">
               <div className="cf-field">
                 <label className="cf-label">No. HP / WhatsApp <span className="cf-required">*</span></label>
-                <input type="tel" name="phone" value={formData.phone} onChange={handleChange} placeholder="08xxxxxxxxxx" required className="cf-input" />
+                <input 
+                  type="tel" 
+                  placeholder="08xxxxxxxxxx" 
+                  className="cf-input" 
+                  {...register('phone', { validate: validateWithZod('phone') })}
+                />
+                {errors.phone && <span className="cf-error-message" style={{ color: 'var(--accent-pink)', fontSize: '11px', marginTop: '4px', display: 'block' }}>{errors.phone.message}</span>}
               </div>
               <div className="cf-field">
                 <label className="cf-label"><Mail size={11} /> Email</label>
-                <input type="email" name="email" value={formData.email} onChange={handleChange} placeholder="email@example.com" className="cf-input" />
+                <input 
+                  type="email" 
+                  placeholder="email@example.com" 
+                  className="cf-input" 
+                  {...register('email', { validate: validateWithZod('email') })}
+                />
+                {errors.email && <span className="cf-error-message" style={{ color: 'var(--accent-pink)', fontSize: '11px', marginTop: '4px', display: 'block' }}>{errors.email.message}</span>}
               </div>
             </div>
             <div className="cf-row">
@@ -704,12 +785,23 @@ const CustomersPage = () => {
                 <label className="cf-label"><AtSign size={11} /> Instagram</label>
                 <div className="cf-prefix-input">
                   <span className="cf-prefix">@</span>
-                  <input type="text" name="instagram" value={formData.instagram.replace('@','')} onChange={(e) => handleChange({ target: { name: 'instagram', value: '@' + e.target.value.replace('@','') }})} placeholder="username" className="cf-input cf-input-prefixed" />
+                  <input 
+                    type="text" 
+                    placeholder="username" 
+                    className="cf-input cf-input-prefixed" 
+                    {...register('instagram')}
+                    onChange={(e) => setValue('instagram', e.target.value.replace('@',''))}
+                  />
                 </div>
               </div>
               <div className="cf-field">
                 <label className="cf-label"><MapPin size={11} /> Alamat</label>
-                <input type="text" name="address" value={formData.address} onChange={handleChange} placeholder="Jl. Contoh No. 123" className="cf-input" />
+                <input 
+                  type="text" 
+                  placeholder="Jl. Contoh No. 123" 
+                  className="cf-input" 
+                  {...register('address')}
+                />
               </div>
             </div>
           </div>
@@ -723,8 +815,13 @@ const CustomersPage = () => {
                   { value: 'Active', label: 'Aktif', color: '#4CAF50' },
                   { value: 'Inactive', label: 'Tidak Aktif', color: '#6b6b76' },
                 ].map(opt => (
-                  <label key={opt.value} className={`cf-status-card ${formData.status === opt.value ? 'selected' : ''}`} style={{ '--cs-color': opt.color }}>
-                    <input type="radio" name="status" value={opt.value} checked={formData.status === opt.value} onChange={handleChange} className="cf-radio" />
+                  <label key={opt.value} className={`cf-status-card ${watchedStatus === opt.value ? 'selected' : ''}`} style={{ '--cs-color': opt.color }}>
+                    <input 
+                      type="radio" 
+                      value={opt.value} 
+                      className="cf-radio" 
+                      {...register('status')}
+                    />
                     <span className="cf-status-dot" style={{ background: opt.color }} />
                     <span>{opt.label}</span>
                   </label>
@@ -733,16 +830,16 @@ const CustomersPage = () => {
               <label className="cf-vip-toggle">
                 <span className="cf-vip-label"><Star size={13} color="#FFC107" fill="#FFC107" /> VIP Member <span className="cf-vip-sub">Diskon 10%</span></span>
                 <div 
-                  className={`cf-toggle-switch ${formData.isVIP ? 'on' : ''}`} 
-                  onClick={() => setFormData(p => ({ ...p, isVIP: !p.isVIP }))}
+                  className={`cf-toggle-switch ${watchedIsVIP ? 'on' : ''}`} 
+                  onClick={() => setValue('isVIP', !watchedIsVIP)}
                   onKeyDown={(e) => {
                     if (e.key === ' ' || e.key === 'Enter') {
                       e.preventDefault();
-                      setFormData(p => ({ ...p, isVIP: !p.isVIP }));
+                      setValue('isVIP', !watchedIsVIP);
                     }
                   }}
                   role="switch"
-                  aria-checked={formData.isVIP || false}
+                  aria-checked={watchedIsVIP || false}
                   tabIndex={0}
                   aria-label="VIP Member Toggle"
                 >
@@ -756,7 +853,12 @@ const CustomersPage = () => {
           <div className="cf-section">
             <div className="cf-field">
               <label className="cf-label"><StickyNote size={11} /> Catatan (opsional)</label>
-              <textarea name="notes" value={formData.notes} onChange={handleChange} placeholder="Preferensi alat, kebiasaan, dll..." className="cf-input cf-textarea" rows="2" />
+              <textarea 
+                placeholder="Preferensi alat, kebiasaan, dll..." 
+                className="cf-input cf-textarea" 
+                rows="2" 
+                {...register('notes')}
+              />
             </div>
           </div>
 

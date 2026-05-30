@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useStaffStore } from '../store/useStaffStore';
 import { useAuditLogStore } from '../store/useAuditLogStore';
@@ -7,79 +7,134 @@ import { UserPlus, Edit2, Trash2, Shield, User, Power, ClipboardList, Loader2, C
 import Modal from '../components/Modal';
 import { toast } from 'sonner';
 import { staggerContainer, staggerItem } from '../animations';
+import confetti from 'canvas-confetti';
+import Fuse from 'fuse.js';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import useSound from 'use-sound';
+import {
+  useReactTable,
+  getCoreRowModel,
+  getSortedRowModel
+} from '@tanstack/react-table';
 import './StaffPage.css';
+
+const staffSchema = z.object({
+  name: z.string().min(2, 'Nama minimal 2 karakter'),
+  username: z.string()
+    .min(3, 'Username minimal 3 karakter')
+    .regex(/^[a-z0-9]+$/, 'Username harus berupa huruf kecil & angka saja (tanpa spasi)'),
+  role: z.enum(['staff', 'admin']),
+  phone: z.string()
+    .min(10, 'Nomor HP minimal 10 digit')
+    .max(15, 'Nomor HP maksimal 15 digit')
+    .regex(/^[0-9]+$/, 'Nomor HP harus berupa angka').or(z.literal('')),
+  password: z.string().min(6, 'Password minimal 6 karakter').or(z.literal('')),
+  permissions: z.array(z.string()).optional()
+});
+
+const resetPasswordSchema = z.object({
+  newPassword: z.string().min(6, 'Password minimal 6 karakter')
+});
+
+const validateStaffWithZod = (fieldName) => (value) => {
+  const fieldSchema = staffSchema.shape[fieldName];
+  if (!fieldSchema) return true;
+  const result = fieldSchema.safeParse(value);
+  return result.success ? true : result.error.errors[0].message;
+};
 
 const StaffPage = () => {
   const { staffMembers, updateStaff, deleteStaff, toggleStaffStatus, createStaffAccount, resetStaffPassword } = useStaffStore();
   const { logs } = useAuditLogStore();
   const [searchQuery, setSearchQuery] = useState('');
+  const [playClick] = useSound('/click.wav', { volume: 0.25 });
 
-  const filteredStaff = staffMembers.filter(staff => {
-    if (!searchQuery.trim()) return true;
-    const q = searchQuery.toLowerCase();
-    return (
-      (staff.name && staff.name.toLowerCase().includes(q)) ||
-      (staff.username && staff.username.toLowerCase().includes(q)) ||
-      (staff.role && staff.role.toLowerCase().includes(q))
-    );
-  });
+  const filteredStaff = useMemo(() => {
+    let result = staffMembers;
+    if (searchQuery.trim()) {
+      const fuse = new Fuse(result, {
+        keys: ['name', 'username', 'role'],
+        threshold: 0.35,
+        ignoreLocation: true
+      });
+      result = fuse.search(searchQuery).map(r => r.item);
+    }
+    return result;
+  }, [staffMembers, searchQuery]);
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
   const [resetTargetStaff, setResetTargetStaff] = useState(null);
-  const [newPassword, setNewPassword] = useState('');
   const [editingStaff, setEditingStaff] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState({
-    name: '',
-    username: '',
-    role: 'staff',
-    phone: '',
-    password: '',
-    permissions: getDefaultPermissionsForRole('staff'),
+
+  const { register, handleSubmit: handleFormSubmit, reset, setValue, watch, formState: { errors } } = useForm({
+    defaultValues: {
+      name: '',
+      username: '',
+      role: 'staff',
+      phone: '',
+      password: '',
+      permissions: getDefaultPermissionsForRole('staff')
+    }
+  });
+
+  const watchedRole = watch('role');
+  const watchedPermissions = watch('permissions') || [];
+
+  const { register: registerReset, handleSubmit: handleFormResetSubmit, reset: resetResetForm, formState: { errors: errorsReset } } = useForm({
+    defaultValues: {
+      newPassword: ''
+    }
   });
 
   const handleOpenModal = (staff = null) => {
+    playClick();
     if (staff) {
       setEditingStaff(staff);
-      setFormData({
-        name: staff.name,
+      reset({
+        name: staff.name || '',
         username: staff.username || '',
-        role: staff.role,
-        phone: staff.phone,
+        role: staff.role || 'staff',
+        phone: staff.phone || '',
         password: '',
-        permissions: staff.permissions || getDefaultPermissionsForRole(staff.role),
+        permissions: staff.permissions || getDefaultPermissionsForRole(staff.role)
       });
     } else {
       setEditingStaff(null);
-      setFormData({
+      reset({
         name: '',
         username: '',
         role: 'staff',
         phone: '',
         password: '',
-        permissions: getDefaultPermissionsForRole('staff'),
+        permissions: getDefaultPermissionsForRole('staff')
       });
     }
     setIsModalOpen(true);
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!formData.name.trim()) return;
-
+  const onSubmitStaff = async (data) => {
     if (editingStaff) {
-      updateStaff(editingStaff.id, formData);
+      updateStaff(editingStaff.id, data);
       toast.success('Data staff berhasil diperbarui');
       setIsModalOpen(false);
     } else {
-      if (!formData.username || !formData.password || formData.password.length < 6) {
+      if (!data.username || !data.password || data.password.length < 6) {
          toast.error('Username dan password (minimal 6 karakter) wajib diisi');
          return;
       }
       setLoading(true);
       try {
-        await createStaffAccount(formData, '', formData.password, formData.username);
-        toast.success('Staff baru berhasil ditambahkan');
+        await createStaffAccount(data, '', data.password, data.username);
+        confetti({
+          particleCount: 150,
+          spread: 80,
+          origin: { y: 0.6 },
+          colors: ['#00f0ff', '#ff2a5f', '#FFC107', '#4CAF50']
+        });
+        toast.success('Staff baru berhasil ditambahkan! 🎉');
         setIsModalOpen(false);
       } catch (error) {
         let msg = error.message;
@@ -93,20 +148,16 @@ const StaffPage = () => {
   };
 
   const handleOpenResetPassword = (staff) => {
+    playClick();
     setResetTargetStaff(staff);
-    setNewPassword('');
+    resetResetForm({ newPassword: '' });
     setIsPasswordModalOpen(true);
   };
 
-  const handleResetPasswordSubmit = async (e) => {
-    e.preventDefault();
-    if (!newPassword || newPassword.length < 6) {
-      toast.error('Password minimal 6 karakter');
-      return;
-    }
+  const onSubmitResetPassword = async (data) => {
     setLoading(true);
     try {
-      await resetStaffPassword(resetTargetStaff, newPassword);
+      await resetStaffPassword(resetTargetStaff, data.newPassword);
       toast.success('Password berhasil di-reset');
       setIsPasswordModalOpen(false);
     } catch (e) {
@@ -117,6 +168,7 @@ const StaffPage = () => {
   };
 
   const handleDelete = (id) => {
+    playClick();
     if (window.confirm('Yakin ingin menghapus staff ini?')) {
       deleteStaff(id);
       toast.success('Staff berhasil dihapus');
@@ -129,23 +181,16 @@ const StaffPage = () => {
   };
 
   const handleRoleChange = (role) => {
-    setFormData((prev) => ({
-      ...prev,
-      role,
-      permissions: getDefaultPermissionsForRole(role),
-    }));
+    setValue('role', role);
+    setValue('permissions', getDefaultPermissionsForRole(role));
   };
 
   const handlePermissionToggle = (permission) => {
-    setFormData((prev) => {
-      const current = prev.permissions || [];
-      return {
-        ...prev,
-        permissions: current.includes(permission)
-          ? current.filter((item) => item !== permission)
-          : [...current, permission],
-      };
-    });
+    const current = watchedPermissions;
+    const next = current.includes(permission)
+      ? current.filter((item) => item !== permission)
+      : [...current, permission];
+    setValue('permissions', next);
   };
 
   return (
@@ -273,7 +318,7 @@ const StaffPage = () => {
       </motion.div>
 
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title={editingStaff ? "Edit Staff" : "Tambah Staff"}>
-        <form className="staff-form" onSubmit={handleSubmit}>
+        <form className="staff-form" onSubmit={handleFormSubmit(onSubmitStaff)}>
           <div className="bf-row">
             <div className="form-group">
               <label htmlFor="staff-name" className="bf-label">Nama Lengkap <span className="bf-required">*</span></label>
@@ -281,12 +326,11 @@ const StaffPage = () => {
                 id="staff-name"
                 type="text"
                 className="bf-input"
-                value={formData.name}
-                onChange={e => setFormData({ ...formData, name: e.target.value })}
-                required
                 autoFocus
                 placeholder="Misal: Budi Santoso"
+                {...register('name', { validate: validateStaffWithZod('name') })}
               />
+              {errors.name && <span className="cf-error-message" style={{ color: 'var(--accent-pink)', fontSize: '11px', marginTop: '4px', display: 'block' }}>{errors.name.message}</span>}
             </div>
             
             <div className="form-group">
@@ -295,10 +339,10 @@ const StaffPage = () => {
                 id="staff-phone"
                 type="tel"
                 className="bf-input"
-                value={formData.phone}
-                onChange={e => setFormData({ ...formData, phone: e.target.value })}
                 placeholder="08..."
+                {...register('phone', { validate: validateStaffWithZod('phone') })}
               />
+              {errors.phone && <span className="cf-error-message" style={{ color: 'var(--accent-pink)', fontSize: '11px', marginTop: '4px', display: 'block' }}>{errors.phone.message}</span>}
             </div>
           </div>
 
@@ -310,11 +354,11 @@ const StaffPage = () => {
                   id="staff-username"
                   type="text"
                   className="bf-input"
-                  value={formData.username}
-                  onChange={e => setFormData({ ...formData, username: e.target.value.toLowerCase().replace(/\s+/g, '') })}
-                  required
                   placeholder="Budi123"
+                  {...register('username', { validate: validateStaffWithZod('username') })}
+                  onChange={(e) => setValue('username', e.target.value.toLowerCase().replace(/\s+/g, ''))}
                 />
+                {errors.username && <span className="cf-error-message" style={{ color: 'var(--accent-pink)', fontSize: '11px', marginTop: '4px', display: 'block' }}>{errors.username.message}</span>}
               </div>
               <div className="form-group">
                 <label htmlFor="staff-password" className="bf-label">Password <span className="bf-required">*</span></label>
@@ -322,12 +366,10 @@ const StaffPage = () => {
                   id="staff-password"
                   type="password"
                   className="bf-input"
-                  value={formData.password}
-                  onChange={e => setFormData({ ...formData, password: e.target.value })}
-                  minLength="6"
-                  required
                   placeholder="Min. 6 karakter"
+                  {...register('password', { validate: validateStaffWithZod('password') })}
                 />
+                {errors.password && <span className="cf-error-message" style={{ color: 'var(--accent-pink)', fontSize: '11px', marginTop: '4px', display: 'block' }}>{errors.password.message}</span>}
               </div>
             </div>
           )}
@@ -337,7 +379,7 @@ const StaffPage = () => {
             <select
               id="staff-role"
               className="bf-input"
-              value={formData.role}
+              value={watchedRole}
               onChange={e => handleRoleChange(e.target.value)}
               required
             >
@@ -350,15 +392,15 @@ const StaffPage = () => {
             <label className="bf-label">Izin Akses Menu (Hanya Staff)</label>
             <div className="permission-grid">
               {Object.values(PERMISSIONS).map((permission) => (
-                <label key={permission} className={`permission-card ${formData.permissions?.includes(permission) ? 'selected' : ''} ${formData.role === 'admin' ? 'disabled' : ''}`}>
+                <label key={permission} className={`permission-card ${watchedPermissions.includes(permission) ? 'selected' : ''} ${watchedRole === 'admin' ? 'disabled' : ''}`}>
                   <input
                     type="checkbox"
-                    checked={formData.role === 'admin' || (formData.permissions?.includes(permission) || false)}
+                    checked={watchedRole === 'admin' || watchedPermissions.includes(permission)}
                     onChange={() => handlePermissionToggle(permission)}
-                    disabled={formData.role === 'admin'}
+                    disabled={watchedRole === 'admin'}
                   />
                   <span className="permission-icon">
-                    {formData.role === 'admin' || formData.permissions?.includes(permission) ? <CheckCircle2 size={16} /> : <div className="empty-circle" />}
+                    {watchedRole === 'admin' || watchedPermissions.includes(permission) ? <CheckCircle2 size={16} /> : <div className="empty-circle" />}
                   </span>
                   <span className="permission-label">{PERMISSION_LABELS[permission] || permission}</span>
                 </label>
@@ -377,20 +419,23 @@ const StaffPage = () => {
       </Modal>
 
       <Modal isOpen={isPasswordModalOpen} onClose={() => setIsPasswordModalOpen(false)} title={`Ganti Password: ${resetTargetStaff?.name || ''}`}>
-        <form className="staff-form" onSubmit={handleResetPasswordSubmit}>
+        <form className="staff-form" onSubmit={handleFormResetSubmit(onSubmitResetPassword)}>
           <div className="form-group">
             <label htmlFor="staff-new-password" className="bf-label">Password Baru <span className="bf-required">*</span></label>
             <input
               id="staff-new-password"
               type="password"
               className="bf-input"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-              minLength="6"
-              required
               placeholder="Minimal 6 karakter"
               autoFocus
+              {...registerReset('newPassword', {
+                validate: (val) => {
+                  const res = resetPasswordSchema.shape.newPassword.safeParse(val);
+                  return res.success ? true : res.error.errors[0].message;
+                }
+              })}
             />
+            {errorsReset.newPassword && <span className="cf-error-message" style={{ color: 'var(--accent-pink)', fontSize: '11px', marginTop: '4px', display: 'block' }}>{errorsReset.newPassword.message}</span>}
           </div>
           <div className="bf-actions">
             <button type="button" className="btn-secondary" onClick={() => setIsPasswordModalOpen(false)} disabled={loading}>

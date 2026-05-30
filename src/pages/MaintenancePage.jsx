@@ -9,6 +9,14 @@ import { toast } from 'sonner';
 import { getMaintenanceUsageInsights } from '../lib/smartInsights';
 import { motion } from 'framer-motion';
 import { pagePreset } from '../animations';
+import Lottie from 'lottie-react';
+import { useEffect } from 'react';
+import {
+  useReactTable,
+  getCoreRowModel,
+  getSortedRowModel,
+  flexRender
+} from '@tanstack/react-table';
 import './MaintenancePage.css';
 
 const MaintenancePage = () => {
@@ -20,6 +28,14 @@ const MaintenancePage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [selectedLog, setSelectedLog] = useState(null);
+  const [animationData, setAnimationData] = useState(null);
+
+  useEffect(() => {
+    fetch('https://lottie.host/80c4e1f7-e737-4d76-880c-a9a304889c10/3B18t52W7l.json')
+      .then(res => res.json())
+      .then(data => setAnimationData(data))
+      .catch(err => console.error("Lottie load failed", err));
+  }, []);
   
   const [formData, setFormData] = useState({
     description: '',
@@ -71,6 +87,97 @@ const MaintenancePage = () => {
 
   const formatCurrency = (num) =>
     new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(num || 0);
+
+  const columns = useMemo(() => [
+    {
+      accessorKey: 'date',
+      header: 'Tanggal',
+      cell: info => format(new Date(info.getValue()), 'dd MMM yyyy')
+    },
+    {
+      accessorKey: 'band',
+      header: 'Judul',
+      cell: info => (
+        <div className="maint-title-cell">
+          <Wrench size={14} color="var(--accent-pink)" style={{ marginRight: 6 }} />
+          {info.getValue() || 'Maintenance'}
+        </div>
+      )
+    },
+    {
+      accessorKey: 'hour',
+      header: 'Jam',
+      cell: info => `${String(info.getValue()).padStart(2, '0')}:00`
+    },
+    {
+      accessorKey: 'duration',
+      header: 'Durasi',
+      cell: info => `${info.getValue()} jam`
+    },
+    {
+      accessorKey: 'maintenanceStatus',
+      header: 'Status',
+      cell: info => {
+        const log = info.row.original;
+        const statusInfo = getStatusBadge(log);
+        return (
+          <span className="maint-status-badge" style={{ background: `${statusInfo.color}22`, color: statusInfo.color, borderColor: `${statusInfo.color}44` }}>
+            {statusInfo.icon}
+            <span style={{ marginLeft: 4 }}>{statusInfo.label}</span>
+          </span>
+        );
+      }
+    },
+    {
+      accessorKey: 'maintenanceCost',
+      header: 'Biaya',
+      cell: info => {
+        const cost = info.getValue();
+        return (
+          <span className={cost > 0 ? 'maint-cost-cell has-cost' : 'maint-cost-cell'}>
+            {cost > 0 ? formatCurrency(cost) : '—'}
+          </span>
+        );
+      }
+    },
+    {
+      id: 'actions',
+      header: 'Aksi',
+      cell: info => {
+        const log = info.row.original;
+        return (
+          <div onClick={e => e.stopPropagation()}>
+            <button
+              className="icon-btn delete"
+              onClick={() => {
+                if (window.confirm('Hapus log ini?')) {
+                  deleteBooking(log.id);
+                  toast.success('Log dihapus');
+                }
+              }}
+              title="Hapus"
+              aria-label={`Hapus log maintenance ${log.band || 'Pemeliharaan Studio'}`}
+            >
+              <Trash2 size={14} />
+            </button>
+          </div>
+        );
+      }
+    }
+  ], []);
+
+  const [sorting, setSorting] = useState([]);
+
+  const table = useReactTable({
+    data: filteredMaintenanceLogs,
+    columns,
+    state: {
+      sorting
+    },
+    onSortingChange: setSorting,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel()
+  });
 
   const handleOpenDetail = (log) => {
     setSelectedLog(log);
@@ -278,10 +385,16 @@ const MaintenancePage = () => {
         </div>
 
         {filteredMaintenanceLogs.length === 0 ? (
-          <div className="maint-empty">
-            <Wrench size={48} color="var(--text-muted)" />
-            <p>Belum ada log maintenance.</p>
-            <small>Tambahkan jadwal maintenance melalui tombol di atas atau melalui halaman <strong>Calendar</strong>.</small>
+          <div className="maint-empty" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '40px 20px', textAlign: 'center' }}>
+            {animationData ? (
+              <div style={{ width: 140, height: 140, marginBottom: '16px' }}>
+                <Lottie animationData={animationData} loop={true} />
+              </div>
+            ) : (
+              <Wrench size={48} color="var(--text-muted)" style={{ marginBottom: '16px' }} />
+            )}
+            <p style={{ fontWeight: '600', color: 'var(--text-primary)', marginBottom: '8px' }}>Belum ada log maintenance.</p>
+            <small style={{ color: 'var(--text-muted)', maxWidth: '380px' }}>Tambahkan jadwal maintenance melalui tombol di atas atau melalui halaman <strong>Calendar</strong>.</small>
           </div>
         ) : (
           <>
@@ -289,55 +402,52 @@ const MaintenancePage = () => {
             <div className="app-table-wrapper hide-on-mobile">
               <table className="app-table maint-table">
                 <thead>
-                  <tr>
-                    <th scope="col">Tanggal</th>
-                    <th scope="col">Judul</th>
-                    <th scope="col">Jam</th>
-                    <th scope="col">Durasi</th>
-                    <th scope="col">Status</th>
-                    <th scope="col">Biaya</th>
-                    <th scope="col" className="action-col">Aksi</th>
-                  </tr>
+                  {table.getHeaderGroups().map(headerGroup => (
+                    <tr key={headerGroup.id}>
+                      {headerGroup.headers.map(header => {
+                        const canSort = header.column.getCanSort();
+                        const isActionCol = header.id === 'actions';
+                        return (
+                          <th 
+                            key={header.id} 
+                            scope="col"
+                            className={isActionCol ? 'action-col' : ''}
+                            style={{ cursor: canSort ? 'pointer' : 'default', userSelect: 'none' }}
+                            onClick={header.column.getToggleSortingHandler()}
+                          >
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                              {flexRender(header.column.columnDef.header, header.getContext())}
+                              {canSort && ({
+                                asc: ' 🔼',
+                                desc: ' 🔽'
+                              }[header.column.getIsSorted()] || null)}
+                            </div>
+                          </th>
+                        );
+                      })}
+                    </tr>
+                  ))}
                 </thead>
                 <tbody>
-                  {filteredMaintenanceLogs.map(log => {
-                    const statusInfo = getStatusBadge(log);
-                    return (
-                      <tr key={log.id} className="maint-row" onClick={() => handleOpenDetail(log)}>
-                        <td>{format(new Date(log.date), 'dd MMM yyyy')}</td>
-                        <td className="maint-title-cell">
-                          <Wrench size={14} color="var(--accent-pink)" style={{ marginRight: 6 }} />
-                          {log.band || 'Maintenance'}
-                        </td>
-                        <td>{String(log.hour).padStart(2, '0')}:00</td>
-                        <td>{log.duration} jam</td>
-                        <td>
-                          <span className="maint-status-badge" style={{ background: `${statusInfo.color}22`, color: statusInfo.color, borderColor: `${statusInfo.color}44` }}>
-                            {statusInfo.icon}
-                            <span style={{ marginLeft: 4 }}>{statusInfo.label}</span>
-                          </span>
-                        </td>
-                        <td className={log.maintenanceCost > 0 ? 'maint-cost-cell has-cost' : 'maint-cost-cell'}>
-                          {log.maintenanceCost > 0 ? formatCurrency(log.maintenanceCost) : '—'}
-                        </td>
-                        <td onClick={e => e.stopPropagation()} className="action-col">
-                          <button
-                            className="icon-btn delete"
-                            onClick={() => {
-                              if (window.confirm('Hapus log ini?')) {
-                                deleteBooking(log.id);
-                                toast.success('Log dihapus');
-                              }
-                            }}
-                            title="Hapus"
-                            aria-label={`Hapus log maintenance ${log.band || 'Pemeliharaan Studio'}`}
+                  {table.getRowModel().rows.map(row => (
+                    <tr 
+                      key={row.id} 
+                      className="maint-row" 
+                      onClick={() => handleOpenDetail(row.original)}
+                    >
+                      {row.getVisibleCells().map(cell => {
+                        const isActionCol = cell.column.id === 'actions';
+                        return (
+                          <td 
+                            key={cell.id} 
+                            className={isActionCol ? 'action-col' : ''}
                           >
-                            <Trash2 size={14} />
-                          </button>
-                        </td>
-                      </tr>
-                    );
-                  })}
+                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>

@@ -410,9 +410,7 @@ const LandingPage = () => {
               >
                 <div className="landing-gallery-media">
                   <img src={photo.url} alt={photo.caption} loading="lazy" />
-                  <div className="landing-gallery-overlay">
-                    <span className="gallery-caption">{photo.caption}</span>
-                  </div>
+                  <div className="landing-gallery-overlay" />
                 </div>
               </MotionCard>
             ))}
@@ -452,9 +450,6 @@ const LandingPage = () => {
                   onClick={(e) => e.stopPropagation()}
                 >
                   <img src={lightboxPhoto.url} alt={lightboxPhoto.caption} />
-                  <div className="lightbox-footer">
-                    <h3 style={{ color: '#fff', fontSize: '1.1rem', margin: '12px 0 0 0', fontWeight: '600' }}>{lightboxPhoto.caption}</h3>
-                  </div>
                 </motion.div>
               </motion.div>
             )}

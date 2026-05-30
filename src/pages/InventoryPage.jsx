@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Search, Plus, Edit2, Trash2, Box, Package, AlertCircle, Wrench, X, Tag, Hash, StickyNote, ChevronDown } from 'lucide-react';
 import { useInventoryStore } from '../store/useInventoryStore';
 import { useBookingStore } from '../store/useBookingStore';
@@ -7,6 +7,18 @@ import Modal from '../components/Modal';
 import { getMaintenanceUsageInsights } from '../lib/smartInsights';
 import { motion } from 'framer-motion';
 import { pagePreset } from '../animations';
+import confetti from 'canvas-confetti';
+import Fuse from 'fuse.js';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import useSound from 'use-sound';
+import Lottie from 'lottie-react';
+import {
+  useReactTable,
+  getCoreRowModel,
+  getSortedRowModel,
+  flexRender
+} from '@tanstack/react-table';
 import './InventoryPage.css';
 
 const CONDITION_COLORS = {
@@ -14,6 +26,25 @@ const CONDITION_COLORS = {
   'Good': { bg: 'rgba(0, 240, 255, 0.15)', color: 'var(--accent-cyan)', label: 'Baik' },
   'Needs Repair': { bg: 'rgba(255, 193, 7, 0.15)', color: '#FFC107', label: 'Butuh Servis' },
   'Broken': { bg: 'rgba(255, 42, 95, 0.15)', color: 'var(--accent-pink)', label: 'Rusak' }
+};
+
+const inventorySchema = z.object({
+  name: z.string().min(2, 'Nama minimal 2 karakter'),
+  category: z.string().min(1, 'Pilih kategori'),
+  brand: z.string().optional(),
+  qty: z.number().int().min(1, 'Jumlah minimal 1 unit'),
+  condition: z.enum(['Excellent', 'Good', 'Needs Repair', 'Broken']),
+  rentalPrice: z.number().min(0, 'Harga sewa tidak boleh negatif'),
+  lastServiced: z.string().optional(),
+  nextService: z.string().optional(),
+  notes: z.string().optional()
+});
+
+const validateWithZod = (fieldName) => (value) => {
+  const fieldSchema = inventorySchema.shape[fieldName];
+  if (!fieldSchema) return true;
+  const result = fieldSchema.safeParse(value);
+  return result.success ? true : result.error.errors[0].message;
 };
 
 const InventoryPage = () => {
@@ -24,17 +55,45 @@ const InventoryPage = () => {
   const [selectedItem, setSelectedItem] = useState(null);
   const [isCatDropdownOpen, setIsCatDropdownOpen] = useState(false);
   
+  const [playClick] = useSound('/click.wav', { volume: 0.25 });
+  const [animationData, setAnimationData] = useState(null);
+
+  useEffect(() => {
+    fetch('https://lottie.host/e2c7a23c-a9b0-466d-9786-fb7c9e99a805/o6aN400t06.json')
+      .then(res => res.json())
+      .then(data => setAnimationData(data))
+      .catch(err => console.error("Lottie load failed", err));
+  }, []);
+
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
-  const [formData, setFormData] = useState({
-    name: '', category: '', brand: '', qty: 1, condition: 'Excellent',
-    rentalPrice: 0, lastServiced: '', nextService: '', notes: ''
+
+  const { register, handleSubmit: handleFormSubmit, reset, setValue, watch, formState: { errors } } = useForm({
+    defaultValues: {
+      name: '',
+      category: '',
+      brand: '',
+      qty: 1,
+      condition: 'Excellent',
+      rentalPrice: 0,
+      lastServiced: '',
+      nextService: '',
+      notes: ''
+    }
   });
 
-  // Custom category input
+  const watchedCategory = watch('category');
   const [showNewCat, setShowNewCat] = useState(false);
   const [newCatName, setNewCatName] = useState('');
+
+  useEffect(() => {
+    if (watchedCategory === '__new__') {
+      setShowNewCat(true);
+    } else {
+      setShowNewCat(false);
+    }
+  }, [watchedCategory]);
 
   const stats = getStats();
   const maintenanceInsights = useMemo(() => getMaintenanceUsageInsights(inventory, bookings), [inventory, bookings]);
@@ -52,12 +111,12 @@ const InventoryPage = () => {
       result = result.filter(item => item.category === activeCategory);
     }
     if (searchQuery.trim()) {
-      const q = searchQuery.toLowerCase();
-      result = result.filter(item => 
-        item.name.toLowerCase().includes(q) || 
-        item.brand.toLowerCase().includes(q) ||
-        item.category.toLowerCase().includes(q)
-      );
+      const fuse = new Fuse(result, {
+        keys: ['name', 'brand', 'category', 'notes'],
+        threshold: 0.35,
+        ignoreLocation: true
+      });
+      result = fuse.search(searchQuery).map(r => r.item);
     }
     return result;
   }, [inventory, searchQuery, activeCategory]);
@@ -65,16 +124,24 @@ const InventoryPage = () => {
   const handleOpenNew = () => {
     setEditingItem(null);
     const today = new Date().toISOString().split('T')[0];
-    setFormData({ name: '', category: categories[0] || '', brand: '', qty: 1, condition: 'Excellent', rentalPrice: 0, lastServiced: today, nextService: '', notes: '' });
-    setShowNewCat(false);
+    reset({ name: '', category: categories[0] || '', brand: '', qty: 1, condition: 'Excellent', rentalPrice: 0, lastServiced: today, nextService: '', notes: '' });
     setNewCatName('');
     setIsModalOpen(true);
   };
 
   const handleOpenEdit = (item) => {
     setEditingItem(item);
-    setFormData({ ...item });
-    setShowNewCat(false);
+    reset({ 
+      name: item.name || '',
+      category: item.category || '',
+      brand: item.brand || '',
+      qty: item.qty || 1,
+      condition: item.condition || 'Excellent',
+      rentalPrice: item.rentalPrice || 0,
+      lastServiced: item.lastServiced || '',
+      nextService: item.nextService || '',
+      notes: item.notes || ''
+    });
     setNewCatName('');
     setIsModalOpen(true);
     setSelectedItem(null);
@@ -98,35 +165,36 @@ const InventoryPage = () => {
     });
   };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    if (name === 'category' && value === '__new__') {
-      setShowNewCat(true);
-      return;
-    }
-    setFormData(prev => ({ ...prev, [name]: (name === 'qty' || name === 'rentalPrice') ? parseInt(value) || 0 : value }));
-  };
-
   const handleAddNewCategory = () => {
     const trimmed = newCatName.trim();
     if (!trimmed) return;
     addCategory(trimmed);
-    setFormData(prev => ({ ...prev, category: trimmed }));
+    setValue('category', trimmed);
     setShowNewCat(false);
     setNewCatName('');
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const onSubmitForm = (data) => {
+    const parsedData = {
+      ...data,
+      qty: Number(data.qty) || 1,
+      rentalPrice: Number(data.rentalPrice) || 0
+    };
+
     if (editingItem) {
-      updateEquipment(editingItem.id, formData);
+      updateEquipment(editingItem.id, parsedData);
+      toast.success('Data inventaris diperbarui!');
     } else {
-      addEquipment(formData);
+      addEquipment(parsedData);
+      confetti({
+        particleCount: 150,
+        spread: 80,
+        origin: { y: 0.6 },
+        colors: ['#00f0ff', '#ff2a5f', '#FFC107', '#4CAF50']
+      });
+      toast.success('Item inventaris berhasil ditambahkan! 🎉');
     }
     setIsModalOpen(false);
-    if (run && currentStep === 8) {
-      setTimeout(() => nextStep(), 300);
-    }
   };
 
   const handleRowClick = (item) => {
@@ -136,6 +204,96 @@ const InventoryPage = () => {
   const isServiceOverdue = (dateStr) => {
     return new Date(dateStr) <= new Date();
   };
+
+  const formatCurrency = (num) =>
+    new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(num || 0);
+
+  const columns = useMemo(() => [
+    {
+      accessorKey: 'name',
+      header: 'Nama Alat',
+      cell: info => {
+        const item = info.row.original;
+        return (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span style={{ fontWeight: '500' }}>{item.name}</span>
+          </div>
+        );
+      }
+    },
+    {
+      accessorKey: 'brand',
+      header: 'Brand',
+      cell: info => info.getValue() || '—'
+    },
+    {
+      accessorKey: 'category',
+      header: 'Kategori'
+    },
+    {
+      accessorKey: 'qty',
+      header: 'Unit',
+      cell: info => `${info.getValue()} unit`
+    },
+    {
+      accessorKey: 'condition',
+      header: 'Kondisi',
+      cell: info => {
+        const cond = info.getValue();
+        const cfg = CONDITION_COLORS[cond] || CONDITION_COLORS['Excellent'];
+        return (
+          <span className="condition-badge" style={{ background: cfg.bg, color: cfg.color, padding: '2px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: '500', display: 'inline-block' }}>
+            {cfg.label}
+          </span>
+        );
+      }
+    },
+    {
+      accessorKey: 'rentalPrice',
+      header: 'Harga Sewa',
+      cell: info => formatCurrency(info.getValue())
+    },
+    {
+      accessorKey: 'nextService',
+      header: 'Jadwal Servis',
+      cell: info => {
+        const dateStr = info.getValue();
+        if (!dateStr) return '—';
+        const overdue = isServiceOverdue(dateStr);
+        return (
+          <span style={{ color: overdue ? 'var(--accent-pink)' : 'var(--text-secondary)', fontWeight: overdue ? '500' : 'normal' }}>
+            {format(new Date(dateStr), 'dd MMM yyyy')} {overdue && '⚠️'}
+          </span>
+        );
+      }
+    },
+    {
+      id: 'actions',
+      header: 'Aksi',
+      cell: info => {
+        const item = info.row.original;
+        return (
+          <div className="row-actions" onClick={e => e.stopPropagation()}>
+            <button className="icon-btn edit" onClick={() => handleOpenEdit(item)} title="Edit" aria-label={`Edit ${item.name}`}><Edit2 size={15} /></button>
+            <button className="icon-btn delete" onClick={() => handleDelete(item.id)} title="Hapus" aria-label={`Hapus ${item.name}`}><Trash2 size={15} /></button>
+          </div>
+        );
+      }
+    }
+  ], [categories]);
+
+  const [sorting, setSorting] = useState([]);
+
+  const table = useReactTable({
+    data: filteredInventory,
+    columns,
+    state: {
+      sorting
+    },
+    onSortingChange: setSorting,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel()
+  });
 
   return (
     <motion.div className="app-page inventory-page" {...pagePreset}>
@@ -314,89 +472,73 @@ const InventoryPage = () => {
             </div>
           </div>
 
-          <div className="app-table-wrapper hide-on-mobile">
-            <table className="app-table inventory-table">
-              <thead>
-                <tr>
-                  <th>Nama Alat</th>
-                  <th>Kategori & Merk</th>
-                  <th>Qty</th>
-                  <th>Harga Sewa</th>
-                  <th>Servis Terakhir</th>
-                  <th>Kondisi</th>
-                  <th className="action-col">Aksi</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredInventory.length > 0 ? (
-                  filteredInventory.map(item => {
-                    const isSelected = selectedItem && selectedItem.id === item.id;
-                    const condition = CONDITION_COLORS[item.condition] || CONDITION_COLORS['Good'];
-                    const overdue = isServiceOverdue(item.nextService);
-                    return (
-                      <tr key={item.id} className={`${isSelected ? 'row-selected' : ''} ${overdue ? 'row-overdue' : ''}`} onClick={() => handleRowClick(item)}>
-                        <td>
-                          <div className="item-name-cell">
-                            <div className={`item-condition-dot ${item.condition.toLowerCase().replace(' ', '-')}`} />
-                            <div className="item-info">
-                              <span className="item-name">{item.name}</span>
-                              {item.notes && <span className="item-note">{item.notes}</span>}
-                            </div>
-                          </div>
-                        </td>
-                        <td>
-                          <div className="category-info">
-                            <span className="category-badge">{item.category}</span>
-                            <span className="brand-text">{item.brand}</span>
-                          </div>
-                        </td>
-                        <td>
-                          <span className="qty-badge">{item.qty || 1}</span>
-                        </td>
-                        <td>
-                          <span className="revenue-text">{new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(item.rentalPrice || 0)}/sesi</span>
-                        </td>
-                        <td>
-                          <span className="date-text">{item.lastServiced}</span>
-                        </td>
-                        <td>
-                          <span className="condition-badge" style={{ background: condition.bg, color: condition.color }}>
-                            {condition.label}
-                          </span>
-                        </td>
-                        <td className="action-col" onClick={e => e.stopPropagation()}>
-                          <div className="row-actions">
-                            <button 
-                              className="icon-btn" 
-                              onClick={() => handleOpenEdit(item)} 
-                              title="Edit"
-                              aria-label={`Edit data ${item.name}`}
-                            >
-                              <Edit2 size={15} />
-                            </button>
-                            <button 
-                              className="icon-btn delete" 
-                              onClick={() => handleDelete(item.id)} 
-                              title="Hapus"
-                              aria-label={`Hapus data ${item.name}`}
-                            >
-                              <Trash2 size={15} />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })
-                ) : (
-                  <tr>
-                    <td colSpan="7" className="empty-state">
-                      Tidak ada data inventaris ditemukan.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
+        {filteredInventory.length === 0 ? (
+          <div className="maint-empty" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '40px 20px', textAlign: 'center' }}>
+            {animationData ? (
+              <div style={{ width: 140, height: 140, marginBottom: '16px' }}>
+                <Lottie animationData={animationData} loop={true} />
+              </div>
+            ) : (
+              <Package size={48} color="var(--text-muted)" style={{ marginBottom: '16px' }} />
+            )}
+            <p style={{ fontWeight: '600', color: 'var(--text-primary)', marginBottom: '8px' }}>Tidak ada data inventaris ditemukan.</p>
+            <small style={{ color: 'var(--text-muted)', maxWidth: '380px' }}>Tambahkan item inventaris baru melalui tombol di atas.</small>
           </div>
+        ) : (
+          <>
+            {/* Desktop Table view */}
+            <div className="app-table-wrapper hide-on-mobile">
+              <table className="app-table inventory-table">
+                <thead>
+                  {table.getHeaderGroups().map(headerGroup => (
+                    <tr key={headerGroup.id}>
+                      {headerGroup.headers.map(header => {
+                        const canSort = header.column.getCanSort();
+                        const isActionCol = header.id === 'actions';
+                        return (
+                          <th 
+                            key={header.id} 
+                            scope="col"
+                            className={isActionCol ? 'action-col' : ''}
+                            style={{ cursor: canSort ? 'pointer' : 'default', userSelect: 'none' }}
+                            onClick={header.column.getToggleSortingHandler()}
+                          >
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                              {flexRender(header.column.columnDef.header, header.getContext())}
+                              {canSort && ({
+                                asc: ' 🔼',
+                                desc: ' 🔽'
+                              }[header.column.getIsSorted()] || null)}
+                            </div>
+                          </th>
+                        );
+                      })}
+                    </tr>
+                  ))}
+                </thead>
+                <tbody>
+                  {table.getRowModel().rows.map(row => (
+                    <tr 
+                      key={row.id} 
+                      className={`maint-row ${selectedItem && selectedItem.id === row.original.id ? 'row-selected' : ''}`} 
+                      onClick={() => handleRowClick(row.original)}
+                    >
+                      {row.getVisibleCells().map(cell => {
+                        const isActionCol = cell.column.id === 'actions';
+                        return (
+                          <td 
+                            key={cell.id} 
+                            className={isActionCol ? 'action-col' : ''}
+                          >
+                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
 
           {/* Mobile Card List */}
           <div className="mobile-inv-list show-on-mobile">
@@ -448,7 +590,9 @@ const InventoryPage = () => {
               </div>
             )}
           </div>
-        </div>
+        </>
+      )}
+    </div>
 
         {/* Detail Sidebar */}
         {selectedItem && (
@@ -545,7 +689,7 @@ const InventoryPage = () => {
         onClose={() => setIsModalOpen(false)} 
         title={editingItem ? "Edit Alat" : "Tambah Alat Baru"}
       >
-        <form className="inventory-form" onSubmit={handleSubmit}>
+        <form className="inventory-form" onSubmit={handleFormSubmit(onSubmitForm)}>
           <div className="form-section">
             <div className="form-section-header">
               <Box size={16} />
@@ -556,29 +700,46 @@ const InventoryPage = () => {
               <div className="form-group">
                 <label>Nama Alat / Model <span className="required">*</span></label>
                 <input 
-                  type="text" name="name" value={formData.name} onChange={handleChange} 
+                  type="text" 
                   placeholder='contoh: Zildjian A Custom Crash 16"'
-                  required className="form-input" autoFocus
+                  className="form-input" 
+                  autoFocus
+                  {...register('name', { validate: validateWithZod('name') })}
                 />
+                {errors.name && <span className="form-error-message" style={{ color: 'var(--accent-pink)', fontSize: '11px', marginTop: '4px', display: 'block' }}>{errors.name.message}</span>}
               </div>
               <div className="form-group">
                 <label>Jumlah Unit</label>
-                <input type="number" name="qty" value={formData.qty} onChange={handleChange} min="1" className="form-input" />
+                <input 
+                  type="number" 
+                  min="1" 
+                  className="form-input" 
+                  {...register('qty', { valueAsNumber: true, validate: validateWithZod('qty') })}
+                />
+                {errors.qty && <span className="form-error-message" style={{ color: 'var(--accent-pink)', fontSize: '11px', marginTop: '4px', display: 'block' }}>{errors.qty.message}</span>}
               </div>
             </div>
-
+ 
             <div className="form-row">
               <div className="form-group">
                 <label>Harga Sewa Tambahan / Sesi</label>
-                <input type="number" name="rentalPrice" value={formData.rentalPrice} onChange={handleChange} min="0" step="5000" className="form-input" placeholder="0 (Gratis)" />
+                <input 
+                  type="number" 
+                  min="0" 
+                  step="5000" 
+                  className="form-input" 
+                  placeholder="0 (Gratis)" 
+                  {...register('rentalPrice', { valueAsNumber: true, validate: validateWithZod('rentalPrice') })}
+                />
+                {errors.rentalPrice && <span className="form-error-message" style={{ color: 'var(--accent-pink)', fontSize: '11px', marginTop: '4px', display: 'block' }}>{errors.rentalPrice.message}</span>}
               </div>
             </div>
-
+ 
             <div className="form-row">
               <div className="form-group">
                 <label>Kategori <span className="required">*</span></label>
                 {!showNewCat ? (
-                  <select name="category" value={formData.category} onChange={handleChange} className="form-input" required>
+                  <select className="form-input" {...register('category', { validate: validateWithZod('category') })}>
                     {categories.map(cat => (
                       <option key={cat} value={cat}>{cat}</option>
                     ))}
@@ -593,17 +754,23 @@ const InventoryPage = () => {
                       style={{ minWidth: 0 }}
                     />
                     <button type="button" className="btn-icon-sm confirm" onClick={handleAddNewCategory} title="Simpan" aria-label="Simpan kategori baru"><Plus size={16} /></button>
-                    <button type="button" className="btn-icon-sm cancel" onClick={() => { setShowNewCat(false); setFormData(prev => ({ ...prev, category: categories[0] || '' })); }} title="Batal" aria-label="Batal tambah kategori baru"><X size={16} /></button>
+                    <button type="button" className="btn-icon-sm cancel" onClick={() => { setValue('category', categories[0] || ''); }} title="Batal" aria-label="Batal tambah kategori baru"><X size={16} /></button>
                   </div>
                 )}
+                {errors.category && <span className="form-error-message" style={{ color: 'var(--accent-pink)', fontSize: '11px', marginTop: '4px', display: 'block' }}>{errors.category.message}</span>}
               </div>
               <div className="form-group">
                 <label>Merk / Brand</label>
-                <input type="text" name="brand" value={formData.brand} onChange={handleChange} placeholder="Pearl, Shure, dll" className="form-input" />
+                <input 
+                  type="text" 
+                  placeholder="Pearl, Shure, dll" 
+                  className="form-input" 
+                  {...register('brand')}
+                />
               </div>
             </div>
           </div>
-
+ 
           <div className="form-section">
             <div className="form-section-header">
               <AlertCircle size={16} />
@@ -613,11 +780,11 @@ const InventoryPage = () => {
               {Object.entries(CONDITION_COLORS).map(([key, val]) => (
                 <button
                   key={key} type="button"
-                  className={`condition-option ${formData.condition === key ? 'selected' : ''}`}
+                  className={`condition-option ${watchedCondition === key ? 'selected' : ''}`}
                   style={{ '--cond-color': val.color, '--cond-bg': val.bg }}
-                  onClick={() => setFormData(prev => ({ ...prev, condition: key }))}
+                  onClick={() => setValue('condition', key)}
                   role="radio"
-                  aria-checked={formData.condition === key}
+                  aria-checked={watchedCondition === key}
                   aria-label={`Kondisi ${val.label}`}
                 >
                   <span className="cond-dot" style={{ background: val.color }} />
@@ -626,7 +793,7 @@ const InventoryPage = () => {
               ))}
             </div>
           </div>
-
+ 
           <div className="form-section">
             <div className="form-section-header">
               <Wrench size={16} />
@@ -635,27 +802,27 @@ const InventoryPage = () => {
             <div className="form-row">
               <div className="form-group">
                 <label>Servis Terakhir</label>
-                <input type="date" name="lastServiced" value={formData.lastServiced} onChange={handleChange} className="form-input" required />
+                <input type="date" className="form-input" required {...register('lastServiced')} />
               </div>
               <div className="form-group">
                 <label>Jadwal Servis Berikutnya</label>
-                <input type="date" name="nextService" value={formData.nextService} onChange={handleChange} className="form-input" required />
+                <input type="date" className="form-input" required {...register('nextService')} />
               </div>
             </div>
           </div>
-
+ 
           <div className="form-section">
             <div className="form-section-header">
               <StickyNote size={16} />
               <span>Catatan Tambahan</span>
             </div>
             <textarea 
-              name="notes" value={formData.notes} onChange={handleChange} 
               placeholder="Catat informasi kerusakan, penggantian onderdil, dll..." 
               className="form-input form-textarea" rows="3"
+              {...register('notes')}
             />
           </div>
-
+ 
           <div className="form-actions">
             <button type="button" className="btn-secondary" onClick={() => setIsModalOpen(false)}>Batal</button>
             <button type="submit" className="btn-primary">

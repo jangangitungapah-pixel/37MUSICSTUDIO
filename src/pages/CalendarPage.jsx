@@ -15,6 +15,8 @@ import { getDepositDeadlineStatus, hasBookingOverlap } from '../lib/bookingWorkf
 import { useCalendarBookingMove } from '../hooks/useCalendarBookingMove';
 import { useCalendarBookingResize } from '../hooks/useCalendarBookingResize';
 import { mobileMenuVariants, activeIndicatorTransition } from '../animations';
+import Fuse from 'fuse.js';
+import useSound from 'use-sound';
 import './CalendarPage.css';
 import './CalendarPrintStyles.css';
 
@@ -32,6 +34,7 @@ const CalendarPage = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [now, setNow] = useState(new Date());
   const [areTopPanelsCollapsed, setAreTopPanelsCollapsed] = useState(false);
+  const [playClick] = useSound('/click.wav', { volume: 0.25 });
 
   // Swipe gesture state
   const touchStartRef = useRef(null);
@@ -149,15 +152,21 @@ const CalendarPage = () => {
   const lastStats = getMonthlyStats(addMonths(currentDate, -1));
   const revTrend = lastStats.totalRevenue > 0 ? Math.round(((stats.totalRevenue - lastStats.totalRevenue) / lastStats.totalRevenue) * 100) : null;
 
-  const filteredBookings = useMemo(() => bookings.filter(b => {
+  const filteredBookings = useMemo(() => {
+    let result = bookings;
     if (searchQuery.trim()) {
-      const q = searchQuery.toLowerCase();
-      if (!b.band.toLowerCase().includes(q) && !(b.phone && b.phone.includes(q))) return false;
+      const fuse = new Fuse(result, {
+        keys: ['band', 'phone', 'notes'],
+        threshold: 0.35,
+        ignoreLocation: true
+      });
+      result = fuse.search(searchQuery).map(r => r.item);
     }
-    if (filterStatus === 'all' && b.status === 'cancelled') return false;
-    if (filterStatus !== 'all' && b.status !== filterStatus) return false;
-    return true;
-  }), [bookings, searchQuery, filterStatus]);
+    if (filterStatus === 'all') {
+      return result.filter(b => b.status !== 'cancelled');
+    }
+    return result.filter(b => b.status === filterStatus);
+  }, [bookings, searchQuery, filterStatus]);
 
   const displayBookings = useMemo(() => {
     if (!resizingBooking) return filteredBookings;
@@ -174,11 +183,12 @@ const CalendarPage = () => {
   }, [filteredBookings, resizingBooking, resizeAddedHours]);
 
   const handleCellClick = (dateStr, hour) => {
+    playClick();
     setPrefillDate(dateStr); setPrefillHour(hour); setIsModalOpen(true);
-    if (run && currentStep === 4) setTimeout(() => nextStep(), 100);
   };
-  const handleNewBooking = () => { setPrefillDate(null); setPrefillHour(null); setIsModalOpen(true); };
+  const handleNewBooking = () => { playClick(); setPrefillDate(null); setPrefillHour(null); setIsModalOpen(true); };
   const handleGoToday = () => {
+    playClick();
     setCurrentDate(new Date());
     setTimeout(() => {
       const todayEl = document.querySelector('.today-col-highlight');
@@ -186,11 +196,13 @@ const CalendarPage = () => {
     }, 100);
   };
   const handlePrev = () => {
+    playClick();
     if (viewMode === 'day') setCurrentDate(subDays(currentDate, 1));
     else if (viewMode === 'week') setCurrentDate(subWeeks(currentDate, 1));
     else setCurrentDate(subMonths(currentDate, 1));
   };
   const handleNext = () => {
+    playClick();
     if (viewMode === 'day') setCurrentDate(addDays(currentDate, 1));
     else if (viewMode === 'week') setCurrentDate(addWeeks(currentDate, 1));
     else setCurrentDate(addMonths(currentDate, 1));

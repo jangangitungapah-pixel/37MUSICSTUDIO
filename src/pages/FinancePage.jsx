@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useFinanceStore } from '../store/useFinanceStore';
 import { useBookingStore } from '../store/useBookingStore';
 import { useSettingsStore } from '../store/useSettingsStore';
@@ -20,7 +20,36 @@ import { getRevenueForecast } from '../lib/smartInsights';
 import { getBookingTotal, getRemainingDue } from '../lib/bookingWorkflows';
 import { motion } from 'framer-motion';
 import { pagePreset } from '../animations';
+import Fuse from 'fuse.js';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import useSound from 'use-sound';
+import Lottie from 'lottie-react';
+import confetti from 'canvas-confetti';
+import { PDFDownloadLink } from '@react-pdf/renderer';
+import { ReceiptPDF } from '../components/ReceiptPDF';
+import {
+  useReactTable,
+  getCoreRowModel,
+  getSortedRowModel,
+  flexRender
+} from '@tanstack/react-table';
 import './FinancePage.css';
+
+const transactionSchema = z.object({
+  type: z.enum(['income', 'expense']),
+  date: z.string().min(1, 'Tanggal wajib diisi'),
+  category: z.string().min(1, 'Kategori harus dipilih'),
+  amount: z.string().refine((val) => !isNaN(Number(val)) && Number(val) > 0, 'Nominal harus berupa angka positif'),
+  description: z.string().min(3, 'Keterangan minimal 3 karakter')
+});
+
+const validateTransactionWithZod = (fieldName) => (value) => {
+  const fieldSchema = transactionSchema.shape[fieldName];
+  if (!fieldSchema) return true;
+  const result = fieldSchema.safeParse(value);
+  return result.success ? true : result.error.errors[0].message;
+};
 
 const CATEGORIES = {
   income: ['Sewa Studio', 'Lainnya'],
@@ -30,16 +59,30 @@ const CATEGORIES = {
 const FinancePage = () => {
   const { transactions, addTransaction, deleteTransaction } = useFinanceStore();
   const { bookings } = useBookingStore();
-  const { pricePerHour } = useSettingsStore();
+  const { pricePerHour, studioName, studioAddress, studioPhone } = useSettingsStore();
   const { theme } = useThemeStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [formData, setFormData] = useState({
-    type: 'expense',
-    date: format(new Date(), 'yyyy-MM-dd'),
-    category: 'Operasional',
-    amount: '',
-    description: ''
+  const [playClick] = useSound('/click.wav', { volume: 0.25 });
+  const [animationData, setAnimationData] = useState(null);
+
+  useEffect(() => {
+    fetch('https://lottie.host/a61c36b6-d522-4467-bc22-38e2d427d14d/B8b0n95d7r.json')
+      .then(res => res.json())
+      .then(data => setAnimationData(data))
+      .catch(err => console.error("Lottie load failed", err));
+  }, []);
+
+  const { register, handleSubmit: handleFormSubmit, reset, setValue, watch, formState: { errors } } = useForm({
+    defaultValues: {
+      type: 'expense',
+      date: format(new Date(), 'yyyy-MM-dd'),
+      category: 'Operasional',
+      amount: '',
+      description: ''
+    }
   });
+
+  const watchedType = watch('type');
 
   const isLight = theme === 'light';
   const cyanColor = isLight ? '#0099bb' : '#00f0ff';
@@ -68,11 +111,19 @@ const FinancePage = () => {
     [transactions, bookings, pricePerHour]
   );
 
-  // Filter Data based on selected period
-  const periodFilteredData = useMemo(
-    () => filterLedgerByPeriod(combinedData, filterPeriod, searchQuery),
-    [combinedData, filterPeriod, searchQuery]
-  );
+  // Filter Data based on selected period with Fuse.js
+  const periodFilteredData = useMemo(() => {
+    let result = filterLedgerByPeriod(combinedData, filterPeriod, '');
+    if (searchQuery.trim()) {
+      const fuse = new Fuse(result, {
+        keys: ['description', 'category'],
+        threshold: 0.35,
+        ignoreLocation: true
+      });
+      result = fuse.search(searchQuery).map(r => r.item);
+    }
+    return result;
+  }, [combinedData, filterPeriod, searchQuery]);
   
   const totalIncomeFiltered = useMemo(() => periodFilteredData.filter(d => d.type === 'income').reduce((sum, d) => sum + d.amount, 0), [periodFilteredData]);
   const totalExpenseFiltered = useMemo(() => periodFilteredData.filter(d => d.type === 'expense').reduce((sum, d) => sum + d.amount, 0), [periodFilteredData]);
@@ -120,6 +171,115 @@ const FinancePage = () => {
     if (id.startsWith('dp-'))   return `DP-${id.replace('dp-', '').slice(-5).padStart(5, '0')}`;
     return 'Manual';
   };
+
+  const columns = useMemo(() => [
+    {
+      accessorKey: 'date',
+      header: 'Tanggal',
+      cell: info => format(new Date(info.getValue()), 'dd MMM yyyy')
+    },
+    {
+      accessorKey: 'category',
+      header: 'Kategori',
+      cell: info => {
+        const entry = info.row.original;
+        return (
+          <span className={`cat-badge ${entry.type === 'income' ? 'income' : 'expense'}`}>
+            {entry.category}
+          </span>
+        );
+      }
+    },
+    {
+      accessorKey: 'description',
+      header: 'Keterangan',
+      cell: info => info.getValue()
+    },
+    {
+      id: 'source',
+      header: 'Sumber',
+      accessorFn: entry => getRef(entry),
+      cell: info => {
+        const entry = info.row.original;
+        return (
+          <>
+            <span className={`source-badge ${entry.isManual ? 'manual' : 'booking'}`}>
+              {getRef(entry)}
+            </span>
+            {entry.isManual && entry.operatorName && (
+              <div className="operator-sub">Oleh: {entry.operatorName}</div>
+            )}
+          </>
+        );
+      }
+    },
+    {
+      id: 'income',
+      header: 'Kas Masuk',
+      accessorFn: entry => entry.type === 'income' ? entry.amount : 0,
+      cell: info => {
+        const entry = info.row.original;
+        return entry.type === 'income' ? formatCurrency(entry.amount) : '—';
+      }
+    },
+    {
+      id: 'expense',
+      header: 'Kas Keluar',
+      accessorFn: entry => entry.type === 'expense' ? entry.amount : 0,
+      cell: info => {
+        const entry = info.row.original;
+        return entry.type === 'expense' ? formatCurrency(entry.amount) : '—';
+      }
+    },
+    {
+      accessorKey: 'balance',
+      header: 'Saldo',
+      cell: info => formatCurrency(info.getValue())
+    },
+    {
+      id: 'actions',
+      header: '',
+      cell: info => {
+        const entry = info.row.original;
+        return (
+          <div className="action-cell">
+            <button className="icon-btn print-btn" onClick={() => handlePrint(entry)} title="Cetak Kwitansi" aria-label="Cetak Kwitansi">
+              <Printer size={14} />
+            </button>
+            <PDFDownloadLink
+              document={<ReceiptPDF transaction={entry} settings={{ studioName, studioAddress, studioPhone }} />}
+              fileName={`kuitansi-${entry.id}.pdf`}
+              style={{ textDecoration: 'none', display: 'inline-flex' }}
+            >
+              {({ loading }) => (
+                <button className="icon-btn print-btn" disabled={loading} title="Unduh PDF Kuitansi" aria-label="Unduh PDF Kuitansi" style={{ color: 'var(--accent-cyan)' }}>
+                  <Download size={14} style={{ opacity: loading ? 0.5 : 1 }} />
+                </button>
+              )}
+            </PDFDownloadLink>
+            {entry.isManual && (
+              <button className="icon-btn delete" onClick={() => { playClick(); if (window.confirm('Hapus transaksi ini?')) deleteTransaction(entry.id); }} title="Hapus" aria-label="Hapus Transaksi">
+                <Trash2 size={14} />
+              </button>
+            )}
+          </div>
+        );
+      }
+    }
+  ], [studioName, studioAddress, studioPhone]);
+
+  const [sorting, setSorting] = useState([]);
+
+  const table = useReactTable({
+    data: filteredData,
+    columns,
+    state: {
+      sorting
+    },
+    onSortingChange: setSorting,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel()
+  });
 
   // Chart Data preparation
   const lineChartData = useMemo(
@@ -422,15 +582,38 @@ const FinancePage = () => {
     }, 100);
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const onSubmit = (data) => {
     addTransaction({
-      ...formData,
-      amount: Number(formData.amount),
+      ...data,
+      amount: Number(data.amount),
       operatorName: userProfile?.name || user?.email || 'Operator'
     });
+    confetti({
+      particleCount: 150,
+      spread: 80,
+      origin: { y: 0.6 },
+      colors: ['#00f0ff', '#ff2a5f', '#FFC107', '#4CAF50']
+    });
     setIsModalOpen(false);
-    setFormData(prev => ({ ...prev, amount: '', description: '' }));
+    toast.success('Transaksi berhasil dicatat!');
+  };
+
+  const handleTypeChange = (typeVal) => {
+    playClick();
+    setValue('type', typeVal);
+    setValue('category', CATEGORIES[typeVal][0]);
+  };
+
+  const handleOpenModal = (type = 'expense') => {
+    playClick();
+    reset({
+      type,
+      date: format(new Date(), 'yyyy-MM-dd'),
+      category: CATEGORIES[type][0],
+      amount: '',
+      description: ''
+    });
+    setIsModalOpen(true);
   };
 
   const PERIOD_OPTIONS = [
@@ -461,7 +644,7 @@ const FinancePage = () => {
           {/* Export */}
           <button 
             className="btn-secondary hide-on-print" 
-            onClick={handleExportExcel} 
+            onClick={() => { playClick(); handleExportExcel(); }} 
             disabled={isExporting || filteredData.length === 0} 
             title={filteredData.length === 0 ? "Tidak ada data untuk diexport" : "Export ke Excel (.xlsx)"}
             aria-label="Ekspor Laporan Keuangan ke Excel"
@@ -473,7 +656,7 @@ const FinancePage = () => {
           {/* Add */}
           <button 
             className="btn-primary hide-on-print" 
-            onClick={() => setIsModalOpen(true)}
+            onClick={() => handleOpenModal('expense')}
             aria-label="Catat Transaksi Baru"
           >
             <Plus size={16} />
@@ -619,15 +802,7 @@ const FinancePage = () => {
             <button
               type="button"
               className="smart-btn-action"
-              onClick={() => {
-                setFormData(prev => ({
-                  ...prev,
-                  type: 'expense',
-                  category: CATEGORIES.expense[0],
-                  date: format(new Date(), 'yyyy-MM-dd')
-                }));
-                setIsModalOpen(true);
-              }}
+              onClick={() => handleOpenModal('expense')}
             >
               <Plus size={14} /> Catat Pengeluaran
             </button>
@@ -721,7 +896,7 @@ const FinancePage = () => {
                 <button
                   key={opt.value}
                   className={`period-btn ${filterPeriod === opt.value ? 'active' : ''}`}
-                  onClick={() => setFilterPeriod(opt.value)}
+                  onClick={() => { playClick(); setFilterPeriod(opt.value); }}
                   aria-pressed={filterPeriod === opt.value}
                   aria-label={`Filter periode: ${opt.label}`}
                 >
@@ -740,7 +915,7 @@ const FinancePage = () => {
                 <button
                   key={opt.value}
                   className={`period-btn ${filterType === opt.value ? 'active' : ''}`}
-                  onClick={() => setFilterType(opt.value)}
+                  onClick={() => { playClick(); setFilterType(opt.value); }}
                   aria-pressed={filterType === opt.value}
                   aria-label={`Filter jenis: ${opt.label}`}
                 >
@@ -770,105 +945,123 @@ const FinancePage = () => {
 
         {/* Desktop Table */}
         <div className="app-table-wrapper hide-on-mobile" style={{ flex: 1, overflow: 'auto' }}>
-          <table className="app-table finance-table">
-            <thead>
-              <tr>
-                <th>Tanggal</th>
-                <th>Kategori</th>
-                <th>Keterangan</th>
-                <th>Sumber</th>
-                <th className="col-money">Kas Masuk</th>
-                <th className="col-money">Kas Keluar</th>
-                <th className="col-money">Saldo</th>
-                <th className="action-col"></th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredData.length === 0 ? (
-                <tr>
-                  <td colSpan="8" className="empty-state">Tidak ada catatan transaksi untuk periode ini.</td>
-                </tr>
+          {filteredData.length === 0 ? (
+            <div className="maint-empty" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '40px 20px', textAlign: 'center' }}>
+              {animationData ? (
+                <div style={{ width: 140, height: 140, marginBottom: '16px' }}>
+                  <Lottie animationData={animationData} loop={true} />
+                </div>
               ) : (
-                filteredData.map(entry => (
-                  <tr key={entry.id}>
-                    <td>{format(new Date(entry.date), 'dd MMM yyyy')}</td>
-                    <td>
-                      <span className={`cat-badge ${entry.type === 'income' ? 'income' : 'expense'}`}>
-                        {entry.category}
-                      </span>
-                    </td>
-                    <td className="desc-cell">{entry.description}</td>
-                    <td>
-                      <span className={`source-badge ${entry.isManual ? 'manual' : 'booking'}`}>
-                        {getRef(entry)}
-                      </span>
-                      {entry.isManual && entry.operatorName && (
-                        <div className="operator-sub">Oleh: {entry.operatorName}</div>
-                      )}
-                    </td>
-                    <td className="col-money text-income">
-                      {entry.type === 'income' ? formatCurrency(entry.amount) : '—'}
-                    </td>
-                    <td className="col-money text-expense">
-                      {entry.type === 'expense' ? formatCurrency(entry.amount) : '—'}
-                    </td>
-                    <td className="col-money fw-bold">{formatCurrency(entry.balance)}</td>
-                    <td className="action-col">
-                      <div className="action-cell">
-                        <button className="icon-btn print-btn" onClick={() => handlePrint(entry)} title="Cetak Kwitansi" aria-label="Cetak Kwitansi">
-                          <Printer size={14} />
-                        </button>
-                        {entry.isManual && (
-                          <button className="icon-btn delete" onClick={() => deleteTransaction(entry.id)} title="Hapus" aria-label="Hapus Transaksi">
-                            <Trash2 size={14} />
-                          </button>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                ))
+                <Wallet size={48} color="var(--text-muted)" style={{ marginBottom: '16px' }} />
               )}
-            </tbody>
-          </table>
+              <p style={{ fontWeight: '600', color: 'var(--text-primary)', marginBottom: '8px' }}>Tidak ada catatan transaksi untuk periode ini.</p>
+              <small style={{ color: 'var(--text-muted)' }}>Tambahkan transaksi baru atau sesuaikan filter Anda.</small>
+            </div>
+          ) : (
+            <table className="app-table finance-table">
+              <thead>
+                {table.getHeaderGroups().map(headerGroup => (
+                  <tr key={headerGroup.id}>
+                    {headerGroup.headers.map(header => {
+                      const canSort = header.column.getCanSort();
+                      const isActionCol = header.id === 'actions';
+                      return (
+                        <th 
+                          key={header.id} 
+                          scope="col"
+                          className={isActionCol ? 'action-col' : ''}
+                          style={{ cursor: canSort ? 'pointer' : 'default', userSelect: 'none' }}
+                          onClick={header.column.getToggleSortingHandler()}
+                        >
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', justifyContent: ['income', 'expense', 'balance'].includes(header.id) ? 'flex-end' : 'flex-start' }}>
+                            {flexRender(header.column.columnDef.header, header.getContext())}
+                            {canSort && ({
+                              asc: ' 🔼',
+                              desc: ' 🔽'
+                            }[header.column.getIsSorted()] || null)}
+                          </div>
+                        </th>
+                      );
+                    })}
+                  </tr>
+                ))}
+              </thead>
+              <tbody>
+                {table.getRowModel().rows.map(row => {
+                  const entry = row.original;
+                  return (
+                    <tr key={entry.id}>
+                      {row.getVisibleCells().map(cell => (
+                        <td key={cell.id} className={['income', 'expense', 'balance'].includes(cell.column.id) ? 'col-money' : ''}>
+                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        </td>
+                      ))}
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          )}
         </div>
 
         {/* Mobile Cards */}
         <div className="mobile-ledger-list show-on-mobile">
           {filteredData.length === 0 ? (
-            <div className="empty-state-mobile" style={{ padding: '40px', textAlign: 'center', color: 'var(--text-muted)' }}>
-              Tidak ada catatan transaksi untuk periode ini.
+            <div className="maint-empty" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '30px 10px', textAlign: 'center' }}>
+              {animationData ? (
+                <div style={{ width: 100, height: 100, marginBottom: '12px' }}>
+                  <Lottie animationData={animationData} loop={true} />
+                </div>
+              ) : (
+                <Wallet size={36} color="var(--text-muted)" style={{ marginBottom: '12px' }} />
+              )}
+              <p style={{ fontWeight: '600', color: 'var(--text-primary)', marginBottom: '4px', fontSize: '14px' }}>Tidak ada transaksi.</p>
             </div>
-          ) : filteredData.map(entry => (
-            <div key={entry.id} className={`mobile-ledger-card ${entry.type}`}>
-              <div className="mobile-ledger-info">
-                <span className="mobile-ledger-desc">{entry.description}</span>
-                <div className="mobile-ledger-meta">
-                  <span className={`cat-badge ${entry.type}`}>{entry.category}</span>
-                  <span className="mobile-ledger-date">{format(new Date(entry.date), 'dd MMM yyyy')}</span>
-                  <span className={`source-badge ${entry.isManual ? 'manual' : 'booking'}`}>{getRef(entry)}</span>
-                  {entry.isManual && entry.operatorName && (
-                    <span className="mobile-ledger-operator">Oleh: {entry.operatorName}</span>
+          ) : table.getRowModel().rows.map(row => {
+            const entry = row.original;
+            return (
+              <div key={entry.id} className={`mobile-ledger-card ${entry.type}`}>
+                <div className="mobile-ledger-info">
+                  <span className="mobile-ledger-desc">{entry.description}</span>
+                  <div className="mobile-ledger-meta">
+                    <span className={`cat-badge ${entry.type}`}>{entry.category}</span>
+                    <span className="mobile-ledger-date">{format(new Date(entry.date), 'dd MMM yyyy')}</span>
+                    <span className={`source-badge ${entry.isManual ? 'manual' : 'booking'}`}>{getRef(entry)}</span>
+                    {entry.isManual && entry.operatorName && (
+                      <span className="mobile-ledger-operator">Oleh: {entry.operatorName}</span>
+                    )}
+                  </div>
+                </div>
+                <div className="mobile-ledger-right">
+                  <span className={`mobile-ledger-amount ${entry.type}`}>
+                    {entry.type === 'income' ? '+' : '−'}{formatCurrency(entry.amount)}
+                  </span>
+                  <span className="mobile-ledger-balance">Saldo: {formatCurrency(entry.balance)}</span>
+                </div>
+                <div className="mobile-ledger-actions">
+                  <button className="icon-btn print-btn" onClick={() => handlePrint(entry)} title="Cetak Kwitansi" aria-label="Cetak Kwitansi">
+                    <Printer size={13} />
+                  </button>
+                  <PDFDownloadLink
+                    document={<ReceiptPDF transaction={entry} settings={{ studioName, studioAddress, studioPhone }} />}
+                    fileName={`kuitansi-${entry.id}.pdf`}
+                    style={{ textDecoration: 'none', display: 'inline-flex' }}
+                  >
+                    {({ loading }) => (
+                      <button className="icon-btn print-btn" disabled={loading} title="Unduh PDF Kuitansi" aria-label="Unduh PDF Kuitansi" style={{ color: 'var(--accent-cyan)' }}>
+                        <Download size={13} />
+                      </button>
+                    )}
+                  </PDFDownloadLink>
+                  {entry.isManual && (
+                    <button className="icon-btn delete" onClick={() => { playClick(); if (window.confirm('Hapus transaksi ini?')) deleteTransaction(entry.id); }} title="Hapus" aria-label="Hapus Transaksi">
+                      <Trash2 size={13} />
+                    </button>
                   )}
                 </div>
               </div>
-              <div className="mobile-ledger-right">
-                <span className={`mobile-ledger-amount ${entry.type}`}>
-                  {entry.type === 'income' ? '+' : '−'}{formatCurrency(entry.amount)}
-                </span>
-                <span className="mobile-ledger-balance">Saldo: {formatCurrency(entry.balance)}</span>
-              </div>
-              <div className="mobile-ledger-actions">
-                <button className="icon-btn print-btn" onClick={() => handlePrint(entry)} title="Cetak Kwitansi" aria-label="Cetak Kwitansi">
-                  <Printer size={13} />
-                </button>
-                {entry.isManual && (
-                  <button className="icon-btn delete" onClick={() => deleteTransaction(entry.id)} title="Hapus" aria-label="Hapus Transaksi">
-                    <Trash2 size={13} />
-                  </button>
-                )}
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 
@@ -878,9 +1071,9 @@ const FinancePage = () => {
           <div className="receipt">
             <h2 className="receipt-title">BUKTI TRANSAKSI</h2>
             <div className="receipt-header">
-              <p><strong>{useSettingsStore.getState().studioName || '37 MUSIC STUDIO'}</strong></p>
-              <p>{useSettingsStore.getState().studioAddress}</p>
-              <p>{useSettingsStore.getState().studioPhone}</p>
+              <p><strong>{studioName || '37 MUSIC STUDIO'}</strong></p>
+              <p>{studioAddress}</p>
+              <p>{studioPhone}</p>
             </div>
             <hr className="receipt-divider" />
             <div className="receipt-info">
@@ -905,24 +1098,24 @@ const FinancePage = () => {
       )}
 
       {/* Add Transaction Modal */}
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Catat Transaksi">
-        <form className="finance-form" onSubmit={handleSubmit}>
+      <Modal isOpen={isModalOpen} onClose={() => { playClick(); setIsModalOpen(false); }} title="Catat Transaksi">
+        <form className="finance-form" onSubmit={handleFormSubmit(onSubmit)}>
           <div className="form-group">
             <label htmlFor="transaction-type">Jenis Transaksi</label>
             <div id="transaction-type" className="type-toggle">
               <button 
                 type="button" 
-                className={`toggle-btn ${formData.type === 'income' ? 'active income' : ''}`}
-                onClick={() => setFormData(prev => ({ ...prev, type: 'income', category: CATEGORIES.income[0] }))}
-                aria-pressed={formData.type === 'income'}
+                className={`toggle-btn ${watchedType === 'income' ? 'active income' : ''}`}
+                onClick={() => handleTypeChange('income')}
+                aria-pressed={watchedType === 'income'}
               >
                 <TrendingUp size={16} /> Pemasukan
               </button>
               <button 
                 type="button" 
-                className={`toggle-btn ${formData.type === 'expense' ? 'active expense' : ''}`}
-                onClick={() => setFormData(prev => ({ ...prev, type: 'expense', category: CATEGORIES.expense[0] }))}
-                aria-pressed={formData.type === 'expense'}
+                className={`toggle-btn ${watchedType === 'expense' ? 'active expense' : ''}`}
+                onClick={() => handleTypeChange('expense')}
+                aria-pressed={watchedType === 'expense'}
               >
                 <TrendingDown size={16} /> Pengeluaran
               </button>
@@ -934,25 +1127,24 @@ const FinancePage = () => {
               <label htmlFor="transaction-date">Tanggal <span className="required">*</span></label>
               <input 
                 id="transaction-date"
-                type="date" name="date" 
-                value={formData.date} 
-                onChange={e => setFormData(p => ({...p, date: e.target.value}))} 
-                className="form-input" required 
+                type="date"
+                className="form-input"
+                {...register('date', { validate: validateTransactionWithZod('date') })}
               />
+              {errors.date && <span className="cf-error-message" style={{ color: 'var(--accent-pink)', fontSize: '11px', marginTop: '4px', display: 'block' }}>{errors.date.message}</span>}
             </div>
             <div className="form-group">
               <label htmlFor="transaction-category">Kategori <span className="required">*</span></label>
               <select 
                 id="transaction-category"
-                name="category" 
-                value={formData.category} 
-                onChange={e => setFormData(p => ({...p, category: e.target.value}))} 
-                className="form-input" required
+                className="form-input"
+                {...register('category', { validate: validateTransactionWithZod('category') })}
               >
-                {CATEGORIES[formData.type].map(cat => (
+                {CATEGORIES[watchedType].map(cat => (
                   <option key={cat} value={cat}>{cat}</option>
                 ))}
               </select>
+              {errors.category && <span className="cf-error-message" style={{ color: 'var(--accent-pink)', fontSize: '11px', marginTop: '4px', display: 'block' }}>{errors.category.message}</span>}
             </div>
           </div>
 
@@ -961,33 +1153,29 @@ const FinancePage = () => {
             <input 
               id="transaction-amount"
               type="number" 
-              name="amount" 
-              value={formData.amount} 
-              onChange={e => setFormData(p => ({...p, amount: e.target.value}))} 
               className="form-input" 
               placeholder="0"
               min="1"
-              required 
               autoFocus
+              {...register('amount', { validate: validateTransactionWithZod('amount') })}
             />
+            {errors.amount && <span className="cf-error-message" style={{ color: 'var(--accent-pink)', fontSize: '11px', marginTop: '4px', display: 'block' }}>{errors.amount.message}</span>}
           </div>
 
           <div className="form-group">
             <label htmlFor="transaction-description">Keterangan <span className="required">*</span></label>
             <textarea 
               id="transaction-description"
-              name="description" 
-              value={formData.description} 
-              onChange={e => setFormData(p => ({...p, description: e.target.value}))} 
               className="form-input form-textarea" 
               placeholder="Detail catatan transaksi..."
               rows="2"
-              required
+              {...register('description', { validate: validateTransactionWithZod('description') })}
             />
+            {errors.description && <span className="cf-error-message" style={{ color: 'var(--accent-pink)', fontSize: '11px', marginTop: '4px', display: 'block' }}>{errors.description.message}</span>}
           </div>
 
           <div className="form-actions">
-            <button type="button" className="btn-secondary" onClick={() => setIsModalOpen(false)}>Batal</button>
+            <button type="button" className="btn-secondary" onClick={() => { playClick(); setIsModalOpen(false); }}>Batal</button>
             <button type="submit" className="btn-primary">Simpan Transaksi</button>
           </div>
         </form>

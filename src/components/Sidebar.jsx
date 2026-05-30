@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { CalendarDays, Users, Package, CreditCard, Settings, BookOpen, PieChart, LogOut, Bell, ChevronRight, ChevronLeft, FlaskConical, Sun, Moon, Shield, Hammer, MoreHorizontal, Image } from 'lucide-react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
+import useSound from 'use-sound';
 import { useAuthStore } from '../store/useAuthStore';
 import { useNotificationStore } from '../store/useNotificationStore';
 import { useThemeStore } from '../store/useThemeStore';
@@ -25,6 +26,7 @@ const Sidebar = () => {
   const { theme, toggleTheme } = useThemeStore();
   const navigate = useNavigate();
   const location = useLocation();
+  const [playClick] = useSound('/click.wav', { volume: 0.25 });
 
   const unreadCount = notifications.filter(n => !n.isRead).length;
 
@@ -73,6 +75,7 @@ const Sidebar = () => {
               key={item.path}
               to={item.path} 
               className={`bn-item ${isActive ? 'active' : ''}`}
+              onClick={playClick}
             >
               <motion.div whileTap={navTap} className="bn-icon-wrapper">
                 {item.icon}
@@ -84,7 +87,7 @@ const Sidebar = () => {
         })}
         <button 
           className="bn-item" 
-          onClick={() => setMobileOpen(true)}
+          onClick={() => { playClick(); setMobileOpen(true); }}
           aria-label="Menu Lainnya"
           aria-haspopup="dialog"
           aria-expanded={mobileOpen}
@@ -95,7 +98,7 @@ const Sidebar = () => {
           <span className="bn-label">Lainnya</span>
         </button>
       </nav>
-
+ 
       {/* ===== MOBILE "MORE" BOTTOM SHEET ===== */}
       <Modal 
         isOpen={mobileOpen} 
@@ -113,7 +116,7 @@ const Sidebar = () => {
               key={item.path}
               to={item.path} 
               className="sheet-nav-item"
-              onClick={() => setMobileOpen(false)}
+              onClick={() => { playClick(); setMobileOpen(false); }}
             >
               <div className="sheet-icon">{item.icon}</div>
               <span>{item.label}</span>
@@ -129,10 +132,10 @@ const Sidebar = () => {
       {/* ===== DESKTOP SIDEBAR ===== */}
       <aside className={`sidebar glass-panel ${isCollapsed ? 'collapsed' : ''}`}>
         
-        {/* Desktop Collapse Toggle */}
+         {/* Desktop Collapse Toggle */}
         <button 
           className="collapse-toggle" 
-          onClick={() => setIsCollapsed(!isCollapsed)}
+          onClick={() => { playClick(); setIsCollapsed(!isCollapsed); }}
           aria-label={isCollapsed ? "Buka sidebar" : "Tutup sidebar"}
         >
           {isCollapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
@@ -151,7 +154,7 @@ const Sidebar = () => {
           </div>
           <button 
             className="notification-bell-btn sidebar-bell" 
-            onClick={() => setIsNotifOpen(true)}
+            onClick={() => { playClick(); setIsNotifOpen(true); }}
             aria-label="Buka panel notifikasi"
           >
             <Bell size={18} />
@@ -177,8 +180,8 @@ const Sidebar = () => {
                 >
                   <NavLink 
                     to={item.path} 
-                    className={`nav-item ${item.tourClass} ${isActive ? 'active' : ''}`}
-                    onClick={() => setMobileOpen(false)}
+                    className={`nav-item ${isActive ? 'active' : ''}`}
+                    onClick={() => { playClick(); setMobileOpen(false); }}
                   >
                     {isActive && (
                       <motion.div 
