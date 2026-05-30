@@ -1,10 +1,37 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Music2, Calendar, MapPin, Mic2, Star, ChevronRight, Activity, 
-  Clock3, Headphones, MessageCircle, Mail, Lock, Eye, EyeOff, AlertCircle, Loader2,
-  Moon, Sun, Menu, X, Phone, CheckCircle2
+  Activity,
+  AlertCircle,
+  ArrowUpRight,
+  Calendar,
+  Camera,
+  CheckCircle2,
+  ChevronRight,
+  Clock3,
+  Disc3,
+  Eye,
+  EyeOff,
+  Gauge,
+  Headphones,
+  Lock,
+  Mail,
+  MapPin,
+  Menu,
+  MessageCircle,
+  Mic2,
+  Moon,
+  Music2,
+  Phone,
+  PlayCircle,
+  ShieldCheck,
+  Sparkles,
+  Sun,
+  Users2,
+  Volume2,
+  X,
+  Loader2,
 } from 'lucide-react';
 import { useSettingsStore } from '../store/useSettingsStore';
 import { useAuthStore } from '../store/useAuthStore';
@@ -18,101 +45,149 @@ import { MotionListItem } from '../components/animation/MotionListItem';
 import { useGalleryStore } from '../store/useGalleryStore';
 import './LandingPage.css';
 
+const FALLBACK_HERO_PHOTO = {
+  url: '/studio-hero.jpg',
+  caption: '37 Music Studio private room',
+};
+
+const YOUTUBE_URL = 'https://youtube.com/@37musicstudio74?si=dq57yhCuJcph0pIf';
+
+const formatCurrency = (value) => new Intl.NumberFormat('id-ID').format(value || 0);
+
+const normalizeWhatsAppNumber = (phone) => {
+  const digits = String(phone || '').replace(/\D/g, '');
+  if (!digits) return '6281234567890';
+  if (digits.startsWith('0')) return `62${digits.slice(1)}`;
+  return digits;
+};
+
+const getDisplayCaption = (photo, index = 0) => {
+  const rawCaption = String(photo?.caption || '').trim();
+  const looksLikeFileName = /\d{6,}/.test(rawCaption) || rawCaption.split(/\s+/).length > 5;
+
+  if (!rawCaption || rawCaption.length > 48 || looksLikeFileName) {
+    return `Studio angle ${String(index + 1).padStart(2, '0')}`;
+  }
+
+  return rawCaption;
+};
+
 const LandingPage = () => {
   const { studioName, studioAddress, studioPhone, pricePerHour } = useSettingsStore();
   const { user, isAuthLoaded, login, error, loading, clearError } = useAuthStore();
   const { theme, toggleTheme } = useThemeStore();
   const { gallery } = useGalleryStore();
   const navigate = useNavigate();
-  
-  const [lightboxPhoto, setLightboxPhoto] = useState(null);
 
+  const [lightboxPhoto, setLightboxPhoto] = useState(null);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [showPass, setShowPass] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-
   const [activeHeroIndex, setActiveHeroIndex] = useState(0);
-  const heroPhotos = gallery.filter(p => p.showOnLandingPage);
+
+  const landingPhotos = useMemo(
+    () => gallery.filter((photo) => photo.showOnLandingPage && photo.url),
+    [gallery]
+  );
+  const customerGallery = useMemo(
+    () => gallery.filter((photo) => photo.showToCustomer && photo.url),
+    [gallery]
+  );
+  const heroPhotos = useMemo(() => {
+    const seen = new Set([FALLBACK_HERO_PHOTO.url]);
+    const extraPhotos = landingPhotos.filter((photo) => {
+      if (!photo.url || seen.has(photo.url)) return false;
+      seen.add(photo.url);
+      return true;
+    });
+
+    return [FALLBACK_HERO_PHOTO, ...extraPhotos].slice(0, 6);
+  }, [landingPhotos]);
+  const currentHeroPhoto = heroPhotos[activeHeroIndex] || FALLBACK_HERO_PHOTO;
+  const formattedPrice = formatCurrency(pricePerHour || 120000);
+  const whatsappNumber = normalizeWhatsAppNumber(studioPhone);
+  const whatsappUrl = `https://wa.me/${whatsappNumber}`;
+  const showGalleryLink = customerGallery.length > 0;
+  const galleryPreview = landingPhotos.length > 0 ? landingPhotos.slice(0, 6) : [FALLBACK_HERO_PHOTO];
 
   useEffect(() => {
-    if (heroPhotos.length <= 1) return;
+    if (heroPhotos.length <= 1) return undefined;
+
     const interval = setInterval(() => {
-      setActiveHeroIndex(prev => (prev + 1) % heroPhotos.length);
-    }, 6000);
+      setActiveHeroIndex((prev) => (prev + 1) % heroPhotos.length);
+    }, 5600);
+
     return () => clearInterval(interval);
   }, [heroPhotos.length]);
 
-  const currentHeroPhoto = heroPhotos.length > 0 
-    ? heroPhotos[activeHeroIndex] 
-    : { url: '/studio-hero.jpg', caption: 'Setup operator + gear lengkap' };
-
-  // Handle scroll for navbar transparency
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 50);
+      setScrolled(window.scrollY > 42);
     };
-    window.addEventListener('scroll', handleScroll);
+
+    handleScroll();
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Clear auth errors when modal is opened/closed
   useEffect(() => {
     clearError();
   }, [isLoginOpen, clearError]);
 
   useEffect(() => {
-    if (!isMobileMenuOpen && !isLoginOpen) return undefined;
+    if (!isMobileMenuOpen && !isLoginOpen && !lightboxPhoto) return undefined;
 
     const handleEscape = (event) => {
       if (event.key === 'Escape') {
         setIsMobileMenuOpen(false);
         setIsLoginOpen(false);
+        setLightboxPhoto(null);
       }
     };
 
     window.addEventListener('keydown', handleEscape);
     return () => window.removeEventListener('keydown', handleEscape);
-  }, [isMobileMenuOpen, isLoginOpen]);
+  }, [isMobileMenuOpen, isLoginOpen, lightboxPhoto]);
 
-  const handleLoginSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      await login(identifier, password);
-      // Let the existing useEffect handle redirect to dashboard
-    } catch {
-      // Error handled by store
-    }
-  };
-
-  // If user is already logged in and is staff/admin, redirect them to dashboard
   useEffect(() => {
     if (isAuthLoaded && user && !user.isAnonymous) {
       const t = setTimeout(() => navigate('/dashboard'), 500);
       return () => clearTimeout(t);
     }
+
+    return undefined;
   }, [user, isAuthLoaded, navigate]);
 
-  // Framer motion variants removed in favor of central animation system
+  const handleLoginSubmit = async (event) => {
+    event.preventDefault();
+
+    try {
+      await login(identifier, password);
+    } catch {
+      return;
+    }
+  };
 
   return (
     <div className="landing-container">
-      {/* Navbar */}
       <nav className={`landing-nav ${scrolled ? 'scrolled' : ''}`}>
-        <Link to="/" className="nav-brand">
-          <img src="/logo.png" alt="Logo" className="nav-brand-logo" style={{ width: '40px', height: '40px', objectFit: 'contain' }} />
-          <span className="brand-text">{studioName || '37 MUSIC'}</span>
+        <Link to="/" className="nav-brand" aria-label={`${studioName || '37 Music Studio'} home`}>
+          <span className="nav-brand-mark" aria-hidden="true">
+            <img src="/logo.png" alt="" />
+          </span>
+          <span className="brand-text">{studioName || '37 MUSIC STUDIO'}</span>
         </Link>
+
         <div className="nav-links hide-on-mobile" role="navigation" aria-label="Navigasi utama">
-          <a href="#features" aria-label="Lihat fasilitas studio">Fasilitas</a>
-          {gallery.filter(p => p.showOnLandingPage).length > 0 && (
-            <a href="#gallery" aria-label="Lihat galeri foto studio">Galeri</a>
-          )}
-          <a href="#pricing" aria-label="Lihat harga sewa">Harga</a>
-          <a href="#location" aria-label="Lihat lokasi studio">Lokasi</a>
+          <a href="#experience">Experience</a>
+          <a href="#gallery">Vibe</a>
+          <a href="#pricing">Rate</a>
+          <a href="#location">Lokasi</a>
         </div>
+
         <div className="nav-actions">
           <MotionButton
             type="button"
@@ -121,25 +196,35 @@ const LandingPage = () => {
             title={theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
             aria-label={theme === 'dark' ? 'Aktifkan Light Mode' : 'Aktifkan Dark Mode'}
           >
-            {theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />}
+            {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
           </MotionButton>
-          <MotionButton 
+
+          <MotionButton
             type="button"
             className={`nav-login-btn ${isLoginOpen ? 'active' : ''}`}
-            onClick={() => { setIsLoginOpen(!isLoginOpen); setIsMobileMenuOpen(false); }}
+            onClick={() => {
+              setIsLoginOpen(!isLoginOpen);
+              setIsMobileMenuOpen(false);
+            }}
             aria-label="Login Staff"
             aria-expanded={isLoginOpen}
           >
-            <Lock size={15} />
-            <span>Login Staff</span>
+            <Lock size={16} />
+            <span>Staff</span>
           </MotionButton>
+
           <Link to="/jadwal-publik" className="nav-book-btn" aria-label="Booking studio sekarang">
-            Booking
+            <Calendar size={16} />
+            <span>Booking</span>
           </Link>
+
           <button
             type="button"
             className={`nav-hamburger ${isMobileMenuOpen ? 'open' : ''}`}
-            onClick={() => { setIsMobileMenuOpen(!isMobileMenuOpen); setIsLoginOpen(false); }}
+            onClick={() => {
+              setIsMobileMenuOpen(!isMobileMenuOpen);
+              setIsLoginOpen(false);
+            }}
             aria-label={isMobileMenuOpen ? 'Tutup menu navigasi' : 'Buka menu navigasi'}
             aria-expanded={isMobileMenuOpen}
             aria-controls="landing-mobile-menu"
@@ -149,7 +234,6 @@ const LandingPage = () => {
         </div>
       </nav>
 
-      {/* Mobile Navigation Menu */}
       <AnimatePresence>
         {isMobileMenuOpen && (
           <>
@@ -167,29 +251,27 @@ const LandingPage = () => {
               className="mobile-nav-menu"
               role="navigation"
               aria-label="Menu navigasi mobile"
-              initial={{ opacity: 0, y: -10 }}
+              initial={{ opacity: 0, y: -8 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
+              exit={{ opacity: 0, y: -8 }}
               transition={{ duration: 0.2 }}
             >
-              <a href="#features" aria-label="Fasilitas studio" onClick={() => setIsMobileMenuOpen(false)}>Fasilitas</a>
-              {gallery.filter(p => p.showOnLandingPage).length > 0 && (
-                <a href="#gallery" aria-label="Galeri foto studio" onClick={() => setIsMobileMenuOpen(false)}>Galeri</a>
-              )}
-              <a href="#pricing" aria-label="Harga sewa" onClick={() => setIsMobileMenuOpen(false)}>Harga</a>
-              <a href="#location" aria-label="Lokasi studio" onClick={() => setIsMobileMenuOpen(false)}>Lokasi</a>
+              <a href="#experience" onClick={() => setIsMobileMenuOpen(false)}>Experience</a>
+              <a href="#gallery" onClick={() => setIsMobileMenuOpen(false)}>Vibe</a>
+              <a href="#pricing" onClick={() => setIsMobileMenuOpen(false)}>Rate</a>
+              <a href="#location" onClick={() => setIsMobileMenuOpen(false)}>Lokasi</a>
               <Link to="/jadwal-publik" className="mobile-menu-booking" onClick={() => setIsMobileMenuOpen(false)}>
-                <Calendar size={16} /> Booking Studio
+                <Calendar size={17} />
+                Booking Studio
               </Link>
             </motion.div>
           </>
         )}
       </AnimatePresence>
 
-      {/* Login Dropdown */}
       <AnimatePresence>
         {isLoginOpen && (
-          <motion.div 
+          <motion.div
             className="nav-login-dropdown"
             role="dialog"
             aria-modal="true"
@@ -197,8 +279,8 @@ const LandingPage = () => {
             {...dropdownPreset}
           >
             <div className="login-dropdown-header">
-              <div className="login-dropdown-icon-wrap" style={{ background: 'transparent', border: 'none' }}>
-                <img src="/logo.png" alt="Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+              <div className="login-dropdown-icon-wrap">
+                <img src="/logo.png" alt="" />
               </div>
               <div>
                 <p className="login-dropdown-brand">{studioName || '37 MUSIC STUDIO'}</p>
@@ -210,7 +292,13 @@ const LandingPage = () => {
 
             <form onSubmit={handleLoginSubmit} className="login-dropdown-form">
               {error && (
-                <motion.div id="login-error" role="alert" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="login-dropdown-error">
+                <motion.div
+                  id="login-error"
+                  role="alert"
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  className="login-dropdown-error"
+                >
                   <AlertCircle size={14} />
                   <span>{error}</span>
                 </motion.div>
@@ -224,7 +312,7 @@ const LandingPage = () => {
                     id="staff-identifier"
                     type="text"
                     value={identifier}
-                    onChange={e => setIdentifier(e.target.value)}
+                    onChange={(event) => setIdentifier(event.target.value)}
                     className="login-field-input"
                     placeholder="admin"
                     autoComplete="username"
@@ -243,7 +331,7 @@ const LandingPage = () => {
                     id="staff-password"
                     type={showPass ? 'text' : 'password'}
                     value={password}
-                    onChange={e => setPassword(e.target.value)}
+                    onChange={(event) => setPassword(event.target.value)}
                     className="login-field-input"
                     placeholder="Password staff"
                     autoComplete="current-password"
@@ -252,7 +340,7 @@ const LandingPage = () => {
                   <button
                     type="button"
                     className="login-field-toggle"
-                    onClick={() => setShowPass(v => !v)}
+                    onClick={() => setShowPass((value) => !value)}
                     aria-label={showPass ? 'Sembunyikan password' : 'Tampilkan password'}
                   >
                     {showPass ? <EyeOff size={16} /> : <Eye size={16} />}
@@ -261,265 +349,363 @@ const LandingPage = () => {
               </div>
 
               <MotionButton type="submit" className="login-dropdown-submit" disabled={loading}>
-                {loading
-                  ? <><Loader2 className="spinner" size={16} /><span>Memverifikasi...</span></>
-                  : <><span>Masuk ke Dashboard</span><ChevronRight size={16} /></>}
+                {loading ? (
+                  <>
+                    <Loader2 className="spinner" size={16} />
+                    <span>Memverifikasi...</span>
+                  </>
+                ) : (
+                  <>
+                    <span>Masuk Dashboard</span>
+                    <ChevronRight size={16} />
+                  </>
+                )}
               </MotionButton>
             </form>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Hero Section */}
-      <section className="hero-section">
-        <div className="hero-stage" />
+      <section className="hero-section" aria-label="37 Music Studio landing hero">
+        <div className="hero-background" aria-hidden="true">
+          <AnimatePresence mode="wait">
+            <motion.img
+              key={currentHeroPhoto.url}
+              src={currentHeroPhoto.url}
+              alt=""
+              initial={{ opacity: 0, scale: 1.03 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+            />
+          </AnimatePresence>
+          <div className="hero-scrim" />
+        </div>
 
-        <div className="hero-layout">
-          <MotionList as="div" className="hero-content">
-            <MotionListItem as="div" className="hero-badge">
-              <Activity size={15} />
-              <span>Studio rekaman & latihan · Tangerang</span>
+        <div className="hero-shell">
+          <MotionList as="div" className="hero-copy">
+            <MotionListItem as="div" className="hero-kicker">
+              <Sparkles size={16} />
+              <span>Private music room in Tangerang</span>
             </MotionListItem>
-            
+
             <MotionListItem as="h1" className="hero-title">
-              Tempat di mana lagu kamu mulai terdengar serius.
-            </MotionListItem>
-            
-            <MotionListItem as="p" className="hero-subtitle">
-              Akustik premium, gear lengkap, operator siap bantu — tinggal datang dan main.
-            </MotionListItem>
-            
-            <MotionListItem as="div" className="hero-buttons">
-              <Link to="/jadwal-publik" className="btn-primary btn-large">
-                <Calendar size={20} /> Booking Sekarang
-              </Link>
-              <a href="https://youtube.com/@37musicstudio74?si=dq57yhCuJcph0pIf" target="_blank" rel="noopener noreferrer" className="btn-youtube btn-large">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                  <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
-                </svg>
-                Dengar Hasilnya
-              </a>
+              Studio private buat suara yang lebih mahal.
             </MotionListItem>
 
-            <MotionListItem as="div" className="hero-quick-facts" aria-label="Informasi singkat studio">
-              <div className="hero-fact"><Clock3 size={16} /> Buka 10.00–23.00</div>
-              <div className="hero-fact"><Headphones size={16} /> Studio Eksklusif</div>
-              <div className="hero-fact"><MessageCircle size={16} /> Booking via WhatsApp</div>
+            <MotionListItem as="p" className="hero-subtitle">
+              Satu ruang eksklusif untuk rehearsal, recording, dan konten band. Gear siap, operator standby, booking langsung dari HP.
+            </MotionListItem>
+
+            <MotionListItem as="div" className="hero-actions">
+              <Link to="/jadwal-publik" className="btn-primary btn-large">
+                <Calendar size={20} />
+                <span>Booking Slot</span>
+              </Link>
+              <a href={YOUTUBE_URL} target="_blank" rel="noopener noreferrer" className="btn-secondary btn-large">
+                <PlayCircle size={20} />
+                <span>Play Preview</span>
+              </a>
             </MotionListItem>
           </MotionList>
 
-          <div className="hero-media-wrapper">
-            <div className="hero-media-ambient-glow" style={{ backgroundImage: `url(${currentHeroPhoto.url})` }} />
-            <div className="hero-media-frame">
-              <div className="hero-media-image">
-                <AnimatePresence mode="wait">
-                  <motion.img 
-                    key={currentHeroPhoto.url}
-                    src={currentHeroPhoto.url} 
-                    alt={currentHeroPhoto.caption}
-                    initial={{ opacity: 0, scale: 1.02 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.8, ease: 'easeInOut' }}
-                    style={{ width: '100%', height: '100%', objectFit: 'contain' }}
-                  />
-                </AnimatePresence>
-                {heroPhotos.length > 1 && (
-                  <div className="hero-slideshow-dots">
-                    {heroPhotos.map((_, idx) => (
-                      <button
-                        key={idx}
-                        type="button"
-                        className={`slideshow-dot ${idx === activeHeroIndex ? 'active' : ''}`}
-                        onClick={() => setActiveHeroIndex(idx)}
-                        aria-label={`Slide ${idx + 1}`}
-                      />
-                    ))}
-                  </div>
-                )}
+          <motion.div
+            className="hero-session"
+            initial={{ opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.72, delay: 0.32, ease: [0.16, 1, 0.3, 1] }}
+            aria-label="Informasi singkat studio"
+          >
+            <div className="hero-session-main">
+              <span className="session-label">Start from</span>
+              <strong>Rp {formattedPrice}</strong>
+              <span>/ jam</span>
+            </div>
+            <div className="hero-session-grid">
+              <div>
+                <Clock3 size={16} />
+                <span>10.00-23.00</span>
+              </div>
+              <div>
+                <Headphones size={16} />
+                <span>Operator</span>
+              </div>
+              <div>
+                <ShieldCheck size={16} />
+                <span>Private room</span>
               </div>
             </div>
-          </div>
-        </div>
-      </section>
+          </motion.div>
 
-      {/* Features Section */}
-      <section id="features" className="features-section">
-        <MotionSection direction="up" className="section-header">
-          <h2>Semua yang Kamu Butuhkan</h2>
-          <p>Satu ruang, satu fokus — akustik proper, gear siap pakai, operator yang ngerti kebutuhan musisi.</p>
-        </MotionSection>
-        
-        <div className="features-grid">
-          <MotionCard interactive={false} delay={0.1} className="feature-card studio">
-            <div className="feature-icon" style={{ background: 'linear-gradient(135deg, rgba(0, 240, 255, 0.15), transparent)', border: '1px solid rgba(0, 240, 255, 0.3)' }}>
-              <Music2 size={28} color="var(--accent-cyan)" />
-            </div>
-            <h3>Rehearsal Room</h3>
-            <p>Kedap suara, akustik seimbang. Vibe-nya beda — cocok buat latihan serius sebelum manggung.</p>
-            <ul className="feature-list">
-              <li><ChevronRight size={16} /> Full AC & Soundproof</li>
-              <li><ChevronRight size={16} /> Drum Set Premium</li>
-              <li><ChevronRight size={16} /> Ampli Gitar & Bass</li>
-            </ul>
-          </MotionCard>
-
-          <MotionCard interactive={false} delay={0.2} className="feature-card recording">
-            <div className="feature-icon" style={{ background: 'linear-gradient(135deg, rgba(255, 42, 95, 0.15), transparent)', border: '1px solid rgba(255, 42, 95, 0.3)' }}>
-              <Mic2 size={28} color="var(--accent-pink)" />
-            </div>
-            <h3>Recording & Tracking</h3>
-            <p>Take vokal, rekam instrumen, atau demo lagu — kualitas yang layak didengar orang banyak.</p>
-            <ul className="feature-list">
-              <li><ChevronRight size={16} /> Condenser & Dynamic Mic</li>
-              <li><ChevronRight size={16} /> Audio Interface & DAW</li>
-              <li><ChevronRight size={16} /> Headphone Monitoring</li>
-            </ul>
-          </MotionCard>
-          
-          <MotionCard interactive={false} delay={0.3} className="feature-card operator">
-            <div className="feature-icon" style={{ background: 'rgba(255, 152, 0, 0.1)', border: '1px solid rgba(255, 152, 0, 0.25)' }}>
-              <Star size={28} color="#FF9800" />
-            </div>
-            <h3>Operator Siap Bantu</h3>
-            <p>Kamu fokus main, operator urus sisanya — dari routing, sound check, sampai sesi rekaman.</p>
-            <ul className="feature-list">
-              <li><ChevronRight size={16} /> Sound Check & Routing</li>
-              <li><ChevronRight size={16} /> Setup & Tuning Gear</li>
-              <li><ChevronRight size={16} /> Asisten Sesi Rekaman</li>
-            </ul>
-          </MotionCard>
-        </div>
-      </section>
-
-      {/* Gallery Section */}
-      {gallery.filter(p => p.showOnLandingPage).length > 0 && (
-        <section id="gallery" className="landing-gallery-section">
-          <MotionSection direction="up" className="section-header">
-            <h2>Lihat Studionya</h2>
-            <p>Ruangan, gear, dan suasananya — biar kamu udah kebayang sebelum datang.</p>
-          </MotionSection>
-          
-          <div className="landing-gallery-grid">
-            {gallery.filter(p => p.showOnLandingPage).slice(0, 6).map((photo, index) => (
-              <MotionCard 
-                key={photo.id}
-                delay={0.05 * index}
-                className="landing-gallery-card"
-                onClick={() => setLightboxPhoto(photo)}
-              >
-                <div className="landing-gallery-media">
-                  <img src={photo.url} alt={photo.caption} loading="lazy" />
-                  <div className="landing-gallery-overlay" />
-                </div>
-              </MotionCard>
-            ))}
-          </div>
-
-          {gallery.filter(p => p.showToCustomer).length > 0 && (
-            <div className="gallery-actions" style={{ display: 'flex', justifyContent: 'center', marginTop: '40px' }}>
-              <Link to="/galeri" className="btn-primary btn-large">
-                Lihat Semua Foto →
-              </Link>
+          {heroPhotos.length > 1 && (
+            <div className="hero-slideshow-dots" aria-label="Pilihan foto hero">
+              {heroPhotos.map((photo, index) => (
+                <button
+                  key={photo.id || photo.url}
+                  type="button"
+                  className={`slideshow-dot ${index === activeHeroIndex ? 'active' : ''}`}
+                  onClick={() => setActiveHeroIndex(index)}
+                  aria-label={`Tampilkan foto ${index + 1}`}
+                  aria-current={index === activeHeroIndex}
+                />
+              ))}
             </div>
           )}
-
-          {/* Lightbox for Landing Page */}
-          <AnimatePresence>
-            {lightboxPhoto && (
-              <motion.div 
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="gallery-lightbox-overlay"
-                style={{ zIndex: 10000 }}
-                onClick={() => setLightboxPhoto(null)}
-              >
-                <button 
-                  className="lightbox-close" 
-                  onClick={() => setLightboxPhoto(null)}
-                  aria-label="Tutup penampil gambar"
-                >
-                  <X size={24} />
-                </button>
-                <motion.div 
-                  initial={{ scale: 0.95 }}
-                  animate={{ scale: 1 }}
-                  exit={{ scale: 0.95 }}
-                  className="lightbox-content"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <img src={lightboxPhoto.url} alt={lightboxPhoto.caption} />
-                </motion.div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </section>
-      )}
-
-      {/* Pricing Section */}
-      <section id="pricing" className="pricing-section">
-        <MotionSection direction="up" className="pricing-container">
-          <div className="pricing-info">
-            <h2>Mulai dari</h2>
-            <div className="price-display">
-              <span className="price-currency">Rp</span>
-              <span className="price-amount">{new Intl.NumberFormat('id-ID').format(pricePerHour || 120000)}</span>
-              <span className="price-unit">/ jam</span>
-            </div>
-            <p>Sound proper, harga terjangkau. Udah include operator, gear, dan ruangan — langsung main tanpa ribet.</p>
-            <div className="pricing-includes" role="list" aria-label="Yang termasuk dalam harga">
-              <div className="pricing-include-item" role="listitem"><CheckCircle2 size={16} /><span>Operator Included</span></div>
-              <div className="pricing-include-item" role="listitem"><CheckCircle2 size={16} /><span>Full AC &amp; Soundproof</span></div>
-              <div className="pricing-include-item" role="listitem"><CheckCircle2 size={16} /><span>Drum, Gitar, Bass</span></div>
-              <div className="pricing-include-item" role="listitem"><CheckCircle2 size={16} /><span>Mic, Interface &amp; DAW</span></div>
-            </div>
-            <Link to="/jadwal-publik" className="btn-primary btn-large" style={{ marginTop: '4px' }}>
-              Cek Jadwal &amp; Booking
-            </Link>
-          </div>
-        </MotionSection>
+        </div>
       </section>
 
-      {/* Footer */}
+      <MotionSection id="experience" direction="up" className="experience-section" amount={0.01}>
+        <div className="section-header">
+          <span className="section-eyebrow">The 37 Experience</span>
+          <h2>Satu studio, vibe-nya dibuat serius.</h2>
+          <p>
+            Layout dibuat untuk band muda, vocalist, solo creator, dan session player yang butuh tempat rapi tanpa ribet teknis.
+          </p>
+        </div>
+
+        <div className="experience-grid">
+          <MotionCard interactive delay={0.05} className="experience-card">
+            <div className="experience-icon">
+              <Music2 size={26} />
+            </div>
+            <span className="experience-label">Rehearsal</span>
+            <h3>Latihan lebih fokus</h3>
+            <p>Soundproof, AC, drum, ampli gitar, ampli bass, dan routing yang siap dipakai dari awal sesi.</p>
+          </MotionCard>
+
+          <MotionCard interactive delay={0.12} className="experience-card featured">
+            <div className="experience-icon">
+              <Mic2 size={26} />
+            </div>
+            <span className="experience-label">Recording</span>
+            <h3>Take vokal dan demo</h3>
+            <p>Mic, interface, monitoring, dan operator untuk bantu tracking supaya ide lagu cepat jadi materi.</p>
+          </MotionCard>
+
+          <MotionCard interactive delay={0.19} className="experience-card">
+            <div className="experience-icon">
+              <Gauge size={26} />
+            </div>
+            <span className="experience-label">Session assist</span>
+            <h3>Datang, setup, main</h3>
+            <p>Operator bantu sound check, tuning basic, dan kebutuhan teknis supaya sesi tetap jalan.</p>
+          </MotionCard>
+        </div>
+      </MotionSection>
+
+      <MotionSection direction="up" className="booking-flow-section">
+        <div className="flow-panel">
+          <div className="flow-copy">
+            <span className="section-eyebrow">Mobile-first booking</span>
+            <h2>Slot kosong bisa dicek sambil jalan.</h2>
+            <p>Cocok buat user yang buka dari HP: cek jadwal, isi data, lalu konfirmasi lewat WhatsApp.</p>
+          </div>
+
+          <div className="flow-steps" aria-label="Alur booking">
+            <div className="flow-step">
+              <span>01</span>
+              <strong>Cek slot</strong>
+              <p>Lihat jadwal publik yang masih kosong.</p>
+            </div>
+            <div className="flow-step">
+              <span>02</span>
+              <strong>Isi sesi</strong>
+              <p>Pilih jam, tulis kebutuhan, dan kirim request.</p>
+            </div>
+            <div className="flow-step">
+              <span>03</span>
+              <strong>Datang main</strong>
+              <p>Tim studio bantu setup saat kamu tiba.</p>
+            </div>
+          </div>
+        </div>
+      </MotionSection>
+
+      <MotionSection id="gallery" direction="up" className="landing-gallery-section">
+        <div className="section-header align-left">
+          <span className="section-eyebrow">Vibe check</span>
+          <h2>Ruangnya kelihatan sebelum kamu booking.</h2>
+          <p>Foto studio jadi sinyal utama supaya user mobile bisa cepat percaya sebelum lanjut ke jadwal.</p>
+        </div>
+
+        <div className="landing-gallery-grid">
+          {galleryPreview.map((photo, index) => {
+            const displayCaption = getDisplayCaption(photo, index);
+
+            return (
+            <MotionCard
+              key={photo.id || photo.url}
+              delay={0.04 * index}
+              className={`landing-gallery-card gallery-card-${index + 1}`}
+              onClick={() => setLightboxPhoto({ ...photo, displayCaption })}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                  event.preventDefault();
+                  setLightboxPhoto({ ...photo, displayCaption });
+                }
+              }}
+            >
+              <div className="landing-gallery-media">
+                <img src={photo.url} alt={displayCaption} loading="lazy" />
+                <div className="landing-gallery-overlay">
+                  <Camera size={18} />
+                  <span>{displayCaption}</span>
+                </div>
+              </div>
+            </MotionCard>
+            );
+          })}
+        </div>
+
+        {showGalleryLink && (
+          <div className="gallery-actions">
+            <Link to="/galeri" className="btn-secondary btn-large">
+              <span>Lihat Galeri</span>
+              <ArrowUpRight size={18} />
+            </Link>
+          </div>
+        )}
+
+        <AnimatePresence>
+          {lightboxPhoto && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="gallery-lightbox-overlay"
+              onClick={() => setLightboxPhoto(null)}
+            >
+              <button
+                type="button"
+                className="lightbox-close"
+                onClick={() => setLightboxPhoto(null)}
+                aria-label="Tutup penampil gambar"
+              >
+                <X size={24} />
+              </button>
+              <motion.div
+                initial={{ scale: 0.96, y: 10 }}
+                animate={{ scale: 1, y: 0 }}
+                exit={{ scale: 0.96, y: 10 }}
+                className="lightbox-content"
+                onClick={(event) => event.stopPropagation()}
+              >
+                <img src={lightboxPhoto.url} alt={lightboxPhoto.displayCaption || 'Foto studio'} />
+                {lightboxPhoto.displayCaption && <p>{lightboxPhoto.displayCaption}</p>}
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </MotionSection>
+
+      <MotionSection id="pricing" direction="up" className="pricing-section">
+        <div className="pricing-shell">
+          <div className="pricing-copy">
+            <span className="section-eyebrow">Studio rate</span>
+            <h2>Harga jelas, fasilitas udah include.</h2>
+            <p>
+              Cocok untuk latihan, demo recording, content session, atau band yang butuh ruang private dengan operator.
+            </p>
+            <div className="pricing-includes" role="list" aria-label="Yang termasuk dalam harga">
+              <div role="listitem"><CheckCircle2 size={17} /><span>Operator included</span></div>
+              <div role="listitem"><CheckCircle2 size={17} /><span>Full AC dan soundproof</span></div>
+              <div role="listitem"><CheckCircle2 size={17} /><span>Drum, ampli gitar, ampli bass</span></div>
+              <div role="listitem"><CheckCircle2 size={17} /><span>Mic, interface, monitoring</span></div>
+            </div>
+          </div>
+
+          <div className="price-card">
+            <div className="price-card-top">
+              <span>Mulai dari</span>
+              <Disc3 size={22} />
+            </div>
+            <div className="price-display">
+              <span className="price-currency">Rp</span>
+              <span className="price-amount">{formattedPrice}</span>
+              <span className="price-unit">/ jam</span>
+            </div>
+            <Link to="/jadwal-publik" className="btn-primary btn-large">
+              <Calendar size={19} />
+              <span>Cek Jadwal</span>
+            </Link>
+          </div>
+        </div>
+      </MotionSection>
+
+      <MotionSection direction="up" className="proof-section">
+        <div className="proof-grid" aria-label="Keunggulan studio">
+          <div>
+            <Volume2 size={20} />
+            <strong>Sound ready</strong>
+            <span>Gear live dan recording siap sesi.</span>
+          </div>
+          <div>
+            <Users2 size={20} />
+            <strong>Youth friendly</strong>
+            <span>Nyaman buat band, creator, dan soloist.</span>
+          </div>
+          <div>
+            <MessageCircle size={20} />
+            <strong>Fast response</strong>
+            <span>Konfirmasi booking lewat WhatsApp.</span>
+          </div>
+        </div>
+      </MotionSection>
+
       <footer id="location" className="landing-footer">
         <div className="footer-content">
           <div className="footer-brand">
-            <div className="nav-brand">
-              <img src="/logo.png" alt="Logo" style={{ width: '32px', height: '32px', objectFit: 'contain' }} />
+            <Link to="/" className="nav-brand">
+              <span className="nav-brand-mark" aria-hidden="true">
+                <img src="/logo.png" alt="" />
+              </span>
               <span className="brand-text">{studioName || '37 MUSIC STUDIO'}</span>
+            </Link>
+            <p>Studio musik private di Tangerang untuk rehearsal, recording, dan session content.</p>
+            <div className="footer-social">
+              <a href={YOUTUBE_URL} target="_blank" rel="noopener noreferrer">
+                <PlayCircle size={17} />
+                YouTube
+              </a>
+              <a href={whatsappUrl} target="_blank" rel="noopener noreferrer">
+                <MessageCircle size={17} />
+                WhatsApp
+              </a>
             </div>
-            <p>Studio musik di Tangerang — akustik proper, gear siap, booking gampang.</p>
           </div>
+
           <div className="footer-contact">
-            <h3>Hubungi Kami</h3>
+            <h3>Hubungi kami</h3>
             <p>
-              <MapPin size={16} />
+              <MapPin size={17} />
               <span>{studioAddress || 'Jl. Musik Indah No. 37, Kota Anda'}</span>
             </p>
             <p>
-              <Phone size={16} />
+              <Phone size={17} />
               <a
-                href={`https://wa.me/${(studioPhone || '08123456789').replace(/[-\s+()]/g, '')}`}
+                href={whatsappUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="footer-contact-link"
                 aria-label={`Hubungi via WhatsApp: ${studioPhone || '0812-3456-7890'}`}
               >
-                WhatsApp: {studioPhone || '0812-3456-7890'}
+                {studioPhone || '0812-3456-7890'}
               </a>
             </p>
           </div>
+
           <div className="footer-map">
-            <h3>Lokasi Studio</h3>
+            <h3>Lokasi studio</h3>
             <div className="map-container">
-              <iframe 
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.345151531122!2d106.6089336!3d-6.218134099999999!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69fea3cbcf857d%3A0x58b169d1a6502414!2s37%20Music%20Studio%20TANGERANG!5e0!3m2!1sen!2sid!4v1779439398167!5m2!1sen!2sid" 
-                width="100%" 
-                height="100%" 
-                style={{ border: 0 }} 
-                allowFullScreen="" 
-                loading="lazy" 
+              <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.345151531122!2d106.6089336!3d-6.218134099999999!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69fea3cbcf857d%3A0x58b169d1a6502414!2s37%20Music%20Studio%20TANGERANG!5e0!3m2!1sen!2sid!4v1779439398167!5m2!1sen!2sid"
+                width="100%"
+                height="100%"
+                style={{ border: 0 }}
+                allowFullScreen=""
+                loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
                 title="Lokasi 37 Music Studio di Google Maps"
               />
@@ -527,9 +713,20 @@ const LandingPage = () => {
           </div>
         </div>
         <div className="footer-bottom">
-          &copy; {new Date().getFullYear()} {studioName || '37 MUSIC STUDIO'}. All rights reserved.
+          <span>Copyright {new Date().getFullYear()} {studioName || '37 MUSIC STUDIO'}. All rights reserved.</span>
         </div>
       </footer>
+
+      <Link to="/jadwal-publik" className="mobile-sticky-cta" aria-label="Booking studio sekarang">
+        <span>
+          <Activity size={15} />
+          Rp {formattedPrice}/jam
+        </span>
+        <strong>
+          Booking
+          <ChevronRight size={17} />
+        </strong>
+      </Link>
     </div>
   );
 };
