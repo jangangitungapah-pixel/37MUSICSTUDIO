@@ -278,33 +278,33 @@ const LandingPage = () => {
           <MotionList as="div" className="hero-content">
             <MotionListItem as="div" className="hero-badge">
               <Activity size={15} />
-              <span>Studio musik premium di Tangerang</span>
+              <span>Studio rekaman & latihan · Tangerang</span>
             </MotionListItem>
             
             <MotionListItem as="h1" className="hero-title">
-              Ruang latihan dan rekaman untuk sound yang lebih siap panggung.
+              Tempat di mana lagu kamu mulai terdengar serius.
             </MotionListItem>
             
             <MotionListItem as="p" className="hero-subtitle">
-              Satu ruang studio eksklusif dengan treatment akustik, gear lengkap, dan bantuan operator untuk rehearsal, take vokal, sampai produksi demo.
+              Akustik premium, gear lengkap, operator siap bantu — tinggal datang dan main.
             </MotionListItem>
             
             <MotionListItem as="div" className="hero-buttons">
               <Link to="/jadwal-publik" className="btn-primary btn-large">
-                <Calendar size={20} /> Booking Studio Sekarang
+                <Calendar size={20} /> Booking Sekarang
               </Link>
               <a href="https://youtube.com/@37musicstudio74?si=dq57yhCuJcph0pIf" target="_blank" rel="noopener noreferrer" className="btn-youtube btn-large">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                   <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
                 </svg>
-                Lihat Hasil Rekaman
+                Dengar Hasilnya
               </a>
             </MotionListItem>
 
             <MotionListItem as="div" className="hero-quick-facts" aria-label="Informasi singkat studio">
-              <div className="hero-fact"><Clock3 size={16} /> 10.00-23.00</div>
-              <div className="hero-fact"><Headphones size={16} /> 1 Ruang Studio</div>
-              <div className="hero-fact"><MessageCircle size={16} /> Booking via WA</div>
+              <div className="hero-fact"><Clock3 size={16} /> Buka 10.00–23.00</div>
+              <div className="hero-fact"><Headphones size={16} /> Studio Eksklusif</div>
+              <div className="hero-fact"><MessageCircle size={16} /> Booking via WhatsApp</div>
             </MotionListItem>
           </MotionList>
 
@@ -346,8 +346,8 @@ const LandingPage = () => {
       {/* Features Section */}
       <section id="features" className="features-section">
         <MotionSection direction="up" className="section-header">
-          <h2>Fasilitas Studio</h2>
-          <p>Satu studio eksklusif dengan treatment akustik, alat lengkap, dan workflow yang nyaman untuk latihan maupun rekaman.</p>
+          <h2>Semua yang Kamu Butuhkan</h2>
+          <p>Satu ruang, satu fokus — akustik proper, gear siap pakai, operator yang ngerti kebutuhan musisi.</p>
         </MotionSection>
         
         <div className="features-grid">
@@ -355,12 +355,12 @@ const LandingPage = () => {
             <div className="feature-icon" style={{ background: 'linear-gradient(135deg, rgba(0, 240, 255, 0.15), transparent)', border: '1px solid rgba(0, 240, 255, 0.3)' }}>
               <Music2 size={28} color="var(--accent-cyan)" />
             </div>
-            <h3>Ruang Latihan Premium</h3>
-            <p>Vibe dapet, sound nendang. Ruang latihan full kedap suara dengan akustik seimbang buat jamming super intens.</p>
+            <h3>Rehearsal Room</h3>
+            <p>Kedap suara, akustik seimbang. Vibe-nya beda — cocok buat latihan serius sebelum manggung.</p>
             <ul className="feature-list">
-              <li><ChevronRight size={16} /> Full AC & Kedap Suara</li>
+              <li><ChevronRight size={16} /> Full AC & Soundproof</li>
               <li><ChevronRight size={16} /> Drum Set Premium</li>
-              <li><ChevronRight size={16} /> Ampli Gitar dan Bass</li>
+              <li><ChevronRight size={16} /> Ampli Gitar & Bass</li>
             </ul>
           </MotionCard>
 
@@ -369,11 +369,11 @@ const LandingPage = () => {
               <Mic2 size={28} color="var(--accent-pink)" />
             </div>
             <h3>Recording & Tracking</h3>
-            <p>Bawa pulang hasil rekaman proper. Gear kelas studio yang standby buat take vocal sampai bikin demo lagu.</p>
+            <p>Take vokal, rekam instrumen, atau demo lagu — kualitas yang layak didengar orang banyak.</p>
             <ul className="feature-list">
-              <li><ChevronRight size={16} /> Mic Condenser & Dinamik</li>
+              <li><ChevronRight size={16} /> Condenser & Dynamic Mic</li>
               <li><ChevronRight size={16} /> Audio Interface & DAW</li>
-              <li><ChevronRight size={16} /> Monitoring Headphone</li>
+              <li><ChevronRight size={16} /> Headphone Monitoring</li>
             </ul>
           </MotionCard>
           
@@ -381,12 +381,12 @@ const LandingPage = () => {
             <div className="feature-icon" style={{ background: 'rgba(255, 152, 0, 0.1)', border: '1px solid rgba(255, 152, 0, 0.25)' }}>
               <Star size={28} color="#FF9800" />
             </div>
-            <h3>Operator Studio</h3>
-            <p>Kamu fokus bermain dan take vokal, operator membantu routing, sound check, dan setup gear.</p>
+            <h3>Operator Siap Bantu</h3>
+            <p>Kamu fokus main, operator urus sisanya — dari routing, sound check, sampai sesi rekaman.</p>
             <ul className="feature-list">
-              <li><ChevronRight size={16} /> Bantuan Sound Check</li>
-              <li><ChevronRight size={16} /> Setup Instrumen</li>
-              <li><ChevronRight size={16} /> Asisten Recording</li>
+              <li><ChevronRight size={16} /> Sound Check & Routing</li>
+              <li><ChevronRight size={16} /> Setup & Tuning Gear</li>
+              <li><ChevronRight size={16} /> Asisten Sesi Rekaman</li>
             </ul>
           </MotionCard>
         </div>
@@ -396,8 +396,8 @@ const LandingPage = () => {
       {gallery.filter(p => p.showOnLandingPage).length > 0 && (
         <section id="gallery" className="landing-gallery-section">
           <MotionSection direction="up" className="section-header">
-            <h2>Galeri Foto Studio</h2>
-            <p>Jelajahi suasana latihan dan rekaman premium kami yang siap menyambut project musik Anda.</p>
+            <h2>Lihat Studionya</h2>
+            <p>Ruangan, gear, dan suasananya — biar kamu udah kebayang sebelum datang.</p>
           </MotionSection>
           
           <div className="landing-gallery-grid">
@@ -421,7 +421,7 @@ const LandingPage = () => {
           {gallery.filter(p => p.showToCustomer).length > 0 && (
             <div className="gallery-actions" style={{ display: 'flex', justifyContent: 'center', marginTop: '40px' }}>
               <Link to="/galeri" className="btn-primary btn-large">
-                Lihat Semua Foto
+                Lihat Semua Foto →
               </Link>
             </div>
           )}
@@ -466,21 +466,21 @@ const LandingPage = () => {
       <section id="pricing" className="pricing-section">
         <MotionSection direction="up" className="pricing-container">
           <div className="pricing-info">
-            <h2>Harga Sewa Mulai Dari</h2>
+            <h2>Mulai dari</h2>
             <div className="price-display">
               <span className="price-currency">Rp</span>
               <span className="price-amount">{new Intl.NumberFormat('id-ID').format(pricePerHour || 120000)}</span>
               <span className="price-unit">/ jam</span>
             </div>
-            <p>Kualitas audio maksimal nggak harus mahal. Amankan jadwal nge-jam atau take vokal kamu sekarang. Ada harga spesial buat booking durasi panjang!</p>
+            <p>Sound proper, harga terjangkau. Udah include operator, gear, dan ruangan — langsung main tanpa ribet.</p>
             <div className="pricing-includes" role="list" aria-label="Yang termasuk dalam harga">
-              <div className="pricing-include-item" role="listitem"><CheckCircle2 size={16} /><span>Operator Studio</span></div>
-              <div className="pricing-include-item" role="listitem"><CheckCircle2 size={16} /><span>Full AC &amp; Kedap Suara</span></div>
-              <div className="pricing-include-item" role="listitem"><CheckCircle2 size={16} /><span>Alat Musik Lengkap</span></div>
-              <div className="pricing-include-item" role="listitem"><CheckCircle2 size={16} /><span>Mic, Headphone &amp; Interface</span></div>
+              <div className="pricing-include-item" role="listitem"><CheckCircle2 size={16} /><span>Operator Included</span></div>
+              <div className="pricing-include-item" role="listitem"><CheckCircle2 size={16} /><span>Full AC &amp; Soundproof</span></div>
+              <div className="pricing-include-item" role="listitem"><CheckCircle2 size={16} /><span>Drum, Gitar, Bass</span></div>
+              <div className="pricing-include-item" role="listitem"><CheckCircle2 size={16} /><span>Mic, Interface &amp; DAW</span></div>
             </div>
             <Link to="/jadwal-publik" className="btn-primary btn-large" style={{ marginTop: '4px' }}>
-              Booking Studio Sekarang
+              Cek Jadwal &amp; Booking
             </Link>
           </div>
         </MotionSection>
@@ -494,7 +494,7 @@ const LandingPage = () => {
               <img src="/logo.png" alt="Logo" style={{ width: '32px', height: '32px', objectFit: 'contain' }} />
               <span className="brand-text">{studioName || '37 MUSIC STUDIO'}</span>
             </div>
-            <p>Studio musik satu ruang dengan akustik premium, gear lengkap, dan booking digital yang mudah.</p>
+            <p>Studio musik di Tangerang — akustik proper, gear siap, booking gampang.</p>
           </div>
           <div className="footer-contact">
             <h3>Hubungi Kami</h3>
@@ -532,7 +532,7 @@ const LandingPage = () => {
           </div>
         </div>
         <div className="footer-bottom">
-          &copy; {new Date().getFullYear()} {studioName || '37 MUSIC STUDIO'}. Didesain menggunakan 37MUSICSTUDIO System.
+          &copy; {new Date().getFullYear()} {studioName || '37 MUSIC STUDIO'}. All rights reserved.
         </div>
       </footer>
     </div>

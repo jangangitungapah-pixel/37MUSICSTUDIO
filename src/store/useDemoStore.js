@@ -227,6 +227,11 @@ const demoStaffMembers = [
   { id: 'demo-staff-3', name: 'Andi Freelance', role: 'staff', phone: '083344556677', status: 'inactive', joinDate: `${currentYear}-01-10` },
 ];
 
+const demoAlbumsItems = [
+  { id: 'album-1', name: 'Ruang Studio & Kontrol', description: 'Foto-foto ruangan live studio dan audio control room', createdAt: format(subDays(today, 15), 'yyyy-MM-dd HH:mm:ss') },
+  { id: 'album-2', name: 'Peralatan & Gear', description: 'Koleksi instrumen musik, drum, gitar, dan amplifier premium', createdAt: format(subDays(today, 12), 'yyyy-MM-dd HH:mm:ss') },
+];
+
 const demoGalleryItems = [
   {
     id: 1700000500001,
@@ -234,6 +239,7 @@ const demoGalleryItems = [
     caption: 'Ruang Live Recording Studio Utama',
     showOnLandingPage: true,
     showToCustomer: true,
+    albumId: 'album-1',
     createdAt: format(subDays(today, 10), 'yyyy-MM-dd')
   },
   {
@@ -242,6 +248,7 @@ const demoGalleryItems = [
     caption: 'Mixing Console & Audio Control Room',
     showOnLandingPage: true,
     showToCustomer: true,
+    albumId: 'album-1',
     createdAt: format(subDays(today, 8), 'yyyy-MM-dd')
   },
   {
@@ -250,6 +257,7 @@ const demoGalleryItems = [
     caption: 'Pearl Export Premium Drum Kit',
     showOnLandingPage: true,
     showToCustomer: true,
+    albumId: 'album-2',
     createdAt: format(subDays(today, 6), 'yyyy-MM-dd')
   },
   {
@@ -258,6 +266,7 @@ const demoGalleryItems = [
     caption: 'Koleksi Gitar Elektrik & Bass Standby',
     showOnLandingPage: false,
     showToCustomer: true,
+    albumId: 'album-2',
     createdAt: format(subDays(today, 4), 'yyyy-MM-dd')
   },
   {
@@ -266,6 +275,7 @@ const demoGalleryItems = [
     caption: 'Vocal Recording Booth & Shure SM58 / AT2020',
     showOnLandingPage: true,
     showToCustomer: false,
+    albumId: 'album-1',
     createdAt: format(subDays(today, 2), 'yyyy-MM-dd')
   }
 ];
@@ -285,6 +295,7 @@ export const useDemoStore = create((set) => ({
   demoTransactions,
   demoStaff: demoStaffMembers,
   demoGallery: demoGalleryItems,
+  demoAlbums: demoAlbumsItems,
   toggleDemoMode: () => set(state => ({ isDemoMode: !state.isDemoMode })),
   setDemoMode: (val) => set({ isDemoMode: val }),
 }));
