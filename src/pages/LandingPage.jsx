@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Music2, Calendar, MapPin, Mic2, Star, ChevronRight, Activity, 
   Clock3, Headphones, MessageCircle, Mail, Lock, Eye, EyeOff, AlertCircle, Loader2,
-  Moon, Sun, Menu, X, Phone, CheckCircle2, ShieldCheck, SlidersHorizontal, RadioTower
+  Moon, Sun, Menu, X, Phone, CheckCircle2
 } from 'lucide-react';
 import { useSettingsStore } from '../store/useSettingsStore';
 import { useAuthStore } from '../store/useAuthStore';
@@ -15,13 +15,17 @@ import MotionSection from '../components/animation/MotionSection';
 import MotionCard from '../components/animation/MotionCard';
 import { MotionList } from '../components/animation/MotionList';
 import { MotionListItem } from '../components/animation/MotionListItem';
+import { useGalleryStore } from '../store/useGalleryStore';
 import './LandingPage.css';
 
 const LandingPage = () => {
   const { studioName, studioAddress, studioPhone, pricePerHour } = useSettingsStore();
   const { user, isAuthLoaded, login, error, loading, clearError } = useAuthStore();
   const { theme, toggleTheme } = useThemeStore();
+  const { gallery } = useGalleryStore();
   const navigate = useNavigate();
+  
+  const [lightboxPhoto, setLightboxPhoto] = useState(null);
 
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -29,6 +33,21 @@ const LandingPage = () => {
   const [password, setPassword] = useState('');
   const [showPass, setShowPass] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+
+  const [activeHeroIndex, setActiveHeroIndex] = useState(0);
+  const heroPhotos = gallery.filter(p => p.showOnLandingPage);
+
+  useEffect(() => {
+    if (heroPhotos.length <= 1) return;
+    const interval = setInterval(() => {
+      setActiveHeroIndex(prev => (prev + 1) % heroPhotos.length);
+    }, 6000);
+    return () => clearInterval(interval);
+  }, [heroPhotos.length]);
+
+  const currentHeroPhoto = heroPhotos.length > 0 
+    ? heroPhotos[activeHeroIndex] 
+    : { url: '/studio-hero.jpg', caption: 'Setup operator + gear lengkap' };
 
   // Handle scroll for navbar transparency
   useEffect(() => {
@@ -88,6 +107,9 @@ const LandingPage = () => {
         </Link>
         <div className="nav-links hide-on-mobile" role="navigation" aria-label="Navigasi utama">
           <a href="#features" aria-label="Lihat fasilitas studio">Fasilitas</a>
+          {gallery.filter(p => p.showOnLandingPage).length > 0 && (
+            <a href="#gallery" aria-label="Lihat galeri foto studio">Galeri</a>
+          )}
           <a href="#pricing" aria-label="Lihat harga sewa">Harga</a>
           <a href="#location" aria-label="Lihat lokasi studio">Lokasi</a>
         </div>
@@ -151,6 +173,9 @@ const LandingPage = () => {
               transition={{ duration: 0.2 }}
             >
               <a href="#features" aria-label="Fasilitas studio" onClick={() => setIsMobileMenuOpen(false)}>Fasilitas</a>
+              {gallery.filter(p => p.showOnLandingPage).length > 0 && (
+                <a href="#gallery" aria-label="Galeri foto studio" onClick={() => setIsMobileMenuOpen(false)}>Galeri</a>
+              )}
               <a href="#pricing" aria-label="Harga sewa" onClick={() => setIsMobileMenuOpen(false)}>Harga</a>
               <a href="#location" aria-label="Lokasi studio" onClick={() => setIsMobileMenuOpen(false)}>Lokasi</a>
               <Link to="/jadwal-publik" className="mobile-menu-booking" onClick={() => setIsMobileMenuOpen(false)}>
@@ -283,23 +308,38 @@ const LandingPage = () => {
             </MotionListItem>
           </MotionList>
 
-          <MotionCard interactive={false} className="hero-media-card" aria-label="Visual studio musik">
-            <div className="hero-media-image">
-              <img src="/studio-hero.jpg" alt="Interior studio musik dengan drum, amplifier, mikrofon, dan panel akustik" />
-            </div>
-            <div className="hero-media-overlay">
-              <div>
-                <span>Siap rehearsal dan recording</span>
-                <strong>Setup operator + gear lengkap</strong>
+          <div className="hero-media-wrapper">
+            <div className="hero-media-ambient-glow" style={{ backgroundImage: `url(${currentHeroPhoto.url})` }} />
+            <div className="hero-media-frame">
+              <div className="hero-media-image">
+                <AnimatePresence mode="wait">
+                  <motion.img 
+                    key={currentHeroPhoto.url}
+                    src={currentHeroPhoto.url} 
+                    alt={currentHeroPhoto.caption}
+                    initial={{ opacity: 0, scale: 1.02 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.8, ease: 'easeInOut' }}
+                    style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                  />
+                </AnimatePresence>
+                {heroPhotos.length > 1 && (
+                  <div className="hero-slideshow-dots">
+                    {heroPhotos.map((_, idx) => (
+                      <button
+                        key={idx}
+                        type="button"
+                        className={`slideshow-dot ${idx === activeHeroIndex ? 'active' : ''}`}
+                        onClick={() => setActiveHeroIndex(idx)}
+                        aria-label={`Slide ${idx + 1}`}
+                      />
+                    ))}
+                  </div>
+                )}
               </div>
-              <img src="/logo.png" alt="" aria-hidden="true" />
             </div>
-            <div className="hero-proof-grid" aria-label="Keunggulan studio">
-              <div><ShieldCheck size={16} /><span>Kedap suara</span></div>
-              <div><SlidersHorizontal size={16} /><span>Sound check dibantu</span></div>
-              <div><RadioTower size={16} /><span>Output siap dipublikasi</span></div>
-            </div>
-          </MotionCard>
+          </div>
         </div>
       </section>
 
@@ -351,6 +391,76 @@ const LandingPage = () => {
           </MotionCard>
         </div>
       </section>
+
+      {/* Gallery Section */}
+      {gallery.filter(p => p.showOnLandingPage).length > 0 && (
+        <section id="gallery" className="landing-gallery-section">
+          <MotionSection direction="up" className="section-header">
+            <h2>Galeri Foto Studio</h2>
+            <p>Jelajahi suasana latihan dan rekaman premium kami yang siap menyambut project musik Anda.</p>
+          </MotionSection>
+          
+          <div className="landing-gallery-grid">
+            {gallery.filter(p => p.showOnLandingPage).slice(0, 6).map((photo, index) => (
+              <MotionCard 
+                key={photo.id}
+                delay={0.05 * index}
+                className="landing-gallery-card"
+                onClick={() => setLightboxPhoto(photo)}
+              >
+                <div className="landing-gallery-media">
+                  <img src={photo.url} alt={photo.caption} loading="lazy" />
+                  <div className="landing-gallery-overlay">
+                    <span className="gallery-caption">{photo.caption}</span>
+                  </div>
+                </div>
+              </MotionCard>
+            ))}
+          </div>
+
+          {gallery.filter(p => p.showToCustomer).length > 0 && (
+            <div className="gallery-actions" style={{ display: 'flex', justifyContent: 'center', marginTop: '40px' }}>
+              <Link to="/galeri" className="btn-primary btn-large">
+                Lihat Semua Foto
+              </Link>
+            </div>
+          )}
+
+          {/* Lightbox for Landing Page */}
+          <AnimatePresence>
+            {lightboxPhoto && (
+              <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="gallery-lightbox-overlay"
+                style={{ zIndex: 10000 }}
+                onClick={() => setLightboxPhoto(null)}
+              >
+                <button 
+                  className="lightbox-close" 
+                  onClick={() => setLightboxPhoto(null)}
+                  aria-label="Tutup penampil gambar"
+                >
+                  <X size={24} />
+                </button>
+                <motion.div 
+                  initial={{ scale: 0.95 }}
+                  animate={{ scale: 1 }}
+                  exit={{ scale: 0.95 }}
+                  className="lightbox-content"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <img src={lightboxPhoto.url} alt={lightboxPhoto.caption} />
+                  <div className="lightbox-footer">
+                    <h3 style={{ color: '#fff', fontSize: '1.1rem', margin: '12px 0 0 0', fontWeight: '600' }}>{lightboxPhoto.caption}</h3>
+                  </div>
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </section>
+      )}
 
       {/* Pricing Section */}
       <section id="pricing" className="pricing-section">

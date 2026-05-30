@@ -15,6 +15,7 @@ import './pages/CalendarPage.css'; // Shared global utilities and grid styles
 import './components/BookingForm.css'; // Shared global form styles (.form-group, .form-input)
 import PublicCalendarPage from './pages/PublicCalendarPage';
 import LandingPage from './pages/LandingPage';
+import PublicGalleryPage from './pages/PublicGalleryPage';
 
 // Lazy load pages for code splitting to reduce chunk size
 const CalendarPage = lazy(() => import('./pages/CalendarPage'));
@@ -26,6 +27,7 @@ const SettingsPage = lazy(() => import('./pages/SettingsPage'));
 const DashboardPage = lazy(() => import('./pages/DashboardPage'));
 const StaffPage = lazy(() => import('./pages/StaffPage'));
 const MaintenancePage = lazy(() => import('./pages/MaintenancePage'));
+import GalleryPage from './pages/GalleryPage';
 
 const STAFF_ROLES = new Set(['admin', 'staff']);
 
@@ -183,6 +185,7 @@ const AnimatedRoutes = () => {
           <Route path="/finance" element={<PageTransition><FinancePage /></PageTransition>} />
           <Route path="/staff" element={<PageTransition><StaffPage /></PageTransition>} />
           <Route path="/maintenance" element={<PageTransition><MaintenancePage /></PageTransition>} />
+          <Route path="/gallery" element={<PageTransition><GalleryPage /></PageTransition>} />
           <Route path="/settings" element={<PageTransition><SettingsPage /></PageTransition>} />
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
@@ -209,10 +212,15 @@ const ProtectedRoute = ({ children }) => {
   }
 
   if (!STAFF_ROLES.has(userProfile?.role)) {
+    console.log('[AuthDebug] AccessDenied: role is not admin or staff:', userProfile);
     return <AccessDenied />;
   }
 
-  if (!hasPermission(userProfile, ROUTE_PERMISSIONS[location.pathname])) {
+  const requiredPerm = ROUTE_PERMISSIONS[location.pathname];
+  const hasPerm = hasPermission(userProfile, requiredPerm);
+  console.log('[AuthDebug] Path:', location.pathname, 'Required:', requiredPerm, 'HasPerm:', hasPerm, 'Profile:', userProfile);
+
+  if (!hasPerm) {
     return <AccessDenied />;
   }
 
@@ -259,6 +267,7 @@ function App() {
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/jadwal-publik" element={<PublicCalendarPage />} />
+          <Route path="/galeri" element={<PublicGalleryPage />} />
           
           {/* Protected Routes */}
           <Route path="/*" element={

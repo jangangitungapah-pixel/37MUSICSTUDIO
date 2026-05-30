@@ -227,6 +227,49 @@ const demoStaffMembers = [
   { id: 'demo-staff-3', name: 'Andi Freelance', role: 'staff', phone: '083344556677', status: 'inactive', joinDate: `${currentYear}-01-10` },
 ];
 
+const demoGalleryItems = [
+  {
+    id: 1700000500001,
+    url: 'https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?q=80&w=1000',
+    caption: 'Ruang Live Recording Studio Utama',
+    showOnLandingPage: true,
+    showToCustomer: true,
+    createdAt: format(subDays(today, 10), 'yyyy-MM-dd')
+  },
+  {
+    id: 1700000500002,
+    url: 'https://images.unsplash.com/photo-1598653222000-6b7b7a552625?q=80&w=1000',
+    caption: 'Mixing Console & Audio Control Room',
+    showOnLandingPage: true,
+    showToCustomer: true,
+    createdAt: format(subDays(today, 8), 'yyyy-MM-dd')
+  },
+  {
+    id: 1700000500003,
+    url: 'https://images.unsplash.com/photo-1511192336575-5a79af67a629?q=80&w=1000',
+    caption: 'Pearl Export Premium Drum Kit',
+    showOnLandingPage: true,
+    showToCustomer: true,
+    createdAt: format(subDays(today, 6), 'yyyy-MM-dd')
+  },
+  {
+    id: 1700000500004,
+    url: 'https://images.unsplash.com/photo-1550985616-10810253b84d?q=80&w=1000',
+    caption: 'Koleksi Gitar Elektrik & Bass Standby',
+    showOnLandingPage: false,
+    showToCustomer: true,
+    createdAt: format(subDays(today, 4), 'yyyy-MM-dd')
+  },
+  {
+    id: 1700000500005,
+    url: 'https://images.unsplash.com/photo-1487180142328-054b783fc471?q=80&w=1000',
+    caption: 'Vocal Recording Booth & Shure SM58 / AT2020',
+    showOnLandingPage: true,
+    showToCustomer: false,
+    createdAt: format(subDays(today, 2), 'yyyy-MM-dd')
+  }
+];
+
 // ─── Pre-build all demo data (runs once at import) ───
 const demoBookings    = buildDemoBookings();
 const demoCustomers   = buildDemoCustomers(demoBookings);
@@ -241,6 +284,7 @@ export const useDemoStore = create((set) => ({
   demoInventory,
   demoTransactions,
   demoStaff: demoStaffMembers,
+  demoGallery: demoGalleryItems,
   toggleDemoMode: () => set(state => ({ isDemoMode: !state.isDemoMode })),
   setDemoMode: (val) => set({ isDemoMode: val }),
 }));

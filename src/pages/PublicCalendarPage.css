@@ -921,3 +921,127 @@ button.pc-cell {
   .pc-duration-grid { grid-template-columns: repeat(3, 1fr); }
   .pc-price-estimate { align-items: flex-start; flex-direction: column; gap: 6px; }
 }
+
+/* Public Calendar Page Gallery (Suasana Studio) */
+.pc-gallery-section {
+  margin-top: 32px;
+  padding: 24px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.pc-gallery-header {
+  margin-bottom: 20px;
+  padding: 0 4px;
+}
+
+.pc-gallery-header h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 6px 0;
+}
+
+.pc-gallery-header p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.pc-gallery-scroll {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  padding: 4px 4px 16px 4px;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+
+.pc-gallery-scroll::-webkit-scrollbar {
+  height: 6px;
+}
+
+.pc-gallery-scroll::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 10px;
+}
+
+.pc-gallery-scroll::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+
+.pc-gallery-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.pc-gallery-item {
+  min-width: 280px;
+  width: 280px;
+  aspect-ratio: 16 / 10;
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+  cursor: pointer;
+  scroll-snap-align: start;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.pc-gallery-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.pc-gallery-item-caption {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(0deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.1) 60%, transparent 100%);
+  display: flex;
+  align-items: flex-end;
+  padding: 14px;
+  opacity: 0.9;
+  transition: opacity 0.3s;
+}
+
+.pc-gallery-item-caption span {
+  color: #fff;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.pc-gallery-item:hover img {
+  transform: scale(1.05);
+}
+
+.pc-gallery-item:hover .pc-gallery-item-caption {
+  opacity: 1;
+  background: linear-gradient(0deg, rgba(var(--accent-pink-rgb), 0.85) 0%, rgba(0,0,0,0.2) 70%);
+}
+
+/* Light Theme Overrides */
+[data-theme="light"] .pc-gallery-section {
+  border-top-color: rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="light"] .pc-gallery-header h2 {
+  color: #0f172a;
+}
+
+[data-theme="light"] .pc-gallery-header p {
+  color: #64748b;
+}
+
+[data-theme="light"] .pc-gallery-item {
+  border-color: rgba(0, 0, 0, 0.06);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="light"] .pc-gallery-scroll::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+[data-theme="light"] .pc-gallery-scroll::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.08);
+}

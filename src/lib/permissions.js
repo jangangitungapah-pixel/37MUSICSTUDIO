@@ -9,6 +9,7 @@ export const PERMISSIONS = {
   maintenance: 'maintenance',
   settings: 'settings',
   dataManagement: 'dataManagement',
+  gallery: 'gallery',
 };
 
 export const PERMISSION_LABELS = {
@@ -22,6 +23,7 @@ export const PERMISSION_LABELS = {
   [PERMISSIONS.maintenance]: 'Maintenance',
   [PERMISSIONS.settings]: 'Pengaturan',
   [PERMISSIONS.dataManagement]: 'Backup / Reset Data',
+  [PERMISSIONS.gallery]: 'Galeri Foto',
 };
 
 export const ADMIN_PERMISSIONS = Object.values(PERMISSIONS);
@@ -33,6 +35,7 @@ export const STAFF_DEFAULT_PERMISSIONS = [
   PERMISSIONS.inventory,
   PERMISSIONS.billing,
   PERMISSIONS.maintenance,
+  PERMISSIONS.gallery,
 ];
 
 export const ROUTE_PERMISSIONS = {
@@ -45,6 +48,7 @@ export const ROUTE_PERMISSIONS = {
   '/staff': PERMISSIONS.staff,
   '/maintenance': PERMISSIONS.maintenance,
   '/settings': PERMISSIONS.settings,
+  '/gallery': PERMISSIONS.gallery,
 };
 
 export const getDefaultPermissionsForRole = (role) => (
@@ -58,5 +62,13 @@ export const hasPermission = (profile, permission) => {
   const permissions = Array.isArray(profile.permissions)
     ? profile.permissions
     : getDefaultPermissionsForRole(profile.role);
+
+  // Backward compatibility: Automatically grant 'gallery' permission to active staff who don't have it in their custom permissions array yet.
+  if (permission === PERMISSIONS.gallery && profile.role === 'staff' && !permissions.includes(PERMISSIONS.gallery)) {
+    if (permissions.includes(PERMISSIONS.dashboard)) {
+      return true;
+    }
+  }
+
   return permissions.includes(permission);
 };

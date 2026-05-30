@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { CalendarDays, Users, Package, CreditCard, Settings, BookOpen, PieChart, LogOut, HelpCircle, Bell, ChevronRight, ChevronLeft, FlaskConical, Sun, Moon, Shield, Hammer, MoreHorizontal } from 'lucide-react';
+import { CalendarDays, Users, Package, CreditCard, Settings, BookOpen, PieChart, LogOut, HelpCircle, Bell, ChevronRight, ChevronLeft, FlaskConical, Sun, Moon, Shield, Hammer, MoreHorizontal, Image } from 'lucide-react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../store/useAuthStore';
 import { useTourStore } from '../store/useTourStore';
@@ -66,6 +66,7 @@ const Sidebar = () => {
     { icon: <Package size={19} />, label: 'Inventory', path: '/inventory', tourClass: '' },
     { icon: <CreditCard size={19} />, label: 'Billing / POS', path: '/billing', tourClass: 'tour-billing' },
     { icon: <BookOpen size={19} />, label: 'Pembukuan', path: '/finance', tourClass: '' },
+    { icon: <Image size={19} />, label: 'Galeri Foto', path: '/gallery', tourClass: '' },
     { icon: <Shield size={19} />, label: 'Staff', path: '/staff', tourClass: '' },
     { icon: <Hammer size={19} />, label: 'Maintenance', path: '/maintenance', tourClass: '' },
     { icon: <Settings size={19} />, label: 'Settings', path: '/settings', tourClass: '' },

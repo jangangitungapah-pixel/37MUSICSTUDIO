@@ -109,6 +109,11 @@ service cloud.firestore {
       allow read, write: if hasAdminAccess();
     }
 
+    match /gallery/{document=**} {
+      allow read: if true;
+      allow write: if hasAdminAccess();
+    }
+
     match /usernames/{document=**} {
       allow read: if true;
       allow write: if hasAdminAccess();

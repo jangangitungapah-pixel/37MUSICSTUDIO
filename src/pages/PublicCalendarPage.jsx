@@ -19,6 +19,7 @@ import { useThemeStore } from '../store/useThemeStore';
 import { AnimatePresence, motion } from 'framer-motion';
 import { modalPreset, overlayVariants } from '../animations';
 import MotionSection from '../components/animation/MotionSection';
+import { useGalleryStore } from '../store/useGalleryStore';
 import './PublicCalendarPage.css';
 
 const PublicCalendarPage = () => {
@@ -32,6 +33,12 @@ const PublicCalendarPage = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [publicAccessError, setPublicAccessError] = useState('');
+  const { gallery } = useGalleryStore();
+  const [lightboxPhoto, setLightboxPhoto] = useState(null);
+  
+  const customerPhotos = useMemo(() => {
+    return gallery.filter(photo => photo.showToCustomer);
+  }, [gallery]);
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth <= 768);
@@ -466,6 +473,61 @@ const PublicCalendarPage = () => {
           </div>
         </div>
       </div>
+
+      {/* Gallery Section for Customer View */}
+      {customerPhotos.length > 0 && (
+        <div className="pc-gallery-section">
+          <MotionSection direction="up" className="pc-gallery-header">
+            <h2>Suasana Studio 37</h2>
+            <p>Foto ruangan dan alat musik asli di studio kami</p>
+          </MotionSection>
+
+          <div className="pc-gallery-scroll">
+            {customerPhotos.map((photo) => (
+              <div key={photo.id} className="pc-gallery-item" onClick={() => setLightboxPhoto(photo)}>
+                <img src={photo.url} alt={photo.caption} loading="lazy" />
+                <div className="pc-gallery-item-caption">
+                  <span>{photo.caption}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Lightbox for Public Calendar Page */}
+      <AnimatePresence>
+        {lightboxPhoto && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="gallery-lightbox-overlay"
+            style={{ zIndex: 10000 }}
+            onClick={() => setLightboxPhoto(null)}
+          >
+            <button 
+              className="lightbox-close" 
+              onClick={() => setLightboxPhoto(null)}
+              aria-label="Tutup penampil gambar"
+            >
+              <X size={24} />
+            </button>
+            <motion.div 
+              initial={{ scale: 0.95 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0.95 }}
+              className="lightbox-content"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <img src={lightboxPhoto.url} alt={lightboxPhoto.caption} />
+              <div className="lightbox-footer">
+                <h3 style={{ color: '#fff', fontSize: '1.1rem', margin: '12px 0 0 0', fontWeight: '600' }}>{lightboxPhoto.caption}</h3>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* ── Premium Booking Modal ── */}
       <AnimatePresence>

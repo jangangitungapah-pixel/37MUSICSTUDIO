@@ -27,7 +27,21 @@ export const useAuthStore = create((set, get) => {
         const docRef = doc(db, 'users', user.uid);
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
-          set({ user, userProfile: docSnap.data(), isAuthLoaded: true });
+          const profileData = docSnap.data();
+
+          // Auto-migration: if staff has custom permissions array but lacks 'gallery' permission,
+          // automatically append it in Firestore and local state.
+          if (profileData.role === 'staff' && Array.isArray(profileData.permissions)) {
+            if (!profileData.permissions.includes('gallery')) {
+              const updatedPermissions = [...profileData.permissions, 'gallery'];
+              profileData.permissions = updatedPermissions;
+              updateDoc(docRef, { permissions: updatedPermissions }).catch((err) => {
+                console.error("Error migrating gallery permission in Firestore:", err);
+              });
+            }
+          }
+
+          set({ user, userProfile: profileData, isAuthLoaded: true });
         } else {
           set({ user, userProfile: null, isAuthLoaded: true });
         }

@@ -179,6 +179,7 @@ const StaffPage = () => {
               placeholder="Cari staff, username, role..." 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
+              aria-label="Cari anggota tim"
             />
             {searchQuery && (
               <button type="button" className="app-search-clear" onClick={() => setSearchQuery('')} aria-label="Bersihkan pencarian" title="Bersihkan pencarian">
@@ -190,7 +191,7 @@ const StaffPage = () => {
       </div>
 
       <motion.div 
-        className="app-stat-grid"
+        className="staff-grid"
         variants={staggerContainer}
         initial="hidden"
         animate="visible"
@@ -209,16 +210,37 @@ const StaffPage = () => {
                   {staff.role === 'admin' ? <Shield size={24} className="avatar-icon-admin" /> : <User size={24} className="avatar-icon-staff" />}
                 </div>
                 <div className="staff-actions">
-                  <button className="icon-btn" onClick={() => handleOpenResetPassword(staff)} title="Ganti Password" style={{ color: 'var(--accent-pink)' }}>
+                  <button 
+                    className="icon-btn" 
+                    onClick={() => handleOpenResetPassword(staff)} 
+                    title="Ganti Password" 
+                    style={{ color: 'var(--accent-pink)' }}
+                    aria-label="Ganti password akun"
+                  >
                     <Key size={16} />
                   </button>
-                  <button className="icon-btn edit" onClick={() => handleOpenModal(staff)} title="Edit">
+                  <button 
+                    className="icon-btn edit" 
+                    onClick={() => handleOpenModal(staff)} 
+                    title="Edit"
+                    aria-label="Edit data staff"
+                  >
                     <Edit2 size={16} />
                   </button>
-                  <button className="icon-btn delete" onClick={() => handleDelete(staff.id)} title="Hapus">
+                  <button 
+                    className="icon-btn delete" 
+                    onClick={() => handleDelete(staff.id)} 
+                    title="Hapus"
+                    aria-label="Hapus staff dari tim"
+                  >
                     <Trash2 size={16} />
                   </button>
-                  <button className="icon-btn" onClick={() => handleToggleStatus(staff.id)} title={staff.status === 'active' ? "Nonaktifkan" : "Aktifkan"}>
+                  <button 
+                    className="icon-btn" 
+                    onClick={() => handleToggleStatus(staff.id)} 
+                    title={staff.status === 'active' ? "Nonaktifkan" : "Aktifkan"}
+                    aria-label={staff.status === 'active' ? "Nonaktifkan akun staff" : "Aktifkan akun staff"}
+                  >
                     <Power size={16} color={staff.status === 'active' ? '#4CAF50' : '#FF5252'} />
                   </button>
                 </div>
@@ -254,8 +276,9 @@ const StaffPage = () => {
         <form className="staff-form" onSubmit={handleSubmit}>
           <div className="bf-row">
             <div className="form-group">
-              <label className="bf-label">Nama Lengkap <span className="bf-required">*</span></label>
+              <label htmlFor="staff-name" className="bf-label">Nama Lengkap <span className="bf-required">*</span></label>
               <input
+                id="staff-name"
                 type="text"
                 className="bf-input"
                 value={formData.name}
@@ -267,8 +290,9 @@ const StaffPage = () => {
             </div>
             
             <div className="form-group">
-              <label className="bf-label">No. Telepon / WA</label>
+              <label htmlFor="staff-phone" className="bf-label">No. Telepon / WA</label>
               <input
+                id="staff-phone"
                 type="tel"
                 className="bf-input"
                 value={formData.phone}
@@ -281,8 +305,9 @@ const StaffPage = () => {
           {!editingStaff && (
             <div className="bf-row">
               <div className="form-group">
-                <label className="bf-label">Username Login <span className="bf-required">*</span></label>
+                <label htmlFor="staff-username" className="bf-label">Username Login <span className="bf-required">*</span></label>
                 <input
+                  id="staff-username"
                   type="text"
                   className="bf-input"
                   value={formData.username}
@@ -292,8 +317,9 @@ const StaffPage = () => {
                 />
               </div>
               <div className="form-group">
-                <label className="bf-label">Password <span className="bf-required">*</span></label>
+                <label htmlFor="staff-password" className="bf-label">Password <span className="bf-required">*</span></label>
                 <input
+                  id="staff-password"
                   type="password"
                   className="bf-input"
                   value={formData.password}
@@ -307,8 +333,9 @@ const StaffPage = () => {
           )}
           
           <div className="form-group">
-            <label className="bf-label">Role Akses <span className="bf-required">*</span></label>
+            <label htmlFor="staff-role" className="bf-label">Role Akses <span className="bf-required">*</span></label>
             <select
+              id="staff-role"
               className="bf-input"
               value={formData.role}
               onChange={e => handleRoleChange(e.target.value)}
@@ -349,11 +376,12 @@ const StaffPage = () => {
         </form>
       </Modal>
 
-      <Modal isOpen={isPasswordModalOpen} onClose={() => setIsPasswordModalOpen(false)} title={`Ganti Password: ${resetTargetStaff?.name}`}>
+      <Modal isOpen={isPasswordModalOpen} onClose={() => setIsPasswordModalOpen(false)} title={`Ganti Password: ${resetTargetStaff?.name || ''}`}>
         <form className="staff-form" onSubmit={handleResetPasswordSubmit}>
           <div className="form-group">
-            <label className="bf-label">Password Baru <span className="bf-required">*</span></label>
+            <label htmlFor="staff-new-password" className="bf-label">Password Baru <span className="bf-required">*</span></label>
             <input
+              id="staff-new-password"
               type="password"
               className="bf-input"
               value={newPassword}

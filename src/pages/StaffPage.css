@@ -1,3 +1,10 @@
+.staff-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(285px, 1fr));
+  gap: 20px;
+  margin-top: 10px;
+}
+
 .staff-card.inactive {
   opacity: 0.6;
   filter: grayscale(100%);
@@ -30,10 +37,6 @@
   display: flex;
   gap: 8px;
 }
-
-.staff-actions 
-
-.staff-actions 
 
 .staff-info {
   position: relative;
@@ -160,8 +163,16 @@
   background: rgba(0, 0, 0, 0.2);
 }
 
+.permission-card:focus-within {
+  outline: 2px solid var(--accent-pink);
+  outline-offset: 2px;
+}
+
 .permission-card input {
-  display: none;
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
 }
 
 .permission-icon {
@@ -224,7 +235,7 @@
   bottom: 0;
   left: 25px; /* Aligns exactly with the center of the 24px marker considering 14px padding left */
   width: 2px;
-  background: linear-gradient(180deg, rgba(var(--accent-cyan-rgb), 0.2) 0%, rgba(255, 255, 255, 0.05) 100%);
+  background: linear-gradient(180deg, rgba(var(--accent-cyan-rgb), 0.2) 0%, transparent 100%);
   border-radius: 2px;
 }
 
@@ -304,4 +315,49 @@
   .audit-log-item {
     flex-direction: column;
   }
+}
+
+/* Light Mode Overrides */
+[data-theme="light"] .staff-avatar {
+  background: rgba(0, 0, 0, 0.02);
+  border-color: rgba(0, 0, 0, 0.08);
+  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.01);
+}
+
+[data-theme="light"] .staff-status-bar {
+  border-top-color: rgba(0, 0, 0, 0.06);
+}
+
+[data-theme="light"] .staff-permission-chips span {
+  background: rgba(0, 0, 0, 0.03);
+  color: var(--text-secondary);
+  border-color: rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="light"] .staff-permission-chips .chip-more {
+  background: transparent;
+  border-color: rgba(0, 0, 0, 0.15);
+}
+
+[data-theme="light"] .permission-card {
+  border-color: rgba(0, 0, 0, 0.08);
+  background: rgba(0, 0, 0, 0.01);
+}
+
+[data-theme="light"] .permission-card:hover:not(.disabled) {
+  background: rgba(0, 0, 0, 0.03);
+  border-color: rgba(0, 0, 0, 0.12);
+}
+
+[data-theme="light"] .permission-card.selected {
+  border-color: rgba(var(--accent-cyan-rgb), 0.5);
+  background: rgba(var(--accent-cyan-rgb), 0.05);
+}
+
+[data-theme="light"] .empty-circle {
+  border-color: rgba(0, 0, 0, 0.25);
+}
+
+[data-theme="light"] .permission-card.disabled {
+  background: rgba(0, 0, 0, 0.05);
 }

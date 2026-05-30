@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { useFinanceStore } from '../store/useFinanceStore';
 import { useBookingStore } from '../store/useBookingStore';
 import { useSettingsStore } from '../store/useSettingsStore';
+import { useThemeStore } from '../store/useThemeStore';
 import { format } from 'date-fns';
 import { Wallet, TrendingUp, TrendingDown, Plus, Trash2, Search, Download, Printer, X } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
@@ -29,6 +30,7 @@ const FinancePage = () => {
   const { transactions, addTransaction, deleteTransaction } = useFinanceStore();
   const { bookings } = useBookingStore();
   const { pricePerHour } = useSettingsStore();
+  const { theme } = useThemeStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState({
     type: 'expense',
@@ -37,6 +39,20 @@ const FinancePage = () => {
     amount: '',
     description: ''
   });
+
+  const isLight = theme === 'light';
+  const cyanColor = isLight ? '#0099bb' : '#00f0ff';
+  const pinkColor = isLight ? '#e8194e' : '#ff2a5f';
+  const gridStroke = isLight ? 'rgba(0, 0, 0, 0.06)' : 'rgba(255, 255, 255, 0.04)';
+  const tooltipBg = isLight ? 'rgba(255, 255, 255, 0.98)' : '#1a1a2e';
+  const tooltipBorder = isLight ? 'rgba(0, 0, 0, 0.08)' : 'rgba(255, 255, 255, 0.1)';
+  const tooltipTextColor = isLight ? '#111128' : '#ffffff';
+
+  const PIE_COLORS = useMemo(() => {
+    return isLight
+      ? ['#e8194e', '#0099bb', '#a855f7', '#2e7d32', '#FF9800', '#E91E63', '#9C27B0']
+      : ['#ff2a5f', '#00f0ff', '#a855f7', '#4CAF50', '#FF9800', '#E91E63', '#9C27B0'];
+  }, [isLight]);
   
   const [filterPeriod, setFilterPeriod] = useState('month'); // 'day', 'week', 'month', 'year', 'all'
   const [searchQuery, setSearchQuery] = useState('');
@@ -125,7 +141,7 @@ const FinancePage = () => {
     };
   }, [bookings, filterPeriod, pricePerHour, totalIncomeFiltered, transactions]);
 
-  const PIE_COLORS = ['#ff2a5f', '#00f0ff', '#a855f7', '#4CAF50', '#FF9800', '#E91E63', '#9C27B0'];
+
 
   const handleExportExcel = async () => {
     setIsExporting(true);
@@ -409,29 +425,24 @@ const FinancePage = () => {
           </div>
         </div>
         <div className="app-page-actions">
-          {/* Period Pill Buttons */}
-          <div className="toolbar-group hide-on-print">
-            {PERIOD_OPTIONS.map(opt => (
-              <button
-                key={opt.value}
-                className={`period-btn ${filterPeriod === opt.value ? 'active' : ''}`}
-                onClick={() => setFilterPeriod(opt.value)}
-              >
-                {opt.label}
-              </button>
-            ))}
-          </div>
-
-
-
           {/* Export */}
-          <button className="btn-secondary hide-on-print" onClick={handleExportExcel} disabled={isExporting} title="Export ke Excel (.xlsx)">
+          <button 
+            className="btn-secondary hide-on-print" 
+            onClick={handleExportExcel} 
+            disabled={isExporting || filteredData.length === 0} 
+            title={filteredData.length === 0 ? "Tidak ada data untuk diexport" : "Export ke Excel (.xlsx)"}
+            aria-label="Ekspor Laporan Keuangan ke Excel"
+          >
             <Download size={15} />
             <span className="hide-on-mobile">{isExporting ? 'Mengekspor...' : 'Export Excel'}</span>
           </button>
 
           {/* Add */}
-          <button className="btn-primary hide-on-print" onClick={() => setIsModalOpen(true)}>
+          <button 
+            className="btn-primary hide-on-print" 
+            onClick={() => setIsModalOpen(true)}
+            aria-label="Catat Transaksi Baru"
+          >
             <Plus size={16} />
             <span className="hide-on-mobile">Catat Transaksi</span>
           </button>
@@ -441,7 +452,7 @@ const FinancePage = () => {
       {/* ── Stats Cards ── */}
       <div className="app-stat-grid finance-stats">
         <div className="app-stat-card primary" style={{flex: 1}}>
-          <div className="stat-icon" style={{color: 'var(--accent-cyan)', background: 'rgba(0, 240, 255, 0.1)'}}>
+          <div className="stat-icon" style={{color: 'var(--accent-cyan)', background: 'rgba(var(--accent-cyan-rgb), 0.1)'}}>
             <Wallet size={24} />
           </div>
           <div className="stat-data">
@@ -451,7 +462,7 @@ const FinancePage = () => {
           </div>
         </div>
         <div className="app-stat-card income" style={{flex: 1}}>
-          <div className="stat-icon" style={{color: '#4CAF50', background: 'rgba(76, 175, 80, 0.1)'}}>
+          <div className="stat-icon" style={{color: 'rgb(var(--success-rgb))', background: 'rgba(var(--success-rgb), 0.1)'}}>
             <TrendingUp size={24} />
           </div>
           <div className="stat-data">
@@ -461,7 +472,7 @@ const FinancePage = () => {
           </div>
         </div>
         <div className="app-stat-card expense" style={{flex: 1}}>
-          <div className="stat-icon" style={{color: 'var(--accent-pink)', background: 'rgba(255, 42, 95, 0.1)'}}>
+          <div className="stat-icon" style={{color: 'var(--accent-pink)', background: 'rgba(var(--accent-pink-rgb), 0.1)'}}>
             <TrendingDown size={24} />
           </div>
           <div className="stat-data">
@@ -523,9 +534,9 @@ const FinancePage = () => {
             <span style={{fontSize: '0.75rem', color: 'var(--text-muted)'}}>Piutang aktif</span>
             <strong style={{fontSize: '1rem', color: 'var(--text-primary)'}}>{formatCurrency(reconciliation.openReceivable)}</strong>
           </div>
-          <div className="smart-item" style={{borderColor: reconciliation.diff === 0 ? 'rgba(76, 175, 80, 0.2)' : 'rgba(255, 42, 95, 0.2)'}}>
+          <div className="smart-item" style={{borderColor: reconciliation.diff === 0 ? 'rgba(var(--success-rgb), 0.2)' : 'rgba(var(--accent-pink-rgb), 0.2)'}}>
             <span style={{fontSize: '0.75rem', color: 'var(--text-muted)'}}>Selisih kas</span>
-            <strong style={{fontSize: '1rem', color: reconciliation.diff === 0 ? '#4CAF50' : 'var(--accent-pink)'}}>{formatCurrency(reconciliation.diff)}</strong>
+            <strong style={{fontSize: '1rem', color: reconciliation.diff === 0 ? 'rgb(var(--success-rgb))' : 'var(--accent-pink)'}}>{formatCurrency(reconciliation.diff)}</strong>
           </div>
         </div>
       </div>
@@ -540,21 +551,21 @@ const FinancePage = () => {
           </div>
           <ResponsiveContainer width="100%" height={220}>
             <LineChart data={lineChartData} margin={{ top: 4, right: 8, left: 0, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" vertical={false} />
+              <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} vertical={false} />
               <XAxis dataKey="date" stroke="var(--text-muted)" fontSize={11} tickMargin={8} axisLine={false} tickLine={false} />
               <YAxis stroke="var(--text-muted)" fontSize={11} tickFormatter={(v) => `${v/1000}k`} axisLine={false} tickLine={false} width={40} />
               <RechartsTooltip
                 formatter={(v) => formatCurrency(v)}
-                contentStyle={{ backgroundColor: '#1a1a2e', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', color: '#fff', fontSize: '0.82rem' }}
-                itemStyle={{ color: '#fff' }}
+                contentStyle={{ backgroundColor: tooltipBg, border: `1px solid ${tooltipBorder}`, borderRadius: '10px', color: tooltipTextColor, fontSize: '0.82rem' }}
+                itemStyle={{ color: tooltipTextColor }}
               />
-              <Line type="monotone" dataKey="Pemasukan" stroke="#00f0ff" strokeWidth={2.5} dot={{ r: 3, fill: '#0d0d1a', strokeWidth: 2 }} activeDot={{ r: 5 }} />
-              <Line type="monotone" dataKey="Pengeluaran" stroke="#ff2a5f" strokeWidth={2.5} dot={{ r: 3, fill: '#0d0d1a', strokeWidth: 2 }} activeDot={{ r: 5 }} />
+              <Line type="monotone" dataKey="Pemasukan" stroke={cyanColor} strokeWidth={2.5} dot={{ r: 3, fill: isLight ? '#fff' : '#0d0d1a', strokeWidth: 2 }} activeDot={{ r: 5 }} />
+              <Line type="monotone" dataKey="Pengeluaran" stroke={pinkColor} strokeWidth={2.5} dot={{ r: 3, fill: isLight ? '#fff' : '#0d0d1a', strokeWidth: 2 }} activeDot={{ r: 5 }} />
             </LineChart>
           </ResponsiveContainer>
           <div className="chart-legend">
-            <span className="legend-item"><span className="legend-dot" style={{ background: '#00f0ff' }} />Pemasukan</span>
-            <span className="legend-item"><span className="legend-dot" style={{ background: '#ff2a5f' }} />Pengeluaran</span>
+            <span className="legend-item"><span className="legend-dot" style={{ background: cyanColor }} />Pemasukan</span>
+            <span className="legend-item"><span className="legend-dot" style={{ background: pinkColor }} />Pengeluaran</span>
           </div>
         </div>
 
@@ -575,7 +586,8 @@ const FinancePage = () => {
                   </Pie>
                   <RechartsTooltip
                     formatter={(v) => formatCurrency(v)}
-                    contentStyle={{ backgroundColor: '#1a1a2e', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', fontSize: '0.8rem' }}
+                    contentStyle={{ backgroundColor: tooltipBg, border: `1px solid ${tooltipBorder}`, borderRadius: '10px', fontSize: '0.8rem', color: tooltipTextColor }}
+                    itemStyle={{ color: tooltipTextColor }}
                   />
                 </PieChart>
               </ResponsiveContainer>
@@ -610,6 +622,21 @@ const FinancePage = () => {
             </div>
           </div>
           <div className="app-table-toolbar-right hide-on-print">
+            {/* Period Pill Buttons */}
+            <div className="toolbar-group">
+              {PERIOD_OPTIONS.map(opt => (
+                <button
+                  key={opt.value}
+                  className={`period-btn ${filterPeriod === opt.value ? 'active' : ''}`}
+                  onClick={() => setFilterPeriod(opt.value)}
+                  aria-pressed={filterPeriod === opt.value}
+                  aria-label={`Filter periode: ${opt.label}`}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+
             <div className="app-search app-search-md">
               <Search className="app-search-icon" />
               <input 
@@ -618,6 +645,7 @@ const FinancePage = () => {
                 placeholder="Cari transaksi..." 
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
+                aria-label="Cari riwayat transaksi"
               />
               {searchQuery && (
                 <button type="button" className="app-search-clear" onClick={() => setSearchQuery('')} aria-label="Bersihkan pencarian" title="Bersihkan pencarian">
@@ -672,11 +700,11 @@ const FinancePage = () => {
                     <td className="col-money fw-bold">{formatCurrency(entry.balance)}</td>
                     <td className="action-col">
                       <div className="action-cell">
-                        <button className="icon-btn print-btn" onClick={() => handlePrint(entry)} title="Cetak Kwitansi">
+                        <button className="icon-btn print-btn" onClick={() => handlePrint(entry)} title="Cetak Kwitansi" aria-label="Cetak Kwitansi">
                           <Printer size={14} />
                         </button>
                         {entry.isManual && (
-                          <button className="icon-btn delete" onClick={() => deleteTransaction(entry.id)} title="Hapus">
+                          <button className="icon-btn delete" onClick={() => deleteTransaction(entry.id)} title="Hapus" aria-label="Hapus Transaksi">
                             <Trash2 size={14} />
                           </button>
                         )}
@@ -692,7 +720,7 @@ const FinancePage = () => {
         {/* Mobile Cards */}
         <div className="mobile-ledger-list show-on-mobile">
           {filteredData.length === 0 ? (
-            <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-muted)' }}>
+            <div className="empty-state-mobile" style={{ padding: '40px', textAlign: 'center', color: 'var(--text-muted)' }}>
               Tidak ada catatan transaksi untuk periode ini.
             </div>
           ) : filteredData.map(entry => (
@@ -711,11 +739,16 @@ const FinancePage = () => {
                 </span>
                 <span className="mobile-ledger-balance">Saldo: {formatCurrency(entry.balance)}</span>
               </div>
-              {entry.isManual && (
-                <button className="icon-btn delete" onClick={() => deleteTransaction(entry.id)} title="Hapus" style={{ width: 28, height: 28, flexShrink: 0 }}>
-                  <Trash2 size={13} />
+              <div className="mobile-ledger-actions">
+                <button className="icon-btn print-btn" onClick={() => handlePrint(entry)} title="Cetak Kwitansi" aria-label="Cetak Kwitansi">
+                  <Printer size={13} />
                 </button>
-              )}
+                {entry.isManual && (
+                  <button className="icon-btn delete" onClick={() => deleteTransaction(entry.id)} title="Hapus" aria-label="Hapus Transaksi">
+                    <Trash2 size={13} />
+                  </button>
+                )}
+              </div>
             </div>
           ))}
         </div>
@@ -757,12 +790,13 @@ const FinancePage = () => {
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Catat Transaksi">
         <form className="finance-form" onSubmit={handleSubmit}>
           <div className="form-group">
-            <label>Jenis Transaksi</label>
-            <div className="type-toggle">
+            <label htmlFor="transaction-type">Jenis Transaksi</label>
+            <div id="transaction-type" className="type-toggle">
               <button 
                 type="button" 
                 className={`toggle-btn ${formData.type === 'income' ? 'active income' : ''}`}
                 onClick={() => setFormData(prev => ({ ...prev, type: 'income', category: CATEGORIES.income[0] }))}
+                aria-pressed={formData.type === 'income'}
               >
                 <TrendingUp size={16} /> Pemasukan
               </button>
@@ -770,6 +804,7 @@ const FinancePage = () => {
                 type="button" 
                 className={`toggle-btn ${formData.type === 'expense' ? 'active expense' : ''}`}
                 onClick={() => setFormData(prev => ({ ...prev, type: 'expense', category: CATEGORIES.expense[0] }))}
+                aria-pressed={formData.type === 'expense'}
               >
                 <TrendingDown size={16} /> Pengeluaran
               </button>
@@ -778,8 +813,9 @@ const FinancePage = () => {
 
           <div className="form-row">
             <div className="form-group">
-              <label>Tanggal <span className="required">*</span></label>
+              <label htmlFor="transaction-date">Tanggal <span className="required">*</span></label>
               <input 
+                id="transaction-date"
                 type="date" name="date" 
                 value={formData.date} 
                 onChange={e => setFormData(p => ({...p, date: e.target.value}))} 
@@ -787,8 +823,9 @@ const FinancePage = () => {
               />
             </div>
             <div className="form-group">
-              <label>Kategori <span className="required">*</span></label>
+              <label htmlFor="transaction-category">Kategori <span className="required">*</span></label>
               <select 
+                id="transaction-category"
                 name="category" 
                 value={formData.category} 
                 onChange={e => setFormData(p => ({...p, category: e.target.value}))} 
@@ -802,8 +839,9 @@ const FinancePage = () => {
           </div>
 
           <div className="form-group">
-            <label>Nominal (Rp) <span className="required">*</span></label>
+            <label htmlFor="transaction-amount">Nominal (Rp) <span className="required">*</span></label>
             <input 
+              id="transaction-amount"
               type="number" 
               name="amount" 
               value={formData.amount} 
@@ -817,8 +855,9 @@ const FinancePage = () => {
           </div>
 
           <div className="form-group">
-            <label>Keterangan <span className="required">*</span></label>
+            <label htmlFor="transaction-description">Keterangan <span className="required">*</span></label>
             <textarea 
+              id="transaction-description"
               name="description" 
               value={formData.description} 
               onChange={e => setFormData(p => ({...p, description: e.target.value}))} 
