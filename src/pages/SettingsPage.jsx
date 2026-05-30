@@ -496,7 +496,7 @@ const SettingsPage = () => {
             >
               {/* === SECTION: PROFILE === */}
               {activeSection === 'profile' && (
-                <div className="settings-panel app-panel tour-settings-profile">
+                <div className="settings-panel app-panel">
               <div className="settings-panel-header">
                 <div className="panel-header-icon" style={{ background: 'rgba(0,240,255,0.1)', color: 'var(--accent-cyan)' }}>
                   <Building2 size={20} />
@@ -581,7 +581,7 @@ const SettingsPage = () => {
 
           {/* === SECTION: PRICING === */}
           {activeSection === 'pricing' && (
-            <div className="settings-panel app-panel tour-settings-rate">
+            <div className="settings-panel app-panel">
               <div className="settings-panel-header">
                 <div className="panel-header-icon" style={{ background: 'rgba(76,175,80,0.1)', color: '#4CAF50' }}>
                   <DollarSign size={20} />
@@ -1026,7 +1026,7 @@ const SettingsPage = () => {
 
           {/* === SECTION: DATA MANAGEMENT === */}
           {activeSection === 'data' && (
-            <div className="settings-panel app-panel danger-zone tour-settings-danger">
+            <div className="settings-panel app-panel danger-zone">
               <div className="settings-panel-header">
                 <div className="panel-header-icon" style={{ background: 'rgba(255,68,68,0.1)', color: '#ff4444' }}>
                   <ShieldAlert size={20} />

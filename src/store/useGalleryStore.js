@@ -1,6 +1,7 @@
 import { create } from 'zustand';
-import { db } from '../firebase';
+import { db, storage } from '../firebase';
 import { collection, doc, onSnapshot, setDoc, deleteDoc, updateDoc } from 'firebase/firestore';
+import { ref, uploadString, getDownloadURL, deleteObject } from 'firebase/storage';
 import { format } from 'date-fns';
 import { useDemoStore } from './useDemoStore';
 import { useAuditLogStore } from './useAuditLogStore';
@@ -15,8 +16,17 @@ export const useGalleryStore = create((set, get) => {
   // Firestore Realtime Listener for Photos
   onSnapshot(galleryRef, (snapshot) => {
     realGallery = snapshot.docs.map(doc => doc.data());
-    // Sort chronologically (newest first)
-    realGallery.sort((a, b) => b.createdAt.localeCompare(a.createdAt) || b.id - a.id);
+    // Sort by order first, then chronologically (newest first)
+    realGallery.sort((a, b) => {
+      const orderA = a.order ?? 999999;
+      const orderB = b.order ?? 999999;
+      if (orderA !== orderB) return orderA - orderB;
+      const dateA = a.createdAt || '';
+      const dateB = b.createdAt || '';
+      const idA = String(a.id || '');
+      const idB = String(b.id || '');
+      return dateB.localeCompare(dateA) || idB.localeCompare(idA);
+    });
     
     if (!useDemoStore.getState().isDemoMode) {
       set({ gallery: realGallery, isLoaded: true });
@@ -28,7 +38,13 @@ export const useGalleryStore = create((set, get) => {
   // Firestore Realtime Listener for Albums
   onSnapshot(albumsRef, (snapshot) => {
     realAlbums = snapshot.docs.map(doc => doc.data());
-    realAlbums.sort((a, b) => b.createdAt.localeCompare(a.createdAt) || b.id - a.id);
+    realAlbums.sort((a, b) => {
+      const dateA = a.createdAt || '';
+      const dateB = b.createdAt || '';
+      const idA = String(a.id || '');
+      const idB = String(b.id || '');
+      return dateB.localeCompare(dateA) || idB.localeCompare(idA);
+    });
     
     if (!useDemoStore.getState().isDemoMode) {
       set({ albums: realAlbums, isAlbumsLoaded: true });
@@ -41,8 +57,23 @@ export const useGalleryStore = create((set, get) => {
   useDemoStore.subscribe((demoState) => {
     if (demoState.isDemoMode) {
       set({
-        gallery: [...demoState.demoGallery].sort((a, b) => b.createdAt.localeCompare(a.createdAt) || b.id - a.id),
-        albums: [...demoState.demoAlbums].sort((a, b) => b.createdAt.localeCompare(a.createdAt) || b.id - a.id),
+        gallery: [...demoState.demoGallery].sort((a, b) => {
+          const orderA = a.order ?? 999999;
+          const orderB = b.order ?? 999999;
+          if (orderA !== orderB) return orderA - orderB;
+          const dateA = a.createdAt || '';
+          const dateB = b.createdAt || '';
+          const idA = String(a.id || '');
+          const idB = String(b.id || '');
+          return dateB.localeCompare(dateA) || idB.localeCompare(idA);
+        }),
+        albums: [...demoState.demoAlbums].sort((a, b) => {
+          const dateA = a.createdAt || '';
+          const dateB = b.createdAt || '';
+          const idA = String(a.id || '');
+          const idB = String(b.id || '');
+          return dateB.localeCompare(dateA) || idB.localeCompare(idA);
+        }),
         isLoaded: true,
         isAlbumsLoaded: true
       });
@@ -59,16 +90,40 @@ export const useGalleryStore = create((set, get) => {
 
     addPhoto: async (newPhoto) => {
       const id = Date.now() + '_' + Math.random().toString(36).slice(2, 7);
+      let finalUrl = newPhoto.url;
+      const isBase64 = newPhoto.url.startsWith('data:image/');
+
+      if (!useDemoStore.getState().isDemoMode && isBase64) {
+        const storageRef = ref(storage, `gallery/${id}.jpg`);
+        await uploadString(storageRef, newPhoto.url, 'data_url');
+        finalUrl = await getDownloadURL(storageRef);
+      }
+
       const photoData = {
         ...newPhoto,
+        url: finalUrl,
         id,
         createdAt: format(new Date(), 'yyyy-MM-dd HH:mm:ss'),
         showOnLandingPage: newPhoto.showOnLandingPage ?? true,
         showToCustomer: newPhoto.showToCustomer ?? true,
         albumId: newPhoto.albumId ?? '',
+        order: newPhoto.order ?? 999999,
       };
 
-      set((state) => ({ gallery: [photoData, ...state.gallery] }));
+      set((state) => {
+        const updated = [photoData, ...state.gallery];
+        updated.sort((a, b) => {
+          const orderA = a.order ?? 999999;
+          const orderB = b.order ?? 999999;
+          if (orderA !== orderB) return orderA - orderB;
+          const dateA = a.createdAt || '';
+          const dateB = b.createdAt || '';
+          const idA = String(a.id || '');
+          const idB = String(b.id || '');
+          return dateB.localeCompare(dateA) || idB.localeCompare(idA);
+        });
+        return { gallery: updated };
+      });
 
       if (useDemoStore.getState().isDemoMode) {
         // Keep in demo store state so it persists during demo session
@@ -120,6 +175,16 @@ export const useGalleryStore = create((set, get) => {
           demoGallery: prev.demoGallery.filter(photo => photo.id !== id)
         }));
         return;
+      }
+
+      // Delete from Firebase Storage if it's stored there
+      if (photoToDelete?.url && photoToDelete.url.includes('firebasestorage.googleapis.com')) {
+        try {
+          const storageRef = ref(storage, `gallery/${id}.jpg`);
+          await deleteObject(storageRef);
+        } catch (err) {
+          console.error('Failed to delete file from Firebase Storage:', err);
+        }
       }
 
       await deleteDoc(doc(galleryRef, id.toString()));

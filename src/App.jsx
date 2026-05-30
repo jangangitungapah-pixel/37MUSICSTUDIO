@@ -4,7 +4,6 @@ import { AnimatePresence } from 'framer-motion';
 import { useAuthStore } from './store/useAuthStore';
 import { useThemeStore } from './store/useThemeStore';
 import Sidebar from './components/Sidebar';
-import TourGuide from './components/TourGuide';
 import NotificationToast from './components/NotificationToast';
 import PageTransition from './components/PageTransition';
 import { Toaster } from 'sonner';
@@ -231,7 +230,6 @@ const ProtectedRoute = ({ children }) => {
   return (
     <div className="app-container">
       <Sidebar />
-      <TourGuide />
       <NotificationToast />
       <main className="main-content">
         {children}

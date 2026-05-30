@@ -1532,23 +1532,99 @@
 
 /* ── Print: only show paper ── */
 @media print {
-  body * { visibility: hidden; }
-
-  .inv2-paper, .inv2-paper * { visibility: visible; }
-
-  .inv2-paper {
-    position: absolute;
-    left: 0; top: 0;
-    width: 100%;
-    max-width: 100%;
-    border-radius: 0;
-    box-shadow: none;
-    margin: 0;
+  /* Hide the rest of the application completely */
+  #root,
+  .sidebar,
+  .navbar,
+  .modal-overlay,
+  .modal-close-floating,
+  .close-btn,
+  .inv2-actions,
+  .no-print {
+    display: none !important;
   }
 
-  .inv2-actions, .no-print { display: none !important; }
+  /* Reset body and html */
+  html, body {
+    background: #ffffff !important;
+    color: #000000 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    height: auto !important;
+    overflow: visible !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
 
-  html, body { background: white; }
+  /* Reset Radix portal wrapper and modal-content containers */
+  [data-radix-portal],
+  .modal-wrapper,
+  .modal-content,
+  .inv2-shell {
+    position: static !important;
+    display: block !important;
+    width: 100% !important;
+    height: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    transform: none !important;
+    overflow: visible !important;
+    z-index: auto !important;
+  }
+
+  /* Make sure the invoice paper fits the sheet */
+  .inv2-paper {
+    position: relative !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    background: #ffffff !important;
+    color: #1a1a2e !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Page margins and layout for A4 */
+  .inv2-paper.a4-mode {
+    padding: 10mm !important;
+  }
+
+  /* Thermal mode specific overrides in print */
+  .inv2-paper.thermal-mode {
+    width: 80mm !important;
+    max-width: 80mm !important;
+    margin: 0 auto !important;
+    padding: 6mm !important;
+    font-size: 11px !important;
+    background: #ffffff !important;
+    border: none !important;
+  }
+
+  .inv2-paper.thermal-mode * {
+    font-family: 'Courier New', Courier, monospace !important;
+  }
+
+  /* Ensure stamp is visible/print-friendly */
+  .inv2-watermark {
+    opacity: 0.15 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  @page {
+    size: auto;
+    margin: 0;
+  }
 }
 
 /* =============================================

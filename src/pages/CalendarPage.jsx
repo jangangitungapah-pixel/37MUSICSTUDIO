@@ -5,7 +5,6 @@ import { useBookingStore } from '../store/useBookingStore';
 import { useSettingsStore } from '../store/useSettingsStore';
 import { useInventoryStore } from '../store/useInventoryStore';
 import { useBookingRequestStore } from '../store/useBookingRequestStore';
-import { useTourStore } from '../store/useTourStore';
 import { useNotificationStore } from '../store/useNotificationStore';
 import { AnimatePresence, motion } from 'framer-motion';
 import * as Tooltip from '@radix-ui/react-tooltip';
@@ -69,7 +68,6 @@ const CalendarPage = () => {
   const { requests, updateRequestStatus } = useBookingRequestStore();
   const { pricePerHour, studioName, durationDiscounts = [], recordingSessions = [], operationalHours = { start: 10, end: 23 }, blockedDates = [] } = useSettingsStore();
   const { inventory } = useInventoryStore();
-  const { run, currentStep, nextStep } = useTourStore();
 
   const calculatePrice = useCallback((b, dur) => {
     let base;
@@ -298,7 +296,6 @@ const CalendarPage = () => {
     const left = Math.min(rect.left, window.innerWidth - 320);
     setDetailPos({ top, left });
     setSelectedBooking(booking);
-    if (run && currentStep === 11 && booking.band === 'Band Tutorial') setTimeout(() => nextStep(), 100);
   };
 
   const handleBookingKeyDown = (e, booking) => {
@@ -317,7 +314,6 @@ const CalendarPage = () => {
 
   const handleDeleteBooking = (id) => {
     deleteBooking(id); setSelectedBooking(null);
-    if (run && currentStep === 12) setTimeout(() => nextStep(), 100);
   };
 
   const handleCancelBooking = async (booking) => {
@@ -387,10 +383,9 @@ const CalendarPage = () => {
   const handleStatusChange = (id, newStatus) => updateBookingStatus(id, newStatus);
 
   useEffect(() => {
-    if (run) return;
     const handleClick = () => setSelectedBooking(null);
     if (selectedBooking) { document.addEventListener('click', handleClick); return () => document.removeEventListener('click', handleClick); }
-  }, [selectedBooking, run]);
+  }, [selectedBooking]);
 
   const formatCurrency = (num) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(num);
   const getStatusLabel = (s) => ({ confirmed: 'Lunas', dp: 'DP', pending: 'Belum Bayar', cancelled: 'Batal' }[s] || s);
@@ -431,7 +426,7 @@ const CalendarPage = () => {
             </div>
           </div>
           <div className="calendar-header-actions app-page-actions">
-            <div className="app-search app-search-lg tour-calendar-search calendar-header-search">
+            <div className="app-search app-search-lg calendar-header-search">
               <Search className="app-search-icon" />
               <input 
                 type="text" 
@@ -472,7 +467,7 @@ const CalendarPage = () => {
 
               <Tooltip.Root>
                 <Tooltip.Trigger asChild>
-                  <button className="btn-secondary tour-calendar-print" onClick={() => window.print()}>
+                  <button className="btn-secondary calendar-print-btn" onClick={() => window.print()}>
                     <Printer size={16} />
                     <span className="hide-on-mobile">Cetak</span>
                   </button>
@@ -485,7 +480,7 @@ const CalendarPage = () => {
                 </Tooltip.Portal>
               </Tooltip.Root>
 
-              <button className="btn-primary tour-calendar-new-btn" onClick={handleNewBooking}>
+              <button className="btn-primary calendar-new-btn" onClick={handleNewBooking}>
                 <Plus size={18} /><span className="hide-on-mobile">New Booking</span>
               </button>
             </div>
@@ -597,7 +592,7 @@ const CalendarPage = () => {
         {/* Toolbar */}
         <div className="calendar-workspace-toolbar">
           {/* Left: Navigation */}
-          <div className="calendar-toolbar-left tour-calendar-nav">
+          <div className="calendar-toolbar-left">
             <button className="icon-btn nav-arrow" onClick={handlePrev} aria-label="Kembali ke periode sebelumnya"><ChevronLeft size={18} /></button>
             <span className="current-month">{getDateLabel()}</span>
             <button className="icon-btn nav-arrow" onClick={handleNext} aria-label="Lanjut ke periode berikutnya"><ChevronRight size={18} /></button>
@@ -606,7 +601,7 @@ const CalendarPage = () => {
 
           {/* Right: View Switcher + Filters */}
           <div className="calendar-toolbar-right">
-            <div className="view-switcher tour-calendar-filters" role="tablist" aria-label="Pilih format tampilan kalender">
+            <div className="view-switcher" role="tablist" aria-label="Pilih format tampilan kalender">
               {viewModes.map(({ id, label, icon: Icon }) => (
                 <button 
                   key={id} 
@@ -661,7 +656,7 @@ const CalendarPage = () => {
         </div>
 
         {/* Grid */}
-        <div className={`monthly-grid-wrapper tour-calendar-grid ${resizingBooking ? 'is-resize-active' : ''} ${movingBooking ? 'is-move-active' : ''}`} ref={gridWrapperRef} onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
+        <div className={`monthly-grid-wrapper ${resizingBooking ? 'is-resize-active' : ''} ${movingBooking ? 'is-move-active' : ''}`} ref={gridWrapperRef} onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
           <div className="monthly-grid" style={{ gridTemplateColumns: `${timeColWidth} repeat(${numDays}, minmax(${colWidth}, 1fr))` }}>
             <div className="grid-corner-cell"><span className="corner-label">JAM</span></div>
 
@@ -696,14 +691,10 @@ const CalendarPage = () => {
                   const cellBooking = displayBookings.find(b => b.date === dateStr && b.hour <= hour && (b.hour + b.duration) > hour);
                   const isBookingStart = cellBooking && cellBooking.hour === hour;
                   const isBookingEnd = cellBooking && (cellBooking.hour + cellBooking.duration - 1) === hour;
-                  const isTargetCell = run && currentStep === 4 && isToday && !cellBooking && !emptyCellAssigned;
-                  if (isTargetCell) emptyCellAssigned = true;
-                  const isTutorialBooking = cellBooking && cellBooking.band === 'Band Tutorial' && run && currentStep === 11;
-
                   const isMoveTarget = moveTarget && moveTarget.date === dateStr && Number(moveTarget.hour) === hour;
                   const moveTargetClass = isMoveTarget ? (moveTarget.isValid ? 'move-target-valid' : 'move-target-invalid') : '';
                   const isMovingSource = movingBooking && cellBooking && movingBooking.id === cellBooking.id;
-                  const cellClasses = ['grid-cell', hourIdx % 2 === 0 ? 'even-row' : '', isToday ? 'today-col-highlight' : '', isWeekend ? 'weekend-col' : '', isTargetCell ? 'tour-target-cell' : '', isTutorialBooking ? 'tour-new-booking' : '', isBlocked && !cellBooking ? 'blocked-cell' : '', moveTargetClass].filter(Boolean).join(' ');
+                  const cellClasses = ['grid-cell', hourIdx % 2 === 0 ? 'even-row' : '', isToday ? 'today-col-highlight' : '', isWeekend ? 'weekend-col' : '', isBlocked && !cellBooking ? 'blocked-cell' : '', moveTargetClass].filter(Boolean).join(' ');
 
                   // Current time line logic
                   const isCurrentHour = isToday && now.getHours() === hour;
@@ -959,7 +950,7 @@ const CalendarPage = () => {
 
               {/* Footer */}
               <div className="detail-footer">
-                <button className="btn-danger tour-btn-delete" onClick={() => handleDeleteBooking(b.id)}>
+                <button className="btn-danger" onClick={() => handleDeleteBooking(b.id)}>
                   <Trash2 size={14} /><span>{b.status === 'maintenance' ? 'Hapus Blokir' : 'Hapus'}</span>
                 </button>
                 {b.status !== 'maintenance' && (

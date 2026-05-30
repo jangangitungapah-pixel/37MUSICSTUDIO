@@ -6,8 +6,9 @@ import { useThemeStore } from '../store/useThemeStore';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   ChevronLeft, ChevronRight, Search, X, Moon, Sun, ImageIcon, 
-  Folder, LayoutGrid, BookImage, Image
+  Folder, LayoutGrid, BookImage, Image, Link2, Download
 } from 'lucide-react';
+import { toast } from 'sonner';
 import MotionSection from '../components/animation/MotionSection';
 import { staggerContainer, staggerItem } from '../animations';
 import './PublicGalleryPage.css';
@@ -18,50 +19,19 @@ const PublicGalleryPage = () => {
   const { studioName } = useSettingsStore();
   const { theme, toggleTheme } = useThemeStore();
 
-  // View mode: 'photos' | 'albums'
+  // ── States ────────────────────────────────────────────────────────────────
   const [viewMode, setViewMode] = useState('photos');
-  // Album drill-down (null = album list, otherwise albumId)
   const [openAlbumId, setOpenAlbumId] = useState(null);
-
-  // Lightbox
   const [lightboxPhoto, setLightboxPhoto] = useState(null);
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const [lightboxList, setLightboxList] = useState([]);
-
-  // Search (only in photos view)
   const [searchQuery, setSearchQuery] = useState('');
+  const [touchStart, setTouchStart] = useState(null);
 
   // ── Base: only photos shown to customers ──────────────────────────────────
   const customerPhotos = useMemo(() => gallery.filter(p => p.showToCustomer), [gallery]);
 
-  // ── All-photos view (with search) ─────────────────────────────────────────
-  const filteredPhotos = useMemo(() => {
-    if (!searchQuery.trim()) return customerPhotos;
-    const q = searchQuery.toLowerCase();
-    return customerPhotos.filter(p => p.caption && p.caption.toLowerCase().includes(q));
-  }, [customerPhotos, searchQuery]);
-
-  // ── Album data for album view ─────────────────────────────────────────────
-  const albumItems = useMemo(() => {
-    const items = albums.map(alb => {
-      const photos = customerPhotos.filter(p => p.albumId === alb.id);
-      return { id: alb.id, name: alb.name, description: alb.description, photos, photoCount: photos.length };
-    }).filter(a => a.photoCount > 0); // only albums with customer-visible photos
-
-    const uncatPhotos = customerPhotos.filter(p => !p.albumId);
-    if (uncatPhotos.length > 0) {
-      items.push({ id: '__uncategorized__', name: 'Lainnya', description: null, photos: uncatPhotos, photoCount: uncatPhotos.length });
-    }
-    return items;
-  }, [albums, customerPhotos]);
-
-  // Photos in the currently open album
-  const openAlbumData = useMemo(() => {
-    if (openAlbumId === null) return null;
-    return albumItems.find(a => a.id === openAlbumId) || null;
-  }, [albumItems, openAlbumId]);
-
-  // ── Lightbox helpers ───────────────────────────────────────────────────────
+  // ── Lightbox Helpers ──────────────────────────────────────────────────────
   const openLightbox = (photo, list) => {
     const idx = list.findIndex(p => p.id === photo.id);
     setLightboxList(list);
@@ -84,6 +54,62 @@ const PublicGalleryPage = () => {
     setLightboxIndex(prev);
     setLightboxPhoto(lightboxList[prev]);
   };
+
+  // ── Effects & Memos ───────────────────────────────────────────────────────
+  // Auto-open lightbox if ?photo=id query parameter is present in URL
+  React.useEffect(() => {
+    if (!gallery || gallery.length === 0) return;
+    const params = new URLSearchParams(window.location.search);
+    const photoId = params.get('photo');
+    if (photoId) {
+      const foundPhoto = gallery.find(p => p.id === photoId);
+      if (foundPhoto && foundPhoto.showToCustomer) {
+        openLightbox(foundPhoto, customerPhotos);
+      }
+    }
+  }, [gallery, customerPhotos]);
+
+  // ── All-photos view (with search) ─────────────────────────────────────────
+  const filteredPhotos = useMemo(() => {
+    if (!searchQuery.trim()) return customerPhotos;
+    const q = searchQuery.toLowerCase();
+    return customerPhotos.filter(p => p.caption && p.caption.toLowerCase().includes(q));
+  }, [customerPhotos, searchQuery]);
+
+  // ── Album data for album view ─────────────────────────────────────────────
+  const albumItems = useMemo(() => {
+    const items = albums.map(alb => {
+      const photos = customerPhotos.filter(p => p.albumId === alb.id);
+      let coverPhoto = null;
+      if (alb.coverPhotoId) {
+        coverPhoto = photos.find(p => p.id === alb.coverPhotoId) || gallery.find(p => p.id === alb.coverPhotoId);
+      }
+      if (!coverPhoto && photos.length > 0) {
+        coverPhoto = photos[0];
+      }
+      return { 
+        id: alb.id, 
+        name: alb.name, 
+        description: alb.description, 
+        coverPhotoId: alb.coverPhotoId,
+        photos, 
+        photoCount: photos.length,
+        cover: coverPhoto || null
+      };
+    }).filter(a => a.photoCount > 0); // only albums with customer-visible photos
+
+    const uncatPhotos = customerPhotos.filter(p => !p.albumId);
+    if (uncatPhotos.length > 0) {
+      items.push({ id: '__uncategorized__', name: 'Lainnya', description: null, photos: uncatPhotos, photoCount: uncatPhotos.length, cover: uncatPhotos[0] || null });
+    }
+    return items;
+  }, [albums, customerPhotos, gallery]);
+
+  // Photos in the currently open album
+  const openAlbumData = useMemo(() => {
+    if (openAlbumId === null) return null;
+    return albumItems.find(a => a.id === openAlbumId) || null;
+  }, [albumItems, openAlbumId]);
 
   // Keyboard nav for lightbox
   React.useEffect(() => {
@@ -263,8 +289,8 @@ const PublicGalleryPage = () => {
                             <div className="pg-album-cover">
                               {alb.photos.length === 0 ? (
                                 <div className="pg-album-cover-empty"><Image size={32} /></div>
-                              ) : alb.photos.length < 4 ? (
-                                <img src={alb.photos[0].url} alt={alb.name} className="pg-album-cover-single" />
+                              ) : (alb.coverPhotoId && alb.cover) || alb.photos.length < 4 ? (
+                                <img src={alb.cover ? alb.cover.url : alb.photos[0].url} alt={alb.name} className="pg-album-cover-single" />
                               ) : (
                                 <div className="pg-album-cover-collage">
                                   {alb.photos.slice(0, 4).map((p, i) => <img key={i} src={p.url} alt="" />)}
@@ -326,11 +352,54 @@ const PublicGalleryPage = () => {
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             className="pg-lightbox-overlay"
             onClick={closeLightbox}
+            onTouchStart={(e) => setTouchStart(e.targetTouches[0].clientX)}
+            onTouchEnd={(e) => {
+              if (touchStart === null) return;
+              const touchEnd = e.changedTouches[0].clientX;
+              const diff = touchStart - touchEnd;
+              if (diff > 50) {
+                goNext(e);
+              } else if (diff < -50) {
+                goPrev(e);
+              }
+              setTouchStart(null);
+            }}
           >
-            {/* Close */}
-            <button type="button" className="pg-lightbox-close" onClick={closeLightbox} aria-label="Tutup">
-              <X size={22} />
-            </button>
+             <div className="pg-lightbox-actions" onClick={(e) => e.stopPropagation()}>
+               {/* Share */}
+               <button
+                 type="button"
+                 className="pg-lightbox-action-btn"
+                 onClick={() => {
+                   const shareUrl = `${window.location.origin}${window.location.pathname}?photo=${lightboxPhoto.id}`;
+                   navigator.clipboard.writeText(shareUrl).then(() => {
+                     toast.success('Tautan foto berhasil disalin ke papan klip!');
+                   }).catch(() => {
+                     toast.error('Gagal menyalin tautan.');
+                   });
+                 }}
+                 title="Salin Tautan Foto"
+               >
+                 <Link2 size={16} />
+               </button>
+
+               {/* Download */}
+               <a
+                 href={lightboxPhoto.url}
+                 target="_blank"
+                 rel="noopener noreferrer"
+                 download={`studio37_foto_${lightboxPhoto.id}.jpg`}
+                 className="pg-lightbox-action-btn"
+                 title="Buka / Unduh Resolusi Asli"
+               >
+                 <Download size={16} />
+               </a>
+
+               {/* Close */}
+               <button type="button" className="pg-lightbox-action-btn close" onClick={closeLightbox} aria-label="Tutup">
+                 <X size={18} />
+               </button>
+             </div>
 
             {/* Counter */}
             {lightboxList.length > 1 && (

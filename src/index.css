@@ -337,9 +337,7 @@ option {
   border-color: rgba(0, 0, 0, 0.07);
 }
 
-[data-theme="light"] .tour-guide-btn:hover {
-  background: rgba(0, 0, 0, 0.04);
-}
+
 
 /* ── Buttons ── */
 

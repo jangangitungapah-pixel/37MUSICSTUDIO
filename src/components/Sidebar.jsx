@@ -1,9 +1,8 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { CalendarDays, Users, Package, CreditCard, Settings, BookOpen, PieChart, LogOut, HelpCircle, Bell, ChevronRight, ChevronLeft, FlaskConical, Sun, Moon, Shield, Hammer, MoreHorizontal, Image } from 'lucide-react';
+import { CalendarDays, Users, Package, CreditCard, Settings, BookOpen, PieChart, LogOut, Bell, ChevronRight, ChevronLeft, FlaskConical, Sun, Moon, Shield, Hammer, MoreHorizontal, Image } from 'lucide-react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../store/useAuthStore';
-import { useTourStore } from '../store/useTourStore';
 import { useNotificationStore } from '../store/useNotificationStore';
 import { useThemeStore } from '../store/useThemeStore';
 import { useDemoStore } from '../store/useDemoStore';
@@ -21,7 +20,6 @@ const Sidebar = () => {
   const [isNotifOpen, setIsNotifOpen] = useState(false);
   
   const { user, userProfile, logout } = useAuthStore();
-  const { startTour } = useTourStore();
   const { notifications } = useNotificationStore();
   const { isDemoMode, toggleDemoMode } = useDemoStore();
   const { theme, toggleTheme } = useThemeStore();
@@ -39,37 +37,19 @@ const Sidebar = () => {
     }
   };
 
-  const handleRestartTour = () => {
-    const currentPath = window.location.pathname;
-    const tourPages = ['/', '/calendar', '/customers', '/inventory', '/billing', '/settings'];
-    
-    // If already on a page with a tour, start it here
-    if (tourPages.includes(currentPath)) {
-      setMobileOpen(false);
-      setTimeout(() => {
-        startTour();
-      }, 300);
-    } else {
-      // Navigate to dashboard first
-      navigate('/dashboard');
-      setMobileOpen(false);
-      setTimeout(() => {
-        startTour();
-      }, 300);
-    }
-  };
+
 
   const menuItems = [
-    { icon: <PieChart size={19} />, label: 'Dashboard', path: '/dashboard', tourClass: '' },
-    { icon: <CalendarDays size={19} />, label: 'Calendar', path: '/calendar', tourClass: 'tour-calendar' },
-    { icon: <Users size={19} />, label: 'Customers', path: '/customers', tourClass: 'tour-customers' },
-    { icon: <Package size={19} />, label: 'Inventory', path: '/inventory', tourClass: '' },
-    { icon: <CreditCard size={19} />, label: 'Billing / POS', path: '/billing', tourClass: 'tour-billing' },
-    { icon: <BookOpen size={19} />, label: 'Pembukuan', path: '/finance', tourClass: '' },
-    { icon: <Image size={19} />, label: 'Galeri Foto', path: '/gallery', tourClass: '' },
-    { icon: <Shield size={19} />, label: 'Staff', path: '/staff', tourClass: '' },
-    { icon: <Hammer size={19} />, label: 'Maintenance', path: '/maintenance', tourClass: '' },
-    { icon: <Settings size={19} />, label: 'Settings', path: '/settings', tourClass: '' },
+    { icon: <PieChart size={19} />, label: 'Dashboard', path: '/dashboard' },
+    { icon: <CalendarDays size={19} />, label: 'Calendar', path: '/calendar' },
+    { icon: <Users size={19} />, label: 'Customers', path: '/customers' },
+    { icon: <Package size={19} />, label: 'Inventory', path: '/inventory' },
+    { icon: <CreditCard size={19} />, label: 'Billing / POS', path: '/billing' },
+    { icon: <BookOpen size={19} />, label: 'Pembukuan', path: '/finance' },
+    { icon: <Image size={19} />, label: 'Galeri Foto', path: '/gallery' },
+    { icon: <Shield size={19} />, label: 'Staff', path: '/staff' },
+    { icon: <Hammer size={19} />, label: 'Maintenance', path: '/maintenance' },
+    { icon: <Settings size={19} />, label: 'Settings', path: '/settings' },
   ];
 
   // Get first letter of username or email for avatar
@@ -252,14 +232,9 @@ const Sidebar = () => {
             <span className="nav-label">{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
           </button>
 
-          <button className="nav-item tour-guide-btn" onClick={handleRestartTour}>
-            <span className="nav-icon" style={{ flexShrink: 0 }}><HelpCircle size={19} /></span>
-            <span className="nav-label">Panduan Tour</span>
-          </button>
-          
           <div className="sidebar-divider" />
           
-          <div className="user-profile tour-profile">
+          <div className="user-profile">
             <button 
               className="user-profile-btn" 
               onClick={() => setIsProfileOpen(true)}

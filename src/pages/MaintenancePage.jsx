@@ -3,7 +3,7 @@ import { useBookingStore } from '../store/useBookingStore';
 import { useFinanceStore } from '../store/useFinanceStore';
 import { useInventoryStore } from '../store/useInventoryStore';
 import { format } from 'date-fns';
-import { Wrench, AlertCircle, CheckCircle, Clock, DollarSign, Trash2, FileText, Search, X } from 'lucide-react';
+import { Wrench, AlertCircle, CheckCircle, Clock, DollarSign, Trash2, FileText, Search, X, Plus } from 'lucide-react';
 import Modal from '../components/Modal';
 import { toast } from 'sonner';
 import { getMaintenanceUsageInsights } from '../lib/smartInsights';
@@ -12,18 +12,30 @@ import { pagePreset } from '../animations';
 import './MaintenancePage.css';
 
 const MaintenancePage = () => {
-  const { bookings, deleteBooking } = useBookingStore();
+  const { bookings, deleteBooking, addBooking, updateBooking } = useBookingStore();
   const { addTransaction } = useFinanceStore();
   const { inventory } = useInventoryStore();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [selectedLog, setSelectedLog] = useState(null);
+  
   const [formData, setFormData] = useState({
     description: '',
     cost: '',
     date: format(new Date(), 'yyyy-MM-dd'),
     status: 'pending',
+  });
+
+  const [newLogData, setNewLogData] = useState({
+    item: 'Studio 1 (Umum)',
+    date: format(new Date(), 'yyyy-MM-dd'),
+    hour: 10,
+    duration: 2,
+    description: '',
+    status: 'pending',
+    cost: '',
   });
 
   // Filter only maintenance-type bookings
@@ -54,6 +66,7 @@ const MaintenancePage = () => {
     const totalCost = maintenanceLogs.reduce((sum, b) => sum + (Number(b.maintenanceCost) || 0), 0);
     return { total, done, pending, totalCost };
   }, [maintenanceLogs]);
+
   const usageInsights = useMemo(() => getMaintenanceUsageInsights(inventory, bookings), [inventory, bookings]);
 
   const formatCurrency = (num) =>
@@ -70,21 +83,71 @@ const MaintenancePage = () => {
     setIsModalOpen(true);
   };
 
+  const handleOpenNew = () => {
+    setNewLogData({
+      item: 'Studio 1 (Umum)',
+      date: format(new Date(), 'yyyy-MM-dd'),
+      hour: 10,
+      duration: 2,
+      description: '',
+      status: 'pending',
+      cost: '',
+    });
+    setIsAddModalOpen(true);
+  };
+
+  const handleSaveNew = async (e) => {
+    e.preventDefault();
+    const cost = Number(newLogData.cost) || 0;
+    
+    const newBooking = {
+      band: newLogData.item,
+      date: newLogData.date,
+      hour: Number(newLogData.hour),
+      duration: Number(newLogData.duration),
+      type: 'maintenance',
+      status: 'maintenance',
+      maintenanceStatus: newLogData.status,
+      maintenanceCost: cost,
+      note: newLogData.description,
+    };
+
+    try {
+      await addBooking(newBooking);
+
+      // Record as expense in finance store if cost > 0 and status is done
+      if (cost > 0 && newLogData.status === 'done') {
+        addTransaction({
+          type: 'expense',
+          date: newLogData.date,
+          category: 'Perawatan',
+          amount: cost,
+          description: `Biaya Maintenance: ${newLogData.item}`,
+        });
+        toast.success(`Log dicatat & Biaya Rp${cost.toLocaleString('id-ID')} dimasukkan ke pembukuan`);
+      } else {
+        toast.success('Log maintenance baru berhasil ditambahkan');
+      }
+
+      setIsAddModalOpen(false);
+    } catch (error) {
+      console.error(error);
+      toast.error('Gagal menambahkan log maintenance');
+    }
+  };
+
   const handleSaveCost = async (e) => {
     e.preventDefault();
     if (!selectedLog) return;
 
     const cost = Number(formData.cost);
-    const { updateBooking } = useBookingStore.getState();
 
     // Update booking with maintenance cost info
-    if (updateBooking) {
-      await updateBooking(selectedLog.id, {
-        maintenanceCost: cost,
-        maintenanceStatus: formData.status,
-        note: formData.description,
-      });
-    }
+    await updateBooking(selectedLog.id, {
+      maintenanceCost: cost,
+      maintenanceStatus: formData.status,
+      note: formData.description,
+    });
 
     // Also record as expense in finance store if cost > 0
     if (cost > 0 && formData.status === 'done') {
@@ -120,33 +183,39 @@ const MaintenancePage = () => {
           <h2 className="app-page-title">Log Maintenance</h2>
           <p className="app-page-subtitle">Pantau jadwal perawatan alat dan studio</p>
         </div>
+        <div className="app-page-actions">
+          <button className="btn-primary" onClick={handleOpenNew} aria-label="Tambah log maintenance baru">
+            <Plus size={18} />
+            <span>Tambah Log</span>
+          </button>
+        </div>
       </div>
 
       {/* Stats */}
       <div className="app-stat-grid maint-stats-bar">
-        <div className="app-stat-card total">
-          <div className="stat-icon" style={{background: 'rgba(0, 240, 255, 0.1)', color: 'var(--accent-cyan)'}}><FileText size={22} /></div>
+        <div className="app-stat-card maint-stat-card total">
+          <div className="stat-icon"><FileText size={22} /></div>
           <div className="stat-data">
             <span className="stat-label">Total Log</span>
             <span className="stat-value">{stats.total}</span>
           </div>
         </div>
-        <div className="app-stat-card pending">
-          <div className="stat-icon" style={{background: 'rgba(255, 193, 7, 0.1)', color: '#FFC107'}}><AlertCircle size={22} /></div>
+        <div className="app-stat-card maint-stat-card pending">
+          <div className="stat-icon"><AlertCircle size={22} /></div>
           <div className="stat-data">
             <span className="stat-label">Pending / Proses</span>
             <span className="stat-value">{stats.pending}</span>
           </div>
         </div>
-        <div className="app-stat-card done">
-          <div className="stat-icon" style={{background: 'rgba(76, 175, 80, 0.1)', color: '#4CAF50'}}><CheckCircle size={22} /></div>
+        <div className="app-stat-card maint-stat-card done">
+          <div className="stat-icon"><CheckCircle size={22} /></div>
           <div className="stat-data">
             <span className="stat-label">Selesai</span>
             <span className="stat-value">{stats.done}</span>
           </div>
         </div>
-        <div className="app-stat-card cost">
-          <div className="stat-icon" style={{background: 'rgba(255, 42, 95, 0.1)', color: 'var(--accent-pink)'}}><DollarSign size={22} /></div>
+        <div className="app-stat-card maint-stat-card cost">
+          <div className="stat-icon"><DollarSign size={22} /></div>
           <div className="stat-data">
             <span className="stat-label">Total Biaya</span>
             <span className="stat-value">{formatCurrency(stats.totalCost)}</span>
@@ -155,19 +224,22 @@ const MaintenancePage = () => {
       </div>
 
       {/* Smart Usage Recommendations */}
-      <div className="app-smart-panel">
-        <div className="smart-head">
+      <div className="maint-smart-panel">
+        <div className="maint-smart-head">
           <Wrench size={20} />
           <div>
             <h3>Prioritas Servis Cerdas</h3>
             <p>{usageInsights.studioHours30d} jam pemakaian studio dalam 30 hari terakhir.</p>
           </div>
         </div>
-        <div className="smart-list app-smart-grid cols-auto">
+        <div className="maint-smart-list">
           {usageInsights.recommendations.slice(0, 3).map(({ item, label, reason, daysToService }) => (
-            <div key={item.id} className={`smart-item ${label.toLowerCase()}`} style={{display: 'flex', flexDirection: 'column', alignItems: 'flex-start', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', padding: '12px 16px', position: 'relative'}}>
-              <strong style={{display: 'block', fontSize: '0.9rem', color: 'var(--text-primary)', marginBottom: '4px'}}>{item.name}</strong>
-              <span style={{display: 'block', fontSize: '0.75rem', color: label === 'Overhaul' ? 'var(--accent-pink)' : label === 'Cek Rutin' ? '#FFC107' : 'var(--text-secondary)', marginBottom: '4px'}}>{label} - {reason}</span>
+            <div 
+              key={item.id} 
+              className={`maint-smart-item ${label.toLowerCase() === 'overhaul' ? 'kritis' : label.toLowerCase() === 'cek rutin' ? 'tinggi' : ''}`}
+            >
+              <strong style={{display: 'block', fontSize: '0.82rem', color: 'var(--text-primary)', marginBottom: '4px'}}>{item.name}</strong>
+              <span style={{display: 'block', fontSize: '0.72rem', color: label === 'Overhaul' ? 'var(--accent-pink)' : label === 'Cek Rutin' ? '#FFC107' : 'var(--text-secondary)', marginBottom: '4px'}}>{label} - {reason}</span>
               <small style={{display: 'block', fontSize: '0.7rem', color: 'var(--text-muted)'}}>{daysToService === null ? 'Belum ada jadwal servis' : daysToService < 0 ? `${Math.abs(daysToService)} hari terlambat` : `${daysToService} hari lagi`}</small>
             </div>
           ))}
@@ -209,65 +281,246 @@ const MaintenancePage = () => {
           <div className="maint-empty">
             <Wrench size={48} color="var(--text-muted)" />
             <p>Belum ada log maintenance.</p>
-            <small>Tambahkan jadwal maintenance melalui halaman <strong>Calendar</strong> → Blokir Jadwal.</small>
+            <small>Tambahkan jadwal maintenance melalui tombol di atas atau melalui halaman <strong>Calendar</strong>.</small>
           </div>
         ) : (
-          <div className="app-table-wrapper">
-            <table className="app-table maint-table">
-              <thead>
-                <tr>
-                  <th>Tanggal</th>
-                  <th>Judul</th>
-                  <th>Jam</th>
-                  <th>Durasi</th>
-                  <th>Status</th>
-                  <th>Biaya</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredMaintenanceLogs.map(log => {
-                  const statusInfo = getStatusBadge(log);
-                  return (
-                    <tr key={log.id} className="maint-row" onClick={() => handleOpenDetail(log)}>
-                      <td>{format(new Date(log.date), 'dd MMM yyyy')}</td>
-                      <td className="maint-title-cell">
-                        <Wrench size={14} color="var(--accent-pink)" style={{ marginRight: 6 }} />
-                        {log.band || 'Maintenance'}
-                      </td>
-                      <td>{String(log.hour).padStart(2, '0')}:00</td>
-                      <td>{log.duration} jam</td>
-                      <td>
-                        <span className="maint-status-badge" style={{ background: `${statusInfo.color}22`, color: statusInfo.color, borderColor: `${statusInfo.color}44` }}>
-                          {statusInfo.icon}
-                          {statusInfo.label}
-                        </span>
-                      </td>
-                      <td className={log.maintenanceCost > 0 ? 'maint-cost-cell has-cost' : 'maint-cost-cell'}>
+          <>
+            {/* Desktop Table view */}
+            <div className="app-table-wrapper hide-on-mobile">
+              <table className="app-table maint-table">
+                <thead>
+                  <tr>
+                    <th scope="col">Tanggal</th>
+                    <th scope="col">Judul</th>
+                    <th scope="col">Jam</th>
+                    <th scope="col">Durasi</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Biaya</th>
+                    <th scope="col" className="action-col">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredMaintenanceLogs.map(log => {
+                    const statusInfo = getStatusBadge(log);
+                    return (
+                      <tr key={log.id} className="maint-row" onClick={() => handleOpenDetail(log)}>
+                        <td>{format(new Date(log.date), 'dd MMM yyyy')}</td>
+                        <td className="maint-title-cell">
+                          <Wrench size={14} color="var(--accent-pink)" style={{ marginRight: 6 }} />
+                          {log.band || 'Maintenance'}
+                        </td>
+                        <td>{String(log.hour).padStart(2, '0')}:00</td>
+                        <td>{log.duration} jam</td>
+                        <td>
+                          <span className="maint-status-badge" style={{ background: `${statusInfo.color}22`, color: statusInfo.color, borderColor: `${statusInfo.color}44` }}>
+                            {statusInfo.icon}
+                            <span style={{ marginLeft: 4 }}>{statusInfo.label}</span>
+                          </span>
+                        </td>
+                        <td className={log.maintenanceCost > 0 ? 'maint-cost-cell has-cost' : 'maint-cost-cell'}>
+                          {log.maintenanceCost > 0 ? formatCurrency(log.maintenanceCost) : '—'}
+                        </td>
+                        <td onClick={e => e.stopPropagation()} className="action-col">
+                          <button
+                            className="icon-btn delete"
+                            onClick={() => {
+                              if (window.confirm('Hapus log ini?')) {
+                                deleteBooking(log.id);
+                                toast.success('Log dihapus');
+                              }
+                            }}
+                            title="Hapus"
+                            aria-label={`Hapus log maintenance ${log.band || 'Pemeliharaan Studio'}`}
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile Card List view */}
+            <div className="mobile-maint-list show-on-mobile">
+              {filteredMaintenanceLogs.map(log => {
+                const statusInfo = getStatusBadge(log);
+                return (
+                  <div 
+                    key={log.id} 
+                    className="mobile-maint-card" 
+                    onClick={() => handleOpenDetail(log)}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleOpenDetail(log); } }}
+                    aria-label={`Detail log ${log.band || 'Maintenance'} tanggal ${format(new Date(log.date), 'dd MMM yyyy')}`}
+                  >
+                    <div className="mobile-maint-card-header">
+                      <span className="maint-card-date">{format(new Date(log.date), 'dd MMM yyyy')}</span>
+                      <span className="maint-status-badge" style={{ background: `${statusInfo.color}22`, color: statusInfo.color, borderColor: `${statusInfo.color}44` }}>
+                        {statusInfo.icon}
+                        <span style={{ marginLeft: 4 }}>{statusInfo.label}</span>
+                      </span>
+                    </div>
+                    <h4 className="maint-card-title">{log.band || 'Maintenance'}</h4>
+                    <div className="mobile-maint-card-details">
+                      <span>{String(log.hour).padStart(2, '0')}:00 ({log.duration} jam)</span>
+                      <strong className={log.maintenanceCost > 0 ? 'has-cost' : ''}>
                         {log.maintenanceCost > 0 ? formatCurrency(log.maintenanceCost) : '—'}
-                      </td>
-                      <td onClick={e => e.stopPropagation()}>
-                        <button
-                          className="icon-btn delete"
-                          onClick={() => {
-                            if (window.confirm('Hapus log ini?')) {
-                              deleteBooking(log.id);
-                              toast.success('Log dihapus');
-                            }
-                          }}
-                          title="Hapus"
-                        >
-                          <Trash2 size={14} />
-                        </button>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+                      </strong>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </>
         )}
       </div>
+
+      {/* Add Modal */}
+      <Modal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)} title="Tambah Log Maintenance">
+        <form onSubmit={handleSaveNew} className="maint-form">
+          <div className="form-group">
+            <label className="form-label-with-icon">
+              <Wrench size={13} />
+              <span>Pilih Alat / Area <span className="required">*</span></span>
+            </label>
+            <select
+              className="form-input"
+              value={newLogData.item}
+              onChange={e => setNewLogData(p => ({ ...p, item: e.target.value }))}
+              required
+            >
+              <optgroup label="Area Umum Studio">
+                <option value="Studio 1 (Umum)">Studio 1 (Umum)</option>
+                <option value="Studio 2 (Umum)">Studio 2 (Umum)</option>
+                <option value="Seluruh Studio (Umum)">Seluruh Studio (Umum)</option>
+                <option value="Lainnya">Lainnya / Area Publik</option>
+              </optgroup>
+              <optgroup label="Database Inventaris">
+                {inventory.map(item => (
+                  <option key={item.id} value={`${item.name} (${item.brand || 'No Brand'})`}>
+                    {item.name} {item.brand ? `(${item.brand})` : ''} - Kategori: {item.category}
+                  </option>
+                ))}
+              </optgroup>
+            </select>
+          </div>
+
+          <div className="form-group">
+            <label className="form-label-with-icon">
+              <span>Tanggal Pelaksanaan <span className="required">*</span></span>
+            </label>
+            <input
+              type="date"
+              className="form-input"
+              value={newLogData.date}
+              onChange={e => setNewLogData(p => ({ ...p, date: e.target.value }))}
+              required
+            />
+          </div>
+
+          <div className="form-row form-row-2" style={{ display: 'flex', gap: '12px' }}>
+            <div className="form-group" style={{ flex: 1 }}>
+              <label className="form-label-with-icon">
+                <Clock size={13} />
+                <span>Jam Mulai <span className="required">*</span></span>
+              </label>
+              <select
+                className="form-input"
+                value={newLogData.hour}
+                onChange={e => setNewLogData(p => ({ ...p, hour: Number(e.target.value) }))}
+                required
+              >
+                {Array.from({ length: 14 }, (_, i) => i + 10).map((hour) => (
+                  <option key={hour} value={hour}>{String(hour).padStart(2, '0')}:00</option>
+                ))}
+              </select>
+            </div>
+            <div className="form-group" style={{ flex: 1 }}>
+              <label className="form-label-with-icon">
+                <span>Durasi (Jam) <span className="required">*</span></span>
+              </label>
+              <input
+                type="number"
+                className="form-input"
+                value={newLogData.duration}
+                onChange={e => setNewLogData(p => ({ ...p, duration: Number(e.target.value) }))}
+                min="1"
+                max="13"
+                required
+              />
+            </div>
+          </div>
+
+          <div className="form-group">
+            <label className="form-label-with-icon">
+              <Clock size={13} />
+              <span>Status Pengerjaan</span>
+            </label>
+            <div className="maint-status-toggle" role="radiogroup" aria-label="Status Pengerjaan Baru">
+              {[
+                { value: 'pending', label: 'Pending', icon: <Clock size={14} /> },
+                { value: 'in_progress', label: 'Proses', icon: <Wrench size={14} /> },
+                { value: 'done', label: 'Selesai', icon: <CheckCircle size={14} /> },
+              ].map(opt => (
+                <button
+                  key={opt.value}
+                  type="button"
+                  className={`maint-toggle-btn btn-${opt.value} ${newLogData.status === opt.value ? 'active' : ''}`}
+                  onClick={() => setNewLogData(p => ({ ...p, status: opt.value }))}
+                  role="radio"
+                  aria-checked={newLogData.status === opt.value}
+                >
+                  {opt.icon}
+                  <span>{opt.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="form-group">
+            <label className="form-label-with-icon">
+              <FileText size={13} />
+              <span>Catatan / Deskripsi Masalah</span>
+            </label>
+            <textarea
+              className="form-input"
+              value={newLogData.description}
+              onChange={e => setNewLogData(p => ({ ...p, description: e.target.value }))}
+              rows={3}
+              placeholder="Detail perbaikan atau jenis kerusakan..."
+            />
+          </div>
+
+          <div className="form-group">
+            <label className="form-label-with-icon">
+              <DollarSign size={13} />
+              <span>Estimasi / Biaya Perbaikan (Rp)</span>
+            </label>
+            <div className="maint-input-wrapper">
+              <span className="maint-input-prefix">Rp</span>
+              <input
+                type="number"
+                className="form-input maint-cost-input"
+                value={newLogData.cost}
+                onChange={e => setNewLogData(p => ({ ...p, cost: e.target.value }))}
+                placeholder="0"
+                min="0"
+              />
+            </div>
+            {newLogData.status === 'done' && Number(newLogData.cost) > 0 && (
+              <small className="form-hint">✓ Biaya akan otomatis dicatat sebagai pengeluaran di Pembukuan</small>
+            )}
+          </div>
+
+          <div className="form-actions">
+            <button type="button" className="btn-secondary" onClick={() => setIsAddModalOpen(false)}>Batal</button>
+            <button type="submit" className="btn-primary">Tambah Log</button>
+          </div>
+        </form>
+      </Modal>
 
       {/* Detail / Edit Modal */}
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Detail Log Maintenance">
@@ -305,7 +558,7 @@ const MaintenancePage = () => {
                 <Clock size={13} />
                 <span>Status Pengerjaan</span>
               </label>
-              <div className="maint-status-toggle">
+              <div className="maint-status-toggle" role="radiogroup" aria-label="Status Pengerjaan">
                 {[
                   { value: 'pending', label: 'Pending', icon: <Clock size={14} /> },
                   { value: 'in_progress', label: 'Proses', icon: <Wrench size={14} /> },
@@ -316,6 +569,8 @@ const MaintenancePage = () => {
                     type="button"
                     className={`maint-toggle-btn btn-${opt.value} ${formData.status === opt.value ? 'active' : ''}`}
                     onClick={() => setFormData(p => ({ ...p, status: opt.value }))}
+                    role="radio"
+                    aria-checked={formData.status === opt.value}
                   >
                     {opt.icon}
                     <span>{opt.label}</span>

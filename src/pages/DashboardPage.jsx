@@ -264,7 +264,7 @@ const DashboardPage = () => {
       </MotionSection>
 
       {/* ===== Stats Cards ===== */}
-      <div className="dash-stats-grid tour-dashboard-stats">
+      <div className="dash-stats-grid">
         {/* Revenue */}
         <div className="dash-stat-card glass-panel">
           <div className="dash-stat-top">
@@ -343,7 +343,7 @@ const DashboardPage = () => {
       <div className="dash-main-grid">
 
         {/* Revenue Chart */}
-        <div className="chart-container glass-panel span-2 tour-dashboard-revenue-chart">
+        <div className="chart-container glass-panel span-2">
           <div className="chart-header">
             <div>
               <h3 className="chart-title">Tren Pendapatan</h3>
@@ -391,7 +391,7 @@ const DashboardPage = () => {
         </div>
 
         {/* Upcoming Bookings */}
-        <div className="dash-upcoming app-card tour-dashboard-upcoming">
+        <div className="dash-upcoming app-card">
           <div className="chart-header">
             <div>
               <h3 className="chart-title">Jadwal Mendatang</h3>
@@ -425,7 +425,7 @@ const DashboardPage = () => {
         </div>
 
         {/* Inventory Pie */}
-        <div className="chart-container glass-panel tour-dashboard-inventory-chart">
+        <div className="chart-container glass-panel">
           <div className="chart-header">
             <div>
               <h3 className="chart-title">Kondisi Inventaris</h3>
@@ -481,7 +481,7 @@ const DashboardPage = () => {
         </div>
 
         {/* Top Customers */}
-        <div className="dash-table-card app-card span-2 tour-dashboard-top-customers">
+        <div className="dash-table-card app-card span-2">
           <div className="chart-header">
             <div>
               <h3 className="chart-title">Top Pelanggan</h3>

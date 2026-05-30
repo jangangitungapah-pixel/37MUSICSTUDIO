@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useBookingStore } from '../store/useBookingStore';
 import { useSettingsStore } from '../store/useSettingsStore';
-import { useTourStore } from '../store/useTourStore';
 import { Printer, CheckCircle, AlertCircle, FileText, Search, X, Share2, MessageCircle, Copy, Download, Check, Bell, ChevronDown } from 'lucide-react';
 import { format } from 'date-fns';
 import html2canvas from 'html2canvas';
@@ -16,7 +15,6 @@ import './BillingPage.css';
 const BillingPage = () => {
   const { bookings, updateBookingStatus } = useBookingStore();
   const { pricePerHour, studioName, studioAddress, studioPhone } = useSettingsStore();
-  const { currentStep, nextStep, run } = useTourStore();
   const [activeTab, setActiveTab] = useState('Semua');
   const [isFilterDropdownOpen, setIsFilterDropdownOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -27,12 +25,7 @@ const BillingPage = () => {
   const invoiceRef = useRef(null);
   const billableBookings = bookings.filter((booking) => !['maintenance', 'cancelled'].includes(booking.status));
 
-  // Auto-close invoice modal if user clicks Lanjut on the print step (step 7 -> 8)
-  useEffect(() => {
-    if (run && currentStep === 8 && isInvoiceModalOpen) {
-      setIsInvoiceModalOpen(false);
-    }
-  }, [run, currentStep, isInvoiceModalOpen]);
+
 
   // Helper functions
   const calculateSubtotal = (booking) => (
@@ -707,7 +700,7 @@ const BillingPage = () => {
               </div>
 
               {/* Share grid */}
-              <div className="inv2-share-grid">
+              <div className="inv2-share-grid tour-invoice-share">
                 <button
                   type="button"
                   className="inv2-share-btn wa"

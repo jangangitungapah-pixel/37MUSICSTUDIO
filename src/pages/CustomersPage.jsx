@@ -2,7 +2,6 @@ import { useState, useMemo } from 'react';
 import { Search, Plus, Edit2, Trash2, Mail, Phone, Calendar as CalendarIcon, Users, UserCheck, DollarSign, X, AtSign, MapPin, Clock, Star, StickyNote, MessageCircle, Gift, Award, ChevronDown } from 'lucide-react';
 import { useCustomerStore } from '../store/useCustomerStore';
 import { useBookingStore } from '../store/useBookingStore';
-import { useTourStore } from '../store/useTourStore';
 import { toast } from 'sonner';
 import Modal from '../components/Modal';
 import { getMembershipTier, TIER_CONFIG, getLoyaltyPoints, sendWelcomeMessage, sendPromoMessage, sendMembershipUpgrade } from '../lib/whatsappService';
@@ -31,7 +30,6 @@ const formatCurrency = (num) => new Intl.NumberFormat('id-ID', { style: 'currenc
 const CustomersPage = () => {
   const { customers, addCustomer, updateCustomer, deleteCustomer, getStats } = useCustomerStore();
   const { bookings } = useBookingStore();
-  const { run, currentStep, nextStep } = useTourStore();
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState('all'); // 'all', 'Active', 'Inactive'
   const [selectedCustomer, setSelectedCustomer] = useState(null);
@@ -134,10 +132,6 @@ const CustomersPage = () => {
       addCustomer(formData);
     }
     setIsModalOpen(false);
-    // Advance tour if we're on the save step
-    if (run && currentStep === 9) {
-      setTimeout(() => nextStep(), 300);
-    }
   };
 
   const handleRowClick = (customer) => {
@@ -163,20 +157,14 @@ const CustomersPage = () => {
         
         <div className="app-page-actions">
 
-          <button className="btn-primary tour-cust-add-btn" onClick={() => {
-            handleOpenNew();
-            if (run && currentStep === 3) {
-              setTimeout(() => nextStep(), 300);
-            }
-          }}>
+          <button className="btn-primary" onClick={handleOpenNew}>
             <Plus size={18} />
             <span>Pelanggan Baru</span>
           </button>
         </div>
       </header>
 
-      {/* Stats Bar */}
-      <div className="stats-bar tour-cust-stats">
+      <div className="stats-bar">
         <div className="stat-card">
           <div className="stat-icon stat-icon-total">
             <Users size={20} color="var(--accent-cyan)" />
@@ -288,8 +276,7 @@ const CustomersPage = () => {
               </div>
             </div>
             <div className="app-table-toolbar-right">
-              {/* Filter Dropdown */}
-              <div className="filter-dropdown-container tour-cust-filters">
+              <div className="filter-dropdown-container">
                 <button 
                   type="button"
                   className="filter-dropdown-toggle"
@@ -352,7 +339,7 @@ const CustomersPage = () => {
                 )}
               </div>
 
-              <div className="app-search app-search-md tour-cust-search">
+              <div className="app-search app-search-md">
                 <Search className="app-search-icon" />
                 <input 
                   type="text" 
@@ -372,7 +359,7 @@ const CustomersPage = () => {
           </div>
 
           <div className="app-table-wrapper hide-on-mobile">
-            <table className="app-table customers-table tour-cust-table">
+            <table className="app-table customers-table">
               <thead>
                 <tr>
                   <th>Nama Band / Pelanggan</th>
@@ -533,7 +520,7 @@ const CustomersPage = () => {
 
         {/* Detail Sidebar */}
         {selectedCustomer && (
-          <div className="customer-detail-panel app-panel tour-cust-detail">
+          <div className="customer-detail-panel app-panel">
             <div className="detail-panel-header">
               <div className="detail-avatar" style={{ background: getAvatarColor(selectedCustomer.name).bg, color: getAvatarColor(selectedCustomer.name).color }}>
                 {selectedCustomer.name.charAt(0).toUpperCase()}
@@ -693,7 +680,7 @@ const CustomersPage = () => {
                 onChange={handleChange}
                 placeholder="contoh: The Rockers"
                 required
-                className="cf-input tour-cust-input-name"
+                className="cf-input"
                 autoFocus
               />
             </div>
@@ -705,7 +692,7 @@ const CustomersPage = () => {
             <div className="cf-row">
               <div className="cf-field">
                 <label className="cf-label">No. HP / WhatsApp <span className="cf-required">*</span></label>
-                <input type="tel" name="phone" value={formData.phone} onChange={handleChange} placeholder="08xxxxxxxxxx" required className="cf-input tour-cust-input-contact" />
+                <input type="tel" name="phone" value={formData.phone} onChange={handleChange} placeholder="08xxxxxxxxxx" required className="cf-input" />
               </div>
               <div className="cf-field">
                 <label className="cf-label"><Mail size={11} /> Email</label>
@@ -717,12 +704,12 @@ const CustomersPage = () => {
                 <label className="cf-label"><AtSign size={11} /> Instagram</label>
                 <div className="cf-prefix-input">
                   <span className="cf-prefix">@</span>
-                  <input type="text" name="instagram" value={formData.instagram.replace('@','')} onChange={(e) => handleChange({ target: { name: 'instagram', value: '@' + e.target.value.replace('@','') }})} placeholder="username" className="cf-input cf-input-prefixed tour-cust-input-social" />
+                  <input type="text" name="instagram" value={formData.instagram.replace('@','')} onChange={(e) => handleChange({ target: { name: 'instagram', value: '@' + e.target.value.replace('@','') }})} placeholder="username" className="cf-input cf-input-prefixed" />
                 </div>
               </div>
               <div className="cf-field">
                 <label className="cf-label"><MapPin size={11} /> Alamat</label>
-                <input type="text" name="address" value={formData.address} onChange={handleChange} placeholder="Jl. Contoh No. 123" className="cf-input tour-cust-input-address" />
+                <input type="text" name="address" value={formData.address} onChange={handleChange} placeholder="Jl. Contoh No. 123" className="cf-input" />
               </div>
             </div>
           </div>
@@ -769,13 +756,13 @@ const CustomersPage = () => {
           <div className="cf-section">
             <div className="cf-field">
               <label className="cf-label"><StickyNote size={11} /> Catatan (opsional)</label>
-              <textarea name="notes" value={formData.notes} onChange={handleChange} placeholder="Preferensi alat, kebiasaan, dll..." className="cf-input cf-textarea tour-cust-input-notes" rows="2" />
+              <textarea name="notes" value={formData.notes} onChange={handleChange} placeholder="Preferensi alat, kebiasaan, dll..." className="cf-input cf-textarea" rows="2" />
             </div>
           </div>
 
           <div className="cf-actions">
             <button type="button" className="btn-secondary" onClick={() => setIsModalOpen(false)}>Batal</button>
-            <button type="submit" className="btn-primary tour-cust-btn-save">
+            <button type="submit" className="btn-primary">
               {editingCustomer ? 'Simpan Perubahan' : 'Tambah Pelanggan'}
             </button>
           </div>

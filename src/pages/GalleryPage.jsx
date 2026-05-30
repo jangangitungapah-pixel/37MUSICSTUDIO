@@ -16,7 +16,7 @@ const MAX_PHOTOS_LIMIT = 30;
 const GalleryPage = () => {
   const { 
     gallery, albums, addPhoto, updatePhoto, deletePhoto, 
-    addAlbum, deleteAlbum 
+    addAlbum, deleteAlbum, updateAlbum
   } = useGalleryStore();
   
   // View mode: 'photos' | 'albums'
@@ -40,6 +40,77 @@ const GalleryPage = () => {
   const [newAlbumDesc, setNewAlbumDesc] = useState('');
   const [isCreatingAlbum, setIsCreatingAlbum] = useState(false);
 
+  // Bulk actions & Reorder State
+  const [isBulkSelectActive, setIsBulkSelectActive] = useState(false);
+  const [selectedPhotoIds, setSelectedPhotoIds] = useState([]);
+  const [isReorderActive, setIsReorderActive] = useState(false);
+  const [draggedPhotoId, setDraggedPhotoId] = useState(null);
+
+  // Inline album editing state
+  const [editingAlbumId, setEditingAlbumId] = useState(null);
+  const [editingName, setEditingName] = useState('');
+  const [editingDesc, setEditingDesc] = useState('');
+
+  const handleSaveAlbumEdit = async (albumId) => {
+    if (!editingName.trim()) {
+      toast.error('Nama album tidak boleh kosong.');
+      return;
+    }
+    try {
+      await updateAlbum(albumId, { name: editingName.trim(), description: editingDesc.trim() });
+      toast.success('Album berhasil diperbarui');
+      setEditingAlbumId(null);
+    } catch (err) {
+      toast.error('Gagal memperbarui album: ' + err.message);
+    }
+  };
+
+  // Drag and Drop handlers
+  const handlePhotoDragStart = (e, photoId) => {
+    if (!isReorderActive) return;
+    setDraggedPhotoId(photoId);
+    e.dataTransfer.effectAllowed = 'move';
+  };
+
+  const handlePhotoDragOver = (e, targetPhotoId) => {
+    e.preventDefault();
+  };
+
+  const handlePhotoDrop = async (e, targetPhotoId) => {
+    e.preventDefault();
+    if (!draggedPhotoId || draggedPhotoId === targetPhotoId) return;
+
+    // Move dragged item in list
+    const reorderedPhotos = [...filteredPhotos];
+    const draggedIdx = reorderedPhotos.findIndex(p => p.id === draggedPhotoId);
+    const targetIdx = reorderedPhotos.findIndex(p => p.id === targetPhotoId);
+
+    if (draggedIdx === -1 || targetIdx === -1) return;
+
+    const [draggedItem] = reorderedPhotos.splice(draggedIdx, 1);
+    reorderedPhotos.splice(targetIdx, 0, draggedItem);
+
+    // Re-assign order fields sequentially (0, 1, 2...)
+    const updatedWithOrders = reorderedPhotos.map((photo, index) => ({
+      ...photo,
+      order: index
+    }));
+
+    // Optimistically update local Zustand store for instant visual feedback
+    useGalleryStore.setState({ gallery: updatedWithOrders });
+
+    try {
+      await Promise.all(updatedWithOrders.map(p => 
+        updatePhoto(p.id, { order: p.order })
+      ));
+      toast.success('Urutan foto berhasil disimpan');
+    } catch (err) {
+      toast.error('Gagal menyimpan urutan: ' + err.message);
+    }
+
+    setDraggedPhotoId(null);
+  };
+  
   // Upload form state
   const [uploadTab, setUploadTab] = useState('file');
   const [imageUrl, setImageUrl] = useState('');
@@ -72,12 +143,20 @@ const GalleryPage = () => {
   const albumItems = useMemo(() => {
     const items = albums.map(alb => {
       const photos = gallery.filter(p => p.albumId === alb.id);
+      let coverPhoto = null;
+      if (alb.coverPhotoId) {
+        coverPhoto = photos.find(p => p.id === alb.coverPhotoId) || gallery.find(p => p.id === alb.coverPhotoId);
+      }
+      if (!coverPhoto && photos.length > 0) {
+        coverPhoto = photos[0];
+      }
       return {
         id: alb.id,
         name: alb.name,
         description: alb.description,
+        coverPhotoId: alb.coverPhotoId,
         photoCount: photos.length,
-        cover: photos[0] || null,       // first photo as cover
+        cover: coverPhoto || null,
         photos,
       };
     });
@@ -289,25 +368,70 @@ const GalleryPage = () => {
       </div>
 
       {/* ── View Mode Toggle + Toolbar ────────────────────────────────────────── */}
-      <div className="gallery-toolbar-row" style={{ marginTop: '24px' }}>
-        {/* Left: view toggle */}
-        <div className="gallery-view-toggle">
-          <button
-            className={`view-toggle-btn ${viewMode === 'photos' ? 'active' : ''}`}
-            onClick={() => handleSwitchView('photos')}
-            title="Tampilan Semua Foto"
-          >
-            <LayoutGrid size={15} />
-            <span>Semua Foto</span>
-          </button>
-          <button
-            className={`view-toggle-btn ${viewMode === 'albums' ? 'active' : ''}`}
-            onClick={() => handleSwitchView('albums')}
-            title="Tampilan Per Album"
-          >
-            <BookImage size={15} />
-            <span>Per Album</span>
-          </button>
+      <div className="gallery-toolbar-row" style={{ marginTop: '24px', flexWrap: 'wrap', gap: '16px' }}>
+        {/* Left side: view toggle + actions */}
+        <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', alignItems: 'center' }}>
+          <div className="gallery-view-toggle">
+            <button
+              className={`view-toggle-btn ${viewMode === 'photos' ? 'active' : ''}`}
+              onClick={() => {
+                handleSwitchView('photos');
+                setIsBulkSelectActive(false);
+                setIsReorderActive(false);
+                setSelectedPhotoIds([]);
+              }}
+              title="Tampilan Semua Foto"
+            >
+              <LayoutGrid size={15} />
+              <span>Semua Foto</span>
+            </button>
+            <button
+              className={`view-toggle-btn ${viewMode === 'albums' ? 'active' : ''}`}
+              onClick={() => {
+                handleSwitchView('albums');
+                setIsBulkSelectActive(false);
+                setIsReorderActive(false);
+                setSelectedPhotoIds([]);
+              }}
+              title="Tampilan Per Album"
+            >
+              <BookImage size={15} />
+              <span>Per Album</span>
+            </button>
+          </div>
+
+          {viewMode === 'photos' && (
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <button
+                type="button"
+                className={`view-toggle-btn ${isBulkSelectActive ? 'active' : ''}`}
+                onClick={() => {
+                  setIsBulkSelectActive(!isBulkSelectActive);
+                  setIsReorderActive(false);
+                  setSelectedPhotoIds([]);
+                }}
+                title="Pilih Beberapa Foto Sekaligus"
+              >
+                <Check size={14} />
+                <span>{isBulkSelectActive ? 'Batal Pilih' : 'Pilih Massal'}</span>
+              </button>
+              {activeTab === 'all' && selectedAlbumFilter === 'all' && (
+                <button
+                  type="button"
+                  className={`view-toggle-btn ${isReorderActive ? 'active' : ''}`}
+                  onClick={() => {
+                    setIsReorderActive(!isReorderActive);
+                    setIsBulkSelectActive(false);
+                    setSelectedPhotoIds([]);
+                  }}
+                  title="Seret foto untuk mengubah urutan landing page"
+                >
+                  <Settings2 size={14} />
+                  <span>{isReorderActive ? 'Selesai Susun' : 'Susun Urutan'}</span>
+                </button>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Right side: only show filters in 'photos' view */}
@@ -376,22 +500,59 @@ const GalleryPage = () => {
                     variants={staggerItem}
                     exit={{ opacity: 0, scale: 0.9 }}
                     key={photo.id}
-                    className="photo-masonry-item"
-                    onClick={() => handleOpenLightbox(photo)}
+                    className={`photo-masonry-item ${isBulkSelectActive ? 'bulk-active' : ''} ${selectedPhotoIds.includes(photo.id) ? 'selected' : ''} ${isReorderActive ? 'reorder-active' : ''} ${draggedPhotoId === photo.id ? 'dragging' : ''}`}
+                    onClick={() => {
+                      if (isBulkSelectActive) {
+                        setSelectedPhotoIds(prev => 
+                          prev.includes(photo.id) ? prev.filter(id => id !== photo.id) : [...prev, photo.id]
+                        );
+                      } else if (!isReorderActive) {
+                        handleOpenLightbox(photo);
+                      }
+                    }}
                     role="button"
                     tabIndex={0}
                     aria-label={`Lihat foto: ${photo.caption}`}
-                    onKeyDown={(e) => e.key === 'Enter' && handleOpenLightbox(photo)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        if (isBulkSelectActive) {
+                          setSelectedPhotoIds(prev => 
+                            prev.includes(photo.id) ? prev.filter(id => id !== photo.id) : [...prev, photo.id]
+                          );
+                        } else if (!isReorderActive) {
+                          handleOpenLightbox(photo);
+                        }
+                      }
+                    }}
+                    draggable={isReorderActive}
+                    onDragStart={(e) => handlePhotoDragStart(e, photo.id)}
+                    onDragOver={(e) => handlePhotoDragOver(e, photo.id)}
+                    onDrop={(e) => handlePhotoDrop(e, photo.id)}
                   >
                     <img src={photo.url} alt={photo.caption} loading="lazy" />
+                    
+                    {isBulkSelectActive && (
+                      <div className={`photo-bulk-checkbox ${selectedPhotoIds.includes(photo.id) ? 'checked' : ''}`}>
+                        {selectedPhotoIds.includes(photo.id) && <Check size={10} color="#fff" />}
+                      </div>
+                    )}
+
                     <div className="photo-masonry-badges">
                       {photo.showOnLandingPage && <span className="photo-badge badge-landing" title="Tampil di Landing Page"><Globe size={9} /></span>}
                       {photo.showToCustomer && <span className="photo-badge badge-customer" title="Tampil ke Customer"><Users size={9} /></span>}
                     </div>
-                    <div className="photo-masonry-overlay">
-                      <span className="photo-masonry-caption">{photo.caption}</span>
-                      <span className="photo-masonry-hint"><Settings2 size={12} /> Klik untuk pengaturan</span>
-                    </div>
+                    
+                    {!isReorderActive && (
+                      <div className="photo-masonry-overlay">
+                        <span className="photo-masonry-caption">{photo.caption}</span>
+                        <span className="photo-masonry-hint">
+                          {isBulkSelectActive 
+                            ? (selectedPhotoIds.includes(photo.id) ? 'Terpilih' : 'Klik untuk memilih') 
+                            : <><Settings2 size={12} /> Klik untuk pengaturan</>
+                          }
+                        </span>
+                      </div>
+                    )}
                   </motion.div>
                 ))}
               </AnimatePresence>
@@ -560,21 +721,51 @@ const GalleryPage = () => {
                             layout
                             variants={staggerItem}
                             key={photo.id}
-                            className="photo-masonry-item"
-                            onClick={() => handleOpenLightbox(photo)}
+                            className={`photo-masonry-item ${isBulkSelectActive ? 'bulk-active' : ''} ${selectedPhotoIds.includes(photo.id) ? 'selected' : ''}`}
+                            onClick={() => {
+                              if (isBulkSelectActive) {
+                                setSelectedPhotoIds(prev => 
+                                  prev.includes(photo.id) ? prev.filter(id => id !== photo.id) : [...prev, photo.id]
+                                );
+                              } else {
+                                handleOpenLightbox(photo);
+                              }
+                            }}
                             role="button"
                             tabIndex={0}
                             aria-label={`Lihat foto: ${photo.caption}`}
-                            onKeyDown={(e) => e.key === 'Enter' && handleOpenLightbox(photo)}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') {
+                                if (isBulkSelectActive) {
+                                  setSelectedPhotoIds(prev => 
+                                    prev.includes(photo.id) ? prev.filter(id => id !== photo.id) : [...prev, photo.id]
+                                  );
+                                } else {
+                                  handleOpenLightbox(photo);
+                                }
+                              }
+                            }}
                           >
                             <img src={photo.url} alt={photo.caption} loading="lazy" />
+                            
+                            {isBulkSelectActive && (
+                              <div className={`photo-bulk-checkbox ${selectedPhotoIds.includes(photo.id) ? 'checked' : ''}`}>
+                                {selectedPhotoIds.includes(photo.id) && <Check size={10} color="#fff" />}
+                              </div>
+                            )}
+
                             <div className="photo-masonry-badges">
                               {photo.showOnLandingPage && <span className="photo-badge badge-landing" title="Tampil di Landing Page"><Globe size={9} /></span>}
                               {photo.showToCustomer && <span className="photo-badge badge-customer" title="Tampil ke Customer"><Users size={9} /></span>}
                             </div>
                             <div className="photo-masonry-overlay">
                               <span className="photo-masonry-caption">{photo.caption}</span>
-                              <span className="photo-masonry-hint"><Settings2 size={12} /> Klik untuk pengaturan</span>
+                              <span className="photo-masonry-hint">
+                                {isBulkSelectActive 
+                                  ? (selectedPhotoIds.includes(photo.id) ? 'Terpilih' : 'Klik untuk memilih') 
+                                  : <><Settings2 size={12} /> Klik untuk pengaturan</>
+                                }
+                              </span>
                             </div>
                           </motion.div>
                         ))}
@@ -729,16 +920,83 @@ const GalleryPage = () => {
               <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', maxHeight: '250px', overflowY: 'auto', paddingRight: '4px' }}>
                 {albums.map(alb => {
                   const count = gallery.filter(p => p.albumId === alb.id).length;
+                  const isEditing = editingAlbumId === alb.id;
                   return (
                     <div key={alb.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 14px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '10px', gap: '12px' }}>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', overflow: 'hidden' }}>
-                        <span style={{ fontWeight: '600', fontSize: '0.92rem', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }} title={alb.name}>{alb.name}</span>
-                        {alb.description && <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>{alb.description}</span>}
-                        <span style={{ fontSize: '0.75rem', color: 'var(--accent-pink)', fontWeight: '600' }}>🏷️ {count} Foto</span>
-                      </div>
-                      <button type="button" className="photo-delete-btn" onClick={() => handleDeleteAlbum(alb.id, alb.name)} style={{ padding: '6px 10px', height: 'auto', borderRadius: '8px' }} title="Hapus Album">
-                        <Trash2 size={14} />
-                      </button>
+                      {isEditing ? (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', flex: 1 }}>
+                          <input
+                            type="text"
+                            className="bf-input"
+                            style={{ padding: '6px 10px', fontSize: '0.88rem', height: 'auto' }}
+                            value={editingName}
+                            onChange={(e) => setEditingName(e.target.value)}
+                            maxLength={40}
+                            placeholder="Nama Album"
+                            autoFocus
+                          />
+                          <input
+                            type="text"
+                            className="bf-input"
+                            style={{ padding: '6px 10px', fontSize: '0.8rem', height: 'auto' }}
+                            value={editingDesc}
+                            onChange={(e) => setEditingDesc(e.target.value)}
+                            maxLength={80}
+                            placeholder="Deskripsi Album"
+                          />
+                          <div style={{ display: 'flex', gap: '6px', marginTop: '2px' }}>
+                            <button
+                              type="button"
+                              className="btn-primary"
+                              style={{ padding: '4px 8px', fontSize: '0.75rem', height: 'auto', borderRadius: '6px' }}
+                              onClick={() => handleSaveAlbumEdit(alb.id)}
+                            >
+                              Simpan
+                            </button>
+                            <button
+                              type="button"
+                              className="btn-secondary"
+                              style={{ padding: '4px 8px', fontSize: '0.75rem', height: 'auto', borderRadius: '6px' }}
+                              onClick={() => setEditingAlbumId(null)}
+                            >
+                              Batal
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', overflow: 'hidden', flex: 1 }}>
+                          <span style={{ fontWeight: '600', fontSize: '0.92rem', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }} title={alb.name}>{alb.name}</span>
+                          {alb.description && <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>{alb.description}</span>}
+                          <span style={{ fontSize: '0.75rem', color: 'var(--accent-pink)', fontWeight: '600' }}>🏷️ {count} Foto</span>
+                        </div>
+                      )}
+                      
+                      {!isEditing && (
+                        <div style={{ display: 'flex', gap: '6px', flexShrink: 0 }}>
+                          <button
+                            type="button"
+                            className="btn-secondary"
+                            onClick={() => {
+                              setEditingAlbumId(alb.id);
+                              setEditingName(alb.name);
+                              setEditingDesc(alb.description || '');
+                            }}
+                            style={{ padding: '6px 8px', height: 'auto', borderRadius: '8px' }}
+                            title="Edit Album"
+                          >
+                            <Settings2 size={13} />
+                          </button>
+                          <button
+                            type="button"
+                            className="photo-delete-btn"
+                            onClick={() => handleDeleteAlbum(alb.id, alb.name)}
+                            style={{ padding: '6px 8px', height: 'auto', borderRadius: '8px' }}
+                            title="Hapus Album"
+                          >
+                            <Trash2 size={13} />
+                          </button>
+                        </div>
+                      )}
                     </div>
                   );
                 })}
@@ -802,17 +1060,99 @@ const GalleryPage = () => {
                   <div className="lsp-header"><Settings2 size={16} /><span>Pengaturan Foto</span></div>
 
                   <div className="lsp-section">
-                    <span className="lsp-label">Keterangan</span>
-                    <p className="lsp-caption-text">{lightboxPhoto.caption}</p>
+                    <span className="lsp-label">Keterangan (Edit langsung)</span>
+                    <input
+                      type="text"
+                      className="lsp-input lsp-caption-input"
+                      value={lightboxPhoto.caption}
+                      onChange={(e) => {
+                        const newCaption = e.target.value;
+                        setLightboxPhoto(prev => ({ ...prev, caption: newCaption }));
+                      }}
+                      onBlur={() => {
+                        updatePhoto(lightboxPhoto.id, { caption: lightboxPhoto.caption });
+                        toast.success('Keterangan foto diperbarui');
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.target.blur();
+                        }
+                      }}
+                      maxLength={80}
+                      style={{
+                        width: '100%',
+                        background: 'rgba(255,255,255,0.05)',
+                        border: '1px solid rgba(255,255,255,0.1)',
+                        color: 'var(--text-primary)',
+                        padding: '8px 12px',
+                        borderRadius: '8px',
+                        fontSize: '0.9rem',
+                        marginTop: '6px'
+                      }}
+                    />
                   </div>
 
                   <div className="lsp-section">
                     <span className="lsp-label"><Folder size={12} /> Album</span>
-                    <select className="lsp-select" value={lightboxPhoto.albumId || ''} onChange={(e) => handleChangeAlbum(lightboxPhoto.id, e.target.value)}>
+                    <select 
+                      className="lsp-select" 
+                      value={lightboxPhoto.albumId || ''} 
+                      onChange={(e) => {
+                        handleChangeAlbum(lightboxPhoto.id, e.target.value);
+                        // If album changes, unset cover
+                        const alb = albums.find(a => a.id === lightboxPhoto.albumId);
+                        if (alb?.coverPhotoId === lightboxPhoto.id) {
+                          updateAlbum(lightboxPhoto.albumId, { coverPhotoId: '' });
+                        }
+                      }}
+                    >
                       <option value="">Tanpa Album</option>
                       {albums.map(alb => <option key={alb.id} value={alb.id}>{alb.name}</option>)}
                     </select>
                   </div>
+
+                  {lightboxPhoto.albumId && (
+                    <div className="lsp-section">
+                      <span className="lsp-label">Sampul Album</span>
+                      {(() => {
+                        const alb = albums.find(a => a.id === lightboxPhoto.albumId);
+                        const isCover = alb?.coverPhotoId === lightboxPhoto.id;
+                        return (
+                          <button
+                            type="button"
+                            className="btn-secondary"
+                            style={{
+                              width: '100%',
+                              padding: '8px 12px',
+                              borderRadius: '8px',
+                              fontSize: '0.85rem',
+                              marginTop: '6px',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              gap: '6px',
+                              background: isCover ? 'rgba(244, 63, 94, 0.15)' : 'rgba(255,255,255,0.03)',
+                              border: isCover ? '1px solid var(--accent-pink)' : '1px solid rgba(255,255,255,0.08)',
+                              color: isCover ? 'var(--accent-pink)' : 'var(--text-primary)',
+                              fontWeight: isCover ? '600' : 'normal'
+                            }}
+                            onClick={() => {
+                              if (isCover) {
+                                updateAlbum(lightboxPhoto.albumId, { coverPhotoId: '' });
+                                toast.success('Sampul album diubah ke default');
+                              } else {
+                                updateAlbum(lightboxPhoto.albumId, { coverPhotoId: lightboxPhoto.id });
+                                toast.success('Foto ini dijadikan sampul album');
+                              }
+                            }}
+                          >
+                            <BookImage size={14} />
+                            <span>{isCover ? 'Sampul Album Aktif' : 'Jadikan Sampul Album'}</span>
+                          </button>
+                        );
+                      })()}
+                    </div>
+                  )}
 
                   <div className="lsp-section">
                     <span className="lsp-label">Visibilitas</span>
@@ -844,6 +1184,106 @@ const GalleryPage = () => {
                 </motion.div>
               )}
             </AnimatePresence>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ── Floating Bulk Action Bar ───────────────────────────────────────── */}
+      <AnimatePresence>
+        {isBulkSelectActive && selectedPhotoIds.length > 0 && (
+          <motion.div
+            initial={{ y: 100, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 100, opacity: 0 }}
+            className="bulk-action-bar"
+          >
+            <div className="bulk-action-info">
+              <span>{selectedPhotoIds.length} foto terpilih</span>
+            </div>
+            <div className="bulk-actions-wrap">
+              {/* Change album */}
+              <div className="bulk-action-select-wrap">
+                <Folder size={14} className="icon-landing" />
+                <select
+                  className="bulk-select-input"
+                  onChange={async (e) => {
+                    const albumId = e.target.value;
+                    const albName = albumId ? (albums.find(a => a.id === albumId)?.name || 'Album') : 'Tanpa Album';
+                    try {
+                      await Promise.all(selectedPhotoIds.map(id => updatePhoto(id, { albumId })));
+                      toast.success(`Berhasil memindahkan ${selectedPhotoIds.length} foto ke ${albName}`);
+                      setSelectedPhotoIds([]);
+                    } catch (err) {
+                      toast.error('Gagal memindahkan foto: ' + err.message);
+                    }
+                  }}
+                  defaultValue=""
+                >
+                  <option value="" disabled hidden>Pindahkan ke...</option>
+                  <option value="">Tanpa Album</option>
+                  {albums.map(alb => <option key={alb.id} value={alb.id}>{alb.name}</option>)}
+                </select>
+              </div>
+
+              {/* Set Visibility */}
+              <button
+                type="button"
+                className="bulk-action-btn"
+                onClick={async () => {
+                  if (window.confirm(`Tampilkan ${selectedPhotoIds.length} foto terpilih di Landing Page?`)) {
+                    try {
+                      await Promise.all(selectedPhotoIds.map(id => updatePhoto(id, { showOnLandingPage: true })));
+                      toast.success(`Berhasil menampilkan ${selectedPhotoIds.length} foto di Landing Page`);
+                      setSelectedPhotoIds([]);
+                    } catch (err) {
+                      toast.error('Gagal mengubah visibilitas: ' + err.message);
+                    }
+                  }
+                }}
+              >
+                <Globe size={14} />
+                <span>Tampilkan di Landing</span>
+              </button>
+
+              <button
+                type="button"
+                className="bulk-action-btn"
+                onClick={async () => {
+                  if (window.confirm(`Sembunyikan ${selectedPhotoIds.length} foto terpilih dari Landing Page?`)) {
+                    try {
+                      await Promise.all(selectedPhotoIds.map(id => updatePhoto(id, { showOnLandingPage: false })));
+                      toast.success(`Berhasil menyembunyikan ${selectedPhotoIds.length} foto dari Landing Page`);
+                      setSelectedPhotoIds([]);
+                    } catch (err) {
+                      toast.error('Gagal mengubah visibilitas: ' + err.message);
+                    }
+                  }
+                }}
+              >
+                <X size={14} />
+                <span>Sembunyikan Landing</span>
+              </button>
+
+              {/* Delete selected */}
+              <button
+                type="button"
+                className="bulk-action-btn btn-danger"
+                onClick={async () => {
+                  if (window.confirm(`Apakah Anda yakin ingin menghapus ${selectedPhotoIds.length} foto terpilih? Tindakan ini tidak dapat dibatalkan.`)) {
+                    try {
+                      await Promise.all(selectedPhotoIds.map(id => deletePhoto(id)));
+                      toast.success(`Berhasil menghapus ${selectedPhotoIds.length} foto`);
+                      setSelectedPhotoIds([]);
+                    } catch (err) {
+                      toast.error('Gagal menghapus foto: ' + err.message);
+                    }
+                  }
+                }}
+              >
+                <Trash2 size={14} />
+                <span>Hapus Terpilih</span>
+              </button>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

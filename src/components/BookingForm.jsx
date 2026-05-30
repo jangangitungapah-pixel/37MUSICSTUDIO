@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useBookingStore } from '../store/useBookingStore';
 import { useSettingsStore } from '../store/useSettingsStore';
 import { useCustomerStore } from '../store/useCustomerStore';
-import { useTourStore } from '../store/useTourStore';
 import { useNotificationStore } from '../store/useNotificationStore';
 import { format } from 'date-fns';
 import { Music2, Mic, Wrench, User, Phone, Calendar, Clock, DollarSign, StickyNote, Star, AlertCircle, QrCode, Banknote, RefreshCw, Box } from 'lucide-react';
@@ -18,7 +17,6 @@ const BookingForm = ({ onClose, initialDate, initialHour }) => {
   const { inventory } = useInventoryStore();
   const rentableInventory = inventory.filter(i => i.condition === 'Excellent' || i.condition === 'Good');
 
-  const { run, currentStep, nextStep } = useTourStore();
   const [isSubmitting, setIsSubmitting] = useState(false);
   
   const [paymentMethod, setPaymentMethod] = useState('cash');
@@ -355,7 +353,7 @@ const BookingForm = ({ onClose, initialDate, initialHour }) => {
           ) : (
             <div className="bf-field">
               <label className="bf-label">Durasi <span className="bf-required">*</span></label>
-              <div className="bf-duration-picker">
+              <div className="bf-duration-picker tour-input-duration">
                 <button type="button" className="bf-dur-btn" onClick={() => setFormData(p => ({ ...p, duration: Math.max(1, p.duration - 1) }))} disabled={formData.duration <= 1}>−</button>
                 <span className="bf-dur-val">{formData.duration} <small>jam</small></span>
                 <button type="button" className="bf-dur-btn" onClick={() => setFormData(p => ({ ...p, duration: Math.min(13, p.duration + 1) }))} disabled={formData.duration >= 13}>+</button>
@@ -460,7 +458,7 @@ const BookingForm = ({ onClose, initialDate, initialHour }) => {
           <div className="bf-section-title"><DollarSign size={13} /> Pembayaran</div>
 
           {/* Status Selector */}
-          <div className="bf-status-grid">
+          <div className="bf-status-grid tour-input-status">
             {statusOptions.map(opt => (
               <label key={opt.value} className={`bf-status-card ${formData.status === opt.value ? 'selected' : ''}`} style={{ '--status-color': opt.color }}>
                 <input type="radio" name="status" value={opt.value} checked={formData.status === opt.value} onChange={handleChange} className="bf-status-radio" />

@@ -1424,3 +1424,200 @@
     gap: 10px;
   }
 }
+
+/* ============================================================
+   Bulk Select & Drag-and-Drop Upgrades
+   ============================================================ */
+
+/* ---- Bulk Select Checkbox ---- */
+.photo-bulk-checkbox {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.7);
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(4px);
+}
+
+.photo-bulk-checkbox.checked {
+  background: var(--accent-pink);
+  border-color: var(--accent-pink);
+  box-shadow: 0 0 10px rgba(var(--accent-pink-rgb), 0.5);
+}
+
+.photo-masonry-item.selected {
+  border-color: var(--accent-pink);
+  box-shadow: 0 0 15px rgba(var(--accent-pink-rgb), 0.3);
+}
+
+/* ---- Reorder Drag and Drop States ---- */
+.photo-masonry-item.reorder-active {
+  cursor: grab;
+  user-select: none;
+}
+
+.photo-masonry-item.reorder-active:active {
+  cursor: grabbing;
+}
+
+.photo-masonry-item.dragging {
+  opacity: 0.3;
+  border: 1px dashed var(--accent-cyan);
+}
+
+/* ---- Floating Bulk Action Bar ---- */
+.bulk-action-bar {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  background: rgba(15, 15, 20, 0.85);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 12px 24px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(var(--accent-pink-rgb), 0.15);
+  max-width: 90%;
+  width: auto;
+}
+
+[data-theme="light"] .bulk-action-bar {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: rgba(0, 0, 0, 0.1);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.1), 0 0 0 1px rgba(var(--accent-pink-rgb), 0.1);
+}
+
+.bulk-action-info {
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+.bulk-actions-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.bulk-action-select-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+}
+
+[data-theme="light"] .bulk-action-select-wrap {
+  background: rgba(0, 0, 0, 0.02);
+  border-color: rgba(0, 0, 0, 0.08);
+}
+
+.bulk-select-input {
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  outline: none;
+  cursor: pointer;
+  padding-right: 4px;
+  font-family: inherit;
+}
+
+.bulk-select-input option {
+  background: #121218;
+  color: #fff;
+}
+
+[data-theme="light"] .bulk-select-input option {
+  background: #fff;
+  color: #0f172a;
+}
+
+.bulk-action-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+  white-space: nowrap;
+}
+
+.bulk-action-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-primary);
+}
+
+[data-theme="light"] .bulk-action-btn {
+  background: rgba(0, 0, 0, 0.02);
+  border-color: rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="light"] .bulk-action-btn:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.bulk-action-btn.btn-danger {
+  border-color: rgba(255, 82, 82, 0.2);
+  background: rgba(255, 82, 82, 0.08);
+  color: #FF5252;
+}
+
+.bulk-action-btn.btn-danger:hover {
+  background: #FF5252;
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(255, 82, 82, 0.25);
+}
+
+@media (max-width: 768px) {
+  .bulk-action-bar {
+    width: calc(100% - 24px);
+    bottom: 12px;
+    padding: 10px 16px;
+    flex-direction: column;
+    gap: 12px;
+    border-radius: 16px;
+    left: 12px;
+    transform: none;
+  }
+  .bulk-actions-wrap {
+    width: 100%;
+    justify-content: center;
+  }
+  .bulk-action-select-wrap {
+    flex: 1;
+    justify-content: center;
+  }
+  .bulk-select-input {
+    width: 100%;
+  }
+  .bulk-action-btn {
+    flex: 1;
+    justify-content: center;
+  }
+}

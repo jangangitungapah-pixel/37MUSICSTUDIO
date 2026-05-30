@@ -2,7 +2,6 @@ import { useState, useMemo } from 'react';
 import { Search, Plus, Edit2, Trash2, Box, Package, AlertCircle, Wrench, X, Tag, Hash, StickyNote, ChevronDown } from 'lucide-react';
 import { useInventoryStore } from '../store/useInventoryStore';
 import { useBookingStore } from '../store/useBookingStore';
-import { useTourStore } from '../store/useTourStore';
 import { toast } from 'sonner';
 import Modal from '../components/Modal';
 import { getMaintenanceUsageInsights } from '../lib/smartInsights';
@@ -20,7 +19,6 @@ const CONDITION_COLORS = {
 const InventoryPage = () => {
   const { inventory, categories, addCategory, addEquipment, updateEquipment, deleteEquipment, getStats } = useInventoryStore();
   const { bookings } = useBookingStore();
-  const { run, currentStep, nextStep } = useTourStore();
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('All');
   const [selectedItem, setSelectedItem] = useState(null);
@@ -149,20 +147,14 @@ const InventoryPage = () => {
         
         <div className="app-page-actions">
 
-          <button className="btn-primary tour-inv-add-btn" onClick={() => {
-            handleOpenNew();
-            if (run && currentStep === 3) {
-              setTimeout(() => nextStep(), 300);
-            }
-          }}>
+          <button className="btn-primary" onClick={handleOpenNew}>
             <Plus size={18} />
             <span>Alat Baru</span>
           </button>
         </div>
       </header>
 
-      {/* Stats Bar */}
-      <div className="stats-bar tour-inv-stats">
+      <div className="stats-bar">
         <div className="stat-card">
           <div className="stat-icon stat-icon-total">
             <Box size={20} color="var(--accent-cyan)" />
@@ -252,8 +244,7 @@ const InventoryPage = () => {
               </div>
             </div>
             <div className="app-table-toolbar-right">
-              {/* Filter Dropdown */}
-              <div className="filter-dropdown-container tour-inv-categories">
+              <div className="filter-dropdown-container">
                 <button 
                   type="button"
                   className="filter-dropdown-toggle"
@@ -304,7 +295,7 @@ const InventoryPage = () => {
                 )}
               </div>
 
-              <div className="app-search app-search-md tour-inv-search">
+              <div className="app-search app-search-md">
                 <Search className="app-search-icon" />
                 <input 
                   type="text" 
@@ -324,7 +315,7 @@ const InventoryPage = () => {
           </div>
 
           <div className="app-table-wrapper hide-on-mobile">
-            <table className="app-table inventory-table tour-inv-table">
+            <table className="app-table inventory-table">
               <thead>
                 <tr>
                   <th>Nama Alat</th>
@@ -555,8 +546,7 @@ const InventoryPage = () => {
         title={editingItem ? "Edit Alat" : "Tambah Alat Baru"}
       >
         <form className="inventory-form" onSubmit={handleSubmit}>
-          {/* Section 1: Identitas Alat */}
-          <div className="form-section tour-inv-input-identity">
+          <div className="form-section">
             <div className="form-section-header">
               <Box size={16} />
               <span>Identitas Alat</span>
@@ -614,8 +604,7 @@ const InventoryPage = () => {
             </div>
           </div>
 
-          {/* Section 2: Kondisi */}
-          <div className="form-section tour-inv-input-condition">
+          <div className="form-section">
             <div className="form-section-header">
               <AlertCircle size={16} />
               <span>Kondisi Alat</span>
@@ -638,8 +627,7 @@ const InventoryPage = () => {
             </div>
           </div>
 
-          {/* Section 3: Maintenance */}
-          <div className="form-section tour-inv-input-maintenance">
+          <div className="form-section">
             <div className="form-section-header">
               <Wrench size={16} />
               <span>Jadwal Maintenance</span>
@@ -656,8 +644,7 @@ const InventoryPage = () => {
             </div>
           </div>
 
-          {/* Section 4: Catatan */}
-          <div className="form-section tour-inv-input-notes">
+          <div className="form-section">
             <div className="form-section-header">
               <StickyNote size={16} />
               <span>Catatan Tambahan</span>
@@ -671,7 +658,7 @@ const InventoryPage = () => {
 
           <div className="form-actions">
             <button type="button" className="btn-secondary" onClick={() => setIsModalOpen(false)}>Batal</button>
-            <button type="submit" className="btn-primary tour-inv-btn-save">
+            <button type="submit" className="btn-primary">
               {editingItem ? 'Update Alat' : 'Simpan Alat'}
             </button>
           </div>

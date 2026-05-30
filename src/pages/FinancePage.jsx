@@ -3,6 +3,7 @@ import { useFinanceStore } from '../store/useFinanceStore';
 import { useBookingStore } from '../store/useBookingStore';
 import { useSettingsStore } from '../store/useSettingsStore';
 import { useThemeStore } from '../store/useThemeStore';
+import { useAuthStore } from '../store/useAuthStore';
 import { format } from 'date-fns';
 import { Wallet, TrendingUp, TrendingDown, Plus, Trash2, Search, Download, Printer, X } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
@@ -54,7 +55,9 @@ const FinancePage = () => {
       : ['#ff2a5f', '#00f0ff', '#a855f7', '#4CAF50', '#FF9800', '#E91E63', '#9C27B0'];
   }, [isLight]);
   
+  const { user, userProfile } = useAuthStore();
   const [filterPeriod, setFilterPeriod] = useState('month'); // 'day', 'week', 'month', 'year', 'all'
+  const [filterType, setFilterType] = useState('all'); // 'all', 'income', 'expense'
   const [searchQuery, setSearchQuery] = useState('');
   const [receiptToPrint, setReceiptToPrint] = useState(null);
   const [isExporting, setIsExporting] = useState(false);
@@ -66,14 +69,43 @@ const FinancePage = () => {
   );
 
   // Filter Data based on selected period
-  const filteredData = useMemo(
+  const periodFilteredData = useMemo(
     () => filterLedgerByPeriod(combinedData, filterPeriod, searchQuery),
     [combinedData, filterPeriod, searchQuery]
   );
   
-  const totalIncomeFiltered = filteredData.filter(d => d.type === 'income').reduce((sum, d) => sum + d.amount, 0);
-  const totalExpenseFiltered = filteredData.filter(d => d.type === 'expense').reduce((sum, d) => sum + d.amount, 0);
+  const totalIncomeFiltered = useMemo(() => periodFilteredData.filter(d => d.type === 'income').reduce((sum, d) => sum + d.amount, 0), [periodFilteredData]);
+  const totalExpenseFiltered = useMemo(() => periodFilteredData.filter(d => d.type === 'expense').reduce((sum, d) => sum + d.amount, 0), [periodFilteredData]);
   const netCashFiltered = totalIncomeFiltered - totalExpenseFiltered;
+
+  const filteredData = useMemo(() => {
+    if (filterType === 'all') return periodFilteredData;
+    return periodFilteredData.filter(d => d.type === filterType);
+  }, [periodFilteredData, filterType]);
+
+  // Today's Expense Tracker calculations
+  const todayStr = format(new Date(), 'yyyy-MM-dd');
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  const yesterdayStr = format(yesterday, 'yyyy-MM-dd');
+
+  const allExpenses = useMemo(() => {
+    return combinedData.filter(d => d.type === 'expense');
+  }, [combinedData]);
+
+  const todayExpensesList = useMemo(() => {
+    return allExpenses.filter(d => d.date === todayStr);
+  }, [allExpenses, todayStr]);
+
+  const todayExpensesSum = useMemo(() => {
+    return todayExpensesList.reduce((sum, d) => sum + d.amount, 0);
+  }, [todayExpensesList]);
+
+  const yesterdayExpensesSum = useMemo(() => {
+    return allExpenses
+      .filter(d => d.date === yesterdayStr)
+      .reduce((sum, d) => sum + d.amount, 0);
+  }, [allExpenses, yesterdayStr]);
   
   const totalBalance = combinedData.length > 0 ? combinedData[0].balance : 0; // Newest entry has final balance
 
@@ -91,13 +123,13 @@ const FinancePage = () => {
 
   // Chart Data preparation
   const lineChartData = useMemo(
-    () => buildFinanceLineChartData(filteredData, filterPeriod),
-    [filteredData, filterPeriod]
+    () => buildFinanceLineChartData(periodFilteredData, filterPeriod),
+    [periodFilteredData, filterPeriod]
   );
 
   const pieChartData = useMemo(
-    () => buildExpensePieData(filteredData),
-    [filteredData]
+    () => buildExpensePieData(periodFilteredData),
+    [periodFilteredData]
   );
   const revenueForecast = useMemo(
     () => getRevenueForecast(bookings, transactions, pricePerHour),
@@ -394,7 +426,8 @@ const FinancePage = () => {
     e.preventDefault();
     addTransaction({
       ...formData,
-      amount: Number(formData.amount)
+      amount: Number(formData.amount),
+      operatorName: userProfile?.name || user?.email || 'Operator'
     });
     setIsModalOpen(false);
     setFormData(prev => ({ ...prev, amount: '', description: '' }));
@@ -483,63 +516,123 @@ const FinancePage = () => {
         </div>
       </div>
 
-      {/* ── Charts ── */}
+      {/* ── Insights Grid ── */}
       <div className="finance-insights-grid hide-on-print">
-      <div className="app-smart-panel">
-        <div className="smart-head">
-          <TrendingUp size={20} />
-          <div>
-            <h3>Forecast Pendapatan Bulanan</h3>
-            <p>Proyeksi berbasis kas masuk berjalan, booking bulan ini, dan piutang aktif.</p>
+        {/* Forecast Panel */}
+        <div className="app-smart-panel">
+          <div className="smart-head">
+            <TrendingUp size={20} />
+            <div>
+              <h3>Forecast Pendapatan Bulanan</h3>
+              <p>Proyeksi berbasis kas masuk berjalan, booking bulan ini, dan piutang aktif.</p>
+            </div>
+          </div>
+          <div className="smart-list app-smart-grid cols-2">
+            <div className="smart-item">
+              <span style={{fontSize: '0.75rem', color: 'var(--text-muted)'}}>Kas saat ini</span>
+              <strong style={{fontSize: '1rem', color: 'var(--text-primary)'}}>{formatCurrency(revenueForecast.currentIncome)}</strong>
+            </div>
+            <div className="smart-item">
+              <span style={{fontSize: '0.75rem', color: 'var(--text-muted)'}}>Forecast konservatif</span>
+              <strong style={{fontSize: '1rem', color: 'var(--text-primary)'}}>{formatCurrency(revenueForecast.conservativeForecast)}</strong>
+            </div>
+            <div className="smart-item">
+              <span style={{fontSize: '0.75rem', color: 'var(--text-muted)'}}>Forecast optimistis</span>
+              <strong style={{fontSize: '1rem', color: 'var(--text-primary)'}}>{formatCurrency(revenueForecast.optimisticForecast)}</strong>
+            </div>
+            <div className="smart-item">
+              <span style={{fontSize: '0.75rem', color: 'var(--text-muted)'}}>Progress bulan</span>
+              <strong style={{fontSize: '1rem', color: 'var(--text-primary)'}}>{revenueForecast.progressPercent}%</strong>
+            </div>
           </div>
         </div>
-        <div className="smart-list app-smart-grid cols-2">
-          <div className="smart-item">
-            <span style={{fontSize: '0.75rem', color: 'var(--text-muted)'}}>Kas saat ini</span>
-            <strong style={{fontSize: '1rem', color: 'var(--text-primary)'}}>{formatCurrency(revenueForecast.currentIncome)}</strong>
-          </div>
-          <div className="smart-item">
-            <span style={{fontSize: '0.75rem', color: 'var(--text-muted)'}}>Forecast konservatif</span>
-            <strong style={{fontSize: '1rem', color: 'var(--text-primary)'}}>{formatCurrency(revenueForecast.conservativeForecast)}</strong>
-          </div>
-          <div className="smart-item">
-            <span style={{fontSize: '0.75rem', color: 'var(--text-muted)'}}>Forecast optimistis</span>
-            <strong style={{fontSize: '1rem', color: 'var(--text-primary)'}}>{formatCurrency(revenueForecast.optimisticForecast)}</strong>
-          </div>
-          <div className="smart-item">
-            <span style={{fontSize: '0.75rem', color: 'var(--text-muted)'}}>Progress bulan</span>
-            <strong style={{fontSize: '1rem', color: 'var(--text-primary)'}}>{revenueForecast.progressPercent}%</strong>
-          </div>
-        </div>
-      </div>
 
-      <div className="app-smart-panel">
-        <div className="smart-head">
-          <Wallet size={20} />
-          <div>
-            <h3>Rekonsiliasi Kas Booking</h3>
-            <p>Cocokkan nilai booking, kas diterima, piutang, dan pemasukan manual pada {periodLabel.toLowerCase()}.</p>
+        {/* Reconciliation Panel */}
+        <div className="app-smart-panel">
+          <div className="smart-head">
+            <Wallet size={20} />
+            <div>
+              <h3>Rekonsiliasi Kas Booking</h3>
+              <p>Cocokkan nilai booking, kas diterima, piutang, dan pemasukan manual pada {periodLabel.toLowerCase()}.</p>
+            </div>
+          </div>
+          <div className="smart-list app-smart-grid cols-2">
+            <div className="smart-item">
+              <span style={{fontSize: '0.75rem', color: 'var(--text-muted)'}}>Nilai booking</span>
+              <strong style={{fontSize: '1rem', color: 'var(--text-primary)'}}>{formatCurrency(reconciliation.bookedValue)}</strong>
+            </div>
+            <div className="smart-item">
+              <span style={{fontSize: '0.75rem', color: 'var(--text-muted)'}}>Kas dari booking</span>
+              <strong style={{fontSize: '1rem', color: 'var(--text-primary)'}}>{formatCurrency(reconciliation.bookingCash)}</strong>
+            </div>
+            <div className="smart-item">
+              <span style={{fontSize: '0.75rem', color: 'var(--text-muted)'}}>Piutang aktif</span>
+              <strong style={{fontSize: '1rem', color: 'var(--text-primary)'}}>{formatCurrency(reconciliation.openReceivable)}</strong>
+            </div>
+            <div className="smart-item" style={{borderColor: reconciliation.diff === 0 ? 'rgba(var(--success-rgb), 0.2)' : 'rgba(var(--accent-pink-rgb), 0.2)'}}>
+              <span style={{fontSize: '0.75rem', color: 'var(--text-muted)'}}>Selisih kas</span>
+              <strong style={{fontSize: '1rem', color: reconciliation.diff === 0 ? 'rgb(var(--success-rgb))' : 'var(--accent-pink)'}}>{formatCurrency(reconciliation.diff)}</strong>
+            </div>
           </div>
         </div>
-        <div className="smart-list app-smart-grid cols-2">
-          <div className="smart-item">
-            <span style={{fontSize: '0.75rem', color: 'var(--text-muted)'}}>Nilai booking</span>
-            <strong style={{fontSize: '1rem', color: 'var(--text-primary)'}}>{formatCurrency(reconciliation.bookedValue)}</strong>
+
+        {/* Daily Expenses Panel */}
+        <div className="app-smart-panel daily-expenses-panel">
+          <div className="smart-head">
+            <TrendingDown size={20} style={{ color: 'var(--accent-pink)' }} />
+            <div>
+              <h3>Pengeluaran Harian</h3>
+              <p>Pemantauan operasional kas keluar dan penanggung jawab.</p>
+            </div>
           </div>
-          <div className="smart-item">
-            <span style={{fontSize: '0.75rem', color: 'var(--text-muted)'}}>Kas dari booking</span>
-            <strong style={{fontSize: '1rem', color: 'var(--text-primary)'}}>{formatCurrency(reconciliation.bookingCash)}</strong>
-          </div>
-          <div className="smart-item">
-            <span style={{fontSize: '0.75rem', color: 'var(--text-muted)'}}>Piutang aktif</span>
-            <strong style={{fontSize: '1rem', color: 'var(--text-primary)'}}>{formatCurrency(reconciliation.openReceivable)}</strong>
-          </div>
-          <div className="smart-item" style={{borderColor: reconciliation.diff === 0 ? 'rgba(var(--success-rgb), 0.2)' : 'rgba(var(--accent-pink-rgb), 0.2)'}}>
-            <span style={{fontSize: '0.75rem', color: 'var(--text-muted)'}}>Selisih kas</span>
-            <strong style={{fontSize: '1rem', color: reconciliation.diff === 0 ? 'rgb(var(--success-rgb))' : 'var(--accent-pink)'}}>{formatCurrency(reconciliation.diff)}</strong>
+          <div className="smart-list daily-expense-list">
+            <div className="daily-expense-summary">
+              <div className="summary-item">
+                <span className="summary-label">Hari Ini</span>
+                <strong className="summary-val text-expense">{formatCurrency(todayExpensesSum)}</strong>
+              </div>
+              <div className="summary-item">
+                <span className="summary-label">Kemarin</span>
+                <strong className="summary-val">{formatCurrency(yesterdayExpensesSum)}</strong>
+              </div>
+            </div>
+            
+            <div className="mini-expense-list-title">Detail Hari Ini:</div>
+            {todayExpensesList.length > 0 ? (
+              <div className="mini-expense-list">
+                {todayExpensesList.slice(0, 3).map((entry) => (
+                  <div key={entry.id} className="mini-expense-item">
+                    <div className="mini-expense-left">
+                      <span className="mini-expense-desc">{entry.description}</span>
+                      <span className="mini-expense-meta">
+                        {entry.category} • oleh {entry.operatorName || 'Staff'}
+                      </span>
+                    </div>
+                    <span className="mini-expense-amount">{formatCurrency(entry.amount)}</span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="mini-expense-empty">Belum ada pengeluaran hari ini.</div>
+            )}
+
+            <button
+              type="button"
+              className="smart-btn-action"
+              onClick={() => {
+                setFormData(prev => ({
+                  ...prev,
+                  type: 'expense',
+                  category: CATEGORIES.expense[0],
+                  date: format(new Date(), 'yyyy-MM-dd')
+                }));
+                setIsModalOpen(true);
+              }}
+            >
+              <Plus size={14} /> Catat Pengeluaran
+            </button>
           </div>
         </div>
-      </div>
       </div>
 
       <div className="finance-charts-grid hide-on-print">
@@ -637,6 +730,25 @@ const FinancePage = () => {
               ))}
             </div>
 
+            {/* Type Pill Buttons */}
+            <div className="toolbar-group">
+              {[
+                { value: 'all', label: 'Semua' },
+                { value: 'income', label: 'Masuk' },
+                { value: 'expense', label: 'Keluar' }
+              ].map(opt => (
+                <button
+                  key={opt.value}
+                  className={`period-btn ${filterType === opt.value ? 'active' : ''}`}
+                  onClick={() => setFilterType(opt.value)}
+                  aria-pressed={filterType === opt.value}
+                  aria-label={`Filter jenis: ${opt.label}`}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+
             <div className="app-search app-search-md">
               <Search className="app-search-icon" />
               <input 
@@ -690,6 +802,9 @@ const FinancePage = () => {
                       <span className={`source-badge ${entry.isManual ? 'manual' : 'booking'}`}>
                         {getRef(entry)}
                       </span>
+                      {entry.isManual && entry.operatorName && (
+                        <div className="operator-sub">Oleh: {entry.operatorName}</div>
+                      )}
                     </td>
                     <td className="col-money text-income">
                       {entry.type === 'income' ? formatCurrency(entry.amount) : '—'}
@@ -731,6 +846,9 @@ const FinancePage = () => {
                   <span className={`cat-badge ${entry.type}`}>{entry.category}</span>
                   <span className="mobile-ledger-date">{format(new Date(entry.date), 'dd MMM yyyy')}</span>
                   <span className={`source-badge ${entry.isManual ? 'manual' : 'booking'}`}>{getRef(entry)}</span>
+                  {entry.isManual && entry.operatorName && (
+                    <span className="mobile-ledger-operator">Oleh: {entry.operatorName}</span>
+                  )}
                 </div>
               </div>
               <div className="mobile-ledger-right">
