@@ -84,23 +84,24 @@ html {
 }
 
 .nav-brand-mark {
-  width: 38px;
-  height: 38px;
+  width: 56px;
+  height: 56px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
-  border: 1px solid var(--landing-line);
-  border-radius: 8px;
-  background: #050505;
+  overflow: visible;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
   flex: 0 0 auto;
 }
 
 .nav-brand-mark img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transform: scale(1.1);
+  width: 54px;
+  height: 54px;
+  object-fit: contain;
+  transform: none;
+  filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.32));
 }
 
 .brand-text {
@@ -248,19 +249,21 @@ html {
 }
 
 .login-dropdown-icon-wrap {
-  width: 42px;
-  height: 42px;
-  overflow: hidden;
-  border: 1px solid var(--landing-line);
-  border-radius: 8px;
-  background: #050505;
+  width: 52px;
+  height: 52px;
+  overflow: visible;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  flex: 0 0 auto;
 }
 
 .login-dropdown-icon-wrap img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transform: scale(1.1);
+  width: 50px;
+  height: 50px;
+  object-fit: contain;
+  transform: none;
+  filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.32));
 }
 
 .login-dropdown-brand,
@@ -1424,8 +1427,22 @@ html {
 }
 
 @media (max-width: 380px) {
+  .nav-brand {
+    gap: 8px;
+  }
+
+  .nav-brand-mark {
+    width: 50px;
+    height: 50px;
+  }
+
+  .nav-brand-mark img {
+    width: 48px;
+    height: 48px;
+  }
+
   .brand-text {
-    max-width: 108px;
+    max-width: 96px;
     font-size: 0.82rem;
   }
 

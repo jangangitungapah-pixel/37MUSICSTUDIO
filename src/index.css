@@ -188,9 +188,9 @@ option {
   overflow-y: auto;
   min-height: 0;
   background:
-    radial-gradient(circle at 80% 10%, rgba(255, 42, 95, 0.08), transparent 45%),
-    radial-gradient(circle at 10% 90%, rgba(0, 240, 255, 0.05), transparent 45%),
-    radial-gradient(circle at 50% 50%, rgba(168, 85, 247, 0.03), transparent 50%),
+    linear-gradient(140deg, rgba(255, 42, 95, 0.075), transparent 34%),
+    linear-gradient(315deg, rgba(0, 240, 255, 0.048), transparent 32%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.018), transparent 30%),
     var(--bg-dark);
   background-size: 200% 200%;
   animation: auroraGrad 25s ease infinite alternate;
@@ -225,21 +225,35 @@ option {
     --text-3xl: 1.65rem;
   }
   .app-container { flex-direction: column; }
-  .main-content { padding: 14px; padding-bottom: 90px; height: 100vh; }
+  .main-content {
+    height: 100vh;
+    padding: calc(92px + env(safe-area-inset-top, 0px)) 12px 106px;
+    scroll-padding-top: calc(92px + env(safe-area-inset-top, 0px));
+  }
   
 }
 
 @media (max-width: 480px) {
   :root { --text-2xl: 1.2rem; }
-  .main-content { padding: 10px; padding-bottom: 90px; }
+  .main-content {
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-bottom: 104px;
+  }
 }
 
 @media (max-width: 360px) {
-  .main-content { padding: 8px; padding-bottom: 90px; }
+  .main-content {
+    padding-left: 8px;
+    padding-right: 8px;
+    padding-bottom: 102px;
+  }
 }
 
 @supports (padding-bottom: env(safe-area-inset-bottom)) {
-  .main-content { padding-bottom: calc(90px + env(safe-area-inset-bottom)) !important; }
+  @media (max-width: 768px) {
+    .main-content { padding-bottom: calc(106px + env(safe-area-inset-bottom)) !important; }
+  }
 }
 
 /* ════════════════════════════════════════════
@@ -288,8 +302,8 @@ option {
 
 [data-theme="light"] .main-content {
   background:
-    radial-gradient(circle at top right, rgba(255, 42, 95, 0.04), transparent 40%),
-    radial-gradient(circle at bottom left, rgba(0, 150, 200, 0.04), transparent 40%),
+    linear-gradient(140deg, rgba(255, 42, 95, 0.038), transparent 36%),
+    linear-gradient(315deg, rgba(0, 150, 200, 0.035), transparent 34%),
     var(--bg-dark);
 }
 

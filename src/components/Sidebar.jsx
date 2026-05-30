@@ -63,9 +63,53 @@ const Sidebar = () => {
   // Separate primary and secondary menus for Bottom Nav
   const primaryMobileMenus = menuItems.slice(0, 4); // Dashboard, Calendar, Customers, Inventory
   const secondaryMobileMenus = menuItems.slice(4); // Billing, Finance, Staff, Maintenance, Settings
+  const currentMenu = menuItems.find((item) => location.pathname.startsWith(item.path)) || menuItems[0];
+  const currentRoleLabel = userProfile?.role === 'admin' ? 'Administrator' : 'Staff';
 
   return (
     <>
+      {/* ===== MOBILE COMMAND HEADER ===== */}
+      <header className="mobile-command-header">
+        <div className="mobile-brand-lockup">
+          <div className="mobile-brand-mark">
+            <img src="/logo.svg" alt="" />
+          </div>
+          <div className="mobile-brand-copy">
+            <span className="mobile-eyebrow">37 Music Studio</span>
+            <h1>{currentMenu.label}</h1>
+            <span>{currentRoleLabel}</span>
+          </div>
+        </div>
+        <div className="mobile-header-actions">
+          <button
+            type="button"
+            className="mobile-icon-btn"
+            onClick={() => { playClick(); toggleTheme(); }}
+            title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+            aria-label={theme === 'dark' ? 'Aktifkan Light Mode' : 'Aktifkan Dark Mode'}
+          >
+            {theme === 'dark' ? <Sun size={17} /> : <Moon size={17} />}
+          </button>
+          <button
+            type="button"
+            className="mobile-icon-btn notification-bell-btn"
+            onClick={() => { playClick(); setIsNotifOpen(true); }}
+            aria-label="Buka panel notifikasi"
+          >
+            <Bell size={17} />
+            {unreadCount > 0 && <span className="notification-badge">{unreadCount > 99 ? '99+' : unreadCount}</span>}
+          </button>
+          <button
+            type="button"
+            className="mobile-avatar-btn"
+            onClick={() => { playClick(); setIsProfileOpen(true); }}
+            aria-label={`Buka Profil ${displayName}`}
+          >
+            {avatarLetter}
+          </button>
+        </div>
+      </header>
+
       {/* ===== BOTTOM NAV BAR (MOBILE ONLY) ===== */}
       <nav className="bottom-nav-bar">
         {primaryMobileMenus.filter((item) => hasPermission(userProfile, ROUTE_PERMISSIONS[item.path])).map((item) => {
@@ -144,8 +188,8 @@ const Sidebar = () => {
         {/* Brand Header */}
         <div className="sidebar-header">
           <div className="sidebar-brand">
-            <div className="logo-icon" style={{ background: 'transparent', boxShadow: 'none', border: 'none', padding: 0 }}>
-              <img src="/logo.png" alt="Logo" style={{ width: '38px', height: '38px', objectFit: 'contain' }} />
+            <div className="logo-icon">
+              <img src="/logo.svg" alt="Logo" />
             </div>
             <div className="logo-text-group">
               <h1 className="logo-text">37 STUDIO</h1>

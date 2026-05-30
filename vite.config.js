@@ -33,7 +33,7 @@ export default defineConfig({
       filename: 'sw.js',
       registerType: 'autoUpdate',
       injectRegister: 'auto',
-      includeAssets: ['icon-512.png', 'icon-192.png'],
+      includeAssets: ['icon-512.png', 'icon-192.png', 'logo.svg'],
       manifest: {
         name: '37 Music Studio',
         short_name: '37 Studio',

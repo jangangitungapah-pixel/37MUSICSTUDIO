@@ -176,7 +176,7 @@ const LandingPage = () => {
       <nav className={`landing-nav ${scrolled ? 'scrolled' : ''}`}>
         <Link to="/" className="nav-brand" aria-label={`${studioName || '37 Music Studio'} home`}>
           <span className="nav-brand-mark" aria-hidden="true">
-            <img src="/logo.png" alt="" />
+            <img src="/logo.svg" alt="" />
           </span>
           <span className="brand-text">{studioName || '37 MUSIC STUDIO'}</span>
         </Link>
@@ -280,7 +280,7 @@ const LandingPage = () => {
           >
             <div className="login-dropdown-header">
               <div className="login-dropdown-icon-wrap">
-                <img src="/logo.png" alt="" />
+                <img src="/logo.svg" alt="" />
               </div>
               <div>
                 <p className="login-dropdown-brand">{studioName || '37 MUSIC STUDIO'}</p>
@@ -659,7 +659,7 @@ const LandingPage = () => {
           <div className="footer-brand">
             <Link to="/" className="nav-brand">
               <span className="nav-brand-mark" aria-hidden="true">
-                <img src="/logo.png" alt="" />
+                <img src="/logo.svg" alt="" />
               </span>
               <span className="brand-text">{studioName || '37 MUSIC STUDIO'}</span>
             </Link>

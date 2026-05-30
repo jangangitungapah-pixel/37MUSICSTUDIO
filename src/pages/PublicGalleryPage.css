@@ -96,13 +96,18 @@
 
 .pg-logo-container {
   display: inline-flex; align-items: center; justify-content: center;
-  width: 68px; height: 68px; border-radius: 20px;
-  background: rgba(255,255,255,0.02);
-  border: 1px solid rgba(255,255,255,0.06);
-  padding: 12px; margin-bottom: 18px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+  width: 96px; height: 96px; border-radius: 0;
+  background: transparent;
+  border: 0;
+  padding: 0; margin-bottom: 18px;
+  box-shadow: none;
 }
-.pg-logo { width: 100%; height: 100%; object-fit: contain; }
+.pg-logo {
+  width: 94px;
+  height: 94px;
+  object-fit: contain;
+  filter: drop-shadow(0 12px 24px rgba(0,0,0,0.34));
+}
 
 .pg-title {
   font-size: 2.6rem; font-weight: 800;
@@ -642,7 +647,8 @@
 
 @media (max-width: 600px) {
   .pg-container { padding: 20px 14px 50px; }
-  .pg-logo-container { width: 58px; height: 58px; padding: 10px; }
+  .pg-logo-container { width: 78px; height: 78px; padding: 0; }
+  .pg-logo { width: 76px; height: 76px; }
   .pg-title { font-size: 1.7rem; }
   .pg-header-top { margin-bottom: 22px; }
   .pg-back-btn { padding: 8px 13px; font-size: 0.85rem; }

@@ -182,7 +182,7 @@ const PublicGalleryPage = () => {
 
         <MotionSection direction="down" className="pg-title-section">
           <div className="pg-logo-container">
-            <img src="/logo.png" alt="Logo" className="pg-logo" />
+            <img src="/logo.svg" alt="Logo" className="pg-logo" />
           </div>
           <h1 className="pg-title">Galeri Foto {studioName || '37 Studio'}</h1>
           <p className="pg-subtitle">Jelajahi suasana latihan, perlengkapan premium, dan momen seru di studio kami.</p>

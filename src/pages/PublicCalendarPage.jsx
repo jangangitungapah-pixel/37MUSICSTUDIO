@@ -6,7 +6,7 @@ import { useBookingRequestStore } from '../store/useBookingRequestStore';
 import { useSettingsStore } from '../store/useSettingsStore';
 import {
   ChevronLeft, ChevronRight, LogOut, Phone, MessageCircle,
-  Plus, CalendarDays, Clock, Info, X, Moon, Sun
+  Plus, CalendarDays, Clock, Info, X, Moon, Sun, Headphones, ShieldCheck
 } from 'lucide-react';
 import {
   format, addMonths, subMonths, startOfMonth, endOfMonth,
@@ -21,6 +21,17 @@ import { modalPreset, overlayVariants } from '../animations';
 import MotionSection from '../components/animation/MotionSection';
 import { useGalleryStore } from '../store/useGalleryStore';
 import './PublicCalendarPage.css';
+
+const getPublicPhotoCaption = (photo, index = 0) => {
+  const rawCaption = String(photo?.caption || '').trim();
+  const looksLikeFileName = /\d{6,}/.test(rawCaption) || rawCaption.split(/\s+/).length > 5;
+
+  if (!rawCaption || rawCaption.length > 48 || looksLikeFileName) {
+    return `Studio angle ${String(index + 1).padStart(2, '0')}`;
+  }
+
+  return rawCaption;
+};
 
 const PublicCalendarPage = () => {
   const navigate = useNavigate();
@@ -39,6 +50,19 @@ const PublicCalendarPage = () => {
   const customerPhotos = useMemo(() => {
     return gallery.filter(photo => photo.showToCustomer);
   }, [gallery]);
+
+  const heroPhoto = useMemo(() => {
+    return customerPhotos.find(photo => photo.url) ||
+      gallery.find(photo => photo.showOnLandingPage && photo.url) || {
+        url: '/studio-hero.jpg',
+        caption: '37 Music Studio private room',
+      };
+  }, [customerPhotos, gallery]);
+
+  const featuredPhotos = useMemo(() => {
+    const photos = customerPhotos.filter(photo => photo.url);
+    return photos.length > 0 ? photos.slice(0, 8) : [heroPhoto];
+  }, [customerPhotos, heroPhoto]);
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth <= 768);
@@ -143,6 +167,8 @@ const PublicCalendarPage = () => {
     .sort((a, b) => b.discountAmount - a.discountAmount)[0];
   const durationDiscountEst = applicableDiscount ? applicableDiscount.discountAmount : 0;
   const priceEst = basePriceEst - durationDiscountEst;
+  const formattedRate = new Intl.NumberFormat('id-ID').format(pricePerHour || 120000);
+  const operatingLabel = `${String(startHour).padStart(2, '0')}.00-${String(endHour).padStart(2, '0')}.00`;
 
   const closeModal = () => {
     setModalOpen(false);
@@ -259,28 +285,48 @@ const PublicCalendarPage = () => {
     <div className="pc-page">
       {/* ── Dynamic Hero Header ── */}
       <MotionSection direction="down" className="pc-hero" as="header">
-        <div className="pc-hero-bg">
-          <div className="pc-hero-blob-1" />
-          <div className="pc-hero-blob-2" />
+        <div className="pc-hero-media" aria-hidden="true">
+          <img src={heroPhoto.url} alt="" />
+          <div className="pc-hero-scrim" />
         </div>
-        
+        <div className="pc-topbar">
+          <button className="pc-brand-btn" type="button" onClick={handleExitPublic} aria-label="Kembali ke beranda">
+            <span className="pc-brand-mark" aria-hidden="true">
+              <img src="/logo.svg" alt="" />
+            </span>
+            <span>{studioName || '37 MUSIC STUDIO'}</span>
+          </button>
+
+          <div className="pc-topbar-actions">
+            <button
+              type="button"
+              className="pc-theme-btn"
+              onClick={toggleTheme}
+              title={theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
+              aria-label={theme === 'dark' ? 'Aktifkan Light Mode' : 'Aktifkan Dark Mode'}
+            >
+              {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
+            </button>
+            <button className="pc-exit-btn" type="button" onClick={handleExitPublic}>
+              <LogOut size={16} />
+              <span>Kembali</span>
+            </button>
+          </div>
+        </div>
+
         <div className="pc-hero-inner">
-          <div className="pc-hero-logo" style={{ background: 'transparent', boxShadow: 'none', border: 'none' }}>
-            <img src="/logo.png" alt="Logo" style={{ width: '64px', height: '64px', objectFit: 'contain' }} />
+          <div className="pc-hero-kicker">
+            <CalendarDays size={17} />
+            <span>Live public booking calendar</span>
           </div>
           <h1 className="pc-hero-title">{studioName || '37 MUSIC STUDIO'}</h1>
-          <p className="pc-hero-sub">Cek ketersediaan jadwal secara real-time dan booking jadwal latihan atau rekaman band kamu dengan mudah.</p>
+          <p className="pc-hero-sub">Pilih slot kosong, ajukan sesi, lalu lanjut konfirmasi langsung lewat WhatsApp. Dibuat ringkas untuk booking dari HP.</p>
 
           <div className="pc-hero-actions">
-            {/* Today availability chip */}
-            <div className="pc-avail-chip">
-              <span className={`pc-avail-dot ${availableToday > 0 ? 'green' : 'red'}`} />
-              <span>
-                {availableToday > 0
-                  ? `${availableToday} slot tersedia hari ini`
-                  : 'Penuh untuk hari ini'}
-              </span>
-            </div>
+            <a className="pc-primary-link" href="#pc-booking-calendar">
+              <span>Cek Slot</span>
+              <ChevronRight size={18} />
+            </a>
 
             {studioPhone && (
               <a
@@ -293,22 +339,34 @@ const PublicCalendarPage = () => {
                 <span>Chat Admin</span>
               </a>
             )}
-
-            <button className="btn-ghost" onClick={handleExitPublic} title="Kembali ke beranda">
-              <LogOut size={16} />
-              <span>Kembali</span>
-            </button>
-
-            <button
-              type="button"
-              className="pc-theme-btn"
-              onClick={toggleTheme}
-              title={theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
-              aria-label={theme === 'dark' ? 'Aktifkan Light Mode' : 'Aktifkan Dark Mode'}
-            >
-              {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
-            </button>
           </div>
+
+          <div className="pc-hero-stats" aria-label="Ringkasan studio">
+            <div className="pc-avail-chip">
+              <span className={`pc-avail-dot ${availableToday > 0 ? 'green' : 'red'}`} />
+              <span>
+                {availableToday > 0
+                  ? `${availableToday} slot tersedia hari ini`
+                  : 'Penuh untuk hari ini'}
+              </span>
+            </div>
+            <div>
+              <Clock size={16} />
+              <span>{operatingLabel}</span>
+            </div>
+            <div>
+              <Headphones size={16} />
+              <span>Operator ready</span>
+            </div>
+            <div>
+              <ShieldCheck size={16} />
+              <span>Rp {formattedRate}/jam</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="pc-hero-caption">
+          <span>{getPublicPhotoCaption(heroPhoto)}</span>
         </div>
       </MotionSection>
 
@@ -320,7 +378,14 @@ const PublicCalendarPage = () => {
           </div>
         )}
 
-        {/* Toolbar */}
+        <MotionSection delay={0.05} className="pc-calendar-intro">
+          <div>
+            <span>Booking board</span>
+            <h2>Pilih jam kosong yang paling pas.</h2>
+          </div>
+          <p>Slot hijau bisa langsung dipilih. Slot merah atau redup berarti sudah terisi, tutup, atau sudah lewat.</p>
+        </MotionSection>
+
         <MotionSection delay={0.1} className="pc-toolbar">
           {/* Navigation */}
           <div className="pc-nav">
@@ -355,7 +420,7 @@ const PublicCalendarPage = () => {
         </MotionSection>
 
         {/* Grid Panel */}
-        <div className="pc-grid-panel">
+        <div className="pc-grid-panel" id="pc-booking-calendar">
           <div className="pc-scroll-hint" aria-hidden="true">Geser kalender untuk melihat tanggal lainnya</div>
           <div className="pc-grid-wrapper" ref={gridWrapperRef}>
             <div
@@ -475,22 +540,27 @@ const PublicCalendarPage = () => {
       </div>
 
       {/* Gallery Section for Customer View */}
-      {customerPhotos.length > 0 && (
+      {featuredPhotos.length > 0 && (
         <div className="pc-gallery-section">
           <MotionSection direction="up" className="pc-gallery-header">
-            <h2>Suasana Studio 37</h2>
-            <p>Foto ruangan dan alat musik asli di studio kami</p>
+            <span>Vibe studio</span>
+            <h2>Lihat ruangnya sebelum booking.</h2>
+            <p>Foto studio membantu kamu memilih sesi dengan konteks yang lebih jelas.</p>
           </MotionSection>
 
           <div className="pc-gallery-scroll">
-            {customerPhotos.map((photo) => (
-              <div key={photo.id} className="pc-gallery-item" onClick={() => setLightboxPhoto(photo)}>
-                <img src={photo.url} alt={photo.caption} loading="lazy" />
+            {featuredPhotos.map((photo, index) => {
+              const displayCaption = getPublicPhotoCaption(photo, index);
+
+              return (
+              <div key={photo.id || photo.url || index} className="pc-gallery-item" onClick={() => setLightboxPhoto({ ...photo, displayCaption })}>
+                <img src={photo.url} alt={displayCaption} loading="lazy" />
                 <div className="pc-gallery-item-caption">
-                  <span>{photo.caption}</span>
+                  <span>{displayCaption}</span>
                 </div>
               </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       )}
@@ -520,9 +590,9 @@ const PublicCalendarPage = () => {
               className="lightbox-content"
               onClick={(e) => e.stopPropagation()}
             >
-              <img src={lightboxPhoto.url} alt={lightboxPhoto.caption} />
+              <img src={lightboxPhoto.url} alt={lightboxPhoto.displayCaption || 'Foto studio'} />
               <div className="lightbox-footer">
-                <h3 style={{ color: '#fff', fontSize: '1.1rem', margin: '12px 0 0 0', fontWeight: '600' }}>{lightboxPhoto.caption}</h3>
+                <h3 style={{ color: '#fff', fontSize: '1.1rem', margin: '12px 0 0 0', fontWeight: '600' }}>{lightboxPhoto.displayCaption || 'Foto studio'}</h3>
               </div>
             </motion.div>
           </motion.div>
