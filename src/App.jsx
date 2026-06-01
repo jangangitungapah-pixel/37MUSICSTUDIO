@@ -238,6 +238,33 @@ const ProtectedRoute = ({ children }) => {
   );
 };
 
+const PageTitleUpdater = () => {
+  const location = useLocation();
+
+  useEffect(() => {
+    const routeTitles = {
+      '/': 'Welcome',
+      '/dashboard': 'Dashboard',
+      '/calendar': 'Kalender',
+      '/customers': 'Pelanggan',
+      '/inventory': 'Inventaris',
+      '/billing': 'Billing & Kasir',
+      '/finance': 'Keuangan',
+      '/staff': 'Staff',
+      '/maintenance': 'Maintenance Log',
+      '/gallery': 'Galeri',
+      '/settings': 'Pengaturan',
+      '/jadwal-publik': 'Jadwal Publik',
+      '/galeri': 'Galeri Publik',
+    };
+
+    const title = routeTitles[location.pathname] || 'Dashboard';
+    document.title = `${title} | 37 Music Studio`;
+  }, [location]);
+
+  return null;
+};
+
 function App() {
   const { theme } = useThemeStore();
 
@@ -247,6 +274,7 @@ function App() {
 
   return (
     <Router>
+      <PageTitleUpdater />
       <Toaster
         theme={theme}
         position="bottom-right"

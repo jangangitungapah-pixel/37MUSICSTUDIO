@@ -9,7 +9,6 @@ import { toast } from 'sonner';
 import { getMaintenanceUsageInsights } from '../lib/smartInsights';
 import { motion } from 'framer-motion';
 import { pagePreset } from '../animations';
-import Lottie from 'lottie-react';
 import { useEffect } from 'react';
 import {
   useReactTable,
@@ -28,14 +27,7 @@ const MaintenancePage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [selectedLog, setSelectedLog] = useState(null);
-  const [animationData, setAnimationData] = useState(null);
 
-  useEffect(() => {
-    fetch('https://lottie.host/80c4e1f7-e737-4d76-880c-a9a304889c10/3B18t52W7l.json')
-      .then(res => res.json())
-      .then(data => setAnimationData(data))
-      .catch(err => console.error("Lottie load failed", err));
-  }, []);
   
   const [formData, setFormData] = useState({
     description: '',
@@ -385,16 +377,13 @@ const MaintenancePage = () => {
         </div>
 
         {filteredMaintenanceLogs.length === 0 ? (
-          <div className="maint-empty" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '40px 20px', textAlign: 'center' }}>
-            {animationData ? (
-              <div style={{ width: 140, height: 140, marginBottom: '16px' }}>
-                <Lottie animationData={animationData} loop={true} />
-              </div>
-            ) : (
-              <Wrench size={48} color="var(--text-muted)" style={{ marginBottom: '16px' }} />
-            )}
-            <p style={{ fontWeight: '600', color: 'var(--text-primary)', marginBottom: '8px' }}>Belum ada log maintenance.</p>
-            <small style={{ color: 'var(--text-muted)', maxWidth: '380px' }}>Tambahkan jadwal maintenance melalui tombol di atas atau melalui halaman <strong>Calendar</strong>.</small>
+          <div className="empty-state-container maint-empty-state">
+            <div className="empty-state-icon-wrapper">
+              <Wrench className="empty-state-icon" size={48} />
+              <div className="empty-state-glow" />
+            </div>
+            <h4 className="empty-state-title">Belum ada log maintenance</h4>
+            <p className="empty-state-subtitle">Tambahkan jadwal maintenance melalui tombol di atas atau melalui halaman <strong>Calendar</strong>.</p>
           </div>
         ) : (
           <>

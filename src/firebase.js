@@ -4,13 +4,13 @@ import { getAuth } from "firebase/auth";
 import { getStorage } from "firebase/storage";
 
 export const firebaseConfig = {
-  apiKey: "AIzaSyDyd_OUnPDzmuAyzL6pMfGlB7CRuwllnfc",
-  authDomain: "music-studio-2.firebaseapp.com",
-  projectId: "music-studio-2",
-  storageBucket: "music-studio-2.firebasestorage.app",
-  messagingSenderId: "389184621786",
-  appId: "1:389184621786:web:9ec5e184e8b83b4310e9e3",
-  measurementId: "G-EXPKHETX17"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 };
 
 // Initialize Firebase

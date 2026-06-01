@@ -25,7 +25,6 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import useSound from 'use-sound';
 import { CLICK_SOUND } from '../lib/sounds';
-import Lottie from 'lottie-react';
 import confetti from 'canvas-confetti';
 import { PDFDownloadLink } from '@react-pdf/renderer';
 import { ReceiptPDF } from '../components/ReceiptPDF';
@@ -64,14 +63,7 @@ const FinancePage = () => {
   const { theme } = useThemeStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [playClick] = useSound(CLICK_SOUND, { volume: 0.25 });
-  const [animationData, setAnimationData] = useState(null);
 
-  useEffect(() => {
-    fetch('/lottie/finance-empty.json')
-      .then(res => res.json())
-      .then(data => setAnimationData(data))
-      .catch(err => console.error("Lottie load failed", err));
-  }, []);
 
   const { register, handleSubmit: handleFormSubmit, reset, setValue, watch, formState: { errors } } = useForm({
     defaultValues: {
@@ -947,16 +939,13 @@ const FinancePage = () => {
         {/* Desktop Table */}
         <div className="app-table-wrapper hide-on-mobile" style={{ flex: 1, overflow: 'auto' }}>
           {filteredData.length === 0 ? (
-            <div className="maint-empty" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '40px 20px', textAlign: 'center' }}>
-              {animationData ? (
-                <div style={{ width: 140, height: 140, marginBottom: '16px' }}>
-                  <Lottie animationData={animationData} loop={true} />
-                </div>
-              ) : (
-                <Wallet size={48} color="var(--text-muted)" style={{ marginBottom: '16px' }} />
-              )}
-              <p style={{ fontWeight: '600', color: 'var(--text-primary)', marginBottom: '8px' }}>Tidak ada catatan transaksi untuk periode ini.</p>
-              <small style={{ color: 'var(--text-muted)' }}>Tambahkan transaksi baru atau sesuaikan filter Anda.</small>
+            <div className="empty-state-container finance-empty-state">
+              <div className="empty-state-icon-wrapper">
+                <Wallet className="empty-state-icon" size={48} />
+                <div className="empty-state-glow" />
+              </div>
+              <h4 className="empty-state-title">Tidak ada catatan transaksi untuk periode ini</h4>
+              <p className="empty-state-subtitle">Tambahkan transaksi baru atau sesuaikan filter Anda.</p>
             </div>
           ) : (
             <table className="app-table finance-table">
@@ -1008,15 +997,12 @@ const FinancePage = () => {
         {/* Mobile Cards */}
         <div className="mobile-ledger-list show-on-mobile">
           {filteredData.length === 0 ? (
-            <div className="maint-empty" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '30px 10px', textAlign: 'center' }}>
-              {animationData ? (
-                <div style={{ width: 100, height: 100, marginBottom: '12px' }}>
-                  <Lottie animationData={animationData} loop={true} />
-                </div>
-              ) : (
-                <Wallet size={36} color="var(--text-muted)" style={{ marginBottom: '12px' }} />
-              )}
-              <p style={{ fontWeight: '600', color: 'var(--text-primary)', marginBottom: '4px', fontSize: '14px' }}>Tidak ada transaksi.</p>
+            <div className="empty-state-container finance-empty-state mobile-compact" style={{ padding: '30px 10px' }}>
+              <div className="empty-state-icon-wrapper" style={{ width: 80, height: 80, marginBottom: '12px' }}>
+                <Wallet className="empty-state-icon" size={38} />
+                <div className="empty-state-glow" />
+              </div>
+              <h4 className="empty-state-title" style={{ fontSize: '0.95rem' }}>Tidak ada transaksi</h4>
             </div>
           ) : table.getRowModel().rows.map(row => {
             const entry = row.original;

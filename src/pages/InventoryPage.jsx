@@ -14,7 +14,6 @@ import { z } from 'zod';
 import useSound from 'use-sound';
 import { CLICK_SOUND } from '../lib/sounds';
 import { format } from 'date-fns';
-import Lottie from 'lottie-react';
 import {
   useReactTable,
   getCoreRowModel,
@@ -58,14 +57,7 @@ const InventoryPage = () => {
   const [isCatDropdownOpen, setIsCatDropdownOpen] = useState(false);
   
   const [playClick] = useSound(CLICK_SOUND, { volume: 0.25 });
-  const [animationData, setAnimationData] = useState(null);
 
-  useEffect(() => {
-    fetch('/lottie/inventory-empty.json')
-      .then(res => res.json())
-      .then(data => setAnimationData(data))
-      .catch(err => console.error("Lottie load failed", err));
-  }, []);
 
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -479,16 +471,13 @@ const InventoryPage = () => {
           </div>
 
         {filteredInventory.length === 0 ? (
-          <div className="maint-empty" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '40px 20px', textAlign: 'center' }}>
-            {animationData ? (
-              <div style={{ width: 140, height: 140, marginBottom: '16px' }}>
-                <Lottie animationData={animationData} loop={true} />
-              </div>
-            ) : (
-              <Package size={48} color="var(--text-muted)" style={{ marginBottom: '16px' }} />
-            )}
-            <p style={{ fontWeight: '600', color: 'var(--text-primary)', marginBottom: '8px' }}>Tidak ada data inventaris ditemukan.</p>
-            <small style={{ color: 'var(--text-muted)', maxWidth: '380px' }}>Tambahkan item inventaris baru melalui tombol di atas.</small>
+          <div className="empty-state-container inventory-empty-state">
+            <div className="empty-state-icon-wrapper">
+              <Package className="empty-state-icon" size={48} />
+              <div className="empty-state-glow" />
+            </div>
+            <h4 className="empty-state-title">Tidak ada data inventaris ditemukan</h4>
+            <p className="empty-state-subtitle">Tambahkan item inventaris baru melalui tombol di atas.</p>
           </div>
         ) : (
           <>
