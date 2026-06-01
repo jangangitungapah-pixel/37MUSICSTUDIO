@@ -12,6 +12,9 @@ export const useGalleryStore = create((set, get) => {
   
   let realGallery = [];
   let realAlbums = [];
+  const markListenerReady = (loadedKey) => {
+    set({ [loadedKey]: true });
+  };
 
   // Firestore Realtime Listener for Photos
   onSnapshot(galleryRef, (snapshot) => {
@@ -33,7 +36,7 @@ export const useGalleryStore = create((set, get) => {
     } else {
       set({ isLoaded: true });
     }
-  });
+  }, () => markListenerReady('isLoaded'));
 
   // Firestore Realtime Listener for Albums
   onSnapshot(albumsRef, (snapshot) => {
@@ -51,7 +54,7 @@ export const useGalleryStore = create((set, get) => {
     } else {
       set({ isAlbumsLoaded: true });
     }
-  });
+  }, () => markListenerReady('isAlbumsLoaded'));
 
   // Subscribe to Demo Mode changes
   useDemoStore.subscribe((demoState) => {

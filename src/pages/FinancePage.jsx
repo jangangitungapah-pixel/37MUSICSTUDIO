@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { useFinanceStore } from '../store/useFinanceStore';
 import { useBookingStore } from '../store/useBookingStore';
 import { useSettingsStore } from '../store/useSettingsStore';
@@ -402,7 +402,7 @@ const FinancePage = () => {
         return 'Semua Periode';
       }
       return `${monthName} ${year}`;
-    } catch (e) {
+    } catch {
       return '';
     }
   }, [lineChartData, filterPeriod]);

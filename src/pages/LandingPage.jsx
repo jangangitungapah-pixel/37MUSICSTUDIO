@@ -176,7 +176,7 @@ const LandingPage = () => {
       <nav className={`landing-nav ${scrolled ? 'scrolled' : ''}`}>
         <Link to="/" className="nav-brand" aria-label={`${studioName || '37 Music Studio'} home`}>
           <span className="nav-brand-mark" aria-hidden="true">
-            <img src="/logo.svg" alt="" />
+            <span className="nav-brand-monogram">37</span>
           </span>
           <span className="brand-text">{studioName || '37 MUSIC STUDIO'}</span>
         </Link>

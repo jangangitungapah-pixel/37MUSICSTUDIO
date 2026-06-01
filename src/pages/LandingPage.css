@@ -16,6 +16,7 @@ html {
   --landing-cyan: #58e0e9;
   --landing-green: #8bd39b;
   --landing-shadow: 0 24px 70px rgba(0, 0, 0, 0.38);
+  --hero-image-position: 24% center;
 
   min-height: 100vh;
   overflow-x: hidden;
@@ -78,30 +79,36 @@ html {
   display: inline-flex;
   align-items: center;
   min-width: 0;
-  gap: 10px;
+  gap: 9px;
   color: var(--landing-text);
   text-decoration: none;
 }
 
 .nav-brand-mark {
-  width: 56px;
-  height: 56px;
+  width: 42px;
+  height: 42px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  overflow: visible;
-  border: 0;
-  border-radius: 0;
-  background: transparent;
+  overflow: hidden;
+  border: 1px solid rgba(227, 184, 109, 0.44);
+  border-radius: 8px;
+  background:
+    linear-gradient(145deg, rgba(227, 184, 109, 0.18), rgba(255, 61, 102, 0.08)),
+    rgba(8, 8, 7, 0.58);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.26);
   flex: 0 0 auto;
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
 }
 
-.nav-brand-mark img {
-  width: 54px;
-  height: 54px;
-  object-fit: contain;
-  transform: none;
-  filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.32));
+.nav-brand-monogram {
+  color: var(--landing-gold);
+  font-family: var(--font-display);
+  font-size: 1.08rem;
+  font-weight: 950;
+  line-height: 1;
+  text-transform: uppercase;
 }
 
 .brand-text {
@@ -391,11 +398,11 @@ html {
 .hero-section {
   position: relative;
   z-index: 1;
-  min-height: 82svh;
+  min-height: 88svh;
   display: flex;
   align-items: flex-end;
   overflow: hidden;
-  padding: 86px 16px 20px;
+  padding: 88px 16px 22px;
   isolation: isolate;
 }
 
@@ -416,15 +423,15 @@ html {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center;
-  filter: saturate(1.08) contrast(1.05);
+  object-position: var(--hero-image-position);
+  filter: saturate(1.12) contrast(1.04) brightness(1.04);
 }
 
 .hero-scrim {
   z-index: 1;
   background:
-    linear-gradient(180deg, rgba(0, 0, 0, 0.58) 0%, rgba(0, 0, 0, 0.18) 38%, rgba(7, 7, 6, 0.92) 100%),
-    linear-gradient(90deg, rgba(0, 0, 0, 0.75) 0%, rgba(0, 0, 0, 0.5) 46%, rgba(0, 0, 0, 0.16) 100%);
+    linear-gradient(180deg, rgba(0, 0, 0, 0.24) 0%, rgba(0, 0, 0, 0.06) 34%, rgba(7, 7, 6, 0.74) 72%, rgba(7, 7, 6, 0.96) 100%),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.18) 0%, rgba(0, 0, 0, 0.04) 52%, rgba(0, 0, 0, 0.42) 100%);
 }
 
 .hero-shell {
@@ -1201,6 +1208,10 @@ html {
 }
 
 @media (min-width: 768px) {
+  .landing-container {
+    --hero-image-position: center;
+  }
+
   .landing-container section,
   .landing-footer {
     scroll-margin-top: 90px;
@@ -1213,6 +1224,19 @@ html {
 
   .landing-nav.scrolled {
     height: 70px;
+  }
+
+  .nav-brand {
+    gap: 12px;
+  }
+
+  .nav-brand-mark {
+    width: 46px;
+    height: 46px;
+  }
+
+  .nav-brand-monogram {
+    font-size: 1.16rem;
   }
 
   .brand-text {
@@ -1264,6 +1288,12 @@ html {
   .hero-section {
     min-height: 82svh;
     padding: 108px 32px 34px;
+  }
+
+  .hero-scrim {
+    background:
+      linear-gradient(180deg, rgba(0, 0, 0, 0.42) 0%, rgba(0, 0, 0, 0.14) 38%, rgba(7, 7, 6, 0.9) 100%),
+      linear-gradient(90deg, rgba(0, 0, 0, 0.72) 0%, rgba(0, 0, 0, 0.46) 46%, rgba(0, 0, 0, 0.14) 100%);
   }
 
   .hero-shell {
@@ -1432,13 +1462,12 @@ html {
   }
 
   .nav-brand-mark {
-    width: 50px;
-    height: 50px;
+    width: 40px;
+    height: 40px;
   }
 
-  .nav-brand-mark img {
-    width: 48px;
-    height: 48px;
+  .nav-brand-monogram {
+    font-size: 1rem;
   }
 
   .brand-text {
@@ -1510,7 +1539,8 @@ html {
 
 [data-theme="light"] .nav-theme-btn,
 [data-theme="light"] .nav-login-btn,
-[data-theme="light"] .nav-hamburger {
+[data-theme="light"] .nav-hamburger,
+[data-theme="light"] .nav-brand-mark {
   background: rgba(255, 255, 255, 0.62);
   color: var(--landing-text);
 }
@@ -1538,8 +1568,8 @@ html {
 
 [data-theme="light"] .hero-scrim {
   background:
-    linear-gradient(180deg, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.16) 38%, rgba(0, 0, 0, 0.82) 100%),
-    linear-gradient(90deg, rgba(0, 0, 0, 0.72) 0%, rgba(0, 0, 0, 0.48) 46%, rgba(0, 0, 0, 0.12) 100%);
+    linear-gradient(180deg, rgba(0, 0, 0, 0.36) 0%, rgba(0, 0, 0, 0.1) 34%, rgba(0, 0, 0, 0.76) 72%, rgba(0, 0, 0, 0.9) 100%),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.28) 0%, rgba(0, 0, 0, 0.08) 52%, rgba(0, 0, 0, 0.44) 100%);
 }
 
 [data-theme="light"] .experience-card,

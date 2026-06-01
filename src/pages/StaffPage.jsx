@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useStaffStore } from '../store/useStaffStore';
 import { useAuditLogStore } from '../store/useAuditLogStore';
@@ -13,11 +13,6 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import useSound from 'use-sound';
 import { CLICK_SOUND } from '../lib/sounds';
-import {
-  useReactTable,
-  getCoreRowModel,
-  getSortedRowModel
-} from '@tanstack/react-table';
 import './StaffPage.css';
 
 const staffSchema = z.object({

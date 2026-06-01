@@ -407,7 +407,6 @@ const CalendarPage = () => {
   const getStatusLabel = (s) => ({ confirmed: 'Lunas', dp: 'DP', pending: 'Belum Bayar', cancelled: 'Batal' }[s] || s);
   const todayStr = format(new Date(), 'yyyy-MM-dd');
   const dayNames = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
-  let emptyCellAssigned = false;
 
   const viewModes = [
     { id: 'day', label: 'Hari', icon: CalendarDays },

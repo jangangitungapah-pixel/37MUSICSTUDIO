@@ -72,7 +72,7 @@ const GalleryPage = () => {
     e.dataTransfer.effectAllowed = 'move';
   };
 
-  const handlePhotoDragOver = (e, targetPhotoId) => {
+  const handlePhotoDragOver = (e) => {
     e.preventDefault();
   };
 
@@ -900,7 +900,7 @@ const GalleryPage = () => {
             <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: '700' }}>Buat Album Baru</h4>
             <div className="form-group" style={{ margin: 0 }}>
               <label htmlFor="new-album-name" className="bf-label" style={{ fontSize: '0.85rem' }}>Nama Album <span className="bf-required">*</span></label>
-              <input id="new-album-name" type="text" className="bf-input" placeholder="Contoh: Suasana Studio A" value={newAlbumName} onChange={(e) => setNewAlbumName(e.target.value)} maxLength={40} required disabled={isCreatingAlbum} />
+              <input id="new-album-name" type="text" className="bf-input" placeholder="Contoh: Suasana Live Room" value={newAlbumName} onChange={(e) => setNewAlbumName(e.target.value)} maxLength={40} required disabled={isCreatingAlbum} />
             </div>
             <div className="form-group" style={{ margin: 0 }}>
               <label htmlFor="new-album-desc" className="bf-label" style={{ fontSize: '0.85rem' }}>Deskripsi Singkat</label>

@@ -64,7 +64,7 @@ const BookingForm = ({ onClose, initialDate, initialHour }) => {
 
   const today = format(new Date(), 'yyyy-MM-dd');
 
-  const { register, handleSubmit: handleFormSubmit, reset, setValue, watch, formState: { errors } } = useForm({
+  const { register, handleSubmit: handleFormSubmit, setValue, watch, formState: { errors } } = useForm({
     defaultValues: {
       type: 'booking',
       band: '',
@@ -93,7 +93,6 @@ const BookingForm = ({ onClose, initialDate, initialHour }) => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    let val = (name === 'hour' || name === 'duration' || name === 'dpAmount') ? Number(value) : value;
     
     if (name === 'sessionId') {
       const session = recordingSessions.find(s => s.id === value);

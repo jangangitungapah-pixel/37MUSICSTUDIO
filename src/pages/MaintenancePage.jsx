@@ -9,7 +9,6 @@ import { toast } from 'sonner';
 import { getMaintenanceUsageInsights } from '../lib/smartInsights';
 import { motion } from 'framer-motion';
 import { pagePreset } from '../animations';
-import { useEffect } from 'react';
 import {
   useReactTable,
   getCoreRowModel,
