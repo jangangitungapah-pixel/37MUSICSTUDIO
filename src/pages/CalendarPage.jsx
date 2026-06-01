@@ -17,6 +17,7 @@ import { useCalendarBookingResize } from '../hooks/useCalendarBookingResize';
 import { mobileMenuVariants, activeIndicatorTransition } from '../animations';
 import Fuse from 'fuse.js';
 import useSound from 'use-sound';
+import { CLICK_SOUND } from '../lib/sounds';
 import './CalendarPage.css';
 import './CalendarPrintStyles.css';
 
@@ -34,7 +35,7 @@ const CalendarPage = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [now, setNow] = useState(new Date());
   const [areTopPanelsCollapsed, setAreTopPanelsCollapsed] = useState(false);
-  const [playClick] = useSound('/click.wav', { volume: 0.25 });
+  const [playClick] = useSound(CLICK_SOUND, { volume: 0.25 });
 
   // Swipe gesture state
   const touchStartRef = useRef(null);

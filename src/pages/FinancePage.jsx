@@ -24,6 +24,7 @@ import Fuse from 'fuse.js';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import useSound from 'use-sound';
+import { CLICK_SOUND } from '../lib/sounds';
 import Lottie from 'lottie-react';
 import confetti from 'canvas-confetti';
 import { PDFDownloadLink } from '@react-pdf/renderer';
@@ -62,7 +63,7 @@ const FinancePage = () => {
   const { pricePerHour, studioName, studioAddress, studioPhone } = useSettingsStore();
   const { theme } = useThemeStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [playClick] = useSound('/click.wav', { volume: 0.25 });
+  const [playClick] = useSound(CLICK_SOUND, { volume: 0.25 });
   const [animationData, setAnimationData] = useState(null);
 
   useEffect(() => {

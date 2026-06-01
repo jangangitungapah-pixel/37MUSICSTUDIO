@@ -12,6 +12,8 @@ import Fuse from 'fuse.js';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import useSound from 'use-sound';
+import { CLICK_SOUND } from '../lib/sounds';
+import { format } from 'date-fns';
 import Lottie from 'lottie-react';
 import {
   useReactTable,
@@ -55,7 +57,7 @@ const InventoryPage = () => {
   const [selectedItem, setSelectedItem] = useState(null);
   const [isCatDropdownOpen, setIsCatDropdownOpen] = useState(false);
   
-  const [playClick] = useSound('/click.wav', { volume: 0.25 });
+  const [playClick] = useSound(CLICK_SOUND, { volume: 0.25 });
   const [animationData, setAnimationData] = useState(null);
 
   useEffect(() => {
@@ -84,6 +86,7 @@ const InventoryPage = () => {
   });
 
   const watchedCategory = watch('category');
+  const watchedCondition = watch('condition');
   const [showNewCat, setShowNewCat] = useState(false);
   const [newCatName, setNewCatName] = useState('');
 
@@ -122,6 +125,7 @@ const InventoryPage = () => {
   }, [inventory, searchQuery, activeCategory]);
 
   const handleOpenNew = () => {
+    playClick();
     setEditingItem(null);
     const today = new Date().toISOString().split('T')[0];
     reset({ name: '', category: categories[0] || '', brand: '', qty: 1, condition: 'Excellent', rentalPrice: 0, lastServiced: today, nextService: '', notes: '' });
@@ -130,6 +134,7 @@ const InventoryPage = () => {
   };
 
   const handleOpenEdit = (item) => {
+    playClick();
     setEditingItem(item);
     reset({ 
       name: item.name || '',
@@ -148,6 +153,7 @@ const InventoryPage = () => {
   };
 
   const handleDelete = (id) => {
+    playClick();
     const item = inventory.find(equipment => equipment.id === id);
     toast.warning('Hapus item inventaris?', {
       description: item?.name || 'Data alat ini akan dihapus permanen.',

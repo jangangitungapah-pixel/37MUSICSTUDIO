@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { CalendarDays, Users, Package, CreditCard, Settings, BookOpen, PieChart, LogOut, Bell, ChevronRight, ChevronLeft, FlaskConical, Sun, Moon, Shield, Hammer, MoreHorizontal, Image } from 'lucide-react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import useSound from 'use-sound';
+import { CLICK_SOUND, HOVER_SOUND } from '../lib/sounds';
 import { useAuthStore } from '../store/useAuthStore';
 import { useNotificationStore } from '../store/useNotificationStore';
 import { useThemeStore } from '../store/useThemeStore';
@@ -13,7 +14,7 @@ import NotificationPanel from './NotificationPanel';
 import Modal from './Modal';
 import { sidebarContainerVariants, sidebarItemVariants, bottomSheetVariants, activeIndicatorTransition, navTap } from '../animations';
 import './Sidebar.css';
-
+ 
 const Sidebar = () => {
   const [mobileOpen, setMobileOpen] = useState(false); // Used for the "More" bottom sheet now
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -26,8 +27,9 @@ const Sidebar = () => {
   const { theme, toggleTheme } = useThemeStore();
   const navigate = useNavigate();
   const location = useLocation();
-  const [playClick] = useSound('/click.wav', { volume: 0.25 });
-
+  const [playClick] = useSound(CLICK_SOUND, { volume: 0.25 });
+  const [playHover] = useSound(HOVER_SOUND, { volume: 0.20 });
+ 
   const unreadCount = notifications.filter(n => !n.isRead).length;
 
   const handleLogout = async () => {
@@ -180,6 +182,7 @@ const Sidebar = () => {
         <button 
           className="collapse-toggle" 
           onClick={() => { playClick(); setIsCollapsed(!isCollapsed); }}
+          onMouseEnter={playHover}
           aria-label={isCollapsed ? "Buka sidebar" : "Tutup sidebar"}
         >
           {isCollapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
@@ -199,6 +202,7 @@ const Sidebar = () => {
           <button 
             className="notification-bell-btn sidebar-bell" 
             onClick={() => { playClick(); setIsNotifOpen(true); }}
+            onMouseEnter={playHover}
             aria-label="Buka panel notifikasi"
           >
             <Bell size={18} />
@@ -226,6 +230,7 @@ const Sidebar = () => {
                     to={item.path} 
                     className={`nav-item ${isActive ? 'active' : ''}`}
                     onClick={() => { playClick(); setMobileOpen(false); }}
+                    onMouseEnter={playHover}
                   >
                     {isActive && (
                       <motion.div 
@@ -253,6 +258,7 @@ const Sidebar = () => {
               <button
                 className="demo-badge-link"
                 onClick={() => { navigate('/settings'); setMobileOpen(false); }}
+                onMouseEnter={playHover}
                 title="Mode Demo Aktif — klik untuk ke Settings"
                 aria-label="Mode Demo Aktif, klik untuk membuka Pengaturan"
               >
@@ -263,6 +269,7 @@ const Sidebar = () => {
               <button 
                 className="demo-badge-off" 
                 onClick={toggleDemoMode}
+                onMouseEnter={playHover}
                 title="Nonaktifkan Mode Demo"
                 aria-label="Nonaktifkan Mode Demo"
               >
@@ -272,7 +279,7 @@ const Sidebar = () => {
           )}
 
           {/* Theme Toggle */}
-          <button className="theme-toggle-btn" onClick={toggleTheme} title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}>
+          <button className="theme-toggle-btn" onClick={toggleTheme} onMouseEnter={playHover} title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}>
             <span className="nav-icon" style={{ flexShrink: 0 }}>
               {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
             </span>
@@ -285,6 +292,7 @@ const Sidebar = () => {
             <button 
               className="user-profile-btn" 
               onClick={() => setIsProfileOpen(true)}
+              onMouseEnter={playHover}
               title="Edit Profil"
               aria-label={`Buka Profil ${displayName}`}
             >
@@ -297,6 +305,7 @@ const Sidebar = () => {
             <button 
               className="sidebar-logout-btn" 
               onClick={handleLogout} 
+              onMouseEnter={playHover}
               title="Logout"
               aria-label="Logout"
             >
