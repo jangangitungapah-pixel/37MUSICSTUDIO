@@ -77,7 +77,7 @@ const Sidebar = () => {
       <header className="mobile-command-header">
         <div className="mobile-brand-lockup">
           <div className="mobile-brand-mark">
-            <img src="/logo.svg" alt="" />
+            <span className="brand-monogram" aria-hidden="true">37</span>
           </div>
           <div className="mobile-brand-copy">
             <span className="mobile-eyebrow">37 Music Studio</span>
@@ -204,7 +204,7 @@ const Sidebar = () => {
         <div className="sidebar-header">
           <div className="sidebar-brand">
             <div className="logo-icon">
-              <img src="/logo.svg" alt="Logo" />
+              <span className="brand-monogram" aria-hidden="true">37</span>
             </div>
             <div className="logo-text-group">
               <h1 className="logo-text">37 STUDIO</h1>

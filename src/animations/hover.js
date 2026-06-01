@@ -4,25 +4,26 @@
  */
 
 export const buttonHover = {
-  scale: 1.02,
-  transition: { duration: 0.2, ease: 'easeOut' }
+  y: -1,
+  transition: { duration: 0.15, ease: 'easeOut' }
 };
 
 export const buttonTap = {
-  scale: 0.96,
-  transition: { duration: 0.1 }
+  scale: 0.98,
+  y: 0,
+  transition: { duration: 0.08 }
 };
 
 export const cardHover = {
-  y: -4,
-  boxShadow: '0 12px 32px rgba(0,0,0,0.12)',
-  transition: { duration: 0.3, ease: 'easeOut' }
+  y: -2,
+  boxShadow: '0 0 2px rgba(0,0,0,0.16), 0 8px 16px rgba(0,0,0,0.18)',
+  transition: { duration: 0.22, ease: 'easeOut' }
 };
 
 export const cardTap = {
-  scale: 0.98,
+  scale: 0.99,
   y: 0,
-  transition: { duration: 0.1 }
+  transition: { duration: 0.08 }
 };
 
 export const iconHover = {

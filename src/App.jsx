@@ -12,6 +12,7 @@ import { ROUTE_PERMISSIONS, hasPermission } from './lib/permissions';
 import './index.css';
 import './pages/CalendarPage.css'; // Shared global utilities and grid styles
 import './components/BookingForm.css'; // Shared global form styles (.form-group, .form-input)
+import './styles/fluent2-assets.css';
 import PublicCalendarPage from './pages/PublicCalendarPage';
 import LandingPage from './pages/LandingPage';
 import PublicGalleryPage from './pages/PublicGalleryPage';

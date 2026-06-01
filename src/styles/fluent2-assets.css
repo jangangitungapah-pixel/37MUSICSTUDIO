@@ -1,0 +1,464 @@
+/*
+  Fluent 2 Web asset layer mapped to the existing 37 Music Studio app.
+  The Figma kit is token-driven, so these aliases intentionally wrap the
+  current app tokens instead of replacing the product brand.
+*/
+
+:root {
+  --fluent-font-family-base: 'Segoe UI Variable', 'Segoe UI', 'Inter', 'Plus Jakarta Sans', system-ui, sans-serif;
+  --fluent-font-family-display: 'Segoe UI Variable Display', 'Segoe UI', 'Plus Jakarta Sans', system-ui, sans-serif;
+
+  --fluent-radius-none: 0;
+  --fluent-radius-small: 4px;
+  --fluent-radius-medium: 6px;
+  --fluent-radius-large: 8px;
+  --fluent-radius-xlarge: 12px;
+  --fluent-radius-circular: 999px;
+
+  --fluent-duration-ultra-fast: 80ms;
+  --fluent-duration-fast: 150ms;
+  --fluent-duration-normal: 220ms;
+  --fluent-duration-slow: 320ms;
+  --fluent-curve-easy-ease: cubic-bezier(0.33, 0, 0.67, 1);
+  --fluent-curve-easy-ease-max: cubic-bezier(0.16, 1, 0.3, 1);
+
+  --fluent-shadow-2:
+    0 0 2px rgba(0, 0, 0, 0.22),
+    0 1px 2px rgba(0, 0, 0, 0.18);
+  --fluent-shadow-4:
+    0 0 2px rgba(0, 0, 0, 0.24),
+    0 2px 4px rgba(0, 0, 0, 0.2);
+  --fluent-shadow-8:
+    0 0 2px rgba(0, 0, 0, 0.24),
+    0 4px 8px rgba(0, 0, 0, 0.22);
+  --fluent-shadow-16:
+    0 0 2px rgba(0, 0, 0, 0.24),
+    0 8px 16px rgba(0, 0, 0, 0.26);
+  --fluent-shadow-28:
+    0 0 8px rgba(0, 0, 0, 0.28),
+    0 14px 28px rgba(0, 0, 0, 0.28);
+
+  --fluent-color-neutral-background-1: #11100f;
+  --fluent-color-neutral-background-2: #1b1a19;
+  --fluent-color-neutral-background-3: #242321;
+  --fluent-color-neutral-background-4: #2f2d2a;
+  --fluent-color-neutral-foreground-1: #fffaf0;
+  --fluent-color-neutral-foreground-2: #d7d0c4;
+  --fluent-color-neutral-foreground-3: #a9a198;
+  --fluent-color-neutral-stroke-1: rgba(255, 250, 240, 0.12);
+  --fluent-color-neutral-stroke-2: rgba(255, 250, 240, 0.18);
+  --fluent-color-subtle-background-hover: rgba(255, 255, 255, 0.06);
+  --fluent-color-subtle-background-pressed: rgba(255, 255, 255, 0.1);
+
+  --fluent-color-brand-background: var(--accent-pink);
+  --fluent-color-brand-background-hover: var(--accent-pink-hover);
+  --fluent-color-brand-foreground: #ffffff;
+  --fluent-color-accent-line: var(--accent-cyan);
+
+  --fluent-control-height-small: 32px;
+  --fluent-control-height-medium: 40px;
+  --fluent-control-height-large: 48px;
+  --fluent-control-padding-inline: 12px;
+
+  --font-display: var(--fluent-font-family-display);
+  --font-body: var(--fluent-font-family-base);
+  --ls-tight: 0;
+  --ls-snug: 0;
+  --ls-normal: 0;
+  --ls-wide: 0;
+  --ls-wider: 0.04em;
+  --ls-caps: 0.06em;
+
+  --bg-dark-rgb: 17, 16, 15;
+  --bg-dark: var(--fluent-color-neutral-background-1);
+  --bg-surface-rgb: 27, 26, 25;
+  --bg-surface: var(--fluent-color-neutral-background-2);
+  --bg-surface-hover: var(--fluent-color-neutral-background-3);
+  --text-primary: var(--fluent-color-neutral-foreground-1);
+  --text-secondary: var(--fluent-color-neutral-foreground-2);
+  --text-muted: var(--fluent-color-neutral-foreground-3);
+  --border-light: var(--fluent-color-neutral-stroke-1);
+  --glass-bg: rgba(var(--bg-surface-rgb), 0.82);
+  --glass-border: var(--fluent-color-neutral-stroke-1);
+  --border-focus: rgba(var(--accent-cyan-rgb), 0.48);
+  --shadow-neon: var(--fluent-shadow-8);
+}
+
+[data-theme="light"] {
+  --fluent-color-neutral-background-1: #f7f7f7;
+  --fluent-color-neutral-background-2: #ffffff;
+  --fluent-color-neutral-background-3: #f3f2f1;
+  --fluent-color-neutral-background-4: #edebe9;
+  --fluent-color-neutral-foreground-1: #242424;
+  --fluent-color-neutral-foreground-2: #424242;
+  --fluent-color-neutral-foreground-3: #616161;
+  --fluent-color-neutral-stroke-1: rgba(36, 36, 36, 0.12);
+  --fluent-color-neutral-stroke-2: rgba(36, 36, 36, 0.18);
+  --fluent-color-subtle-background-hover: rgba(36, 36, 36, 0.055);
+  --fluent-color-subtle-background-pressed: rgba(36, 36, 36, 0.09);
+  --fluent-shadow-2:
+    0 0 2px rgba(0, 0, 0, 0.12),
+    0 1px 2px rgba(0, 0, 0, 0.08);
+  --fluent-shadow-4:
+    0 0 2px rgba(0, 0, 0, 0.12),
+    0 2px 4px rgba(0, 0, 0, 0.08);
+  --fluent-shadow-8:
+    0 0 2px rgba(0, 0, 0, 0.12),
+    0 4px 8px rgba(0, 0, 0, 0.1);
+  --fluent-shadow-16:
+    0 0 2px rgba(0, 0, 0, 0.12),
+    0 8px 16px rgba(0, 0, 0, 0.12);
+  --fluent-shadow-28:
+    0 0 8px rgba(0, 0, 0, 0.12),
+    0 14px 28px rgba(0, 0, 0, 0.14);
+
+  --bg-dark-rgb: 247, 247, 247;
+  --bg-dark: var(--fluent-color-neutral-background-1);
+  --bg-surface-rgb: 255, 255, 255;
+  --bg-surface: var(--fluent-color-neutral-background-2);
+  --bg-surface-hover: var(--fluent-color-neutral-background-3);
+  --text-primary: var(--fluent-color-neutral-foreground-1);
+  --text-secondary: var(--fluent-color-neutral-foreground-2);
+  --text-muted: var(--fluent-color-neutral-foreground-3);
+  --border-light: var(--fluent-color-neutral-stroke-1);
+  --glass-bg: rgba(255, 255, 255, 0.86);
+  --glass-border: var(--fluent-color-neutral-stroke-1);
+}
+
+.fluent-brand-mark,
+.brand-monogram {
+  width: 40px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  border-radius: var(--fluent-radius-large);
+  border: 1px solid rgba(var(--accent-pink-rgb), 0.34);
+  background:
+    linear-gradient(145deg, rgba(var(--accent-pink-rgb), 0.18), rgba(var(--accent-cyan-rgb), 0.08)),
+    var(--bg-surface);
+  color: var(--text-primary);
+  font-family: var(--font-display);
+  font-size: 0.98rem;
+  font-weight: 800;
+  line-height: 1;
+  box-shadow: var(--fluent-shadow-4);
+}
+
+.glass-panel,
+.app-panel,
+.app-card,
+.app-stat-card,
+.app-smart-panel,
+.app-table-panel,
+.stat-card,
+.dash-stat-card,
+.dash-smart-card,
+.finance-stat-card,
+.billing-stat-card,
+.maint-stat-card,
+.staff-card,
+.feature-card,
+.reset-option-card,
+.pricing-info-card,
+.cf-status-card,
+.bf-status-card,
+.mobile-customer-card,
+.mobile-inv-card,
+.mobile-billing-card,
+.mobile-ledger-card,
+.card-interactive {
+  border-radius: var(--fluent-radius-large) !important;
+  border-color: var(--fluent-color-neutral-stroke-1) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.012)),
+    var(--glass-bg) !important;
+  box-shadow: var(--fluent-shadow-4);
+}
+
+.app-card:hover,
+.app-stat-card:hover,
+.stat-card:hover,
+.dash-stat-card:hover,
+.dash-smart-card:hover,
+.staff-card:hover,
+.mobile-customer-card:hover,
+.mobile-inv-card:hover,
+.mobile-billing-card:hover,
+.mobile-ledger-card:hover,
+.card-interactive:hover {
+  border-color: var(--fluent-color-neutral-stroke-2) !important;
+  box-shadow: var(--fluent-shadow-8) !important;
+}
+
+.btn,
+.btn-primary,
+.btn-secondary,
+.btn-ghost,
+.btn-danger,
+.btn-success,
+.btn-warning,
+.icon-btn,
+.mobile-icon-btn,
+.mobile-avatar-btn,
+.collapse-toggle,
+.theme-toggle-btn,
+.sidebar-logout-btn {
+  border-radius: var(--fluent-radius-medium) !important;
+  font-family: var(--font-body) !important;
+  font-weight: 600 !important;
+  transition:
+    background var(--fluent-duration-fast) var(--fluent-curve-easy-ease),
+    border-color var(--fluent-duration-fast) var(--fluent-curve-easy-ease),
+    color var(--fluent-duration-fast) var(--fluent-curve-easy-ease),
+    box-shadow var(--fluent-duration-fast) var(--fluent-curve-easy-ease),
+    transform var(--fluent-duration-ultra-fast) var(--fluent-curve-easy-ease) !important;
+}
+
+.btn,
+.btn-primary,
+.btn-secondary,
+.btn-ghost,
+.btn-danger,
+.btn-success,
+.btn-warning {
+  min-height: var(--fluent-control-height-medium);
+  height: auto;
+  padding-inline: 16px;
+}
+
+.btn-primary {
+  background: var(--fluent-color-brand-background) !important;
+  color: var(--fluent-color-brand-foreground) !important;
+  box-shadow: var(--fluent-shadow-4) !important;
+}
+
+.btn-primary:hover {
+  background: var(--fluent-color-brand-background-hover) !important;
+  box-shadow: var(--fluent-shadow-8) !important;
+  transform: translateY(-1px) !important;
+}
+
+.btn-secondary,
+.btn-ghost,
+.icon-btn,
+.mobile-icon-btn,
+.sidebar-logout-btn,
+.theme-toggle-btn {
+  border: 1px solid var(--fluent-color-neutral-stroke-1) !important;
+  background: var(--fluent-color-subtle-background-hover) !important;
+  color: var(--text-primary) !important;
+}
+
+.btn-secondary:hover,
+.btn-ghost:hover,
+.icon-btn:hover,
+.mobile-icon-btn:hover,
+.sidebar-logout-btn:hover,
+.theme-toggle-btn:hover {
+  background: var(--fluent-color-subtle-background-pressed) !important;
+  border-color: var(--fluent-color-neutral-stroke-2) !important;
+}
+
+.btn:focus-visible,
+.btn-primary:focus-visible,
+.btn-secondary:focus-visible,
+.btn-ghost:focus-visible,
+.btn-danger:focus-visible,
+.btn-success:focus-visible,
+.btn-warning:focus-visible,
+.icon-btn:focus-visible,
+.mobile-icon-btn:focus-visible,
+.mobile-avatar-btn:focus-visible,
+.nav-item:focus-visible,
+.bn-item:focus-visible,
+.sheet-nav-item:focus-visible {
+  outline: 2px solid var(--fluent-color-accent-line) !important;
+  outline-offset: 2px !important;
+  box-shadow: 0 0 0 4px rgba(var(--accent-cyan-rgb), 0.16) !important;
+}
+
+input:not([type="checkbox"]):not([type="radio"]),
+select,
+textarea,
+.form-input,
+.form-select,
+.form-textarea,
+.bf-input,
+.app-search,
+.search-bar,
+.search-wrapper,
+.finance-search-wrap {
+  min-height: var(--fluent-control-height-medium);
+  border-radius: var(--fluent-radius-medium) !important;
+  border: 1px solid var(--fluent-color-neutral-stroke-1) !important;
+  background: var(--fluent-color-neutral-background-2) !important;
+  color: var(--text-primary) !important;
+  box-shadow: none !important;
+}
+
+input:not([type="checkbox"]):not([type="radio"]):focus,
+select:focus,
+textarea:focus,
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus,
+.bf-input:focus,
+.app-search:focus-within,
+.search-bar:focus-within,
+.search-wrapper:focus-within,
+.finance-search-wrap:focus-within {
+  border-color: var(--fluent-color-accent-line) !important;
+  outline: 2px solid transparent !important;
+  box-shadow: 0 0 0 3px rgba(var(--accent-cyan-rgb), 0.16) !important;
+}
+
+.modal-overlay {
+  background: rgba(0, 0, 0, 0.58) !important;
+  -webkit-backdrop-filter: blur(8px) saturate(120%) !important;
+  backdrop-filter: blur(8px) saturate(120%) !important;
+}
+
+.modal-content {
+  border-radius: var(--fluent-radius-xlarge) !important;
+  border-color: var(--fluent-color-neutral-stroke-1) !important;
+  background: var(--fluent-color-neutral-background-2) !important;
+  box-shadow: var(--fluent-shadow-28) !important;
+}
+
+.modal-header {
+  min-height: 56px;
+  padding: 14px 18px !important;
+  border-bottom-color: var(--fluent-color-neutral-stroke-1) !important;
+  background: var(--fluent-color-neutral-background-3) !important;
+}
+
+.modal-title,
+.app-page-title,
+.page-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+.app-table,
+.customers-table,
+.billing-table,
+.inventory-table,
+.maint-table,
+.finance-table,
+.staff-table {
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
+}
+
+.app-table th,
+.customers-table th,
+.billing-table th,
+.inventory-table th,
+.maint-table th,
+.finance-table th,
+.staff-table th {
+  background: var(--fluent-color-neutral-background-3) !important;
+  border-bottom: 1px solid var(--fluent-color-neutral-stroke-1) !important;
+  color: var(--text-muted) !important;
+  font-weight: 700 !important;
+  letter-spacing: var(--ls-caps) !important;
+}
+
+.app-table td,
+.customers-table td,
+.billing-table td,
+.inventory-table td,
+.maint-table td,
+.finance-table td,
+.staff-table td {
+  border-bottom: 1px solid var(--fluent-color-neutral-stroke-1) !important;
+}
+
+.app-table tr:hover td,
+.customers-table tbody tr:hover td,
+.billing-table tbody tr:hover td,
+.inventory-table tbody tr:hover td,
+.maint-table tbody tr:hover td,
+.finance-table tbody tr:hover td,
+.staff-table tbody tr:hover td {
+  background: var(--fluent-color-subtle-background-hover) !important;
+}
+
+.sidebar,
+.mobile-command-header,
+.bottom-nav-bar {
+  border-radius: var(--fluent-radius-xlarge) !important;
+  border-color: var(--fluent-color-neutral-stroke-1) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.015)),
+    rgba(var(--bg-surface-rgb), 0.92) !important;
+  box-shadow: var(--fluent-shadow-16) !important;
+}
+
+.nav-item,
+.bn-item,
+.sheet-nav-item {
+  border-radius: var(--fluent-radius-large) !important;
+}
+
+.nav-active-bg,
+.bn-indicator {
+  border-radius: var(--fluent-radius-large) !important;
+  background:
+    linear-gradient(135deg, rgba(var(--accent-pink-rgb), 0.18), rgba(var(--accent-cyan-rgb), 0.08)),
+    var(--fluent-color-subtle-background-hover) !important;
+  border-color: rgba(var(--accent-pink-rgb), 0.18) !important;
+}
+
+.nav-icon,
+.sheet-icon,
+.bn-icon-wrapper {
+  border-radius: var(--fluent-radius-medium) !important;
+}
+
+@media (max-width: 768px) {
+  .mobile-command-header {
+    border-radius: var(--fluent-radius-xlarge) !important;
+  }
+
+  .bottom-nav-bar {
+    border-radius: 18px !important;
+  }
+
+  .modal-content {
+    border-radius: var(--fluent-radius-xlarge) var(--fluent-radius-xlarge) 0 0 !important;
+  }
+
+  .sheet-nav-item {
+    min-height: 88px;
+  }
+}
+
+.landing-container .btn-large {
+  border-radius: var(--fluent-radius-circular) !important;
+}
+
+.landing-container .btn-primary.btn-large {
+  background: var(--landing-gold) !important;
+  color: #110f0b !important;
+  box-shadow: 0 16px 34px rgba(227, 184, 109, 0.24) !important;
+}
+
+.landing-container .btn-primary.btn-large:hover {
+  background: var(--landing-gold) !important;
+  box-shadow: 0 20px 42px rgba(227, 184, 109, 0.33) !important;
+}
+
+.landing-container .btn-secondary.btn-large {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(255, 255, 255, 0.18) !important;
+  color: #fffaf0 !important;
+}
+
+.landing-container .btn-secondary.btn-large:hover {
+  background: rgba(255, 255, 255, 0.13) !important;
+  border-color: rgba(255, 255, 255, 0.32) !important;
+}
