@@ -61,7 +61,7 @@ const InventoryPage = () => {
   const [animationData, setAnimationData] = useState(null);
 
   useEffect(() => {
-    fetch('https://lottie.host/e2c7a23c-a9b0-466d-9786-fb7c9e99a805/o6aN400t06.json')
+    fetch('/lottie/inventory-empty.json')
       .then(res => res.json())
       .then(data => setAnimationData(data))
       .catch(err => console.error("Lottie load failed", err));

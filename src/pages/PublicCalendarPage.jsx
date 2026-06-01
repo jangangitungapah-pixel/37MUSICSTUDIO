@@ -54,7 +54,7 @@ const PublicCalendarPage = () => {
   const heroPhoto = useMemo(() => {
     return customerPhotos.find(photo => photo.url) ||
       gallery.find(photo => photo.showOnLandingPage && photo.url) || {
-        url: '/studio-hero.jpg',
+        url: '/studio-hero.webp',
         caption: '37 Music Studio private room',
       };
   }, [customerPhotos, gallery]);

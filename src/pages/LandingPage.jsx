@@ -46,7 +46,7 @@ import { useGalleryStore } from '../store/useGalleryStore';
 import './LandingPage.css';
 
 const FALLBACK_HERO_PHOTO = {
-  url: '/studio-hero.jpg',
+  url: '/studio-hero.webp',
   caption: '37 Music Studio private room',
 };
 

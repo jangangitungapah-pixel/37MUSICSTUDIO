@@ -177,7 +177,7 @@ export const useCalendarBookingMove = ({
       cleanup();
     };
 
-    longPressTimerRef.current = window.setTimeout(activateMove, 360);
+    longPressTimerRef.current = window.setTimeout(activateMove, 500);
     document.addEventListener('pointermove', handlePointerMove, { passive: false });
     document.addEventListener('pointerup', handlePointerUp);
     document.addEventListener('pointercancel', handlePointerCancel);

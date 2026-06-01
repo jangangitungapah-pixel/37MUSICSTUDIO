@@ -906,6 +906,9 @@ body.calendar-move-lock .main-content {
   border-bottom: none; border-top: none;
   border-right: 1px solid var(--border-light);
   will-change: filter, transform;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
 }
 .booked-cell[draggable="true"] { cursor: grab; }
 .booked-cell[draggable="true"]:active { cursor: grabbing; }

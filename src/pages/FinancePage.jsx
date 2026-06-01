@@ -67,7 +67,7 @@ const FinancePage = () => {
   const [animationData, setAnimationData] = useState(null);
 
   useEffect(() => {
-    fetch('https://lottie.host/a61c36b6-d522-4467-bc22-38e2d427d14d/B8b0n95d7r.json')
+    fetch('/lottie/finance-empty.json')
       .then(res => res.json())
       .then(data => setAnimationData(data))
       .catch(err => console.error("Lottie load failed", err));

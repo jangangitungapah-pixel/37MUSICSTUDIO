@@ -727,6 +727,7 @@ const CalendarPage = () => {
                         data-hour={hour}
                         onClick={e => handleBookingClick(e, cellBooking)}
                         onPointerDown={(e) => handleMobileBookingPointerDown(e, cellBooking)}
+                        onContextMenu={e => e.preventDefault()}
                         draggable={isBookingStart && !isMobile}
                         onDragStart={(e) => handleDragStart(e, cellBooking)}
                         onDragEnd={handleDragEnd}

@@ -2301,3 +2301,48 @@ input:not([type="checkbox"]):not([type="radio"]):focus, select:focus, textarea:f
 .app-table tbody tr {
   transition: background-color 0.2s ease, transform 0.2s ease;
 }
+
+/* ==========================================================
+   MOBILE TOUCH TARGET IMPROVEMENTS (WCAG 2.1 Accessibility)
+   ========================================================== */
+@media (max-width: 768px) {
+  .icon-btn, 
+  .dur-btn, 
+  .collapse-toggle, 
+  .theme-toggle-btn, 
+  .sidebar-logout-btn, 
+  .notification-bell-btn,
+  .bn-item,
+  .sheet-nav-item,
+  .btn-icon-sm,
+  .filter-dropdown-toggle,
+  .pg-lightbox-action-btn,
+  .pc-modal-close {
+    position: relative;
+  }
+  .icon-btn::after, 
+  .dur-btn::after, 
+  .collapse-toggle::after, 
+  .theme-toggle-btn::after, 
+  .sidebar-logout-btn::after, 
+  .notification-bell-btn::after,
+  .bn-item::after,
+  .sheet-nav-item::after,
+  .btn-icon-sm::after,
+  .filter-dropdown-toggle::after,
+  .pg-lightbox-action-btn::after,
+  .pc-modal-close::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
+    z-index: 10;
+    pointer-events: auto;
+  }
+}
+
