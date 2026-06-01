@@ -48,7 +48,10 @@ const validateWithZod = (fieldName) => (value) => {
   return result.success ? true : result.error.errors[0].message;
 };
 
+import { useThemeStore } from '../store/useThemeStore';
+
 const InventoryPage = () => {
+  const { soundEnabled } = useThemeStore();
   const { inventory, categories, addCategory, addEquipment, updateEquipment, deleteEquipment, getStats } = useInventoryStore();
   const { bookings } = useBookingStore();
   const [searchQuery, setSearchQuery] = useState('');
@@ -56,7 +59,8 @@ const InventoryPage = () => {
   const [selectedItem, setSelectedItem] = useState(null);
   const [isCatDropdownOpen, setIsCatDropdownOpen] = useState(false);
   
-  const [playClick] = useSound(CLICK_SOUND, { volume: 0.25 });
+  const [playClickRaw] = useSound(CLICK_SOUND, { volume: 0.25 });
+  const playClick = () => { if (soundEnabled) playClickRaw(); };
 
 
   // Modal State

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { CalendarDays, Users, Package, CreditCard, Settings, BookOpen, PieChart, LogOut, Bell, ChevronRight, ChevronLeft, FlaskConical, Sun, Moon, Shield, Hammer, MoreHorizontal, Image } from 'lucide-react';
+import { CalendarDays, Users, Package, CreditCard, Settings, BookOpen, PieChart, LogOut, Bell, ChevronRight, ChevronLeft, FlaskConical, Sun, Moon, Shield, Hammer, MoreHorizontal, Image, Volume2, VolumeX } from 'lucide-react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import useSound from 'use-sound';
 import { CLICK_SOUND, HOVER_SOUND } from '../lib/sounds';
@@ -24,11 +24,14 @@ const Sidebar = () => {
   const { user, userProfile, logout } = useAuthStore();
   const { notifications } = useNotificationStore();
   const { isDemoMode, toggleDemoMode } = useDemoStore();
-  const { theme, toggleTheme } = useThemeStore();
+  const { theme, toggleTheme, soundEnabled, toggleSound } = useThemeStore();
   const navigate = useNavigate();
   const location = useLocation();
-  const [playClick] = useSound(CLICK_SOUND, { volume: 0.25 });
-  const [playHover] = useSound(HOVER_SOUND, { volume: 0.20 });
+  const [playClickRaw] = useSound(CLICK_SOUND, { volume: 0.25 });
+  const [playHoverRaw] = useSound(HOVER_SOUND, { volume: 0.20 });
+
+  const playClick = () => { if (soundEnabled) playClickRaw(); };
+  const playHover = () => { if (soundEnabled) playHoverRaw(); };
  
   const unreadCount = notifications.filter(n => !n.isRead).length;
 
@@ -83,6 +86,15 @@ const Sidebar = () => {
           </div>
         </div>
         <div className="mobile-header-actions">
+          <button
+            type="button"
+            className="mobile-icon-btn"
+            onClick={() => { toggleSound(); if (!soundEnabled) playClickRaw(); }}
+            title={soundEnabled ? 'Matikan Efek Suara' : 'Aktifkan Efek Suara'}
+            aria-label={soundEnabled ? 'Matikan Efek Suara' : 'Aktifkan Efek Suara'}
+          >
+            {soundEnabled ? <Volume2 size={17} /> : <VolumeX size={17} />}
+          </button>
           <button
             type="button"
             className="mobile-icon-btn"
@@ -277,6 +289,14 @@ const Sidebar = () => {
               </button>
             </div>
           )}
+
+          {/* Sound Toggle */}
+          <button className="theme-toggle-btn" onClick={toggleSound} onMouseEnter={playHover} title={soundEnabled ? 'Matikan Efek Suara' : 'Aktifkan Efek Suara'}>
+            <span className="nav-icon" style={{ flexShrink: 0 }}>
+              {soundEnabled ? <Volume2 size={18} /> : <VolumeX size={18} />}
+            </span>
+            <span className="nav-label">{soundEnabled ? 'Sound FX On' : 'Sound FX Off'}</span>
+          </button>
 
           {/* Theme Toggle */}
           <button className="theme-toggle-btn" onClick={toggleTheme} onMouseEnter={playHover} title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}>

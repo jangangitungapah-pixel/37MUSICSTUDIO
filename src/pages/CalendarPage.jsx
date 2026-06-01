@@ -17,11 +17,13 @@ import { useCalendarBookingResize } from '../hooks/useCalendarBookingResize';
 import { mobileMenuVariants, activeIndicatorTransition } from '../animations';
 import Fuse from 'fuse.js';
 import useSound from 'use-sound';
+import { useThemeStore } from '../store/useThemeStore';
 import { CLICK_SOUND } from '../lib/sounds';
 import './CalendarPage.css';
 import './CalendarPrintStyles.css';
 
 const CalendarPage = () => {
+  const { soundEnabled } = useThemeStore();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [viewMode, setViewMode] = useState('month');
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -35,7 +37,8 @@ const CalendarPage = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [now, setNow] = useState(new Date());
   const [areTopPanelsCollapsed, setAreTopPanelsCollapsed] = useState(false);
-  const [playClick] = useSound(CLICK_SOUND, { volume: 0.25 });
+  const [playClickRaw] = useSound(CLICK_SOUND, { volume: 0.25 });
+  const playClick = () => { if (soundEnabled) playClickRaw(); };
 
   // Swipe gesture state
   const touchStartRef = useRef(null);

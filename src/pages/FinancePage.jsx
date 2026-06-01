@@ -6,7 +6,7 @@ import { useThemeStore } from '../store/useThemeStore';
 import { useAuthStore } from '../store/useAuthStore';
 import { format } from 'date-fns';
 import { Wallet, TrendingUp, TrendingDown, Plus, Trash2, Search, Download, Printer, X } from 'lucide-react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { toast } from 'sonner';
 import Modal from '../components/Modal';
 import {
@@ -56,13 +56,114 @@ const CATEGORIES = {
   expense: ['Operasional', 'Listrik / Air', 'Gaji', 'Perawatan', 'Alat Baru', 'Lainnya']
 };
 
+const CustomActiveDot = (props) => {
+  const { cx, cy, stroke, theme } = props;
+  if (!cx || !cy) return null;
+  const isLight = theme === 'light';
+  return (
+    <g>
+      {/* Outer shadow matching Ellipse 41: 40px width/height => r = 20 */}
+      <circle
+        cx={cx}
+        cy={cy}
+        r={20}
+        fill={isLight ? '#FFFFFF' : '#1a1a2e'}
+        stroke={isLight ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.1)'}
+        strokeWidth={isLight ? 0 : 1}
+        style={{ filter: 'drop-shadow(0px 5px 25px rgba(0, 0, 0, 0.15))' }}
+      />
+      {/* Center dot inside Ellipse 41 (representing target/value point) */}
+      <circle
+        cx={cx}
+        cy={cy}
+        r={6}
+        fill={stroke || '#FE6C6C'}
+      />
+    </g>
+  );
+};
+
+const CustomCursor = (props) => {
+  const { x, y, height } = props;
+  if (x === undefined || y === undefined) return null;
+  
+  // Rectangle 86: width 90px, height 354px (safely using plot height)
+  const cursorHeight = height || 354;
+  
+  return (
+    <rect
+      x={x - 45} // centered at tick
+      y={y}
+      width={90}
+      height={cursorHeight}
+      fill="url(#cursorGradient)"
+      opacity={0.5}
+      rx={0}
+    />
+  );
+};
+
+const CustomXAxisTick = (props) => {
+  const { x, y, payload, theme } = props;
+  if (!payload) return null;
+  
+  const isLight = theme === 'light';
+  const value = String(payload.value || '');
+  const valLower = value.toLowerCase();
+  
+  // Highlight "May" or "Mei" or "05" (active month in Figma design)
+  const isHighlighted = valLower.includes('may') || valLower.includes('mei') || valLower.includes('05');
+  const fontWeight = isHighlighted ? '600' : '500';
+  const opacity = isHighlighted ? 1 : 0.5;
+  const textColor = isLight ? '#454459' : '#ffffff';
+  
+  // Extract leading digits only (e.g. "04 JUN" -> "04")
+  let displayValue = value;
+  const digitMatch = value.match(/^\d+/);
+  if (digitMatch) {
+    displayValue = digitMatch[0];
+  }
+  
+  return (
+    <text
+      x={x}
+      y={y + 14}
+      textAnchor="middle"
+      fill={textColor}
+      style={{
+        fontFamily: "'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+        fontSize: '12px',
+        fontWeight: fontWeight,
+        opacity: opacity,
+        textTransform: 'uppercase',
+        letterSpacing: '0.04em'
+      }}
+    >
+      {displayValue}
+    </text>
+  );
+};
+
+const formatYAxisTick = (v) => {
+  if (v === 0) return '0';
+  if (v >= 1000000) {
+    return `${(v / 1000000).toFixed(v % 1000000 === 0 ? 0 : 1)} jt`;
+  }
+  if (v >= 1000) {
+    return `${v / 1000} rb`;
+  }
+  return v;
+};
+
+
 const FinancePage = () => {
   const { transactions, addTransaction, deleteTransaction } = useFinanceStore();
   const { bookings } = useBookingStore();
   const { pricePerHour, studioName, studioAddress, studioPhone } = useSettingsStore();
-  const { theme } = useThemeStore();
+  const { theme, soundEnabled } = useThemeStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [playClick] = useSound(CLICK_SOUND, { volume: 0.25 });
+  const [playClickRaw] = useSound(CLICK_SOUND, { volume: 0.25 });
+  const playClick = () => { if (soundEnabled) playClickRaw(); };
 
 
   const { register, handleSubmit: handleFormSubmit, reset, setValue, watch, formState: { errors } } = useForm({
@@ -279,6 +380,32 @@ const FinancePage = () => {
     () => buildFinanceLineChartData(periodFilteredData, filterPeriod),
     [periodFilteredData, filterPeriod]
   );
+
+  const chartMonthHeader = useMemo(() => {
+    if (!lineChartData || lineChartData.length === 0) return '';
+    const firstEntry = lineChartData[0];
+    if (!firstEntry || !firstEntry.sortKey) return '';
+    const datePart = firstEntry.sortKey;
+    try {
+      const dateObj = new Date(datePart);
+      if (isNaN(dateObj.getTime())) return '';
+      const idMonths = [
+        'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+        'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+      ];
+      const monthName = idMonths[dateObj.getMonth()];
+      const year = dateObj.getFullYear();
+      if (filterPeriod === 'year') {
+        return `Tahun ${year}`;
+      }
+      if (filterPeriod === 'all') {
+        return 'Semua Periode';
+      }
+      return `${monthName} ${year}`;
+    } catch (e) {
+      return '';
+    }
+  }, [lineChartData, filterPeriod]);
 
   const pieChartData = useMemo(
     () => buildExpensePieData(periodFilteredData),
@@ -658,397 +785,445 @@ const FinancePage = () => {
         </div>
       </div>
 
-      {/* ── Stats Cards ── */}
-      <div className="app-stat-grid finance-stats">
-        <div className="app-stat-card primary" style={{flex: 1}}>
-          <div className="stat-icon" style={{color: 'var(--accent-cyan)', background: 'rgba(var(--accent-cyan-rgb), 0.1)'}}>
-            <Wallet size={24} />
-          </div>
-          <div className="stat-data">
-            <span className="stat-label">Total Saldo Bersih</span>
-            <span className="stat-value">{formatCurrency(totalBalance)}</span>
-            <span className="stat-note">Akumulasi semua catatan kas</span>
-          </div>
-        </div>
-        <div className="app-stat-card income" style={{flex: 1}}>
-          <div className="stat-icon" style={{color: 'rgb(var(--success-rgb))', background: 'rgba(var(--success-rgb), 0.1)'}}>
-            <TrendingUp size={24} />
-          </div>
-          <div className="stat-data">
-            <span className="stat-label">Pemasukan · {periodLabel}</span>
-            <span className="stat-value">{formatCurrency(totalIncomeFiltered)}</span>
-            <span className="stat-note">Booking dan pemasukan manual</span>
-          </div>
-        </div>
-        <div className="app-stat-card expense" style={{flex: 1}}>
-          <div className="stat-icon" style={{color: 'var(--accent-pink)', background: 'rgba(var(--accent-pink-rgb), 0.1)'}}>
-            <TrendingDown size={24} />
-          </div>
-          <div className="stat-data">
-            <span className="stat-label">Pengeluaran · {periodLabel}</span>
-            <span className="stat-value">{formatCurrency(totalExpenseFiltered)}</span>
-            <span className="stat-note">Biaya operasional tercatat</span>
-          </div>
-        </div>
-      </div>
-
-      {/* ── Insights Grid ── */}
-      <div className="finance-insights-grid hide-on-print">
-        {/* Forecast Panel */}
-        <div className="app-smart-panel">
-          <div className="smart-head">
-            <TrendingUp size={20} />
-            <div>
-              <h3>Forecast Pendapatan Bulanan</h3>
-              <p>Proyeksi berbasis kas masuk berjalan, booking bulan ini, dan piutang aktif.</p>
-            </div>
-          </div>
-          <div className="smart-list app-smart-grid cols-2">
-            <div className="smart-item">
-              <span style={{fontSize: '0.75rem', color: 'var(--text-muted)'}}>Kas saat ini</span>
-              <strong style={{fontSize: '1rem', color: 'var(--text-primary)'}}>{formatCurrency(revenueForecast.currentIncome)}</strong>
-            </div>
-            <div className="smart-item">
-              <span style={{fontSize: '0.75rem', color: 'var(--text-muted)'}}>Forecast konservatif</span>
-              <strong style={{fontSize: '1rem', color: 'var(--text-primary)'}}>{formatCurrency(revenueForecast.conservativeForecast)}</strong>
-            </div>
-            <div className="smart-item">
-              <span style={{fontSize: '0.75rem', color: 'var(--text-muted)'}}>Forecast optimistis</span>
-              <strong style={{fontSize: '1rem', color: 'var(--text-primary)'}}>{formatCurrency(revenueForecast.optimisticForecast)}</strong>
-            </div>
-            <div className="smart-item">
-              <span style={{fontSize: '0.75rem', color: 'var(--text-muted)'}}>Progress bulan</span>
-              <strong style={{fontSize: '1rem', color: 'var(--text-primary)'}}>{revenueForecast.progressPercent}%</strong>
-            </div>
-          </div>
-        </div>
-
-        {/* Reconciliation Panel */}
-        <div className="app-smart-panel">
-          <div className="smart-head">
-            <Wallet size={20} />
-            <div>
-              <h3>Rekonsiliasi Kas Booking</h3>
-              <p>Cocokkan nilai booking, kas diterima, piutang, dan pemasukan manual pada {periodLabel.toLowerCase()}.</p>
-            </div>
-          </div>
-          <div className="smart-list app-smart-grid cols-2">
-            <div className="smart-item">
-              <span style={{fontSize: '0.75rem', color: 'var(--text-muted)'}}>Nilai booking</span>
-              <strong style={{fontSize: '1rem', color: 'var(--text-primary)'}}>{formatCurrency(reconciliation.bookedValue)}</strong>
-            </div>
-            <div className="smart-item">
-              <span style={{fontSize: '0.75rem', color: 'var(--text-muted)'}}>Kas dari booking</span>
-              <strong style={{fontSize: '1rem', color: 'var(--text-primary)'}}>{formatCurrency(reconciliation.bookingCash)}</strong>
-            </div>
-            <div className="smart-item">
-              <span style={{fontSize: '0.75rem', color: 'var(--text-muted)'}}>Piutang aktif</span>
-              <strong style={{fontSize: '1rem', color: 'var(--text-primary)'}}>{formatCurrency(reconciliation.openReceivable)}</strong>
-            </div>
-            <div className="smart-item" style={{borderColor: reconciliation.diff === 0 ? 'rgba(var(--success-rgb), 0.2)' : 'rgba(var(--accent-pink-rgb), 0.2)'}}>
-              <span style={{fontSize: '0.75rem', color: 'var(--text-muted)'}}>Selisih kas</span>
-              <strong style={{fontSize: '1rem', color: reconciliation.diff === 0 ? 'rgb(var(--success-rgb))' : 'var(--accent-pink)'}}>{formatCurrency(reconciliation.diff)}</strong>
-            </div>
-          </div>
-        </div>
-
-        {/* Daily Expenses Panel */}
-        <div className="app-smart-panel daily-expenses-panel">
-          <div className="smart-head">
-            <TrendingDown size={20} style={{ color: 'var(--accent-pink)' }} />
-            <div>
-              <h3>Pengeluaran Harian</h3>
-              <p>Pemantauan operasional kas keluar dan penanggung jawab.</p>
-            </div>
-          </div>
-          <div className="smart-list daily-expense-list">
-            <div className="daily-expense-summary">
-              <div className="summary-item">
-                <span className="summary-label">Hari Ini</span>
-                <strong className="summary-val text-expense">{formatCurrency(todayExpensesSum)}</strong>
+      {/* ── Main Layout Grid ── */}
+      <div className="finance-layout-grid">
+        
+        {/* ── LEFT COLUMN (Main Metrics & Logs) ── */}
+        <div className="finance-main-col">
+          
+          {/* AreaChart Widget Card */}
+          <div className="app-card finance-chart-card chart-8-container hide-on-print">
+            <div className="chart-card-header">
+              <div className="chart-header-title">
+                <TrendingUp size={15} color="var(--accent-cyan)" />
+                <h3>Tren Arus Kas</h3>
+                {chartMonthHeader && <span className="chart-header-month">{chartMonthHeader}</span>}
               </div>
-              <div className="summary-item">
-                <span className="summary-label">Kemarin</span>
-                <strong className="summary-val">{formatCurrency(yesterdayExpensesSum)}</strong>
+              
+              {/* Period Selectors moved into the Chart Header */}
+              <div className="chart-period-selector">
+                {PERIOD_OPTIONS.map(opt => (
+                  <button
+                    key={opt.value}
+                    className={`period-btn ${filterPeriod === opt.value ? 'active' : ''}`}
+                    onClick={() => { playClick(); setFilterPeriod(opt.value); }}
+                    aria-pressed={filterPeriod === opt.value}
+                    aria-label={`Filter periode: ${opt.label}`}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
               </div>
             </div>
             
-            <div className="mini-expense-list-title">Detail Hari Ini:</div>
-            {todayExpensesList.length > 0 ? (
-              <div className="mini-expense-list">
-                {todayExpensesList.slice(0, 3).map((entry) => (
-                  <div key={entry.id} className="mini-expense-item">
-                    <div className="mini-expense-left">
-                      <span className="mini-expense-desc">{entry.description}</span>
-                      <span className="mini-expense-meta">
-                        {entry.category} • oleh {entry.operatorName || 'Staff'}
-                      </span>
-                    </div>
-                    <span className="mini-expense-amount">{formatCurrency(entry.amount)}</span>
-                  </div>
-                ))}
+            <ResponsiveContainer width="100%" height={390}>
+              <AreaChart data={lineChartData} margin={{ top: 12, right: 12, left: 0, bottom: 8 }}>
+                <defs>
+                  <linearGradient id="colorPemasukan" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor={cyanColor} stopOpacity={0.25}/>
+                    <stop offset="95%" stopColor={cyanColor} stopOpacity={0}/>
+                  </linearGradient>
+                  <linearGradient id="colorPengeluaran" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#FE6C6C" stopOpacity={1}/>
+                    <stop offset="100%" stopColor="rgba(254, 70, 75, 0)" stopOpacity={0}/>
+                  </linearGradient>
+                  <linearGradient id="cursorGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="1.04%" stopColor="rgba(254, 108, 108, 0)"/>
+                    <stop offset="28.13%" stopColor="#FE6C6C"/>
+                    <stop offset="66.67%" stopColor="#FE464B"/>
+                    <stop offset="98.44%" stopColor="rgba(254, 70, 75, 0)"/>
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} vertical={false} />
+                <XAxis 
+                  dataKey="date" 
+                  stroke="var(--text-muted)" 
+                  axisLine={false} 
+                  tickLine={false} 
+                  tickFormatter={(value) => {
+                    const digitMatch = String(value).match(/^\d+/);
+                    return digitMatch ? digitMatch[0] : value;
+                  }}
+                  tick={(props) => <CustomXAxisTick {...props} theme={theme} />} 
+                />
+                <YAxis stroke="var(--text-muted)" fontSize={11} tickFormatter={formatYAxisTick} axisLine={false} tickLine={false} width={40} />
+                <RechartsTooltip
+                  formatter={(v) => formatCurrency(v)}
+                  contentStyle={{ backgroundColor: tooltipBg, border: `1px solid ${tooltipBorder}`, borderRadius: '10px', color: tooltipTextColor, fontSize: '0.82rem' }}
+                  itemStyle={{ color: tooltipTextColor }}
+                  cursor={<CustomCursor />}
+                />
+                <Area 
+                  type="monotone" 
+                  dataKey="Pemasukan" 
+                  stroke={cyanColor} 
+                  strokeWidth={2.5} 
+                  fillOpacity={0.15} 
+                  fill="url(#colorPemasukan)" 
+                  dot={{ r: 3.5, fill: isLight ? '#fff' : '#0d0d1a', strokeWidth: 2 }} 
+                  activeDot={<CustomActiveDot theme={theme} />} 
+                />
+                <Area 
+                  type="monotone" 
+                  dataKey="Pengeluaran" 
+                  className="vector-7-group"
+                  stroke="#FE6C6C" 
+                  strokeWidth={2.5} 
+                  fillOpacity={0.1} 
+                  fill="url(#colorPengeluaran)" 
+                  dot={{ r: 3.5, fill: isLight ? '#fff' : '#0d0d1a', strokeWidth: 2 }} 
+                  activeDot={<CustomActiveDot theme={theme} />} 
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+            <div className="chart-legend">
+              <span className="legend-item"><span className="legend-dot" style={{ background: cyanColor }} />Pemasukan</span>
+              <span className="legend-item"><span className="legend-dot" style={{ background: pinkColor }} />Pengeluaran</span>
+            </div>
+          </div>
+
+          {/* Ledger Table Section */}
+          <div className="finance-content">
+            <div className="app-table-toolbar">
+              <div className="app-table-toolbar-left">
+                <div>
+                  <span className="app-table-toolbar-title">Riwayat Transaksi</span>
+                  <span className="app-table-toolbar-subtitle">{periodLabel} • {filteredData.length} transaksi</span>
+                </div>
               </div>
-            ) : (
-              <div className="mini-expense-empty">Belum ada pengeluaran hari ini.</div>
-            )}
+              <div className="app-table-toolbar-right hide-on-print">
+                {/* Type Pill Buttons */}
+                <div className="toolbar-group">
+                  {[
+                    { value: 'all', label: 'Semua' },
+                    { value: 'income', label: 'Masuk' },
+                    { value: 'expense', label: 'Keluar' }
+                  ].map(opt => (
+                    <button
+                      key={opt.value}
+                      className={`period-btn ${filterType === opt.value ? 'active' : ''}`}
+                      onClick={() => { playClick(); setFilterType(opt.value); }}
+                      aria-pressed={filterType === opt.value}
+                      aria-label={`Filter jenis: ${opt.label}`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
 
-            <button
-              type="button"
-              className="smart-btn-action"
-              onClick={() => handleOpenModal('expense')}
-            >
-              <Plus size={14} /> Catat Pengeluaran
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div className="finance-charts-grid hide-on-print">
-        {/* Line Chart */}
-        <div className="app-card finance-chart-card">
-          <div className="chart-card-header">
-            <TrendingUp size={15} color="var(--accent-cyan)" />
-            <h3>Tren Arus Kas</h3>
-          </div>
-          <ResponsiveContainer width="100%" height={220}>
-            <LineChart data={lineChartData} margin={{ top: 4, right: 8, left: 0, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} vertical={false} />
-              <XAxis dataKey="date" stroke="var(--text-muted)" fontSize={11} tickMargin={8} axisLine={false} tickLine={false} />
-              <YAxis stroke="var(--text-muted)" fontSize={11} tickFormatter={(v) => `${v/1000}k`} axisLine={false} tickLine={false} width={40} />
-              <RechartsTooltip
-                formatter={(v) => formatCurrency(v)}
-                contentStyle={{ backgroundColor: tooltipBg, border: `1px solid ${tooltipBorder}`, borderRadius: '10px', color: tooltipTextColor, fontSize: '0.82rem' }}
-                itemStyle={{ color: tooltipTextColor }}
-              />
-              <Line type="monotone" dataKey="Pemasukan" stroke={cyanColor} strokeWidth={2.5} dot={{ r: 3, fill: isLight ? '#fff' : '#0d0d1a', strokeWidth: 2 }} activeDot={{ r: 5 }} />
-              <Line type="monotone" dataKey="Pengeluaran" stroke={pinkColor} strokeWidth={2.5} dot={{ r: 3, fill: isLight ? '#fff' : '#0d0d1a', strokeWidth: 2 }} activeDot={{ r: 5 }} />
-            </LineChart>
-          </ResponsiveContainer>
-          <div className="chart-legend">
-            <span className="legend-item"><span className="legend-dot" style={{ background: cyanColor }} />Pemasukan</span>
-            <span className="legend-item"><span className="legend-dot" style={{ background: pinkColor }} />Pengeluaran</span>
-          </div>
-        </div>
-
-        {/* Pie Chart */}
-        <div className="app-card finance-chart-card">
-          <div className="chart-card-header">
-            <TrendingDown size={15} color="var(--accent-pink)" />
-            <h3>Pengeluaran per Kategori</h3>
-          </div>
-          {pieChartData.length > 0 ? (
-            <>
-              <ResponsiveContainer width="100%" height={160}>
-                <PieChart>
-                  <Pie data={pieChartData} cx="50%" cy="50%" innerRadius={48} outerRadius={70} paddingAngle={4} dataKey="value">
-                    {pieChartData.map((_, i) => (
-                      <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} stroke="transparent" />
-                    ))}
-                  </Pie>
-                  <RechartsTooltip
-                    formatter={(v) => formatCurrency(v)}
-                    contentStyle={{ backgroundColor: tooltipBg, border: `1px solid ${tooltipBorder}`, borderRadius: '10px', fontSize: '0.8rem', color: tooltipTextColor }}
-                    itemStyle={{ color: tooltipTextColor }}
+                <div className="app-search app-search-md">
+                  <Search className="app-search-icon" />
+                  <input 
+                    type="text" 
+                    className="app-search-input"
+                    placeholder="Cari transaksi..." 
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    aria-label="Cari riwayat transaksi"
                   />
-                </PieChart>
-              </ResponsiveContainer>
-              <div className="pie-legend-list">
-                {pieChartData.map((item, i) => (
-                  <div key={item.name} className="pie-legend-item">
-                    <div className="pie-legend-left">
-                      <span className="pie-legend-dot" style={{ background: PIE_COLORS[i % PIE_COLORS.length] }} />
-                      <span className="pie-legend-name">{item.name}</span>
-                    </div>
-                    <span className="pie-legend-val">{formatCurrency(item.value)}</span>
-                  </div>
-                ))}
-              </div>
-            </>
-          ) : (
-            <div style={{ height: '200px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
-              Belum ada pengeluaran
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* ── Ledger Table ── */}
-      <div className="finance-content">
-        {/* Table Header Bar */}
-        <div className="app-table-toolbar">
-          <div className="app-table-toolbar-left">
-            <div>
-              <span className="app-table-toolbar-title">Riwayat Transaksi</span>
-              <span className="app-table-toolbar-subtitle">{periodLabel} • {filteredData.length} transaksi</span>
-            </div>
-          </div>
-          <div className="app-table-toolbar-right hide-on-print">
-            {/* Period Pill Buttons */}
-            <div className="toolbar-group">
-              {PERIOD_OPTIONS.map(opt => (
-                <button
-                  key={opt.value}
-                  className={`period-btn ${filterPeriod === opt.value ? 'active' : ''}`}
-                  onClick={() => { playClick(); setFilterPeriod(opt.value); }}
-                  aria-pressed={filterPeriod === opt.value}
-                  aria-label={`Filter periode: ${opt.label}`}
-                >
-                  {opt.label}
-                </button>
-              ))}
-            </div>
-
-            {/* Type Pill Buttons */}
-            <div className="toolbar-group">
-              {[
-                { value: 'all', label: 'Semua' },
-                { value: 'income', label: 'Masuk' },
-                { value: 'expense', label: 'Keluar' }
-              ].map(opt => (
-                <button
-                  key={opt.value}
-                  className={`period-btn ${filterType === opt.value ? 'active' : ''}`}
-                  onClick={() => { playClick(); setFilterType(opt.value); }}
-                  aria-pressed={filterType === opt.value}
-                  aria-label={`Filter jenis: ${opt.label}`}
-                >
-                  {opt.label}
-                </button>
-              ))}
-            </div>
-
-            <div className="app-search app-search-md">
-              <Search className="app-search-icon" />
-              <input 
-                type="text" 
-                className="app-search-input"
-                placeholder="Cari transaksi..." 
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                aria-label="Cari riwayat transaksi"
-              />
-              {searchQuery && (
-                <button type="button" className="app-search-clear" onClick={() => setSearchQuery('')} aria-label="Bersihkan pencarian" title="Bersihkan pencarian">
-                  <X size={14} />
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Desktop Table */}
-        <div className="app-table-wrapper hide-on-mobile" style={{ flex: 1, overflow: 'auto' }}>
-          {filteredData.length === 0 ? (
-            <div className="empty-state-container finance-empty-state">
-              <div className="empty-state-icon-wrapper">
-                <Wallet className="empty-state-icon" size={48} />
-                <div className="empty-state-glow" />
-              </div>
-              <h4 className="empty-state-title">Tidak ada catatan transaksi untuk periode ini</h4>
-              <p className="empty-state-subtitle">Tambahkan transaksi baru atau sesuaikan filter Anda.</p>
-            </div>
-          ) : (
-            <table className="app-table finance-table">
-              <thead>
-                {table.getHeaderGroups().map(headerGroup => (
-                  <tr key={headerGroup.id}>
-                    {headerGroup.headers.map(header => {
-                      const canSort = header.column.getCanSort();
-                      const isActionCol = header.id === 'actions';
-                      return (
-                        <th 
-                          key={header.id} 
-                          scope="col"
-                          className={isActionCol ? 'action-col' : ''}
-                          style={{ cursor: canSort ? 'pointer' : 'default', userSelect: 'none' }}
-                          onClick={header.column.getToggleSortingHandler()}
-                        >
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', justifyContent: ['income', 'expense', 'balance'].includes(header.id) ? 'flex-end' : 'flex-start' }}>
-                            {flexRender(header.column.columnDef.header, header.getContext())}
-                            {canSort && ({
-                              asc: ' 🔼',
-                              desc: ' 🔽'
-                            }[header.column.getIsSorted()] || null)}
-                          </div>
-                        </th>
-                      );
-                    })}
-                  </tr>
-                ))}
-              </thead>
-              <tbody>
-                {table.getRowModel().rows.map(row => {
-                  const entry = row.original;
-                  return (
-                    <tr key={entry.id}>
-                      {row.getVisibleCells().map(cell => (
-                        <td key={cell.id} className={['income', 'expense', 'balance'].includes(cell.column.id) ? 'col-money' : ''}>
-                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                        </td>
-                      ))}
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          )}
-        </div>
-
-        {/* Mobile Cards */}
-        <div className="mobile-ledger-list show-on-mobile">
-          {filteredData.length === 0 ? (
-            <div className="empty-state-container finance-empty-state mobile-compact" style={{ padding: '30px 10px' }}>
-              <div className="empty-state-icon-wrapper" style={{ width: 80, height: 80, marginBottom: '12px' }}>
-                <Wallet className="empty-state-icon" size={38} />
-                <div className="empty-state-glow" />
-              </div>
-              <h4 className="empty-state-title" style={{ fontSize: '0.95rem' }}>Tidak ada transaksi</h4>
-            </div>
-          ) : table.getRowModel().rows.map(row => {
-            const entry = row.original;
-            return (
-              <div key={entry.id} className={`mobile-ledger-card ${entry.type}`}>
-                <div className="mobile-ledger-info">
-                  <span className="mobile-ledger-desc">{entry.description}</span>
-                  <div className="mobile-ledger-meta">
-                    <span className={`cat-badge ${entry.type}`}>{entry.category}</span>
-                    <span className="mobile-ledger-date">{format(new Date(entry.date), 'dd MMM yyyy')}</span>
-                    <span className={`source-badge ${entry.isManual ? 'manual' : 'booking'}`}>{getRef(entry)}</span>
-                    {entry.isManual && entry.operatorName && (
-                      <span className="mobile-ledger-operator">Oleh: {entry.operatorName}</span>
-                    )}
-                  </div>
-                </div>
-                <div className="mobile-ledger-right">
-                  <span className={`mobile-ledger-amount ${entry.type}`}>
-                    {entry.type === 'income' ? '+' : '−'}{formatCurrency(entry.amount)}
-                  </span>
-                  <span className="mobile-ledger-balance">Saldo: {formatCurrency(entry.balance)}</span>
-                </div>
-                <div className="mobile-ledger-actions">
-                  <button className="icon-btn print-btn" onClick={() => handlePrint(entry)} title="Cetak Kwitansi" aria-label="Cetak Kwitansi">
-                    <Printer size={13} />
-                  </button>
-                  <PDFDownloadLink
-                    document={<ReceiptPDF transaction={entry} settings={{ studioName, studioAddress, studioPhone }} />}
-                    fileName={`kuitansi-${entry.id}.pdf`}
-                    style={{ textDecoration: 'none', display: 'inline-flex' }}
-                  >
-                    {({ loading }) => (
-                      <button className="icon-btn print-btn" disabled={loading} title="Unduh PDF Kuitansi" aria-label="Unduh PDF Kuitansi" style={{ color: 'var(--accent-cyan)' }}>
-                        <Download size={13} />
-                      </button>
-                    )}
-                  </PDFDownloadLink>
-                  {entry.isManual && (
-                    <button className="icon-btn delete" onClick={() => { playClick(); if (window.confirm('Hapus transaksi ini?')) deleteTransaction(entry.id); }} title="Hapus" aria-label="Hapus Transaksi">
-                      <Trash2 size={13} />
+                  {searchQuery && (
+                    <button type="button" className="app-search-clear" onClick={() => setSearchQuery('')} aria-label="Bersihkan pencarian" title="Bersihkan pencarian">
+                      <X size={14} />
                     </button>
                   )}
                 </div>
               </div>
-            );
-          })}
+            </div>
+
+            {/* Desktop Table */}
+            <div className="app-table-wrapper hide-on-mobile" style={{ flex: 1, overflow: 'auto' }}>
+              {filteredData.length === 0 ? (
+                <div className="empty-state-container finance-empty-state">
+                  <div className="empty-state-icon-wrapper">
+                    <Wallet className="empty-state-icon" size={48} />
+                    <div className="empty-state-glow" />
+                  </div>
+                  <h4 className="empty-state-title">Tidak ada catatan transaksi untuk periode ini</h4>
+                  <p className="empty-state-subtitle">Tambahkan transaksi baru atau sesuaikan filter Anda.</p>
+                </div>
+              ) : (
+                <table className="app-table finance-table">
+                  <thead>
+                    {table.getHeaderGroups().map(headerGroup => (
+                      <tr key={headerGroup.id}>
+                        {headerGroup.headers.map(header => {
+                          const canSort = header.column.getCanSort();
+                          const isActionCol = header.id === 'actions';
+                          return (
+                            <th 
+                              key={header.id} 
+                              scope="col"
+                              className={isActionCol ? 'action-col' : ''}
+                              style={{ cursor: canSort ? 'pointer' : 'default', userSelect: 'none' }}
+                              onClick={header.column.getToggleSortingHandler()}
+                            >
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', justifyContent: ['income', 'expense', 'balance'].includes(header.id) ? 'flex-end' : 'flex-start' }}>
+                                {flexRender(header.column.columnDef.header, header.getContext())}
+                                {canSort && ({
+                                  asc: ' 🔼',
+                                  desc: ' 🔽'
+                                }[header.column.getIsSorted()] || null)}
+                              </div>
+                            </th>
+                          );
+                        })}
+                      </tr>
+                    ))}
+                  </thead>
+                  <tbody>
+                    {table.getRowModel().rows.map(row => {
+                      const entry = row.original;
+                      return (
+                        <tr key={entry.id}>
+                          {row.getVisibleCells().map(cell => (
+                            <td key={cell.id} className={['income', 'expense', 'balance'].includes(cell.column.id) ? 'col-money' : ''}>
+                              {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                            </td>
+                          ))}
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              )}
+            </div>
+
+            {/* Mobile Cards */}
+            <div className="mobile-ledger-list show-on-mobile">
+              {filteredData.length === 0 ? (
+                <div className="empty-state-container finance-empty-state mobile-compact" style={{ padding: '30px 10px' }}>
+                  <div className="empty-state-icon-wrapper" style={{ width: 80, height: 80, marginBottom: '12px' }}>
+                    <Wallet className="empty-state-icon" size={38} />
+                    <div className="empty-state-glow" />
+                  </div>
+                  <h4 className="empty-state-title" style={{ fontSize: '0.95rem' }}>Tidak ada transaksi</h4>
+                </div>
+              ) : table.getRowModel().rows.map(row => {
+                const entry = row.original;
+                return (
+                  <div key={entry.id} className={`mobile-ledger-card ${entry.type}`}>
+                    <div className="mobile-ledger-info">
+                      <span className="mobile-ledger-desc">{entry.description}</span>
+                      <div className="mobile-ledger-meta">
+                        <span className={`cat-badge ${entry.type}`}>{entry.category}</span>
+                        <span className="mobile-ledger-date">{format(new Date(entry.date), 'dd MMM yyyy')}</span>
+                        <span className={`source-badge ${entry.isManual ? 'manual' : 'booking'}`}>{getRef(entry)}</span>
+                        {entry.isManual && entry.operatorName && (
+                          <span className="mobile-ledger-operator">Oleh: {entry.operatorName}</span>
+                        )}
+                      </div>
+                    </div>
+                    <div className="mobile-ledger-right">
+                      <span className={`mobile-ledger-amount ${entry.type}`}>
+                        {entry.type === 'income' ? '+' : '−'}{formatCurrency(entry.amount)}
+                      </span>
+                      <span className="mobile-ledger-balance">Saldo: {formatCurrency(entry.balance)}</span>
+                    </div>
+                    <div className="mobile-ledger-actions">
+                      <button className="icon-btn print-btn" onClick={() => handlePrint(entry)} title="Cetak Kwitansi" aria-label="Cetak Kwitansi">
+                        <Printer size={13} />
+                      </button>
+                      <PDFDownloadLink
+                        document={<ReceiptPDF transaction={entry} settings={{ studioName, studioAddress, studioPhone }} />}
+                        fileName={`kuitansi-${entry.id}.pdf`}
+                        style={{ textDecoration: 'none', display: 'inline-flex' }}
+                      >
+                        {({ loading }) => (
+                          <button className="icon-btn print-btn" disabled={loading} title="Unduh PDF Kuitansi" aria-label="Unduh PDF Kuitansi" style={{ color: 'var(--accent-cyan)' }}>
+                            <Download size={13} />
+                          </button>
+                        )}
+                      </PDFDownloadLink>
+                      {entry.isManual && (
+                        <button className="icon-btn delete" onClick={() => { playClick(); if (window.confirm('Hapus transaksi ini?')) deleteTransaction(entry.id); }} title="Hapus" aria-label="Hapus Transaksi">
+                          <Trash2 size={13} />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
+        {/* ── RIGHT COLUMN (Sidebar KPI & Widget Stack) ── */}
+        <div className="finance-sidebar-col hide-on-print">
+          
+          {/* Vertical Stats Stack */}
+          <div className="sidebar-stats-stack">
+            {/* Total Balance Card */}
+            <div className="app-stat-card primary-gradient">
+              <div className="stat-icon-glow">
+                <Wallet size={20} />
+              </div>
+              <div className="stat-data">
+                <span className="stat-label">Total Saldo Bersih</span>
+                <span className="stat-value">{formatCurrency(totalBalance)}</span>
+                <span className="stat-note">Akumulasi buku kas</span>
+              </div>
+            </div>
+
+            {/* Income Card */}
+            <div className="app-stat-card income-gradient">
+              <div className="stat-icon-glow">
+                <TrendingUp size={20} />
+              </div>
+              <div className="stat-data">
+                <span className="stat-label">Pemasukan · {periodLabel}</span>
+                <span className="stat-value">{formatCurrency(totalIncomeFiltered)}</span>
+                <span className="stat-note">Booking & manual</span>
+              </div>
+            </div>
+
+            {/* Expense Card */}
+            <div className="app-stat-card expense-gradient">
+              <div className="stat-icon-glow">
+                <TrendingDown size={20} />
+              </div>
+              <div className="stat-data">
+                <span className="stat-label">Pengeluaran · {periodLabel}</span>
+                <span className="stat-value">{formatCurrency(totalExpenseFiltered)}</span>
+                <span className="stat-note">Operasional terbayar</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Smart Insights Panel */}
+          <div className="sidebar-widget-card glass-panel">
+            <div className="widget-header">
+              <TrendingUp size={16} color="var(--accent-cyan)" />
+              <h4>Forecast & Rekonsiliasi</h4>
+            </div>
+            <div className="widget-content">
+              {/* Forecast */}
+              <div className="insight-section-item">
+                <div className="insight-item-header">
+                  <h5>Forecast Pendapatan</h5>
+                  <span className="badge-value">{revenueForecast.progressPercent}%</span>
+                </div>
+                <div className="progress-bar-container">
+                  <div className="progress-bar-fill" style={{ width: `${Math.min(revenueForecast.progressPercent, 100)}%` }} />
+                </div>
+                <div className="insight-grid-vals">
+                  <div className="val-block">
+                    <span>Kas Berjalan</span>
+                    <strong>{formatCurrency(revenueForecast.currentIncome)}</strong>
+                  </div>
+                  <div className="val-block">
+                    <span>Konservatif</span>
+                    <strong>{formatCurrency(revenueForecast.conservativeForecast)}</strong>
+                  </div>
+                </div>
+              </div>
+
+              {/* Reconciliation */}
+              <div className="insight-section-item" style={{ marginTop: '16px', paddingTop: '16px', borderTop: '1px solid rgba(255, 255, 255, 0.05)' }}>
+                <h5>Rekonsiliasi Kas Booking</h5>
+                <div className="insight-grid-vals">
+                  <div className="val-block">
+                    <span>Nilai Booking</span>
+                    <strong>{formatCurrency(reconciliation.bookedValue)}</strong>
+                  </div>
+                  <div className="val-block">
+                    <span>Selisih Kas</span>
+                    <strong style={{ color: reconciliation.diff === 0 ? 'rgb(var(--success-rgb))' : 'var(--accent-pink)' }}>
+                      {formatCurrency(reconciliation.diff)}
+                    </strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Category Breakdown (Pie Chart) */}
+          <div className="sidebar-widget-card glass-panel">
+            <div className="widget-header">
+              <TrendingDown size={16} color="var(--accent-pink)" />
+              <h4>Breakdown Pengeluaran</h4>
+            </div>
+            <div className="widget-content">
+              {pieChartData.length > 0 ? (
+                <>
+                  <div className="sidebar-chart-wrapper">
+                    <ResponsiveContainer width="100%" height={140}>
+                      <PieChart>
+                        <Pie data={pieChartData} cx="50%" cy="50%" innerRadius={36} outerRadius={52} paddingAngle={4} dataKey="value">
+                          {pieChartData.map((_, i) => (
+                            <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} stroke="transparent" />
+                          ))}
+                        </Pie>
+                        <RechartsTooltip
+                          formatter={(v) => formatCurrency(v)}
+                          contentStyle={{ backgroundColor: tooltipBg, border: `1px solid ${tooltipBorder}`, borderRadius: '10px', fontSize: '0.8rem', color: tooltipTextColor }}
+                          itemStyle={{ color: tooltipTextColor }}
+                        />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </div>
+                  <div className="pie-legend-list">
+                    {pieChartData.map((item, i) => (
+                      <div key={item.name} className="pie-legend-item">
+                        <div className="pie-legend-left">
+                          <span className="pie-legend-dot" style={{ background: PIE_COLORS[i % PIE_COLORS.length] }} />
+                          <span className="pie-legend-name">{item.name}</span>
+                        </div>
+                        <span className="pie-legend-val">{formatCurrency(item.value)}</span>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              ) : (
+                <div className="sidebar-empty-state">Belum ada pengeluaran</div>
+              )}
+            </div>
+          </div>
+
+          {/* Daily Operations outlays */}
+          <div className="sidebar-widget-card glass-panel">
+            <div className="widget-header">
+              <TrendingDown size={16} color="var(--accent-pink)" />
+              <h4>Pengeluaran Harian</h4>
+            </div>
+            <div className="widget-content daily-expense-list">
+              <div className="daily-expense-summary">
+                <div className="summary-item">
+                  <span className="summary-label">Hari Ini</span>
+                  <strong className="summary-val text-expense">{formatCurrency(todayExpensesSum)}</strong>
+                </div>
+                <div className="summary-item">
+                  <span className="summary-label">Kemarin</span>
+                  <strong className="summary-val">{formatCurrency(yesterdayExpensesSum)}</strong>
+                </div>
+              </div>
+
+              {todayExpensesList.length > 0 ? (
+                <div className="mini-expense-list">
+                  {todayExpensesList.slice(0, 3).map((entry) => (
+                    <div key={entry.id} className="mini-expense-item">
+                      <div className="mini-expense-left">
+                        <span className="mini-expense-desc">{entry.description}</span>
+                        <span className="mini-expense-meta">
+                          {entry.category} • oleh {entry.operatorName || 'Staff'}
+                        </span>
+                      </div>
+                      <span className="mini-expense-amount">{formatCurrency(entry.amount)}</span>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="mini-expense-empty">Belum ada pengeluaran hari ini.</div>
+              )}
+
+              <button
+                type="button"
+                className="smart-btn-action"
+                onClick={() => handleOpenModal('expense')}
+              >
+                <Plus size={14} /> Catat Pengeluaran
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 

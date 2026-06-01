@@ -311,21 +311,22 @@
 }
 
 .finance-table th:nth-child(1),
-.finance-table td:nth-child(1) { width: 11%; }
+.finance-table td:nth-child(1) { width: 10%; min-width: 90px; }
 .finance-table th:nth-child(2),
-.finance-table td:nth-child(2) { width: 13%; }
+.finance-table td:nth-child(2) { width: 10%; min-width: 90px; }
 .finance-table th:nth-child(3),
-.finance-table td:nth-child(3) { width: 22%; }
+.finance-table td:nth-child(3) { width: 18%; min-width: 140px; }
 .finance-table th:nth-child(4),
-.finance-table td:nth-child(4) { width: 11%; text-align: center; }
+.finance-table td:nth-child(4) { width: 9%; min-width: 80px; text-align: center; }
+
 .finance-table th:nth-child(5),
-.finance-table td:nth-child(5) { width: 13%; text-align: right; }
+.finance-table td:nth-child(5) { width: 11%; min-width: 95px; text-align: right; padding-left: 8px !important; padding-right: 8px !important; }
 .finance-table th:nth-child(6),
-.finance-table td:nth-child(6) { width: 13%; text-align: right; }
+.finance-table td:nth-child(6) { width: 11%; min-width: 95px; text-align: right; padding-left: 8px !important; padding-right: 8px !important; }
 .finance-table th:nth-child(7),
-.finance-table td:nth-child(7) { width: 12%; text-align: right; }
+.finance-table td:nth-child(7) { width: 13%; min-width: 110px; text-align: right; padding-left: 8px !important; padding-right: 8px !important; }
 .finance-table th:nth-child(8),
-.finance-table td:nth-child(8) { width: 64px; }
+.finance-table td:nth-child(8) { width: 18%; min-width: 140px; text-align: right; padding-left: 8px !important; padding-right: 12px !important; }
 
 .cat-badge {
   display: inline-flex;
@@ -1065,4 +1066,384 @@
 [data-theme="light"] .mobile-ledger-operator {
   border-left-color: rgba(0, 0, 0, 0.1) !important;
 }
+
+/* ==========================================================
+   CUSTOM FIGMA-STYLE CHART 8 OVERRIDES
+   ========================================================== */
+
+/* Chart 8 Container */
+.chart-8-container {
+  position: relative;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-light);
+  border-radius: 16px;
+  box-shadow: 0px 5px 25px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+[data-theme="light"] .chart-8-container {
+  background: #FFFFFF !important;
+  box-shadow: 0px 5px 25px rgba(0, 0, 0, 0.08) !important;
+  border: none !important;
+}
+
+/* Stretch chart container on desktop to align with the table and fill the main column space */
+@media (min-width: 1025px) {
+  .chart-8-container {
+    width: 100% !important;
+    height: 540px !important;
+  }
+}
+
+/* Vector 8 - Area Fill Path (Gradient 9) */
+.vector-7-group .recharts-area-area {
+  opacity: 0.1 !important;
+  fill: url(#colorPengeluaran) !important;
+}
+
+/* Vector 7 - Area Stroke Path */
+.vector-7-group .recharts-area-curve {
+  stroke: #FE6C6C !important;
+  stroke-width: 2.5px !important;
+}
+
+/* Rectangle 86 - Active column cursor highlight */
+.rectangle-86 {
+  width: 90px;
+  fill: url(#cursorGradient);
+  opacity: 0.5;
+}
+
+/* Ellipse 41 - Hover active dot */
+.ellipse-41 {
+  box-sizing: border-box;
+  width: 40px;
+  height: 40px;
+  background: #FFFFFF;
+  box-shadow: 0px 5px 25px rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+}
+
+/* Typography styles for XAxis Ticks (Jan, Feb, Mar, Apr, May, Jun, Jul) */
+.recharts-cartesian-axis-tick-value {
+  font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.04em !important;
+}
+
+/* Specific text color for ticks */
+[data-theme="light"] .recharts-cartesian-axis-tick-value {
+  color: #454459 !important;
+  fill: #454459 !important;
+}
+
+[data-theme="dark"] .recharts-cartesian-axis-tick-value {
+  color: rgba(255, 255, 255, 0.6) !important;
+  fill: rgba(255, 255, 255, 0.6) !important;
+}
+
+/* May / Mei highlighted label in Figma */
+.recharts-cartesian-axis-tick.highlighted .recharts-cartesian-axis-tick-value {
+  font-weight: 600 !important;
+  opacity: 1 !important;
+}
+
+/* ==========================================================
+   TWO-COLUMN BOOKKEEPING DASHBOARD LAYOUT OVERHAUL
+   ========================================================== */
+
+/* Main Layout Wrapper Grid */
+.finance-layout-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+  width: 100%;
+}
+
+@media (min-width: 1200px) {
+  .finance-layout-grid {
+    grid-template-columns: 1.6fr 1fr; /* Main chart/table on left, sidebar on right */
+    align-items: start;
+  }
+}
+
+@media (min-width: 1440px) {
+  .finance-layout-grid {
+    grid-template-columns: 1.8fr 1fr;
+  }
+}
+
+/* Main content column containing charts & ledger logs */
+.finance-main-col {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+}
+
+/* Sidebar widget stack column */
+.finance-sidebar-col {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+}
+
+/* Sidebar Stats Stack */
+.sidebar-stats-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sidebar-stats-stack .app-stat-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  border-radius: 16px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-light);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.sidebar-stats-stack .app-stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar-stats-stack .stat-icon-glow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  flex-shrink: 0;
+}
+
+/* Stat color schemes */
+.sidebar-stats-stack .primary-gradient .stat-icon-glow {
+  background: rgba(var(--accent-cyan-rgb), 0.12);
+  color: var(--accent-cyan);
+}
+
+.sidebar-stats-stack .income-gradient .stat-icon-glow {
+  background: rgba(var(--success-rgb), 0.12);
+  color: rgb(var(--success-rgb));
+}
+
+.sidebar-stats-stack .expense-gradient .stat-icon-glow {
+  background: rgba(var(--accent-pink-rgb), 0.12);
+  color: var(--accent-pink);
+}
+
+/* Premium gradient overlays for Light Theme cards */
+[data-theme="light"] .sidebar-stats-stack .primary-gradient {
+  background: linear-gradient(135deg, rgba(0, 153, 187, 0.04) 0%, rgba(0, 153, 187, 0.01) 100%) !important;
+  border-color: rgba(0, 153, 187, 0.12) !important;
+}
+
+[data-theme="light"] .sidebar-stats-stack .income-gradient {
+  background: linear-gradient(135deg, rgba(46, 125, 50, 0.04) 0%, rgba(46, 125, 50, 0.01) 100%) !important;
+  border-color: rgba(46, 125, 50, 0.12) !important;
+}
+
+[data-theme="light"] .sidebar-stats-stack .expense-gradient {
+  background: linear-gradient(135deg, rgba(232, 25, 78, 0.04) 0%, rgba(232, 25, 78, 0.01) 100%) !important;
+  border-color: rgba(232, 25, 78, 0.12) !important;
+}
+
+/* Sidebar Glassmorphic Widgets */
+.sidebar-widget-card {
+  border-radius: 16px;
+  padding: 20px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-light);
+}
+
+[data-theme="light"] .sidebar-widget-card {
+  background: #FFFFFF !important;
+  box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.03) !important;
+  border-color: rgba(0, 0, 0, 0.05) !important;
+}
+
+.widget-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="light"] .widget-header {
+  border-bottom-color: rgba(0, 0, 0, 0.06);
+}
+
+.widget-header h4 {
+  font-size: 0.88rem;
+  font-weight: 750;
+  color: var(--text-primary);
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Insight widget progress bar */
+.insight-section-item h5 {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  margin: 0 0 10px 0;
+}
+
+.insight-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.insight-item-header h5 {
+  margin: 0;
+}
+
+.insight-item-header .badge-value {
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: var(--accent-cyan);
+  background: rgba(var(--accent-cyan-rgb), 0.1);
+  padding: 2px 7px;
+  border-radius: 6px;
+}
+
+.progress-bar-container {
+  height: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 99px;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+
+[data-theme="light"] .progress-bar-container {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: var(--accent-cyan);
+  border-radius: 99px;
+  transition: width 0.4s ease;
+}
+
+.insight-grid-vals {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.val-block {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.val-block span {
+  font-size: 0.66rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.val-block strong {
+  font-size: 0.88rem;
+  font-weight: 750;
+  color: var(--text-primary);
+}
+
+/* Breakdown Pie Chart Styles */
+.sidebar-chart-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.sidebar-empty-state {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  text-align: center;
+  padding: 20px;
+}
+
+/* Consolidated Interval Selectors inside Chart Header */
+.chart-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.chart-header-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.chart-header-title h3 {
+  margin: 0;
+  font-size: 0.94rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.chart-period-selector {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  background: rgba(0, 0, 0, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  padding: 3px;
+}
+
+[data-theme="light"] .chart-period-selector {
+  background: rgba(0, 0, 0, 0.03);
+  border-color: rgba(0, 0, 0, 0.06);
+}
+
+.chart-header-month {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  margin-left: 8px;
+  font-weight: 700;
+  background: rgba(255, 255, 255, 0.04);
+  padding: 3px 9px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+[data-theme="light"] .chart-header-month {
+  background: rgba(0, 0, 0, 0.03) !important;
+  border-color: rgba(0, 0, 0, 0.04) !important;
+  color: #454459 !important;
+}
+
+
+
 

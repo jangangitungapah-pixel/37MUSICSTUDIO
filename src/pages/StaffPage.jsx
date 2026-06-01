@@ -45,11 +45,15 @@ const validateStaffWithZod = (fieldName) => (value) => {
   return result.success ? true : result.error.errors[0].message;
 };
 
+import { useThemeStore } from '../store/useThemeStore';
+
 const StaffPage = () => {
+  const { soundEnabled } = useThemeStore();
   const { staffMembers, updateStaff, deleteStaff, toggleStaffStatus, createStaffAccount, resetStaffPassword } = useStaffStore();
   const { logs } = useAuditLogStore();
   const [searchQuery, setSearchQuery] = useState('');
-  const [playClick] = useSound(CLICK_SOUND, { volume: 0.25 });
+  const [playClickRaw] = useSound(CLICK_SOUND, { volume: 0.25 });
+  const playClick = () => { if (soundEnabled) playClickRaw(); };
 
   const filteredStaff = useMemo(() => {
     let result = staffMembers;
