@@ -713,98 +713,206 @@ body.calendar-move-lock .main-content {
 .grid-corner-cell {
   position: sticky; top: 0; left: 0;
   z-index: 100;
-  background: var(--bg-dark);
-  border-bottom: 1px solid var(--glass-border);
-  border-right: 1px solid var(--glass-border);
+  background: rgba(15, 15, 26, 0.8) !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.05) !important;
   display: flex; align-items: center; justify-content: center;
   padding: 10px;
 }
 .corner-label {
-  font-size: 0.6rem; font-weight: 800;
-  text-transform: uppercase; letter-spacing: 0.15em;
-  color: var(--text-muted);
+  font-size: 0.58rem; font-weight: 900;
+  text-transform: uppercase; letter-spacing: 0.18em;
+  color: var(--accent-cyan);
+  background: rgba(0, 240, 255, 0.08);
+  padding: 3px 8px;
+  border-radius: 20px;
+  border: 1px solid rgba(0, 240, 255, 0.15);
 }
 
 /* Day header cells */
 .grid-header-cell {
   position: sticky; top: 0;
-  background: var(--bg-dark);
-  border-bottom: 2px solid var(--glass-border);
-  border-right: 1px solid var(--border-light);
-  padding: 10px 4px;
+  background: rgba(15, 15, 26, 0.75) !important;
+  backdrop-filter: blur(16px) saturate(200%);
+  -webkit-backdrop-filter: blur(16px) saturate(200%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.02) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  padding: 12px 4px;
   text-align: center;
   z-index: 10;
   display: flex; flex-direction: column;
-  align-items: center; gap: 4px;
-  transition: background 0.2s;
+  align-items: center; gap: 6px;
+  transition: transform 0.24s cubic-bezier(0.16, 1, 0.3, 1), background 0.24s ease, box-shadow 0.24s ease, border-color 0.24s ease;
+}
+.grid-header-cell::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent-cyan), transparent);
+  opacity: 0;
+  transition: opacity 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+}
+.grid-header-cell:hover {
+  background: rgba(20, 20, 32, 0.92) !important;
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  z-index: 15;
+}
+.grid-header-cell:hover::before {
+  opacity: 1;
 }
 .grid-header-cell .day-name {
-  font-size: 0.6rem; text-transform: uppercase;
-  font-weight: 800; letter-spacing: 0.1em;
+  font-size: 0.58rem; text-transform: uppercase;
+  font-weight: 800; letter-spacing: 0.12em;
   color: var(--text-muted);
+  transition: color 0.2s;
 }
 .grid-header-cell .day-number {
-  font-size: 1rem; font-weight: 700;
+  font-size: 1.05rem; font-weight: 800;
   color: var(--text-secondary);
-  width: 30px; height: 30px;
+  width: 32px; height: 32px;
   display: flex; align-items: center; justify-content: center;
   border-radius: 50%;
-  transition: all 0.15s;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
-.grid-header-cell.today { background: rgba(var(--accent-cyan-rgb), 0.04); }
+.grid-header-cell.today {
+  background: rgba(0, 240, 255, 0.04) !important;
+  border-bottom: 2px solid var(--accent-cyan) !important;
+  animation: metronomePulseHeader 1s cubic-bezier(0.25, 0.8, 0.25, 1) infinite;
+}
 .grid-header-cell.today .day-number {
-  color: var(--bg-dark);
-  background: var(--accent-cyan);
-  font-weight: 800;
-  box-shadow: 0 0 14px rgba(var(--accent-cyan-rgb), 0.4);
+  color: #0f0f1a;
+  background: linear-gradient(135deg, var(--accent-cyan), #00bfff);
+  font-weight: 900;
+  box-shadow: 0 0 16px rgba(0, 240, 255, 0.45);
+  transform: scale(1.05);
 }
-.grid-header-cell.weekend .day-name { color: var(--accent-pink); opacity: 0.8; }
+.grid-header-cell.today:hover {
+  background: rgba(0, 240, 255, 0.08) !important;
+}
+.grid-header-cell.weekend .day-name { color: var(--accent-pink); opacity: 0.9; }
 
 /* Time label column */
 .sticky-col { position: sticky; left: 0; z-index: 20; }
 
 .time-label {
-  border-right: 1px solid var(--glass-border);
-  border-bottom: 1px solid var(--border-light);
-  padding: 0 4px;
+  border-right: 1px solid rgba(255, 255, 255, 0.05) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.02) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  padding: 0 6px;
   display: flex; align-items: center; justify-content: center;
-  background: var(--bg-dark);
-  min-height: 44px;
+  background: rgba(15, 15, 26, 0.75) !important;
+  backdrop-filter: blur(12px) saturate(200%);
+  -webkit-backdrop-filter: blur(12px) saturate(200%);
+  min-height: 48px;
+  transition: transform 0.24s cubic-bezier(0.16, 1, 0.3, 1), background 0.24s ease, box-shadow 0.24s ease, border-color 0.24s ease;
 }
-.time-label.even-row { background: var(--bg-surface); }
+.time-label::before {
+  content: '';
+  position: absolute;
+  top: 0; bottom: 0; left: 0;
+  width: 2px;
+  background: linear-gradient(180deg, transparent, var(--accent-pink), transparent);
+  opacity: 0;
+  transition: opacity 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+}
+.time-label:hover {
+  background: rgba(20, 20, 32, 0.92) !important;
+  transform: translateX(4px);
+  box-shadow: 6px 0 20px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  z-index: 25;
+}
+.time-label:hover::before {
+  opacity: 1;
+}
+.time-label.even-row {
+  background: rgba(var(--bg-surface-rgb), 0.35) !important;
+}
+.time-label.current-hour-highlight {
+  position: relative;
+  background: rgba(var(--accent-pink-rgb), 0.05) !important;
+  animation: metronomePulseHour 1s cubic-bezier(0.25, 0.8, 0.25, 1) infinite;
+  z-index: 25;
+}
+.time-label.current-hour-highlight .time-range {
+  background: linear-gradient(135deg, var(--accent-cyan), var(--accent-pink));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 900;
+  text-shadow: 0 0 8px rgba(255, 0, 128, 0.15);
+  opacity: 1;
+}
 
 .time-range {
-  font-size: 0.65rem; color: var(--text-muted);
-  font-weight: 700; white-space: nowrap;
+  font-size: 0.68rem; color: var(--text-muted);
+  font-weight: 800; white-space: nowrap;
   font-variant-numeric: tabular-nums;
-  letter-spacing: 0.02em; opacity: 0.8;
+  letter-spacing: 0.03em;
+  opacity: 0.85;
 }
+
+/* Metronome Pulses */
+@keyframes metronomePulseHeader {
+  0%, 100% {
+    background: rgba(0, 240, 255, 0.04) !important;
+    box-shadow: inset 0 0 10px rgba(0, 240, 255, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  }
+  12% {
+    background: rgba(0, 240, 255, 0.12) !important;
+    box-shadow: inset 0 0 20px rgba(0, 240, 255, 0.25), 0 0 12px rgba(0, 240, 255, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  }
+}
+
+@keyframes metronomePulseHour {
+  0%, 100% {
+    background: rgba(var(--accent-pink-rgb), 0.04) !important;
+    box-shadow: inset 2px 0 0 rgba(var(--accent-pink-rgb), 0.4), inset 0 0 8px rgba(var(--accent-pink-rgb), 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  }
+  12% {
+    background: rgba(var(--accent-pink-rgb), 0.12) !important;
+    box-shadow: inset 4px 0 0 var(--accent-pink), inset 0 0 16px rgba(var(--accent-pink-rgb), 0.3), 0 0 8px rgba(var(--accent-pink-rgb), 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  }
+}
+
 
 /* Grid Cells */
 .grid-cell {
-  border-right: 1px solid var(--border-light);
-  border-bottom: 1px solid var(--border-light);
-  min-height: 44px; position: relative;
-  transition: background 0.12s;
+  border-right: 1px solid rgba(255, 255, 255, 0.02) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.02) !important;
+  min-height: 48px; position: relative;
+  transition: background 0.2s ease, border-color 0.2s ease;
+  background: transparent;
 }
-.grid-cell.even-row { background: rgba(var(--bg-surface-rgb), 0.15); }
-.grid-cell.today-col-highlight { background: rgba(var(--accent-cyan-rgb), 0.025) !important; }
-.grid-cell.weekend-col { background: rgba(var(--accent-pink-rgb), 0.01); }
-.grid-cell.today-col-highlight.weekend-col { background: rgba(var(--accent-cyan-rgb), 0.025) !important; }
+.grid-cell.even-row { background: rgba(255, 255, 255, 0.005); }
+.grid-cell.today-col-highlight { background: rgba(var(--accent-cyan-rgb), 0.015) !important; }
+.grid-cell.weekend-col { background: rgba(var(--accent-pink-rgb), 0.005); }
+.grid-cell.today-col-highlight.weekend-col { background: rgba(var(--accent-cyan-rgb), 0.015) !important; }
 
 /* Empty cell (click to add) */
 .empty-cell {
   cursor: pointer;
   display: flex; align-items: center; justify-content: center;
-  transition: background 0.12s;
+  transition: background 0.2s ease;
 }
-.empty-cell:hover { background: var(--bg-surface-hover) !important; }
+.empty-cell:hover {
+  background: rgba(255, 255, 255, 0.025) !important;
+}
 .hover-plus {
-  opacity: 0; color: var(--text-muted);
-  font-size: 1.1rem; font-weight: 300;
-  transition: opacity 0.15s;
+  opacity: 0; color: var(--accent-pink);
+  font-size: 1.25rem; font-weight: 300;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transform: scale(0.8);
 }
-.empty-cell:hover .hover-plus { opacity: 0.5; }
+.empty-cell:hover .hover-plus {
+  opacity: 0.7;
+  transform: scale(1.1);
+}
 
 /* ===== Radix UI Components ===== */
 .radix-tooltip-content {
@@ -901,58 +1009,129 @@ body.calendar-move-lock .main-content {
    ══════════════════════════════════════════ */
 .booked-cell {
   cursor: pointer;
-  transition: filter 0.16s ease, opacity 0.16s ease, box-shadow 0.18s ease, transform 0.18s ease, border-color 0.18s ease;
+  transition: filter 0.22s ease, opacity 0.22s ease, box-shadow 0.24s cubic-bezier(0.16, 1, 0.3, 1), transform 0.24s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s;
   overflow: hidden;
   border-bottom: none; border-top: none;
-  border-right: 1px solid var(--border-light);
-  will-change: filter, transform;
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
+  will-change: filter, transform, box-shadow;
   -webkit-user-select: none;
   user-select: none;
   -webkit-touch-callout: none;
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
 }
 .booked-cell[draggable="true"] { cursor: grab; }
 .booked-cell[draggable="true"]:active { cursor: grabbing; }
-.booked-cell:hover { filter: brightness(1.2); z-index: 2; }
 
+/* Interactive 3D Lift & Scale */
+.booked-cell:hover {
+  filter: brightness(1.2) saturate(105%);
+  transform: translateY(-2px) scale(1.02);
+  z-index: 10 !important;
+  box-shadow: 
+    0 12px 28px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.16);
+}
+
+/* Status Confirmed (Lunas) - Neon Cyan Glow */
 .booked-cell.status-confirmed {
-  background: rgba(var(--accent-cyan-rgb), 0.12);
+  background: linear-gradient(135deg, rgba(var(--accent-cyan-rgb), 0.14), rgba(var(--accent-cyan-rgb), 0.04));
   border-left: 3px solid var(--accent-cyan);
+  box-shadow: 
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 4px 12px rgba(var(--accent-cyan-rgb), 0.12);
 }
-.booked-cell.status-confirmed.booking-start { border-top: 1px solid rgba(var(--accent-cyan-rgb),0.2); }
-.booked-cell.status-confirmed.booking-end   { border-bottom: 1px solid rgba(var(--accent-cyan-rgb),0.2); }
+.booked-cell.status-confirmed.booking-start { border-top: 1px solid rgba(var(--accent-cyan-rgb), 0.22); }
+.booked-cell.status-confirmed.booking-end   { border-bottom: 1px solid rgba(var(--accent-cyan-rgb), 0.22); }
+.booked-cell.status-confirmed:hover {
+  box-shadow: 
+    0 12px 28px rgba(0, 0, 0, 0.45),
+    0 0 16px rgba(var(--accent-cyan-rgb), 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
 
+/* Status Down Payment (DP) - Neon Amber Glow */
 .booked-cell.status-dp {
-  background: rgba(255, 193, 7, 0.12);
+  background: linear-gradient(135deg, rgba(255, 193, 7, 0.12), rgba(255, 193, 7, 0.03));
   border-left: 3px solid #FFC107;
+  box-shadow: 
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 4px 12px rgba(255, 193, 7, 0.12);
 }
-.booked-cell.status-dp.booking-start { border-top: 1px solid rgba(255,193,7,0.2); }
-.booked-cell.status-dp.booking-end   { border-bottom: 1px solid rgba(255,193,7,0.2); }
+.booked-cell.status-dp.booking-start { border-top: 1px solid rgba(255, 193, 7, 0.22); }
+.booked-cell.status-dp.booking-end   { border-bottom: 1px solid rgba(255, 193, 7, 0.22); }
+.booked-cell.status-dp:hover {
+  box-shadow: 
+    0 12px 28px rgba(0, 0, 0, 0.45),
+    0 0 16px rgba(255, 193, 7, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
 
+/* Status Pending (Belum Bayar) - Neon Pink Glow */
 .booked-cell.status-pending {
-  background: rgba(var(--accent-pink-rgb), 0.12);
+  background: linear-gradient(135deg, rgba(var(--accent-pink-rgb), 0.14), rgba(var(--accent-pink-rgb), 0.04));
   border-left: 3px solid var(--accent-pink);
+  box-shadow: 
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 4px 12px rgba(var(--accent-pink-rgb), 0.12);
 }
-.booked-cell.status-pending.booking-start { border-top: 1px solid rgba(var(--accent-pink-rgb),0.2); }
-.booked-cell.status-pending.booking-end   { border-bottom: 1px solid rgba(var(--accent-pink-rgb),0.2); }
+.booked-cell.status-pending.booking-start { border-top: 1px solid rgba(var(--accent-pink-rgb), 0.22); }
+.booked-cell.status-pending.booking-end   { border-bottom: 1px solid rgba(var(--accent-pink-rgb), 0.22); }
+.booked-cell.status-pending:hover {
+  box-shadow: 
+    0 12px 28px rgba(0, 0, 0, 0.45),
+    0 0 16px rgba(var(--accent-pink-rgb), 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
 
+/* Status Maintenance (Blocked) */
 .status-maintenance {
   background: repeating-linear-gradient(
     45deg,
-    rgba(107,107,118,0.08), rgba(107,107,118,0.08) 8px,
-    rgba(107,107,118,0.16) 8px, rgba(107,107,118,0.16) 16px
+    rgba(107, 107, 118, 0.05), rgba(107, 107, 118, 0.05) 8px,
+    rgba(107, 107, 118, 0.12) 8px, rgba(107, 107, 118, 0.12) 16px
   );
   border-left: 3px solid #6b6b76;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
 .status-maintenance:hover { filter: brightness(1.15); }
 
-.booked-cell.booking-start       { border-radius: 6px 6px 0 0; }
-.booked-cell.booking-end         { border-radius: 0 0 6px 6px; }
-.booked-cell.booking-start.booking-end { border-radius: 6px; }
+/* VIP Booking Styling */
+.booked-cell.booking-vip {
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(255, 215, 0, 0.04)) !important;
+  border-left: 3.5px solid #FFD700 !important;
+  box-shadow: 
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 4px 16px rgba(255, 215, 0, 0.15) !important;
+}
+.booked-cell.booking-vip .booking-band-name {
+  color: #FFD700 !important;
+  font-weight: 900;
+  text-shadow: 0 0 6px rgba(255, 215, 0, 0.35);
+}
+.booked-cell.booking-vip:hover {
+  box-shadow: 
+    0 14px 32px rgba(0, 0, 0, 0.5),
+    0 0 20px rgba(255, 215, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.22) !important;
+}
 
+/* Recording Booking Styling */
+.booked-cell.booking-recording {
+  background: linear-gradient(135deg, rgba(255, 59, 48, 0.15), rgba(255, 59, 48, 0.04));
+  border-left: 3.5px solid #ff453a;
+}
+
+/* Border radius profiles */
+.booked-cell.booking-start       { border-radius: 10px 10px 0 0; }
+.booked-cell.booking-end         { border-radius: 0 0 10px 10px; }
+.booked-cell.booking-start.booking-end { border-radius: 10px; }
+
+/* Resizing and source locks */
 .booked-cell.is-resizing {
   opacity: 0.92; filter: brightness(1.2);
   border-right-style: dashed;
-  transform: translateZ(0) scale(1.01);
+  transform: translateZ(0) scale(1.015);
   box-shadow:
     inset 0 0 0 1px rgba(255, 255, 255, 0.24),
     0 8px 22px rgba(0, 0, 0, 0.24);
@@ -1076,6 +1255,9 @@ body.calendar-move-lock .main-content {
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   line-height: 1.2; letter-spacing: -0.01em;
   font-family: var(--font-display);
+  display: flex;
+  align-items: center;
+  gap: 3px;
 }
 .booking-time-label {
   font-size: 0.6rem; color: var(--text-secondary);
@@ -1083,6 +1265,37 @@ body.calendar-move-lock .main-content {
   font-variant-numeric: tabular-nums;
   opacity: 0.75; font-weight: 600;
 }
+.booking-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 1px;
+}
+.rec-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  background: rgba(255, 59, 48, 0.12);
+  border: 1px solid rgba(255, 59, 48, 0.22);
+  padding: 1px 4px;
+  border-radius: 4px;
+  color: #ff453a;
+  line-height: 1;
+}
+.rec-dot {
+  width: 5px;
+  height: 5px;
+  background: #ff453a;
+  border-radius: 50%;
+  box-shadow: 0 0 6px #ff453a;
+  animation: liveRecPulse 1.2s infinite ease-in-out;
+  flex-shrink: 0;
+}
+@keyframes liveRecPulse {
+  0%, 100% { opacity: 0.4; transform: scale(0.95); }
+  50% { opacity: 1; transform: scale(1.15); }
+}
+
 
 @media (max-width: 768px) {
   .booking-info {
@@ -1094,9 +1307,19 @@ body.calendar-move-lock .main-content {
   .booking-band-name {
     font-size: 0.58rem;
     width: 100%;
+    justify-content: center;
   }
   .booking-time-label {
     display: none; /* Hide on mobile because 1:1 cells are too narrow for time */
+  }
+  .rec-text {
+    display: none !important;
+  }
+  .rec-indicator {
+    padding: 1px 3px !important;
+    border-color: rgba(255, 59, 48, 0.4) !important;
+    background: rgba(255, 59, 48, 0.25) !important;
+    margin-right: 0;
   }
 }
 
@@ -2098,3 +2321,343 @@ body.calendar-move-lock .main-content {
     height: 30px;
   }
 }
+
+/* ==========================================================
+   FLUENT CALENDAR OVERHAUL STYLES
+   ========================================================== */
+
+/* 1. Ambient Background Orbs */
+.calendar-ambient-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.calendar-ambient-bg .ambient-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(140px);
+  opacity: 0.1;
+  mix-blend-mode: plus-lighter;
+  animation: floatOrbCal 26s infinite alternate ease-in-out;
+}
+
+.calendar-ambient-bg .orb-1 {
+  width: 480px;
+  height: 480px;
+  background: radial-gradient(circle, var(--accent-pink) 0%, transparent 80%);
+  top: -120px;
+  right: 5%;
+  animation-duration: 26s;
+}
+
+.calendar-ambient-bg .orb-2 {
+  width: 550px;
+  height: 550px;
+  background: radial-gradient(circle, var(--accent-cyan) 0%, transparent 80%);
+  bottom: 10px;
+  left: 2%;
+  animation-duration: 32s;
+  animation-delay: -8s;
+}
+
+.calendar-ambient-bg .orb-3 {
+  width: 350px;
+  height: 350px;
+  background: radial-gradient(circle, #8b5cf6 0%, transparent 80%);
+  top: 30%;
+  left: 30%;
+  animation-duration: 22s;
+  animation-delay: -11s;
+}
+
+@keyframes floatOrbCal {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-30px, 60px) scale(1.1); }
+  100% { transform: translate(40px, -40px) scale(0.9); }
+}
+
+/* Ensure the calendar container and overview panels sit nicely above the ambient layer */
+.calendar-shell,
+.calendar-overview,
+.calendar-workspace,
+.booking-detail-popup {
+  position: relative;
+  z-index: 1;
+}
+
+/* 2. Glassmorphic Booked Cells & Hover States */
+.booked-cell {
+  background: rgba(255, 255, 255, 0.03) !important;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+  border-left-width: 4px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
+}
+
+.booked-cell.status-confirmed {
+  border-left-color: var(--accent-cyan) !important;
+  box-shadow: 0 4px 14px rgba(var(--accent-cyan-rgb), 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.booked-cell.status-dp {
+  border-left-color: #FFC107 !important;
+  box-shadow: 0 4px 14px rgba(255, 193, 7, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.booked-cell.status-pending {
+  border-left-color: var(--accent-pink) !important;
+  box-shadow: 0 4px 14px rgba(var(--accent-pink-rgb), 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.booked-cell.status-maintenance {
+  border-left-color: #6b6b76 !important;
+  background: repeating-linear-gradient(
+    45deg,
+    rgba(107, 107, 118, 0.04), rgba(107, 107, 118, 0.04) 8px,
+    rgba(107, 107, 118, 0.08) 8px, rgba(107, 107, 118, 0.08) 16px
+  ) !important;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.02);
+}
+
+/* Hover Zoom & Saturate */
+.booked-cell:hover {
+  filter: brightness(1.22) saturate(1.1) !important;
+  transform: scale(1.01) translateY(-1px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28) !important;
+  z-index: 10 !important;
+}
+
+/* 3. Empty Cells Minimal Styling */
+.empty-cell {
+  background: transparent;
+  transition: all 0.15s ease;
+}
+
+.empty-cell:hover {
+  background: rgba(255, 255, 255, 0.035) !important;
+}
+
+.empty-cell:hover .hover-plus {
+  opacity: 0.7;
+  color: var(--accent-pink);
+  transform: scale(1.2);
+}
+
+/* 4. Laser Current Time Line Indicator */
+.current-time-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent-pink), var(--accent-cyan));
+  z-index: 50;
+  pointer-events: none;
+  box-shadow: 0 0 10px rgba(var(--accent-pink-rgb), 0.7);
+}
+
+.current-time-line::before {
+  content: '';
+  position: absolute;
+  left: -4px;
+  top: -3px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent-pink);
+  box-shadow: 0 0 12px rgba(var(--accent-pink-rgb), 0.95);
+  animation: pulseLaserDot 2s infinite;
+}
+
+@keyframes pulseLaserDot {
+  0% { transform: scale(0.95); opacity: 0.85; }
+  50% { transform: scale(1.3); opacity: 1; box-shadow: 0 0 15px rgba(var(--accent-pink-rgb), 1); }
+  100% { transform: scale(0.95); opacity: 0.85; }
+}
+
+/* 5. Modern View Switcher and Filters styling */
+.view-switcher {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  backdrop-filter: blur(10px);
+  padding: 3px;
+  border-radius: 12px;
+}
+
+.view-btn {
+  color: var(--text-muted);
+  transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: var(--font-display);
+}
+
+.view-btn:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.view-btn.active {
+  background: linear-gradient(135deg, rgba(var(--accent-pink-rgb), 0.9), rgba(var(--accent-pink-rgb), 0.75)) !important;
+  box-shadow: 0 4px 15px rgba(var(--accent-pink-rgb), 0.32) !important;
+  color: #ffffff !important;
+}
+
+/* 6. Filter Chips Styling */
+.filter-chip {
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid rgba(255, 255, 255, 0.07) !important;
+  border-radius: 20px;
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  transition: all 0.2s ease;
+}
+
+.filter-chip:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  color: var(--text-primary);
+}
+
+.filter-chip.active {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-color: rgba(255, 255, 255, 0.25) !important;
+  color: var(--text-primary) !important;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.filter-chip.active.confirmed {
+  border-color: rgb(var(--success-rgb)) !important;
+  background: rgba(var(--success-rgb), 0.12) !important;
+  color: rgb(var(--success-rgb)) !important;
+}
+
+.filter-chip.active.dp {
+  border-color: #FFC107 !important;
+  background: rgba(255, 193, 7, 0.12) !important;
+  color: #FFC107 !important;
+}
+
+.filter-chip.active.pending {
+  border-color: var(--accent-pink) !important;
+  background: rgba(var(--accent-pink-rgb), 0.12) !important;
+  color: var(--accent-pink) !important;
+}
+
+/* 7. Acrylic Booking Detail Dialog Card */
+.booking-detail-popup {
+  background: rgba(var(--bg-surface-rgb), 0.22) !important;
+  backdrop-filter: blur(28px) !important;
+  -webkit-backdrop-filter: blur(28px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 20px !important;
+  box-shadow: 
+    0 24px 75px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+}
+
+.booking-detail-popup.mobile-sheet {
+  background: rgba(var(--bg-surface-rgb), 0.78) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-bottom: none !important;
+  border-radius: 24px 24px 0 0 !important;
+}
+
+.detail-header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  background: rgba(255, 255, 255, 0.01) !important;
+}
+
+.detail-price-card {
+  background: rgba(255, 255, 255, 0.02) !important;
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+  border-radius: 14px !important;
+  padding: 14px 16px !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.01);
+}
+
+.detail-price-row.total {
+  border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+.detail-paid-badge {
+  border-top: 1px solid rgba(var(--success-rgb), 0.1) !important;
+}
+
+.detail-unpaid-badge {
+  border-top: 1px solid rgba(var(--warning-rgb), 0.1) !important;
+}
+
+/* Duration picker styling */
+.duration-controls {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
+
+.dur-btn {
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+.detail-footer {
+  border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Light mode overrides for calendar */
+[data-theme="light"] .booked-cell {
+  background: rgba(255, 255, 255, 0.78) !important;
+  border-color: rgba(17, 17, 40, 0.08) !important;
+  box-shadow: 0 4px 12px rgba(17, 17, 40, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+[data-theme="light"] .booked-cell.status-confirmed {
+  background: rgba(var(--accent-cyan-rgb), 0.08) !important;
+  box-shadow: 0 4px 12px rgba(var(--accent-cyan-rgb), 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+[data-theme="light"] .booked-cell.status-dp {
+  background: rgba(255, 193, 7, 0.08) !important;
+  box-shadow: 0 4px 12px rgba(255, 193, 7, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+[data-theme="light"] .booked-cell.status-pending {
+  background: rgba(var(--accent-pink-rgb), 0.08) !important;
+  box-shadow: 0 4px 12px rgba(var(--accent-pink-rgb), 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+[data-theme="light"] .booking-detail-popup {
+  background: rgba(255, 255, 255, 0.75) !important;
+  border-color: rgba(17, 17, 40, 0.12) !important;
+  box-shadow: 
+    0 24px 60px rgba(17, 17, 40, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
+}
+
+[data-theme="light"] .booking-detail-popup.mobile-sheet {
+  background: rgba(255, 255, 255, 0.94) !important;
+  border-color: rgba(17, 17, 40, 0.12) !important;
+}
+
+[data-theme="light"] .view-switcher {
+  background: rgba(0, 0, 0, 0.03) !important;
+  border-color: rgba(0, 0, 0, 0.06) !important;
+}
+
+[data-theme="light"] .view-btn:hover {
+  background: rgba(0, 0, 0, 0.03);
+}
+
+[data-theme="light"] .filter-chip {
+  background: rgba(0, 0, 0, 0.03) !important;
+  border-color: rgba(0, 0, 0, 0.06) !important;
+}
+
+[data-theme="light"] .filter-chip:hover {
+  background: rgba(0, 0, 0, 0.06) !important;
+}
+

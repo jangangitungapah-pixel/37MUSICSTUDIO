@@ -1308,3 +1308,257 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.78) !important;
   border-color: rgba(17, 17, 40, 0.08) !important;
 }
+
+/* ==========================================================
+   MATERIAL 3 SWITCH COMPONENT (GLOBAL)
+   ========================================================== */
+.m3-switch {
+  position: relative;
+  width: 52px;
+  height: 32px;
+  border-radius: 100px;
+  border: none;
+  cursor: pointer;
+  outline: none;
+  box-sizing: border-box;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  transition: background-color 0.2s, border 0.2s;
+  flex-shrink: 0;
+}
+
+.m3-switch.off {
+  background: rgba(255, 255, 255, 0.08);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.m3-switch.on {
+  background: #6750A4;
+  border: 2px solid transparent;
+}
+
+/* Switch handle */
+.m3-switch-handle {
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  top: calc(50% - 28px/2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: left 0.2s cubic-bezier(0.2, 0, 0, 1);
+}
+
+.m3-switch.off .m3-switch-handle {
+  left: 2px;
+}
+
+.m3-switch.on .m3-switch-handle {
+  left: 20px;
+}
+
+/* Handle shape */
+.m3-switch-handle-shape {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 24px;
+  transition: width 0.2s, height 0.2s, background-color 0.2s;
+}
+
+.m3-switch.off .m3-switch-handle-shape {
+  width: 16px;
+  height: 16px;
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.m3-switch.on .m3-switch-handle-shape {
+  width: 24px;
+  height: 24px;
+  background: #FFFFFF;
+}
+
+/* Icon */
+.m3-switch-icon {
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.m3-switch-icon svg {
+  width: 14px;
+  height: 14px;
+  stroke: #4F378A; /* M3/sys/light/on-primary-container */
+}
+
+/* ==========================================================
+   ANIMATIVE SWITCH COMPONENT (SIDEBAR)
+   ========================================================== */
+.anim-switch {
+  position: relative;
+  width: 52px;
+  height: 32px;
+  border-radius: 100px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  cursor: pointer;
+  outline: none;
+  box-sizing: border-box;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+  flex-shrink: 0;
+}
+
+/* Theme switch (Light Mode) */
+.anim-switch-theme.off {
+  background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.anim-switch-theme.on {
+  background: linear-gradient(135deg, #0ea5e9 0%, #f59e0b 100%);
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+/* Sound switch */
+.anim-switch-sound.off {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.anim-switch-sound.on {
+  background: linear-gradient(135deg, #d946ef 0%, #8b5cf6 100%);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Hover effects */
+.anim-switch:hover {
+  filter: brightness(1.1);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.05), inset 0 1px 2px rgba(0,0,0,0.3);
+}
+
+/* Switch handle */
+.anim-switch-handle {
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  z-index: 2;
+  top: calc(50% - 24px/2);
+}
+
+.anim-switch.off .anim-switch-handle {
+  left: 3px;
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.anim-switch.on .anim-switch-handle {
+  left: 23px; /* 52px width - 24px handle - 3px offset - 2px borders */
+  background: #ffffff;
+}
+
+/* Icon colors */
+.anim-switch-icon-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.icon-sun {
+  color: #f59e0b;
+  filter: drop-shadow(0 0 2px rgba(245, 158, 11, 0.5));
+}
+
+.icon-moon {
+  color: #6366f1;
+}
+
+.icon-volume-on {
+  color: #a21caf;
+}
+
+.icon-volume-off {
+  color: #64748b;
+}
+
+.anim-switch:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Light theme support override */
+[data-theme="light"] .anim-switch-sound.off {
+  background: rgba(0, 0, 0, 0.06);
+  border-color: rgba(0, 0, 0, 0.1);
+}
+[data-theme="light"] .anim-switch-sound.on {
+  background: linear-gradient(135deg, #a21caf 0%, #6366f1 100%);
+}
+
+/* Sidebar Toggle Row styles */
+.sidebar-toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: 10px;
+  background: transparent;
+  width: 100%;
+  color: rgba(255, 255, 255, 0.58);
+  box-sizing: border-box;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sidebar-toggle-row:hover {
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-primary);
+}
+
+.sidebar-toggle-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+}
+
+.sidebar-toggle-info .nav-icon {
+  background: rgba(255, 255, 255, 0.04);
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.sidebar-toggle-row:hover .nav-icon {
+  background: rgba(var(--accent-cyan-rgb), 0.12);
+  color: var(--accent-cyan);
+}
+
+[data-theme="light"] .sidebar-toggle-row {
+  color: rgba(17, 17, 40, 0.6);
+}
+
+[data-theme="light"] .sidebar-toggle-row:hover {
+  background: rgba(0, 0, 0, 0.04);
+  color: var(--text-primary);
+}
+
+[data-theme="light"] .sidebar-toggle-row:hover .nav-icon {
+  background: rgba(var(--accent-cyan-rgb), 0.08);
+  color: var(--accent-cyan);
+}
+

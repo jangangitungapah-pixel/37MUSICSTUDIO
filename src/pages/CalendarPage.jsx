@@ -428,6 +428,13 @@ const CalendarPage = () => {
   return (
     <Tooltip.Provider delayDuration={200}>
       <div className="app-page calendar-page">
+        {/* Fluent Ambient Background */}
+        <div className="calendar-ambient-bg">
+          <div className="ambient-orb orb-1" />
+          <div className="ambient-orb orb-2" />
+          <div className="ambient-orb orb-3" />
+        </div>
+
         <div className={`calendar-shell ${selectedBooking ? 'blurred' : ''} ${areTopPanelsCollapsed ? 'panels-collapsed' : ''}`}>
           {/* Header */}
         <header className="calendar-page-header app-page-header">
@@ -688,15 +695,17 @@ const CalendarPage = () => {
               );
             })}
 
-            {hoursArray.map((hour, hourIdx) => (
-              <React.Fragment key={hour}>
-                <div className={`time-label sticky-col ${hourIdx % 2 === 0 ? 'even-row' : ''}`}>
-                  <span className="time-range">
-                    {isMobile 
-                      ? `${String(hour).padStart(2, '0')}.00` 
-                      : `${String(hour).padStart(2, '0')}.00 - ${String(hour + 1).padStart(2, '0')}.00`}
-                  </span>
-                </div>
+            {hoursArray.map((hour, hourIdx) => {
+              const isCurrentHour = now.getHours() === hour;
+              return (
+                <React.Fragment key={hour}>
+                  <div className={`time-label sticky-col ${hourIdx % 2 === 0 ? 'even-row' : ''} ${isCurrentHour ? 'current-hour-highlight' : ''}`}>
+                    <span className="time-range">
+                      {isMobile 
+                        ? `${String(hour).padStart(2, '0')}.00` 
+                        : `${String(hour).padStart(2, '0')}.00 - ${String(hour + 1).padStart(2, '0')}.00`}
+                    </span>
+                  </div>
                 {daysArray.map((day, dayIdx) => {
                   const dateStr = format(day, 'yyyy-MM-dd');
                   const isToday = dateStr === todayStr;
@@ -723,7 +732,7 @@ const CalendarPage = () => {
                         initial={{ opacity: 0, y: 8 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.25, ease: 'easeOut' }}
-                        className={`${cellClasses} booked-cell status-${cellBooking.status} ${isBookingStart ? 'booking-start' : ''} ${isBookingEnd ? 'booking-end' : ''} ${cellBooking.isResizing ? 'is-resizing' : ''} ${isMovingSource ? 'is-moving-source' : ''}`}
+                        className={`${cellClasses} booked-cell status-${cellBooking.status} ${isBookingStart ? 'booking-start' : ''} ${isBookingEnd ? 'booking-end' : ''} ${cellBooking.isResizing ? 'is-resizing' : ''} ${isMovingSource ? 'is-moving-source' : ''} ${cellBooking.isVIP ? 'booking-vip' : ''} ${cellBooking.type === 'recording' ? 'booking-recording' : ''}`}
                         data-calendar-cell="true"
                         data-date={dateStr}
                         data-hour={hour}
@@ -743,8 +752,23 @@ const CalendarPage = () => {
                         {isCurrentHour && <div className="current-time-line" style={{ top: timeLineTop }} />}
                         {isBookingStart && (
                           <div className="booking-info">
-                            <span className="booking-band-name">{cellBooking.band}</span>
-                            <span className="booking-time-label">{cellBooking.hour}.00–{cellBooking.hour + cellBooking.duration}.00</span>
+                            <span className="booking-band-name">
+                              {cellBooking.isVIP && (
+                                <svg className="vip-star-icon" viewBox="0 0 24 24" fill="#FFC107" width="10" height="10" style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: 4, transform: 'translateY(-1px)' }}>
+                                  <polygon points="12,2 15,9 22,9 17,14 19,21 12,17 5,21 7,14 2,9 9,9" />
+                                </svg>
+                              )}
+                              {cellBooking.band}
+                            </span>
+                            <div className="booking-meta-row" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                              {cellBooking.type === 'recording' && (
+                                <span className="rec-indicator" title="Recording Session">
+                                  <span className="rec-dot" />
+                                  <span className="rec-text" style={{ fontSize: '9px', fontWeight: 800 }}>REC</span>
+                                </span>
+                              )}
+                              <span className="booking-time-label">{cellBooking.hour}.00–{cellBooking.hour + cellBooking.duration}.00</span>
+                            </div>
                           </div>
                         )}
                         {isBookingEnd && (
@@ -776,7 +800,7 @@ const CalendarPage = () => {
                   );
                 })}
               </React.Fragment>
-            ))}
+            ); })}
           </div>
         </div>
 

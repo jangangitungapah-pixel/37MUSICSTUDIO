@@ -15,6 +15,53 @@ import Modal from './Modal';
 import { sidebarContainerVariants, sidebarItemVariants, bottomSheetVariants, activeIndicatorTransition, navTap } from '../animations';
 import './Sidebar.css';
  
+const AnimativeSwitch = ({ checked, onChange, type, ariaLabel, disabled }) => {
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={checked}
+      className={`anim-switch anim-switch-${type} ${checked ? 'on' : 'off'}`}
+      onClick={onChange}
+      aria-label={ariaLabel}
+      disabled={disabled}
+    >
+      <motion.div
+        className="anim-switch-handle"
+        layout
+        transition={{
+          type: "spring",
+          stiffness: 500,
+          damping: 28
+        }}
+      >
+        <motion.div
+          className="anim-switch-icon-wrapper"
+          key={checked ? 'on' : 'off'}
+          initial={{ scale: 0.6, rotate: checked ? -90 : 90, opacity: 0 }}
+          animate={{ scale: 1, rotate: 0, opacity: 1 }}
+          exit={{ scale: 0.6, rotate: checked ? 90 : -90, opacity: 0 }}
+          transition={{ duration: 0.18 }}
+        >
+          {type === 'theme' ? (
+            checked ? (
+              <Sun size={12} className="icon-sun" />
+            ) : (
+              <Moon size={12} className="icon-moon" />
+            )
+          ) : (
+            checked ? (
+              <Volume2 size={12} className="icon-volume-on" />
+            ) : (
+              <VolumeX size={12} className="icon-volume-off" />
+            )
+          )}
+        </motion.div>
+      </motion.div>
+    </button>
+  );
+};
+
 const Sidebar = () => {
   const [mobileOpen, setMobileOpen] = useState(false); // Used for the "More" bottom sheet now
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -291,20 +338,64 @@ const Sidebar = () => {
           )}
 
           {/* Sound Toggle */}
-          <button className="theme-toggle-btn" onClick={toggleSound} onMouseEnter={playHover} title={soundEnabled ? 'Matikan Efek Suara' : 'Aktifkan Efek Suara'}>
-            <span className="nav-icon" style={{ flexShrink: 0 }}>
-              {soundEnabled ? <Volume2 size={18} /> : <VolumeX size={18} />}
-            </span>
-            <span className="nav-label">{soundEnabled ? 'Sound FX On' : 'Sound FX Off'}</span>
-          </button>
+          {isCollapsed ? (
+            <button 
+              className="theme-toggle-btn" 
+              onClick={toggleSound} 
+              onMouseEnter={playHover} 
+              title={soundEnabled ? 'Matikan Efek Suara' : 'Aktifkan Efek Suara'}
+              aria-label={soundEnabled ? 'Matikan Efek Suara' : 'Aktifkan Efek Suara'}
+            >
+              <span className="nav-icon" style={{ flexShrink: 0 }}>
+                {soundEnabled ? <Volume2 size={18} /> : <VolumeX size={18} />}
+              </span>
+            </button>
+          ) : (
+            <div className="sidebar-toggle-row">
+              <div className="sidebar-toggle-info">
+                <span className="nav-icon" style={{ flexShrink: 0 }}>
+                  {soundEnabled ? <Volume2 size={18} /> : <VolumeX size={18} />}
+                </span>
+                <span className="nav-label">{soundEnabled ? 'Sound FX On' : 'Sound FX Off'}</span>
+              </div>
+              <AnimativeSwitch 
+                checked={soundEnabled} 
+                onChange={toggleSound} 
+                type="sound"
+                ariaLabel="Toggle Sound FX" 
+              />
+            </div>
+          )}
 
           {/* Theme Toggle */}
-          <button className="theme-toggle-btn" onClick={toggleTheme} onMouseEnter={playHover} title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}>
-            <span className="nav-icon" style={{ flexShrink: 0 }}>
-              {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
-            </span>
-            <span className="nav-label">{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
-          </button>
+          {isCollapsed ? (
+            <button 
+              className="theme-toggle-btn" 
+              onClick={toggleTheme} 
+              onMouseEnter={playHover} 
+              title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+              aria-label={theme === 'dark' ? 'Aktifkan Light Mode' : 'Aktifkan Dark Mode'}
+            >
+              <span className="nav-icon" style={{ flexShrink: 0 }}>
+                {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+              </span>
+            </button>
+          ) : (
+            <div className="sidebar-toggle-row">
+              <div className="sidebar-toggle-info">
+                <span className="nav-icon" style={{ flexShrink: 0 }}>
+                  {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+                </span>
+                <span className="nav-label">{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
+              </div>
+              <AnimativeSwitch 
+                checked={theme === 'light'} 
+                onChange={toggleTheme} 
+                type="theme"
+                ariaLabel="Toggle Light Mode" 
+              />
+            </div>
+          )}
 
           <div className="sidebar-divider" />
           

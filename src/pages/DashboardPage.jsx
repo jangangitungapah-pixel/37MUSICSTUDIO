@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useBookingStore } from '../store/useBookingStore';
 import { useBookingRequestStore } from '../store/useBookingRequestStore';
 import { useCustomerStore } from '../store/useCustomerStore';
@@ -6,6 +6,7 @@ import { useInventoryStore } from '../store/useInventoryStore';
 import { useFinanceStore } from '../store/useFinanceStore';
 import { useSettingsStore } from '../store/useSettingsStore';
 import { useAuthStore } from '../store/useAuthStore';
+import { useThemeStore } from '../store/useThemeStore';
 import { format, subDays, addMonths, addDays } from 'date-fns';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import {
@@ -49,7 +50,17 @@ const DashboardPage = () => {
   const { pricePerHour, studioName, operationalHours = { start: 10, end: 23 } } = useSettingsStore();
   const { staffMembers } = useStaffStore();
   const { user, userProfile } = useAuthStore();
+  const { theme } = useThemeStore();
   const navigate = useNavigate();
+
+  const [currentTime, setCurrentTime] = useState(new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 15000);
+    return () => clearInterval(timer);
+  }, []);
 
   // Modals state
   const [isQuickBookingOpen, setIsQuickBookingOpen] = useState(false);
@@ -208,12 +219,19 @@ const DashboardPage = () => {
 
 
   const today = useMemo(() => new Date(), []);
-  const currentHour = today.getHours();
+  const currentHour = currentTime.getHours();
   const greeting = currentHour < 11 ? 'Selamat Pagi' : currentHour < 15 ? 'Selamat Siang' : currentHour < 18 ? 'Selamat Sore' : 'Selamat Malam';
 
   const bookingStats = getMonthlyStats(today);
   const lastMonthStats = getMonthlyStats(addMonths(today, -1));
   const invStats = getInvStats();
+
+  const revenueTargetProgress = Math.min(100, Math.round((bookingStats.totalRevenue / 35000000) * 100));
+  const occupancyProgress = Math.min(100, Math.round((bookingStats.totalHours / 390) * 100));
+  const activeCustomersCount = customers.filter(c => c.totalBookings > 0).length;
+  const activeCustomersProgress = customers.length > 0 ? Math.min(100, Math.round((activeCustomersCount / customers.length) * 100)) : 0;
+  const healthyInvItems = (invStats.excellent || 0) + (invStats.good || 0);
+  const inventoryHealthProgress = invStats.totalItems > 0 ? Math.round((healthyInvItems / invStats.totalItems) * 100) : 100;
 
   const revTrend = lastMonthStats.totalRevenue > 0
     ? Math.round(((bookingStats.totalRevenue - lastMonthStats.totalRevenue) / lastMonthStats.totalRevenue) * 100)
@@ -390,86 +408,105 @@ const DashboardPage = () => {
   return (
     <div className="app-page dashboard-page">
 
+      {/* Fluent Ambient Background */}
+      <div className="dashboard-ambient-bg">
+        <div className="ambient-orb orb-1" />
+        <div className="ambient-orb orb-2" />
+        <div className="ambient-orb orb-3" />
+      </div>
+
       {/* ===== Greeting Banner ===== */}
       <MotionSection direction="down" className="dash-greeting glass-panel">
         <div className="dash-greeting-left">
-          <div className="dash-greeting-icon"><Music2 size={22} /></div>
+          <div className="dash-greeting-icon"><Music2 size={24} /></div>
           <div>
             <h2 className="dash-greeting-title">{greeting}, Admin! 👋</h2>
-            <p className="dash-greeting-sub">{studioName} · {format(today, 'EEEE, dd MMMM yyyy')}</p>
+            <p className="dash-greeting-sub">{studioName}</p>
           </div>
         </div>
+
+        {/* Live Clock Widget */}
+        <div className="dash-live-clock-widget">
+          <div className="clock-time">{format(currentTime, 'HH:mm')}</div>
+          <div className="clock-details">
+            <span className="clock-date">{format(currentTime, 'EEEE, dd MMM yyyy')}</span>
+            <span className="clock-status-live"><span className="status-live-pulse" /> Live cockpit</span>
+          </div>
+        </div>
+
         <div className="dash-greeting-right">
-          {invStats.serviceNeeded > 0 && (
-            <div className="dash-alert-chip warning">
-              <AlertTriangle size={13} />
-              <span>{invStats.serviceNeeded} alat perlu servis</span>
-            </div>
-          )}
-          {bookingStats.pending > 0 && (
-            <div className="dash-alert-chip danger">
-              <Clock size={13} />
-              <span>{bookingStats.pending} booking belum bayar</span>
-            </div>
-          )}
-          {pendingRequests.length > 0 && (
-            <div className="dash-alert-chip info">
-              <Inbox size={13} />
-              <span>{pendingRequests.length} request publik</span>
-            </div>
-          )}
-          {bookingStats.pending === 0 && invStats.serviceNeeded === 0 && pendingRequests.length === 0 && (
-            <div className="dash-alert-chip success">
-              <CheckCircle2 size={13} />
-              <span>Semua berjalan lancar!</span>
-            </div>
-          )}
-          <MotionButton 
-            onClick={() => {
-              setIsQuickBookingOpen(true);
-              setQbBand('');
-              setQbPhone('');
-              setQbDate(format(new Date(), 'yyyy-MM-dd'));
-              setQbHour(10);
-              setQbDuration(1);
-              setQbStatus('pending');
-              setQbDpAmount('');
-              setQbNote('');
-            }} 
-            className="btn-primary qb-btn" 
-            style={{ marginLeft: 8, padding: '8px 16px', borderRadius: '12px' }} 
-            title="Tambah Booking Cepat"
-            aria-label="Tambah Booking Cepat"
-          >
-            <CalendarCheck size={16} />
-            <span className="hide-on-mobile">+ Booking</span>
-          </MotionButton>
-          <MotionButton 
-            onClick={() => {
-              setIsQuickExpenseOpen(true);
-              setQeDescription('');
-              setQeAmount('');
-              setQeCategory('Operasional');
-              setQeDate(format(new Date(), 'yyyy-MM-dd'));
-            }} 
-            className="btn-primary qe-btn" 
-            style={{ marginLeft: 8, padding: '8px 16px', borderRadius: '12px' }} 
-            title="Catat Pengeluaran Cepat"
-            aria-label="Catat Pengeluaran Cepat"
-          >
-            <TrendingDown size={16} />
-            <span className="hide-on-mobile">+ Pengeluaran</span>
-          </MotionButton>
-          <MotionButton 
-            onClick={handleExportExcel} 
-            className="btn-secondary" 
-            style={{ marginLeft: 8, padding: '8px 16px', borderRadius: '12px' }} 
-            title="Unduh Semua Laporan (Excel)"
-            aria-label="Unduh Semua Laporan Excel"
-          >
-            <Download size={16} />
-            <span className="hide-on-mobile">Unduh Laporan</span>
-          </MotionButton>
+          <div className="dash-alerts-strip">
+            {invStats.serviceNeeded > 0 && (
+              <div className="dash-alert-chip warning">
+                <AlertTriangle size={13} />
+                <span>{invStats.serviceNeeded} alat servis</span>
+              </div>
+            )}
+            {bookingStats.pending > 0 && (
+              <div className="dash-alert-chip danger">
+                <Clock size={13} />
+                <span>{bookingStats.pending} pending</span>
+              </div>
+            )}
+            {pendingRequests.length > 0 && (
+              <div className="dash-alert-chip info">
+                <Inbox size={13} />
+                <span>{pendingRequests.length} request</span>
+              </div>
+            )}
+            {bookingStats.pending === 0 && invStats.serviceNeeded === 0 && pendingRequests.length === 0 && (
+              <div className="dash-alert-chip success">
+                <CheckCircle2 size={13} />
+                <span>Semua aman!</span>
+              </div>
+            )}
+          </div>
+
+          <div className="dash-action-toolbar">
+            <MotionButton 
+              onClick={() => {
+                setIsQuickBookingOpen(true);
+                setQbBand('');
+                setQbPhone('');
+                setQbDate(format(new Date(), 'yyyy-MM-dd'));
+                setQbHour(10);
+                setQbDuration(1);
+                setQbStatus('pending');
+                setQbDpAmount('');
+                setQbNote('');
+              }} 
+              className="btn-primary qb-btn" 
+              title="Tambah Booking Cepat"
+              aria-label="Tambah Booking Cepat"
+            >
+              <CalendarCheck size={16} />
+              <span>+ Booking</span>
+            </MotionButton>
+            <MotionButton 
+              onClick={() => {
+                setIsQuickExpenseOpen(true);
+                setQeDescription('');
+                setQeAmount('');
+                setQeCategory('Operasional');
+                setQeDate(format(new Date(), 'yyyy-MM-dd'));
+              }} 
+              className="btn-primary qe-btn" 
+              title="Catat Pengeluaran Cepat"
+              aria-label="Catat Pengeluaran Cepat"
+            >
+              <TrendingDown size={16} />
+              <span>+ Pengeluaran</span>
+            </MotionButton>
+            <MotionButton 
+              onClick={handleExportExcel} 
+              className="btn-secondary" 
+              title="Unduh Semua Laporan (Excel)"
+              aria-label="Unduh Semua Laporan Excel"
+            >
+              <Download size={16} />
+              <span>Laporan</span>
+            </MotionButton>
+          </div>
         </div>
       </MotionSection>
 
@@ -479,7 +516,7 @@ const DashboardPage = () => {
         <div className="dash-stat-card glass-panel">
           <div className="dash-stat-top">
             <div className="stat-icon-wrapper blue">
-              <TrendingUp size={24} />
+              <TrendingUp size={20} />
             </div>
             {revTrend !== null && (
               <span className={`dash-trend ${revTrend >= 0 ? 'up' : 'down'}`}>
@@ -490,6 +527,15 @@ const DashboardPage = () => {
           </div>
           <span className="dash-stat-value">{formatCurrency(bookingStats.totalRevenue)}</span>
           <span className="dash-stat-label">Pendapatan Bulan Ini</span>
+          
+          {/* Progress bar */}
+          <div className="dash-stat-progress-container">
+            <div className="dash-stat-progress-bar" style={{ width: `${revenueTargetProgress}%`, background: 'var(--accent-cyan)' }} />
+          </div>
+          <div className="dash-stat-progress-info">
+            <span>Target: Rp 35jt</span>
+            <span>{revenueTargetProgress}%</span>
+          </div>
           <span className="dash-stat-sub">vs {formatCurrency(lastMonthStats.totalRevenue)} bulan lalu</span>
         </div>
 
@@ -497,7 +543,7 @@ const DashboardPage = () => {
         <div className="dash-stat-card glass-panel">
           <div className="dash-stat-top">
             <div className="stat-icon-wrapper green">
-              <CalendarCheck size={24} />
+              <CalendarCheck size={20} />
             </div>
             {bookTrend !== null && (
               <span className={`dash-trend ${bookTrend >= 0 ? 'up' : 'down'}`}>
@@ -510,7 +556,17 @@ const DashboardPage = () => {
             {bookingStats.totalBookings}
             <span className="dash-stat-unit"> sesi</span>
           </div>
-          <span className="dash-stat-label">Total Booking Bulan Ini</span>
+          <span className="dash-stat-label">Total Booking</span>
+          
+          {/* Progress bar */}
+          <div className="dash-stat-progress-container">
+            <div className="dash-stat-progress-bar" style={{ width: `${occupancyProgress}%`, background: 'rgb(var(--success-rgb))' }} />
+          </div>
+          <div className="dash-stat-progress-info">
+            <span>Okupansi (Target 390 jam)</span>
+            <span>{occupancyProgress}%</span>
+          </div>
+          
           <div className="dash-stat-pills" style={{marginTop: '4px'}}>
             <span className="dash-pill confirmed">{bookingStats.confirmed} Lunas</span>
             <span className="dash-pill dp">{bookingStats.dp} DP</span>
@@ -522,14 +578,23 @@ const DashboardPage = () => {
         <div className="dash-stat-card glass-panel">
           <div className="dash-stat-top">
             <div className="stat-icon-wrapper pink">
-              <Users size={24} />
+              <Users size={20} />
             </div>
           </div>
           <div className="dash-stat-value">
             {customers.length}
             <span className="dash-stat-unit"> orang</span>
           </div>
-          <span className="dash-stat-label">Total Pelanggan Terdaftar</span>
+          <span className="dash-stat-label">Pelanggan Terdaftar</span>
+          
+          {/* Progress bar */}
+          <div className="dash-stat-progress-container">
+            <div className="dash-stat-progress-bar" style={{ width: `${activeCustomersProgress}%`, background: 'var(--accent-pink)' }} />
+          </div>
+          <div className="dash-stat-progress-info">
+            <span>Rasio Pelanggan Aktif</span>
+            <span>{activeCustomersProgress}%</span>
+          </div>
           <span className="dash-stat-sub">{bookingStats.totalHours} jam terpakai bulan ini</span>
         </div>
 
@@ -537,14 +602,23 @@ const DashboardPage = () => {
         <div className="dash-stat-card glass-panel">
           <div className="dash-stat-top">
             <div className="stat-icon-wrapper orange">
-              <PackageOpen size={24} />
+              <PackageOpen size={20} />
             </div>
           </div>
-          <span className={`dash-stat-value ${invStats.serviceNeeded > 0 ? 'warn' : ''}`}>
+          <div className={`dash-stat-value ${invStats.serviceNeeded > 0 ? 'warn' : ''}`}>
             {invStats.serviceNeeded}
             <span className="dash-stat-unit"> item</span>
-          </span>
-          <span className="dash-stat-label">Alat Perlu Perhatian</span>
+          </div>
+          <span className="dash-stat-label">Kondisi Alat</span>
+          
+          {/* Progress bar */}
+          <div className="dash-stat-progress-container">
+            <div className="dash-stat-progress-bar" style={{ width: `${inventoryHealthProgress}%`, background: '#FFA000' }} />
+          </div>
+          <div className="dash-stat-progress-info">
+            <span>Rasio Alat Layak Pakai</span>
+            <span>{inventoryHealthProgress}%</span>
+          </div>
           <span className="dash-stat-sub">dari {invStats.totalItems} total alat inventaris</span>
         </div>
       </div>
@@ -590,11 +664,12 @@ const DashboardPage = () => {
                 type="monotone" 
                 dataKey="Pendapatan" 
                 stroke="var(--accent-cyan)" 
-                strokeWidth={2.5} 
+                strokeWidth={3} 
                 fillOpacity={1} 
                 fill="url(#cyanGrad)" 
-                dot={{ r: 3.5, stroke: 'var(--accent-cyan)', strokeWidth: 2, fill: 'var(--bg-surface)' }} 
-                activeDot={{ r: 5.5, stroke: 'var(--accent-cyan)', strokeWidth: 2, fill: 'var(--accent-cyan)' }} 
+                dot={{ r: 4, stroke: 'var(--accent-cyan)', strokeWidth: 2, fill: 'var(--bg-surface)' }} 
+                activeDot={{ r: 6, stroke: 'var(--accent-cyan)', strokeWidth: 2, fill: 'var(--accent-cyan)' }} 
+                style={{ filter: 'drop-shadow(0 4px 8px rgba(0, 240, 255, 0.25))' }}
               />
             </AreaChart>
           </ResponsiveContainer>
@@ -618,40 +693,49 @@ const DashboardPage = () => {
             </div>
           ) : (
             <div className="upcoming-list">
-              {upcomingBookings.map(b => (
-                <div key={b.id} className="upcoming-item">
-                  <div className="upcoming-status-bar" style={{ background: getStatusColor(b.status) }} />
-                  <div className="upcoming-info">
-                    <div className="upcoming-band">{b.band}</div>
-                    <div className="upcoming-time">
-                      <Clock size={11} /> {b.hour}.00 – {b.hour + b.duration}.00
+              {upcomingBookings.map(b => {
+                const isLive = b._tag === 'Hari Ini' && currentHour >= b.hour && currentHour < (b.hour + b.duration);
+                return (
+                  <div key={b.id} className={`upcoming-item ${isLive ? 'live-item' : ''}`}>
+                    <div className="upcoming-status-bar" style={{ background: getStatusColor(b.status) }} />
+                    <div className="upcoming-info">
+                      <div className="upcoming-band">{b.band}</div>
+                      <div className="upcoming-time">
+                        <Clock size={11} /> {b.hour}.00 – {b.hour + b.duration}.00
+                      </div>
                     </div>
-                  </div>
-                  <span className={`upcoming-tag tag-${b._tag === 'Hari Ini' ? 'today' : 'tomorrow'}`}>{b._tag}</span>
-                  <div className="dash-work-actions">
-                    {b.status !== 'confirmed' && (
+                    {isLive ? (
+                      <span className="upcoming-tag tag-live">
+                        <span className="live-pulse-dot" /> LIVE NOW
+                      </span>
+                    ) : (
+                      <span className={`upcoming-tag tag-${b._tag === 'Hari Ini' ? 'today' : 'tomorrow'}`}>{b._tag}</span>
+                    )}
+                    <div className="dash-work-actions">
+                      {b.status !== 'confirmed' && (
+                        <button 
+                          type="button"
+                          className="icon-btn success dash-icon-action approve" 
+                          onClick={(e) => { e.stopPropagation(); handleInstantPay(b); }} 
+                          title="Lunasi Instan"
+                          aria-label={`Lunasi Instan booking dari ${b.band}`}
+                        >
+                          <CheckCircle2 size={14} />
+                        </button>
+                      )}
                       <button 
                         type="button"
-                        className="icon-btn success dash-icon-action approve" 
-                        onClick={(e) => { e.stopPropagation(); handleInstantPay(b); }} 
-                        title="Lunasi Instan"
-                        aria-label={`Lunasi Instan booking dari ${b.band}`}
+                        className="icon-btn cyan dash-icon-action send" 
+                        onClick={(e) => { e.stopPropagation(); handleSendBookingReminder(b); }} 
+                        title="Kirim reminder WhatsApp"
+                        aria-label={`Kirim pengingat WhatsApp ke ${b.band}`}
                       >
-                        <CheckCircle2 size={14} />
+                        <MessageCircle size={14} />
                       </button>
-                    )}
-                    <button 
-                      type="button"
-                      className="icon-btn cyan dash-icon-action send" 
-                      onClick={(e) => { e.stopPropagation(); handleSendBookingReminder(b); }} 
-                      title="Kirim reminder WhatsApp"
-                      aria-label={`Kirim pengingat WhatsApp ke ${b.band}`}
-                    >
-                      <MessageCircle size={14} />
-                    </button>
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
@@ -673,33 +757,39 @@ const DashboardPage = () => {
               <p>Belum ada data inventaris</p>
             </div>
           ) : (
-            <ResponsiveContainer width="100%" height={200}>
-              <PieChart>
-                <Pie 
-                  data={inventoryChartData} 
-                  cx="50%" 
-                  cy="50%" 
-                  innerRadius={60} 
-                  outerRadius={80} 
-                  paddingAngle={5} 
-                  cornerRadius={4}
-                  dataKey="value" 
-                  strokeWidth={0}
-                >
-                  {inventoryChartData.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
-                </Pie>
-                <Tooltip 
-                  contentStyle={{ 
-                    backgroundColor: 'var(--bg-surface)', 
-                    border: '1px solid var(--border-light)', 
-                    borderRadius: '12px', 
-                    fontSize: '0.8rem',
-                    boxShadow: '0 10px 25px rgba(0, 0, 0, 0.2)',
-                    color: 'var(--text-primary)'
-                  }} 
-                />
-              </PieChart>
-            </ResponsiveContainer>
+            <div className="donut-chart-wrapper" style={{ position: 'relative', width: '100%', height: '200px' }}>
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie 
+                    data={inventoryChartData} 
+                    cx="50%" 
+                    cy="50%" 
+                    innerRadius={65} 
+                    outerRadius={80} 
+                    paddingAngle={4} 
+                    cornerRadius={6}
+                    dataKey="value" 
+                    strokeWidth={0}
+                  >
+                    {inventoryChartData.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
+                  </Pie>
+                  <Tooltip 
+                    contentStyle={{ 
+                      backgroundColor: 'var(--bg-surface)', 
+                      border: '1px solid var(--border-light)', 
+                      borderRadius: '12px', 
+                      fontSize: '0.8rem',
+                      boxShadow: '0 10px 25px rgba(0, 0, 0, 0.2)',
+                      color: 'var(--text-primary)'
+                    }} 
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+              <div className="donut-center-label">
+                <span className="donut-center-val">{invStats.totalItems}</span>
+                <span className="donut-center-lbl">Total Alat</span>
+              </div>
+            </div>
           )}
           <div className="inv-legend">
             {inventoryChartData.map((d, i) => (
