@@ -6,7 +6,7 @@ import { useBookingStore } from '../store/useBookingStore';
 import {
   Settings, Save, Building2, Phone, MapPin, DollarSign,
   Bell, Database, Trash2, CheckCircle2, XCircle, ShieldAlert,
-  ChevronRight, Music2, Sparkles, Lock, ToggleLeft, ToggleRight,
+  ChevronRight, Music2, Sparkles, Lock,
   AlertTriangle, RefreshCw, FlaskConical, Download, Upload,
   Clock, CalendarX
 } from 'lucide-react';
@@ -16,6 +16,32 @@ import { toast } from 'sonner';
 import { pagePreset } from '../animations';
 import '../components/BookingForm.css'; // Import premium form styles
 import './SettingsPage.css';
+
+const M3Switch = ({ checked, onChange, ariaLabel, disabled }) => {
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={checked}
+      className={`m3-switch ${checked ? 'on' : 'off'}`}
+      onClick={onChange}
+      aria-label={ariaLabel}
+      disabled={disabled}
+    >
+      <div className="m3-switch-handle">
+        <div className="m3-switch-handle-shape">
+          {checked && (
+            <span className="m3-switch-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            </span>
+          )}
+        </div>
+      </div>
+    </button>
+  );
+};
 
 const SettingsPage = () => {
   const storeSettings = useSettingsStore();
@@ -915,14 +941,11 @@ const SettingsPage = () => {
                       </p>
                     </div>
                   </div>
-                  <button
-                    type="button"
-                    className={`demo-big-toggle ${isDemoMode ? 'on' : 'off'}`}
-                    onClick={toggleDemoMode}
-                    title={isDemoMode ? 'Matikan Demo Mode' : 'Aktifkan Demo Mode'}
-                  >
-                    <div className="demo-big-thumb" />
-                  </button>
+                  <M3Switch
+                    checked={isDemoMode}
+                    onChange={toggleDemoMode}
+                    ariaLabel={isDemoMode ? 'Matikan Demo Mode' : 'Aktifkan Demo Mode'}
+                  />
                 </div>
 
                 {/* Stats Preview when active */}
@@ -1002,17 +1025,13 @@ const SettingsPage = () => {
                     </div>
                   </div>
                   {notifPermission === 'granted' ? (
-                    <div className="notif-toggle active">
-                      <ToggleRight size={28} color="var(--accent-cyan)" />
-                    </div>
+                    <M3Switch checked={true} ariaLabel="Notifikasi Aktif" disabled={true} />
                   ) : notifPermission === 'default' ? (
                     <button className="btn-primary" onClick={handleRequestNotif} type="button">
                       Izinkan
                     </button>
                   ) : (
-                    <div className="notif-toggle">
-                      <ToggleLeft size={28} color="var(--text-muted)" />
-                    </div>
+                    <M3Switch checked={false} onChange={handleRequestNotif} ariaLabel="Notifikasi Nonaktif" />
                   )}
                 </div>
 

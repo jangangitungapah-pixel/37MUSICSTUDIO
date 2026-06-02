@@ -794,7 +794,7 @@ const BillingPage = () => {
                 <PDFDownloadLink
                   document={<InvoicePDF invoice={selectedInvoice} settings={{ studioName, studioAddress, studioPhone, pricePerHour }} />}
                   fileName={`invoice-${selectedInvoice.id.toString().padStart(5, '0')}.pdf`}
-                  style={{ textDecoration: 'none' }}
+                  className="inv2-pdf-link"
                 >
                   {({ loading }) => (
                     <button
@@ -814,7 +814,7 @@ const BillingPage = () => {
                   onClick={handlePrint}
                   aria-label="Cetak invoice atau simpan sebagai PDF"
                 >
-                  <Printer size={16} /> Cetak / PDF
+                  <Printer size={16} /> Cetak
                 </button>
               </div>
             </div>

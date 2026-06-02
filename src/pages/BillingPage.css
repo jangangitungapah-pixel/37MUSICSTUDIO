@@ -773,7 +773,7 @@
 .inv2-shell {
   display: flex;
   gap: 24px;
-  align-items: flex-start;
+  align-items: stretch;
 }
 
 /* ── Invoice Paper Base ── */
@@ -1243,11 +1243,12 @@
 
 /* ── Action Panel (Right side) ── */
 .inv2-actions {
-  width: 260px;
+  width: 300px;
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
   gap: 16px;
+  padding-bottom: 20px;
 }
 
 .inv2-actions-header {
@@ -1324,6 +1325,21 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 8px;
+}
+
+.inv2-share-btn:last-child:nth-child(odd) {
+  grid-column: span 2;
+}
+
+/* PDF link wrapper and bottom layout */
+.inv2-pdf-link {
+  flex: 2;
+  display: flex;
+  text-decoration: none;
+}
+
+.inv2-pdf-link .inv2-btn-print {
+  width: 100%;
 }
 
 .inv2-share-btn {
@@ -1460,12 +1476,12 @@
   align-items: center;
   justify-content: center;
   gap: 6px;
-  padding: 11px 14px;
+  padding: 10px 10px;
   border-radius: 10px;
   border: 1px solid rgba(255, 255, 255, 0.1);
   background: rgba(255, 255, 255, 0.04);
   color: rgba(255, 255, 255, 0.5);
-  font-size: 0.82rem;
+  font-size: 0.78rem;
   font-weight: 700;
   font-family: inherit;
   cursor: pointer;
@@ -1484,12 +1500,12 @@
   align-items: center;
   justify-content: center;
   gap: 7px;
-  padding: 11px 14px;
+  padding: 10px 10px;
   border-radius: 10px;
   border: none;
   background: linear-gradient(135deg, var(--accent-pink), #c4154a);
   color: white;
-  font-size: 0.86rem;
+  font-size: 0.78rem;
   font-weight: 800;
   font-family: inherit;
   cursor: pointer;

@@ -1,11 +1,12 @@
-import { useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { useBookingStore } from '../store/useBookingStore';
 import { useBookingRequestStore } from '../store/useBookingRequestStore';
 import { useCustomerStore } from '../store/useCustomerStore';
 import { useInventoryStore } from '../store/useInventoryStore';
 import { useFinanceStore } from '../store/useFinanceStore';
 import { useSettingsStore } from '../store/useSettingsStore';
-import { format, subDays, addMonths } from 'date-fns';
+import { useAuthStore } from '../store/useAuthStore';
+import { format, subDays, addMonths, addDays } from 'date-fns';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import {
   TrendingUp, TrendingDown, Users, CalendarCheck, PackageOpen, Clock,
@@ -28,6 +29,8 @@ import { toast } from 'sonner';
 import MotionSection from '../components/animation/MotionSection';
 import MotionButton from '../components/animation/MotionButton';
 import { MotionListItem } from '../components/animation/MotionListItem';
+import Modal from '../components/Modal';
+import confetti from 'canvas-confetti';
 import './DashboardPage.css';
 
 const COLORS = [
@@ -38,14 +41,171 @@ const COLORS = [
 ];
 
 const DashboardPage = () => {
-  const { bookings, getMonthlyStats, addBooking } = useBookingStore();
+  const { bookings, getMonthlyStats, addBooking, updateBookingStatus } = useBookingStore();
   const { requests, updateRequestStatus } = useBookingRequestStore();
   const { customers } = useCustomerStore();
-  const { inventory, getStats: getInvStats } = useInventoryStore();
-  const { transactions } = useFinanceStore();
+  const { inventory, getStats: getInvStats, updateEquipment } = useInventoryStore();
+  const { transactions, addTransaction } = useFinanceStore();
   const { pricePerHour, studioName, operationalHours = { start: 10, end: 23 } } = useSettingsStore();
   const { staffMembers } = useStaffStore();
+  const { user, userProfile } = useAuthStore();
   const navigate = useNavigate();
+
+  // Modals state
+  const [isQuickBookingOpen, setIsQuickBookingOpen] = useState(false);
+  const [isQuickExpenseOpen, setIsQuickExpenseOpen] = useState(false);
+
+  // Quick Booking Form State
+  const [qbBand, setQbBand] = useState('');
+  const [qbPhone, setQbPhone] = useState('');
+  const [qbDate, setQbDate] = useState(format(new Date(), 'yyyy-MM-dd'));
+  const [qbHour, setQbHour] = useState(10);
+  const [qbDuration, setQbDuration] = useState(1);
+  const [qbStatus, setQbStatus] = useState('pending');
+  const [qbDpAmount, setQbDpAmount] = useState('');
+  const [qbNote, setQbNote] = useState('');
+
+  // Quick Expense Form State
+  const [qeDescription, setQeDescription] = useState('');
+  const [qeAmount, setQeAmount] = useState('');
+  const [qeCategory, setQeCategory] = useState('Operasional');
+  const [qeDate, setQeDate] = useState(format(new Date(), 'yyyy-MM-dd'));
+
+  const handleInstantPay = async (booking) => {
+    try {
+      await updateBookingStatus(booking.id, 'confirmed');
+      toast.success(`Booking ${booking.band} berhasil dilunasi!`);
+      confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.6 }
+      });
+    } catch (err) {
+      toast.error(err.message || 'Gagal melunasi booking.');
+    }
+  };
+
+  const handleContactCustomer = (customer) => {
+    if (!customer.phone) {
+      toast.error('Nomor telepon tidak tersedia untuk pelanggan ini.');
+      return;
+    }
+    const message = `Halo ${customer.name}, kami dari ${studioName} ingin mengucapkan terima kasih atas loyalitas Anda latihan bersama kami. Semoga sukses selalu untuk musik Anda!`;
+    const phone = customer.phone.replace(/\D/g, '');
+    const url = `https://wa.me/${phone.startsWith('0') ? `62${phone.slice(1)}` : phone}?text=${encodeURIComponent(message)}`;
+    window.open(url, '_blank');
+  };
+
+  const handleCompleteMaintenance = async (item) => {
+    try {
+      const todayStr = format(new Date(), 'yyyy-MM-dd');
+      const nextServiceStr = format(addDays(new Date(), 90), 'yyyy-MM-dd');
+      await updateEquipment(item.id, {
+        condition: 'Excellent',
+        lastServiced: todayStr,
+        nextService: nextServiceStr
+      });
+      toast.success(`Servis ${item.name} selesai! Kondisi diatur ke Excellent.`);
+      confetti({
+        particleCount: 80,
+        spread: 60,
+        origin: { y: 0.6 }
+      });
+    } catch (err) {
+      toast.error(err.message || 'Gagal menyelesaikan servis.');
+    }
+  };
+
+  const handleQuickBookingSubmit = async (e) => {
+    e.preventDefault();
+    if (!qbBand.trim()) {
+      toast.error('Nama band wajib diisi.');
+      return;
+    }
+
+    const candidate = {
+      date: qbDate,
+      hour: Number(qbHour),
+      duration: Number(qbDuration)
+    };
+
+    if (hasBookingOverlap(bookings, candidate)) {
+      toast.error('Slot waktu bentrok dengan booking lain. Cek kalender.');
+      return;
+    }
+
+    try {
+      const dpVal = qbStatus === 'dp' ? Number(qbDpAmount) || 0 : 0;
+      await addBooking({
+        type: 'booking',
+        band: qbBand,
+        phone: qbPhone,
+        date: qbDate,
+        hour: Number(qbHour),
+        duration: Number(qbDuration),
+        status: qbStatus,
+        dpAmount: dpVal,
+        note: qbNote || 'Dibuat lewat Quick Booking di dashboard.'
+      });
+      toast.success(`Booking untuk ${qbBand} berhasil ditambahkan!`);
+      confetti({
+        particleCount: 150,
+        spread: 80,
+        origin: { y: 0.6 }
+      });
+      setIsQuickBookingOpen(false);
+      // Reset form
+      setQbBand('');
+      setQbPhone('');
+      setQbDate(format(new Date(), 'yyyy-MM-dd'));
+      setQbHour(10);
+      setQbDuration(1);
+      setQbStatus('pending');
+      setQbDpAmount('');
+      setQbNote('');
+    } catch (err) {
+      toast.error(err.message || 'Gagal menambahkan booking.');
+    }
+  };
+
+  const handleQuickExpenseSubmit = async (e) => {
+    e.preventDefault();
+    if (!qeDescription.trim()) {
+      toast.error('Keterangan wajib diisi.');
+      return;
+    }
+    const amountVal = Number(qeAmount);
+    if (isNaN(amountVal) || amountVal <= 0) {
+      toast.error('Nominal harus berupa angka positif.');
+      return;
+    }
+
+    try {
+      await addTransaction({
+        type: 'expense',
+        category: qeCategory,
+        amount: amountVal,
+        description: qeDescription,
+        date: qeDate,
+        operatorName: userProfile?.name || user?.email || 'Operator'
+      });
+      toast.success('Pengeluaran berhasil dicatat!');
+      confetti({
+        particleCount: 100,
+        spread: 60,
+        origin: { y: 0.6 }
+      });
+      setIsQuickExpenseOpen(false);
+      // Reset form
+      setQeDescription('');
+      setQeAmount('');
+      setQeCategory('Operasional');
+      setQeDate(format(new Date(), 'yyyy-MM-dd'));
+    } catch (err) {
+      toast.error(err.message || 'Gagal mencatat pengeluaran.');
+    }
+  };
+
 
   const today = useMemo(() => new Date(), []);
   const currentHour = today.getHours();
@@ -179,6 +339,20 @@ const DashboardPage = () => {
     window.open(url, '_blank');
   };
 
+  const handleSendBookingReminder = (booking) => {
+    if (!booking.phone) {
+      toast.error('Nomor telepon tidak tersedia untuk jadwal ini.');
+      return;
+    }
+
+    const timeLabel = `${booking.hour}.00`;
+    const dateLabel = format(new Date(booking.date + 'T00:00:00'), 'dd MMM yyyy');
+    const message = `Halo ${booking.band}, sekadar mengingatkan Anda ada jadwal latihan ${booking._tag === 'Hari Ini' ? 'hari ini' : 'besok'} tanggal ${dateLabel} jam ${timeLabel} WIB di ${studioName}. Mohon datang tepat waktu ya! Terima kasih.`;
+    const phone = booking.phone.replace(/\D/g, '');
+    const url = `https://wa.me/${phone.startsWith('0') ? `62${phone.slice(1)}` : phone}?text=${encodeURIComponent(message)}`;
+    window.open(url, '_blank');
+  };
+
   const handleExportExcel = async () => {
     let toastId;
     try {
@@ -251,8 +425,44 @@ const DashboardPage = () => {
             </div>
           )}
           <MotionButton 
+            onClick={() => {
+              setIsQuickBookingOpen(true);
+              setQbBand('');
+              setQbPhone('');
+              setQbDate(format(new Date(), 'yyyy-MM-dd'));
+              setQbHour(10);
+              setQbDuration(1);
+              setQbStatus('pending');
+              setQbDpAmount('');
+              setQbNote('');
+            }} 
+            className="btn-primary qb-btn" 
+            style={{ marginLeft: 8, padding: '8px 16px', borderRadius: '12px' }} 
+            title="Tambah Booking Cepat"
+            aria-label="Tambah Booking Cepat"
+          >
+            <CalendarCheck size={16} />
+            <span className="hide-on-mobile">+ Booking</span>
+          </MotionButton>
+          <MotionButton 
+            onClick={() => {
+              setIsQuickExpenseOpen(true);
+              setQeDescription('');
+              setQeAmount('');
+              setQeCategory('Operasional');
+              setQeDate(format(new Date(), 'yyyy-MM-dd'));
+            }} 
+            className="btn-primary qe-btn" 
+            style={{ marginLeft: 8, padding: '8px 16px', borderRadius: '12px' }} 
+            title="Catat Pengeluaran Cepat"
+            aria-label="Catat Pengeluaran Cepat"
+          >
+            <TrendingDown size={16} />
+            <span className="hide-on-mobile">+ Pengeluaran</span>
+          </MotionButton>
+          <MotionButton 
             onClick={handleExportExcel} 
-            className="btn-primary" 
+            className="btn-secondary" 
             style={{ marginLeft: 8, padding: '8px 16px', borderRadius: '12px' }} 
             title="Unduh Semua Laporan (Excel)"
             aria-label="Unduh Semua Laporan Excel"
@@ -418,6 +628,28 @@ const DashboardPage = () => {
                     </div>
                   </div>
                   <span className={`upcoming-tag tag-${b._tag === 'Hari Ini' ? 'today' : 'tomorrow'}`}>{b._tag}</span>
+                  <div className="dash-work-actions">
+                    {b.status !== 'confirmed' && (
+                      <button 
+                        type="button"
+                        className="icon-btn success dash-icon-action approve" 
+                        onClick={(e) => { e.stopPropagation(); handleInstantPay(b); }} 
+                        title="Lunasi Instan"
+                        aria-label={`Lunasi Instan booking dari ${b.band}`}
+                      >
+                        <CheckCircle2 size={14} />
+                      </button>
+                    )}
+                    <button 
+                      type="button"
+                      className="icon-btn cyan dash-icon-action send" 
+                      onClick={(e) => { e.stopPropagation(); handleSendBookingReminder(b); }} 
+                      title="Kirim reminder WhatsApp"
+                      aria-label={`Kirim pengingat WhatsApp ke ${b.band}`}
+                    >
+                      <MessageCircle size={14} />
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
@@ -506,9 +738,22 @@ const DashboardPage = () => {
                     <span className="top-cust-name">{c.name}</span>
                     <span className="top-cust-phone">{c.phone || '—'}</span>
                   </div>
-                  <div className="top-cust-stats">
-                    <span className="top-cust-bookings">{c.totalBookings}</span>
-                    <span className="top-cust-unit">sesi</span>
+                  <div className="top-cust-stats" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <div style={{ display: 'flex', alignItems: 'baseline', gap: '3px' }}>
+                      <span className="top-cust-bookings">{c.totalBookings}</span>
+                      <span className="top-cust-unit">sesi</span>
+                    </div>
+                    {c.phone && (
+                      <button 
+                        type="button"
+                        className="icon-btn cyan dash-icon-action send" 
+                        onClick={(e) => { e.stopPropagation(); handleContactCustomer(c); }} 
+                        title="Hubungi WhatsApp"
+                        aria-label={`Hubungi WhatsApp ${c.name}`}
+                      >
+                        <MessageCircle size={14} />
+                      </button>
+                    )}
                   </div>
                 </div>
               ))}
@@ -655,13 +900,27 @@ const DashboardPage = () => {
           </div>
           <div className="dash-work-list">
             {priorityMaintenance.slice(0, 2).map(({ item, label, reason }) => (
-              <button className="dash-work-item as-button" key={item.id} onClick={() => navigate('/maintenance')}>
-                <div className="dash-work-main">
+              <div className="dash-work-item" key={item.id}>
+                <div 
+                  className="dash-work-main" 
+                  onClick={() => navigate('/maintenance')}
+                  style={{ cursor: 'pointer', flex: 1 }}
+                >
                   <strong>{item.name}</strong>
                   <span>{label} - {reason}</span>
                 </div>
-                <Wrench size={14} />
-              </button>
+                <div className="dash-work-actions">
+                  <button 
+                    type="button"
+                    className="icon-btn success dash-icon-action approve"
+                    onClick={(e) => { e.stopPropagation(); handleCompleteMaintenance(item); }}
+                    title="Tandai Selesai Servis"
+                    aria-label={`Selesaikan servis untuk ${item.name}`}
+                  >
+                    <CheckCircle2 size={14} />
+                  </button>
+                </div>
+              </div>
             ))}
             <button className="dash-work-item as-button" onClick={() => navigate('/customers')}>
               <div className="dash-work-main">
@@ -673,6 +932,186 @@ const DashboardPage = () => {
           </div>
         </section>
       </MotionSection>
+      {/* Quick Booking Modal */}
+      <Modal isOpen={isQuickBookingOpen} onClose={() => setIsQuickBookingOpen(false)} title="Tambah Booking Cepat">
+        <form className="finance-form quick-dash-form" onSubmit={handleQuickBookingSubmit}>
+          <div className="form-group">
+            <label htmlFor="qb-band">Nama Band <span className="required">*</span></label>
+            <input 
+              id="qb-band"
+              type="text" 
+              className="form-input" 
+              placeholder="Masukkan nama band..."
+              value={qbBand}
+              onChange={(e) => setQbBand(e.target.value)}
+              required
+              autoFocus
+            />
+          </div>
+          <div className="form-row">
+            <div className="form-group">
+              <label htmlFor="qb-phone">No. WhatsApp</label>
+              <input 
+                id="qb-phone"
+                type="text" 
+                className="form-input" 
+                placeholder="081xxx..."
+                value={qbPhone}
+                onChange={(e) => setQbPhone(e.target.value)}
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="qb-date">Tanggal <span className="required">*</span></label>
+              <input 
+                id="qb-date"
+                type="date" 
+                className="form-input" 
+                value={qbDate}
+                onChange={(e) => setQbDate(e.target.value)}
+                required
+              />
+            </div>
+          </div>
+          <div className="form-row">
+            <div className="form-group">
+              <label htmlFor="qb-hour">Jam Mulai <span className="required">*</span></label>
+              <select 
+                id="qb-hour"
+                className="form-input" 
+                value={qbHour} 
+                onChange={(e) => setQbHour(Number(e.target.value))}
+                required
+              >
+                {Array.from({ length: 13 }, (_, i) => 10 + i).map(h => (
+                  <option key={h} value={h}>{String(h).padStart(2, '0')}:00</option>
+                ))}
+              </select>
+            </div>
+            <div className="form-group">
+              <label htmlFor="qb-duration">Durasi (Jam) <span className="required">*</span></label>
+              <input 
+                id="qb-duration"
+                type="number" 
+                className="form-input" 
+                min="1" 
+                max="12"
+                value={qbDuration}
+                onChange={(e) => setQbDuration(Number(e.target.value))}
+                required
+              />
+            </div>
+          </div>
+          <div className="form-row">
+            <div className="form-group">
+              <label htmlFor="qb-status">Status Pembayaran <span className="required">*</span></label>
+              <select 
+                id="qb-status"
+                className="form-input" 
+                value={qbStatus} 
+                onChange={(e) => setQbStatus(e.target.value)}
+                required
+              >
+                <option value="pending">Pending (Belum Bayar)</option>
+                <option value="dp">DP (Down Payment)</option>
+                <option value="confirmed">Lunas (Confirmed)</option>
+              </select>
+            </div>
+            {qbStatus === 'dp' && (
+              <div className="form-group">
+                <label htmlFor="qb-dpAmount">Nominal DP (Rp) <span className="required">*</span></label>
+                <input 
+                  id="qb-dpAmount"
+                  type="number" 
+                  className="form-input" 
+                  placeholder="0"
+                  min="1"
+                  value={qbDpAmount}
+                  onChange={(e) => setQbDpAmount(e.target.value)}
+                  required
+                />
+              </div>
+            )}
+          </div>
+          <div className="form-group">
+            <label htmlFor="qb-note">Catatan Tambahan</label>
+            <textarea 
+              id="qb-note"
+              className="form-input form-textarea" 
+              placeholder="Catatan latihan band..."
+              rows="2"
+              value={qbNote}
+              onChange={(e) => setQbNote(e.target.value)}
+            />
+          </div>
+          <div className="form-actions">
+            <button type="button" className="btn-secondary" onClick={() => setIsQuickBookingOpen(false)}>Batal</button>
+            <button type="submit" className="btn-primary">Simpan Booking</button>
+          </div>
+        </form>
+      </Modal>
+
+      {/* Quick Expense Modal */}
+      <Modal isOpen={isQuickExpenseOpen} onClose={() => setIsQuickExpenseOpen(false)} title="Catat Pengeluaran Cepat">
+        <form className="finance-form quick-dash-form" onSubmit={handleQuickExpenseSubmit}>
+          <div className="form-row">
+            <div className="form-group">
+              <label htmlFor="qe-date">Tanggal <span className="required">*</span></label>
+              <input 
+                id="qe-date"
+                type="date" 
+                className="form-input" 
+                value={qeDate}
+                onChange={(e) => setQeDate(e.target.value)}
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="qe-category">Kategori <span className="required">*</span></label>
+              <select 
+                id="qe-category"
+                className="form-input" 
+                value={qeCategory} 
+                onChange={(e) => setQeCategory(e.target.value)}
+                required
+              >
+                {['Operasional', 'Listrik / Air', 'Gaji', 'Perawatan', 'Alat Baru', 'Lainnya'].map(cat => (
+                  <option key={cat} value={cat}>{cat}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+          <div className="form-group">
+            <label htmlFor="qe-amount">Nominal (Rp) <span className="required">*</span></label>
+            <input 
+              id="qe-amount"
+              type="number" 
+              className="form-input" 
+              placeholder="0"
+              min="1"
+              value={qeAmount}
+              onChange={(e) => setQeAmount(e.target.value)}
+              required
+              autoFocus
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="qe-description">Keterangan <span className="required">*</span></label>
+            <textarea 
+              id="qe-description"
+              className="form-input form-textarea" 
+              placeholder="Detail pengeluaran..."
+              rows="2"
+              value={qeDescription}
+              onChange={(e) => setQeDescription(e.target.value)}
+              required
+            />
+          </div>
+          <div className="form-actions">
+            <button type="button" className="btn-secondary" onClick={() => setIsQuickExpenseOpen(false)}>Batal</button>
+            <button type="submit" className="btn-primary">Simpan Transaksi</button>
+          </div>
+        </form>
+      </Modal>
     </div>
   );
 };

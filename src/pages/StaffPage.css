@@ -13,25 +13,59 @@
 .staff-card-header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
   position: relative;
   z-index: 1;
 }
 
+.staff-avatar-container {
+  position: relative;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
 .staff-avatar {
-  width: 56px;
-  height: 56px;
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.03);
+  width: 44px;
+  height: 44px;
+  border-radius: var(--borderRadiusCircular);
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.02);
+  font-size: 0.95rem;
+  font-weight: var(--fw-bold);
+  border: var(--strokeWidthThin) solid transparent;
+  text-shadow: none;
 }
 
-.avatar-icon-admin { color: var(--accent-pink); filter: drop-shadow(0 0 8px rgba(var(--accent-pink-rgb), 0.5)); }
-.avatar-icon-staff { color: var(--accent-cyan); filter: drop-shadow(0 0 8px rgba(var(--accent-cyan-rgb), 0.5)); }
+.staff-avatar.admin {
+  background: rgba(255, 42, 95, 0.08);
+  color: var(--accent-pink);
+  border-color: rgba(255, 42, 95, 0.2);
+}
+
+.staff-avatar.staff {
+  background: rgba(0, 240, 255, 0.08);
+  color: var(--accent-cyan);
+  border-color: rgba(0, 240, 255, 0.2);
+}
+
+.staff-status-ring {
+  position: absolute;
+  bottom: -1px;
+  right: -1px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid var(--bg-surface);
+}
+
+.staff-status-ring.active {
+  background-color: #4CAF50;
+}
+
+.staff-status-ring.inactive {
+  background-color: #9898a8;
+}
 
 .staff-actions {
   display: flex;
@@ -41,6 +75,7 @@
 .staff-info {
   position: relative;
   z-index: 1;
+  margin-top: 16px;
 }
 
 .staff-info h3 {
@@ -51,48 +86,22 @@
   letter-spacing: -0.01em;
 }
 
-.staff-role-badge {
-  display: inline-block;
-  padding: 4px 12px;
-  border-radius: 20px;
-  font-size: 0.8rem;
-  font-weight: 600;
-  margin-bottom: 12px;
-}
-
-.staff-role-badge.admin {
-  background: rgba(var(--accent-pink-rgb), 0.15);
-  color: var(--accent-pink);
-  border: 1px solid rgba(var(--accent-pink-rgb), 0.3);
-}
-
-.staff-role-badge.staff {
-  background: rgba(var(--accent-cyan-rgb), 0.15);
-  color: var(--accent-cyan);
-  border: 1px solid rgba(var(--accent-cyan-rgb), 0.3);
-}
+/* Role badges handled by .f-badge globally */
 
 .staff-phone {
   color: var(--text-secondary);
   font-size: 0.9rem;
   margin: 0;
+  margin-top: 8px;
 }
 
 .staff-status-bar {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding-top: 16px;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  font-size: 0.85rem;
-  color: var(--text-muted);
-}
-
-.status-indicator {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  box-shadow: 0 0 8px currentColor;
+  margin-top: 18px;
+  padding-top: 12px;
+  border-top: var(--strokeWidthThin) solid rgba(255, 255, 255, 0.05);
 }
 
 .staff-form {
@@ -133,9 +142,9 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 12px 14px;
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 10px 12px;
+  border-radius: var(--borderRadiusMedium);
+  border: var(--strokeWidthThin) solid rgba(255, 255, 255, 0.06);
   background: rgba(255, 255, 255, 0.02);
   color: var(--text-secondary);
   font-size: 0.85rem;
@@ -318,10 +327,18 @@
 }
 
 /* Light Mode Overrides */
-[data-theme="light"] .staff-avatar {
-  background: rgba(0, 0, 0, 0.02);
-  border-color: rgba(0, 0, 0, 0.08);
-  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.01);
+[data-theme="light"] .staff-avatar.admin {
+  background: rgba(232, 25, 78, 0.08);
+  color: #e8194e;
+  border-color: rgba(232, 25, 78, 0.15);
+}
+[data-theme="light"] .staff-avatar.staff {
+  background: rgba(0, 153, 187, 0.08);
+  color: #0099bb;
+  border-color: rgba(0, 153, 187, 0.15);
+}
+[data-theme="light"] .staff-status-ring {
+  border-color: #ffffff;
 }
 
 [data-theme="light"] .staff-status-bar {

@@ -312,7 +312,6 @@ const Sidebar = () => {
             <button 
               className="user-profile-btn" 
               onClick={() => setIsProfileOpen(true)}
-              onMouseEnter={playHover}
               title="Edit Profil"
               aria-label={`Buka Profil ${displayName}`}
             >

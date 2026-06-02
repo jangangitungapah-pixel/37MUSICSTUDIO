@@ -42,6 +42,13 @@ const validateStaffWithZod = (fieldName) => (value) => {
 
 import { useThemeStore } from '../store/useThemeStore';
 
+const getInitials = (name) => {
+  if (!name) return '??';
+  const parts = name.trim().split(/\s+/);
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+};
+
 const StaffPage = () => {
   const { soundEnabled } = useThemeStore();
   const { staffMembers, updateStaff, deleteStaff, toggleStaffStatus, createStaffAccount, resetStaffPassword } = useStaffStore();
@@ -251,8 +258,11 @@ const StaffPage = () => {
               className={`app-panel staff-card ${staff.status === 'inactive' ? 'inactive' : ''}`}
             >
               <div className="staff-card-header">
-                <div className="staff-avatar">
-                  {staff.role === 'admin' ? <Shield size={24} className="avatar-icon-admin" /> : <User size={24} className="avatar-icon-staff" />}
+                <div className="staff-avatar-container">
+                  <div className={`staff-avatar ${staff.role}`}>
+                    {getInitials(staff.name)}
+                  </div>
+                  <span className={`staff-status-ring ${staff.status}`} />
                 </div>
                 <div className="staff-actions">
                   <button 
@@ -262,7 +272,7 @@ const StaffPage = () => {
                     style={{ color: 'var(--accent-pink)' }}
                     aria-label="Ganti password akun"
                   >
-                    <Key size={16} />
+                    <Key size={14} />
                   </button>
                   <button 
                     className="icon-btn edit" 
@@ -270,7 +280,7 @@ const StaffPage = () => {
                     title="Edit"
                     aria-label="Edit data staff"
                   >
-                    <Edit2 size={16} />
+                    <Edit2 size={14} />
                   </button>
                   <button 
                     className="icon-btn delete" 
@@ -278,7 +288,7 @@ const StaffPage = () => {
                     title="Hapus"
                     aria-label="Hapus staff dari tim"
                   >
-                    <Trash2 size={16} />
+                    <Trash2 size={14} />
                   </button>
                   <button 
                     className="icon-btn" 
@@ -286,21 +296,21 @@ const StaffPage = () => {
                     title={staff.status === 'active' ? "Nonaktifkan" : "Aktifkan"}
                     aria-label={staff.status === 'active' ? "Nonaktifkan akun staff" : "Aktifkan akun staff"}
                   >
-                    <Power size={16} color={staff.status === 'active' ? '#4CAF50' : '#FF5252'} />
+                    <Power size={14} color={staff.status === 'active' ? '#4CAF50' : '#FF5252'} />
                   </button>
                 </div>
               </div>
               
               <div className="staff-info">
                 <h3>{staff.name}</h3>
-                <span className={`staff-role-badge ${staff.role}`}>
+                <span className={`f-badge ${staff.role === 'admin' ? 'f-badge-danger' : 'f-badge-info'}`}>
                   {staff.role === 'admin' ? 'Administrator' : 'Staff'}
                 </span>
-                {staff.username && <p className="staff-phone" style={{marginTop: 4}}>👤 @{staff.username}</p>}
+                {staff.username && <p className="staff-phone" style={{marginTop: 6}}>👤 @{staff.username}</p>}
                 <p className="staff-phone">📞 {staff.phone || '-'}</p>
                 <div className="staff-permission-chips">
                   {(staff.permissions || getDefaultPermissionsForRole(staff.role)).slice(0, 4).map((permission) => (
-                    <span key={permission}>{PERMISSION_LABELS[permission] || permission}</span>
+                    <span key={permission} className="f-badge f-badge-neutral">{PERMISSION_LABELS[permission] || permission}</span>
                   ))}
                   {(staff.permissions || getDefaultPermissionsForRole(staff.role)).length > 4 && (
                     <span className="chip-more">+{(staff.permissions || getDefaultPermissionsForRole(staff.role)).length - 4}</span>
@@ -309,8 +319,9 @@ const StaffPage = () => {
               </div>
               
               <div className="staff-status-bar">
-                <span className="status-indicator" style={{ background: staff.status === 'active' ? 'var(--accent-cyan)' : '#FF5252' }} />
-                <span>{staff.status === 'active' ? 'Akun Aktif' : 'Akun Nonaktif'}</span>
+                <span className={`f-badge ${staff.status === 'active' ? 'f-badge-success' : 'f-badge-neutral'}`} style={{fontSize: '11px', padding: '3px 8px'}}>
+                  {staff.status === 'active' ? 'Aktif' : 'Nonaktif'}
+                </span>
               </div>
             </motion.div>
           ))}

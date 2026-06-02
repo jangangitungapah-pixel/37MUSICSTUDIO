@@ -821,3 +821,91 @@
   .dash-greeting-title { font-size: 0.95rem; }
   .dash-stat-card   { padding: 12px; }
 }
+
+/* Upcoming list quick actions spacing */
+.upcoming-item .dash-icon-action {
+  margin-left: 8px;
+}
+
+/* ==========================================================
+   QUICK ACTION MODALS FORM STYLING
+   ========================================================== */
+.quick-dash-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.quick-dash-form .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.quick-dash-form .form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.quick-dash-form label {
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-align: left;
+}
+
+.quick-dash-form .required {
+  color: var(--accent-pink);
+}
+
+.quick-dash-form .form-textarea {
+  min-height: 76px;
+  resize: vertical;
+}
+
+.quick-dash-form .form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 2px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border-light);
+}
+
+/* Quick Action Buttons coloring & glow */
+.qb-btn {
+  background: linear-gradient(135deg, rgba(var(--accent-cyan-rgb), 0.8), rgba(var(--accent-cyan-rgb), 0.6)) !important;
+  color: #0f0f1a !important;
+  box-shadow: 0 0 14px rgba(var(--accent-cyan-rgb), 0.35);
+  font-weight: 800;
+}
+.qb-btn:hover {
+  background: var(--accent-cyan) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 0 20px rgba(var(--accent-cyan-rgb), 0.5);
+}
+
+.qe-btn {
+  background: linear-gradient(135deg, rgba(var(--accent-pink-rgb), 0.8), rgba(var(--accent-pink-rgb), 0.6)) !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 14px rgba(var(--accent-pink-rgb), 0.35);
+  font-weight: 800;
+}
+.qe-btn:hover {
+  background: var(--accent-pink) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 0 20px rgba(var(--accent-pink-rgb), 0.5);
+}
+
+/* Small adjustments to form-input fields in modal */
+.quick-dash-form .form-input {
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .quick-dash-form .form-row {
+    grid-template-columns: 1fr;
+  }
+}
+

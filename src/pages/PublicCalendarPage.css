@@ -654,7 +654,6 @@ button.pc-cell {
 
 .pc-cell.available:hover,
 .pc-cell.available:focus-visible {
-  transform: translateY(-1px);
   border-color: rgba(139, 211, 155, 0.72);
   background: rgba(139, 211, 155, 0.12);
   box-shadow: inset 0 0 0 1px rgba(139, 211, 155, 0.24);

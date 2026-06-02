@@ -343,13 +343,7 @@
   transition: all 0.2s;
 }
 
-.user-profile-btn:hover {
-  background: rgba(255, 255, 255, 0.04);
-}
 
-[data-theme="light"] .user-profile-btn:hover {
-  background: rgba(0, 0, 0, 0.04);
-}
 
 .sidebar.collapsed .user-profile {
   padding: 4px 0;
@@ -1297,4 +1291,20 @@
   .bn-label {
     font-size: 0.58rem;
   }
+}
+
+/* ===== Reset Sidebar Hover Interaction ===== */
+.sidebar:hover {
+  transform: none !important;
+  box-shadow: 
+    0 26px 70px rgba(0, 0, 0, 0.34),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+  border-color: rgba(255, 255, 255, 0.09) !important;
+}
+
+[data-theme="light"] .sidebar:hover {
+  box-shadow: 
+    0 22px 52px rgba(17, 17, 40, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.78) !important;
+  border-color: rgba(17, 17, 40, 0.08) !important;
 }
