@@ -493,3 +493,61 @@ select.bf-input option {
     gap: 6px;
   }
 }
+
+/* ══════════════════════════════════════════
+   ⑨ BOOKING FORM (≤768px) — Mobile Overrides
+   ══════════════════════════════════════════ */
+@media (max-width: 768px) {
+
+  .bf-section {
+    padding: 14px var(--mob-card-px);
+    border-radius: var(--mob-radius);
+    gap: 12px;
+  }
+
+  .bf-section-title {
+    font-size: 0.78rem;
+  }
+
+  .bf-input,
+  .form-input {
+    font-size: 0.9rem;
+    padding: 10px 12px;
+    border-radius: var(--mob-radius-sm);
+  }
+
+  .bf-price-card {
+    padding: 12px var(--mob-card-px);
+    border-radius: var(--mob-radius-sm);
+    gap: 8px;
+  }
+
+  .bf-price-row {
+    font-size: 0.8rem;
+  }
+
+  .bf-price-row.total {
+    font-size: 0.9rem;
+  }
+
+  /* Type buttons */
+  .bf-type-btn {
+    padding: 9px 12px;
+    font-size: 0.8rem;
+    border-radius: var(--mob-radius-sm);
+  }
+
+  /* Form actions */
+  .form-actions,
+  .bf-form-actions {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .form-actions > button,
+  .bf-form-actions > button {
+    width: 100%;
+    justify-content: center;
+    min-height: 44px;
+  }
+}

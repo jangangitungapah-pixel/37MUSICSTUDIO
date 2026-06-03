@@ -1342,6 +1342,8 @@ const FinancePage = () => {
           </div>
         </form>
       </Modal>
+      {/* Mobile bottom nav spacer */}
+      <div aria-hidden="true" style={{ height: '90px', flexShrink: 0 }} className="mobile-bottom-spacer" />
     </motion.div>
   );
 };

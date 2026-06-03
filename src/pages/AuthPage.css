@@ -526,3 +526,57 @@
   .auth-header h1 { font-size: 1.4rem; }
   .auth-submit { padding: 13px; }
 }
+
+/* ══════════════════════════════════════════
+   ⑬ AUTH / LOGIN PAGE (≤768px) — Mobile Overrides
+   ══════════════════════════════════════════ */
+@media (max-width: 768px) {
+
+  .auth-container {
+    flex-direction: column;
+    padding: 0;
+  }
+
+  .auth-brand-panel {
+    display: none;
+  }
+
+  .auth-form-panel {
+    width: 100%;
+    padding: 32px var(--mob-page-px);
+    justify-content: center;
+    min-height: 100dvh;
+  }
+
+  .auth-card {
+    padding: 24px 20px;
+    border-radius: 20px;
+    max-width: 100%;
+  }
+
+  .auth-header h1 {
+    font-size: 1.6rem;
+    letter-spacing: -0.04em;
+  }
+
+  .auth-header p {
+    font-size: 0.82rem;
+  }
+
+  .form-input {
+    padding: 12px 14px;
+    font-size: 0.9rem;
+    border-radius: var(--mob-radius-sm);
+  }
+
+  .auth-submit {
+    min-height: 46px;
+    font-size: 0.92rem;
+    border-radius: 12px;
+  }
+
+  .auth-guest-btn {
+    min-height: 42px;
+    font-size: 0.86rem;
+  }
+}

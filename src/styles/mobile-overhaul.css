@@ -1,0 +1,215 @@
+/* ══════════════════════════════════════════
+   MOBILE OVERHAUL — 37 Music Studio Admin
+   Global, comprehensive mobile-first overhaul for all pages.
+   Designed for 390px (iPhone 14) ↔ 480px range.
+   ══════════════════════════════════════════ */
+
+/* ─────────────────────────────────────────
+   SPACING TOKENS (mobile-specific)
+   ───────────────────────────────────────── */
+:root {
+  --mob-page-px: 14px;          /* Horizontal page padding */
+  --mob-gap-sm:  10px;          /* Small gap (tight sections) */
+  --mob-gap-md:  12px;          /* Medium gap (standard sections) */
+  --mob-gap-lg:  16px;          /* Large gap (major sections) */
+  --mob-card-px: 14px;          /* Card inner horizontal padding */
+  --mob-card-py: 12px;          /* Card inner vertical padding */
+  --mob-radius:  14px;          /* Card border radius */
+  --mob-radius-sm: 10px;        /* Small radius (chips, badges) */
+}
+
+/* ══════════════════════════════════════════
+   ① GLOBAL ADMIN LAYOUT (≤768px)
+   ══════════════════════════════════════════ */
+@media (max-width: 768px) {
+
+  /* Global main-content scrolling fix —
+     Mobile header: 68px height + 10px top offset + 12px gap = 90px
+     Safe area-aware for iPhone notch/dynamic island */
+  .main-content {
+    padding-top: calc(90px + env(safe-area-inset-top, 0px)) !important;
+    padding-left: var(--mob-page-px) !important;
+    padding-right: var(--mob-page-px) !important;
+    padding-bottom: calc(130px + env(safe-area-inset-bottom, 0px)) !important;
+    scroll-padding-top: calc(90px + env(safe-area-inset-top, 0px));
+    -webkit-overflow-scrolling: touch;
+    height: 100dvh;
+  }
+
+  /* Page headers: stack cleanly */
+  .page-header,
+  .page-header-row,
+  .finance-header,
+  .billing-header,
+  .inventory-header,
+  .customers-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--mob-gap-md);
+  }
+
+  /* Page header actions: full width row */
+  .page-header-actions,
+  .header-actions {
+    width: 100%;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .page-header-actions > *,
+  .header-actions > * {
+    flex: 1;
+    min-width: 0;
+    justify-content: center;
+  }
+
+  /* Search bars: full width */
+  .search-bar,
+  .search-input-wrapper,
+  [class*="search-bar"] {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* Glass panels on mobile */
+  .glass-panel {
+    border-radius: var(--mob-radius);
+  }
+
+  /* Tables: force horizontal scroll */
+  .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Detail panels: hidden on mobile by default (use sheet instead) */
+  .customer-detail-panel,
+  .item-detail-panel {
+    display: none;
+  }
+
+  /* When detail panel is shown on mobile (full-screen sheet) */
+  .customer-detail-panel.mobile-open,
+  .item-detail-panel.mobile-open {
+    display: flex;
+    position: fixed;
+    inset: 0;
+    z-index: 9000;
+    flex-direction: column;
+    border-radius: 0;
+    background: var(--bg-surface);
+    overflow-y: auto;
+  }
+
+  /* Global button sizes on mobile */
+  .btn-primary,
+  .btn-secondary {
+    min-height: 40px;
+    font-size: 0.84rem;
+  }
+
+  /* Icon buttons: slightly larger tap targets */
+  .icon-btn {
+    width: 36px !important;
+    height: 36px !important;
+  }
+
+  /* Modals: full-width on mobile */
+  .modal-container,
+  .modal-content {
+    width: 100% !important;
+    max-width: 100% !important;
+    border-radius: 22px 22px 0 0 !important;
+    margin: 0 !important;
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    top: auto !important;
+    max-height: 92vh !important;
+    overflow-y: auto !important;
+  }
+
+  .modal-overlay {
+    align-items: flex-end !important;
+  }
+
+  /* Modal header drag handle indicator */
+  .modal-header::before {
+    content: '';
+    display: block;
+    width: 36px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 2px;
+    margin: 0 auto 12px;
+  }
+}
+
+/* ─────────────────────────────────────────
+   Small mobile tweaks
+   ───────────────────────────────────────── */
+@media (max-width: 480px) {
+  .main-content {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+}
+
+/* ══════════════════════════════════════════
+   ⑭ SHARED TABLE STYLES (≤768px)
+   ══════════════════════════════════════════ */
+@media (max-width: 768px) {
+
+  /* Universal table improvements */
+  .table-responsive table,
+  .app-table-wrapper table {
+    min-width: 600px;
+  }
+
+  thead th {
+    padding: 10px 12px !important;
+    font-size: 0.62rem !important;
+    letter-spacing: 0.07em !important;
+    white-space: nowrap;
+  }
+
+  tbody td {
+    padding: 10px 12px !important;
+    font-size: 0.8rem !important;
+  }
+
+  /* Page title scale */
+  .page-title {
+    font-size: 1.4rem;
+    letter-spacing: -0.035em;
+  }
+
+  .page-subtitle {
+    font-size: 0.78rem;
+  }
+
+  /* Section labels */
+  .section-label,
+  .nav-section-label {
+    font-size: 0.58rem;
+    letter-spacing: 0.09em;
+  }
+}
+
+/* ══════════════════════════════════════════
+   ⑮ SAFE AREA + PWA FIXES
+   ══════════════════════════════════════════ */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  @media (max-width: 768px) {
+    .main-content {
+      padding-bottom: calc(130px + env(safe-area-inset-bottom)) !important;
+    }
+
+    .mobile-billing-list,
+    .mobile-ledger-list {
+      padding-bottom: calc(90px + env(safe-area-inset-bottom, 0px)) !important;
+    }
+  }
+}

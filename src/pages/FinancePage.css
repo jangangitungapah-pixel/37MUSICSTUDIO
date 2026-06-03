@@ -452,11 +452,12 @@
   gap: 12px;
   align-items: center;
   padding: 12px 14px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-left-width: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.07) !important;
+  border-left-width: 4px !important;
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.025);
-  transition: transform 0.2s ease, background-color 0.2s ease;
+  background: rgba(255, 255, 255, 0.03) !important;
+  backdrop-filter: blur(10px);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.25s ease, box-shadow 0.25s !important;
 }
 
 .mobile-ledger-actions {
@@ -467,11 +468,29 @@
 }
 
 .mobile-ledger-card.income {
-  border-left-color: rgba(var(--success-rgb), 0.7);
+  border-left-color: rgb(var(--success-rgb)) !important;
 }
 
 .mobile-ledger-card.expense {
-  border-left-color: rgba(var(--accent-pink-rgb), 0.7);
+  border-left-color: var(--accent-pink) !important;
+}
+
+.mobile-ledger-card:hover {
+  transform: translateY(-2px) scale(1.01);
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+.mobile-ledger-card.income:hover {
+  box-shadow: 
+    0 4px 15px rgba(0, 0, 0, 0.2),
+    0 0 10px rgba(var(--success-rgb), 0.15) !important;
+}
+
+.mobile-ledger-card.expense:hover {
+  box-shadow: 
+    0 4px 15px rgba(0, 0, 0, 0.2),
+    0 0 10px rgba(var(--accent-pink-rgb), 0.15) !important;
 }
 
 .mobile-ledger-info,
@@ -1130,11 +1149,11 @@
 
 /* Typography styles for XAxis Ticks (Jan, Feb, Mar, Apr, May, Jun, Jul) */
 .recharts-cartesian-axis-tick-value {
-  font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
-  font-size: 12px !important;
-  font-weight: 500 !important;
+  font-family: var(--font-body) !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
   text-transform: uppercase !important;
-  letter-spacing: 0.04em !important;
+  letter-spacing: var(--ls-wide) !important;
 }
 
 /* Specific text color for ticks */
@@ -1442,6 +1461,160 @@
   background: rgba(0, 0, 0, 0.03) !important;
   border-color: rgba(0, 0, 0, 0.04) !important;
   color: #454459 !important;
+}
+
+/* ══════════════════════════════════════════
+   ⑥ FINANCE PAGE (≤768px) — Mobile Overrides
+   ══════════════════════════════════════════ */
+@media (max-width: 768px) {
+
+  .finance-page {
+    gap: var(--mob-gap-md);
+    padding-bottom: 20px;
+  }
+
+  .finance-header-left .page-title {
+    font-size: 1.3rem;
+  }
+
+  .finance-header-left .page-subtitle {
+    font-size: 0.8rem;
+  }
+
+  .finance-header-meta {
+    gap: 6px;
+    margin-top: 10px;
+  }
+
+  .finance-header-meta span {
+    font-size: 0.7rem;
+    padding: 3px 8px;
+  }
+
+  /* Period toolbar */
+  .finance-page .toolbar-group {
+    width: 100%;
+    overflow-x: auto;
+    border-radius: var(--mob-radius-sm);
+  }
+
+  .finance-page .period-btn {
+    flex: 1 0 auto;
+    min-height: 34px;
+    padding: 0 10px;
+    font-size: 0.74rem;
+  }
+
+  /* Stats: single column */
+  .finance-stats {
+    grid-template-columns: 1fr;
+    gap: var(--mob-gap-sm);
+  }
+
+  .finance-stat-card {
+    min-height: 88px;
+    padding: 12px var(--mob-card-px) !important;
+    border-radius: var(--mob-radius);
+  }
+
+  .finance-stat-card .stat-icon {
+    width: 36px;
+    height: 36px;
+  }
+
+  .finance-stat-card .stat-value {
+    font-size: 1.05rem;
+  }
+
+  /* Charts grid: single column */
+  .finance-charts-grid {
+    grid-template-columns: 1fr;
+    gap: var(--mob-gap-md);
+  }
+
+  .finance-chart-card {
+    padding: 14px var(--mob-card-px);
+    border-radius: var(--mob-radius);
+  }
+
+  /* Insights grid */
+  .finance-insights-grid {
+    grid-template-columns: 1fr;
+    gap: var(--mob-gap-md);
+  }
+
+  /* Table header */
+  .finance-table-header {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 12px var(--mob-card-px);
+    gap: var(--mob-gap-sm);
+  }
+
+  .finance-table-meta {
+    justify-content: flex-start;
+  }
+
+  .finance-table-meta span {
+    font-size: 0.7rem;
+  }
+
+  /* Table: hide, show mobile cards */
+  .hide-on-mobile { display: none !important; }
+  .show-on-mobile { display: flex !important; }
+
+  /* Mobile ledger cards */
+  .mobile-ledger-list {
+    padding: 6px;
+    gap: 8px;
+    padding-bottom: calc(90px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  .mobile-ledger-card {
+    padding: 11px var(--mob-card-px);
+    border-radius: var(--mob-radius);
+    gap: 10px;
+  }
+
+  .mobile-ledger-desc {
+    font-size: 0.84rem;
+  }
+
+  .mobile-ledger-amount {
+    font-size: 0.9rem;
+  }
+
+  .mobile-ledger-date {
+    font-size: 0.68rem;
+  }
+
+  /* Finance form */
+  .finance-form .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .finance-content {
+    min-height: 0;
+    overflow: visible;
+  }
+}
+
+@media (max-width: 480px) {
+  .mobile-ledger-card {
+    grid-template-columns: 1fr auto;
+    gap: 8px 10px;
+    padding: 10px 12px;
+  }
+
+  .mobile-ledger-actions {
+    grid-column: 2;
+    grid-row: 2;
+  }
+
+  .finance-header-meta span,
+  .finance-table-meta span {
+    font-size: 0.66rem;
+  }
 }
 
 

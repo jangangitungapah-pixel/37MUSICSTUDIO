@@ -718,8 +718,9 @@
   }
 
   .settings-nav-item {
-    flex: 1;
-    min-width: 0;
+    flex: 0 0 auto;
+    min-width: auto;
+    width: auto;
     flex-direction: column;
     justify-content: center;
     align-items: center;
@@ -1244,6 +1245,180 @@
   .backup-restore-actions {
     flex-direction: column;
     align-items: stretch;
+  }
+}
+
+/* ══════════════════════════════════════════
+   ⑧ SETTINGS PAGE (≤768px) — Mobile Overrides
+   ══════════════════════════════════════════ */
+@media (max-width: 768px) {
+
+  .settings-page {
+    gap: var(--mob-gap-lg);
+  }
+
+  /* Header */
+  .settings-header {
+    flex-wrap: nowrap;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .settings-header-info {
+    gap: 10px;
+  }
+
+  .settings-header-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    flex-shrink: 0;
+  }
+
+  .settings-save-btn span {
+    display: none;
+  }
+
+  .settings-save-btn {
+    padding: 10px 14px;
+    min-width: 44px;
+    justify-content: center;
+  }
+
+  /* Layout: stack vertically */
+  .settings-layout {
+    grid-template-columns: 1fr;
+    gap: var(--mob-gap-md);
+  }
+
+  /* Nav: horizontal scroll strip */
+  .settings-nav {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    gap: 6px;
+    position: static;
+    padding: 10px;
+    justify-content: flex-start;
+    border-radius: var(--mob-radius);
+    scrollbar-width: none;
+  }
+
+  .settings-nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .settings-nav-brand,
+  .settings-nav-divider {
+    display: none;
+  }
+
+  .settings-nav-item {
+    flex: 0 0 auto;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 10px 12px;
+    gap: 4px;
+    font-size: 0.7rem;
+    min-width: 64px;
+    white-space: nowrap;
+  }
+
+  .settings-nav-icon {
+    width: 28px;
+    height: 28px;
+  }
+
+  .settings-nav-label {
+    font-size: 0.64rem;
+  }
+
+  .settings-nav-chevron {
+    display: none;
+  }
+
+  /* Panel: comfortable padding */
+  .settings-panel {
+    padding: 18px var(--mob-card-px);
+    gap: 18px;
+    border-radius: var(--mob-radius);
+  }
+
+  .settings-panel-header {
+    gap: 12px;
+  }
+
+  .panel-header-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+  }
+
+  .panel-title {
+    font-size: 1rem;
+  }
+
+  /* Form: single column */
+  .settings-form-body {
+    max-width: 100%;
+    gap: 16px;
+  }
+
+  .settings-form-row,
+  .bf-row {
+    grid-template-columns: 1fr;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  /* Pricing grid: 2-col */
+  .pricing-info-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  /* Reset options: single column */
+  .reset-options-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Notification status card: stack */
+  .notif-status-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--mob-gap-sm);
+    padding: 16px var(--mob-card-px);
+    border-radius: var(--mob-radius);
+  }
+
+  .notif-status-desc {
+    max-width: 100%;
+    font-size: 0.76rem;
+  }
+
+  /* Settings info box */
+  .settings-info-box {
+    padding: 10px 12px;
+    font-size: 0.78rem;
+    border-radius: var(--mob-radius-sm);
+  }
+}
+
+@media (max-width: 480px) {
+  .settings-header-icon {
+    width: 34px;
+    height: 34px;
+  }
+
+  .pricing-info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .settings-panel {
+    padding: 14px 12px;
+    gap: 14px;
   }
 }
 

@@ -175,7 +175,14 @@
   font-size: 1.05rem;
   flex-shrink: 0;
   position: relative;
-  transition: transform 0.2s ease;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s !important;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+tr:hover .customer-avatar {
+  transform: scale(1.08) translateY(-1px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.35);
 }
 
 .customer-avatar::after {
@@ -184,14 +191,36 @@
   inset: -2px;
   border-radius: 13px;
   background: inherit;
-  filter: blur(6px);
+  filter: blur(8px);
   opacity: 0.25;
   z-index: -1;
-  transition: opacity 0.2s ease;
+  transition: opacity 0.25s ease, filter 0.25s ease;
 }
 
 tr:hover .customer-avatar::after {
-  opacity: 0.5;
+  opacity: 0.55;
+  filter: blur(10px);
+}
+
+/* VIP Avatar Specific Glow Outlines */
+.customer-avatar.vip {
+  border: 1.5px solid rgba(255, 215, 0, 0.8) !important;
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.4), 0 4px 10px rgba(0, 0, 0, 0.25) !important;
+}
+
+.customer-avatar.vip::after {
+  background: linear-gradient(135deg, #FFD700, #FFA500) !important;
+  opacity: 0.4;
+  filter: blur(10px);
+}
+
+tr:hover .customer-avatar.vip {
+  transform: scale(1.1) translateY(-2px);
+  box-shadow: 0 0 18px rgba(255, 215, 0, 0.7), 0 6px 15px rgba(0, 0, 0, 0.35) !important;
+}
+
+tr:hover .customer-avatar.vip::after {
+  opacity: 0.7;
 }
 
 .customer-info {
@@ -425,6 +454,18 @@ tr:hover
   filter: blur(8px);
   opacity: 0.3;
   z-index: -1;
+}
+
+/* VIP Detail Avatar */
+.detail-avatar.vip {
+  border: 2px solid rgba(255, 215, 0, 0.8) !important;
+  box-shadow: 0 0 12px rgba(255, 215, 0, 0.5) !important;
+}
+
+.detail-avatar.vip::after {
+  background: linear-gradient(135deg, #FFD700, #FFA500) !important;
+  opacity: 0.5;
+  filter: blur(10px);
 }
 
 .detail-panel-header h3 {
@@ -1711,6 +1752,129 @@ tr:hover
 [data-theme="light"] .filter-dropdown-item.active {
   background: rgba(255, 42, 95, 0.05);
   color: var(--accent-pink);
+}
+
+/* ══════════════════════════════════════════
+   ④ CUSTOMERS PAGE (≤768px)
+   ══════════════════════════════════════════ */
+@media (max-width: 768px) {
+
+  .customers-page {
+    gap: var(--mob-gap-lg);
+  }
+
+  /* Stats bar: 2+1 grid */
+  .customers-page .stats-bar {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--mob-gap-sm);
+  }
+
+  .customers-page .stats-bar > :nth-child(5) {
+    grid-column: 1 / -1;
+  }
+
+  .customers-page .stat-card {
+    padding: var(--mob-card-py) var(--mob-card-px);
+    border-radius: var(--mob-radius);
+    gap: 10px;
+  }
+
+  .customers-page .stat-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+  }
+
+  .customers-page .stat-value {
+    font-size: 1.15rem;
+  }
+
+  .customers-page .stat-label {
+    font-size: 0.62rem;
+  }
+
+  /* Retention banner: stack */
+  .retention-alert-banner {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    padding: 12px var(--mob-card-px) !important;
+    border-radius: var(--mob-radius) !important;
+    gap: var(--mob-gap-sm) !important;
+  }
+
+  /* Content area: full width (detail panel hidden) */
+  .customers-content-area {
+    flex-direction: column;
+    overflow: visible;
+    min-height: 0;
+  }
+
+  .customers-container {
+    overflow: visible;
+    flex: none;
+  }
+
+  /* Table: allow scroll */
+  .customers-page .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: var(--mob-radius);
+  }
+
+  /* Customer row: compact */
+  .customer-avatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 9px;
+    font-size: 0.88rem;
+  }
+
+  .customer-name {
+    font-size: 0.82rem;
+  }
+
+  .customer-note {
+    font-size: 0.68rem;
+    max-width: 130px;
+  }
+
+  .contact-item {
+    font-size: 0.76rem;
+  }
+
+  .booking-badge,
+  .hours-badge {
+    padding: 3px 8px;
+    font-size: 0.75rem;
+    border-radius: 6px;
+  }
+
+  .tier-badge {
+    font-size: 0.7rem;
+    padding: 3px 8px;
+  }
+
+  .status-badge {
+    font-size: 0.65rem;
+    padding: 3px 9px;
+  }
+
+  /* Stack retention cards in 1 column to avoid horizontal cutoff */
+  .smart-retention-grid {
+    grid-template-columns: 1fr !important;
+    gap: 8px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .customers-page .stats-bar {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .customers-page .stat-value {
+    font-size: 1rem;
+  }
 }
 
 

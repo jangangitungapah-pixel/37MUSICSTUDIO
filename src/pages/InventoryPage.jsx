@@ -244,7 +244,8 @@ const InventoryPage = () => {
         const cond = info.getValue();
         const cfg = CONDITION_COLORS[cond] || CONDITION_COLORS['Excellent'];
         return (
-          <span className="condition-badge" style={{ background: cfg.bg, color: cfg.color, padding: '2px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: '500', display: 'inline-block' }}>
+          <span className="condition-badge" style={{ background: cfg.bg, color: cfg.color }}>
+            <span className={`condition-pulsar ${cond.toLowerCase().replace(' ', '-')}`} />
             {cfg.label}
           </span>
         );
@@ -602,6 +603,7 @@ const InventoryPage = () => {
               </div>
               <h3>{selectedItem.name}</h3>
               <span className="condition-badge" style={{ background: (CONDITION_COLORS[selectedItem.condition] || CONDITION_COLORS['Good']).bg, color: (CONDITION_COLORS[selectedItem.condition] || CONDITION_COLORS['Good']).color }}>
+                <span className={`condition-pulsar ${selectedItem.condition.toLowerCase().replace(' ', '-')}`} />
                 {(CONDITION_COLORS[selectedItem.condition] || CONDITION_COLORS['Good']).label}
               </span>
               <button className="icon-btn detail-panel-close" onClick={() => setSelectedItem(null)} aria-label="Tutup panel detail"><X size={16} /></button>

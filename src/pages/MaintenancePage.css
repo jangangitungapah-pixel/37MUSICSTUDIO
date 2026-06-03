@@ -59,6 +59,46 @@
   border: 1px solid;
 }
 
+/* Glowing Pulsar inside badge */
+.maint-pulsar {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  display: inline-block;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.maint-pulsar::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: inherit;
+  animation: maintPulsarGlow 1.8s infinite ease-in-out;
+}
+
+@keyframes maintPulsarGlow {
+  0% { transform: scale(1); opacity: 1; box-shadow: 0 0 0 0 currentColor; }
+  100% { transform: scale(3.2); opacity: 0; box-shadow: 0 0 0 4px currentColor; }
+}
+
+.maint-pulsar.pending {
+  animation-duration: 2s;
+}
+
+.maint-pulsar.in_progress {
+  animation-duration: 1.4s;
+}
+
+.maint-pulsar.done {
+  animation-duration: 2.5s;
+}
+
+
 .maint-cost-cell { color: var(--text-muted); }
 .maint-cost-cell.has-cost { color: var(--accent-pink); font-weight: 600; }
 
@@ -464,5 +504,25 @@
   .mobile-maint-card-details .has-cost {
     color: var(--accent-pink);
     font-weight: 600;
+  }
+}
+
+/* ══════════════════════════════════════════
+   ⑪ MAINTENANCE PAGE (≤768px) — Mobile Overrides
+   ══════════════════════════════════════════ */
+@media (max-width: 768px) {
+
+  .maintenance-page {
+    gap: var(--mob-gap-lg);
+  }
+
+  .maintenance-stats {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--mob-gap-sm);
+  }
+
+  .maintenance-item {
+    padding: var(--mob-card-py) var(--mob-card-px);
+    border-radius: var(--mob-radius);
   }
 }

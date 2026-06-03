@@ -13,6 +13,7 @@ import './index.css';
 import './pages/CalendarPage.css'; // Shared global utilities and grid styles
 import './components/BookingForm.css'; // Shared global form styles (.form-group, .form-input)
 import './styles/fluent2-assets.css';
+import './styles/mobile-overhaul.css'; // Comprehensive mobile responsive overhaul (all admin pages)
 import PublicCalendarPage from './pages/PublicCalendarPage';
 import LandingPage from './pages/LandingPage';
 import PublicGalleryPage from './pages/PublicGalleryPage';
@@ -230,6 +231,11 @@ const ProtectedRoute = ({ children }) => {
 
   return (
     <div className="app-container">
+      <div className="ambient-glow-wrapper">
+        <div className="ambient-blob blob-cyan" />
+        <div className="ambient-blob blob-pink" />
+        <div className="ambient-blob blob-purple" />
+      </div>
       <Sidebar />
       <NotificationToast />
       <main className="main-content">
@@ -287,7 +293,7 @@ function App() {
             border: theme === 'light' ? '1px solid rgba(0,0,0,0.08)' : '1px solid rgba(255,255,255,0.08)',
             color: theme === 'light' ? '#111128' : '#ffffff',
             boxShadow: theme === 'light' ? '0 12px 32px rgba(17,17,40,0.12)' : 'none',
-            fontFamily: 'Outfit, sans-serif',
+            fontFamily: "'Plus Jakarta Sans', sans-serif",
           },
         }}
       />

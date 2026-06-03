@@ -5,15 +5,15 @@
 */
 
 :root {
-  --fluent-font-family-base: 'Segoe UI Variable', 'Segoe UI', 'Inter', 'Plus Jakarta Sans', system-ui, sans-serif;
-  --fluent-font-family-display: 'Segoe UI Variable Display', 'Segoe UI', 'Plus Jakarta Sans', system-ui, sans-serif;
+  --fluent-font-family-base: 'Inter', 'Segoe UI', system-ui, sans-serif;
+  --fluent-font-family-display: 'Inter', 'Segoe UI', system-ui, sans-serif;
 
   --fluent-radius-none: 0;
   --fluent-radius-small: 4px;
   --fluent-radius-medium: 6px;
   --fluent-radius-large: 8px;
   --fluent-radius-xlarge: 12px;
-  --fluent-radius-circular: 999px;
+  --fluent-radius-circular: 99px;
 
   --fluent-duration-ultra-fast: 80ms;
   --fluent-duration-fast: 150ms;
@@ -62,12 +62,14 @@
 
   --font-display: var(--fluent-font-family-display);
   --font-body: var(--fluent-font-family-base);
-  --ls-tight: 0;
-  --ls-snug: 0;
+  --ls-tightest: -0.05em;
+  --ls-tight: -0.035em;
+  --ls-snug: -0.02em;
   --ls-normal: 0;
-  --ls-wide: 0;
-  --ls-wider: 0.04em;
-  --ls-caps: 0.06em;
+  --ls-wide: 0.03em;
+  --ls-wider: 0.07em;
+  --ls-caps: 0.12em;
+  --ls-display: -0.04em;
 
   --bg-dark-rgb: 17, 16, 15;
   --bg-dark: var(--fluent-color-neutral-background-1);
@@ -334,12 +336,17 @@ textarea:focus,
   background: var(--fluent-color-neutral-background-3) !important;
 }
 
-.modal-title,
+.modal-title {
+  font-family: var(--font-body);
+  font-weight: 700;
+  letter-spacing: -0.015em;
+}
+
 .app-page-title,
 .page-title {
   font-family: var(--font-display);
   font-weight: 700;
-  letter-spacing: 0;
+  letter-spacing: -0.035em;
 }
 
 .app-table,

@@ -1689,13 +1689,14 @@ input:not([type="checkbox"]):not([type="radio"]):focus, select:focus, textarea:f
 }
 
 .app-table-panel {
-  background: var(--glass-bg);
-  -webkit-backdrop-filter: blur(14px);
-  backdrop-filter: blur(14px);
-  border: 1px solid var(--glass-border);
+  background: rgba(255, 255, 255, 0.03) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.07) !important;
   border-radius: 16px;
   padding: 20px;
   overflow: hidden;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.24) !important;
 }
 
 /* 3. Tables */
@@ -2041,74 +2042,89 @@ input:not([type="checkbox"]):not([type="radio"]):focus, select:focus, textarea:f
    ========================================================================== */
 
 /* ── Base Search Wrapper ── */
-.app-search,
-.search-bar,
-.search-wrapper,
-.finance-search-wrap {
+.app-page .app-search,
+.app-page .search-bar,
+.app-page .search-wrapper,
+.app-page .finance-search-wrap {
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  background: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-  border-radius: 12px;
-  color: var(--text-primary);
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 24px !important;
+  color: var(--text-primary) !important;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
   position: relative;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
+  backdrop-filter: blur(10px);
 }
 
 /* Base sizing & padding inside */
-.app-search-input {
+.app-page .app-search .app-search-input,
+.app-page .search-bar .app-search-input,
+.app-page .search-wrapper .app-search-input,
+.app-page .finance-search-wrap .app-search-input {
   background: transparent !important;
   border: none !important;
   outline: none !important;
   box-shadow: none !important;
   width: 100% !important;
   padding: 0 !important;
-  font-size: 0.86rem;
-  color: var(--text-primary);
+  font-size: 0.85rem !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.01em !important;
+  color: var(--text-primary) !important;
 }
-.app-search-input:focus {
+.app-page .app-search .app-search-input:focus,
+.app-page .search-bar .app-search-input:focus,
+.app-page .search-wrapper .app-search-input:focus,
+.app-page .finance-search-wrap .app-search-input:focus {
   background: transparent !important;
   border: none !important;
   box-shadow: none !important;
   outline: none !important;
 }
 
-.app-search-input::placeholder {
-  color: var(--text-muted);
+.app-page .app-search .app-search-input::placeholder,
+.app-page .search-bar .app-search-input::placeholder,
+.app-page .search-wrapper .app-search-input::placeholder,
+.app-page .finance-search-wrap .app-search-input::placeholder {
+  color: var(--text-muted) !important;
 }
 
-.app-search-icon {
-  color: var(--text-muted);
+.app-page .app-search-icon {
+  color: var(--text-muted) !important;
   flex-shrink: 0;
-  transition: color 0.2s;
+  transition: color 0.2s, transform 0.2s !important;
 }
 
 /* Hover & Focus States */
-.app-search:hover,
-.search-bar:hover,
-.search-wrapper:hover,
-.finance-search-wrap:hover {
-  background: transparent !important;
-  border-color: transparent !important;
-  box-shadow: none !important;
+.app-page .app-search:hover,
+.app-page .search-bar:hover,
+.app-page .search-wrapper:hover,
+.app-page .finance-search-wrap:hover {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25) !important;
 }
 
-.app-search:focus-within,
-.search-bar:focus-within,
-.search-wrapper:focus-within,
-.finance-search-wrap:focus-within {
-  background: transparent !important;
-  border-color: transparent !important;
-  box-shadow: none !important;
+.app-page .app-search:focus-within,
+.app-page .search-bar:focus-within,
+.app-page .search-wrapper:focus-within,
+.app-page .finance-search-wrap:focus-within {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: var(--accent-cyan) !important;
+  outline: none !important;
+  box-shadow: 0 0 16px rgba(var(--accent-cyan-rgb), 0.25), 0 4px 12px rgba(0, 0, 0, 0.25) !important;
+  transform: translateY(-1px);
 }
 
-.app-search:focus-within .app-search-icon,
-.search-bar:focus-within .app-search-icon,
-.search-wrapper:focus-within .app-search-icon,
-.finance-search-wrap:focus-within .app-search-icon {
-  color: var(--accent-pink);
+.app-page .app-search:focus-within .app-search-icon,
+.app-page .search-bar:focus-within .app-search-icon,
+.app-page .search-wrapper:focus-within .app-search-icon,
+.app-page .finance-search-wrap:focus-within .app-search-icon {
+  color: var(--accent-cyan) !important;
+  transform: scale(1.05);
 }
 
 /* ── Sizing Variants ── */
@@ -2212,18 +2228,37 @@ input:not([type="checkbox"]):not([type="radio"]):focus, select:focus, textarea:f
 }
 
 /* ── Light Theme Adjustments ── */
-[data-theme="light"] .app-search,
-[data-theme="light"] .search-bar,
-[data-theme="light"] .search-wrapper,
-[data-theme="light"] .finance-search-wrap {
-  background: transparent !important;
-  border-color: transparent !important;
+[data-theme="light"] .app-page .app-search,
+[data-theme="light"] .app-page .search-bar,
+[data-theme="light"] .app-page .search-wrapper,
+[data-theme="light"] .app-page .finance-search-wrap {
+  background: rgba(0, 0, 0, 0.03) !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05) !important;
 }
-[data-theme="light"] .app-search:hover {
-  background: transparent !important;
+[data-theme="light"] .app-page .app-search:hover,
+[data-theme="light"] .app-page .search-bar:hover,
+[data-theme="light"] .app-page .search-wrapper:hover,
+[data-theme="light"] .app-page .finance-search-wrap:hover {
+  background: rgba(0, 0, 0, 0.05) !important;
+  border-color: rgba(0, 0, 0, 0.12) !important;
 }
-[data-theme="light"] .app-search:focus-within {
-  background: transparent !important;
+[data-theme="light"] .app-page .app-search:focus-within,
+[data-theme="light"] .app-page .search-bar:focus-within,
+[data-theme="light"] .app-page .search-wrapper:focus-within,
+[data-theme="light"] .app-page .finance-search-wrap:focus-within {
+  background: rgba(0, 0, 0, 0.06) !important;
+  border-color: var(--accent-cyan) !important;
+  box-shadow: 0 0 16px rgba(var(--accent-cyan-rgb), 0.15), 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+}
+[data-theme="light"] .app-page .app-search-input {
+  color: #333 !important;
+}
+[data-theme="light"] .app-page .app-search-input::placeholder {
+  color: #888 !important;
+}
+[data-theme="light"] .app-page .app-search-icon {
+  color: #777 !important;
 }
 
 /* Mobile Adjustments */
@@ -2554,6 +2589,133 @@ input:not([type="checkbox"]):not([type="radio"]):focus, select:focus, textarea:f
   background: rgba(0, 0, 0, 0.04);
   color: var(--text-secondary);
   border-color: rgba(0, 0, 0, 0.08);
+}
+
+
+/* ==========================================================
+   SPATIAL & AMBIENT UI DESIGN SYSTEM OVERRIDES
+   ========================================================== */
+
+/* ── Ambient Background Glows ── */
+.ambient-glow-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+  background: var(--bg-dark);
+}
+
+.ambient-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(100px);
+  opacity: 0.15;
+  will-change: transform;
+  mix-blend-mode: screen;
+}
+
+.blob-cyan {
+  top: -10%;
+  left: 20%;
+  width: 50vw;
+  height: 50vw;
+  background: radial-gradient(circle, var(--accent-cyan) 0%, transparent 70%);
+  animation: floatBlob1 28s ease-in-out infinite alternate;
+}
+
+.blob-pink {
+  bottom: -15%;
+  right: 15%;
+  width: 45vw;
+  height: 45vw;
+  background: radial-gradient(circle, var(--accent-pink) 0%, transparent 70%);
+  animation: floatBlob2 35s ease-in-out infinite alternate;
+}
+
+.blob-purple {
+  top: 30%;
+  left: -10%;
+  width: 40vw;
+  height: 40vw;
+  background: radial-gradient(circle, #9c27b0 0%, transparent 70%);
+  animation: floatBlob3 32s ease-in-out infinite alternate;
+}
+
+@keyframes floatBlob1 {
+  0% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(8%, 15%, 0) scale(1.1); }
+  100% { transform: translate3d(-5%, 5%, 0) scale(0.95); }
+}
+
+@keyframes floatBlob2 {
+  0% { transform: translate3d(0, 0, 0) scale(0.9); }
+  50% { transform: translate3d(-10%, -12%, 0) scale(1.05); }
+  100% { transform: translate3d(5%, -5%, 0) scale(1); }
+}
+
+@keyframes floatBlob3 {
+  0% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(12%, -8%, 0) scale(0.85); }
+  100% { transform: translate3d(-4%, 10%, 0) scale(1.1); }
+}
+
+/* Light Theme Adjustments for Ambient Glows */
+[data-theme="light"] .ambient-glow-wrapper {
+  background: #f8fafc;
+}
+[data-theme="light"] .ambient-blob {
+  opacity: 0.08;
+  mix-blend-mode: multiply;
+}
+
+/* ── Spatial UI Panel Overrides ── */
+.app-page .glass-panel,
+.app-page .app-stat-card,
+.app-page .dashboard-card,
+.app-page .billing-stat-card,
+.app-page .maint-stat-card {
+  background: rgba(255, 255, 255, 0.03) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.07) !important;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.24) !important;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.app-page .glass-panel:hover,
+.app-page .app-stat-card:hover,
+.app-page .dashboard-card:hover,
+.app-page .billing-stat-card:hover {
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.35) !important;
+}
+
+/* Light Theme Spatial Panels */
+[data-theme="light"] .app-page .glass-panel,
+[data-theme="light"] .app-page .app-stat-card,
+[data-theme="light"] .app-page .dashboard-card,
+[data-theme="light"] .app-page .billing-stat-card,
+[data-theme="light"] .app-page .maint-stat-card {
+  background: rgba(255, 255, 255, 0.45) !important;
+  border: 1px solid rgba(255, 255, 255, 0.4) !important;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.04) !important;
+}
+
+[data-theme="light"] .app-page .glass-panel:hover,
+[data-theme="light"] .app-page .app-stat-card:hover,
+[data-theme="light"] .app-page .dashboard-card:hover,
+[data-theme="light"] .app-page .billing-stat-card:hover {
+  background: rgba(255, 255, 255, 0.6) !important;
+  border-color: rgba(255, 255, 255, 0.6) !important;
+  box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.08) !important;
 }
 
 

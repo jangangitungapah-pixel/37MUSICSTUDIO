@@ -113,6 +113,7 @@ const MaintenancePage = () => {
         const statusInfo = getStatusBadge(log);
         return (
           <span className="maint-status-badge" style={{ background: `${statusInfo.color}22`, color: statusInfo.color, borderColor: `${statusInfo.color}44` }}>
+            <span className={`maint-pulsar ${log.maintenanceStatus || 'pending'}`} style={{ backgroundColor: statusInfo.color, color: statusInfo.color }} />
             {statusInfo.icon}
             <span style={{ marginLeft: 4 }}>{statusInfo.label}</span>
           </span>
@@ -457,6 +458,7 @@ const MaintenancePage = () => {
                     <div className="mobile-maint-card-header">
                       <span className="maint-card-date">{format(new Date(log.date), 'dd MMM yyyy')}</span>
                       <span className="maint-status-badge" style={{ background: `${statusInfo.color}22`, color: statusInfo.color, borderColor: `${statusInfo.color}44` }}>
+                        <span className={`maint-pulsar ${log.maintenanceStatus || 'pending'}`} style={{ backgroundColor: statusInfo.color, color: statusInfo.color }} />
                         {statusInfo.icon}
                         <span style={{ marginLeft: 4 }}>{statusInfo.label}</span>
                       </span>

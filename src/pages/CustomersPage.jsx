@@ -453,7 +453,7 @@ const CustomersPage = () => {
                       <tr key={customer.id} className={isSelected ? 'row-selected' : ''} onClick={() => handleRowClick(customer)}>
                         <td>
                           <div className="customer-name-cell">
-                            <div className="customer-avatar" style={{ background: avatarColor.bg, color: avatarColor.color }}>
+                            <div className={`customer-avatar ${customer.isVIP ? 'vip' : ''}`} style={{ background: avatarColor.bg, color: avatarColor.color }}>
                               {customer.name.charAt(0).toUpperCase()}
                             </div>
                             <div className="customer-info">
@@ -553,7 +553,7 @@ const CustomersPage = () => {
                     onClick={() => handleRowClick(customer)}
                   >
                     <div className="mobile-card-left">
-                      <div className="customer-avatar" style={{ background: avatarColor.bg, color: avatarColor.color }}>
+                      <div className={`customer-avatar ${customer.isVIP ? 'vip' : ''}`} style={{ background: avatarColor.bg, color: avatarColor.color }}>
                         {customer.name.charAt(0).toUpperCase()}
                       </div>
                       <div className="mobile-card-info">
@@ -593,7 +593,7 @@ const CustomersPage = () => {
         {selectedCustomer && (
           <div className="customer-detail-panel app-panel">
             <div className="detail-panel-header">
-              <div className="detail-avatar" style={{ background: getAvatarColor(selectedCustomer.name).bg, color: getAvatarColor(selectedCustomer.name).color }}>
+              <div className={`detail-avatar ${selectedCustomer.isVIP ? 'vip' : ''}`} style={{ background: getAvatarColor(selectedCustomer.name).bg, color: getAvatarColor(selectedCustomer.name).color }}>
                 {selectedCustomer.name.charAt(0).toUpperCase()}
               </div>
               <h3>{selectedCustomer.name}</h3>
