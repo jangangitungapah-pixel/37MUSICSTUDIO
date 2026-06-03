@@ -1,5 +1,5 @@
 /* ─── Fonts ─── */
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Inter:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Onest:wght@300;400;500;600;700;800;900&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,400&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap');
 
 :root {
   /* ─── Color Tokens ─── */
@@ -32,8 +32,9 @@
   --shadow-neon: 0 0 15px rgba(var(--accent-pink-rgb), 0.3);
 
   /* ─── Typography Tokens ─── */
-  --font-display: 'Plus Jakarta Sans', system-ui, sans-serif;
-  --font-body:    'Inter', 'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-display: 'Onest', 'DM Sans', system-ui, sans-serif;
+  --font-body:    'DM Sans', 'Onest', system-ui, sans-serif;
+  --font-mono:    'DM Mono', 'Fira Code', ui-monospace, monospace;
 
   /* Modular scale — ratio 1.25 */
   --text-xs:   0.72rem;   /* 11.5px  — labels, badges, caps */
@@ -107,16 +108,17 @@ html {
 }
 
 body {
-  font-family: var(--font-display);
+  font-family: var(--font-body);
   font-size: var(--text-base);
   font-weight: var(--fw-regular);
   line-height: var(--lh-normal);
-  letter-spacing: var(--ls-normal);
+  letter-spacing: -0.01em;
   background-color: var(--bg-dark);
   color: var(--text-primary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+  font-optical-sizing: auto;
   overflow-x: hidden;
 }
 
@@ -124,15 +126,15 @@ body {
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-display);
   line-height: var(--lh-tight);
-  letter-spacing: var(--ls-snug);
+  letter-spacing: -0.02em;
   color: var(--text-primary);
   font-weight: var(--fw-black);
 }
 
-h1 { font-size: var(--text-3xl); letter-spacing: -0.035em; }
-h2 { font-size: var(--text-2xl); letter-spacing: -0.025em; }
-h3 { font-size: var(--text-xl);  letter-spacing: -0.02em; }
-h4 { font-size: var(--text-lg);  font-weight: var(--fw-bold); }
+h1 { font-size: var(--text-3xl); letter-spacing: -0.04em; }
+h2 { font-size: var(--text-2xl); letter-spacing: -0.03em; }
+h3 { font-size: var(--text-xl);  letter-spacing: -0.025em; }
+h4 { font-size: var(--text-lg);  font-weight: var(--fw-bold); letter-spacing: -0.015em; }
 h5 { font-size: var(--text-md);  font-weight: var(--fw-semi); }
 h6 { font-size: var(--text-base); font-weight: var(--fw-semi); }
 
@@ -171,7 +173,7 @@ p {
   line-height: var(--lh-normal);
 }
 
-/* ─── Numeric / tabular figures ─── */
+/* ─── Numeric / tabular figures — use DM Mono for crisp numbers ─── */
 .tabular-nums,
 .stat-value,
 .dash-stat-value,
@@ -182,11 +184,24 @@ p {
 [class*="-total"] {
   font-variant-numeric: tabular-nums;
   font-feature-settings: 'tnum' 1;
+  font-family: var(--font-mono);
+  letter-spacing: -0.02em;
+}
+
+/* Elements with tabular-nums anywhere get DM Mono automatically */
+[style*="tabular"],
+.time-range,
+.booking-time-label,
+.current-month,
+.dur-label {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1;
 }
 
 /* ─── Global input / select typography ─── */
 input, textarea, select, button {
-  font-family: var(--font-display);
+  font-family: var(--font-body);
 }
 
 option {

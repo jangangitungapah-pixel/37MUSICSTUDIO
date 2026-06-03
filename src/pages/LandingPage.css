@@ -1,3 +1,6 @@
+/* ─── Landing Page Advertising Fonts ─── */
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Grotesk:wght@400;500;600;700&family=Archivo+Black&display=swap');
+
 html {
   scroll-behavior: smooth;
 }
@@ -17,6 +20,11 @@ html {
   --landing-green: #8bd39b;
   --landing-shadow: 0 24px 70px rgba(0, 0, 0, 0.38);
   --hero-image-position: 24% center;
+
+  /* ─── Advertising Font Stack (Landing Page Only) ─── */
+  --font-ad-display: 'Bebas Neue', 'Archivo Black', Impact, 'Franklin Gothic Medium', sans-serif;
+  --font-ad-sub:     'Space Grotesk', 'DM Sans', system-ui, sans-serif;
+  --font-ad-brand:   'Space Grotesk', var(--font-display);
 
   min-height: 100vh;
   overflow-x: hidden;
@@ -104,18 +112,20 @@ html {
 
 .nav-brand-monogram {
   color: var(--landing-gold);
-  font-family: var(--font-display);
+  font-family: var(--font-ad-brand);
   font-size: 1.08rem;
-  font-weight: 950;
+  font-weight: 700;
   line-height: 1;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
 .brand-text {
   color: var(--landing-text);
-  font-family: var(--font-display);
-  font-size: 0.92rem;
-  font-weight: 800;
+  font-family: var(--font-ad-brand);
+  font-size: 0.88rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
   line-height: 1;
   text-transform: uppercase;
   white-space: nowrap;
@@ -469,10 +479,12 @@ html {
   margin: 0;
   max-width: 740px;
   color: #fffaf0;
-  font-family: var(--font-display);
-  font-size: 2.38rem;
-  font-weight: 900;
-  line-height: 0.98;
+  font-family: var(--font-ad-display);
+  font-size: clamp(3.2rem, 10vw, 6.5rem);
+  font-weight: 400; /* Bebas Neue is inherently heavy — weight 400 = full impact */
+  line-height: 0.92;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
   text-wrap: balance;
   overflow-wrap: anywhere;
 }
@@ -481,9 +493,11 @@ html {
   max-width: 590px;
   margin: 0;
   color: rgba(255, 250, 240, 0.82);
-  font-size: 0.98rem;
+  font-family: var(--font-ad-sub);
+  font-size: 1.05rem;
   font-weight: 500;
-  line-height: 1.7;
+  line-height: 1.65;
+  letter-spacing: -0.01em;
 }
 
 .hero-actions {
@@ -671,10 +685,12 @@ html {
 .pricing-copy h2 {
   margin: 0;
   color: var(--landing-text);
-  font-family: var(--font-display);
-  font-size: 2rem;
-  font-weight: 900;
-  line-height: 1.05;
+  font-family: var(--font-ad-display);
+  font-size: clamp(2.2rem, 6vw, 3.8rem);
+  font-weight: 400;
+  line-height: 0.97;
+  letter-spacing: 0.025em;
+  text-transform: uppercase;
   text-wrap: balance;
 }
 

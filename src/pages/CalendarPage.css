@@ -2661,3 +2661,214 @@ body.calendar-move-lock .main-content {
   background: rgba(0, 0, 0, 0.06) !important;
 }
 
+/* ══════════════════════════════════════════════════════
+   LIGHT MODE — COMPREHENSIVE CALENDAR GRID OVERRIDES
+   ══════════════════════════════════════════════════════ */
+
+/* ── Grid Corner Cell ── */
+[data-theme="light"] .grid-corner-cell {
+  background: rgba(245, 245, 249, 0.95) !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08) !important;
+  border-right: 1px solid rgba(0, 0, 0, 0.08) !important;
+}
+
+/* ── Day Header Cells ── */
+[data-theme="light"] .grid-header-cell {
+  background: rgba(245, 245, 249, 0.9) !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08) !important;
+  border-right: 1px solid rgba(0, 0, 0, 0.04) !important;
+  box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.04);
+}
+[data-theme="light"] .grid-header-cell:hover {
+  background: rgba(232, 232, 240, 0.98) !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08), inset 0 -1px 0 rgba(0, 0, 0, 0.05) !important;
+}
+[data-theme="light"] .grid-header-cell.today {
+  background: rgba(0, 210, 230, 0.06) !important;
+  border-bottom: 2px solid var(--accent-cyan) !important;
+}
+[data-theme="light"] .grid-header-cell.today:hover {
+  background: rgba(0, 210, 230, 0.11) !important;
+}
+[data-theme="light"] .grid-header-cell .day-name {
+  color: var(--text-muted);
+}
+[data-theme="light"] .grid-header-cell .day-number {
+  color: var(--text-secondary);
+}
+[data-theme="light"] .grid-header-cell.today .day-number {
+  color: #fff;
+  background: linear-gradient(135deg, #00c8d4, #00a0cc);
+  box-shadow: 0 0 14px rgba(0, 200, 212, 0.3);
+}
+
+/* ── Time Label Column ── */
+[data-theme="light"] .time-label {
+  background: rgba(245, 245, 249, 0.9) !important;
+  border-right: 1px solid rgba(0, 0, 0, 0.08) !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.04) !important;
+  box-shadow: none;
+}
+[data-theme="light"] .time-label:hover {
+  background: rgba(232, 232, 240, 0.98) !important;
+  box-shadow: 4px 0 16px rgba(0, 0, 0, 0.07) !important;
+}
+[data-theme="light"] .time-label.even-row {
+  background: rgba(238, 238, 245, 0.55) !important;
+}
+[data-theme="light"] .time-label.current-hour-highlight {
+  background: rgba(var(--accent-pink-rgb), 0.04) !important;
+}
+[data-theme="light"] .time-range {
+  color: var(--text-muted);
+  opacity: 1;
+}
+
+/* ── Grid Cells ── */
+[data-theme="light"] .grid-cell {
+  border-right: 1px solid rgba(0, 0, 0, 0.05) !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.04) !important;
+  background: transparent !important;
+}
+[data-theme="light"] .grid-cell.even-row {
+  background: rgba(0, 0, 0, 0.01) !important;
+}
+[data-theme="light"] .grid-cell.today-col-highlight {
+  background: rgba(var(--accent-cyan-rgb), 0.025) !important;
+}
+[data-theme="light"] .grid-cell.weekend-col {
+  background: rgba(var(--accent-pink-rgb), 0.01) !important;
+}
+[data-theme="light"] .grid-cell.today-col-highlight.weekend-col {
+  background: rgba(var(--accent-cyan-rgb), 0.025) !important;
+}
+[data-theme="light"] .empty-cell:hover {
+  background: rgba(0, 0, 0, 0.03) !important;
+}
+
+/* ── Metronome pulse — light variants ── */
+[data-theme="light"] .grid-header-cell.today {
+  animation: metronomePulseHeaderLight 1s cubic-bezier(0.25, 0.8, 0.25, 1) infinite;
+}
+@keyframes metronomePulseHeaderLight {
+  0%, 100% {
+    background: rgba(0, 210, 230, 0.06) !important;
+    box-shadow: inset 0 0 8px rgba(0, 200, 212, 0.04);
+  }
+  12% {
+    background: rgba(0, 210, 230, 0.13) !important;
+    box-shadow: inset 0 0 16px rgba(0, 200, 212, 0.16), 0 0 8px rgba(0, 200, 212, 0.1);
+  }
+}
+
+[data-theme="light"] .time-label.current-hour-highlight {
+  animation: metronomePulseHourLight 1s cubic-bezier(0.25, 0.8, 0.25, 1) infinite;
+}
+@keyframes metronomePulseHourLight {
+  0%, 100% {
+    background: rgba(var(--accent-pink-rgb), 0.04) !important;
+    box-shadow: inset 2px 0 0 rgba(var(--accent-pink-rgb), 0.3);
+  }
+  12% {
+    background: rgba(var(--accent-pink-rgb), 0.09) !important;
+    box-shadow: inset 4px 0 0 var(--accent-pink), 0 0 8px rgba(var(--accent-pink-rgb), 0.1);
+  }
+}
+
+/* ── Corner label ── */
+[data-theme="light"] .corner-label {
+  color: var(--accent-cyan);
+  background: rgba(var(--accent-cyan-rgb), 0.07);
+  border-color: rgba(var(--accent-cyan-rgb), 0.15);
+}
+
+/* ── Recommendation & request strips ── */
+[data-theme="light"] .calendar-recommendation-strip,
+[data-theme="light"] .calendar-request-strip {
+  background: rgba(0, 0, 0, 0.02) !important;
+  border-color: rgba(0, 0, 0, 0.07) !important;
+}
+[data-theme="light"] .cal-slot-chip,
+[data-theme="light"] .cal-request-chip {
+  background: rgba(0, 0, 0, 0.03) !important;
+  border-color: rgba(0, 0, 0, 0.07) !important;
+}
+
+/* ── Booking detail popup ── */
+[data-theme="light"] .booking-detail-popup {
+  background: rgba(255, 255, 255, 0.97) !important;
+  border-color: rgba(0, 0, 0, 0.08) !important;
+  box-shadow:
+    0 24px 60px rgba(0, 0, 0, 0.1),
+    0 0 0 1px rgba(0, 0, 0, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 1) !important;
+}
+[data-theme="light"] .booking-detail-popup.mobile-sheet {
+  background: rgba(255, 255, 255, 0.98) !important;
+  border-color: rgba(0, 0, 0, 0.08) !important;
+}
+[data-theme="light"] .detail-header {
+  background: rgba(248, 248, 252, 0.8) !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.07) !important;
+}
+[data-theme="light"] .detail-price-card {
+  background: rgba(248, 248, 252, 0.7) !important;
+  border: 1px solid rgba(0, 0, 0, 0.07) !important;
+}
+[data-theme="light"] .detail-price-row.total {
+  border-top: 1px solid rgba(0, 0, 0, 0.08) !important;
+}
+[data-theme="light"] .detail-paid-badge {
+  border-top: 1px solid rgba(var(--success-rgb), 0.18) !important;
+}
+[data-theme="light"] .detail-unpaid-badge {
+  border-top: 1px solid rgba(var(--warning-rgb), 0.18) !important;
+}
+[data-theme="light"] .detail-footer {
+  border-top: 1px solid rgba(0, 0, 0, 0.07) !important;
+}
+[data-theme="light"] .duration-controls {
+  background: rgba(0, 0, 0, 0.04) !important;
+  border: 1px solid rgba(0, 0, 0, 0.09) !important;
+}
+[data-theme="light"] .dur-btn {
+  background: rgba(255, 255, 255, 0.85) !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+  color: var(--text-primary) !important;
+}
+[data-theme="light"] .detail-overlay {
+  background: rgba(200, 200, 210, 0.5) !important;
+}
+
+/* ── Booking markers: text legibility in light ── */
+[data-theme="light"] .booking-title {
+  color: var(--text-primary) !important;
+  text-shadow: none !important;
+}
+[data-theme="light"] .booking-customer {
+  color: var(--text-secondary) !important;
+  text-shadow: none !important;
+}
+[data-theme="light"] .booking-time-label {
+  color: var(--text-muted) !important;
+  text-shadow: none !important;
+}
+
+/* ── Tooltip ── */
+[data-theme="light"] .radix-tooltip-content {
+  background: rgba(255, 255, 255, 0.98) !important;
+  border-color: rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
+  color: var(--text-primary) !important;
+}
+[data-theme="light"] .radix-tooltip-arrow {
+  fill: rgba(255, 255, 255, 0.98) !important;
+}
+
+/* ── Resize handle ── */
+[data-theme="light"] .resize-handle {
+  background: linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.04)) !important;
+}
+[data-theme="light"] .resize-handle:hover {
+  background: rgba(0, 0, 0, 0.06) !important;
+}
