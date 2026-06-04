@@ -42,6 +42,15 @@ export const useAuthStore = create((set, get) => {
           }
 
           set({ user, userProfile: profileData, isAuthLoaded: true });
+
+          // Register FCM Token if notification permission is granted
+          if ('Notification' in window && Notification.permission === 'granted') {
+            import('../lib/fcm').then(({ registerFCMToken }) => {
+              registerFCMToken(user.uid);
+            }).catch((err) => {
+              console.error("[FCM] Error loading FCM module:", err);
+            });
+          }
         } else {
           set({ user, userProfile: null, isAuthLoaded: true });
         }
@@ -244,6 +253,15 @@ export const useAuthStore = create((set, get) => {
     logout: async () => {
       set({ loading: true, error: null });
       try {
+        const { user } = get();
+        if (user && !user.isAnonymous) {
+          try {
+            const { unregisterFCMToken } = await import('../lib/fcm');
+            await unregisterFCMToken(user.uid);
+          } catch (err) {
+            console.error("[FCM] Error unregistering token on logout:", err);
+          }
+        }
         await signOut(auth);
         set({ loading: false });
       } catch (error) {

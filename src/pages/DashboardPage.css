@@ -379,25 +379,25 @@
 .dash-stat-card:hover:has(.stat-icon-wrapper.blue) {
   border-color: rgba(0, 240, 255, 0.3) !important;
   box-shadow: 
-    0 12px 40px 0 rgba(0, 0, 0, 0.35) !important,
+    0 12px 40px 0 rgba(0, 0, 0, 0.35),
     0 0 20px 0 rgba(0, 240, 255, 0.15) !important;
 }
 .dash-stat-card:hover:has(.stat-icon-wrapper.green) {
   border-color: rgba(76, 175, 80, 0.3) !important;
   box-shadow: 
-    0 12px 40px 0 rgba(0, 0, 0, 0.35) !important,
+    0 12px 40px 0 rgba(0, 0, 0, 0.35),
     0 0 20px 0 rgba(76, 175, 80, 0.15) !important;
 }
 .dash-stat-card:hover:has(.stat-icon-wrapper.pink) {
   border-color: rgba(255, 42, 95, 0.3) !important;
   box-shadow: 
-    0 12px 40px 0 rgba(0, 0, 0, 0.35) !important,
+    0 12px 40px 0 rgba(0, 0, 0, 0.35),
     0 0 20px 0 rgba(255, 42, 95, 0.15) !important;
 }
 .dash-stat-card:hover:has(.stat-icon-wrapper.orange) {
   border-color: rgba(255, 152, 0, 0.3) !important;
   box-shadow: 
-    0 12px 40px 0 rgba(0, 0, 0, 0.35) !important,
+    0 12px 40px 0 rgba(0, 0, 0, 0.35),
     0 0 20px 0 rgba(255, 152, 0, 0.15) !important;
 }
 

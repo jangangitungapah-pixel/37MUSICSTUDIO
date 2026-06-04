@@ -166,6 +166,7 @@ const PublicGalleryPage = () => {
       <div className="pg-bg-blobs">
         <div className="pg-blob-1" />
         <div className="pg-blob-2" />
+        <div className="pg-blob-3" />
       </div>
 
       {/* Header */}
@@ -365,6 +366,8 @@ const PublicGalleryPage = () => {
               setTouchStart(null);
             }}
           >
+            {/* Ambient Ambilight Glow */}
+            <div className="pg-lightbox-ambilight" style={{ backgroundImage: `url(${lightboxPhoto.url})` }} />
              <div className="pg-lightbox-actions" onClick={(e) => e.stopPropagation()}>
                {/* Share */}
                <button

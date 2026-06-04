@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useSettingsStore } from '../store/useSettingsStore';
 import { useDemoStore } from '../store/useDemoStore';
 import { useBookingStore } from '../store/useBookingStore';
+import { useAuthStore } from '../store/useAuthStore';
 import {
   Settings, Save, Building2, Phone, MapPin, DollarSign,
   Bell, Database, Trash2, CheckCircle2, XCircle, ShieldAlert,
@@ -47,6 +48,7 @@ const SettingsPage = () => {
   const storeSettings = useSettingsStore();
   const { isDemoMode, toggleDemoMode } = useDemoStore();
   const { bookings } = useBookingStore();
+  const { user } = useAuthStore();
 
   const [formData, setFormData] = useState({
     studioName: '',
@@ -434,6 +436,13 @@ const SettingsPage = () => {
   const handleRequestNotif = () => {
     Notification.requestPermission().then(perm => {
       setNotifPermission(perm);
+      if (perm === 'granted' && user?.uid) {
+        import('../lib/fcm').then(({ registerFCMToken }) => {
+          registerFCMToken(user.uid);
+        }).catch(err => {
+          console.error('[FCM] Error loading FCM module:', err);
+        });
+      }
     });
   };
 

@@ -88,14 +88,21 @@ export const useBookingStore = create((set, get) => {
             addNotification({
               type: 'booking',
               title: 'Booking Baru',
-              message: `${b.band} - ${b.date}, ${b.hour}.00-${b.hour + b.duration}.00 (${b.duration} jam)`,
+              message: `${b.band || 'Pelanggan'} - ${b.date}, ${b.hour}.00-${b.hour + b.duration}.00 (${b.duration} jam)`,
+            });
+          }
+          if (change.type === 'modified' && !localActionIds.has(b.id)) {
+            addNotification({
+              type: 'warning',
+              title: 'Booking Diperbarui 🔄',
+              message: `${b.band || 'Pelanggan'} - ${b.date}, ${b.hour}.00-${b.hour + b.duration}.00 (Status: ${b.status})`,
             });
           }
           if (change.type === 'removed' && !localActionIds.has(b.id)) {
             addNotification({
               type: 'warning',
-              title: 'Booking Dihapus',
-              message: `${b.band} - ${b.date} telah dihapus oleh pengguna lain`,
+              title: 'Booking Dihapus ⚠️',
+              message: `${b.band || 'Pelanggan'} - ${b.date} telah dihapus oleh pengguna lain`,
             });
           }
           if (localActionIds.has(b.id)) localActionIds.delete(b.id);

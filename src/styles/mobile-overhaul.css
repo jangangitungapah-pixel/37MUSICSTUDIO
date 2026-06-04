@@ -36,6 +36,11 @@
     height: 100dvh;
   }
 
+  /* All admin page containers get bottom padding to clear bottom navbar */
+  .app-page {
+    padding-bottom: calc(100px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+
   /* Page headers: stack cleanly */
   .page-header,
   .page-header-row,

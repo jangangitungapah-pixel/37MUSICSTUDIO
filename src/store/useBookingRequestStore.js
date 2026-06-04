@@ -4,6 +4,7 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { collection, doc, onSnapshot, setDoc, updateDoc } from 'firebase/firestore';
 import { useDemoStore } from './useDemoStore';
 import { useAuditLogStore } from './useAuditLogStore';
+import { useNotificationStore } from './useNotificationStore';
 
 const normalizeRequestDoc = (docSnap) => ({
   id: docSnap.id,
@@ -27,11 +28,27 @@ export const useBookingRequestStore = create((set, get) => {
       return;
     }
 
+    let isFirstLoad = true;
+
     unsubscribeRequests = onSnapshot(
       requestsRef,
       (snapshot) => {
         realRequests = snapshot.docs.map(normalizeRequestDoc);
         if (!useDemoStore.getState().isDemoMode) {
+          if (!isFirstLoad) {
+            const { addNotification } = useNotificationStore.getState();
+            snapshot.docChanges().forEach((change) => {
+              if (change.type === 'added') {
+                const req = normalizeRequestDoc(change.doc);
+                addNotification({
+                  type: 'customer',
+                  title: 'Permintaan Booking Baru 📝',
+                  message: `Band: ${req.bandName || 'Pelanggan'} - ${req.date || ''}, ${req.hour || ''}.00 (${req.duration || 1} jam)`,
+                });
+              }
+            });
+          }
+          isFirstLoad = false;
           set({ requests: realRequests, isLoaded: true, error: null });
         } else {
           set({ isLoaded: true, error: null });

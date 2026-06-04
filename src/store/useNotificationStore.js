@@ -1,6 +1,8 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { toast } from 'sonner';
+import { CLICK_SOUND } from '../lib/sounds';
+import { useThemeStore } from './useThemeStore';
 
 export const useNotificationStore = create(
   persist(
@@ -16,6 +18,18 @@ export const useNotificationStore = create(
           isRead: false, 
           ...notification 
         };
+
+        // Play notification sound if enabled
+        try {
+          const { soundEnabled } = useThemeStore.getState();
+          if (soundEnabled) {
+            const audio = new Audio(CLICK_SOUND);
+            audio.volume = 0.5;
+            audio.play().catch(() => {});
+          }
+        } catch (err) {
+          console.warn('[Notification] Audio play blocked or failed:', err);
+        }
         
         // Trigger Native OS Notification if permitted
         if ('Notification' in window && Notification.permission === 'granted') {

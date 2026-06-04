@@ -186,7 +186,7 @@ const GalleryPage = () => {
     const reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onload = (event) => {
-      const img = new Image();
+      const img = new window.Image();
       img.src = event.target.result;
       img.onload = () => {
         const canvas = document.createElement('canvas');
@@ -333,6 +333,13 @@ const GalleryPage = () => {
   // ── Renders ────────────────────────────────────────────────────────────────
   return (
     <div className="app-page gallery-page">
+      {/* Background Ambient Glow Blobs */}
+      <div className="gallery-bg-blobs">
+        <div className="gallery-blob gallery-blob-1" />
+        <div className="gallery-blob gallery-blob-2" />
+        <div className="gallery-blob gallery-blob-3" />
+      </div>
+
       {/* ── Page Header ──────────────────────────────────────────────────────── */}
       <div className="app-page-header">
         <div>
@@ -1015,9 +1022,11 @@ const GalleryPage = () => {
         {lightboxPhoto && (
           <motion.div
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="gallery-lightbox-overlay"
+            className={`gallery-lightbox-overlay ${isSettingsOpen ? 'has-settings-open' : ''}`}
             onClick={() => { setLightboxPhoto(null); setIsSettingsOpen(false); }}
           >
+            {/* Ambient Ambilight Glow */}
+            <div className="lightbox-ambilight" style={{ backgroundImage: `url(${lightboxPhoto.url})` }} />
             <button className="lightbox-close" onClick={() => { setLightboxPhoto(null); setIsSettingsOpen(false); }} aria-label="Tutup penampil gambar">
               <X size={24} />
             </button>
