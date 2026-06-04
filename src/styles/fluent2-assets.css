@@ -388,7 +388,7 @@ textarea:focus,
 .maint-table th,
 .finance-table th,
 .staff-table th {
-  background: rgba(18, 18, 24, 0.6) !important;
+  background: var(--bg-surface-hover) !important;
   border-bottom: 1px solid var(--fluent-color-neutral-stroke-1) !important;
   color: var(--text-muted) !important;
   font-weight: 700 !important;
@@ -422,7 +422,7 @@ textarea:focus,
   border-color: var(--fluent-color-neutral-stroke-1) !important;
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.015)),
-    rgba(18, 18, 24, 0.55) !important;
+    var(--glass-bg) !important;
   box-shadow: var(--fluent-shadow-16) !important;
   -webkit-backdrop-filter: blur(28px) saturate(180%) !important;
   backdrop-filter: blur(28px) saturate(180%) !important;

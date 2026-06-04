@@ -33,6 +33,44 @@ const uploadToImgBB = async (blobOrBase64) => {
   return data.data.url;  // permanent CDN URL
 };
 
+// ── Cloudinary upload (Alternatif unblocked di Indonesia) ─────────
+const uploadToCloudinary = async (blobOrBase64) => {
+  const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+  const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
+
+  const formData = new FormData();
+  formData.append('file', blobOrBase64);
+  formData.append('upload_preset', uploadPreset);
+
+  const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+    method: 'POST',
+    body: formData,
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error?.message || `Upload Cloudinary gagal (${res.status})`);
+  }
+  const data = await res.json();
+  return data.secure_url;
+};
+
+// Helper upload gambar
+const uploadImage = async (blobOrBase64) => {
+  const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+  const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
+
+  if (cloudName && uploadPreset) {
+    try {
+      return await uploadToCloudinary(blobOrBase64);
+    } catch (err) {
+      console.warn('Upload Cloudinary gagal, mencoba fallback ke ImgBB...', err);
+    }
+  }
+
+  return await uploadToImgBB(blobOrBase64);
+};
+
 export const useGalleryStore = create((set, get) => {
   const galleryRef = collection(db, 'gallery');
   const albumsRef = collection(db, 'albums');
@@ -125,11 +163,9 @@ export const useGalleryStore = create((set, get) => {
 
       if (!useDemoStore.getState().isDemoMode) {
         if (newPhoto.file instanceof Blob) {
-          // Upload blob ke ImgBB — gratis, cukup API key
-          finalUrl = await uploadToImgBB(newPhoto.file);
+          finalUrl = await uploadImage(newPhoto.file);
         } else if (typeof finalUrl === 'string' && finalUrl.startsWith('data:image/')) {
-          // URL tab: base64 — upload ke ImgBB juga
-          finalUrl = await uploadToImgBB(finalUrl);
+          finalUrl = await uploadImage(finalUrl);
         }
         // Jika sudah URL eksternal (https://...), simpan langsung
       } else if (newPhoto.file instanceof Blob) {

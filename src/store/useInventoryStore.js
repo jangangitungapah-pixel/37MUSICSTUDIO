@@ -1,6 +1,7 @@
 import { create } from 'zustand';
-import { db } from '../firebase';
+import { db, auth } from '../firebase';
 import { collection, doc, onSnapshot, setDoc, deleteDoc, updateDoc } from 'firebase/firestore';
+import { onAuthStateChanged } from 'firebase/auth';
 import { format, addDays } from 'date-fns';
 import { useDemoStore } from './useDemoStore';
 import { useAuditLogStore } from './useAuditLogStore';
@@ -12,27 +13,52 @@ export const useInventoryStore = create((set, get) => {
   const categoriesRef = doc(db, 'config', 'inventoryCategories');
   let realInventory = [];
   let realCategories = [];
+  let unsubscribeInventory = null;
+  let unsubscribeCategories = null;
 
-  onSnapshot(inventoryRef, (snapshot) => {
-    realInventory = snapshot.docs.map(doc => doc.data());
-    if (!useDemoStore.getState().isDemoMode) {
-      set({ inventory: realInventory, isLoaded: true });
-    } else {
-      set({ isLoaded: true });
+  onAuthStateChanged(auth, (user) => {
+    if (unsubscribeInventory) {
+      unsubscribeInventory();
+      unsubscribeInventory = null;
     }
-  });
+    if (unsubscribeCategories) {
+      unsubscribeCategories();
+      unsubscribeCategories = null;
+    }
 
-  onSnapshot(categoriesRef, (docSnap) => {
-    if (useDemoStore.getState().isDemoMode) return;
-    if (docSnap.exists()) {
-      realCategories = docSnap.data().list;
-      set({ categories: realCategories });
-    } else {
-      const initialCategories = ['Drum', 'Amps', 'Microphones', 'Accessories'];
-      setDoc(categoriesRef, { list: initialCategories });
-      realCategories = initialCategories;
-      set({ categories: initialCategories });
+    if (!user || user.isAnonymous) {
+      realInventory = [];
+      realCategories = [];
+      set({ inventory: [], categories: [], isLoaded: true });
+      return;
     }
+
+    unsubscribeInventory = onSnapshot(inventoryRef, (snapshot) => {
+      realInventory = snapshot.docs.map(doc => doc.data());
+      if (!useDemoStore.getState().isDemoMode) {
+        set({ inventory: realInventory, isLoaded: true });
+      } else {
+        set({ isLoaded: true });
+      }
+    }, (error) => {
+      console.error('Error loading inventory:', error);
+      set({ inventory: [], isLoaded: true, error: error.message });
+    });
+
+    unsubscribeCategories = onSnapshot(categoriesRef, (docSnap) => {
+      if (useDemoStore.getState().isDemoMode) return;
+      if (docSnap.exists()) {
+        realCategories = docSnap.data().list;
+        set({ categories: realCategories });
+      } else {
+        const initialCategories = ['Drum', 'Amps', 'Microphones', 'Accessories'];
+        setDoc(categoriesRef, { list: initialCategories });
+        realCategories = initialCategories;
+        set({ categories: initialCategories });
+      }
+    }, (error) => {
+      console.error('Error loading inventory categories:', error);
+    });
   });
 
   useDemoStore.subscribe((demoState) => {

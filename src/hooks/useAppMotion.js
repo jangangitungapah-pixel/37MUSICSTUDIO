@@ -1,22 +1,46 @@
 import { useReducedMotion } from 'framer-motion';
+import { useState, useEffect } from 'react';
 
 /**
- * Hook to handle accessibility preferences around animations.
- * If user prefers reduced motion, this helps dial back or disable animations.
+ * Hook to handle accessibility preferences and performance adjustments around animations.
+ * If user prefers reduced motion, or if the device is a mobile/tablet screen,
+ * this helps dial back or disable expensive animations.
  */
 export const useAppMotion = () => {
   const prefersReducedMotion = useReducedMotion();
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
+    const checkIsMobile = () => {
+      // Screens <= 1024px (covers mobile phones and tablets in portrait/landscape)
+      // or devices that support touch and are <= 1024px wide
+      const matchesWidth = window.innerWidth <= 1024;
+      const matchesTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+      return matchesWidth || (matchesTouch && matchesWidth);
+    };
+
+    setIsMobile(checkIsMobile());
+
+    const handleResize = () => {
+      setIsMobile(checkIsMobile());
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const shouldReduce = prefersReducedMotion || isMobile;
 
   /**
-   * Helper to merge/override motion props when reduced motion is enabled.
-   * If reduced motion is true, it falls back to simple opacity transitions
-   * instead of heavy transforms or physics springs.
+   * Helper to merge/override motion props when reduced motion or mobile viewport is active.
+   * Falls back to simple opacity transitions instead of heavy transforms or physics springs.
    * 
    * @param {Object} normalProps - The standard animation props (variants, transition, etc.)
    * @param {Object} reducedProps - Optional overrides when reduced motion is active
    */
   const getMotionProps = (normalProps, reducedProps = null) => {
-    if (!prefersReducedMotion) {
+    if (!shouldReduce) {
       return normalProps;
     }
 
@@ -25,16 +49,22 @@ export const useAppMotion = () => {
       initial: { opacity: 0 },
       animate: { opacity: 1 },
       exit: { opacity: 0 },
-      transition: { duration: 0.1 },
+      transition: { duration: 0.15 },
       whileHover: {},
       whileTap: {},
     };
 
-    return { ...defaultReduced, ...reducedProps };
+    const merged = { ...defaultReduced, ...reducedProps };
+
+    // Remove viewport and scroll-triggered animations to completely bypass scroll event listeners
+    delete merged.viewport;
+    delete merged.whileInView;
+
+    return merged;
   };
 
   return {
-    isReduced: prefersReducedMotion,
+    isReduced: shouldReduce,
     getMotionProps,
   };
 };

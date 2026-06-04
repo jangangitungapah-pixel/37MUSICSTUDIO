@@ -1,20 +1,38 @@
 import { create } from 'zustand';
-import { db } from '../firebase';
+import { db, auth } from '../firebase';
 import { collection, doc, onSnapshot, setDoc, deleteDoc } from 'firebase/firestore';
+import { onAuthStateChanged } from 'firebase/auth';
 import { useDemoStore } from './useDemoStore';
 import { useAuditLogStore } from './useAuditLogStore';
 
 export const useFinanceStore = create((set) => {
   const financeRef = collection(db, 'finances');
   let realTransactions = [];
+  let unsubscribeFinance = null;
 
-  onSnapshot(financeRef, (snapshot) => {
-    realTransactions = snapshot.docs.map(doc => doc.data());
-    if (!useDemoStore.getState().isDemoMode) {
-      set({ transactions: realTransactions, isLoaded: true });
-    } else {
-      set({ isLoaded: true });
+  onAuthStateChanged(auth, (user) => {
+    if (unsubscribeFinance) {
+      unsubscribeFinance();
+      unsubscribeFinance = null;
     }
+
+    if (!user || user.isAnonymous) {
+      realTransactions = [];
+      set({ transactions: [], isLoaded: true });
+      return;
+    }
+
+    unsubscribeFinance = onSnapshot(financeRef, (snapshot) => {
+      realTransactions = snapshot.docs.map(doc => doc.data());
+      if (!useDemoStore.getState().isDemoMode) {
+        set({ transactions: realTransactions, isLoaded: true });
+      } else {
+        set({ isLoaded: true });
+      }
+    }, (error) => {
+      console.error('Error loading finances:', error);
+      set({ transactions: [], isLoaded: true, error: error.message });
+    });
   });
 
   useDemoStore.subscribe((demoState) => {

@@ -405,6 +405,9 @@ const DashboardPage = () => {
       toast.error('Terjadi kesalahan saat memproses laporan Excel.', { id: toastId });
     }
   };
+
+  const displayName = userProfile?.name || userProfile?.username || user?.displayName || (user?.email ? user.email.split('@')[0] : 'Admin');
+
   return (
     <div className="app-page dashboard-page">
 
@@ -420,7 +423,7 @@ const DashboardPage = () => {
         <div className="dash-greeting-left">
           <div className="dash-greeting-icon"><Music2 size={24} /></div>
           <div>
-            <h2 className="dash-greeting-title">{greeting}, Admin! 👋</h2>
+            <h2 className="dash-greeting-title">{greeting}, {displayName}! 👋</h2>
             <p className="dash-greeting-sub">{studioName}</p>
           </div>
         </div>

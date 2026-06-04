@@ -22,9 +22,10 @@ const staffSchema = z.object({
     .regex(/^[a-z0-9]+$/, 'Username harus berupa huruf kecil & angka saja (tanpa spasi)'),
   role: z.enum(['staff', 'admin']),
   phone: z.string()
-    .min(10, 'Nomor HP minimal 10 digit')
-    .max(15, 'Nomor HP maksimal 15 digit')
-    .regex(/^[0-9]+$/, 'Nomor HP harus berupa angka').or(z.literal('')),
+    .refine(
+      (val) => val === '' || (val.length >= 10 && val.length <= 15 && /^[0-9]+$/.test(val)),
+      { message: 'Nomor HP harus 10-15 digit angka' }
+    ),
   password: z.string().min(6, 'Password minimal 6 karakter').or(z.literal('')),
   permissions: z.array(z.string()).optional()
 });
@@ -134,7 +135,17 @@ const StaffPage = () => {
       }
       setLoading(true);
       try {
-        await createStaffAccount(data, '', data.password, data.username);
+        await createStaffAccount(
+          {
+            name: data.name,
+            phone: data.phone,
+            role: data.role,
+            permissions: data.permissions,
+          },
+          '', // no custom email, use username-based email
+          data.password,
+          data.username
+        );
         confetti({
           particleCount: 150,
           spread: 80,
@@ -142,11 +153,14 @@ const StaffPage = () => {
           colors: ['#00f0ff', '#ff2a5f', '#FFC107', '#4CAF50']
         });
         toast.success('Staff baru berhasil ditambahkan! 🎉');
+        reset();
         setIsModalOpen(false);
       } catch (error) {
         let msg = error.message;
-        if (error.code === 'auth/email-already-in-use') msg = 'Username sudah digunakan.';
+        if (error.code === 'auth/email-already-in-use') msg = 'Username sudah digunakan, coba username lain.';
         if (error.code === 'auth/weak-password') msg = 'Password terlalu lemah (minimal 6 karakter).';
+        if (error.code === 'auth/network-request-failed') msg = 'Gagal terhubung ke server. Periksa koneksi internet.';
+        if (error.code === 'auth/too-many-requests') msg = 'Terlalu banyak percobaan. Coba lagi beberapa saat.';
         toast.error(msg);
       } finally {
         setLoading(false);
@@ -365,9 +379,15 @@ const StaffPage = () => {
                   id="staff-username"
                   type="text"
                   className="bf-input"
-                  placeholder="Budi123"
-                  {...register('username', { validate: validateStaffWithZod('username') })}
-                  onChange={(e) => setValue('username', e.target.value.toLowerCase().replace(/\s+/g, ''))}
+                  placeholder="budi123"
+                  {...register('username', {
+                    validate: validateStaffWithZod('username'),
+                    onChange: (e) => {
+                      // Normalize to lowercase, no spaces
+                      const clean = e.target.value.toLowerCase().replace(/\s+/g, '');
+                      setValue('username', clean, { shouldValidate: true });
+                    }
+                  })}
                 />
                 {errors.username && <span className="cf-error-message" style={{ color: 'var(--accent-pink)', fontSize: '11px', marginTop: '4px', display: 'block' }}>{errors.username.message}</span>}
               </div>

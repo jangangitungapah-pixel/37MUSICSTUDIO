@@ -135,6 +135,8 @@ const LandingPage = () => {
 
   useEffect(() => {
     clearError();
+    setIdentifier('');
+    setPassword('');
   }, [isLoginOpen, clearError]);
 
   useEffect(() => {

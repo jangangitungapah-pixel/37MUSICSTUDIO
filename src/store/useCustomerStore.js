@@ -1,6 +1,7 @@
 import { create } from 'zustand';
-import { db } from '../firebase';
+import { db, auth } from '../firebase';
 import { collection, doc, onSnapshot, setDoc, deleteDoc, updateDoc } from 'firebase/firestore';
+import { onAuthStateChanged } from 'firebase/auth';
 import { format } from 'date-fns';
 import { useDemoStore } from './useDemoStore';
 import { useAuditLogStore } from './useAuditLogStore';
@@ -8,14 +9,31 @@ import { useAuditLogStore } from './useAuditLogStore';
 export const useCustomerStore = create((set, get) => {
   const customersRef = collection(db, 'customers');
   let realCustomers = [];
+  let unsubscribeCustomers = null;
 
-  onSnapshot(customersRef, (snapshot) => {
-    realCustomers = snapshot.docs.map(doc => doc.data());
-    if (!useDemoStore.getState().isDemoMode) {
-      set({ customers: realCustomers, isLoaded: true });
-    } else {
-      set({ isLoaded: true });
+  onAuthStateChanged(auth, (user) => {
+    if (unsubscribeCustomers) {
+      unsubscribeCustomers();
+      unsubscribeCustomers = null;
     }
+
+    if (!user || user.isAnonymous) {
+      realCustomers = [];
+      set({ customers: [], isLoaded: true });
+      return;
+    }
+
+    unsubscribeCustomers = onSnapshot(customersRef, (snapshot) => {
+      realCustomers = snapshot.docs.map(doc => doc.data());
+      if (!useDemoStore.getState().isDemoMode) {
+        set({ customers: realCustomers, isLoaded: true });
+      } else {
+        set({ isLoaded: true });
+      }
+    }, (error) => {
+      console.error('Error loading customers:', error);
+      set({ customers: [], isLoaded: true, error: error.message });
+    });
   });
 
   useDemoStore.subscribe((demoState) => {

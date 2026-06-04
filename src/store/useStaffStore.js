@@ -4,13 +4,55 @@ import { useDemoStore } from './useDemoStore';
 import { getDefaultPermissionsForRole } from '../lib/permissions';
 import { useAuditLogStore } from './useAuditLogStore';
 import { initializeApp, deleteApp } from 'firebase/app';
-import { getAuth, createUserWithEmailAndPassword, signOut } from 'firebase/auth';
-import { getFirestore, setDoc, doc, updateDoc, deleteDoc } from 'firebase/firestore';
-import { db, firebaseConfig } from '../firebase';
+import { getAuth, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from 'firebase/auth';
+import { getFirestore, setDoc, doc, updateDoc, deleteDoc, collection, onSnapshot } from 'firebase/firestore';
+import { db, firebaseConfig, auth } from '../firebase';
 
 export const useStaffStore = create(
   persist(
-    (set) => {
+    (set, get) => {
+      const usersRef = collection(db, 'users');
+      let realStaff = [];
+      let unsubscribeStaff = null;
+
+      onAuthStateChanged(auth, (user) => {
+        if (unsubscribeStaff) {
+          unsubscribeStaff();
+          unsubscribeStaff = null;
+        }
+
+        if (!user || user.isAnonymous) {
+          realStaff = [];
+          set({ staffMembers: [] });
+          return;
+        }
+
+        unsubscribeStaff = onSnapshot(usersRef, (snapshot) => {
+          realStaff = snapshot.docs
+            .filter(doc => !doc.id.includes('.') && !doc.id.includes('='))
+            .map(doc => {
+              const data = doc.data();
+              return {
+                id: data.uid || doc.id,
+                name: data.name || data.username || 'No Name',
+                username: data.username || '',
+                email: data.email || '',
+                phone: data.phone || '',
+                role: data.role || 'staff',
+                status: data.status || 'active',
+                permissions: data.permissions || getDefaultPermissionsForRole(data.role || 'staff')
+              };
+            });
+
+          if (!useDemoStore.getState().isDemoMode) {
+            set({ staffMembers: realStaff });
+          }
+        }, (error) => {
+          console.error('Error loading staff members:', error);
+          set({ staffMembers: [] });
+        });
+      });
+
       // Subscribe to demo store
       useDemoStore.subscribe((demoState) => {
         if (demoState.isDemoMode) {
@@ -20,17 +62,14 @@ export const useStaffStore = create(
           }));
         } else {
           set((state) => ({
-            staffMembers: state.realStaffMembers || state.staffMembers,
+            staffMembers: realStaff,
             realStaffMembers: null
           }));
         }
       });
 
       return {
-        staffMembers: [
-          { id: '1', name: 'Admin Utama', role: 'admin', phone: '08123456789', status: 'active', permissions: getDefaultPermissionsForRole('admin') },
-          { id: '2', name: 'Budi Staff', role: 'staff', phone: '08198765432', status: 'active', permissions: getDefaultPermissionsForRole('staff') },
-        ],
+        staffMembers: [],
         realStaffMembers: null,
         
         addStaff: (staff) => {
@@ -52,49 +91,60 @@ export const useStaffStore = create(
         },
 
           createStaffAccount: async (staffData, email, password, username) => {
+          // Use a unique app name to prevent conflicts on repeated calls
+          const appName = `SecondaryApp_${Date.now()}`;
           let secondaryApp;
           try {
             // 1. Initialize secondary app to avoid logging out the admin
-            secondaryApp = initializeApp(firebaseConfig, "SecondaryApp");
+            secondaryApp = initializeApp(firebaseConfig, appName);
             const secondaryAuth = getAuth(secondaryApp);
-            const secondaryDb = getFirestore(secondaryApp);
 
             // 2. Create the user
-            const finalEmail = email || `${username}@37musicstudio.local`;
+            const cleanUsername = username.toLowerCase().replace(/\s+/g, '');
+            const finalEmail = email || `${cleanUsername}@37musicstudio.local`;
             const userCredential = await createUserWithEmailAndPassword(secondaryAuth, finalEmail, password);
             const newUser = userCredential.user;
 
-            // 3. Create the basic user profile using secondaryDb
+            // 3. Create the full user profile using primary db (Admin session)
             const newProfile = {
               uid: newUser.uid,
               email: finalEmail,
-              username: username.toLowerCase().replace(/\s+/g, ''),
+              username: cleanUsername,
+              name: staffData.name || '',
               phone: staffData.phone || '',
+              role: staffData.role,
+              permissions: staffData.permissions || getDefaultPermissionsForRole(staffData.role),
+              requiresPasswordChange: true,
+              status: 'active',
               createdAt: new Date().toISOString()
             };
-            await setDoc(doc(secondaryDb, 'users', newUser.uid), newProfile);
             
-            // 3.5. Save username mapping for login lookup
-            await setDoc(doc(secondaryDb, 'usernames', newProfile.username), {
-              email: finalEmail
-            });
+            try {
+              await setDoc(doc(db, 'users', newUser.uid), newProfile);
+              
+              // 3.5. Save username mapping for login lookup
+              await setDoc(doc(db, 'usernames', cleanUsername), {
+                email: finalEmail
+              });
+            } catch (firestoreError) {
+              // Rollback: delete the created Auth user to allow retries if Firestore fails
+              console.error("Firestore write failed, rolling back Auth user...", firestoreError);
+              await newUser.delete().catch(deleteErr => console.error("Rollback delete failed:", deleteErr));
+              throw firestoreError;
+            }
 
             // 4. Sign out the secondary auth
             await signOut(secondaryAuth);
 
             // 5. Clean up the secondary app
             await deleteApp(secondaryApp);
+            secondaryApp = null;
 
-            // 6. Update the user document to set the 'role' using the primary db (admin access allowed)
-            await updateDoc(doc(db, 'users', newUser.uid), {
-              role: staffData.role,
-              permissions: staffData.permissions || getDefaultPermissionsForRole(staffData.role)
-            });
-
-            // 7. Update local state
+            // 6. Update local state
             const newStaff = {
               ...staffData,
               id: newUser.uid, // Use actual Firebase UID
+              username: cleanUsername,
               status: 'active',
               permissions: staffData.permissions || getDefaultPermissionsForRole(staffData.role),
             };
@@ -130,6 +180,7 @@ export const useStaffStore = create(
           
           try {
              await updateDoc(doc(db, 'users', id), {
+               name: payload.name || '',
                role: payload.role,
                permissions: payload.permissions,
                phone: payload.phone || ''
@@ -148,40 +199,49 @@ export const useStaffStore = create(
         },
 
         resetStaffPassword: async (oldStaff, newPassword) => {
+          // Use a unique app name to prevent conflicts on repeated calls
+          const appName = `SecondaryAppReset_${Date.now()}`;
           let secondaryApp;
           try {
-            secondaryApp = initializeApp(firebaseConfig, "SecondaryAppReset");
+            secondaryApp = initializeApp(firebaseConfig, appName);
             const secondaryAuth = getAuth(secondaryApp);
-            const secondaryDb = getFirestore(secondaryApp);
 
             // Create a completely new email to avoid "email-already-in-use"
             const newEmail = `${oldStaff.username}_${Date.now()}@37musicstudio.local`;
             const userCredential = await createUserWithEmailAndPassword(secondaryAuth, newEmail, newPassword);
             const newUser = userCredential.user;
 
-            // Copy old profile to new uid
+            // Copy old profile to new uid with all required fields
             const newProfile = {
               uid: newUser.uid,
               email: newEmail,
               username: oldStaff.username,
+              name: oldStaff.name || '',
               phone: oldStaff.phone || '',
+              role: oldStaff.role,
+              permissions: oldStaff.permissions || getDefaultPermissionsForRole(oldStaff.role),
+              status: oldStaff.status || 'active',
+              requiresPasswordChange: false,
               createdAt: new Date().toISOString()
             };
-            await setDoc(doc(secondaryDb, 'users', newUser.uid), newProfile);
+            
+            try {
+              await setDoc(doc(db, 'users', newUser.uid), newProfile);
 
-            // Update mapping
-            await setDoc(doc(secondaryDb, 'usernames', oldStaff.username), {
-              email: newEmail
-            });
+              // Update username mapping
+              await setDoc(doc(db, 'usernames', oldStaff.username), {
+                email: newEmail
+              });
+            } catch (firestoreError) {
+              // Rollback: delete the new Auth user if Firestore writes fail during reset
+              console.error("Firestore user creation failed during reset, deleting new Auth user...", firestoreError);
+              await newUser.delete().catch(deleteErr => console.error("Rollback delete failed:", deleteErr));
+              throw firestoreError;
+            }
 
             await signOut(secondaryAuth);
             await deleteApp(secondaryApp);
-
-            // Add role/permissions via primary admin db
-            await updateDoc(doc(db, 'users', newUser.uid), {
-              role: oldStaff.role,
-              permissions: oldStaff.permissions || getDefaultPermissionsForRole(oldStaff.role)
-            });
+            secondaryApp = null;
 
             // Delete old user document
             try {
@@ -210,7 +270,7 @@ export const useStaffStore = create(
         },
 
 
-        deleteStaff: (id) => {
+        deleteStaff: async (id) => {
           set((state) => ({
             staffMembers: state.staffMembers.filter(s => s.id !== id)
           }));
@@ -220,12 +280,22 @@ export const useStaffStore = create(
             entityId: id,
             summary: 'Staff dihapus',
           });
+          if (useDemoStore.getState().isDemoMode) return;
+          try {
+            await deleteDoc(doc(db, 'users', id));
+          } catch (e) {
+            console.error("Error deleting user document:", e);
+          }
         },
         
-        toggleStaffStatus: (id) => {
+        toggleStaffStatus: async (id) => {
+          const staff = get().staffMembers.find(s => s.id === id);
+          if (!staff) return;
+          const nextStatus = staff.status === 'active' ? 'inactive' : 'active';
+
           set((state) => ({
             staffMembers: state.staffMembers.map(s => 
-              s.id === id ? { ...s, status: s.status === 'active' ? 'inactive' : 'active' } : s
+              s.id === id ? { ...s, status: nextStatus } : s
             )
           }));
           useAuditLogStore.getState().addLog({
@@ -234,6 +304,14 @@ export const useStaffStore = create(
             entityId: id,
             summary: 'Status staff diperbarui',
           });
+          if (useDemoStore.getState().isDemoMode) return;
+          try {
+            await updateDoc(doc(db, 'users', id), {
+              status: nextStatus
+            });
+          } catch (e) {
+            console.error("Error updating user status:", e);
+          }
         },
       };
     },

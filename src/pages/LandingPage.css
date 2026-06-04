@@ -1556,20 +1556,59 @@ html {
   background: rgba(255, 250, 241, 0.9);
 }
 
-[data-theme="light"] .nav-theme-btn,
-[data-theme="light"] .nav-login-btn,
-[data-theme="light"] .nav-hamburger,
+/* Light Theme Navigation Bar (Unscrolled vs Scrolled) */
+[data-theme="light"] .landing-nav:not(.scrolled) .brand-text {
+  color: #fffaf0 !important;
+}
+
+[data-theme="light"] .landing-nav:not(.scrolled) .nav-links a {
+  color: rgba(255, 250, 240, 0.78) !important;
+}
+
+[data-theme="light"] .landing-nav:not(.scrolled) .nav-links a:hover {
+  color: #fffaf0 !important;
+}
+
+[data-theme="light"] .landing-nav:not(.scrolled) .nav-theme-btn,
+[data-theme="light"] .landing-nav:not(.scrolled) .nav-login-btn,
+[data-theme="light"] .landing-nav:not(.scrolled) .nav-hamburger {
+  background: rgba(255, 255, 255, 0.055) !important;
+  color: #fffaf0 !important;
+  border-color: rgba(255, 255, 255, 0.11) !important;
+}
+
+[data-theme="light"] .landing-nav.scrolled .brand-text {
+  color: var(--landing-text) !important;
+}
+
+[data-theme="light"] .landing-nav.scrolled .nav-links a {
+  color: rgba(26, 21, 16, 0.72) !important;
+}
+
+[data-theme="light"] .landing-nav.scrolled .nav-links a:hover {
+  color: var(--landing-text) !important;
+}
+
+[data-theme="light"] .landing-nav.scrolled .nav-theme-btn,
+[data-theme="light"] .landing-nav.scrolled .nav-login-btn,
+[data-theme="light"] .landing-nav.scrolled .nav-hamburger {
+  background: rgba(0, 0, 0, 0.035) !important;
+  color: var(--landing-text) !important;
+  border-color: rgba(30, 25, 18, 0.12) !important;
+}
+
+[data-theme="light"] .landing-nav.scrolled .nav-theme-btn:hover,
+[data-theme="light"] .landing-nav.scrolled .nav-login-btn:hover,
+[data-theme="light"] .landing-nav.scrolled .nav-login-btn.active,
+[data-theme="light"] .landing-nav.scrolled .nav-hamburger:hover,
+[data-theme="light"] .landing-nav.scrolled .nav-hamburger.open {
+  border-color: rgba(168, 107, 31, 0.52) !important;
+  color: var(--landing-gold) !important;
+  background: rgba(168, 107, 31, 0.1) !important;
+}
+
 [data-theme="light"] .nav-brand-mark {
   background: rgba(255, 255, 255, 0.62);
-  color: var(--landing-text);
-}
-
-[data-theme="light"] .nav-links a {
-  color: rgba(26, 21, 16, 0.72);
-}
-
-[data-theme="light"] .nav-links a:hover {
-  color: var(--landing-text);
 }
 
 [data-theme="light"] .hero-title,

@@ -19,9 +19,9 @@
 }
 
 /* ══════════════════════════════════════════
-   ① GLOBAL ADMIN LAYOUT (≤768px)
+   ① GLOBAL ADMIN LAYOUT (≤1024px)
    ══════════════════════════════════════════ */
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
 
   /* Global main-content scrolling fix —
      Mobile header: 68px height + 10px top offset + 12px gap = 90px
@@ -166,9 +166,9 @@
 }
 
 /* ══════════════════════════════════════════
-   ⑭ SHARED TABLE STYLES (≤768px)
+   ⑭ SHARED TABLE STYLES (≤1024px)
    ══════════════════════════════════════════ */
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
 
   /* Universal table improvements */
   .table-responsive table,
@@ -210,7 +210,7 @@
    ⑮ SAFE AREA + PWA FIXES
    ══════════════════════════════════════════ */
 @supports (padding-bottom: env(safe-area-inset-bottom)) {
-  @media (max-width: 768px) {
+  @media (max-width: 1024px) {
     .main-content {
       padding-bottom: calc(130px + env(safe-area-inset-bottom)) !important;
     }
@@ -219,5 +219,193 @@
     .mobile-ledger-list {
       padding-bottom: calc(90px + env(safe-area-inset-bottom, 0px)) !important;
     }
+  }
+}
+
+/* ══════════════════════════════════════════
+   ⑯ MOBILE & TABLET PERFORMANCE OPTIMIZATIONS (≤1024px)
+   ══════════════════════════════════════════ */
+@media (max-width: 1024px) {
+  /* Disable heavy, GPU-intensive backdrop-filter blurs to restore scroll rendering at 60fps */
+  .glass-panel,
+  .app-panel,
+  .app-card,
+  .app-stat-card,
+  .app-smart-panel,
+  .app-table-panel,
+  .stat-card,
+  .dash-stat-card,
+  .dash-smart-card,
+  .finance-stat-card,
+  .billing-stat-card,
+  .maint-stat-card,
+  .staff-card,
+  .feature-card,
+  .reset-option-card,
+  .pricing-info-card,
+  .cf-status-card,
+  .bf-status-card,
+  .mobile-customer-card,
+  .mobile-inv-card,
+  .mobile-billing-card,
+  .mobile-ledger-card,
+  .customer-detail-panel,
+  .item-detail-panel,
+  .card-interactive,
+  .sidebar,
+  .mobile-command-header,
+  .bottom-nav-bar,
+  .modal-overlay,
+  .modal-content,
+  .landing-nav.scrolled,
+  .nav-brand-mark,
+  .nav-theme-btn,
+  .nav-login-btn,
+  .nav-hamburger,
+  .mobile-nav-menu,
+  .nav-login-dropdown,
+  .hero-session,
+  .hero-slideshow-dots,
+  .btn-secondary.btn-large,
+  .calendar-container,
+  .sticky-col,
+  .time-label,
+  .grid-corner-cell,
+  .day-header-cell,
+  .booking-detail-popup,
+  .notif-panel,
+  .fluent-dialog,
+  .fluent-popover,
+  .fluent-tooltip,
+  input:not([type="checkbox"]):not([type="radio"]),
+  select,
+  textarea,
+  .form-input,
+  .form-select,
+  .form-textarea,
+  .bf-input,
+  .app-search,
+  .search-bar,
+  .search-wrapper,
+  .finance-search-wrap {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  /* Optimize layout colors when backdrop-filter is disabled (replace transparency with solid fallback colors) */
+  .glass-panel,
+  .app-panel,
+  .app-card,
+  .app-stat-card,
+  .app-smart-panel,
+  .app-table-panel,
+  .stat-card,
+  .dash-stat-card,
+  .dash-smart-card,
+  .finance-stat-card,
+  .billing-stat-card,
+  .maint-stat-card,
+  .staff-card,
+  .reset-option-card,
+  .pricing-info-card,
+  .cf-status-card,
+  .bf-status-card,
+  .mobile-customer-card,
+  .mobile-inv-card,
+  .mobile-billing-card,
+  .mobile-ledger-card,
+  .customer-detail-panel,
+  .item-detail-panel,
+  .card-interactive {
+    background: var(--bg-surface) !important;
+  }
+
+  .sidebar,
+  .mobile-command-header,
+  .bottom-nav-bar,
+  .modal-content,
+  .notif-panel,
+  .booking-detail-popup {
+    background: var(--bg-surface) !important;
+  }
+
+  /* Landing page translucent fallbacks */
+  .landing-container {
+    --landing-surface: #141311;
+    --landing-surface-strong: #191715;
+  }
+
+  .landing-nav.scrolled {
+    background: #070706 !important;
+  }
+
+  .mobile-nav-menu,
+  .nav-login-dropdown {
+    background: #0b0a09 !important;
+  }
+
+  .nav-brand-mark,
+  .nav-theme-btn,
+  .nav-login-btn,
+  .nav-hamburger {
+    background: #1e1b17 !important;
+  }
+
+  .btn-secondary.btn-large {
+    background: rgba(255, 255, 255, 0.11) !important;
+  }
+
+  .hero-session {
+    background: #080807 !important;
+  }
+
+  .hero-slideshow-dots {
+    background: #000000 !important;
+  }
+
+  /* Override expensive drop-shadow / spatial-shadow calculations on mobile to speed up rendering */
+  :root {
+    --shadow-spatial: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+    --shadow-spatial-hover: 0 6px 16px rgba(0, 0, 0, 0.25) !important;
+    --shadow-neon: none !important;
+    --landing-shadow: 0 10px 24px rgba(0, 0, 0, 0.3) !important;
+    --fluent-shadow-4: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+    --fluent-shadow-8: 0 6px 16px rgba(0, 0, 0, 0.25) !important;
+    --fluent-shadow-16: 0 10px 24px rgba(0, 0, 0, 0.3) !important;
+    --fluent-shadow-28: 0 16px 36px rgba(0, 0, 0, 0.35) !important;
+  }
+
+  /* Simplify transitions on mobile/tablet: avoid transition: all on major panels to stop paint invalidations */
+  .glass-panel,
+  .app-panel,
+  .app-card,
+  .card-interactive,
+  .app-stat-card,
+  .stat-card,
+  .dash-stat-card,
+  .dash-smart-card,
+  .staff-card,
+  .mobile-customer-card,
+  .mobile-inv-card,
+  .mobile-billing-card,
+  .mobile-ledger-card {
+    transition: transform 0.2s ease, opacity 0.2s ease, border-color 0.2s ease !important;
+  }
+
+  /* Prevent translation jumps on mobile/tablet hover since hover sticky touches are awkward */
+  .app-card:hover,
+  .app-panel:hover,
+  .glass-panel:hover,
+  .app-stat-card:hover,
+  .stat-card:hover,
+  .dash-stat-card:hover,
+  .dash-smart-card:hover,
+  .staff-card:hover,
+  .mobile-customer-card:hover,
+  .mobile-inv-card:hover,
+  .mobile-billing-card:hover,
+  .mobile-ledger-card:hover,
+  .card-interactive:hover {
+    transform: none !important;
   }
 }
