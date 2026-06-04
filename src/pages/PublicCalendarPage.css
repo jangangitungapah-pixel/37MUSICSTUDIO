@@ -40,7 +40,7 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 18px clamp(16px, 4vw, 48px) 46px;
+  padding: calc(18px + env(safe-area-inset-top, 0px)) clamp(16px, 4vw, 48px) 46px;
   isolation: isolate;
   overflow: hidden;
 }
@@ -1067,7 +1067,7 @@ button.pc-cell {
 @media (max-width: 900px) {
   .pc-hero {
     min-height: 66svh;
-    padding: 14px 16px 36px;
+    padding: calc(14px + env(safe-area-inset-top, 0px)) 16px 36px;
   }
 
   .pc-hero-scrim {

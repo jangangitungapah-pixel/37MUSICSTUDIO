@@ -23,15 +23,17 @@
   align-items: center;
   gap: 18px;
   padding: 22px 24px;
-  border-radius: 18px;
-  background: rgba(255, 255, 255, 0.025);
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  border-radius: var(--fluent-radius-large);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.015)),
+    var(--glass-bg);
+  border: 1px solid var(--fluent-color-neutral-stroke-1);
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
   position: relative;
   overflow: hidden;
-  transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease;
+  box-shadow: var(--fluent-shadow-4);
   cursor: default;
 }
 
@@ -46,8 +48,8 @@
 }
 
 .billing-stat-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.25);
+  transform: translateY(-3px);
+  box-shadow: var(--fluent-shadow-8);
 }
 
 .billing-stat-card:hover::before { opacity: 1; }
@@ -155,12 +157,17 @@
   gap: 12px;
   align-items: stretch;
   padding: 16px;
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.025);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: var(--fluent-radius-large);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.015)),
+    var(--glass-bg);
+  border: 1px solid var(--fluent-color-neutral-stroke-1);
   position: relative;
   overflow: hidden;
-  transition: border-color 0.3s ease;
+  box-shadow: var(--fluent-shadow-4);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  backdrop-filter: blur(28px) saturate(180%);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .billing-smart-panel::before {
@@ -226,12 +233,12 @@
   gap: 8px;
   min-width: 0;
   padding: 11px 13px;
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.025);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: var(--fluent-radius-medium);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--fluent-color-neutral-stroke-1);
   position: relative;
   overflow: hidden;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all var(--fluent-duration-fast) var(--fluent-curve-easy-ease);
 }
 
 .billing-smart-item::before {
@@ -243,14 +250,14 @@
   width: 3px;
   background: rgba(255,255,255,0.12);
   border-radius: 3px 0 0 3px;
-  transition: background 0.2s ease;
+  transition: background var(--fluent-duration-fast) ease;
 }
 
 .billing-smart-item:hover {
-  background: rgba(255, 255, 255, 0.04);
-  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: var(--fluent-color-neutral-stroke-2);
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0,0,0,0.18);
+  box-shadow: var(--fluent-shadow-2);
 }
 
 .billing-smart-item.overdue,
@@ -586,14 +593,19 @@
   display: flex;
   flex-direction: column;
   padding: 13px 14px;
-  border-radius: 14px;
+  border-radius: var(--fluent-radius-large);
   cursor: pointer;
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--fluent-color-neutral-stroke-1);
+  background: var(--glass-bg);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  backdrop-filter: blur(28px) saturate(180%);
   gap: 9px;
-  transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform var(--fluent-duration-normal) var(--fluent-curve-easy-ease-max),
+              box-shadow var(--fluent-duration-normal) var(--fluent-curve-easy-ease-max),
+              border-color 0.3s ease;
   position: relative;
   overflow: hidden;
+  box-shadow: var(--fluent-shadow-4);
 }
 
 .mobile-billing-card::before {
@@ -605,18 +617,17 @@
   width: 3px;
   background: linear-gradient(180deg, var(--accent-pink), var(--accent-cyan));
   opacity: 0;
-  transition: opacity 0.2s ease;
+  transition: opacity var(--fluent-duration-fast) ease;
 }
 
 .mobile-billing-card:hover {
-  background: rgba(255, 255, 255, 0.04);
-  border-color: rgba(255, 255, 255, 0.1);
+  border-color: var(--fluent-color-neutral-stroke-2);
   transform: translateX(2px);
 }
 
 .mobile-billing-card:hover::before { opacity: 1; }
 
-.mobile-billing-card:active { background: rgba(255, 255, 255, 0.07); }
+.mobile-billing-card:active { background: var(--fluent-color-subtle-background-pressed); }
 
 .mobile-bill-top {
   display: flex;

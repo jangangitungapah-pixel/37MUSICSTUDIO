@@ -19,11 +19,13 @@
   max-height: 90vh;
   display: flex;
   flex-direction: column;
-  background: #1a1a22;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.04);
+  background: var(--glass-bg) !important;
+  backdrop-filter: blur(var(--glass-blur)) !important;
+  -webkit-backdrop-filter: blur(var(--glass-blur)) !important;
+  border: 1px solid var(--glass-border) !important;
+  box-shadow: var(--shadow28) !important;
   overflow: hidden;
-  border-radius: 18px;
+  border-radius: var(--borderRadiusXXLarge) !important;
 }
 
 .modal-header {

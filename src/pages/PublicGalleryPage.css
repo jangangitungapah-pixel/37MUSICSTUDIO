@@ -16,7 +16,7 @@
   color: var(--text-main);
   position: relative;
   overflow-x: hidden;
-  padding: 40px 6% 100px;
+  padding: calc(40px + env(safe-area-inset-top, 0px)) 6% calc(100px + env(safe-area-inset-bottom, 0px));
   font-family: var(--font-body, 'Inter', sans-serif);
 }
 
@@ -722,7 +722,7 @@
 }
 
 @media (max-width: 900px) {
-  .pg-container { padding: 30px 24px 60px; }
+  .pg-container { padding: calc(30px + env(safe-area-inset-top, 0px)) 24px calc(60px + env(safe-area-inset-bottom, 0px)); }
   .pg-title { font-size: 2.1rem; }
   .pg-subtitle { font-size: 0.95rem; }
   .pg-masonry-grid { columns: 3 150px; }
@@ -732,7 +732,7 @@
 }
 
 @media (max-width: 600px) {
-  .pg-container { padding: 20px 14px 50px; }
+  .pg-container { padding: calc(20px + env(safe-area-inset-top, 0px)) 14px calc(50px + env(safe-area-inset-bottom, 0px)); }
   .pg-logo-container { width: 78px; height: 78px; padding: 0; }
   .pg-logo { width: 76px; height: 76px; }
   .pg-title { font-size: 1.7rem; }

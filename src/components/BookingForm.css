@@ -9,9 +9,9 @@
 .bf-type-toggle {
   display: flex;
   gap: 6px;
-  background: rgba(255,255,255,0.02);
-  border-radius: 12px;
-  border: 1px solid rgba(255,255,255,0.05);
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: var(--fluent-radius-medium);
+  border: 1px solid var(--fluent-color-neutral-stroke-1);
   padding: 4px;
 }
 
@@ -102,22 +102,32 @@
 
 /* ===== Input ===== */
 .bf-input {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.28) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  backdrop-filter: blur(10px) !important;
+  border: 1px solid var(--fluent-color-neutral-stroke-1) !important;
+  border-radius: var(--fluent-radius-medium) !important;
   padding: 12px 14px;
-  color: var(--text-primary);
+  color: var(--text-primary) !important;
   font-size: 0.95rem;
   font-family: inherit;
-  transition: all 0.2s;
+  transition: all var(--fluent-duration-fast) var(--fluent-curve-easy-ease) !important;
   outline: none;
   width: 100%;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2) !important;
+}
+
+[data-theme="light"] .bf-input {
+  background: rgba(255, 255, 255, 0.65) !important;
+  border-color: rgba(0, 0, 0, 0.12) !important;
+  color: var(--text-primary) !important;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05) !important;
 }
 
 .bf-input:focus {
-  border-color: var(--accent-cyan);
-  background: rgba(255, 255, 255, 0.05);
-  box-shadow: 0 0 0 3px rgba(0, 240, 255, 0.15);
+  border-color: var(--fluent-color-accent-line) !important;
+  background: rgba(0, 0, 0, 0.35) !important;
+  box-shadow: 0 0 0 3px rgba(var(--accent-cyan-rgb), 0.25) !important;
 }
 
 .bf-input::placeholder {
@@ -181,9 +191,11 @@ select.bf-input option {
 .bf-duration-picker {
   display: flex;
   align-items: center;
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.28);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--fluent-color-neutral-stroke-1);
+  border-radius: var(--fluent-radius-medium);
   overflow: hidden;
   height: 45px;
 }
@@ -298,9 +310,9 @@ select.bf-input option {
 
 /* ===== Price Card ===== */
 .bf-price-card {
-  background: rgba(255,255,255,0.02);
-  border: 1px solid rgba(255,255,255,0.06);
-  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.16);
+  border: 1px solid var(--fluent-color-neutral-stroke-1);
+  border-radius: var(--fluent-radius-medium);
   padding: 12px 14px;
   display: flex;
   flex-direction: column;
@@ -338,9 +350,9 @@ select.bf-input option {
   flex-direction: column;
   gap: 8px;
   padding: 14px;
-  background: rgba(0,240,255,0.03);
-  border: 1px solid rgba(0,240,255,0.08);
-  border-radius: 10px;
+  background: rgba(var(--accent-cyan-rgb), 0.05);
+  border: 1px solid rgba(var(--accent-cyan-rgb), 0.18);
+  border-radius: var(--fluent-radius-medium);
 }
 
 .bf-remaining {
@@ -407,9 +419,9 @@ select.bf-input option {
 .bf-deadline-field {
   margin-top: 12px;
   padding: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--fluent-color-neutral-stroke-1);
+  border-radius: var(--fluent-radius-medium);
+  background: rgba(0, 0, 0, 0.18);
 }
 
 .bf-recurring-toggle {
