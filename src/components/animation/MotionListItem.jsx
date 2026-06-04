@@ -11,7 +11,17 @@ export const MotionListItem = ({
   as = 'li',
   ...props 
 }) => {
-  const { getMotionProps } = useAppMotion();
+  const { isReduced, getMotionProps } = useAppMotion();
+
+  if (isReduced) {
+    const Component = as;
+    return (
+      <Component className={`motion-list-item ${className}`} {...props}>
+        {children}
+      </Component>
+    );
+  }
+
   const motionProps = getMotionProps({ variants: listItemVariants });
   const Component = motion[as] || motion.li;
 

@@ -8,20 +8,20 @@ import { useState, useEffect } from 'react';
  */
 export const useAppMotion = () => {
   const prefersReducedMotion = useReducedMotion();
-  const [isMobile, setIsMobile] = useState(false);
+
+  const checkIsMobile = () => {
+    if (typeof window === 'undefined') return false;
+    // Screens <= 1024px (covers mobile phones and tablets in portrait/landscape)
+    // or devices that support touch and are <= 1024px wide
+    const matchesWidth = window.innerWidth <= 1024;
+    const matchesTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    return matchesWidth || (matchesTouch && matchesWidth);
+  };
+
+  const [isMobile, setIsMobile] = useState(checkIsMobile);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    
-    const checkIsMobile = () => {
-      // Screens <= 1024px (covers mobile phones and tablets in portrait/landscape)
-      // or devices that support touch and are <= 1024px wide
-      const matchesWidth = window.innerWidth <= 1024;
-      const matchesTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-      return matchesWidth || (matchesTouch && matchesWidth);
-    };
-
-    setIsMobile(checkIsMobile());
 
     const handleResize = () => {
       setIsMobile(checkIsMobile());

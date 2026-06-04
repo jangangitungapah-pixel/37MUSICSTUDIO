@@ -787,6 +787,19 @@
   align-items: stretch;
 }
 
+@media (max-width: 992px) {
+  .modal-content.invoice-modal-wide {
+    max-width: 600px !important;
+  }
+  .inv2-shell {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .inv2-actions {
+    width: 100% !important;
+  }
+}
+
 /* ── Invoice Paper Base ── */
 .inv2-paper {
   flex: 1;

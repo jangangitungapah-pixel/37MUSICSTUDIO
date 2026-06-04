@@ -12,9 +12,19 @@ const MotionSection = ({
   delay = 0,
   once = true,
   amount = 0.2,
+  as = 'section',
   ...props 
 }) => {
-  const { getMotionProps } = useAppMotion();
+  const { isReduced, getMotionProps } = useAppMotion();
+
+  if (isReduced) {
+    const Component = as;
+    return (
+      <Component className={`motion-section ${className}`} {...props}>
+        {children}
+      </Component>
+    );
+  }
 
   let variants;
   switch (direction) {

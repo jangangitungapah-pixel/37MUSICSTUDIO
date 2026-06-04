@@ -26,6 +26,15 @@
   gap: 12px;
 }
 
+/* calendar-shell is the main wrapper in JSX */
+.calendar-shell.blurred {
+  filter: none !important; /* No blur on content — overlay handles it */
+}
+
+.calendar-shell.panels-collapsed {
+  gap: 12px;
+}
+
 /* ── Header Icon (from inline styles) ── */
 .calendar-header-icon {
   display: flex;
@@ -126,6 +135,7 @@
 .booking-detail-popup {
   position: fixed;
   width: 310px;
+  max-height: calc(100vh - 24px);
   z-index: 10001;
   display: flex;
   flex-direction: column;
@@ -151,9 +161,23 @@
   width: 100%;
   border-radius: 22px 22px 0 0;
   animation: sheetUp 0.32s cubic-bezier(0.16, 1, 0.3, 1);
-  max-height: 90vh;
-  overflow-y: auto;
+  max-height: 82vh !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
   box-shadow: 0 -20px 60px rgba(0, 0, 0, 0.3), 0 0 0 1px var(--border-light);
+}
+.booking-detail-popup.mobile-sheet .detail-header {
+  flex-shrink: 0 !important;
+}
+.booking-detail-popup.mobile-sheet .detail-body {
+  flex: 1 !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+}
+.booking-detail-popup.mobile-sheet .detail-footer {
+  flex-shrink: 0 !important;
+  padding-bottom: calc(18px + env(safe-area-inset-bottom, 0px)) !important;
 }
 .booking-detail-popup.mobile-sheet::before {
   content: '';
@@ -235,6 +259,7 @@
   display: flex;
   flex-direction: column;
   gap: 11px;
+  overflow-y: auto;
 }
 
 .detail-info-row {
@@ -950,9 +975,10 @@ body.calendar-move-lock .main-content {
 /* Current Time Line */
 .current-time-line {
   position: absolute; left: 0; right: 0;
-  height: 2px; background: var(--accent-pink);
+  height: 2.5px; background: var(--accent-pink);
   z-index: 50; pointer-events: none;
-  box-shadow: 0 0 4px rgba(var(--accent-pink-rgb), 0.5);
+  box-shadow: 0 0 12px 2px rgba(var(--accent-pink-rgb), 0.7);
+  animation: timePulse 2s infinite alternate;
 }
 .current-time-line::before {
   content: '';
@@ -960,7 +986,11 @@ body.calendar-move-lock .main-content {
   width: 8px; height: 8px;
   border-radius: 50%;
   background: var(--accent-pink);
-  box-shadow: 0 0 6px rgba(var(--accent-pink-rgb), 0.6);
+  box-shadow: 0 0 10px 2px rgba(var(--accent-pink-rgb), 0.8);
+}
+@keyframes timePulse {
+  0% { opacity: 0.8; box-shadow: 0 0 8px 1px rgba(var(--accent-pink-rgb), 0.5); }
+  100% { opacity: 1; box-shadow: 0 0 16px 3px rgba(var(--accent-pink-rgb), 0.85); }
 }
 
 /* Resize Handle */
@@ -994,15 +1024,15 @@ body.calendar-move-lock .main-content {
   border-radius: 12px !important;
   overflow: hidden;
   cursor: pointer;
-  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease, filter 0.2s ease, opacity 0.2s ease;
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.15), box-shadow 0.4s ease, filter 0.2s ease, opacity 0.2s ease !important;
   user-select: none;
   touch-action: none;
 }
 
 .booked-cell:hover {
   z-index: 10;
-  transform: scale(1.02) translateZ(0);
-  filter: brightness(1.05);
+  transform: scale(1.025) translateY(-2px) translateZ(0) !important;
+  filter: brightness(1.08);
 }
 
 /* Disable pointer interactions during active drag to allow document.elementFromPoint to resolve underlying grid cells */
@@ -1276,15 +1306,19 @@ body.calendar-move-lock .main-content {
 
 @media (max-width: 768px) {
   .booking-info {
-    padding: 3px 2px;
-    gap: 1px;
-    align-items: center;
-    text-align: center;
+    padding: 4px 6px !important;
+    gap: 2px !important;
+    align-items: flex-start !important;
+    text-align: left !important;
   }
   .booking-band-name {
-    font-size: 0.58rem;
-    width: 100%;
-    justify-content: center;
+    font-size: 0.7rem !important;
+    font-weight: 700 !important;
+    width: 100% !important;
+    justify-content: flex-start !important;
+    text-align: left !important;
+    white-space: nowrap !important;
+    display: inline-flex !important;
   }
   .booking-time-label {
     display: none; /* Hide on mobile because 1:1 cells are too narrow for time */
@@ -1773,31 +1807,42 @@ body.calendar-move-lock .main-content {
     cursor: ns-resize;
   }
 
-  /* Mobile: floating card detail popup */
-  .booking-detail-popup {
+  /* Mobile: bottom sheet detail (mobile-sheet class set in JSX) */
+  .booking-detail-popup.mobile-sheet {
     position: fixed !important;
     z-index: 10001 !important;
-    bottom: calc(16px + env(safe-area-inset-bottom, 0px)) !important;
+    bottom: 0 !important;
     top: auto !important;
-    left: 16px !important;
-    right: 16px !important;
-    width: auto !important;
-    max-width: 480px !important;
-    margin: 0 auto !important;
-    max-height: 80vh;
-    overflow-y: auto;
-    border-radius: 16px !important;
-    box-shadow: 0 12px 40px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.08) !important;
-    background: rgba(var(--bg-surface-rgb), 0.98) !important;
-    -webkit-backdrop-filter: none !important;
-  backdrop-filter: none !important;
-    padding-bottom: 8px !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    max-height: 85vh !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+    border-radius: 24px 24px 0 0 !important;
+    box-shadow: 0 -16px 50px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.09) !important;
+    background: rgba(var(--bg-surface-rgb), 0.82) !important;
+    backdrop-filter: blur(25px) !important;
+    -webkit-backdrop-filter: blur(25px) !important;
+    padding-bottom: 0 !important;
   }
-  .booking-detail-popup::before { display: none !important; }
-  .detail-header { padding: 14px 18px 12px !important; border-bottom: 1px solid rgba(255,255,255,0.07); }
+  .booking-detail-popup.mobile-sheet::before {
+    content: '';
+    display: block !important;
+    width: 40px;
+    height: 4px;
+    background: rgba(255,255,255,0.18);
+    border-radius: 2px;
+    margin: 12px auto 4px;
+    flex-shrink: 0;
+  }
+  .detail-header { padding: 14px 18px 12px !important; border-bottom: 1px solid rgba(255,255,255,0.07); flex-shrink: 0 !important; }
   .detail-header-info h4 { font-size: 1.05rem; }
   .detail-close { width: 28px; height: 28px; border-radius: 8px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.06); }
-  .detail-body { padding: 12px 18px; gap: 10px; }
+  .detail-body { padding: 12px 18px; gap: 10px; flex: 1 !important; overflow-y: auto !important; -webkit-overflow-scrolling: touch !important; }
   .detail-info-row { font-size: 0.83rem; gap: 10px; }
   .detail-info-row svg { width: 14px; height: 14px; }
   .detail-price-card { border-radius: 12px; padding: 12px 14px; }
@@ -1805,7 +1850,7 @@ body.calendar-move-lock .main-content {
   .detail-status-section label { font-size: 0.7rem; }
   .status-buttons { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
   .status-btn { padding: 8px 6px; font-size: 0.73rem; border-radius: 8px; text-align: center; justify-content: center; }
-  .detail-footer { display: flex; flex-wrap: wrap; gap: 8px; padding: 10px 18px 16px; padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px)); border-top: 1px solid rgba(255,255,255,0.06); }
+  .detail-footer { display: flex; flex-wrap: wrap; gap: 8px; padding: 10px 18px calc(18px + env(safe-area-inset-bottom, 0px)) !important; border-top: 1px solid rgba(255,255,255,0.06); flex-shrink: 0 !important; }
   .delete-btn { padding: 10px 14px; font-size: 0.8rem; border-radius: 10px; white-space: nowrap; flex: 1; min-width: 40%; }
   .detail-footer .btn-secondary { padding: 10px 14px; font-size: 0.8rem; border-radius: 10px; display: flex; gap: 6px; align-items: center; justify-content: center; flex: 1; min-width: 40%; }
 }
@@ -2533,9 +2578,10 @@ body.calendar-move-lock .main-content {
 
 /* 7. Acrylic Booking Detail Dialog Card */
 .booking-detail-popup {
-  background: rgba(var(--bg-surface-rgb), 0.22) !important;
-  backdrop-filter: blur(28px) !important;
-  -webkit-backdrop-filter: blur(28px) !important;
+  z-index: 100000 !important;
+  background: rgba(var(--bg-surface-rgb), 0.93) !important;
+  backdrop-filter: blur(30px) !important;
+  -webkit-backdrop-filter: blur(30px) !important;
   border: 1px solid rgba(255, 255, 255, 0.1) !important;
   border-radius: 20px !important;
   box-shadow: 
@@ -2544,7 +2590,7 @@ body.calendar-move-lock .main-content {
 }
 
 .booking-detail-popup.mobile-sheet {
-  background: rgba(var(--bg-surface-rgb), 0.78) !important;
+  background: rgba(var(--bg-surface-rgb), 0.94) !important;
   border: 1px solid rgba(255, 255, 255, 0.12) !important;
   border-bottom: none !important;
   border-radius: 24px 24px 0 0 !important;
@@ -2868,6 +2914,44 @@ body.calendar-move-lock .main-content {
     gap: var(--mob-gap-md);
   }
 
+  /* Time labels & Sticky time column layout on mobile */
+  .time-label {
+    padding: 0 4px !important;
+  }
+  .time-range {
+    font-size: 0.65rem !important;
+    font-weight: 700 !important;
+    text-align: center;
+  }
+  .grid-header-cell {
+    padding: 8px 2px !important;
+    background: rgba(10, 10, 18, 0.9) !important;
+  }
+  .grid-header-cell .day-name {
+    font-size: 0.58rem !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.02em !important;
+  }
+  .grid-header-cell .day-number {
+    font-size: 0.85rem !important;
+    width: 24px !important;
+    height: 24px !important;
+    border-radius: 6px !important;
+  }
+  .grid-header-cell.today .day-number {
+    background: var(--accent-cyan) !important;
+    color: #000 !important;
+    font-weight: 800 !important;
+    box-shadow: 0 0 10px rgba(var(--accent-cyan-rgb), 0.3) !important;
+  }
+
+  /* Premium Booked Cells (Cards) on Mobile */
+  .booked-cell {
+    border-radius: 8px !important;
+    border-left-width: 3.5px !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15) !important;
+  }
+
   /* Stats grid: 2-column on mobile */
   .calendar-stats-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -2998,17 +3082,7 @@ body.calendar-move-lock .main-content {
     font-size: 0.72rem;
   }
 
-  /* Booking detail popup: full bottom sheet */
-  .booking-detail-popup:not(.mobile-sheet) {
-    position: fixed !important;
-    bottom: 0 !important;
-    left: 0 !important;
-    right: 0 !important;
-    width: 100% !important;
-    border-radius: 22px 22px 0 0 !important;
-    max-height: 88vh !important;
-    overflow-y: auto !important;
-  }
+  /* Booking detail popup: mobile-sheet already handles bottom-sheet positioning above */
 }
 
 @media (max-width: 480px) {

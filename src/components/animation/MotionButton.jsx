@@ -13,7 +13,15 @@ const MotionButton = ({
   type = 'button',
   ...props 
 }) => {
-  const { getMotionProps } = useAppMotion();
+  const { isReduced, getMotionProps } = useAppMotion();
+
+  if (isReduced) {
+    return (
+      <button type={type} className={`motion-button ${className}`} onClick={onClick} disabled={disabled} {...props}>
+        {children}
+      </button>
+    );
+  }
 
   const baseProps = {
     ...buttonPreset,

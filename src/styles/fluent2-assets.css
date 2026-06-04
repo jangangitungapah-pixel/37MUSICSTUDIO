@@ -169,9 +169,9 @@
     linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.015)),
     var(--glass-bg) !important;
   box-shadow: var(--fluent-shadow-4) !important;
-  -webkit-backdrop-filter: blur(28px) saturate(180%) !important;
-  backdrop-filter: blur(28px) saturate(180%) !important;
-  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease !important;
+  -webkit-backdrop-filter: blur(32px) saturate(200%) !important;
+  backdrop-filter: blur(32px) saturate(200%) !important;
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.15), box-shadow 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.15), border-color 0.3s ease !important;
 }
 
 .app-card:hover,
@@ -187,9 +187,12 @@
 .mobile-billing-card:hover,
 .mobile-ledger-card:hover,
 .card-interactive:hover {
-  border-color: var(--fluent-color-neutral-stroke-2) !important;
-  box-shadow: var(--fluent-shadow-8) !important;
-  transform: translateY(-3px) !important;
+  border-color: rgba(var(--accent-pink-rgb), 0.38) !important;
+  box-shadow: 
+    0 20px 48px rgba(0, 0, 0, 0.42),
+    0 0 28px rgba(var(--accent-pink-rgb), 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
+  transform: translateY(-5px) scale(1.008) !important;
 }
 
 .btn,
@@ -213,7 +216,7 @@
     border-color var(--fluent-duration-fast) var(--fluent-curve-easy-ease),
     color var(--fluent-duration-fast) var(--fluent-curve-easy-ease),
     box-shadow var(--fluent-duration-fast) var(--fluent-curve-easy-ease),
-    transform var(--fluent-duration-ultra-fast) var(--fluent-curve-easy-ease) !important;
+    transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.2) !important;
 }
 
 .btn,
@@ -231,14 +234,17 @@
 .btn-primary {
   background: linear-gradient(135deg, var(--accent-pink) 0%, #c91442 100%) !important;
   color: #ffffff !important;
-  border: 1px solid rgba(255, 255, 255, 0.12) !important;
-  box-shadow: 0 4px 14px rgba(var(--accent-pink-rgb), 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.18) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  box-shadow: 0 4px 14px rgba(var(--accent-pink-rgb), 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
 }
 
 .btn-primary:hover {
   background: linear-gradient(135deg, var(--accent-pink-hover) 0%, #c91442 100%) !important;
-  box-shadow: 0 6px 20px rgba(var(--accent-pink-rgb), 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.22) !important;
-  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 24px rgba(var(--accent-pink-rgb), 0.5), 0 0 15px rgba(var(--accent-pink-rgb), 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.25) !important;
+  transform: translateY(-3px) scale(1.02) !important;
+}
+.btn-primary:active {
+  transform: translateY(-1px) scale(0.98) !important;
 }
 
 .btn-secondary,
@@ -259,7 +265,17 @@
 .sidebar-logout-btn:hover,
 .theme-toggle-btn:hover {
   background: var(--fluent-color-subtle-background-pressed) !important;
-  border-color: var(--fluent-color-neutral-stroke-2) !important;
+  border-color: rgba(var(--accent-pink-rgb), 0.32) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12), 0 0 10px rgba(var(--accent-pink-rgb), 0.05) !important;
+  transform: translateY(-2px) !important;
+}
+.btn-secondary:active,
+.btn-ghost:active,
+.icon-btn:active,
+.mobile-icon-btn:active,
+.sidebar-logout-btn:active,
+.theme-toggle-btn:active {
+  transform: translateY(0) scale(0.98) !important;
 }
 
 .btn:focus-visible,
@@ -332,7 +348,7 @@ textarea:focus,
 .finance-search-wrap:focus-within {
   border-color: var(--fluent-color-accent-line) !important;
   outline: 2px solid transparent !important;
-  box-shadow: 0 0 0 3px rgba(var(--accent-cyan-rgb), 0.25) !important;
+  box-shadow: 0 0 15px rgba(var(--accent-cyan-rgb), 0.15), 0 0 0 3px rgba(var(--accent-cyan-rgb), 0.25) !important;
 }
 
 .modal-overlay {
@@ -343,11 +359,14 @@ textarea:focus,
 
 .modal-content {
   border-radius: var(--fluent-radius-xlarge) !important;
-  border-color: var(--fluent-color-neutral-stroke-1) !important;
-  background: var(--glass-bg) !important;
-  -webkit-backdrop-filter: blur(28px) saturate(190%) !important;
-  backdrop-filter: blur(28px) saturate(190%) !important;
-  box-shadow: var(--fluent-shadow-28) !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  background: rgba(18, 18, 24, 0.42) !important;
+  -webkit-backdrop-filter: blur(36px) saturate(200%) !important;
+  backdrop-filter: blur(36px) saturate(200%) !important;
+  box-shadow: 
+    0 32px 80px rgba(0, 0, 0, 0.58),
+    0 0 45px rgba(var(--accent-pink-rgb), 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
 }
 
 .modal-header {
@@ -491,4 +510,71 @@ textarea:focus,
 .landing-container .btn-secondary.btn-large:hover {
   background: rgba(255, 255, 255, 0.13) !important;
   border-color: rgba(255, 255, 255, 0.32) !important;
+}
+
+/* ====================================================
+   UNIFIED MOBILE GLASS CARDS OVERHAUL
+   ==================================================== */
+@media (max-width: 1024px) {
+  .mobile-customer-card,
+  .mobile-inv-card,
+  .mobile-ledger-card,
+  .mobile-maint-card,
+  .mobile-billing-card {
+    border-radius: 14px !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.015)),
+      var(--glass-bg) !important;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3) !important;
+    backdrop-filter: blur(24px) saturate(200%) !important;
+    -webkit-backdrop-filter: blur(24px) saturate(200%) !important;
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.15), box-shadow 0.4s ease, border-color 0.4s ease !important;
+  }
+
+  .mobile-customer-card:hover,
+  .mobile-inv-card:hover,
+  .mobile-ledger-card:hover,
+  .mobile-maint-card:hover,
+  .mobile-billing-card:hover {
+    border-color: rgba(var(--accent-pink-rgb), 0.38) !important;
+    box-shadow: 
+      0 12px 30px rgba(0, 0, 0, 0.45),
+      0 0 20px rgba(var(--accent-pink-rgb), 0.14),
+      inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
+    transform: translateY(-3px) scale(1.006) !important;
+  }
+
+  .mobile-customer-card:active,
+  .mobile-inv-card:active,
+  .mobile-ledger-card:active,
+  .mobile-maint-card:active,
+  .mobile-billing-card:active {
+    transform: scale(0.97) !important;
+    background: rgba(255, 255, 255, 0.08) !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25) !important;
+  }
+
+  /* Light Theme overrides for mobile cards */
+  [data-theme="light"] .mobile-customer-card,
+  [data-theme="light"] .mobile-inv-card,
+  [data-theme="light"] .mobile-ledger-card,
+  [data-theme="light"] .mobile-maint-card,
+  [data-theme="light"] .mobile-billing-card {
+    background: rgba(255, 255, 255, 0.72) !important;
+    border-color: rgba(0, 0, 0, 0.08) !important;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04) !important;
+  }
+
+  [data-theme="light"] .mobile-customer-card:hover,
+  [data-theme="light"] .mobile-inv-card:hover,
+  [data-theme="light"] .mobile-ledger-card:hover,
+  [data-theme="light"] .mobile-maint-card:hover,
+  [data-theme="light"] .mobile-billing-card:hover {
+    background: rgba(255, 255, 255, 0.88) !important;
+    border-color: rgba(var(--accent-pink-rgb), 0.25) !important;
+    box-shadow: 
+      0 10px 24px rgba(0, 0, 0, 0.08),
+      0 0 16px rgba(var(--accent-pink-rgb), 0.08) !important;
+  }
 }

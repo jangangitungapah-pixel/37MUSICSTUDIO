@@ -13,7 +13,16 @@ export const MotionList = ({
   as = 'ul',
   ...props 
 }) => {
-  const { getMotionProps } = useAppMotion();
+  const { isReduced, getMotionProps } = useAppMotion();
+
+  if (isReduced) {
+    const Component = as;
+    return (
+      <Component className={`motion-list ${className}`} {...props}>
+        {children}
+      </Component>
+    );
+  }
 
   const baseProps = {
     ...listPreset,

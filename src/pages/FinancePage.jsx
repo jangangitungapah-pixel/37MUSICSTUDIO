@@ -883,7 +883,7 @@ const FinancePage = () => {
           </div>
 
           {/* Ledger Table Section */}
-          <div className="finance-content">
+          <div className="finance-content app-panel">
             <div className="app-table-toolbar">
               <div className="app-table-toolbar-left">
                 <div>

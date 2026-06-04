@@ -12,7 +12,15 @@ const MotionCard = ({
   delay = 0,
   ...props 
 }) => {
-  const { getMotionProps } = useAppMotion();
+  const { isReduced, getMotionProps } = useAppMotion();
+
+  if (isReduced) {
+    return (
+      <div className={`motion-card ${className}`} {...props}>
+        {children}
+      </div>
+    );
+  }
 
   const baseProps = {
     ...cardPreset,

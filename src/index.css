@@ -2640,78 +2640,85 @@ input:not([type="checkbox"]):not([type="radio"]):focus, select:focus, textarea:f
   pointer-events: none;
   overflow: hidden;
   background:
-    radial-gradient(circle at 10% 20%, rgba(255, 42, 95, 0.09) 0%, transparent 45%),
-    radial-gradient(circle at 90% 80%, rgba(0, 240, 255, 0.07) 0%, transparent 45%),
-    radial-gradient(circle at 50% 50%, rgba(168, 85, 247, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 10% 20%, rgba(255, 42, 95, 0.14) 0%, transparent 45%),
+    radial-gradient(circle at 90% 80%, rgba(0, 240, 255, 0.12) 0%, transparent 45%),
+    radial-gradient(circle at 50% 50%, rgba(168, 85, 247, 0.08) 0%, transparent 50%),
     var(--bg-dark);
   background-size: 140% 140%;
-  animation: auroraGrad 20s ease infinite alternate;
+  animation: auroraGrad 24s ease infinite alternate;
 }
 
 .ambient-blob {
   position: absolute;
   border-radius: 50%;
-  filter: blur(100px);
-  opacity: 0.15;
+  filter: blur(120px);
+  opacity: 0.22;
   will-change: transform;
   mix-blend-mode: screen;
 }
 
 .blob-cyan {
-  top: -10%;
-  left: 20%;
-  width: 50vw;
-  height: 50vw;
-  background: radial-gradient(circle, var(--accent-cyan) 0%, transparent 70%);
-  animation: floatBlob1 28s ease-in-out infinite alternate;
+  top: -8%;
+  left: 15%;
+  width: 55vw;
+  height: 55vw;
+  background: radial-gradient(circle, rgba(var(--accent-cyan-rgb), 0.85) 0%, transparent 70%);
+  animation: floatBlob1 32s ease-in-out infinite alternate;
 }
 
 .blob-pink {
-  bottom: -15%;
-  right: 15%;
-  width: 45vw;
-  height: 45vw;
-  background: radial-gradient(circle, var(--accent-pink) 0%, transparent 70%);
-  animation: floatBlob2 35s ease-in-out infinite alternate;
+  bottom: -12%;
+  right: 12%;
+  width: 50vw;
+  height: 50vw;
+  background: radial-gradient(circle, rgba(var(--accent-pink-rgb), 0.85) 0%, transparent 70%);
+  animation: floatBlob2 38s ease-in-out infinite alternate;
 }
 
 .blob-purple {
-  top: 30%;
-  left: -10%;
-  width: 40vw;
-  height: 40vw;
-  background: radial-gradient(circle, #9c27b0 0%, transparent 70%);
-  animation: floatBlob3 32s ease-in-out infinite alternate;
+  top: 25%;
+  left: -8%;
+  width: 45vw;
+  height: 45vw;
+  background: radial-gradient(circle, rgba(168, 85, 247, 0.85) 0%, transparent 70%);
+  animation: floatBlob3 34s ease-in-out infinite alternate;
 }
 
 @keyframes floatBlob1 {
   0% { transform: translate3d(0, 0, 0) scale(1); }
-  50% { transform: translate3d(8%, 15%, 0) scale(1.1); }
-  100% { transform: translate3d(-5%, 5%, 0) scale(0.95); }
+  50% { transform: translate3d(10%, 12%, 0) scale(1.15); }
+  100% { transform: translate3d(-6%, 6%, 0) scale(0.92); }
 }
 
 @keyframes floatBlob2 {
-  0% { transform: translate3d(0, 0, 0) scale(0.9); }
-  50% { transform: translate3d(-10%, -12%, 0) scale(1.05); }
-  100% { transform: translate3d(5%, -5%, 0) scale(1); }
+  0% { transform: translate3d(0, 0, 0) scale(0.88); }
+  50% { transform: translate3d(-12%, -15%, 0) scale(1.1); }
+  100% { transform: translate3d(6%, -6%, 0) scale(1.02); }
 }
 
 @keyframes floatBlob3 {
-  0% { transform: translate3d(0, 0, 0) scale(1); }
-  50% { transform: translate3d(12%, -8%, 0) scale(0.85); }
-  100% { transform: translate3d(-4%, 10%, 0) scale(1.1); }
+  0% { transform: translate3d(0, 0, 0) scale(0.95); }
+  50% { transform: translate3d(14%, -10%, 0) scale(0.9); }
+  100% { transform: translate3d(-6%, 12%, 0) scale(1.12); }
 }
 
 /* Light Theme Adjustments for Ambient Glows */
 [data-theme="light"] .ambient-glow-wrapper {
   background:
-    linear-gradient(140deg, rgba(255, 42, 95, 0.038), transparent 36%),
-    linear-gradient(315deg, rgba(0, 150, 200, 0.035), transparent 34%),
+    linear-gradient(140deg, rgba(255, 42, 95, 0.048), transparent 36%),
+    linear-gradient(315deg, rgba(0, 150, 200, 0.045), transparent 34%),
     var(--bg-dark);
 }
 [data-theme="light"] .ambient-blob {
-  opacity: 0.08;
+  opacity: 0.11;
   mix-blend-mode: multiply;
+}
+
+/* ── Spatial Title & Text Shadows ── */
+.app-page-title, .page-title {
+  text-shadow: 
+    0 0 40px rgba(var(--accent-pink-rgb), 0.15),
+    0 0 80px rgba(var(--accent-cyan-rgb), 0.08) !important;
 }
 
 /* ── Spatial UI Panel Overrides ── */
@@ -2720,22 +2727,27 @@ input:not([type="checkbox"]):not([type="radio"]):focus, select:focus, textarea:f
 .app-page .dashboard-card,
 .app-page .billing-stat-card,
 .app-page .maint-stat-card {
-  background: rgba(255, 255, 255, 0.03) !important;
-  backdrop-filter: blur(20px) !important;
-  -webkit-backdrop-filter: blur(20px) !important;
-  border: 1px solid rgba(255, 255, 255, 0.07) !important;
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.24) !important;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  background: rgba(18, 18, 24, 0.32) !important;
+  backdrop-filter: blur(32px) saturate(200%) !important;
+  -webkit-backdrop-filter: blur(32px) saturate(200%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 
+    0 12px 40px 0 rgba(0, 0, 0, 0.32),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 
 .app-page .glass-panel:hover,
 .app-page .app-stat-card:hover,
 .app-page .dashboard-card:hover,
 .app-page .billing-stat-card:hover {
-  transform: translateY(-2px);
-  background: rgba(255, 255, 255, 0.05) !important;
-  border-color: rgba(255, 255, 255, 0.12) !important;
-  box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.35) !important;
+  transform: translateY(-4px) scale(1.006) !important;
+  background: rgba(24, 24, 32, 0.45) !important;
+  border-color: rgba(var(--accent-pink-rgb), 0.4) !important;
+  box-shadow: 
+    0 24px 48px 0 rgba(0, 0, 0, 0.42),
+    0 0 28px 0 rgba(var(--accent-pink-rgb), 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
 }
 
 /* Light Theme Spatial Panels */
@@ -2744,9 +2756,11 @@ input:not([type="checkbox"]):not([type="radio"]):focus, select:focus, textarea:f
 [data-theme="light"] .app-page .dashboard-card,
 [data-theme="light"] .app-page .billing-stat-card,
 [data-theme="light"] .app-page .maint-stat-card {
-  background: rgba(255, 255, 255, 0.45) !important;
-  border: 1px solid rgba(255, 255, 255, 0.4) !important;
-  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.04) !important;
+  background: rgba(255, 255, 255, 0.55) !important;
+  border: 1px solid rgba(255, 255, 255, 0.48) !important;
+  box-shadow: 
+    0 8px 32px 0 rgba(31, 38, 135, 0.04),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5) !important;
 }
 
 [data-theme="light"] .app-page .glass-panel:hover,

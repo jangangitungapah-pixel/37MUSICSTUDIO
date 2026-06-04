@@ -1302,6 +1302,8 @@ html {
     left: auto;
     right: 32px;
     width: 350px;
+    max-height: calc(100vh - 100px);
+    overflow-y: auto;
   }
 
   .hero-section {

@@ -28,15 +28,19 @@
   padding: 20px 26px;
   background: linear-gradient(
     130deg,
-    rgba(var(--accent-pink-rgb), 0.08) 0%,
-    rgba(var(--accent-cyan-rgb), 0.04) 50%,
-    transparent 100%
-  );
-  border: 1px solid rgba(var(--accent-pink-rgb), 0.14);
+    rgba(var(--accent-pink-rgb), 0.14) 0%,
+    rgba(var(--accent-cyan-rgb), 0.08) 50%,
+    rgba(168, 85, 247, 0.03) 100%
+  ) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
   border-radius: 18px;
   position: relative;
   overflow: hidden;
   flex-wrap: wrap;
+  box-shadow: 
+    0 12px 36px rgba(0, 0, 0, 0.28),
+    0 0 20px rgba(var(--accent-pink-rgb), 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
 }
 
 /* Decorative glow orb */
@@ -48,7 +52,19 @@
   width: 180px;
   height: 180px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(var(--accent-pink-rgb), 0.12), transparent 70%);
+  background: radial-gradient(circle, rgba(var(--accent-pink-rgb), 0.18), transparent 70%);
+  pointer-events: none;
+}
+
+.dash-greeting::after {
+  content: '';
+  position: absolute;
+  bottom: -50px;
+  left: -50px;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(var(--accent-cyan-rgb), 0.14), transparent 70%);
   pointer-events: none;
 }
 

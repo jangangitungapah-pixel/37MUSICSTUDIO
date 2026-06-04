@@ -9,33 +9,36 @@ export const PERIOD_LABELS = {
 };
 
 export const buildCombinedLedger = ({ transactions = [], bookings = [], pricePerHour = 0 }) => {
-  const allEntries = [...transactions];
+  const allEntries = transactions.map(t => ({
+    ...t,
+    amount: Number(t.amount || 0)
+  }));
 
   bookings.forEach((booking) => {
     if (booking.status === 'maintenance' || booking.status === 'cancelled') return;
 
     if (booking.status === 'confirmed') {
-      const base = booking.type === 'recording'
+      const base = Number(booking.type === 'recording'
         ? (booking.sessionPrice || 0)
-        : (booking.duration * pricePerHour);
-      const total = base + (booking.equipmentCost || 0) - (booking.discountAmount || 0);
+        : (booking.duration * pricePerHour));
+      const total = base + Number(booking.equipmentCost || 0) - Number(booking.discountAmount || 0);
 
       allEntries.push({
         id: `book-${booking.id}`,
         date: booking.date,
         type: 'income',
         category: 'Sewa Studio',
-        amount: total,
+        amount: Number(total),
         description: `Sewa oleh ${booking.band} (${booking.duration} Jam)${booking.discountAmount > 0 ? ' [VIP]' : ''}`,
         isManual: false
       });
-    } else if (booking.status === 'dp' && booking.dpAmount > 0) {
+    } else if (booking.status === 'dp' && Number(booking.dpAmount || 0) > 0) {
       allEntries.push({
         id: `dp-${booking.id}`,
         date: booking.date,
         type: 'income',
         category: 'Sewa Studio',
-        amount: booking.dpAmount,
+        amount: Number(booking.dpAmount),
         description: `DP Sewa oleh ${booking.band}`,
         isManual: false
       });
@@ -46,8 +49,9 @@ export const buildCombinedLedger = ({ transactions = [], bookings = [], pricePer
 
   let runningBalance = 0;
   return allEntries.map((entry) => {
-    runningBalance += entry.type === 'income' ? entry.amount : -entry.amount;
-    return { ...entry, balance: runningBalance };
+    const amt = Number(entry.amount || 0);
+    runningBalance += entry.type === 'income' ? amt : -amt;
+    return { ...entry, amount: amt, balance: runningBalance };
   }).reverse();
 };
 

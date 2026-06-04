@@ -16,7 +16,16 @@ const MotionReveal = ({
   as = 'div',
   ...props 
 }) => {
-  const { getMotionProps } = useAppMotion();
+  const { isReduced, getMotionProps } = useAppMotion();
+
+  if (isReduced) {
+    const Component = as;
+    return (
+      <Component className={`motion-reveal ${className}`} {...props}>
+        {children}
+      </Component>
+    );
+  }
 
   let variants;
   switch (type) {
