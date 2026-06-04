@@ -1,0 +1,24 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // Helper: signed in as staff/admin (not anonymous)
+    function signedInStaff() {
+      return request.auth != null
+        && request.auth.token.firebase.sign_in_provider != 'anonymous';
+    }
+
+    // Gallery images — readable by anyone, writable only by authenticated staff
+    match /gallery/{fileName} {
+      allow read: if true;
+      allow write: if signedInStaff()
+        && request.resource.size < 10 * 1024 * 1024   // max 10 MB per file
+        && request.resource.contentType.matches('image/.*');
+    }
+
+    // Everything else requires auth
+    match /{allPaths=**} {
+      allow read, write: if signedInStaff();
+    }
+  }
+}

@@ -120,6 +120,7 @@ const GalleryPage = () => {
   const [showToCustomer, setShowToCustomer] = useState(true);
   const [uploadAlbumId, setUploadAlbumId] = useState('');
   const [loading, setLoading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState({ current: 0, total: 0 });
   
   const fileInputRef = useRef(null);
   const dragRef = useRef(null);
@@ -181,26 +182,28 @@ const GalleryPage = () => {
     return albumItems.find(a => a.id === openAlbumId) || null;
   }, [albumItems, openAlbumId]);
 
-  // ── Image compression ──────────────────────────────────────────────────────
+  // ── Image compression — uses canvas.toBlob (async, non-blocking) ───────────
   const compressImage = (file) => new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = (event) => {
-      const img = new window.Image();
-      img.src = event.target.result;
-      img.onload = () => {
-        const canvas = document.createElement('canvas');
-        let { width, height } = img;
-        const MAX = 1000;
-        if (width > height) { if (width > MAX) { height *= MAX / width; width = MAX; } }
-        else { if (height > MAX) { width *= MAX / height; height = MAX; } }
-        canvas.width = width; canvas.height = height;
-        canvas.getContext('2d').drawImage(img, 0, 0, width, height);
-        resolve(canvas.toDataURL('image/jpeg', 0.7));
-      };
-      img.onerror = reject;
+    const objectUrl = URL.createObjectURL(file);
+    const img = new window.Image();
+    img.src = objectUrl;
+    img.onload = () => {
+      URL.revokeObjectURL(objectUrl);
+      const canvas = document.createElement('canvas');
+      let { width, height } = img;
+      const MAX = 1000;
+      if (width > height) { if (width > MAX) { height *= MAX / width; width = MAX; } }
+      else { if (height > MAX) { width *= MAX / height; height = MAX; } }
+      canvas.width = Math.round(width);
+      canvas.height = Math.round(height);
+      canvas.getContext('2d').drawImage(img, 0, 0, Math.round(width), Math.round(height));
+      // toBlob is ASYNC — does not block the main thread (unlike toDataURL)
+      canvas.toBlob((blob) => {
+        if (blob) resolve(blob);
+        else reject(new Error('Kompresi gambar gagal'));
+      }, 'image/jpeg', 0.75);
     };
-    reader.onerror = reject;
+    img.onerror = () => { URL.revokeObjectURL(objectUrl); reject(new Error('Gagal memuat gambar')); };
   });
 
   const processUploadedFiles = async (files) => {
@@ -210,20 +213,28 @@ const GalleryPage = () => {
     });
     if (validFiles.length === 0) return;
     setLoading(true);
+    setUploadProgress({ current: 0, total: validFiles.length });
     try {
-      const newFilesData = await Promise.all(validFiles.map(async (file) => {
-        const compressedBase64 = await compressImage(file);
+      const newFilesData = [];
+      for (let i = 0; i < validFiles.length; i++) {
+        const file = validFiles[i];
+        setUploadProgress({ current: i + 1, total: validFiles.length });
+        // compressImage now uses canvas.toBlob (async) — no main thread blocking
+        const blob = await compressImage(file);
+        // Create a temporary URL for preview in the queue UI
+        const previewUrl = URL.createObjectURL(blob);
         const baseName = file.name.substring(0, file.name.lastIndexOf('.')) || file.name;
-        return {
+        newFilesData.push({
           id: Date.now() + Math.random().toString(36).substr(2, 5),
-          base64: compressedBase64,
+          blob,       // actual Blob for upload
+          previewUrl, // Object URL for <img> preview only
           name: file.name,
           caption: baseName.replace(/[_-]/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
-        };
-      }));
+        });
+      }
       setSelectedFiles(prev => [...prev, ...newFilesData]);
-    } catch { toast.error('Gagal memproses gambar.'); }
-    finally { setLoading(false); }
+    } catch (err) { toast.error('Gagal memproses gambar: ' + err.message); }
+    finally { setLoading(false); setUploadProgress({ current: 0, total: 0 }); }
   };
 
   const handleFileChange = async (e) => {
@@ -240,7 +251,9 @@ const GalleryPage = () => {
   };
 
   const handleOpenUploadModal = () => {
-    setSelectedFiles([]); setImageUrl(''); setCaption('');
+    // Revoke any lingering object URLs to avoid memory leaks
+    setSelectedFiles(prev => { prev.forEach(f => f.previewUrl && URL.revokeObjectURL(f.previewUrl)); return []; });
+    setImageUrl(''); setCaption('');
     setShowOnLandingPage(true); setShowToCustomer(true);
     setUploadAlbumId(''); setUploadTab('file');
     setIsUploadModalOpen(true);
@@ -261,14 +274,20 @@ const GalleryPage = () => {
     } else {
       if (selectedFiles.length === 0) { toast.error('Pilih berkas foto terlebih dahulu.'); return; }
       setLoading(true);
+      setUploadProgress({ current: 0, total: selectedFiles.length });
       try {
-        await Promise.all(selectedFiles.map(fileItem =>
-          addPhoto({ url: fileItem.base64, caption: fileItem.caption.trim() || 'Foto Studio 37', showOnLandingPage, showToCustomer, albumId: uploadAlbumId })
-        ));
+        // Upload serial one by one — pass Blob directly (no base64 overhead)
+        for (let i = 0; i < selectedFiles.length; i++) {
+          const fileItem = selectedFiles[i];
+          setUploadProgress({ current: i + 1, total: selectedFiles.length });
+          await addPhoto({ file: fileItem.blob, caption: fileItem.caption.trim() || 'Foto Studio 37', showOnLandingPage, showToCustomer, albumId: uploadAlbumId });
+        }
+        // Cleanup preview URLs after successful upload
+        selectedFiles.forEach(f => f.previewUrl && URL.revokeObjectURL(f.previewUrl));
         toast.success(`${selectedFiles.length} foto berhasil ditambahkan ke galeri`);
         setIsUploadModalOpen(false);
       } catch (err) { toast.error('Gagal menambahkan foto: ' + err.message); }
-      finally { setLoading(false); }
+      finally { setLoading(false); setUploadProgress({ current: 0, total: 0 }); }
     }
   };
 
@@ -821,12 +840,15 @@ const GalleryPage = () => {
                   <div className="upload-queue-container">
                     <div className="upload-queue-header">
                       <span>Daftar Unggahan ({selectedFiles.length} foto)</span>
-                      <button type="button" className="clear-queue-btn" onClick={() => setSelectedFiles([])} disabled={loading}>Hapus Semua</button>
+                      <button type="button" className="clear-queue-btn" onClick={() => {
+                        selectedFiles.forEach(f => f.previewUrl && URL.revokeObjectURL(f.previewUrl));
+                        setSelectedFiles([]);
+                      }} disabled={loading}>Hapus Semua</button>
                     </div>
                     <div className="upload-queue-list">
                       {selectedFiles.map((fileItem) => (
                         <div key={fileItem.id} className="upload-queue-item">
-                          <div className="queue-thumbnail"><img src={fileItem.base64} alt={fileItem.name} /></div>
+                          <div className="queue-thumbnail"><img src={fileItem.previewUrl} alt={fileItem.name} /></div>
                           <div className="queue-details">
                             <span className="queue-filename" title={fileItem.name}>{fileItem.name}</span>
                             <input
@@ -837,7 +859,10 @@ const GalleryPage = () => {
                               disabled={loading} maxLength={80} required
                             />
                           </div>
-                          <button type="button" className="queue-remove-btn" onClick={() => setSelectedFiles(prev => prev.filter(item => item.id !== fileItem.id))} disabled={loading} title="Hapus foto ini">
+                          <button type="button" className="queue-remove-btn" onClick={() => {
+                            if (fileItem.previewUrl) URL.revokeObjectURL(fileItem.previewUrl);
+                            setSelectedFiles(prev => prev.filter(item => item.id !== fileItem.id));
+                          }} disabled={loading} title="Hapus foto ini">
                             <X size={16} />
                           </button>
                         </div>
@@ -894,7 +919,10 @@ const GalleryPage = () => {
             <button type="button" className="btn-secondary" onClick={() => setIsUploadModalOpen(false)} disabled={loading}>Batal</button>
             <button type="submit" className="btn-primary" disabled={loading || (uploadTab === 'file' && selectedFiles.length === 0) || (uploadTab === 'url' && !imageUrl)}>
               {loading ? <Loader2 size={16} className="spinner" /> : null}
-              {loading ? ' Memproses...' : 'Tambahkan ke Galeri'}
+              {loading && uploadProgress.total > 1
+                ? ` Mengunggah ${uploadProgress.current}/${uploadProgress.total}...`
+                : loading ? ' Memproses...' : 'Tambahkan ke Galeri'
+              }
             </button>
           </div>
         </form>

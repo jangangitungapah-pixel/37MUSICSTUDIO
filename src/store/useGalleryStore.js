@@ -1,10 +1,37 @@
 import { create } from 'zustand';
 import { db, storage } from '../firebase';
 import { collection, doc, onSnapshot, setDoc, deleteDoc, updateDoc } from 'firebase/firestore';
-import { ref, uploadString, getDownloadURL, deleteObject } from 'firebase/storage';
+import { ref, deleteObject } from 'firebase/storage';
 import { format } from 'date-fns';
 import { useDemoStore } from './useDemoStore';
 import { useAuditLogStore } from './useAuditLogStore';
+
+// ── ImgBB upload (gratis, cukup 1 API key) ─────────────────────────
+const uploadToImgBB = async (blobOrBase64) => {
+  const apiKey = import.meta.env.VITE_IMGBB_API_KEY;
+  if (!apiKey) throw new Error('VITE_IMGBB_API_KEY belum diset di .env');
+
+  const formData = new FormData();
+  if (blobOrBase64 instanceof Blob) {
+    formData.append('image', blobOrBase64, 'photo.jpg');
+  } else {
+    // base64 string — strip data:image/...;base64, prefix
+    const base64 = blobOrBase64.includes(',') ? blobOrBase64.split(',')[1] : blobOrBase64;
+    formData.append('image', base64);
+  }
+
+  const res = await fetch(`https://api.imgbb.com/1/upload?key=${apiKey}`, {
+    method: 'POST',
+    body: formData,
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error?.message || `Upload ImgBB gagal (${res.status})`);
+  }
+  const data = await res.json();
+  if (!data.success) throw new Error('Upload ImgBB tidak berhasil');
+  return data.data.url;  // permanent CDN URL
+};
 
 export const useGalleryStore = create((set, get) => {
   const galleryRef = collection(db, 'gallery');
@@ -93,17 +120,27 @@ export const useGalleryStore = create((set, get) => {
 
     addPhoto: async (newPhoto) => {
       const id = Date.now() + '_' + Math.random().toString(36).slice(2, 7);
-      let finalUrl = newPhoto.url;
-      const isBase64 = newPhoto.url.startsWith('data:image/');
+      let finalUrl = newPhoto.url || '';
+      const isBase64 = typeof finalUrl === 'string' && finalUrl.startsWith('data:image/');
 
-      if (!useDemoStore.getState().isDemoMode && isBase64) {
-        const storageRef = ref(storage, `gallery/${id}.jpg`);
-        await uploadString(storageRef, newPhoto.url, 'data_url');
-        finalUrl = await getDownloadURL(storageRef);
+      if (!useDemoStore.getState().isDemoMode) {
+        if (newPhoto.file instanceof Blob) {
+          // Upload blob ke ImgBB — gratis, cukup API key
+          finalUrl = await uploadToImgBB(newPhoto.file);
+        } else if (typeof finalUrl === 'string' && finalUrl.startsWith('data:image/')) {
+          // URL tab: base64 — upload ke ImgBB juga
+          finalUrl = await uploadToImgBB(finalUrl);
+        }
+        // Jika sudah URL eksternal (https://...), simpan langsung
+      } else if (newPhoto.file instanceof Blob) {
+        // Demo mode: temporary object URL
+        finalUrl = URL.createObjectURL(newPhoto.file);
       }
 
+      // Exclude `file` (Blob) — hanya dipakai untuk upload, tidak disimpan ke Firestore
+      const { file: _fileBlob, ...photoFields } = newPhoto;
       const photoData = {
-        ...newPhoto,
+        ...photoFields,
         url: finalUrl,
         id,
         createdAt: format(new Date(), 'yyyy-MM-dd HH:mm:ss'),

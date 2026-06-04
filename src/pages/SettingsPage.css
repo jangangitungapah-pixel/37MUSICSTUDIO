@@ -1308,6 +1308,7 @@
     justify-content: flex-start;
     border-radius: var(--mob-radius);
     scrollbar-width: none;
+    margin: 0 !important;
   }
 
   .settings-nav::-webkit-scrollbar {
