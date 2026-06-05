@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGalleryStore } from '../store/useGalleryStore';
 import { useSettingsStore } from '../store/useSettingsStore';
@@ -41,19 +41,19 @@ const PublicGalleryPage = () => {
 
   const closeLightbox = () => setLightboxPhoto(null);
 
-  const goNext = (e) => {
+  const goNext = useCallback((e) => {
     e.stopPropagation();
     const next = (lightboxIndex + 1) % lightboxList.length;
     setLightboxIndex(next);
     setLightboxPhoto(lightboxList[next]);
-  };
+  }, [lightboxIndex, lightboxList]);
 
-  const goPrev = (e) => {
+  const goPrev = useCallback((e) => {
     e.stopPropagation();
     const prev = (lightboxIndex - 1 + lightboxList.length) % lightboxList.length;
     setLightboxIndex(prev);
     setLightboxPhoto(lightboxList[prev]);
-  };
+  }, [lightboxIndex, lightboxList]);
 
   // ── Effects & Memos ───────────────────────────────────────────────────────
   // Auto-open lightbox if ?photo=id query parameter is present in URL
@@ -121,7 +121,7 @@ const PublicGalleryPage = () => {
     };
     window.addEventListener('keydown', handle);
     return () => window.removeEventListener('keydown', handle);
-  }, [lightboxPhoto, lightboxIndex, lightboxList]);
+  }, [lightboxPhoto, goNext, goPrev]);
 
   // ── Switch view resets ─────────────────────────────────────────────────────
   const handleSwitchView = (mode) => {

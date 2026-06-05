@@ -336,7 +336,6 @@ const CalendarPage = () => {
   };
 
   const handleBookingClick = (e, booking) => {
-    console.log('[BookingClickDebug] Clicked:', booking.band, 'isMobile:', isMobile, 'suppress:', suppressNextBookingClickRef.current);
     e.stopPropagation();
     if (e.nativeEvent) {
       e.nativeEvent.stopImmediatePropagation();
@@ -442,7 +441,6 @@ const CalendarPage = () => {
 
   useEffect(() => {
     const handleClick = () => {
-      console.log('[DocumentClickDebug] Clicked document, closing popup');
       setSelectedBooking(null);
     };
     if (selectedBooking) { document.addEventListener('click', handleClick); return () => document.removeEventListener('click', handleClick); }

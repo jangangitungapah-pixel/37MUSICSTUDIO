@@ -1,7 +1,8 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import { Search, Plus, Edit2, Trash2, Box, Package, AlertCircle, Wrench, X, Tag, Hash, StickyNote, ChevronDown } from 'lucide-react';
 import { useInventoryStore } from '../store/useInventoryStore';
 import { useBookingStore } from '../store/useBookingStore';
+import { useThemeStore } from '../store/useThemeStore';
 import { toast } from 'sonner';
 import Modal from '../components/Modal';
 import { getMaintenanceUsageInsights } from '../lib/smartInsights';
@@ -48,8 +49,6 @@ const validateWithZod = (fieldName) => (value) => {
   return result.success ? true : result.error.errors[0].message;
 };
 
-import { useThemeStore } from '../store/useThemeStore';
-
 const InventoryPage = () => {
   const { soundEnabled } = useThemeStore();
   const { inventory, categories, addCategory, addEquipment, updateEquipment, deleteEquipment, getStats } = useInventoryStore();
@@ -60,7 +59,7 @@ const InventoryPage = () => {
   const [isCatDropdownOpen, setIsCatDropdownOpen] = useState(false);
   
   const [playClickRaw] = useSound(CLICK_SOUND, { volume: 0.25 });
-  const playClick = () => { if (soundEnabled) playClickRaw(); };
+  const playClick = useCallback(() => { if (soundEnabled) playClickRaw(); }, [soundEnabled, playClickRaw]);
 
 
   // Modal State
@@ -129,7 +128,7 @@ const InventoryPage = () => {
     setIsModalOpen(true);
   };
 
-  const handleOpenEdit = (item) => {
+  const handleOpenEdit = useCallback((item) => {
     playClick();
     setEditingItem(item);
     reset({ 
@@ -146,9 +145,9 @@ const InventoryPage = () => {
     setNewCatName('');
     setIsModalOpen(true);
     setSelectedItem(null);
-  };
+  }, [playClick, reset]);
 
-  const handleDelete = (id) => {
+  const handleDelete = useCallback((id) => {
     playClick();
     const item = inventory.find(equipment => equipment.id === id);
     toast.warning('Hapus item inventaris?', {
@@ -165,7 +164,7 @@ const InventoryPage = () => {
         onClick: () => {}
       }
     });
-  };
+  }, [deleteEquipment, inventory, playClick, selectedItem]);
 
   const handleAddNewCategory = () => {
     const trimmed = newCatName.trim();
@@ -283,7 +282,7 @@ const InventoryPage = () => {
         );
       }
     }
-  ], [categories]);
+  ], [handleDelete, handleOpenEdit]);
 
   const [sorting, setSorting] = useState([]);
 

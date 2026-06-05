@@ -1,4 +1,4 @@
-import { precacheAndRoute } from 'workbox-precaching';
+import { cleanupOutdatedCaches, precacheAndRoute } from 'workbox-precaching';
 import { clientsClaim } from 'workbox-core';
 
 // Take control immediately
@@ -6,6 +6,7 @@ self.skipWaiting();
 clientsClaim();
 
 // Precache all Vite-built assets
+cleanupOutdatedCaches();
 precacheAndRoute(self.__WB_MANIFEST);
 
 // ===== Push Notification Click Handler =====

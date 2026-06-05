@@ -5,7 +5,7 @@ import { getDefaultPermissionsForRole } from '../lib/permissions';
 import { useAuditLogStore } from './useAuditLogStore';
 import { initializeApp, deleteApp } from 'firebase/app';
 import { getAuth, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from 'firebase/auth';
-import { getFirestore, setDoc, doc, updateDoc, deleteDoc, collection, onSnapshot } from 'firebase/firestore';
+import { setDoc, doc, updateDoc, deleteDoc, collection, onSnapshot } from 'firebase/firestore';
 import { db, firebaseConfig, auth } from '../firebase';
 
 export const useStaffStore = create(
@@ -61,10 +61,10 @@ export const useStaffStore = create(
             staffMembers: demoState.demoStaff
           }));
         } else {
-          set((state) => ({
+          set({
             staffMembers: realStaff,
             realStaffMembers: null
-          }));
+          });
         }
       });
 

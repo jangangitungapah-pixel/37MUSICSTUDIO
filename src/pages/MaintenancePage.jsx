@@ -156,7 +156,7 @@ const MaintenancePage = () => {
         );
       }
     }
-  ], []);
+  ], [deleteBooking]);
 
   const [sorting, setSorting] = useState([]);
 

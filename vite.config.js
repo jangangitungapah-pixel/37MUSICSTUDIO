@@ -9,18 +9,22 @@ const allowedHosts = (process.env.VITE_ALLOWED_HOSTS || '')
 
 const splitVendorChunk = (id) => {
   if (!id.includes('node_modules')) return undefined
-  if (id.includes('react') || id.includes('scheduler')) return 'vendor-react'
+  if (
+    id.includes('/react/') ||
+    id.includes('\\react\\') ||
+    id.includes('react_jsx-runtime') ||
+    id.includes('react-jsx-runtime') ||
+    id.includes('react/jsx-runtime') ||
+    id.includes('react\\jsx-runtime') ||
+    id.includes('react-dom') ||
+    id.includes('react-is') ||
+    id.includes('scheduler')
+  ) return 'vendor-react'
   if (id.includes('react-router')) return 'vendor-router'
   if (id.includes('lucide-react')) return 'vendor-icons'
-  if (id.includes('date-fns')) return 'vendor-date'
   if (id.includes('zustand')) return 'vendor-state'
   if (id.includes('sonner')) return 'vendor-sonner'
-  if (id.includes('html2canvas')) return 'vendor-capture'
-  if (id.includes('firebase')) return 'vendor-firebase'
-  if (id.includes('framer-motion')) return 'vendor-motion'
-  if (id.includes('recharts') || id.includes('d3-')) return 'vendor-charts'
-  if (id.includes('exceljs')) return 'vendor-excel'
-  return 'vendor'
+  return undefined
 }
 
 // https://vite.dev/config/
@@ -62,8 +66,20 @@ export default defineConfig({
       },
       injectManifest: {
         rollupFormat: 'iife',
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
-        globIgnores: ['**/vendor-excel-*.js']
+        globPatterns: [
+          'index.html',
+          'manifest.webmanifest',
+          'registerSW.js',
+          'assets/index-*.js',
+          'assets/index-*.css',
+          'assets/vendor-react-*.js',
+          'assets/vendor-router-*.js',
+          'assets/vendor-icons-*.js',
+          'assets/vendor-state-*.js',
+          'assets/useThemeStore-*.js',
+          'icon-*.png',
+          'logo.svg'
+        ]
       }
     })
   ],
@@ -73,6 +89,7 @@ export default defineConfig({
   },
   build: {
     chunkSizeWarningLimit: 1000,
+    modulePreload: false,
     rollupOptions: {
       output: {
         manualChunks: splitVendorChunk,

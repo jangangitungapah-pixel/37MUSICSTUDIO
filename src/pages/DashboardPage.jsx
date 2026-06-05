@@ -6,7 +6,6 @@ import { useInventoryStore } from '../store/useInventoryStore';
 import { useFinanceStore } from '../store/useFinanceStore';
 import { useSettingsStore } from '../store/useSettingsStore';
 import { useAuthStore } from '../store/useAuthStore';
-import { useThemeStore } from '../store/useThemeStore';
 import { format, subDays, addMonths, addDays } from 'date-fns';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import {
@@ -50,7 +49,6 @@ const DashboardPage = () => {
   const { pricePerHour, studioName, operationalHours = { start: 10, end: 23 } } = useSettingsStore();
   const { staffMembers } = useStaffStore();
   const { user, userProfile } = useAuthStore();
-  const { theme } = useThemeStore();
   const navigate = useNavigate();
 
   const [currentTime, setCurrentTime] = useState(new Date());

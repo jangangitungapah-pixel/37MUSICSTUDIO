@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useStaffStore } from '../store/useStaffStore';
 import { useAuditLogStore } from '../store/useAuditLogStore';
 import { PERMISSIONS, PERMISSION_LABELS, getDefaultPermissionsForRole } from '../lib/permissions';
-import { UserPlus, Edit2, Trash2, Shield, User, Power, ClipboardList, Loader2, Clock, CheckCircle2, Key, Search, X } from 'lucide-react';
+import { UserPlus, Edit2, Trash2, Power, ClipboardList, Loader2, Clock, CheckCircle2, Key, Search, X } from 'lucide-react';
 import Modal from '../components/Modal';
 import { toast } from 'sonner';
 import { staggerContainer, staggerItem } from '../animations';

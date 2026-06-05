@@ -1,249 +1,19 @@
-import { useEffect, Suspense, lazy, useState } from 'react';
+import { Suspense, lazy, useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
-import { AnimatePresence } from 'framer-motion';
-import { useAuthStore } from './store/useAuthStore';
+import { Loader2 } from 'lucide-react';
 import { useThemeStore } from './store/useThemeStore';
-import Sidebar from './components/Sidebar';
-import NotificationToast from './components/NotificationToast';
-import PageTransition from './components/PageTransition';
-import { Toaster } from 'sonner';
-import { Loader2, LockKeyhole, LogOut, ShieldAlert } from 'lucide-react';
-import { ROUTE_PERMISSIONS, hasPermission } from './lib/permissions';
-import './index.css';
-import './pages/CalendarPage.css'; // Shared global utilities and grid styles
-import './components/BookingForm.css'; // Shared global form styles (.form-group, .form-input)
-import './styles/fluent2-assets.css';
-import './styles/mobile-overhaul.css'; // Comprehensive mobile responsive overhaul (all admin pages)
-import PublicCalendarPage from './pages/PublicCalendarPage';
 import LandingPage from './pages/LandingPage';
-import PublicGalleryPage from './pages/PublicGalleryPage';
 
-// Lazy load pages for code splitting to reduce chunk size
-const CalendarPage = lazy(() => import('./pages/CalendarPage'));
-const CustomersPage = lazy(() => import('./pages/CustomersPage'));
-const InventoryPage = lazy(() => import('./pages/InventoryPage'));
-const BillingPage = lazy(() => import('./pages/BillingPage'));
-const FinancePage = lazy(() => import('./pages/FinancePage'));
-const SettingsPage = lazy(() => import('./pages/SettingsPage'));
-const DashboardPage = lazy(() => import('./pages/DashboardPage'));
-const StaffPage = lazy(() => import('./pages/StaffPage'));
-const MaintenancePage = lazy(() => import('./pages/MaintenancePage'));
-import GalleryPage from './pages/GalleryPage';
-
-const STAFF_ROLES = new Set(['admin', 'staff']);
+const AdminShell = lazy(() => import('./components/AdminShell'));
+const PublicCalendarPage = lazy(() => import('./pages/PublicCalendarPage'));
+const PublicGalleryPage = lazy(() => import('./pages/PublicGalleryPage'));
+const RegisterPage = lazy(() => import('./pages/RegisterPage'));
 
 const FullPageLoader = () => (
-  <div style={{height: '100vh', width: '100vw', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg-dark)'}}>
+  <div style={{ height: '100vh', width: '100vw', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg-dark)' }}>
     <Loader2 className="spinner" size={32} color="var(--accent-pink)" />
   </div>
 );
-
-const AccessDenied = () => {
-  const { logout, loading } = useAuthStore();
-
-  return (
-    <div className="auth-container auth-centered">
-      <div className="auth-bg-blob blob1" />
-      <div className="auth-bg-blob blob2" />
-      <div className="auth-form-panel">
-        <div className="auth-card security-card">
-          <div className="auth-header">
-            <div className="auth-header-top">
-              <div className="auth-header-logo">
-                <ShieldAlert size={24} color="var(--accent-pink)" />
-              </div>
-              <div>
-                <span className="auth-header-studio">37 Studio</span>
-              </div>
-            </div>
-            <h1>Akses ditolak</h1>
-            <p>Akun ini belum memiliki role admin atau staff. Hubungi admin utama untuk mengaktifkan akses dashboard.</p>
-          </div>
-          <button type="button" className="auth-guest-btn" onClick={logout} disabled={loading}>
-            {loading ? <Loader2 className="spinner" size={16} /> : <LogOut size={16} />}
-            <span>Keluar</span>
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const RequiredPasswordChange = () => {
-  const { completeRequiredPasswordChange, logout, loading, error, clearError } = useAuthStore();
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [localError, setLocalError] = useState('');
-
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    clearError();
-    setLocalError('');
-
-    if (newPassword.length < 8) {
-      setLocalError('Password baru minimal 8 karakter.');
-      return;
-    }
-
-    if (newPassword === '123456' || newPassword.toLowerCase().includes('admin')) {
-      setLocalError('Gunakan password baru yang tidak sama dengan password default.');
-      return;
-    }
-
-    if (newPassword !== confirmPassword) {
-      setLocalError('Konfirmasi password tidak cocok.');
-      return;
-    }
-
-    try {
-      await completeRequiredPasswordChange(newPassword);
-    } catch {
-      return;
-    }
-  };
-
-  return (
-    <div className="auth-container auth-centered">
-      <div className="auth-bg-blob blob1" />
-      <div className="auth-bg-blob blob2" />
-      <div className="auth-form-panel">
-        <div className="auth-card security-card">
-          <div className="auth-header">
-            <div className="auth-header-top">
-              <div className="auth-header-logo">
-                <LockKeyhole size={24} color="var(--accent-pink)" />
-              </div>
-              <div>
-                <span className="auth-header-studio">37 Studio</span>
-              </div>
-            </div>
-            <h1>Ganti password default</h1>
-            <p>Password default hanya untuk setup awal. Buat password baru sebelum masuk ke dashboard.</p>
-          </div>
-
-          {(localError || error) && (
-            <div className="auth-error">
-              <ShieldAlert size={16} />
-              <span>{localError || error}</span>
-            </div>
-          )}
-
-          <form className="auth-form" onSubmit={handleSubmit}>
-            <div className="form-group">
-              <label>Password Baru</label>
-              <input
-                type="password"
-                className="form-input no-icon"
-                value={newPassword}
-                onChange={(event) => setNewPassword(event.target.value)}
-                minLength="8"
-                autoComplete="new-password"
-                required
-              />
-            </div>
-            <div className="form-group">
-              <label>Konfirmasi Password</label>
-              <input
-                type="password"
-                className="form-input no-icon"
-                value={confirmPassword}
-                onChange={(event) => setConfirmPassword(event.target.value)}
-                minLength="8"
-                autoComplete="new-password"
-                required
-              />
-            </div>
-            <button type="submit" className="auth-submit" disabled={loading}>
-              {loading ? <Loader2 className="spinner" size={18} /> : <LockKeyhole size={17} />}
-              <span>{loading ? 'Menyimpan...' : 'Simpan Password Baru'}</span>
-            </button>
-          </form>
-
-          <button type="button" className="auth-guest-btn security-secondary-action" onClick={logout} disabled={loading}>
-            <LogOut size={16} />
-            <span>Keluar dulu</span>
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const AnimatedRoutes = () => {
-  const location = useLocation();
-  return (
-    // Suspense with null fallback: no spinner flash between lazy-loaded pages.
-    // The key on Routes causes React to remount the page component on navigation,
-    // which triggers PageTransition's initial→animate enter animation.
-    <Suspense fallback={null}>
-      <AnimatePresence mode="wait">
-        <Routes location={location} key={location.pathname}>
-          <Route path="/dashboard" element={<PageTransition><DashboardPage /></PageTransition>} />
-          <Route path="/calendar" element={<PageTransition><CalendarPage /></PageTransition>} />
-          <Route path="/customers" element={<PageTransition><CustomersPage /></PageTransition>} />
-          <Route path="/inventory" element={<PageTransition><InventoryPage /></PageTransition>} />
-          <Route path="/billing" element={<PageTransition><BillingPage /></PageTransition>} />
-          <Route path="/finance" element={<PageTransition><FinancePage /></PageTransition>} />
-          <Route path="/staff" element={<PageTransition><StaffPage /></PageTransition>} />
-          <Route path="/maintenance" element={<PageTransition><MaintenancePage /></PageTransition>} />
-          <Route path="/gallery" element={<PageTransition><GalleryPage /></PageTransition>} />
-          <Route path="/settings" element={<PageTransition><SettingsPage /></PageTransition>} />
-          <Route path="*" element={<Navigate to="/dashboard" replace />} />
-        </Routes>
-      </AnimatePresence>
-    </Suspense>
-  );
-};
-
-const ProtectedRoute = ({ children }) => {
-  const { user, userProfile, isAuthLoaded } = useAuthStore();
-  const location = useLocation();
-  
-  if (!isAuthLoaded) {
-    return <FullPageLoader />;
-  }
-  
-  if (!user) {
-    return <Navigate to="/" replace />;
-  }
-
-  // Prevent anonymous users from accessing admin routes
-  if (user.isAnonymous) {
-    return <Navigate to="/jadwal-publik" replace />;
-  }
-
-  if (!STAFF_ROLES.has(userProfile?.role)) {
-    console.log('[AuthDebug] AccessDenied: role is not admin or staff:', userProfile);
-    return <AccessDenied />;
-  }
-
-  const requiredPerm = ROUTE_PERMISSIONS[location.pathname];
-  const hasPerm = hasPermission(userProfile, requiredPerm);
-  console.log('[AuthDebug] Path:', location.pathname, 'Required:', requiredPerm, 'HasPerm:', hasPerm, 'Profile:', userProfile);
-
-  if (!hasPerm) {
-    return <AccessDenied />;
-  }
-
-  if (userProfile?.requiresPasswordChange) {
-    return <RequiredPasswordChange />;
-  }
-
-  return (
-    <div className="app-container">
-      <div className="ambient-glow-wrapper">
-        <div className="ambient-blob blob-cyan" />
-        <div className="ambient-blob blob-pink" />
-        <div className="ambient-blob blob-purple" />
-      </div>
-      <Sidebar />
-      <NotificationToast />
-      <main className="main-content">
-        {children}
-      </main>
-    </div>
-  );
-};
 
 const PageTitleUpdater = () => {
   const location = useLocation();
@@ -272,6 +42,61 @@ const PageTitleUpdater = () => {
   return null;
 };
 
+const loadAfterIdle = (callback) => {
+  if (typeof window === 'undefined') return () => {};
+
+  const isMobile = window.matchMedia?.('(max-width: 767px)').matches;
+  if (isMobile) {
+    const timeoutId = window.setTimeout(callback, 5000);
+    return () => window.clearTimeout(timeoutId);
+  }
+
+  if ('requestIdleCallback' in window) {
+    const idleId = window.requestIdleCallback(callback, { timeout: 2500 });
+    return () => window.cancelIdleCallback(idleId);
+  }
+
+  const timeoutId = window.setTimeout(callback, 1800);
+  return () => window.clearTimeout(timeoutId);
+};
+
+const LazyToaster = ({ theme }) => {
+  const [ToasterComponent, setToasterComponent] = useState(null);
+
+  useEffect(() => {
+    let mounted = true;
+    const cancel = loadAfterIdle(async () => {
+      const { Toaster } = await import('sonner');
+      if (mounted) setToasterComponent(() => Toaster);
+    });
+
+    return () => {
+      mounted = false;
+      cancel();
+    };
+  }, []);
+
+  if (!ToasterComponent) return null;
+
+  return (
+    <ToasterComponent
+      theme={theme}
+      position="bottom-right"
+      richColors
+      toastOptions={{
+        style: {
+          background: theme === 'light' ? 'rgba(255, 255, 255, 0.96)' : 'rgba(22, 22, 28, 0.95)',
+          backdropFilter: 'blur(16px)',
+          border: theme === 'light' ? '1px solid rgba(0,0,0,0.08)' : '1px solid rgba(255,255,255,0.08)',
+          color: theme === 'light' ? '#111128' : '#ffffff',
+          boxShadow: theme === 'light' ? '0 12px 32px rgba(17,17,40,0.12)' : 'none',
+          fontFamily: "'Plus Jakarta Sans', sans-serif",
+        },
+      }}
+    />
+  );
+};
+
 function App() {
   const { theme } = useThemeStore();
 
@@ -282,33 +107,15 @@ function App() {
   return (
     <Router>
       <PageTitleUpdater />
-      <Toaster
-        theme={theme}
-        position="bottom-right"
-        richColors
-        toastOptions={{
-          style: {
-            background: theme === 'light' ? 'rgba(255, 255, 255, 0.96)' : 'rgba(22, 22, 28, 0.95)',
-            backdropFilter: 'blur(16px)',
-            border: theme === 'light' ? '1px solid rgba(0,0,0,0.08)' : '1px solid rgba(255,255,255,0.08)',
-            color: theme === 'light' ? '#111128' : '#ffffff',
-            boxShadow: theme === 'light' ? '0 12px 32px rgba(17,17,40,0.12)' : 'none',
-            fontFamily: "'Plus Jakarta Sans', sans-serif",
-          },
-        }}
-      />
-        <Routes>
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/jadwal-publik" element={<PublicCalendarPage />} />
-          <Route path="/galeri" element={<PublicGalleryPage />} />
-          
-          {/* Protected Routes */}
-          <Route path="/*" element={
-            <ProtectedRoute>
-              <AnimatedRoutes />
-            </ProtectedRoute>
-          } />
-        </Routes>
+      <LazyToaster theme={theme} />
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/login" element={<Navigate to="/" replace />} />
+        <Route path="/register" element={<Suspense fallback={<FullPageLoader />}><RegisterPage /></Suspense>} />
+        <Route path="/jadwal-publik" element={<Suspense fallback={<FullPageLoader />}><PublicCalendarPage /></Suspense>} />
+        <Route path="/galeri" element={<Suspense fallback={<FullPageLoader />}><PublicGalleryPage /></Suspense>} />
+        <Route path="/*" element={<Suspense fallback={<FullPageLoader />}><AdminShell /></Suspense>} />
+      </Routes>
     </Router>
   );
 }

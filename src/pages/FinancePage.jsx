@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { useFinanceStore } from '../store/useFinanceStore';
 import { useBookingStore } from '../store/useBookingStore';
 import { useSettingsStore } from '../store/useSettingsStore';
@@ -163,7 +163,7 @@ const FinancePage = () => {
   const { theme, soundEnabled } = useThemeStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [playClickRaw] = useSound(CLICK_SOUND, { volume: 0.25 });
-  const playClick = () => { if (soundEnabled) playClickRaw(); };
+  const playClick = useCallback(() => { if (soundEnabled) playClickRaw(); }, [soundEnabled, playClickRaw]);
 
 
   const { register, handleSubmit: handleFormSubmit, reset, setValue, watch, formState: { errors } } = useForm({
@@ -360,7 +360,7 @@ const FinancePage = () => {
         );
       }
     }
-  ], [studioName, studioAddress, studioPhone]);
+  ], [studioName, studioAddress, studioPhone, deleteTransaction, playClick]);
 
   const [sorting, setSorting] = useState([]);
 

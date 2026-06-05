@@ -12,6 +12,18 @@ dist
 dist-ssr
 *.local
 
+# Local audit and UI debugging artifacts belong under scratch/
+/*.webp
+/*.cjs
+/fix_*.js
+/build_output.txt
+/dev-*.log
+scratch/
+!scratch/
+scratch/*
+!scratch/legacy-audit-artifacts/
+!scratch/legacy-audit-artifacts/**
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

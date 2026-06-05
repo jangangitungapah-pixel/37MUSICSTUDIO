@@ -1,10 +1,6 @@
 /* ─── Landing Page Advertising Fonts ─── */
 @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Grotesk:wght@400;500;600;700&family=Archivo+Black&display=swap');
 
-html {
-  scroll-behavior: smooth;
-}
-
 .landing-container {
   --landing-bg: #070706;
   --landing-surface: rgba(18, 17, 15, 0.72);
@@ -829,6 +825,10 @@ html {
 }
 
 .landing-gallery-card {
+  display: block;
+  width: 100%;
+  padding: 0;
+  text-align: left;
   overflow: hidden;
   border: 1px solid var(--landing-line);
   border-radius: 8px;
@@ -1227,6 +1227,10 @@ html {
 }
 
 @media (min-width: 768px) {
+  html {
+    scroll-behavior: smooth;
+  }
+
   .landing-container {
     --hero-image-position: center;
   }
@@ -1524,6 +1528,232 @@ html {
 
   .mobile-sticky-cta span {
     font-size: 0.78rem;
+  }
+}
+
+@media (max-width: 767px) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .landing-container {
+    --landing-shadow: 0 12px 28px rgba(0, 0, 0, 0.24);
+    background: #070706;
+  }
+
+  .landing-container::before {
+    display: none;
+  }
+
+  .landing-container *,
+  .landing-container *::before,
+  .landing-container *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+
+  .landing-nav.scrolled,
+  .nav-brand-mark,
+  .nav-theme-btn,
+  .nav-login-btn,
+  .nav-hamburger,
+  .mobile-nav-menu,
+  .nav-login-dropdown,
+  .hero-kicker,
+  .hero-session,
+  .landing-container .btn-secondary.btn-large,
+  .gallery-lightbox-overlay,
+  .mobile-sticky-cta {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
+  .landing-nav {
+    height: calc(60px + env(safe-area-inset-top, 0px));
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  .landing-nav.scrolled {
+    height: calc(58px + env(safe-area-inset-top, 0px));
+    background: rgba(7, 7, 6, 0.96);
+  }
+
+  .brand-text {
+    max-width: 112px;
+  }
+
+  .nav-actions {
+    gap: 6px;
+  }
+
+  .nav-theme-btn,
+  .nav-login-btn,
+  .nav-hamburger {
+    width: 40px;
+    height: 40px;
+    background: rgba(12, 11, 10, 0.86);
+  }
+
+  .mobile-nav-menu {
+    top: calc(64px + env(safe-area-inset-top, 0px));
+    background: #0b0a09;
+    box-shadow: 0 14px 32px rgba(0, 0, 0, 0.34);
+  }
+
+  .nav-login-dropdown {
+    top: calc(64px + env(safe-area-inset-top, 0px));
+    background: #0b0a09;
+    box-shadow: 0 14px 32px rgba(0, 0, 0, 0.34);
+  }
+
+  .hero-section {
+    min-height: 76svh;
+    padding: calc(78px + env(safe-area-inset-top, 0px)) 14px 18px;
+  }
+
+  .hero-background img {
+    filter: none;
+    object-position: 30% center;
+  }
+
+  .hero-scrim {
+    background:
+      linear-gradient(180deg, rgba(0, 0, 0, 0.26) 0%, rgba(0, 0, 0, 0.1) 32%, rgba(7, 7, 6, 0.82) 72%, rgba(7, 7, 6, 0.97) 100%),
+      linear-gradient(90deg, rgba(0, 0, 0, 0.18) 0%, rgba(0, 0, 0, 0.02) 58%, rgba(0, 0, 0, 0.34) 100%);
+  }
+
+  .hero-shell,
+  .hero-copy {
+    gap: 12px;
+  }
+
+  .hero-kicker {
+    padding: 7px 10px;
+    background: rgba(7, 7, 6, 0.76);
+    font-size: 0.74rem;
+  }
+
+  .hero-title {
+    font-size: clamp(2.55rem, 13.5vw, 3.7rem);
+    line-height: 0.94;
+  }
+
+  .hero-subtitle {
+    max-width: 34rem;
+    font-size: 0.96rem;
+    line-height: 1.52;
+  }
+
+  .hero-actions {
+    gap: 8px;
+  }
+
+  .hero-actions .btn-secondary {
+    display: none;
+  }
+
+  .btn-large {
+    min-height: 48px;
+  }
+
+  .hero-session {
+    padding: 10px;
+    background: rgba(8, 8, 7, 0.76);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.24);
+  }
+
+  .hero-session-main strong {
+    font-size: 1.35rem;
+  }
+
+  .hero-session-grid {
+    gap: 6px;
+  }
+
+  .hero-session-grid div {
+    min-height: 46px;
+    padding: 7px 4px;
+    font-size: 0.7rem;
+  }
+
+  .experience-section,
+  .booking-flow-section,
+  .landing-gallery-section,
+  .pricing-section,
+  .proof-section {
+    content-visibility: auto;
+    contain-intrinsic-size: 720px;
+    width: min(100% - 28px, 1180px);
+  }
+
+  .section-header h2,
+  .flow-copy h2,
+  .pricing-copy h2 {
+    font-size: clamp(2rem, 10vw, 2.75rem);
+    line-height: 1;
+  }
+
+  .experience-card,
+  .flow-panel,
+  .flow-step,
+  .pricing-copy,
+  .price-card,
+  .proof-grid div,
+  .landing-gallery-card {
+    box-shadow: none;
+  }
+
+  .flow-panel {
+    background: var(--landing-surface-strong);
+  }
+
+  .landing-gallery-media img,
+  .landing-gallery-card:hover .landing-gallery-media img,
+  .landing-container .btn-primary.btn-large:hover,
+  .landing-container .btn-secondary.btn-large:hover {
+    transform: none;
+    filter: none;
+  }
+
+  .landing-gallery-section {
+    padding-top: 30px;
+  }
+
+  .map-container {
+    height: 188px;
+  }
+
+  .landing-footer {
+    padding-bottom: calc(92px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .mobile-sticky-cta {
+    left: 10px;
+    right: 10px;
+    bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+    min-height: 54px;
+    background: #090807;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.32);
+  }
+}
+
+@media (max-width: 380px) {
+  .brand-text {
+    max-width: 96px;
+    font-size: 0.82rem;
+  }
+
+  .nav-theme-btn,
+  .nav-login-btn,
+  .nav-hamburger {
+    width: 39px;
+    height: 39px;
+  }
+
+  .hero-title {
+    font-size: 2.22rem;
   }
 }
 
