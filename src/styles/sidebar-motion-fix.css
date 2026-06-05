@@ -137,3 +137,35 @@
     border-color: rgba(var(--accent-pink-rgb), 0.18) !important;
   }
 }
+
+/* High-specificity final mobile nav override.
+   Sidebar.css is imported from Sidebar.jsx and can load after global styles,
+   so this selector intentionally beats the later component-level rules. */
+@media (max-width: 1024px) {
+  html body .app-container .bottom-nav-bar {
+    background: rgba(24, 27, 34, 0.50) !important;
+    background-image: linear-gradient(135deg, rgba(255, 255, 255, 0.10), rgba(255, 255, 255, 0.025)) !important;
+    border: 1px solid rgba(255, 255, 255, 0.13) !important;
+    box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+    -webkit-backdrop-filter: blur(18px) saturate(1.22) !important;
+    backdrop-filter: blur(18px) saturate(1.22) !important;
+    contain: none !important;
+    isolation: isolate !important;
+  }
+
+  html body[data-theme="light"] .app-container .bottom-nav-bar,
+  html [data-theme="light"] body .app-container .bottom-nav-bar,
+  html body .app-container [data-theme="light"] .bottom-nav-bar {
+    background: rgba(255, 255, 255, 0.60) !important;
+    background-image: linear-gradient(135deg, rgba(255, 255, 255, 0.76), rgba(255, 255, 255, 0.24)) !important;
+    border: 1px solid rgba(20, 23, 32, 0.12) !important;
+    box-shadow: 0 -10px 30px rgba(20, 23, 32, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.90) !important;
+    -webkit-backdrop-filter: blur(18px) saturate(1.16) !important;
+    backdrop-filter: blur(18px) saturate(1.16) !important;
+  }
+
+  html body .app-container .bottom-nav-bar .bn-item.active {
+    background: rgba(var(--accent-pink-rgb), 0.16) !important;
+    border-color: rgba(var(--accent-pink-rgb), 0.20) !important;
+  }
+}
