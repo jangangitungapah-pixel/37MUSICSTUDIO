@@ -9,8 +9,8 @@ import { useSettingsStore } from '../store/useSettingsStore';
 import { useAuthStore } from '../store/useAuthStore';
 import { format, subDays, addMonths, addDays } from 'date-fns';
 import {
-  TrendingUp, TrendingDown, Users, CalendarCheck, PackageOpen, Clock,
-  ArrowRight, AlertTriangle, CheckCircle2, Music2, Lightbulb, Wallet, Activity, Download,
+  Clock,
+  CheckCircle2, Lightbulb, Wallet, Activity,
   Inbox, MessageCircle, Wrench, Gift, XCircle, Send
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -27,6 +27,9 @@ import { buildDashboardWorkbook } from '../lib/dashboardWorkbook';
 import { useStaffStore } from '../store/useStaffStore';
 import { toast } from 'sonner';
 import Modal from '../components/Modal';
+import DashboardHeader from '../features/dashboard/DashboardHeader';
+import DashboardMainGrid from '../features/dashboard/DashboardMainGrid';
+import DashboardStats from '../features/dashboard/DashboardStats';
 import './DashboardPage.css';
 
 const runCelebration = async (options) => {
@@ -249,6 +252,26 @@ const DashboardPage = () => {
     }
   };
 
+  const openQuickBooking = () => {
+    setIsQuickBookingOpen(true);
+    setQbBand('');
+    setQbPhone('');
+    setQbDate(format(new Date(), 'yyyy-MM-dd'));
+    setQbHour(10);
+    setQbDuration(1);
+    setQbStatus('pending');
+    setQbDpAmount('');
+    setQbNote('');
+  };
+
+  const openQuickExpense = () => {
+    setIsQuickExpenseOpen(true);
+    setQeDescription('');
+    setQeAmount('');
+    setQeCategory('Operasional');
+    setQeDate(format(new Date(), 'yyyy-MM-dd'));
+  };
+
 
   const today = useMemo(() => new Date(), []);
   const currentHour = currentTime.getHours();
@@ -447,415 +470,47 @@ const DashboardPage = () => {
 
   return (
     <div className="app-page dashboard-page">
-      {/* ===== Greeting Banner ===== */}
-      <section className="dash-greeting glass-panel">
-        <div className="dash-greeting-left">
-          <div className="dash-greeting-icon"><Music2 size={24} /></div>
-          <div>
-            <h2 className="dash-greeting-title">{greeting}, {displayName}! 👋</h2>
-            <p className="dash-greeting-sub">{studioName}</p>
-          </div>
-        </div>
+      <DashboardHeader
+        greeting={greeting}
+        displayName={displayName}
+        studioName={studioName}
+        currentTime={currentTime}
+        invStats={invStats}
+        bookingStats={bookingStats}
+        pendingRequests={pendingRequests}
+        onQuickBooking={openQuickBooking}
+        onQuickExpense={openQuickExpense}
+        onExportExcel={handleExportExcel}
+      />
 
-        {/* Live Clock Widget */}
-        <div className="dash-live-clock-widget">
-          <div className="clock-time">{format(currentTime, 'HH:mm')}</div>
-          <div className="clock-details">
-            <span className="clock-date">{format(currentTime, 'EEEE, dd MMM yyyy')}</span>
-            <span className="clock-status-live"><span className="status-live-pulse" /> Live cockpit</span>
-          </div>
-        </div>
-
-        <div className="dash-greeting-right">
-          <div className="dash-alerts-strip">
-            {invStats.serviceNeeded > 0 && (
-              <div className="dash-alert-chip warning">
-                <AlertTriangle size={13} />
-                <span>{invStats.serviceNeeded} alat servis</span>
-              </div>
-            )}
-            {bookingStats.pending > 0 && (
-              <div className="dash-alert-chip danger">
-                <Clock size={13} />
-                <span>{bookingStats.pending} pending</span>
-              </div>
-            )}
-            {pendingRequests.length > 0 && (
-              <div className="dash-alert-chip info">
-                <Inbox size={13} />
-                <span>{pendingRequests.length} request</span>
-              </div>
-            )}
-            {bookingStats.pending === 0 && invStats.serviceNeeded === 0 && pendingRequests.length === 0 && (
-              <div className="dash-alert-chip success">
-                <CheckCircle2 size={13} />
-                <span>Semua aman!</span>
-              </div>
-            )}
-          </div>
-
-          <div className="dash-action-toolbar">
-            <button
-              type="button"
-              onClick={() => {
-                setIsQuickBookingOpen(true);
-                setQbBand('');
-                setQbPhone('');
-                setQbDate(format(new Date(), 'yyyy-MM-dd'));
-                setQbHour(10);
-                setQbDuration(1);
-                setQbStatus('pending');
-                setQbDpAmount('');
-                setQbNote('');
-              }} 
-              className="btn-primary qb-btn" 
-              title="Tambah Booking Cepat"
-              aria-label="Tambah Booking Cepat"
-            >
-              <CalendarCheck size={16} />
-              <span>+ Booking</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setIsQuickExpenseOpen(true);
-                setQeDescription('');
-                setQeAmount('');
-                setQeCategory('Operasional');
-                setQeDate(format(new Date(), 'yyyy-MM-dd'));
-              }} 
-              className="btn-primary qe-btn" 
-              title="Catat Pengeluaran Cepat"
-              aria-label="Catat Pengeluaran Cepat"
-            >
-              <TrendingDown size={16} />
-              <span>+ Pengeluaran</span>
-            </button>
-            <button
-              type="button"
-              onClick={handleExportExcel} 
-              className="btn-secondary" 
-              title="Unduh Semua Laporan (Excel)"
-              aria-label="Unduh Semua Laporan Excel"
-            >
-              <Download size={16} />
-              <span>Laporan</span>
-            </button>
-          </div>
-        </div>
-      </section>
-
-      {/* ===== Stats Cards ===== */}
-      <div className="dash-stats-grid">
-        {/* Revenue */}
-        <div className="dash-stat-card glass-panel">
-          <div className="dash-stat-top">
-            <div className="stat-icon-wrapper blue">
-              <TrendingUp size={20} />
-            </div>
-            {revTrend !== null && (
-              <span className={`dash-trend ${revTrend >= 0 ? 'up' : 'down'}`}>
-                {revTrend >= 0 ? <TrendingUp size={10} /> : <TrendingDown size={10} />}
-                {revTrend >= 0 ? '+' : ''}{revTrend}%
-              </span>
-            )}
-          </div>
-          <span className="dash-stat-value">{formatCurrency(bookingStats.totalRevenue)}</span>
-          <span className="dash-stat-label">Pendapatan Bulan Ini</span>
-          
-          {/* Progress bar */}
-          <div className="dash-stat-progress-container">
-            <div className="dash-stat-progress-bar" style={{ width: `${revenueTargetProgress}%`, background: 'var(--accent-cyan)' }} />
-          </div>
-          <div className="dash-stat-progress-info">
-            <span>Target: Rp 35jt</span>
-            <span>{revenueTargetProgress}%</span>
-          </div>
-          <span className="dash-stat-sub">vs {formatCurrency(lastMonthStats.totalRevenue)} bulan lalu</span>
-        </div>
-
-        {/* Bookings */}
-        <div className="dash-stat-card glass-panel">
-          <div className="dash-stat-top">
-            <div className="stat-icon-wrapper green">
-              <CalendarCheck size={20} />
-            </div>
-            {bookTrend !== null && (
-              <span className={`dash-trend ${bookTrend >= 0 ? 'up' : 'down'}`}>
-                {bookTrend >= 0 ? <TrendingUp size={10} /> : <TrendingDown size={10} />}
-                {bookTrend >= 0 ? '+' : ''}{bookTrend}%
-              </span>
-            )}
-          </div>
-          <div className="dash-stat-value">
-            {bookingStats.totalBookings}
-            <span className="dash-stat-unit"> sesi</span>
-          </div>
-          <span className="dash-stat-label">Total Booking</span>
-          
-          {/* Progress bar */}
-          <div className="dash-stat-progress-container">
-            <div className="dash-stat-progress-bar" style={{ width: `${occupancyProgress}%`, background: 'rgb(var(--success-rgb))' }} />
-          </div>
-          <div className="dash-stat-progress-info">
-            <span>Okupansi (Target 390 jam)</span>
-            <span>{occupancyProgress}%</span>
-          </div>
-          
-          <div className="dash-stat-pills" style={{marginTop: '4px'}}>
-            <span className="dash-pill confirmed">{bookingStats.confirmed} Lunas</span>
-            <span className="dash-pill dp">{bookingStats.dp} DP</span>
-            <span className="dash-pill pending">{bookingStats.pending} Pending</span>
-          </div>
-        </div>
-
-        {/* Customers */}
-        <div className="dash-stat-card glass-panel">
-          <div className="dash-stat-top">
-            <div className="stat-icon-wrapper pink">
-              <Users size={20} />
-            </div>
-          </div>
-          <div className="dash-stat-value">
-            {customers.length}
-            <span className="dash-stat-unit"> orang</span>
-          </div>
-          <span className="dash-stat-label">Pelanggan Terdaftar</span>
-          
-          {/* Progress bar */}
-          <div className="dash-stat-progress-container">
-            <div className="dash-stat-progress-bar" style={{ width: `${activeCustomersProgress}%`, background: 'var(--accent-pink)' }} />
-          </div>
-          <div className="dash-stat-progress-info">
-            <span>Rasio Pelanggan Aktif</span>
-            <span>{activeCustomersProgress}%</span>
-          </div>
-          <span className="dash-stat-sub">{bookingStats.totalHours} jam terpakai bulan ini</span>
-        </div>
-
-        {/* Inventory Alert */}
-        <div className="dash-stat-card glass-panel">
-          <div className="dash-stat-top">
-            <div className="stat-icon-wrapper orange">
-              <PackageOpen size={20} />
-            </div>
-          </div>
-          <div className={`dash-stat-value ${invStats.serviceNeeded > 0 ? 'warn' : ''}`}>
-            {invStats.serviceNeeded}
-            <span className="dash-stat-unit"> item</span>
-          </div>
-          <span className="dash-stat-label">Kondisi Alat</span>
-          
-          {/* Progress bar */}
-          <div className="dash-stat-progress-container">
-            <div className="dash-stat-progress-bar" style={{ width: `${inventoryHealthProgress}%`, background: '#FFA000' }} />
-          </div>
-          <div className="dash-stat-progress-info">
-            <span>Rasio Alat Layak Pakai</span>
-            <span>{inventoryHealthProgress}%</span>
-          </div>
-          <span className="dash-stat-sub">dari {invStats.totalItems} total alat inventaris</span>
-        </div>
-      </div>
-
-      {/* ===== Main Grid: Charts + Upcoming ===== */}
-      <div className="dash-main-grid">
-
-        {/* Revenue Chart */}
-        <div className="chart-container glass-panel span-2">
-          <div className="chart-header">
-            <div>
-              <h3 className="chart-title">Tren Pendapatan</h3>
-              <p className="chart-sub">7 hari terakhir</p>
-            </div>
-            <button className="chart-link-btn" onClick={() => navigate('/finance')}>
-              Lihat Detail <ArrowRight size={14} />
-            </button>
-          </div>
-          <div className="lite-revenue-chart" aria-label="Pendapatan 7 hari terakhir">
-            {revenueChartData.map((item) => {
-              const height = Math.max(6, Math.round((item.Pendapatan / maxRevenue) * 100));
-              return (
-                <div className="lite-revenue-day" key={item.name}>
-                  <div className="lite-revenue-track">
-                    <span className="lite-revenue-bar" style={{ height: `${height}%` }} />
-                  </div>
-                  <strong>{formatK(item.Pendapatan)}</strong>
-                  <span>{item.name}</span>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Upcoming Bookings */}
-        <div className="dash-upcoming app-card">
-          <div className="chart-header">
-            <div>
-              <h3 className="chart-title">Jadwal Mendatang</h3>
-              <p className="chart-sub">Hari ini & besok</p>
-            </div>
-            <button className="chart-link-btn" onClick={() => navigate('/calendar')}>
-              Kalender <ArrowRight size={14} />
-            </button>
-          </div>
-          {upcomingBookings.length === 0 ? (
-            <div className="dash-empty-state">
-              <CalendarCheck size={32} opacity={0.2} />
-              <p>Tidak ada jadwal hari ini</p>
-            </div>
-          ) : (
-            <div className="upcoming-list">
-              {upcomingBookings.map(b => {
-                const isLive = b._tag === 'Hari Ini' && currentHour >= b.hour && currentHour < (b.hour + b.duration);
-                return (
-                  <div key={b.id} className={`upcoming-item ${isLive ? 'live-item' : ''}`}>
-                    <div className="upcoming-status-bar" style={{ background: getStatusColor(b.status) }} />
-                    <div className="upcoming-info">
-                      <div className="upcoming-band">{b.band}</div>
-                      <div className="upcoming-time">
-                        <Clock size={11} /> {b.hour}.00 – {b.hour + b.duration}.00
-                      </div>
-                    </div>
-                    {isLive ? (
-                      <span className="upcoming-tag tag-live">
-                        <span className="live-pulse-dot" /> LIVE NOW
-                      </span>
-                    ) : (
-                      <span className={`upcoming-tag tag-${b._tag === 'Hari Ini' ? 'today' : 'tomorrow'}`}>{b._tag}</span>
-                    )}
-                    <div className="dash-work-actions">
-                      {b.status !== 'confirmed' && (
-                        <button 
-                          type="button"
-                          className="icon-btn success dash-icon-action approve" 
-                          onClick={(e) => { e.stopPropagation(); handleInstantPay(b); }} 
-                          title="Lunasi Instan"
-                          aria-label={`Lunasi Instan booking dari ${b.band}`}
-                        >
-                          <CheckCircle2 size={14} />
-                        </button>
-                      )}
-                      <button 
-                        type="button"
-                        className="icon-btn cyan dash-icon-action send" 
-                        onClick={(e) => { e.stopPropagation(); handleSendBookingReminder(b); }} 
-                        title="Kirim reminder WhatsApp"
-                        aria-label={`Kirim pengingat WhatsApp ke ${b.band}`}
-                      >
-                        <MessageCircle size={14} />
-                      </button>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
-
-        {/* Inventory Pie */}
-        <div className="chart-container glass-panel">
-          <div className="chart-header">
-            <div>
-              <h3 className="chart-title">Kondisi Inventaris</h3>
-              <p className="chart-sub">{invStats.totalItems} item total</p>
-            </div>
-            <button className="chart-link-btn" onClick={() => navigate('/inventory')}>
-              Detail <ArrowRight size={14} />
-            </button>
-          </div>
-          {inventoryChartData.length === 0 ? (
-            <div className="dash-empty-state">
-              <PackageOpen size={32} opacity={0.2} />
-              <p>Belum ada data inventaris</p>
-            </div>
-          ) : (
-            <div className="lite-inventory-meter">
-              <div className="donut-center-label lite-inventory-total">
-                <span className="donut-center-val">{invStats.totalItems}</span>
-                <span className="donut-center-lbl">Total Alat</span>
-              </div>
-              <div className="lite-inventory-bars">
-                {inventoryChartData.map((item) => (
-                  <div className="lite-inventory-row" key={item.name}>
-                    <span>{item.name}</span>
-                    <div className="lite-inventory-track">
-                      <span
-                        className="lite-inventory-fill"
-                        style={{
-                          width: `${Math.max(4, Math.round((item.value / Math.max(invStats.totalItems, 1)) * 100))}%`,
-                          background: item.color,
-                        }}
-                      />
-                    </div>
-                    <strong>{item.value}</strong>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-          <div className="inv-legend">
-            {inventoryChartData.map((d) => (
-              <div key={d.name} className="inv-legend-item">
-                <span className="inv-legend-dot" style={{ background: d.color }} />
-                <span>{d.name}</span>
-                <strong>{d.value}</strong>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Top Customers */}
-        <div className="dash-table-card app-card span-2">
-          <div className="chart-header">
-            <div>
-              <h3 className="chart-title">Top Pelanggan</h3>
-              <p className="chart-sub">Berdasarkan loyalitas booking</p>
-            </div>
-            <button className="chart-link-btn" onClick={() => navigate('/customers')}>
-              Semua <ArrowRight size={14} />
-            </button>
-          </div>
-          {topCustomers.length === 0 ? (
-            <div className="dash-empty-state">
-              <Users size={32} opacity={0.2} />
-              <p>Belum ada data pelanggan</p>
-            </div>
-          ) : (
-            <div className="top-customers-list">
-              {topCustomers.map((c, i) => (
-                <div key={c.id} className="top-cust-row">
-                  <div className={`top-cust-rank rank-${i + 1}`}>#{i + 1}</div>
-                  <div className="top-cust-avatar">{c.name.charAt(0).toUpperCase()}</div>
-                  <div className="top-cust-info">
-                    <span className="top-cust-name">{c.name}</span>
-                    <span className="top-cust-phone">{c.phone || '—'}</span>
-                  </div>
-                  <div className="top-cust-stats" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <div style={{ display: 'flex', alignItems: 'baseline', gap: '3px' }}>
-                      <span className="top-cust-bookings">{c.totalBookings}</span>
-                      <span className="top-cust-unit">sesi</span>
-                    </div>
-                    {c.phone && (
-                      <button 
-                        type="button"
-                        className="icon-btn cyan dash-icon-action send" 
-                        onClick={(e) => { e.stopPropagation(); handleContactCustomer(c); }} 
-                        title="Hubungi WhatsApp"
-                        aria-label={`Hubungi WhatsApp ${c.name}`}
-                      >
-                        <MessageCircle size={14} />
-                      </button>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-      </div>
-
+      <DashboardStats
+        bookingStats={bookingStats}
+        lastMonthStats={lastMonthStats}
+        customersCount={customers.length}
+        invStats={invStats}
+        revTrend={revTrend}
+        bookTrend={bookTrend}
+        revenueTargetProgress={revenueTargetProgress}
+        occupancyProgress={occupancyProgress}
+        activeCustomersProgress={activeCustomersProgress}
+        inventoryHealthProgress={inventoryHealthProgress}
+        formatCurrency={formatCurrency}
+      />
+      <DashboardMainGrid
+        revenueChartData={revenueChartData}
+        maxRevenue={maxRevenue}
+        inventoryChartData={inventoryChartData}
+        invStats={invStats}
+        upcomingBookings={upcomingBookings}
+        currentHour={currentHour}
+        topCustomers={topCustomers}
+        formatK={formatK}
+        getStatusColor={getStatusColor}
+        onNavigate={navigate}
+        onInstantPay={handleInstantPay}
+        onSendBookingReminder={handleSendBookingReminder}
+        onContactCustomer={handleContactCustomer}
+      />
 {/* ===== Smart Insights ===== */}
       <section className="app-smart-panel app-smart-grid cols-auto">
         <div className="smart-item">
