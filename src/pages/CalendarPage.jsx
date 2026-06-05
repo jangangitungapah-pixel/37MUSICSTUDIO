@@ -1,25 +1,25 @@
 import { useState, useMemo, useRef, useEffect, useCallback } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 import { createPortal } from 'react-dom';
-import { Clock, Trash2, Phone, StickyNote, X, MessageCircle, Calendar, LayoutGrid, CalendarDays, RotateCcw } from 'lucide-react';
+import { Calendar, LayoutGrid, CalendarDays } from 'lucide-react';
 import { format, addMonths, subMonths, startOfMonth, endOfMonth, addDays, subDays, getDay, startOfWeek, endOfWeek, eachDayOfInterval, addWeeks, subWeeks } from 'date-fns';
 import { useBookingStore } from '../store/useBookingStore';
 import { useSettingsStore } from '../store/useSettingsStore';
 import { useInventoryStore } from '../store/useInventoryStore';
 import { useBookingRequestStore } from '../store/useBookingRequestStore';
 import { useNotificationStore } from '../store/useNotificationStore';
-import { AnimatePresence, motion } from 'framer-motion';
 import * as Tooltip from '@radix-ui/react-tooltip';
 import Modal from '../components/Modal';
 import BookingForm from '../components/BookingForm';
 import { getAnomalies } from '../lib/smartInsights';
-import { getDepositDeadlineStatus, hasBookingOverlap } from '../lib/bookingWorkflows';
+import { hasBookingOverlap } from '../lib/bookingWorkflows';
 import { useCalendarBookingMove } from '../hooks/useCalendarBookingMove';
 import { useCalendarBookingResize } from '../hooks/useCalendarBookingResize';
 import Fuse from 'fuse.js';
 import useSound from 'use-sound';
 import { useThemeStore } from '../store/useThemeStore';
 import { CLICK_SOUND } from '../lib/sounds';
+import BookingDetailPopup from '../features/calendar/BookingDetailPopup';
 import CalendarGrid from '../features/calendar/CalendarGrid';
 import CalendarHeader from '../features/calendar/CalendarHeader';
 import CalendarMobileControls from '../features/calendar/CalendarMobileControls';
@@ -469,6 +469,18 @@ const CalendarPage = () => {
   };
 
   const handleStatusChange = (id, newStatus) => updateBookingStatus(id, newStatus);
+  const selectedBookingDetail = selectedBooking ? (bookings.find((booking) => booking.id === selectedBooking.id) || selectedBooking) : null;
+  const handleChangeBookingDuration = (booking, nextDuration) => {
+    if (nextDuration === booking.duration) return;
+
+    const candidate = { date: booking.date, hour: booking.hour, duration: nextDuration };
+    if (hasBookingOverlap(bookings, candidate, booking.id)) {
+      useNotificationStore.getState().addNotification({ title: 'Jadwal Bentrok!', message: 'Durasi bertabrakan dengan booking lain.', type: 'error' });
+      return;
+    }
+
+    updateBooking(booking.id, { duration: nextDuration });
+  };
 
   useEffect(() => {
     const handleClick = () => {
@@ -599,187 +611,25 @@ const CalendarPage = () => {
       </section>
       </div>
 
-      {/* Booking detail: bottom sheet on mobile, popup on desktop */}
       {createPortal(
-        <div className="booking-detail-portal-container" style={{ position: 'fixed', inset: 0, zIndex: 100000, pointerEvents: 'none' }}>
-          <AnimatePresence>
-            {selectedBooking && isMobile && (
-              <motion.div
-                key="detail-overlay"
-                className="detail-overlay"
-                onClick={() => setSelectedBooking(null)}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.15, ease: 'easeInOut' }}
-                style={{ pointerEvents: 'auto' }}
-              />
-            )}
-            {selectedBooking && (() => {
-              const b = bookings.find(x => x.id === selectedBooking.id) || selectedBooking;
-              const isRecording = b.type === 'recording';
-              const basePrice = isRecording ? (b.sessionPrice || 0) : (b.duration * pricePerHour);
-              const equipmentCost = b.equipmentCost || 0;
-              const totalPrice = basePrice + equipmentCost - (b.discountAmount || 0);
-              
-              return (
-                <motion.div
-                  key="detail-popup"
-                  className={`booking-detail-popup ${isMobile ? 'mobile-sheet' : ''}`}
-                  style={{
-                    pointerEvents: 'auto',
-                    ...(!isMobile ? { top: detailPos.top, left: detailPos.left } : {})
-                  }}
-                  onClick={e => e.stopPropagation()}
-                  initial={isMobile ? { y: 80, opacity: 0 } : { scale: 0.95, opacity: 0, y: -4 }}
-                  animate={isMobile ? { y: 0, opacity: 1 } : { scale: 1, opacity: 1, y: 0 }}
-                  exit={isMobile ? { y: 80, opacity: 0 } : { scale: 0.95, opacity: 0, y: -4 }}
-                  transition={{ duration: 0.15, ease: 'easeInOut' }}
-                >
-                  {/* Header */}
-                  <div className="detail-header">
-                    <div className="detail-header-info">
-                      <span className={`detail-status-dot status-${b.status}`} />
-                      <h4>{b.band} {isRecording && <span className="recording-pill">Recording</span>}</h4>
-                    </div>
-                    <div className="detail-header-actions">
-                      <span className={`detail-status-badge status-${b.status}`}>{getStatusLabel(b.status)}</span>
-                      <button className="icon-btn detail-close" onClick={() => setSelectedBooking(null)} aria-label="Tutup detail booking"><X size={16} /></button>
-                    </div>
-                  </div>
-
-                  <div className="detail-body">
-                    {/* Time */}
-                    <div className="detail-info-row">
-                      <Clock size={14} />
-                      <div className="detail-info-content">
-                        <span>{b.date} • {b.hour}.00 – {b.hour + b.duration}.00 WIB</span>
-                        {isRecording ? (
-                          <div className="duration-controls is-muted">
-                            <span className="dur-label">Paket Sesi ({b.duration} jam)</span>
-                          </div>
-                        ) : (
-                          <div className="duration-controls">
-                            <button className="dur-btn" onClick={() => updateBooking(b.id, { duration: Math.max(1, b.duration - 1) })} disabled={b.duration <= 1} aria-label="Kurangi durasi">−</button>
-                            <span className="dur-label">{b.duration} jam</span>
-                            <button className="dur-btn" onClick={() => {
-                            const newDur = Math.min(13, b.duration + 1);
-                            if (newDur > b.duration) {
-                              const candidate = { date: b.date, hour: b.hour, duration: newDur };
-                              if (hasBookingOverlap(bookings, candidate, b.id)) {
-                                useNotificationStore.getState().addNotification({ title: 'Jadwal Bentrok!', message: 'Durasi bertabrakan dengan booking lain.', type: 'error' }); 
-                                return; 
-                              }
-                              updateBooking(b.id, { duration: newDur });
-                            }
-                          }} aria-label="Tambah durasi">+</button>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Phone */}
-                    {b.phone && b.status !== 'maintenance' && (
-                      <div className="detail-info-row"><Phone size={14} /><span>{b.phone}</span></div>
-                    )}
-
-                    {/* Note */}
-                    {b.note && (
-                      <div className="detail-info-row"><StickyNote size={14} /><span>{b.note}</span></div>
-                    )}
-
-                    {/* Price Section */}
-                    {b.status !== 'maintenance' && (
-                      <div className="detail-price-card">
-                        <div className="detail-price-row">
-                          <span>Subtotal {isRecording ? '(Sesi Recording)' : `(${b.duration} jam)`}</span>
-                          <span>{formatCurrency(basePrice)}</span>
-                        </div>
-                        {b.rentedEquipment && b.rentedEquipment.length > 0 && (
-                          <div className="detail-price-row equipment">
-                            <div style={{ display: 'flex', flexDirection: 'column' }}>
-                              <span>Sewa Alat Tambahan</span>
-                              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                                {b.rentedEquipment.map(id => inventory.find(i => i.id === id)?.name || 'Alat').join(', ')}
-                              </span>
-                            </div>
-                            <span>{formatCurrency(equipmentCost)}</span>
-                          </div>
-                        )}
-                        {(b.discountAmount || 0) > 0 && (
-                          <div className="detail-price-row discount">
-                            <span>Diskon VIP</span>
-                            <span>−{formatCurrency(b.discountAmount)}</span>
-                          </div>
-                        )}
-                        <div className="detail-price-row total">
-                          <span>Total</span>
-                          <span>{formatCurrency(totalPrice)}</span>
-                        </div>
-                        {b.status === 'dp' && b.dpAmount > 0 && (
-                          <>
-                            <div className="detail-price-row dp"><span>DP Dibayar</span><span>{formatCurrency(b.dpAmount)}</span></div>
-                            <div className="detail-price-row remaining"><span>Sisa Tagihan</span><span>{formatCurrency(totalPrice - b.dpAmount)}</span></div>
-                          </>
-                        )}
-                        {b.status === 'confirmed' && <div className="detail-paid-badge">✓ Lunas</div>}
-                        {b.status === 'pending' && <div className="detail-unpaid-badge">⚠ Belum Dibayar</div>}
-                        {(() => {
-                          const deadline = getDepositDeadlineStatus(b);
-                          return deadline.state !== 'none' ? (
-                            <div className={`detail-deadline-badge ${deadline.state}`}>Deadline: {deadline.label}</div>
-                          ) : null;
-                        })()}
-                        {b.status === 'cancelled' && (
-                          <div className="detail-cancelled-note">Dibatalkan{b.cancelReason ? `: ${b.cancelReason}` : ''}</div>
-                        )}
-                      </div>
-                    )}
-
-                    {/* Status Change */}
-                    {b.status !== 'maintenance' && b.status !== 'cancelled' && (
-                      <div className="detail-status-section">
-                        <label>Ubah Status</label>
-                        <div className="status-buttons">
-                          {['pending', 'dp', 'confirmed'].map(s => (
-                            <button key={s} className={`status-btn ${s} ${b.status === s ? 'active' : ''}`} onClick={() => handleStatusChange(b.id, s)}>
-                              {getStatusLabel(s)}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Footer */}
-                  <div className="detail-footer">
-                    <button className="btn-danger" onClick={() => handleDeleteBooking(b.id)}>
-                      <Trash2 size={14} /><span>{b.status === 'maintenance' ? 'Hapus Blokir' : 'Hapus'}</span>
-                    </button>
-                    {b.status !== 'maintenance' && (
-                      <button className="btn-secondary" onClick={handleSendReminder}>
-                        <MessageCircle size={14} /><span>Kirim Pengingat</span>
-                      </button>
-                    )}
-                    {b.status !== 'maintenance' && b.status !== 'cancelled' && (
-                      <>
-                        <button className="btn-secondary" onClick={() => openRescheduleModal(b)}>
-                          <RotateCcw size={14} /><span>Reschedule</span>
-                        </button>
-                        <button className="btn-danger" onClick={() => handleCancelBooking(b)}>
-                          <X size={14} /><span>Batal Booking</span>
-                        </button>
-                      </>
-                    )}
-                  </div>
-                </motion.div>
-              );
-            })()}
-          </AnimatePresence>
-        </div>,
+        <BookingDetailPopup
+          booking={selectedBookingDetail}
+          detailPos={detailPos}
+          formatCurrency={formatCurrency}
+          inventory={inventory}
+          isMobile={isMobile}
+          pricePerHour={pricePerHour}
+          getStatusLabel={getStatusLabel}
+          onCancelBooking={handleCancelBooking}
+          onChangeDuration={handleChangeBookingDuration}
+          onClose={() => setSelectedBooking(null)}
+          onDeleteBooking={handleDeleteBooking}
+          onOpenReschedule={openRescheduleModal}
+          onSendReminder={handleSendReminder}
+          onStatusChange={handleStatusChange}
+        />,
         document.body
       )}
-
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Booking Baru">
         <BookingForm onClose={() => setIsModalOpen(false)} initialDate={prefillDate} initialHour={prefillHour} />
       </Modal>
