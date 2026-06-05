@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuthStore } from '../store/useAuthStore';
-import { Music, AlertCircle, Loader2 } from 'lucide-react';
+import { Music, AlertCircle } from 'lucide-react';
+import { Button, Card, LoadingState } from '../shared/ui';
 import './AuthPage.css';
 
 const RegisterPage = () => {
@@ -43,12 +44,12 @@ const RegisterPage = () => {
   };
 
   if (!isAuthLoaded) {
-    return <div className="auth-loading"><Loader2 className="spinner" size={32} /></div>;
+    return <LoadingState className="auth-loading" size={32} />;
   }
 
   return (
     <div className="auth-container" style={{padding: '40px 20px'}}>
-      <div className="auth-card glass-panel" style={{maxWidth: '450px'}}>
+      <Card variant="glass" className="auth-card" style={{maxWidth: '450px'}}>
         <div className="auth-header">
           <div className="logo-icon">
             <Music size={32} color="var(--accent-pink)" />
@@ -126,15 +127,15 @@ const RegisterPage = () => {
             />
           </div>
           
-          <button type="submit" className="btn-primary auth-submit" disabled={loading}>
-            {loading ? <Loader2 className="spinner" size={18} /> : 'Register'}
-          </button>
+          <Button type="submit" className="auth-submit" loading={loading} spinnerSize={18}>
+            Register
+          </Button>
         </form>
 
         <div className="auth-footer">
           <p>Sudah punya akun? <Link to="/login">Login di sini</Link></p>
         </div>
-      </div>
+      </Card>
     </div>
   );
 };

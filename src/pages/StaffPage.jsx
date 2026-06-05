@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useStaffStore } from '../store/useStaffStore';
 import { useAuditLogStore } from '../store/useAuditLogStore';
 import { PERMISSIONS, PERMISSION_LABELS, getDefaultPermissionsForRole } from '../lib/permissions';
-import { UserPlus, Edit2, Trash2, Power, ClipboardList, Loader2, Clock, CheckCircle2, Key, Search, X } from 'lucide-react';
+import { UserPlus, Edit2, Trash2, Power, ClipboardList, Clock, CheckCircle2, Key, Search, X } from 'lucide-react';
 import Modal from '../components/Modal';
 import { toast } from 'sonner';
 import { staggerContainer, staggerItem } from '../animations';
@@ -13,6 +13,7 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import useSound from 'use-sound';
 import { CLICK_SOUND } from '../lib/sounds';
+import { Badge, Button, Card } from '../shared/ui';
 import './StaffPage.css';
 
 const staffSchema = z.object({
@@ -222,10 +223,10 @@ const StaffPage = () => {
           <p className="app-page-subtitle">Kelola akses dan data anggota tim Anda</p>
         </div>
         <div className="app-page-actions">
-          <button className="btn-primary" onClick={() => handleOpenModal()}>
+          <Button onClick={() => handleOpenModal()}>
             <UserPlus size={16} />
             <span>Tambah Staff</span>
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -264,12 +265,14 @@ const StaffPage = () => {
       >
         <AnimatePresence>
           {filteredStaff.map(staff => (
-            <motion.div 
+            <Card
+              as={motion.div}
               layout
               variants={staggerItem}
               exit={{ opacity: 0, scale: 0.9, y: -20 }}
               key={staff.id} 
               className={`app-panel staff-card ${staff.status === 'inactive' ? 'inactive' : ''}`}
+              variant="plain"
             >
               <div className="staff-card-header">
                 <div className="staff-avatar-container">
@@ -317,14 +320,14 @@ const StaffPage = () => {
               
               <div className="staff-info">
                 <h3>{staff.name}</h3>
-                <span className={`f-badge ${staff.role === 'admin' ? 'f-badge-danger' : 'f-badge-info'}`}>
+                <Badge tone={staff.role === 'admin' ? 'danger' : 'info'}>
                   {staff.role === 'admin' ? 'Administrator' : 'Staff'}
-                </span>
+                </Badge>
                 {staff.username && <p className="staff-phone" style={{marginTop: 6}}>👤 @{staff.username}</p>}
                 <p className="staff-phone">📞 {staff.phone || '-'}</p>
                 <div className="staff-permission-chips">
                   {(staff.permissions || getDefaultPermissionsForRole(staff.role)).slice(0, 4).map((permission) => (
-                    <span key={permission} className="f-badge f-badge-neutral">{PERMISSION_LABELS[permission] || permission}</span>
+                    <Badge key={permission} tone="neutral">{PERMISSION_LABELS[permission] || permission}</Badge>
                   ))}
                   {(staff.permissions || getDefaultPermissionsForRole(staff.role)).length > 4 && (
                     <span className="chip-more">+{(staff.permissions || getDefaultPermissionsForRole(staff.role)).length - 4}</span>
@@ -333,11 +336,11 @@ const StaffPage = () => {
               </div>
               
               <div className="staff-status-bar">
-                <span className={`f-badge ${staff.status === 'active' ? 'f-badge-success' : 'f-badge-neutral'}`} style={{fontSize: '11px', padding: '3px 8px'}}>
+                <Badge tone={staff.status === 'active' ? 'success' : 'neutral'} compact>
                   {staff.status === 'active' ? 'Aktif' : 'Nonaktif'}
-                </span>
+                </Badge>
               </div>
-            </motion.div>
+            </Card>
           ))}
         </AnimatePresence>
       </motion.div>
@@ -440,11 +443,10 @@ const StaffPage = () => {
           </div>
 
           <div className="bf-actions">
-            <button type="button" className="btn-secondary" onClick={() => setIsModalOpen(false)} disabled={loading}>Batal</button>
-            <button type="submit" className="btn-primary" disabled={loading}>
-              {loading ? <Loader2 size={16} className="spinner" /> : null}
-              {loading ? ' Memproses...' : editingStaff ? 'Simpan Perubahan' : 'Tambahkan Staff'}
-            </button>
+            <Button type="button" variant="secondary" onClick={() => setIsModalOpen(false)} disabled={loading}>Batal</Button>
+            <Button type="submit" loading={loading} loadingLabel="Memproses..." disabled={loading}>
+              {editingStaff ? 'Simpan Perubahan' : 'Tambahkan Staff'}
+            </Button>
           </div>
         </form>
       </Modal>
@@ -469,12 +471,12 @@ const StaffPage = () => {
             {errorsReset.newPassword && <span className="cf-error-message" style={{ color: 'var(--accent-pink)', fontSize: '11px', marginTop: '4px', display: 'block' }}>{errorsReset.newPassword.message}</span>}
           </div>
           <div className="bf-actions">
-            <button type="button" className="btn-secondary" onClick={() => setIsPasswordModalOpen(false)} disabled={loading}>
+            <Button type="button" variant="secondary" onClick={() => setIsPasswordModalOpen(false)} disabled={loading}>
               Batal
-            </button>
-            <button type="submit" className="btn-primary" disabled={loading} style={{ background: 'var(--accent-pink)' }}>
-              {loading ? <Loader2 className="spinner" size={16} /> : 'Simpan Password Baru'}
-            </button>
+            </Button>
+            <Button type="submit" loading={loading} disabled={loading} style={{ background: 'var(--accent-pink)' }}>
+              Simpan Password Baru
+            </Button>
           </div>
         </form>
       </Modal>
@@ -493,7 +495,7 @@ const StaffPage = () => {
               <div className="timeline-marker">
                 <Clock size={12} />
               </div>
-              <div className="app-card timeline-content">
+              <Card variant="card" className="timeline-content">
                 <div className="timeline-meta">
                   <span className="timeline-actor">{log.actorName}</span>
                   <span className="timeline-time">{new Date(log.createdAt).toLocaleString('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}</span>
@@ -501,7 +503,7 @@ const StaffPage = () => {
                 <div className="timeline-action">
                   <strong>{log.action}</strong>: {log.summary}
                 </div>
-              </div>
+              </Card>
             </div>
           ))}
           {logs.length === 0 && <div className="audit-log-empty">Belum ada jejak aktivitas tercatat.</div>}

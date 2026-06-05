@@ -6,7 +6,7 @@ import './shared/styles/legacy-compat.css'
 import './shared/styles/admin-flat.css'
 import './shared/styles/public-showcase.css'
 import './shared/styles/mobile.css'
-import App from './App.jsx'
+import App from './app/App.jsx'
 import ErrorBoundary from './components/ErrorBoundary.jsx'
 
 createRoot(document.getElementById('root')).render(

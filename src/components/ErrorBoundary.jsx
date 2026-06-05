@@ -1,5 +1,6 @@
 import React from 'react';
 import { AlertOctagon, RotateCw, Home } from 'lucide-react';
+import { Button, Card } from '../shared/ui';
 import './ErrorBoundary.css';
 
 class ErrorBoundary extends React.Component {
@@ -29,7 +30,7 @@ class ErrorBoundary extends React.Component {
     if (this.state.hasError) {
       return (
         <div className="error-boundary-container">
-          <div className="error-boundary-card">
+          <Card variant="plain" className="error-boundary-card">
             <div className="error-boundary-icon-wrapper">
               <AlertOctagon size={40} />
             </div>
@@ -47,24 +48,26 @@ class ErrorBoundary extends React.Component {
             </details>
 
             <div className="error-boundary-actions">
-              <button 
+              <Button
                 type="button" 
-                className="btn btn-secondary" 
+                variant="secondary"
+                className="btn"
                 onClick={this.handleGoHome}
               >
                 <Home size={16} />
                 <span>Ke Beranda</span>
-              </button>
-              <button 
+              </Button>
+              <Button
                 type="button" 
-                className="btn btn-primary" 
+                variant="primary"
+                className="btn"
                 onClick={this.handleReload}
               >
                 <RotateCw size={16} />
                 <span>Muat Ulang</span>
-              </button>
+              </Button>
             </div>
-          </div>
+          </Card>
         </div>
       );
     }

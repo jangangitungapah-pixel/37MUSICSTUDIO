@@ -1,0 +1,8 @@
+.ui-button {
+  min-width: 0;
+}
+
+.ui-button > svg,
+.ui-button > .spinner {
+  flex-shrink: 0;
+}

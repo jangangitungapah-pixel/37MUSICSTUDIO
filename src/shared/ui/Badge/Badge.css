@@ -1,0 +1,8 @@
+.ui-badge {
+  min-width: 0;
+}
+
+.ui-badge-compact {
+  font-size: 11px;
+  padding: 3px 8px;
+}

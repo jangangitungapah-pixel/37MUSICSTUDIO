@@ -1,15 +1,16 @@
 import { useState } from 'react';
-import { CalendarDays, Users, Package, CreditCard, Settings, BookOpen, PieChart, LogOut, Bell, ChevronRight, ChevronLeft, FlaskConical, Sun, Moon, Shield, Hammer, MoreHorizontal, Image, Volume2, VolumeX } from 'lucide-react';
+import { CalendarDays, Users, Package, CreditCard, Settings, BookOpen, PieChart, LogOut, Bell, ChevronRight, ChevronLeft, FlaskConical, Sun, Moon, Shield, Hammer, Image, Volume2, VolumeX } from 'lucide-react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
-import { useAuthStore } from '../store/useAuthStore';
-import { useNotificationStore } from '../store/useNotificationStore';
-import { useThemeStore } from '../store/useThemeStore';
-import { useDemoStore } from '../store/useDemoStore';
-import { ROUTE_PERMISSIONS, hasPermission } from '../lib/permissions';
-import ProfileModal from './ProfileModal';
-import NotificationPanel from './NotificationPanel';
-import Modal from './Modal';
-import './Sidebar.css';
+import { useAuthStore } from '../../store/useAuthStore';
+import { useNotificationStore } from '../../store/useNotificationStore';
+import { useThemeStore } from '../../store/useThemeStore';
+import { useDemoStore } from '../../store/useDemoStore';
+import { ROUTE_PERMISSIONS, hasPermission } from '../../lib/permissions';
+import ProfileModal from '../../components/ProfileModal';
+import NotificationPanel from '../../components/NotificationPanel';
+import Modal from '../../components/Modal';
+import BottomNav from './BottomNav';
+import '../../components/Sidebar.css';
 
 const UI_CLICK_SOUND = '/click.wav';
 
@@ -163,36 +164,14 @@ const Sidebar = () => {
       </header>
 
       {/* ===== BOTTOM NAV BAR (MOBILE ONLY) ===== */}
-      <nav className="bottom-nav-bar">
-        {primaryMobileMenus.filter((item) => hasPermission(userProfile, ROUTE_PERMISSIONS[item.path])).map((item) => {
-          const isActive = location.pathname.startsWith(item.path) || (item.path === '/dashboard' && location.pathname === '/');
-          return (
-            <NavLink 
-              key={item.path}
-              to={item.path} 
-              className={`bn-item ${isActive ? 'active' : ''}`}
-              onClick={playClick}
-            >
-              <div className="bn-icon-wrapper">
-                {item.icon}
-              </div>
-              <span className="bn-label">{item.label === 'Dashboard' ? 'Home' : item.label}</span>
-            </NavLink>
-          );
-        })}
-        <button 
-          className="bn-item" 
-          onClick={() => { playClick(); setMobileOpen(true); }}
-          aria-label="Menu Lainnya"
-          aria-haspopup="dialog"
-          aria-expanded={mobileOpen}
-        >
-          <div className="bn-icon-wrapper">
-            <MoreHorizontal size={19} />
-          </div>
-          <span className="bn-label">Lainnya</span>
-        </button>
-      </nav>
+      <BottomNav
+        primaryItems={primaryMobileMenus}
+        userProfile={userProfile}
+        location={location}
+        onNavigate={playClick}
+        onMore={() => { playClick(); setMobileOpen(true); }}
+        isMoreOpen={mobileOpen}
+      />
  
       {/* ===== MOBILE "MORE" BOTTOM SHEET ===== */}
       <Modal 

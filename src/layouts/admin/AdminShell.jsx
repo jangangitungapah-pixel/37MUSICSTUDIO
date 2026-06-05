@@ -1,34 +1,29 @@
 import { Suspense, lazy, useState } from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { Loader2, LockKeyhole, LogOut, ShieldAlert } from 'lucide-react';
-import { useAuthStore } from '../store/useAuthStore';
-import { ROUTE_PERMISSIONS, hasPermission } from '../lib/permissions';
+import { useAuthStore } from '../../store/useAuthStore';
+import { ROUTE_PERMISSIONS, hasPermission } from '../../lib/permissions';
+import FullPageLoader from '../../app/FullPageLoader';
 import Sidebar from './Sidebar';
-import NotificationToast from './NotificationToast';
-import '../pages/AuthPage.css';
-import '../styles/fluent2-assets.css';
-import '../styles/flat-minimal-system.css';
-import '../styles/modern-minimal-admin.css';
-import '../styles/mobile-overhaul.css';
+import NotificationToast from '../../components/NotificationToast';
+import '../../pages/AuthPage.css';
+import '../../styles/fluent2-assets.css';
+import '../../styles/flat-minimal-system.css';
+import '../../styles/modern-minimal-admin.css';
+import '../../styles/mobile-overhaul.css';
 
-const CalendarPage = lazy(() => import('../pages/CalendarPage'));
-const CustomersPage = lazy(() => import('../pages/CustomersPage'));
-const InventoryPage = lazy(() => import('../pages/InventoryPage'));
-const BillingPage = lazy(() => import('../pages/BillingPage'));
-const FinancePage = lazy(() => import('../pages/FinancePage'));
-const SettingsPage = lazy(() => import('../pages/SettingsPage'));
-const DashboardPage = lazy(() => import('../pages/DashboardPage'));
-const StaffPage = lazy(() => import('../pages/StaffPage'));
-const MaintenancePage = lazy(() => import('../pages/MaintenancePage'));
-const GalleryPage = lazy(() => import('../pages/GalleryPage'));
+const CalendarPage = lazy(() => import('../../pages/CalendarPage'));
+const CustomersPage = lazy(() => import('../../pages/CustomersPage'));
+const InventoryPage = lazy(() => import('../../pages/InventoryPage'));
+const BillingPage = lazy(() => import('../../pages/BillingPage'));
+const FinancePage = lazy(() => import('../../pages/FinancePage'));
+const SettingsPage = lazy(() => import('../../pages/SettingsPage'));
+const DashboardPage = lazy(() => import('../../pages/DashboardPage'));
+const StaffPage = lazy(() => import('../../pages/StaffPage'));
+const MaintenancePage = lazy(() => import('../../pages/MaintenancePage'));
+const GalleryPage = lazy(() => import('../../pages/GalleryPage'));
 
 const STAFF_ROLES = new Set(['admin', 'staff']);
-
-const FullPageLoader = () => (
-  <div style={{ height: '100vh', width: '100vw', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg-dark)' }}>
-    <Loader2 className="spinner" size={32} color="var(--accent-pink)" />
-  </div>
-);
 
 const AccessDenied = () => {
   const { logout, loading } = useAuthStore();
