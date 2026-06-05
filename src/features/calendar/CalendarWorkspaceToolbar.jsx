@@ -4,12 +4,12 @@ import * as Tooltip from '@radix-ui/react-tooltip';
 import { activeIndicatorTransition } from '../../animations';
 
 const STATUS_FILTERS = [
-  { id: 'all', label: 'Semua', shortLabel: 'S' },
-  { id: 'pending', label: 'Pending', shortLabel: 'P' },
-  { id: 'dp', label: 'DP', shortLabel: 'DP' },
-  { id: 'confirmed', label: 'Lunas', shortLabel: 'L' },
-  { id: 'maintenance', label: 'Blokir', shortLabel: 'B' },
-  { id: 'cancelled', label: 'Batal', shortLabel: 'X' },
+  { id: 'all',         label: 'Semua',    shortLabel: 'All' },
+  { id: 'pending',     label: 'Pending',  shortLabel: 'P'   },
+  { id: 'dp',          label: 'DP',       shortLabel: 'DP'  },
+  { id: 'confirmed',   label: 'Lunas',    shortLabel: 'L'   },
+  { id: 'maintenance', label: 'Blokir',   shortLabel: 'B'   },
+  { id: 'cancelled',   label: 'Batal',    shortLabel: 'X'   },
 ];
 
 const CalendarWorkspaceToolbar = ({
@@ -24,51 +24,58 @@ const CalendarWorkspaceToolbar = ({
   onNext,
   onPrev,
 }) => (
-  <div className="calendar-workspace-toolbar">
-    <div className="calendar-toolbar-left">
-      <button className="icon-btn nav-arrow" onClick={onPrev} aria-label="Kembali ke periode sebelumnya">
-        <ChevronLeft size={18} />
-      </button>
-      <span className="current-month">{dateLabel}</span>
-      <button className="icon-btn nav-arrow" onClick={onNext} aria-label="Lanjut ke periode berikutnya">
-        <ChevronRight size={18} />
-      </button>
-      <button className="today-btn" onClick={onGoToday}>Hari Ini</button>
+  <div className="cal-toolbar">
+    {/* Left: Date Navigation */}
+    <div className="cal-toolbar-left">
+      <div className="cal-date-nav">
+        <button className="cal-nav-btn" onClick={onPrev} aria-label="Periode sebelumnya">
+          <ChevronLeft size={16} />
+        </button>
+        <span className="cal-period-label">{dateLabel}</span>
+        <button className="cal-nav-btn" onClick={onNext} aria-label="Periode berikutnya">
+          <ChevronRight size={16} />
+        </button>
+      </div>
+      <button className="cal-today-btn" onClick={onGoToday}>Hari Ini</button>
     </div>
 
-    <div className="calendar-toolbar-right">
-      <div className="view-switcher" role="tablist" aria-label="Pilih format tampilan kalender">
+    {/* Right: View switcher + Filter chips */}
+    <div className="cal-toolbar-right">
+      {/* View mode pills */}
+      <div className="cal-view-switcher" role="tablist" aria-label="Format tampilan kalender">
         {viewModes.map(({ id, label, icon: Icon }) => (
           <button
             key={id}
-            className={`view-btn ${viewMode === id ? 'active' : ''}`}
+            className={`cal-view-btn ${viewMode === id ? 'active' : ''}`}
             onClick={() => onChangeViewMode(id)}
             role="tab"
             aria-selected={viewMode === id}
           >
-            <Icon size={14} />
+            <Icon size={13} />
             <span>{label}</span>
             {viewMode === id && (
               <motion.div
-                layoutId="view-indicator"
-                className="view-btn-indicator"
+                layoutId="cal-view-indicator"
+                className="cal-view-indicator"
                 transition={activeIndicatorTransition}
               />
             )}
           </button>
         ))}
       </div>
-      <div className="quick-filters">
+
+      {/* Status filter chips */}
+      <div className="cal-filters">
         {STATUS_FILTERS.map(({ id, label, shortLabel }) => (
           <Tooltip.Root key={id}>
             <Tooltip.Trigger asChild>
               <button
-                className={`filter-chip ${filterStatus === id ? `active ${id}` : ''}`}
+                className={`cal-chip ${filterStatus === id ? `active ${id}` : ''}`}
                 onClick={() => onChangeFilter(id)}
                 aria-pressed={filterStatus === id}
-                aria-label={`Filter status ${label}`}
+                aria-label={`Filter ${label}`}
               >
-                {id !== 'all' && <span className={`dot ${id}`} style={id === 'maintenance' ? { background: '#6b6b76' } : undefined} />}
+                {id !== 'all' && <span className={`cal-chip-dot ${id}`} />}
                 {isMobile ? shortLabel : label}
               </button>
             </Tooltip.Trigger>

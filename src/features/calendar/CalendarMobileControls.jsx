@@ -1,12 +1,12 @@
 import { ChevronLeft, ChevronRight, Plus, Search, X } from 'lucide-react';
 
 const MOBILE_STATUS_FILTERS = [
-  { id: 'all', label: 'Semua' },
-  { id: 'pending', label: 'Pending' },
-  { id: 'dp', label: 'DP' },
-  { id: 'confirmed', label: 'Lunas' },
+  { id: 'all',         label: 'Semua'  },
+  { id: 'pending',     label: 'Pending'},
+  { id: 'dp',          label: 'DP'     },
+  { id: 'confirmed',   label: 'Lunas'  },
   { id: 'maintenance', label: 'Blokir' },
-  { id: 'cancelled', label: 'Batal' },
+  { id: 'cancelled',   label: 'Batal'  },
 ];
 
 const CalendarMobileControls = ({
@@ -25,65 +25,73 @@ const CalendarMobileControls = ({
   onNext,
   onPrev,
 }) => (
-  <div className="calendar-mobile-control">
-    <div className="calendar-mobile-titlebar">
-      <div>
-        <h2 className="mobile-title">Booking Calendar</h2>
-        <p className="mobile-subtitle">{studioName} - {dateLabel}</p>
+  <div className="cal-mob-ctrl">
+    {/* Top row: title + FAB */}
+    <div className="cal-mob-top">
+      <div className="cal-mob-title">
+        <h2>Booking Calendar</h2>
+        <p>{studioName} · {dateLabel}</p>
       </div>
-      <button className="calendar-mobile-new" onClick={onNewBooking} aria-label="Booking Baru">
+      <button className="cal-mob-fab" onClick={onNewBooking} aria-label="Booking Baru">
         <Plus size={20} />
       </button>
     </div>
 
-    <div className="calendar-mobile-search">
-      <Search size={14} className="search-icon" />
-      <input
-        type="text"
-        placeholder="Cari band / no HP..."
-        value={searchQuery}
-        onChange={(event) => onChangeSearch(event.target.value)}
-        aria-label="Cari band atau nomor HP"
-      />
-      {searchQuery && (
-        <button onClick={onClearSearch} aria-label="Bersihkan">
-          <X size={12} />
+    {/* Search + Nav row */}
+    <div className="cal-mob-row">
+      <div className="cal-mob-search">
+        <Search size={13} />
+        <input
+          type="text"
+          placeholder="Cari band / no HP..."
+          value={searchQuery}
+          onChange={(e) => onChangeSearch(e.target.value)}
+          aria-label="Cari band atau nomor HP"
+        />
+        {searchQuery && (
+          <button className="cal-mob-search-clear" onClick={onClearSearch} aria-label="Bersihkan">
+            <X size={11} />
+          </button>
+        )}
+      </div>
+
+      <div className="cal-mob-nav">
+        <button className="cal-mob-nav-btn" onClick={onPrev} aria-label="Sebelumnya">
+          <ChevronLeft size={15} />
         </button>
-      )}
-    </div>
-
-    <div className="calendar-mobile-period">
-      <button onClick={onPrev} aria-label="Sebelumnya">
-        <ChevronLeft size={16} />
-      </button>
-      <button className="calendar-mobile-today" onClick={onGoToday}>
-        Hari Ini
-      </button>
-      <button onClick={onNext} aria-label="Berikutnya">
-        <ChevronRight size={16} />
-      </button>
-    </div>
-
-    <div className="calendar-mobile-segments">
-      {viewModes.map(({ id, label, icon: Icon }) => (
-        <button
-          key={id}
-          className={`view-btn ${viewMode === id ? 'active' : ''}`}
-          onClick={() => onChangeViewMode(id)}
-        >
-          <Icon size={12} />
-          <span>{label}</span>
+        <button className="cal-mob-today-btn" onClick={onGoToday}>Hari Ini</button>
+        <button className="cal-mob-nav-btn" onClick={onNext} aria-label="Berikutnya">
+          <ChevronRight size={15} />
         </button>
-      ))}
+      </div>
     </div>
 
-    <div className="calendar-mobile-filters">
+    {/* View mode + Filter row */}
+    <div className="cal-mob-row">
+      <div className="cal-mob-segments">
+        {viewModes.map(({ id, label, icon: Icon }) => (
+          <button
+            key={id}
+            className={`cal-mob-seg-btn ${viewMode === id ? 'active' : ''}`}
+            onClick={() => onChangeViewMode(id)}
+          >
+            <Icon size={12} />
+            <span>{label}</span>
+          </button>
+        ))}
+      </div>
+    </div>
+
+    {/* Filter chips */}
+    <div className="cal-mob-filters">
       {MOBILE_STATUS_FILTERS.map(({ id, label }) => (
         <button
           key={id}
-          className={`filter-chip ${filterStatus === id ? 'active' : ''}`}
+          className={`cal-chip ${filterStatus === id ? `active ${id}` : ''}`}
           onClick={() => onChangeFilter(id)}
+          aria-pressed={filterStatus === id}
         >
+          {id !== 'all' && <span className={`cal-chip-dot ${id}`} />}
           {label}
         </button>
       ))}

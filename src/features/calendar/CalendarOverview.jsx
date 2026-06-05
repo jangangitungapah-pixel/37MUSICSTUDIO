@@ -16,88 +16,107 @@ const CalendarOverview = ({
     {!isCollapsed && (
       <motion.div
         id="calendar-top-panels"
-        className="calendar-overview"
+        className="cal-overview"
         variants={mobileMenuVariants}
         initial="hidden"
         animate="visible"
         exit="exit"
         transition={{ duration: 0.22, ease: 'easeInOut' }}
       >
-        <div className="calendar-stats-grid">
-          <div className="calendar-stat-card">
-            <div className="calendar-stat-icon stat-icon-bookings">
-              <CalendarCheck size={18} color="var(--accent-cyan)" />
+        {/* Stats Row */}
+        <div className="cal-stats-row">
+          <div className="cal-stat">
+            <div className="cal-stat-icon teal">
+              <CalendarCheck size={17} />
             </div>
-            <div className="calendar-stat-data">
-              <span className="calendar-stat-value">{stats.totalBookings}</span>
-              <span className="calendar-stat-label">Total Booking</span>
-            </div>
-          </div>
-          <div className="calendar-stat-card">
-            <div className="calendar-stat-icon stat-icon-hours">
-              <Clock size={18} color="var(--accent-pink)" />
-            </div>
-            <div className="calendar-stat-data">
-              <span className="calendar-stat-value">{stats.totalHours}<small> jam</small></span>
-              <span className="calendar-stat-label">Jam Terpakai</span>
+            <div className="cal-stat-body">
+              <span className="cal-stat-val">{stats.totalBookings}</span>
+              <span className="cal-stat-lbl">Total Booking</span>
             </div>
           </div>
-          <div className="calendar-stat-card">
-            <div className="calendar-stat-icon stat-icon-revenue">
-              <DollarSign size={18} color="#4CAF50" />
+
+          <div className="cal-stat">
+            <div className="cal-stat-icon gold">
+              <Clock size={17} />
             </div>
-            <div className="calendar-stat-data">
-              <span className="calendar-stat-value">{formatCurrency(stats.totalRevenue)}</span>
-              <span className="calendar-stat-label">
+            <div className="cal-stat-body">
+              <span className="cal-stat-val">{stats.totalHours}<small> jam</small></span>
+              <span className="cal-stat-lbl">Jam Terpakai</span>
+            </div>
+          </div>
+
+          <div className="cal-stat">
+            <div className="cal-stat-icon green">
+              <DollarSign size={17} />
+            </div>
+            <div className="cal-stat-body">
+              <span className="cal-stat-val" style={{ fontSize: '1rem' }}>
+                {formatCurrency(stats.totalRevenue)}
+              </span>
+              <span className="cal-stat-lbl">
                 Est. Pendapatan
                 {revTrend !== null && (
-                  <span className={`trend-badge ${revTrend >= 0 ? 'up' : 'down'}`}>
-                    <TrendingUp size={10} />{revTrend >= 0 ? '+' : ''}{revTrend}%
+                  <span className={`cal-trend ${revTrend >= 0 ? 'up' : 'down'}`}>
+                    <TrendingUp size={9} />
+                    {revTrend >= 0 ? '+' : ''}{revTrend}%
                   </span>
                 )}
               </span>
             </div>
           </div>
-          <div className="calendar-stat-card">
-            <div className="calendar-stat-legend">
-              <span className="calendar-stat-legend-item"><span className="dot confirmed" /> {stats.confirmed} Lunas</span>
-              <span className="calendar-stat-legend-item"><span className="dot dp" /> {stats.dp} DP</span>
-              <span className="calendar-stat-legend-item"><span className="dot pending" /> {stats.pending} Pending</span>
+
+          <div className="cal-stat">
+            <div className="cal-stat-legend">
+              <div className="cal-legend-row">
+                <span className="cal-legend-dot confirmed" />
+                <span>{stats.confirmed} Lunas</span>
+              </div>
+              <div className="cal-legend-row">
+                <span className="cal-legend-dot dp" />
+                <span>{stats.dp} DP</span>
+              </div>
+              <div className="cal-legend-row">
+                <span className="cal-legend-dot pending" />
+                <span>{stats.pending} Pending</span>
+              </div>
             </div>
           </div>
         </div>
 
-        <div className="app-smart-panel">
-          {scheduleAnomalies.length > 0 && (
-            <div className="cal-smart-alert">
-              <AlertTriangle size={15} />
-              <span>{scheduleAnomalies.length} anomali jadwal terdeteksi. Pertama: {scheduleAnomalies[0].detail}</span>
-            </div>
-          )}
-        </div>
+        {/* Anomaly alert */}
+        {scheduleAnomalies.length > 0 && (
+          <div className="cal-smart-strip">
+            <AlertTriangle size={14} />
+            <span>
+              <strong>{scheduleAnomalies.length} anomali</strong> terdeteksi — {scheduleAnomalies[0].detail}
+            </span>
+          </div>
+        )}
 
+        {/* Pending requests */}
         {pendingRequests.length > 0 && (
-          <div className="app-smart-panel">
-            <div className="smart-head">
-              <Inbox size={20} />
-              <div>
-                <h3>Request Booking Publik</h3>
-                <p>{pendingRequests.length} request menunggu persetujuan admin.</p>
-              </div>
+          <div className="cal-inbox">
+            <div className="cal-inbox-head">
+              <Inbox size={16} color="var(--c-teal)" />
+              <h3>Request Booking Publik</h3>
+              <p>{pendingRequests.length} menunggu persetujuan</p>
             </div>
-            <div className="smart-list">
-              {pendingRequests.slice(0, 5).map((request) => (
-                <div key={request.id} className="cal-request-chip">
-                  <div className="cal-request-info">
-                    <strong>{request.band}</strong>
-                    <span>{request.date} &bull; {String(request.hour).padStart(2, '0')}.00-{String(Number(request.hour) + Number(request.duration || 1)).padStart(2, '0')}.00</span>
+            <div className="cal-inbox-list">
+              {pendingRequests.slice(0, 5).map((req) => (
+                <div key={req.id} className="cal-req-chip">
+                  <div className="cal-req-info">
+                    <strong>{req.band}</strong>
+                    <span>
+                      {req.date} · {String(req.hour).padStart(2, '0')}.00–
+                      {String(Number(req.hour) + Number(req.duration || 1)).padStart(2, '0')}.00
+                    </span>
                   </div>
-                  <div className="cal-request-actions">
-                    <button className="request-approve" onClick={() => onApproveRequest(request)} title="Approve">
-                      <CheckCircle2 size={15} /> Approve
+                  <div className="cal-req-btns">
+                    <button className="cal-req-approve" onClick={() => onApproveRequest(req)} title="Approve">
+                      <CheckCircle2 size={13} /> Approve
                     </button>
-                    <button className="request-reject" onClick={() => onRejectRequest(request)} title="Tolak">
-                      <XCircle size={15} /> Tolak
+                    <button className="cal-req-reject" onClick={() => onRejectRequest(req)} title="Tolak">
+                      <XCircle size={13} /> Tolak
                     </button>
                   </div>
                 </div>

@@ -511,9 +511,9 @@ const CalendarPage = () => {
 
   return (
     <Tooltip.Provider delayDuration={200}>
-      <div className="app-page calendar-page cal-page">
+      <div className="cal-page">
 
-        <div className={`calendar-shell ${selectedBooking ? 'blurred' : ''} ${areTopPanelsCollapsed ? 'panels-collapsed' : ''}`}>
+        <div className="calendar-shell">
           {isMobile && (
             <CalendarMobileControls
               dateLabel={getDateLabel()}
@@ -556,8 +556,8 @@ const CalendarPage = () => {
         onRejectRequest={handleRejectRequest}
       />
 
-      {/* Calendar Container */}
-      <section className="calendar-workspace app-panel">
+      {/* Calendar Workspace */}
+      <section className="cal-workspace">
         <CalendarWorkspaceToolbar
           dateLabel={getDateLabel()}
           filterStatus={filterStatus}
@@ -658,40 +658,6 @@ const CalendarPage = () => {
               <textarea
                 className="form-input"
                 rows="3"
-                value={rescheduleDraft.reason}
-                onChange={(event) => setRescheduleDraft((prev) => ({ ...prev, reason: event.target.value }))}
-                placeholder="Contoh: pelanggan minta pindah jam"
-              />
-            </div>
-            <div className="form-actions">
-              <button type="button" className="btn-secondary" onClick={() => setRescheduleDraft(null)}>Batal</button>
-              <button type="submit" className="btn-primary">Simpan Jadwal Baru</button>
-            </div>
-          </form>
-        )}
-      </Modal>
-
-      {/* Resize Confirmation Modal */}
-      <Modal isOpen={!!resizeConfirmData} onClose={() => setResizeConfirmData(null)} title="Konfirmasi Perubahan Jam">
-        {resizeConfirmData && (
-          <div className="resize-confirm-body">
-            <div className="resize-warning-box">
-              <h4>Perubahan Durasi & Biaya</h4>
-              <p>
-                Durasi: <strong>{resizeConfirmData.oldDuration} jam</strong> <span className="resize-arrow">{'->'}</span> <strong className="resize-new-duration">{resizeConfirmData.newDuration} jam</strong>
-              </p>
-            </div>
-
-            <div className="resize-price-details">
-              <div className="resize-price-row">
-                <span>Total Biaya Sebelumnya</span>
-                <span>{formatCurrency(resizeConfirmData.oldPrice)}</span>
-              </div>
-              <div className="resize-price-row is-total">
-                <span>Total Biaya Baru</span>
-                <span>{formatCurrency(resizeConfirmData.newPrice)}</span>
-              </div>
-            </div>
 
             {resizeConfirmData.diff !== 0 && (
               <div className={`resize-diff-note ${resizeConfirmData.diff > 0 ? 'increase' : 'decrease'}`}>
