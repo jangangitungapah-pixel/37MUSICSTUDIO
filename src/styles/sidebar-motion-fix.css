@@ -1,0 +1,171 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   SIDEBAR MOTION FIX
+   --------------------------------------------------------------------------
+   The flat minimal override simplifies visual effects, but the sidebar and
+   bottom nav rely on Framer Motion layout animations for active indicators.
+   This file keeps those areas visually flat while preventing CSS hover and
+   transition overrides from fighting Framer Motion transforms.
+   ════════════════════════════════════════════════════════════════════════════ */
+
+/* Keep the desktop sidebar collapse animation predictable. */
+.sidebar {
+  transition: width 260ms cubic-bezier(0.2, 0, 0, 1) !important;
+  transform: none !important;
+  will-change: width;
+  contain: layout paint;
+}
+
+.sidebar:hover,
+.sidebar.glass-panel:hover {
+  transform: none !important;
+}
+
+/* Prevent nav hover rules from creating vertical jumps/bounce. */
+.sidebar .nav-item,
+.sidebar .theme-toggle-btn,
+.sidebar .user-profile,
+.sidebar .user-profile-btn,
+.sidebar .collapse-toggle,
+.bottom-nav-bar .bn-item,
+.bottom-nav-bar .bn-icon-wrapper,
+.mobile-command-header,
+.mobile-command-header *,
+.bottom-sheet-grid .sheet-nav-item {
+  transform: none !important;
+  will-change: auto !important;
+}
+
+.sidebar .nav-item:hover,
+.sidebar .theme-toggle-btn:hover,
+.sidebar .user-profile:hover,
+.sidebar .user-profile-btn:hover,
+.bottom-nav-bar .bn-item:hover,
+.bottom-nav-bar .bn-icon-wrapper:hover,
+.bottom-sheet-grid .sheet-nav-item:hover {
+  transform: none !important;
+}
+
+/* Scope transitions to cheap visual properties. Framer Motion still owns transform. */
+.sidebar .nav-item,
+.sidebar .theme-toggle-btn,
+.sidebar .collapse-toggle,
+.sidebar .notification-bell-btn,
+.sidebar .user-profile,
+.sidebar .user-profile-btn,
+.bottom-nav-bar .bn-item,
+.bottom-sheet-grid .sheet-nav-item {
+  transition-property: background-color, border-color, color, opacity, box-shadow !important;
+  transition-duration: 150ms !important;
+  transition-timing-function: cubic-bezier(0.2, 0, 0, 1) !important;
+}
+
+/* Avoid layout twitching while Framer Motion moves the active background. */
+.sidebar .nav-icon,
+.sidebar .logo-icon,
+.sidebar .mobile-brand-mark,
+.sidebar .nav-chevron,
+.bottom-nav-bar .bn-icon-wrapper,
+.bottom-nav-bar .bn-label {
+  transition-property: background-color, border-color, color, opacity !important;
+  transition-duration: 150ms !important;
+  transform: none !important;
+}
+
+/* Active indicator: flat and stable, while preserving Framer layoutId motion. */
+.sidebar .nav-active-bg {
+  background: var(--accent-soft) !important;
+  border: 1px solid var(--accent-border) !important;
+  box-shadow: none !important;
+  border-radius: 10px !important;
+  pointer-events: none !important;
+  will-change: transform, width, height !important;
+}
+
+.sidebar .nav-active-bg::before {
+  background: var(--accent-pink) !important;
+  box-shadow: none !important;
+}
+
+/* Bottom nav indicator should slide smoothly without inherited bounce. */
+.bottom-nav-bar .bn-indicator {
+  box-shadow: none !important;
+  will-change: transform, width, height !important;
+}
+
+/* Framer children inside nav should not receive global transitions. */
+.sidebar [style*="transform"],
+.bottom-nav-bar [style*="transform"] {
+  transition-property: none !important;
+}
+
+/* Mobile: keep tap feedback subtle without bouncing the whole nav. */
+@media (max-width: 1024px) {
+  .sidebar,
+  .bottom-nav-bar,
+  .mobile-command-header {
+    contain: layout paint;
+  }
+
+  .bottom-nav-bar .bn-item:active,
+  .bottom-nav-bar .bn-icon-wrapper:active,
+  .mobile-command-header button:active,
+  .bottom-sheet-grid .sheet-nav-item:active {
+    transform: none !important;
+  }
+}
+
+/* Mobile bottom nav may keep a subtle blur for depth, but only on this fixed chrome. */
+@media (max-width: 768px) {
+  .bottom-nav-bar {
+    background: rgba(24, 27, 34, 0.74) !important;
+    border: 1px solid rgba(255, 255, 255, 0.10) !important;
+    box-shadow: 0 -8px 28px rgba(0, 0, 0, 0.24), inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
+    -webkit-backdrop-filter: blur(12px) saturate(1.16) !important;
+    backdrop-filter: blur(12px) saturate(1.16) !important;
+  }
+
+  [data-theme="light"] .bottom-nav-bar {
+    background: rgba(255, 255, 255, 0.78) !important;
+    border: 1px solid rgba(20, 23, 32, 0.10) !important;
+    box-shadow: 0 -8px 28px rgba(20, 23, 32, 0.10), inset 0 1px 0 rgba(255, 255, 255, 0.88) !important;
+    -webkit-backdrop-filter: blur(12px) saturate(1.10) !important;
+    backdrop-filter: blur(12px) saturate(1.10) !important;
+  }
+
+  .bottom-nav-bar .bn-item.active {
+    background: rgba(var(--accent-pink-rgb), 0.14) !important;
+    border-color: rgba(var(--accent-pink-rgb), 0.18) !important;
+  }
+}
+
+/* High-specificity final mobile nav override.
+   Sidebar.css is imported from Sidebar.jsx and can load after global styles,
+   so this selector intentionally beats the later component-level rules. */
+@media (max-width: 1024px) {
+  html body .app-container .bottom-nav-bar {
+    background: rgba(24, 27, 34, 0.50) !important;
+    background-image: linear-gradient(135deg, rgba(255, 255, 255, 0.10), rgba(255, 255, 255, 0.025)) !important;
+    border: 1px solid rgba(255, 255, 255, 0.13) !important;
+    box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+    -webkit-backdrop-filter: blur(18px) saturate(1.22) !important;
+    backdrop-filter: blur(18px) saturate(1.22) !important;
+    contain: none !important;
+    isolation: isolate !important;
+  }
+
+  html body[data-theme="light"] .app-container .bottom-nav-bar,
+  html [data-theme="light"] body .app-container .bottom-nav-bar,
+  html body .app-container [data-theme="light"] .bottom-nav-bar {
+    background: rgba(255, 255, 255, 0.60) !important;
+    background-image: linear-gradient(135deg, rgba(255, 255, 255, 0.76), rgba(255, 255, 255, 0.24)) !important;
+    border: 1px solid rgba(20, 23, 32, 0.12) !important;
+    box-shadow: 0 -10px 30px rgba(20, 23, 32, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.90) !important;
+    -webkit-backdrop-filter: blur(18px) saturate(1.16) !important;
+    backdrop-filter: blur(18px) saturate(1.16) !important;
+  }
+
+  html body .app-container .bottom-nav-bar .bn-item.active {
+    background: rgba(var(--accent-pink-rgb), 0.16) !important;
+    border-color: rgba(var(--accent-pink-rgb), 0.20) !important;
+  }
+}
