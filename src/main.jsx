@@ -4,6 +4,7 @@ import './index.css'
 import './styles/fluent2-assets.css'
 import './styles/mobile-overhaul.css'
 import './styles/flat-minimal-system.css'
+import './styles/showcase-pages.css'
 import App from './App.jsx'
 import ErrorBoundary from './components/ErrorBoundary.jsx'
 
