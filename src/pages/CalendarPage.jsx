@@ -1,7 +1,7 @@
-import React, { useState, useMemo, useRef, useEffect, useCallback } from 'react';
+import { useState, useMemo, useRef, useEffect, useCallback } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 import { createPortal } from 'react-dom';
-import { Inbox, ChevronLeft, ChevronRight, Plus, Search, CalendarCheck, Clock, DollarSign, Trash2, Phone, StickyNote, X, MessageCircle, TrendingUp, Calendar, LayoutGrid, CalendarDays, AlertTriangle, CheckCircle2, XCircle, RotateCcw } from 'lucide-react';
+import { Clock, Trash2, Phone, StickyNote, X, MessageCircle, Calendar, LayoutGrid, CalendarDays, RotateCcw } from 'lucide-react';
 import { format, addMonths, subMonths, startOfMonth, endOfMonth, addDays, subDays, getDay, startOfWeek, endOfWeek, eachDayOfInterval, addWeeks, subWeeks } from 'date-fns';
 import { useBookingStore } from '../store/useBookingStore';
 import { useSettingsStore } from '../store/useSettingsStore';
@@ -16,12 +16,15 @@ import { getAnomalies } from '../lib/smartInsights';
 import { getDepositDeadlineStatus, hasBookingOverlap } from '../lib/bookingWorkflows';
 import { useCalendarBookingMove } from '../hooks/useCalendarBookingMove';
 import { useCalendarBookingResize } from '../hooks/useCalendarBookingResize';
-import { mobileMenuVariants, activeIndicatorTransition } from '../animations';
 import Fuse from 'fuse.js';
 import useSound from 'use-sound';
 import { useThemeStore } from '../store/useThemeStore';
 import { CLICK_SOUND } from '../lib/sounds';
+import CalendarGrid from '../features/calendar/CalendarGrid';
 import CalendarHeader from '../features/calendar/CalendarHeader';
+import CalendarMobileControls from '../features/calendar/CalendarMobileControls';
+import CalendarOverview from '../features/calendar/CalendarOverview';
+import CalendarWorkspaceToolbar from '../features/calendar/CalendarWorkspaceToolbar';
 import './CalendarPage.css';
 import './CalendarPrintStyles.css';
 import './CalendarModernOverrides.css';
@@ -507,77 +510,22 @@ const CalendarPage = () => {
 
         <div className={`calendar-shell ${selectedBooking ? 'blurred' : ''} ${areTopPanelsCollapsed ? 'panels-collapsed' : ''}`}>
           {isMobile && (
-            <div className="calendar-mobile-control">
-              <div className="calendar-mobile-titlebar">
-                <div>
-                  <h2 className="mobile-title">Booking Calendar</h2>
-                  <p className="mobile-subtitle">{studioName} - {getDateLabel()}</p>
-                </div>
-                <button className="calendar-mobile-new" onClick={handleNewBooking} aria-label="Booking Baru">
-                  <Plus size={20} />
-                </button>
-              </div>
-
-              <div className="calendar-mobile-search">
-                <Search size={14} className="search-icon" />
-                <input
-                  type="text"
-                  placeholder="Cari band / no HP..."
-                  value={searchQuery}
-                  onChange={e => setSearchQuery(e.target.value)}
-                  aria-label="Cari band atau nomor HP"
-                />
-                {searchQuery && (
-                  <button onClick={() => setSearchQuery('')} aria-label="Bersihkan">
-                    <X size={12} />
-                  </button>
-                )}
-              </div>
-
-              <div className="calendar-mobile-period">
-                <button onClick={handlePrev} aria-label="Sebelumnya">
-                  <ChevronLeft size={16} />
-                </button>
-                <button className="calendar-mobile-today" onClick={handleGoToday}>
-                  Hari Ini
-                </button>
-                <button onClick={handleNext} aria-label="Berikutnya">
-                  <ChevronRight size={16} />
-                </button>
-              </div>
-
-              <div className="calendar-mobile-segments">
-                {viewModes.map(({ id, label, icon: Icon }) => (
-                  <button
-                    key={id}
-                    className={`view-btn ${viewMode === id ? 'active' : ''}`}
-                    onClick={() => setViewMode(id)}
-                  >
-                    <Icon size={12} />
-                    <span>{label}</span>
-                  </button>
-                ))}
-              </div>
-
-              <div className="calendar-mobile-filters">
-                {[
-                  { id: 'all', label: 'Semua' },
-                  { id: 'pending', label: 'Pending' },
-                  { id: 'dp', label: 'DP' },
-                  { id: 'confirmed', label: 'Lunas' },
-                  { id: 'maintenance', label: 'Blokir' },
-                  { id: 'cancelled', label: 'Batal' },
-                ].map(({ id, label }) => (
-                  <button
-                    key={id}
-                    className={`filter-chip ${filterStatus === id ? 'active' : ''}`}
-                    onClick={() => setFilterStatus(id)}
-                  >
-                    {label}
-                  </button>
-                ))}
-              </div>
-            </div>
+            <CalendarMobileControls
+              dateLabel={getDateLabel()}
+              filterStatus={filterStatus}
+              searchQuery={searchQuery}
+              studioName={studioName}
+              viewMode={viewMode}
+              viewModes={viewModes}
+              onChangeFilter={setFilterStatus}
+              onChangeSearch={setSearchQuery}
+              onChangeViewMode={setViewMode}
+              onClearSearch={() => setSearchQuery('')}
+              onGoToday={handleGoToday}
+              onNewBooking={handleNewBooking}
+              onNext={handleNext}
+              onPrev={handlePrev}
+            />
           )}
 
           <CalendarHeader
@@ -592,359 +540,62 @@ const CalendarPage = () => {
             onTogglePanels={() => setAreTopPanelsCollapsed((value) => !value)}
           />
 
-      <AnimatePresence initial={false}>
-        {!areTopPanelsCollapsed && (
-          <motion.div
-            id="calendar-top-panels"
-            className="calendar-overview"
-            variants={mobileMenuVariants}
-            initial="hidden"
-            animate="visible"
-            exit="exit"
-            transition={{ duration: 0.22, ease: 'easeInOut' }}
-          >
-            {/* Stats Bar */}
-            <div className="calendar-stats-grid">
-              <div className="calendar-stat-card">
-                <div className="calendar-stat-icon stat-icon-bookings">
-                  <CalendarCheck size={18} color="var(--accent-cyan)" />
-                </div>
-                <div className="calendar-stat-data">
-                  <span className="calendar-stat-value">{stats.totalBookings}</span>
-                  <span className="calendar-stat-label">Total Booking</span>
-                </div>
-              </div>
-              <div className="calendar-stat-card">
-                <div className="calendar-stat-icon stat-icon-hours">
-                  <Clock size={18} color="var(--accent-pink)" />
-                </div>
-                <div className="calendar-stat-data">
-                  <span className="calendar-stat-value">{stats.totalHours}<small> jam</small></span>
-                  <span className="calendar-stat-label">Jam Terpakai</span>
-                </div>
-              </div>
-              <div className="calendar-stat-card">
-                <div className="calendar-stat-icon stat-icon-revenue">
-                  <DollarSign size={18} color="#4CAF50" />
-                </div>
-                <div className="calendar-stat-data">
-                  <span className="calendar-stat-value">{formatCurrency(stats.totalRevenue)}</span>
-                  <span className="calendar-stat-label">
-                    Est. Pendapatan
-                    {revTrend !== null && (
-                      <span className={`trend-badge ${revTrend >= 0 ? 'up' : 'down'}`}>
-                        <TrendingUp size={10} />{revTrend >= 0 ? '+' : ''}{revTrend}%
-                      </span>
-                    )}
-                  </span>
-                </div>
-              </div>
-              <div className="calendar-stat-card">
-                <div className="calendar-stat-legend">
-                  <span className="calendar-stat-legend-item"><span className="dot confirmed" /> {stats.confirmed} Lunas</span>
-                  <span className="calendar-stat-legend-item"><span className="dot dp" /> {stats.dp} DP</span>
-                  <span className="calendar-stat-legend-item"><span className="dot pending" /> {stats.pending} Pending</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Smart Scheduling */}
-            <div className="app-smart-panel">
-
-              {scheduleAnomalies.length > 0 && (
-                <div className="cal-smart-alert">
-                  <AlertTriangle size={15} />
-                  <span>{scheduleAnomalies.length} anomali jadwal terdeteksi. Pertama: {scheduleAnomalies[0].detail}</span>
-                </div>
-              )}
-            </div>
-
-            {pendingRequests.length > 0 && (
-              <div className="app-smart-panel">
-                <div className="smart-head">
-                  <Inbox size={20} />
-                  <div>
-                    <h3>Request Booking Publik</h3>
-                    <p>{pendingRequests.length} request menunggu persetujuan admin.</p>
-                  </div>
-                </div>
-                <div className="smart-list">
-                  {pendingRequests.slice(0, 5).map((request) => (
-                    <div key={request.id} className="cal-request-chip">
-                      <div className="cal-request-info">
-                        <strong>{request.band}</strong>
-                        <span>{request.date} &bull; {String(request.hour).padStart(2, '0')}.00-{String(Number(request.hour) + Number(request.duration || 1)).padStart(2, '0')}.00</span>
-                      </div>
-                      <div className="cal-request-actions">
-                        <button className="request-approve" onClick={() => handleApproveRequest(request)} title="Approve">
-                          <CheckCircle2 size={15} /> Approve
-                        </button>
-                        <button className="request-reject" onClick={() => handleRejectRequest(request)} title="Tolak">
-                          <XCircle size={15} /> Tolak
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <CalendarOverview
+        formatCurrency={formatCurrency}
+        isCollapsed={areTopPanelsCollapsed}
+        pendingRequests={pendingRequests}
+        revTrend={revTrend}
+        scheduleAnomalies={scheduleAnomalies}
+        stats={stats}
+        onApproveRequest={handleApproveRequest}
+        onRejectRequest={handleRejectRequest}
+      />
 
       {/* Calendar Container */}
       <section className="calendar-workspace app-panel">
-        {/* Toolbar */}
-        <div className="calendar-workspace-toolbar">
-          {/* Left: Navigation */}
-          <div className="calendar-toolbar-left">
-            <button className="icon-btn nav-arrow" onClick={handlePrev} aria-label="Kembali ke periode sebelumnya"><ChevronLeft size={18} /></button>
-            <span className="current-month">{getDateLabel()}</span>
-            <button className="icon-btn nav-arrow" onClick={handleNext} aria-label="Lanjut ke periode berikutnya"><ChevronRight size={18} /></button>
-            <button className="today-btn" onClick={handleGoToday}>Hari Ini</button>
-          </div>
-
-          {/* Right: View Switcher + Filters */}
-          <div className="calendar-toolbar-right">
-            <div className="view-switcher" role="tablist" aria-label="Pilih format tampilan kalender">
-              {viewModes.map(({ id, label, icon: Icon }) => (
-                <button 
-                  key={id} 
-                  className={`view-btn ${viewMode === id ? 'active' : ''}`} 
-                  onClick={() => setViewMode(id)}
-                  role="tab"
-                  aria-selected={viewMode === id}
-                >
-                  <Icon size={14} />
-                  <span>{label}</span>
-                  {viewMode === id && (
-                    <motion.div 
-                      layoutId="view-indicator"
-                      className="view-btn-indicator"
-                      transition={activeIndicatorTransition}
-                    />
-                  )}
-                </button>
-              ))}
-            </div>
-            <div className="quick-filters">
-              {[
-                { id: 'all', label: 'Semua', shortLabel: 'S' },
-                { id: 'pending', label: 'Pending', shortLabel: 'P' },
-                { id: 'dp', label: 'DP', shortLabel: 'DP' },
-                { id: 'confirmed', label: 'Lunas', shortLabel: 'L' },
-                { id: 'maintenance', label: 'Blokir', shortLabel: 'B' },
-                { id: 'cancelled', label: 'Batal', shortLabel: 'X' },
-              ].map(({ id, label, shortLabel }) => (
-                <Tooltip.Root key={id}>
-                  <Tooltip.Trigger asChild>
-                    <button 
-                      className={`filter-chip ${filterStatus === id ? `active ${id}` : ''}`} 
-                      onClick={() => setFilterStatus(id)}
-                      aria-pressed={filterStatus === id}
-                      aria-label={`Filter status ${label}`}
-                    >
-                      {id !== 'all' && <span className={`dot ${id}`} style={id === 'maintenance' ? { background: '#6b6b76' } : undefined} />}
-                      {isMobile ? shortLabel : label}
-                    </button>
-                  </Tooltip.Trigger>
-                  <Tooltip.Portal>
-                    <Tooltip.Content className="radix-tooltip-content" sideOffset={5} side="bottom">
-                      {label}
-                      <Tooltip.Arrow className="radix-tooltip-arrow" />
-                    </Tooltip.Content>
-                  </Tooltip.Portal>
-                </Tooltip.Root>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Grid */}
-        <div className={`monthly-grid-wrapper ${resizingBooking ? 'is-resize-active' : ''} ${movingBooking ? 'is-move-active' : ''}`} ref={gridWrapperRef} onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
-          <div className="monthly-grid" style={{ gridTemplateColumns: `${timeColWidth} repeat(${numDays}, minmax(${colWidth}, 1fr))`, gridTemplateRows: `auto repeat(${hoursArray.length}, minmax(48px, 1fr))` }}>
-            <div className="grid-corner-cell" style={{ gridRow: 1, gridColumn: 1 }}><span className="corner-label">JAM</span></div>
-
-            {daysMetadata.map((meta, idx) => {
-              return (
-                <div key={idx} className={`grid-header-cell ${meta.isToday ? 'today' : ''} ${meta.isWeekend ? 'weekend' : ''}`} style={{ gridRow: 1, gridColumn: idx + 2 }}>
-                  <span className="day-name">{dayNames[meta.dow]} {meta.isBlocked && <AlertTriangle size={12} color="var(--accent-pink)" style={{marginLeft: 4, display: 'inline'}} />}</span>
-                  <span className={`day-number ${meta.isToday ? 'today-circle' : ''}`}>{meta.dayNum}</span>
-                </div>
-              );
-            })}
-
-            {hoursArray.map((hour, hourIdx) => {
-              const isCurrentHour = now.getHours() === hour;
-              return (
-                <React.Fragment key={hour}>
-                  <div className={`time-label sticky-col ${hourIdx % 2 === 0 ? 'even-row' : ''} ${isCurrentHour ? 'current-hour-highlight' : ''}`} style={{ gridRow: hourIdx + 2, gridColumn: 1 }}>
-                    <span className="time-range">
-                      {String(hour).padStart(2, '0')}.00
-                    </span>
-                  </div>
-                  {daysMetadata.map((meta, dayIdx) => {
-                    const dateStr = meta.dateStr;
-                    const isToday = meta.isToday;
-                    const isWeekend = meta.isWeekend;
-                    const isBlocked = meta.isBlocked;
-                    const cellBooking = bookingsLookup[`${dateStr}-${hour}`];
-                    const isMoveTarget = moveTarget && moveTarget.date === dateStr && Number(moveTarget.hour) === hour;
-                    const moveTargetClass = isMoveTarget ? (moveTarget.isValid ? 'move-target-valid' : 'move-target-invalid') : '';
-                    const cellClasses = [
-                      'grid-cell',
-                      !cellBooking ? 'empty-cell' : 'covered-cell',
-                      hourIdx % 2 === 0 ? 'even-row' : '',
-                      isToday ? 'today-col-highlight' : '',
-                      isWeekend ? 'weekend-col' : '',
-                      isBlocked && !cellBooking ? 'blocked-cell' : '',
-                      moveTargetClass
-                    ].filter(Boolean).join(' ');
-
-                    // Current time line logic
-                    const isCurrentHour = isToday && now.getHours() === hour;
-                    const timeLineTop = isCurrentHour ? `${(now.getMinutes() / 60) * 100}%` : null;
-
-                    return (
-                      <div 
-                        key={`${hour}-${dayIdx}`} 
-                        className={cellClasses} 
-                        style={{ gridRow: hourIdx + 2, gridColumn: dayIdx + 2 }}
-                        data-calendar-cell="true"
-                        data-date={dateStr}
-                        data-hour={hour}
-                        onClick={cellBooking ? undefined : () => handleCellClick(dateStr, hour)}
-                        onDragOver={handleDragOver}
-                        onDrop={(e) => handleDrop(e, dateStr, hour)}
-                        role={cellBooking ? "presentation" : "button"}
-                        tabIndex={cellBooking ? -1 : 0}
-                        aria-label={cellBooking ? undefined : `Slot kosong pukul ${hour}.00 tanggal ${meta.ariaLabelDate}. Tekan Enter untuk membuat booking baru.`}
-                        onKeyDown={cellBooking ? undefined : e => handleCellKeyDown(e, dateStr, hour)}
-                      >
-                        {isCurrentHour && <div className="current-time-line" style={{ top: timeLineTop }} />}
-                        {!cellBooking && <span className="hover-plus">+</span>}
-                      </div>
-                    );
-                  })}
-                </React.Fragment>
-              );
-            })}
-
-            {/* Floating Booking Cards */}
-            {visibleBookings.map((booking) => {
-              const dayIdx = daysMetadata.findIndex(d => d.dateStr === booking.date);
-              if (dayIdx === -1) return null;
-
-              const startRow = (booking.hour - startHour) + 2;
-              const endRow = startRow + booking.duration;
-              const gridColumn = dayIdx + 2;
-
-              const isMovingSource = movingBooking && movingBooking.id === booking.id;
-              
-              // Current time line logic inside the contiguous card
-              const isToday = daysMetadata[dayIdx].isToday;
-              const hasCurrentTime = isToday && now.getHours() >= booking.hour && now.getHours() < (booking.hour + booking.duration);
-              const timeLineTop = hasCurrentTime 
-                ? `${((now.getHours() - booking.hour + (now.getMinutes() / 60)) / booking.duration) * 100}%`
-                : null;
-
-              const cardClasses = [
-                'grid-cell',
-                'booked-cell',
-                `status-${booking.status}`,
-                booking.isResizing ? 'is-resizing' : '',
-                isMovingSource ? 'is-moving-source' : '',
-                booking.isVIP ? 'booking-vip' : '',
-                booking.type === 'recording' ? 'booking-recording' : ''
-              ].filter(Boolean).join(' ');
-
-              return (
-                <div
-                  key={booking.id}
-                  className={cardClasses}
-                  style={{
-                    gridRow: `${startRow} / ${endRow}`,
-                    gridColumn: `${gridColumn}`,
-                  }}
-                  onClick={e => handleBookingClick(e, booking)}
-                  onPointerDown={(e) => handleMobileBookingPointerDown(e, booking)}
-                  onContextMenu={e => e.preventDefault()}
-                  draggable={!isMobile}
-                  onDragStart={(e) => handleDragStart(e, booking)}
-                  onDragEnd={handleDragEnd}
-                  onDragOver={handleDragOver}
-                  onDrop={(e) => handleDrop(e, booking.date, booking.hour)}
-                  role="button"
-                  tabIndex={0}
-                  aria-label={`Jadwal ${booking.band}, pukul ${booking.hour}.00 durasi ${booking.duration} jam tanggal ${daysMetadata[dayIdx].ariaLabelDate}. Status: ${getStatusLabel(booking.status)}.`}
-                  onKeyDown={e => handleBookingKeyDown(e, booking)}
-                >
-                  {hasCurrentTime && <div className="current-time-line" style={{ top: timeLineTop }} />}
-                  
-                  <div className="booking-info">
-                    <span className="booking-band-name">
-                      {booking.isVIP && (
-                        <svg className="vip-star-icon" viewBox="0 0 24 24" fill="#FFC107" width="10" height="10" style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: 4, transform: 'translateY(-1px)' }}>
-                          <polygon points="12,2 15,9 22,9 17,14 19,21 12,17 5,21 7,14 2,9 9,9" />
-                        </svg>
-                      )}
-                      {booking.band}
-                    </span>
-                    <div className="booking-meta-row" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                      {booking.type === 'recording' && (
-                        <span className="rec-indicator" title="Recording Session">
-                          <span className="rec-dot" />
-                          <span className="rec-text" style={{ fontSize: '9px', fontWeight: 800 }}>REC</span>
-                        </span>
-                      )}
-                      <span className="booking-time-label">{booking.hour}.00-{booking.hour + booking.duration}.00</span>
-                    </div>
-                  </div>
-
-                  <div className="resize-handle" onMouseDown={(e) => handleResizeStart(e, booking)} onTouchStart={(e) => handleResizeStart(e, booking)}>
-                    <div className="resize-line" />
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        <AnimatePresence>
-          {movingBooking && moveGhost && (
-            <motion.div
-              className={`mobile-booking-drag-ghost status-${movingBooking.status}`}
-              style={{
-                left: moveGhost.x,
-                top: moveGhost.y,
-                width: moveGhost.width,
-                height: moveGhost.height,
-              }}
-              initial={{ opacity: 0, scale: 0.92, y: 8 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.94, y: 6 }}
-              transition={{ duration: 0.16, ease: 'easeOut' }}
-            >
-              <strong>{movingBooking.band}</strong>
-              <span>{movingBooking.hour}.00-{movingBooking.hour + movingBooking.duration}.00</span>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        <AnimatePresence>
-          {movingBooking && moveTarget && (
-            <motion.div
-              className={`mobile-move-hint ${moveTarget.isValid ? 'valid' : 'invalid'}`}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 8 }}
-              transition={{ duration: 0.16, ease: 'easeOut' }}
-            >
-              <strong>{moveTarget.isValid ? 'Lepaskan untuk pindah' : moveTarget.reason}</strong>
-              <span>{moveTarget.date} - {String(moveTarget.hour).padStart(2, '0')}:00, durasi {moveTarget.duration} jam</span>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        <CalendarWorkspaceToolbar
+          dateLabel={getDateLabel()}
+          filterStatus={filterStatus}
+          isMobile={isMobile}
+          viewMode={viewMode}
+          viewModes={viewModes}
+          onChangeFilter={setFilterStatus}
+          onChangeViewMode={setViewMode}
+          onGoToday={handleGoToday}
+          onNext={handleNext}
+          onPrev={handlePrev}
+        />
+        <CalendarGrid
+          bookingsLookup={bookingsLookup}
+          colWidth={colWidth}
+          dayNames={dayNames}
+          daysMetadata={daysMetadata}
+          gridWrapperRef={gridWrapperRef}
+          hoursArray={hoursArray}
+          isMobile={isMobile}
+          moveGhost={moveGhost}
+          moveTarget={moveTarget}
+          movingBooking={movingBooking}
+          now={now}
+          numDays={numDays}
+          resizingBooking={resizingBooking}
+          startHour={startHour}
+          timeColWidth={timeColWidth}
+          visibleBookings={visibleBookings}
+          getStatusLabel={getStatusLabel}
+          onBookingClick={handleBookingClick}
+          onBookingKeyDown={handleBookingKeyDown}
+          onCellClick={handleCellClick}
+          onCellKeyDown={handleCellKeyDown}
+          onDragEnd={handleDragEnd}
+          onDragOver={handleDragOver}
+          onDragStart={handleDragStart}
+          onDrop={handleDrop}
+          onMobileBookingPointerDown={handleMobileBookingPointerDown}
+          onResizeStart={handleResizeStart}
+          onTouchEnd={handleTouchEnd}
+          onTouchStart={handleTouchStart}
+        />
       </section>
       </div>
 
