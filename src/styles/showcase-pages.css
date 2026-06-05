@@ -1,0 +1,485 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   SHOWCASE PAGES — Landing + Public Calendar
+   --------------------------------------------------------------------------
+   Admin UI stays modern flat minimal. Customer-facing pages need more visual
+   impact: premium studio showcase, controlled glass, cinematic hero treatment,
+   stronger CTA hierarchy, and polished public booking experience.
+   ════════════════════════════════════════════════════════════════════════════ */
+
+/* --------------------------------------------------------------------------
+   Landing page: premium customer showcase
+   -------------------------------------------------------------------------- */
+.landing-container {
+  --landing-bg: #050505;
+  --landing-ink: #fff7ea;
+  --landing-muted-premium: #d7c8b4;
+  --landing-gold: #f0c579;
+  --landing-gold-2: #ffe2a8;
+  --landing-rose: #ff3d66;
+  --landing-cyan: #58e0e9;
+  --landing-glass: rgba(14, 13, 12, 0.58);
+  --landing-glass-strong: rgba(17, 15, 13, 0.76);
+  --landing-showcase-line: rgba(255, 232, 188, 0.16);
+  --landing-showcase-shadow: 0 28px 80px rgba(0, 0, 0, 0.48), 0 8px 22px rgba(0, 0, 0, 0.26);
+
+  background:
+    radial-gradient(circle at 18% 8%, rgba(240, 197, 121, 0.16), transparent 34rem),
+    radial-gradient(circle at 82% 18%, rgba(255, 61, 102, 0.12), transparent 30rem),
+    radial-gradient(circle at 52% 80%, rgba(88, 224, 233, 0.08), transparent 36rem),
+    linear-gradient(180deg, #050505 0%, #11100e 44%, #070706 100%) !important;
+  color: var(--landing-ink) !important;
+}
+
+.landing-container::before {
+  opacity: 0.9 !important;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.028) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.018) 1px, transparent 1px),
+    radial-gradient(circle at 50% 0%, rgba(240, 197, 121, 0.10), transparent 42rem) !important;
+  background-size: 64px 64px, 64px 64px, auto !important;
+}
+
+.landing-nav,
+.landing-nav.scrolled {
+  background: rgba(7, 7, 6, 0.62) !important;
+  border-bottom: 1px solid rgba(255, 232, 188, 0.12) !important;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.24) !important;
+  -webkit-backdrop-filter: blur(18px) saturate(1.18) !important;
+  backdrop-filter: blur(18px) saturate(1.18) !important;
+}
+
+.landing-nav:not(.scrolled) {
+  background: linear-gradient(180deg, rgba(5, 5, 5, 0.74), rgba(5, 5, 5, 0.18)) !important;
+  box-shadow: none !important;
+}
+
+.nav-brand-mark,
+.nav-theme-btn,
+.nav-login-btn,
+.nav-hamburger,
+.mobile-nav-menu,
+.nav-login-dropdown {
+  background: var(--landing-glass) !important;
+  border-color: var(--landing-showcase-line) !important;
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(1.22) !important;
+  backdrop-filter: blur(16px) saturate(1.22) !important;
+}
+
+.nav-brand-mark {
+  border-radius: 14px !important;
+  background:
+    linear-gradient(145deg, rgba(240, 197, 121, 0.20), rgba(255, 61, 102, 0.08)),
+    rgba(8, 8, 7, 0.58) !important;
+}
+
+.nav-brand-monogram,
+.hero-kicker,
+.section-eyebrow,
+.experience-label,
+.session-label {
+  color: var(--landing-gold) !important;
+  text-shadow: 0 0 18px rgba(240, 197, 121, 0.20) !important;
+}
+
+.hero-section {
+  min-height: clamp(680px, 100svh, 900px) !important;
+  background: #050505 !important;
+  overflow: hidden !important;
+}
+
+.hero-section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 70% 28%, rgba(240, 197, 121, 0.20), transparent 22rem),
+    radial-gradient(circle at 12% 70%, rgba(255, 61, 102, 0.14), transparent 28rem),
+    linear-gradient(180deg, rgba(5, 5, 5, 0.08), rgba(5, 5, 5, 0.62) 82%, #050505 100%) !important;
+}
+
+.hero-background img {
+  filter: saturate(1.08) contrast(1.08) brightness(0.78) !important;
+  transform: scale(1.035) !important;
+}
+
+.hero-scrim,
+.hero-background::after {
+  background:
+    linear-gradient(90deg, rgba(5, 5, 5, 0.90) 0%, rgba(5, 5, 5, 0.56) 38%, rgba(5, 5, 5, 0.16) 72%, rgba(5, 5, 5, 0.60) 100%),
+    linear-gradient(180deg, rgba(5, 5, 5, 0.28) 0%, rgba(5, 5, 5, 0.42) 56%, #050505 100%) !important;
+}
+
+.hero-shell {
+  position: relative;
+  z-index: 3 !important;
+}
+
+.hero-copy {
+  position: relative;
+}
+
+.hero-kicker,
+.pc-hero-kicker {
+  width: fit-content;
+  padding: 8px 12px !important;
+  border: 1px solid rgba(240, 197, 121, 0.22) !important;
+  border-radius: 999px !important;
+  background: rgba(240, 197, 121, 0.08) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  backdrop-filter: blur(10px) !important;
+}
+
+.hero-title {
+  max-width: 880px !important;
+  color: var(--landing-ink) !important;
+  text-shadow: 0 18px 52px rgba(0, 0, 0, 0.52) !important;
+}
+
+.hero-subtitle {
+  max-width: 620px !important;
+  color: var(--landing-muted-premium) !important;
+}
+
+.btn-primary,
+.landing-container .btn-primary,
+.nav-book-btn,
+.mobile-menu-booking,
+.login-dropdown-submit {
+  background:
+    linear-gradient(135deg, var(--landing-gold-2), var(--landing-gold) 52%, #d69c46) !important;
+  color: #17110a !important;
+  border: 1px solid rgba(255, 226, 168, 0.60) !important;
+  box-shadow: 0 16px 34px rgba(240, 197, 121, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.54) !important;
+}
+
+.btn-primary:hover,
+.landing-container .btn-primary:hover,
+.nav-book-btn:hover,
+.mobile-menu-booking:hover,
+.login-dropdown-submit:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 20px 44px rgba(240, 197, 121, 0.30), inset 0 1px 0 rgba(255, 255, 255, 0.64) !important;
+}
+
+.btn-secondary,
+.landing-container .btn-secondary {
+  background: rgba(255, 255, 255, 0.075) !important;
+  border: 1px solid rgba(255, 232, 188, 0.16) !important;
+  color: var(--landing-ink) !important;
+  -webkit-backdrop-filter: blur(14px) saturate(1.12) !important;
+  backdrop-filter: blur(14px) saturate(1.12) !important;
+}
+
+.hero-session,
+.experience-card,
+.flow-panel,
+.price-card,
+.proof-grid > div,
+.footer-contact,
+.footer-map,
+.map-container,
+.landing-gallery-card {
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.105), rgba(255, 255, 255, 0.032)),
+    var(--landing-glass) !important;
+  border: 1px solid var(--landing-showcase-line) !important;
+  box-shadow: var(--landing-showcase-shadow) !important;
+  -webkit-backdrop-filter: blur(18px) saturate(1.18) !important;
+  backdrop-filter: blur(18px) saturate(1.18) !important;
+}
+
+.experience-card,
+.price-card,
+.landing-gallery-card {
+  border-radius: 24px !important;
+}
+
+.experience-card.featured {
+  background:
+    linear-gradient(145deg, rgba(240, 197, 121, 0.16), rgba(255, 61, 102, 0.07)),
+    var(--landing-glass-strong) !important;
+  border-color: rgba(240, 197, 121, 0.26) !important;
+}
+
+.experience-icon,
+.login-dropdown-icon-wrap {
+  background: rgba(240, 197, 121, 0.12) !important;
+  border: 1px solid rgba(240, 197, 121, 0.22) !important;
+  color: var(--landing-gold) !important;
+}
+
+.landing-gallery-media img,
+.pc-gallery-item img {
+  filter: saturate(1.05) contrast(1.04) !important;
+}
+
+.landing-gallery-card:hover img,
+.pc-gallery-item:hover img {
+  transform: scale(1.055) !important;
+}
+
+/* --------------------------------------------------------------------------
+   Public calendar: premium booking experience
+   -------------------------------------------------------------------------- */
+.pc-page {
+  --pc-bg: #050505;
+  --pc-gold: #f0c579;
+  --pc-gold-2: #ffe2a8;
+  --pc-rose: #ff3d66;
+  --pc-cyan: #58e0e9;
+  --pc-green: #8bd39b;
+  --pc-text: #fff7ea;
+  --pc-muted: #d7c8b4;
+  --pc-line: rgba(255, 232, 188, 0.14);
+  --pc-line-strong: rgba(255, 232, 188, 0.28);
+  --pc-surface: rgba(14, 13, 12, 0.62);
+  --pc-surface-strong: rgba(17, 15, 13, 0.80);
+  --pc-shadow: 0 28px 82px rgba(0, 0, 0, 0.46), 0 8px 22px rgba(0, 0, 0, 0.24);
+
+  background:
+    radial-gradient(circle at 18% 4%, rgba(240, 197, 121, 0.14), transparent 36rem),
+    radial-gradient(circle at 82% 14%, rgba(255, 61, 102, 0.10), transparent 32rem),
+    linear-gradient(180deg, #050505 0%, #11100e 52%, #050505 100%) !important;
+}
+
+.pc-hero {
+  min-height: clamp(620px, 88svh, 840px) !important;
+  background: #050505 !important;
+}
+
+.pc-hero-media img {
+  filter: saturate(1.08) contrast(1.08) brightness(0.78) !important;
+  transform: scale(1.035) !important;
+}
+
+.pc-hero-scrim {
+  background:
+    linear-gradient(90deg, rgba(5, 5, 5, 0.92) 0%, rgba(5, 5, 5, 0.58) 40%, rgba(5, 5, 5, 0.18) 74%, rgba(5, 5, 5, 0.62) 100%),
+    radial-gradient(circle at 78% 28%, rgba(240, 197, 121, 0.16), transparent 24rem),
+    linear-gradient(180deg, rgba(5, 5, 5, 0.25) 0%, rgba(5, 5, 5, 0.44) 58%, #050505 100%) !important;
+}
+
+.pc-topbar,
+.pc-brand-btn,
+.pc-exit-btn,
+.pc-theme-btn,
+.pc-wa-quick-btn,
+.pc-hero-stats,
+.pc-calendar-intro,
+.pc-toolbar,
+.pc-grid-panel,
+.pc-legend,
+.pc-view-switch,
+.pc-public-status,
+.pc-gallery-item,
+.pc-modal {
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.100), rgba(255, 255, 255, 0.030)),
+    var(--pc-surface) !important;
+  border: 1px solid var(--pc-line) !important;
+  box-shadow: var(--pc-shadow) !important;
+  -webkit-backdrop-filter: blur(18px) saturate(1.18) !important;
+  backdrop-filter: blur(18px) saturate(1.18) !important;
+}
+
+.pc-topbar {
+  padding: 10px 10px !important;
+  border-radius: 999px !important;
+}
+
+.pc-brand-btn,
+.pc-theme-btn,
+.pc-exit-btn,
+.pc-wa-quick-btn {
+  box-shadow: none !important;
+}
+
+.pc-brand-btn:hover,
+.pc-exit-btn:hover,
+.pc-theme-btn:hover,
+.pc-primary-link:hover,
+.pc-wa-quick-btn:hover {
+  transform: translateY(-2px) !important;
+  border-color: var(--pc-line-strong) !important;
+  background: rgba(255, 255, 255, 0.105) !important;
+}
+
+.pc-hero-title {
+  color: var(--pc-text) !important;
+  text-shadow: 0 18px 52px rgba(0, 0, 0, 0.52) !important;
+}
+
+.pc-hero-sub {
+  color: var(--pc-muted) !important;
+}
+
+.pc-primary-link {
+  background:
+    linear-gradient(135deg, var(--pc-gold-2), var(--pc-gold) 52%, #d69c46) !important;
+  color: #17110a !important;
+  border-color: rgba(255, 226, 168, 0.60) !important;
+  box-shadow: 0 16px 34px rgba(240, 197, 121, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.54) !important;
+}
+
+.pc-hero-stats {
+  overflow: hidden !important;
+  border-radius: 22px !important;
+}
+
+.pc-hero-stats > div,
+.pc-avail-chip {
+  background: transparent !important;
+  border-color: rgba(255, 232, 188, 0.13) !important;
+  box-shadow: none !important;
+}
+
+.pc-calendar-intro,
+.pc-toolbar,
+.pc-grid-panel {
+  border-radius: 22px !important;
+}
+
+.pc-calendar-intro {
+  padding: 22px !important;
+}
+
+.pc-toolbar {
+  padding: 14px !important;
+}
+
+.pc-view-btn.active {
+  background: linear-gradient(135deg, var(--pc-gold-2), var(--pc-gold)) !important;
+  color: #17110a !important;
+}
+
+.pc-grid-wrapper {
+  padding: 16px !important;
+}
+
+.pc-corner,
+.pc-header-cell,
+.pc-time-label {
+  background: rgba(14, 13, 12, 0.82) !important;
+  border-color: rgba(255, 232, 188, 0.12) !important;
+  -webkit-backdrop-filter: blur(14px) saturate(1.12) !important;
+  backdrop-filter: blur(14px) saturate(1.12) !important;
+}
+
+.pc-header-cell.today {
+  background: rgba(240, 197, 121, 0.16) !important;
+  border-color: rgba(240, 197, 121, 0.46) !important;
+}
+
+.pc-cell {
+  background: rgba(255, 255, 255, 0.040) !important;
+  border-color: rgba(255, 232, 188, 0.09) !important;
+}
+
+.pc-cell.available {
+  background: rgba(139, 211, 155, 0.070) !important;
+  border-color: rgba(139, 211, 155, 0.30) !important;
+}
+
+.pc-cell.available:hover,
+.pc-cell.available:focus-visible {
+  background: rgba(139, 211, 155, 0.14) !important;
+  border-color: rgba(139, 211, 155, 0.72) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 12px 28px rgba(139, 211, 155, 0.08), inset 0 0 0 1px rgba(139, 211, 155, 0.18) !important;
+}
+
+.pc-cell.booked {
+  background: linear-gradient(135deg, rgba(255, 61, 102, 0.22), rgba(255, 61, 102, 0.08)) !important;
+  border-color: rgba(255, 61, 102, 0.40) !important;
+}
+
+.pc-booked-tag {
+  background: rgba(255, 61, 102, 0.16) !important;
+  border: 1px solid rgba(255, 61, 102, 0.24) !important;
+}
+
+.pc-modal-overlay {
+  background: rgba(0, 0, 0, 0.72) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  backdrop-filter: blur(12px) !important;
+}
+
+.pc-modal-header-icon {
+  background: rgba(240, 197, 121, 0.14) !important;
+  border: 1px solid rgba(240, 197, 121, 0.24) !important;
+}
+
+@media (max-width: 768px) {
+  .landing-container,
+  .pc-page {
+    background:
+      radial-gradient(circle at 20% 0%, rgba(240, 197, 121, 0.12), transparent 20rem),
+      radial-gradient(circle at 88% 12%, rgba(255, 61, 102, 0.10), transparent 22rem),
+      #050505 !important;
+  }
+
+  .hero-section,
+  .pc-hero {
+    min-height: 760px !important;
+  }
+
+  .hero-scrim,
+  .pc-hero-scrim {
+    background:
+      linear-gradient(180deg, rgba(5, 5, 5, 0.26) 0%, rgba(5, 5, 5, 0.72) 46%, #050505 100%),
+      linear-gradient(90deg, rgba(5, 5, 5, 0.82), rgba(5, 5, 5, 0.34)) !important;
+  }
+
+  .hero-title,
+  .pc-hero-title {
+    font-size: clamp(2.75rem, 17vw, 4.6rem) !important;
+  }
+
+  .hero-subtitle,
+  .pc-hero-sub {
+    color: rgba(255, 247, 234, 0.82) !important;
+  }
+
+  .hero-session,
+  .pc-hero-stats {
+    border-radius: 22px !important;
+  }
+
+  .experience-card,
+  .price-card,
+  .flow-panel,
+  .proof-grid > div,
+  .pc-calendar-intro,
+  .pc-toolbar,
+  .pc-grid-panel,
+  .pc-gallery-item {
+    border-radius: 20px !important;
+    box-shadow: 0 18px 48px rgba(0, 0, 0, 0.34) !important;
+    -webkit-backdrop-filter: blur(14px) saturate(1.12) !important;
+    backdrop-filter: blur(14px) saturate(1.12) !important;
+  }
+
+  .pc-topbar {
+    border-radius: 22px !important;
+  }
+
+  .pc-grid-wrapper {
+    padding: 10px !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pc-avail-dot.green {
+    animation: none !important;
+  }
+
+  .landing-gallery-media img,
+  .pc-gallery-item img,
+  .hero-background img,
+  .pc-hero-media img {
+    transition: none !important;
+  }
+}
