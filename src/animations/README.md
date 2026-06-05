@@ -30,35 +30,15 @@ import { cardPreset, buttonPreset } from '../animations';
 </motion.button>
 ```
 
-### 2. Menggunakan Komponen Wrapper (Disarankan)
-Gunakan komponen wrapper yang sudah dibuat di `src/components/animation/` agar tidak perlu import konfigurasi berulang kali.
+### 2. Menggunakan Komponen Wrapper
+Saat ini wrapper yang dipakai runtime adalah `MotionSection` untuk scroll reveal pada halaman public.
 
 ```jsx
-import MotionCard from '../components/animation/MotionCard';
 import MotionSection from '../components/animation/MotionSection';
 
-// Scroll Reveal
 <MotionSection direction="up" delay={0.2}>
   <h2>Judul Bagian</h2>
 </MotionSection>
-
-// Interactive Card
-<MotionCard interactive>
-  <p>Isi dari card dengan efek hover premium.</p>
-</MotionCard>
-```
-
-### 3. Menggunakan List & Stagger
-Untuk daftar item (menu, grid kartu), gunakan `MotionList` dan `MotionListItem`.
-
-```jsx
-import { MotionList, MotionListItem } from '../components/animation/MotionList';
-
-<MotionList>
-  <MotionListItem>Item 1</MotionListItem>
-  <MotionListItem>Item 2</MotionListItem>
-  <MotionListItem>Item 3</MotionListItem>
-</MotionList>
 ```
 
 ## Aturan Konsistensi & Performa

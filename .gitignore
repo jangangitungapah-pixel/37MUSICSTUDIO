@@ -19,10 +19,7 @@ dist-ssr
 /build_output.txt
 /dev-*.log
 scratch/
-!scratch/
-scratch/*
-!scratch/legacy-audit-artifacts/
-!scratch/legacy-audit-artifacts/**
+output/playwright/
 
 # Editor directories and files
 .vscode/*
