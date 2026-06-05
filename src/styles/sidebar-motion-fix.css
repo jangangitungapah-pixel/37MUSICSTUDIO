@@ -113,3 +113,27 @@
     transform: none !important;
   }
 }
+
+/* Mobile bottom nav may keep a subtle blur for depth, but only on this fixed chrome. */
+@media (max-width: 768px) {
+  .bottom-nav-bar {
+    background: rgba(24, 27, 34, 0.74) !important;
+    border: 1px solid rgba(255, 255, 255, 0.10) !important;
+    box-shadow: 0 -8px 28px rgba(0, 0, 0, 0.24), inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
+    -webkit-backdrop-filter: blur(12px) saturate(1.16) !important;
+    backdrop-filter: blur(12px) saturate(1.16) !important;
+  }
+
+  [data-theme="light"] .bottom-nav-bar {
+    background: rgba(255, 255, 255, 0.78) !important;
+    border: 1px solid rgba(20, 23, 32, 0.10) !important;
+    box-shadow: 0 -8px 28px rgba(20, 23, 32, 0.10), inset 0 1px 0 rgba(255, 255, 255, 0.88) !important;
+    -webkit-backdrop-filter: blur(12px) saturate(1.10) !important;
+    backdrop-filter: blur(12px) saturate(1.10) !important;
+  }
+
+  .bottom-nav-bar .bn-item.active {
+    background: rgba(var(--accent-pink-rgb), 0.14) !important;
+    border-color: rgba(var(--accent-pink-rgb), 0.18) !important;
+  }
+}
