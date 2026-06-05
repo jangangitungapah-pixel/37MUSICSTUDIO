@@ -532,31 +532,7 @@
     animation: none !important;
   }
 
-  /* 7. Optimasi Khusus Kalender pada Mobile */
-  .empty-cell,
-  .empty-cell:hover,
-  .empty-cell:hover .hover-plus {
-    transition: none !important;
-    transform: none !important;
-    background: transparent !important;
-  }
 
-  .booked-cell {
-    transition: transform 0.2s, background-color 0.2s, border-color 0.2s !important;
-  }
-  .booked-cell:hover {
-    filter: none !important;
-    transform: none !important;
-  }
-
-  .current-time-line {
-    animation: none !important;
-    box-shadow: none !important;
-  }
-  .current-time-line::before {
-    box-shadow: none !important;
-    animation: none !important;
-  }
 
   /* Efek sentuhan sederhana pada mobile */
   .glass-panel:active,

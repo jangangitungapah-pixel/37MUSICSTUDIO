@@ -25,9 +25,8 @@ import CalendarHeader from '../features/calendar/CalendarHeader';
 import CalendarMobileControls from '../features/calendar/CalendarMobileControls';
 import CalendarOverview from '../features/calendar/CalendarOverview';
 import CalendarWorkspaceToolbar from '../features/calendar/CalendarWorkspaceToolbar';
-import './CalendarPage.css';
 import './CalendarPrintStyles.css';
-import './CalendarModernOverrides.css';
+import '../features/calendar/calendar.css';
 
 const CalendarPage = () => {
   const soundEnabled = useThemeStore(state => state.soundEnabled);
@@ -512,13 +511,7 @@ const CalendarPage = () => {
 
   return (
     <Tooltip.Provider delayDuration={200}>
-      <div className="app-page calendar-page">
-        {/* Fluent Ambient Background */}
-        <div className="calendar-ambient-bg">
-          <div className="ambient-orb orb-1" />
-          <div className="ambient-orb orb-2" />
-          <div className="ambient-orb orb-3" />
-        </div>
+      <div className="app-page calendar-page cal-page">
 
         <div className={`calendar-shell ${selectedBooking ? 'blurred' : ''} ${areTopPanelsCollapsed ? 'panels-collapsed' : ''}`}>
           {isMobile && (

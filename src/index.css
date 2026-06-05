@@ -402,94 +402,7 @@ option {
 
 
 
-/* ── Calendar grid ── */
-[data-theme="light"] .calendar-container {
-  background: rgba(255, 255, 255, 0.9);
-}
 
-[data-theme="light"] .sticky-col,
-[data-theme="light"] .time-label {
-  background: rgba(245, 245, 252, 0.98);
-  color: var(--text-muted);
-  border-color: rgba(0, 0, 0, 0.06);
-}
-
-[data-theme="light"] .grid-corner-cell {
-  background: rgba(245, 245, 252, 0.98);
-  border-color: rgba(0, 0, 0, 0.06);
-}
-
-[data-theme="light"] .day-header-cell {
-  background: rgba(245, 245, 252, 0.98);
-  border-color: rgba(0, 0, 0, 0.06);
-  color: var(--text-secondary);
-}
-
-[data-theme="light"] .day-header-cell.today-col {
-  color: var(--accent-pink);
-}
-
-[data-theme="light"] .grid-cell {
-  border-color: rgba(0, 0, 0, 0.05);
-}
-
-[data-theme="light"] .grid-cell:hover {
-  background: rgba(232, 25, 78, 0.04);
-}
-
-[data-theme="light"] .grid-cell.today-col-highlight {
-  background: rgba(232, 25, 78, 0.03);
-}
-
-/* ── Booking detail popup ── */
-[data-theme="light"] .booking-detail-popup {
-  background: rgba(255, 255, 255, 0.97);
-  border-color: rgba(0, 0, 0, 0.1);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.14);
-}
-
-[data-theme="light"] .detail-header {
-  border-color: rgba(0, 0, 0, 0.07);
-}
-
-[data-theme="light"] .detail-price-card {
-  background: rgba(0, 0, 0, 0.03);
-  border-color: rgba(0, 0, 0, 0.07);
-}
-
-[data-theme="light"] .detail-footer {
-  border-color: rgba(0, 0, 0, 0.07);
-}
-
-/* ── Toolbar & filters ── */
-[data-theme="light"] .calendar-toolbar {
-  border-color: rgba(0, 0, 0, 0.07);
-}
-
-[data-theme="light"] .filter-chip {
-  background: rgba(0, 0, 0, 0.04);
-  border-color: rgba(0, 0, 0, 0.08);
-  color: var(--text-secondary);
-}
-
-[data-theme="light"] .filter-chip:hover {
-  background: rgba(0, 0, 0, 0.07);
-}
-
-[data-theme="light"] .today-btn {
-  background: rgba(0, 0, 0, 0.05);
-  border-color: rgba(0, 0, 0, 0.1);
-  color: var(--text-secondary);
-}
-
-[data-theme="light"] .today-btn:hover {
-  background: rgba(0, 0, 0, 0.08);
-  color: var(--text-primary);
-}
-
-[data-theme="light"] .nav-arrow {
-  color: var(--text-secondary);
-}
 
 /* ── Stat cards ── */
 [data-theme="light"] .stat-card {
@@ -704,108 +617,7 @@ option {
   background: rgba(232,25,78,0.04);
 }
 
-/* ─── Calendar Grid — Light Mode ─── */
-[data-theme="light"] .calendar-container {
-  background: rgba(255, 255, 255, 0.85);
-  border-color: rgba(0, 0, 0, 0.07);
-}
 
-[data-theme="light"] .calendar-toolbar {
-  background: rgba(0, 0, 0, 0.03);
-  border-color: rgba(0, 0, 0, 0.07);
-}
-
-[data-theme="light"] .grid-corner-cell,
-[data-theme="light"] .grid-header-cell {
-  background: #f0f2f8;
-  border-color: rgba(0, 0, 0, 0.07);
-}
-
-[data-theme="light"] .grid-header-cell.today {
-  background: rgba(0, 150, 187, 0.06);
-}
-
-[data-theme="light"] .grid-header-cell.today .day-number {
-  background: var(--accent-cyan);
-  color: white;
-  box-shadow: 0 0 12px rgba(0, 153, 187, 0.35);
-}
-
-[data-theme="light"] .grid-header-cell .day-name { color: #9090b0; }
-[data-theme="light"] .grid-header-cell .day-number { color: #4a4a66; }
-[data-theme="light"] .grid-header-cell.weekend .day-name { color: var(--accent-pink); opacity: 0.7; }
-
-[data-theme="light"] .time-label {
-  background: #f0f2f8;
-  border-color: rgba(0, 0, 0, 0.06);
-}
-
-[data-theme="light"] .time-label.even-row {
-  background: #f8f8fc;
-}
-
-[data-theme="light"] .time-range {
-  color: #9090b0;
-}
-
-[data-theme="light"] .grid-cell {
-  border-color: rgba(0, 0, 0, 0.04);
-}
-
-[data-theme="light"] .grid-cell.even-row {
-  background: rgba(0, 0, 0, 0.01);
-}
-
-[data-theme="light"] .grid-cell.today-col-highlight {
-  background: rgba(0, 150, 187, 0.04) !important;
-}
-
-[data-theme="light"] .grid-cell.weekend-col {
-  background: rgba(232, 25, 78, 0.015);
-}
-
-[data-theme="light"] .empty-cell:hover {
-  background: rgba(0, 0, 0, 0.04) !important;
-}
-
-[data-theme="light"] .booked-cell.status-confirmed {
-  background: rgba(0, 153, 187, 0.08) !important;
-  border-left-color: var(--accent-cyan);
-}
-
-[data-theme="light"] .booked-cell.status-dp {
-  background: rgba(255, 180, 0, 0.08) !important;
-  border-left-color: #e6a800;
-}
-
-[data-theme="light"] .booked-cell.status-pending {
-  background: rgba(232, 25, 78, 0.08) !important;
-  border-left-color: var(--accent-pink);
-}
-
-[data-theme="light"] .booking-band-name { color: #111128; }
-[data-theme="light"] .booking-time-label { color: #4a4a66; }
-
-
-
-
-
-[data-theme="light"] .filter-chip {
-  background: rgba(0, 0, 0, 0.04);
-  border-color: rgba(0, 0, 0, 0.08);
-  color: #4a4a66;
-}
-
-[data-theme="light"] .filter-chip:hover {
-  background: rgba(0, 0, 0, 0.07);
-  color: #111128;
-}
-
-[data-theme="light"] .filter-chip.active {
-  background: var(--bg-surface-hover);
-  border-color: rgba(0, 0, 0, 0.2);
-  color: #111128;
-}
 
 /* ─── Data Tables — Light Mode ─── */
 [data-theme="light"] .customers-table th,
@@ -1457,11 +1269,7 @@ input:not([type="checkbox"]):not([type="radio"]):focus, select:focus, textarea:f
 /* ════════════════════════════════════════════
    LIGHT THEME ADDITIONAL COMPONENT OVERRIDES
    ════════════════════════════════════════════ */
-[data-theme="light"] .detail-overlay {
-  background: rgba(0, 0, 0, 0.3) !important;
-  -webkit-backdrop-filter: blur(10px) !important;
-  backdrop-filter: blur(10px) !important;
-}
+
 
 /* Maintenance Page Light Theme */
 [data-theme="light"] .maint-modal-info {

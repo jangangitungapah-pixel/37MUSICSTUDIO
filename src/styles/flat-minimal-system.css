@@ -462,11 +462,7 @@ table,
 
 thead th,
 .table-header th,
-.grid-header-cell,
 .day-header-cell,
-.sticky-col,
-.time-label,
-.grid-corner-cell,
 .pc-header-cell,
 .pc-time-cell {
   background: var(--surface-2) !important;
@@ -479,7 +475,6 @@ thead th,
 
 tbody td,
 td,
-.grid-cell,
 .pc-grid-cell {
   border-color: var(--border-subtle) !important;
   color: var(--text-primary) !important;
@@ -487,7 +482,6 @@ td,
 
 tbody tr:hover td,
 .table-row:hover,
-.grid-cell:hover,
 .pc-grid-cell:hover {
   background: rgba(var(--accent-pink-rgb), 0.05) !important;
 }
@@ -623,24 +617,20 @@ tbody tr:hover td,
 
 /* Public calendar */
 .pc-page,
-.calendar-page,
 .gallery-page,
 .app-page {
   background: transparent !important;
 }
 
 .pc-body,
-.calendar-container,
 .pc-grid-wrapper {
   background: transparent !important;
 }
 
-.empty-cell,
 .pc-empty-cell {
   background: transparent !important;
 }
 
-.booked-cell,
 .pc-booked-cell {
   background: var(--surface-2) !important;
   border-color: var(--border-subtle) !important;
