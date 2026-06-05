@@ -155,6 +155,34 @@ const formatYAxisTick = (v) => {
   }
   return v;
 };
+
+const PDFDownloadContent = ({ loading, url, transaction, setReady, iconSize }) => {
+  useEffect(() => {
+    if (!loading && url) {
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `kuitansi-${transaction.id}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      const timer = setTimeout(() => setReady(false), 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [loading, setReady, transaction.id, url]);
+
+  return (
+    <button
+      className="icon-btn print-btn"
+      disabled={loading}
+      title={loading ? "Menyiapkan PDF..." : "Unduh PDF Kuitansi"}
+      aria-label="Unduh PDF Kuitansi"
+      style={{ color: 'var(--accent-cyan)' }}
+    >
+      <Download size={iconSize} style={{ opacity: loading ? 0.5 : 1 }} />
+    </button>
+  );
+};
+
 const LazyPDFDownloadButton = ({ transaction, settings, iconSize = 14 }) => {
   const [ready, setReady] = useState(false);
 
@@ -164,32 +192,15 @@ const LazyPDFDownloadButton = ({ transaction, settings, iconSize = 14 }) => {
       fileName={`kuitansi-${transaction.id}.pdf`}
       style={{ textDecoration: 'none', display: 'inline-flex' }}
     >
-      {({ loading, url }) => {
-        useEffect(() => {
-          if (!loading && url) {
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `kuitansi-${transaction.id}.pdf`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            const timer = setTimeout(() => setReady(false), 2000);
-            return () => clearTimeout(timer);
-          }
-        }, [loading, url]);
-
-        return (
-          <button
-            className="icon-btn print-btn"
-            disabled={loading}
-            title={loading ? "Menyiapkan PDF..." : "Unduh PDF Kuitansi"}
-            aria-label="Unduh PDF Kuitansi"
-            style={{ color: 'var(--accent-cyan)' }}
-          >
-            <Download size={iconSize} style={{ opacity: loading ? 0.5 : 1 }} />
-          </button>
-        );
-      }}
+      {({ loading, url }) => (
+        <PDFDownloadContent
+          loading={loading}
+          url={url}
+          transaction={transaction}
+          setReady={setReady}
+          iconSize={iconSize}
+        />
+      )}
     </PDFDownloadLink>
   ) : (
     <button

@@ -1,9 +1,6 @@
 import { useState } from 'react';
-import { motion } from 'framer-motion';
 import { CalendarDays, Users, Package, CreditCard, Settings, BookOpen, PieChart, LogOut, Bell, ChevronRight, ChevronLeft, FlaskConical, Sun, Moon, Shield, Hammer, MoreHorizontal, Image, Volume2, VolumeX } from 'lucide-react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
-import useSound from 'use-sound';
-import { CLICK_SOUND, HOVER_SOUND } from '../lib/sounds';
 import { useAuthStore } from '../store/useAuthStore';
 import { useNotificationStore } from '../store/useNotificationStore';
 import { useThemeStore } from '../store/useThemeStore';
@@ -12,8 +9,15 @@ import { ROUTE_PERMISSIONS, hasPermission } from '../lib/permissions';
 import ProfileModal from './ProfileModal';
 import NotificationPanel from './NotificationPanel';
 import Modal from './Modal';
-import { sidebarContainerVariants, sidebarItemVariants, bottomSheetVariants, activeIndicatorTransition, navTap } from '../animations';
 import './Sidebar.css';
+
+const UI_CLICK_SOUND = '/click.wav';
+
+const playUiSound = (volume) => {
+  const audio = new Audio(UI_CLICK_SOUND);
+  audio.volume = volume;
+  audio.play().catch(() => {});
+};
  
 const AnimativeSwitch = ({ checked, onChange, type, ariaLabel, disabled }) => {
   return (
@@ -26,22 +30,11 @@ const AnimativeSwitch = ({ checked, onChange, type, ariaLabel, disabled }) => {
       aria-label={ariaLabel}
       disabled={disabled}
     >
-      <motion.div
+      <div
         className="anim-switch-handle"
-        layout
-        transition={{
-          type: "spring",
-          stiffness: 500,
-          damping: 28
-        }}
       >
-        <motion.div
+        <div
           className="anim-switch-icon-wrapper"
-          key={checked ? 'on' : 'off'}
-          initial={{ scale: 0.6, rotate: checked ? -90 : 90, opacity: 0 }}
-          animate={{ scale: 1, rotate: 0, opacity: 1 }}
-          exit={{ scale: 0.6, rotate: checked ? 90 : -90, opacity: 0 }}
-          transition={{ duration: 0.18 }}
         >
           {type === 'theme' ? (
             checked ? (
@@ -56,8 +49,8 @@ const AnimativeSwitch = ({ checked, onChange, type, ariaLabel, disabled }) => {
               <VolumeX size={12} className="icon-volume-off" />
             )
           )}
-        </motion.div>
-      </motion.div>
+        </div>
+      </div>
     </button>
   );
 };
@@ -74,11 +67,9 @@ const Sidebar = () => {
   const { theme, toggleTheme, soundEnabled, toggleSound } = useThemeStore();
   const navigate = useNavigate();
   const location = useLocation();
-  const [playClickRaw] = useSound(CLICK_SOUND, { volume: 0.25 });
-  const [playHoverRaw] = useSound(HOVER_SOUND, { volume: 0.20 });
 
-  const playClick = () => { if (soundEnabled) playClickRaw(); };
-  const playHover = () => { if (soundEnabled) playHoverRaw(); };
+  const playClick = () => { if (soundEnabled) playUiSound(0.25); };
+  const playHover = () => { if (soundEnabled) playUiSound(0.08); };
  
   const unreadCount = notifications.filter(n => !n.isRead).length;
 
@@ -136,7 +127,7 @@ const Sidebar = () => {
           <button
             type="button"
             className="mobile-icon-btn"
-            onClick={() => { toggleSound(); if (!soundEnabled) playClickRaw(); }}
+            onClick={() => { toggleSound(); if (!soundEnabled) playUiSound(0.25); }}
             title={soundEnabled ? 'Matikan Efek Suara' : 'Aktifkan Efek Suara'}
             aria-label={soundEnabled ? 'Matikan Efek Suara' : 'Aktifkan Efek Suara'}
           >
@@ -182,10 +173,9 @@ const Sidebar = () => {
               className={`bn-item ${isActive ? 'active' : ''}`}
               onClick={playClick}
             >
-              <motion.div whileTap={navTap} className="bn-icon-wrapper">
+              <div className="bn-icon-wrapper">
                 {item.icon}
-                {isActive && <motion.div layoutId="bn-indicator" className="bn-indicator" transition={activeIndicatorTransition} />}
-              </motion.div>
+              </div>
               <span className="bn-label">{item.label === 'Dashboard' ? 'Home' : item.label}</span>
             </NavLink>
           );
@@ -197,9 +187,9 @@ const Sidebar = () => {
           aria-haspopup="dialog"
           aria-expanded={mobileOpen}
         >
-          <motion.div whileTap={navTap} className="bn-icon-wrapper">
+          <div className="bn-icon-wrapper">
             <MoreHorizontal size={19} />
-          </motion.div>
+          </div>
           <span className="bn-label">Lainnya</span>
         </button>
       </nav>
@@ -209,7 +199,6 @@ const Sidebar = () => {
         isOpen={mobileOpen} 
         onClose={() => setMobileOpen(false)} 
         className="mobile-bottom-sheet"
-        preset={{ variants: bottomSheetVariants, initial: 'hidden', animate: 'visible', exit: 'exit', transition: { type: 'spring', stiffness: 300, damping: 30 } }}
       >
         <div className="bottom-sheet-header">
           <div className="sheet-drag-handle" />
@@ -272,41 +261,25 @@ const Sidebar = () => {
         {/* Navigation */}
         <nav className="sidebar-nav">
           <span className="nav-section-label">MENU</span>
-          <motion.div
-            initial="hidden"
-            animate="visible"
-            variants={sidebarContainerVariants}
-            style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}
-          >
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
             {menuItems.filter((item) => hasPermission(userProfile, ROUTE_PERMISSIONS[item.path])).map((item) => {
               const isActive = location.pathname.startsWith(item.path) || (item.path === '/dashboard' && location.pathname === '/');
               return (
-                <motion.div
-                  key={item.path}
-                  variants={sidebarItemVariants}
-                >
+                <div key={item.path}>
                   <NavLink 
                     to={item.path} 
                     className={`nav-item ${isActive ? 'active' : ''}`}
                     onClick={() => { playClick(); setMobileOpen(false); }}
                     onMouseEnter={playHover}
                   >
-                    {isActive && (
-                      <motion.div 
-                        layoutId="sidebar-active-indicator"
-                        className="nav-active-bg"
-                        initial={false}
-                        transition={activeIndicatorTransition}
-                      />
-                    )}
                     <span className="nav-icon" style={{ position: 'relative', zIndex: 1 }}>{item.icon}</span>
                     <span className="nav-label" style={{ position: 'relative', zIndex: 1 }}>{item.label}</span>
                     <ChevronRight size={14} className="nav-chevron" style={{ position: 'relative', zIndex: 1 }} />
                   </NavLink>
-                </motion.div>
+                </div>
               );
             })}
-          </motion.div>
+          </div>
         </nav>
 
         {/* Footer */}

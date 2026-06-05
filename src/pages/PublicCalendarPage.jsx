@@ -278,7 +278,9 @@ const PublicCalendarPage = () => {
   }, [currentDate, viewMode]);
 
   const dayNames = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
-  const colWidth = viewMode === 'day' ? '240px' : viewMode === 'week' ? '120px' : '70px';
+  const colWidth = isMobile
+    ? (viewMode === 'day' ? '100%' : viewMode === 'week' ? '80px' : '50px')
+    : (viewMode === 'day' ? '240px' : viewMode === 'week' ? '120px' : '70px');
   const timeColWidth = isMobile ? '60px' : '110px';
 
   return (

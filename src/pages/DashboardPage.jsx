@@ -8,7 +8,6 @@ import { useFinanceStore } from '../store/useFinanceStore';
 import { useSettingsStore } from '../store/useSettingsStore';
 import { useAuthStore } from '../store/useAuthStore';
 import { format, subDays, addMonths, addDays } from 'date-fns';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import {
   TrendingUp, TrendingDown, Users, CalendarCheck, PackageOpen, Clock,
   ArrowRight, AlertTriangle, CheckCircle2, Music2, Lightbulb, Wallet, Activity, Download,
@@ -27,19 +26,19 @@ import { hasBookingOverlap } from '../lib/bookingWorkflows';
 import { buildDashboardWorkbook } from '../lib/dashboardWorkbook';
 import { useStaffStore } from '../store/useStaffStore';
 import { toast } from 'sonner';
-import MotionSection from '../components/animation/MotionSection';
-import MotionButton from '../components/animation/MotionButton';
-import { MotionListItem } from '../components/animation/MotionListItem';
 import Modal from '../components/Modal';
-import confetti from 'canvas-confetti';
 import './DashboardPage.css';
 
-const COLORS = [
-  'var(--accent-cyan)',
-  'rgb(var(--success-rgb))',
-  'rgb(var(--warning-rgb))',
-  'var(--accent-pink)'
-];
+const runCelebration = async (options) => {
+  if (typeof window === 'undefined' || window.matchMedia?.('(max-width: 768px)').matches) return;
+
+  try {
+    const { default: confetti } = await import('canvas-confetti');
+    confetti(options);
+  } catch {
+    // Celebration is optional UI feedback; keep the workflow silent if it fails.
+  }
+};
 
 const DashboardPage = () => {
   const { bookings, getMonthlyStats, addBooking, updateBookingStatus } = useBookingStore(
@@ -86,14 +85,7 @@ const DashboardPage = () => {
   );
   const navigate = useNavigate();
 
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [currentTime, setCurrentTime] = useState(new Date());
-
-  useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth <= 768);
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -126,7 +118,7 @@ const DashboardPage = () => {
     try {
       await updateBookingStatus(booking.id, 'confirmed');
       toast.success(`Booking ${booking.band} berhasil dilunasi!`);
-      confetti({
+      runCelebration({
         particleCount: 100,
         spread: 70,
         origin: { y: 0.6 }
@@ -157,7 +149,7 @@ const DashboardPage = () => {
         nextService: nextServiceStr
       });
       toast.success(`Servis ${item.name} selesai! Kondisi diatur ke Excellent.`);
-      confetti({
+      runCelebration({
         particleCount: 80,
         spread: 60,
         origin: { y: 0.6 }
@@ -199,7 +191,7 @@ const DashboardPage = () => {
         note: qbNote || 'Dibuat lewat Quick Booking di dashboard.'
       });
       toast.success(`Booking untuk ${qbBand} berhasil ditambahkan!`);
-      confetti({
+      runCelebration({
         particleCount: 150,
         spread: 80,
         origin: { y: 0.6 }
@@ -241,7 +233,7 @@ const DashboardPage = () => {
         operatorName: userProfile?.name || user?.email || 'Operator'
       });
       toast.success('Pengeluaran berhasil dicatat!');
-      confetti({
+      runCelebration({
         particleCount: 100,
         spread: 60,
         origin: { y: 0.6 }
@@ -318,11 +310,16 @@ const DashboardPage = () => {
     });
   }, [combinedData, today]);
 
+  const maxRevenue = useMemo(
+    () => Math.max(1, ...revenueChartData.map((item) => item.Pendapatan)),
+    [revenueChartData]
+  );
+
   const inventoryChartData = [
-    { name: 'Excellent', value: invStats.excellent },
-    { name: 'Good', value: invStats.good },
-    { name: 'Perlu Servis', value: invStats.needsRepair },
-    { name: 'Rusak', value: invStats.broken },
+    { name: 'Excellent', value: invStats.excellent, color: 'var(--accent-cyan)' },
+    { name: 'Good', value: invStats.good, color: 'rgb(var(--success-rgb))' },
+    { name: 'Perlu Servis', value: invStats.needsRepair, color: 'rgb(var(--warning-rgb))' },
+    { name: 'Rusak', value: invStats.broken, color: 'var(--accent-pink)' },
   ].filter(d => d.value > 0);
 
   const topCustomers = [...customers].sort((a, b) => b.totalBookings - a.totalBookings).slice(0, 5);
@@ -450,16 +447,8 @@ const DashboardPage = () => {
 
   return (
     <div className="app-page dashboard-page">
-
-      {/* Fluent Ambient Background */}
-      <div className="dashboard-ambient-bg">
-        <div className="ambient-orb orb-1" />
-        <div className="ambient-orb orb-2" />
-        <div className="ambient-orb orb-3" />
-      </div>
-
       {/* ===== Greeting Banner ===== */}
-      <MotionSection direction="down" className="dash-greeting glass-panel">
+      <section className="dash-greeting glass-panel">
         <div className="dash-greeting-left">
           <div className="dash-greeting-icon"><Music2 size={24} /></div>
           <div>
@@ -506,7 +495,8 @@ const DashboardPage = () => {
           </div>
 
           <div className="dash-action-toolbar">
-            <MotionButton 
+            <button
+              type="button"
               onClick={() => {
                 setIsQuickBookingOpen(true);
                 setQbBand('');
@@ -524,8 +514,9 @@ const DashboardPage = () => {
             >
               <CalendarCheck size={16} />
               <span>+ Booking</span>
-            </MotionButton>
-            <MotionButton 
+            </button>
+            <button
+              type="button"
               onClick={() => {
                 setIsQuickExpenseOpen(true);
                 setQeDescription('');
@@ -539,8 +530,9 @@ const DashboardPage = () => {
             >
               <TrendingDown size={16} />
               <span>+ Pengeluaran</span>
-            </MotionButton>
-            <MotionButton 
+            </button>
+            <button
+              type="button"
               onClick={handleExportExcel} 
               className="btn-secondary" 
               title="Unduh Semua Laporan (Excel)"
@@ -548,10 +540,10 @@ const DashboardPage = () => {
             >
               <Download size={16} />
               <span>Laporan</span>
-            </MotionButton>
+            </button>
           </div>
         </div>
-      </MotionSection>
+      </section>
 
       {/* ===== Stats Cards ===== */}
       <div className="dash-stats-grid">
@@ -680,44 +672,20 @@ const DashboardPage = () => {
               Lihat Detail <ArrowRight size={14} />
             </button>
           </div>
-          <ResponsiveContainer width="100%" height={220}>
-            <AreaChart data={revenueChartData} margin={{ top: 10, right: 10, left: 10, bottom: 0 }}>
-              <defs>
-                <linearGradient id="cyanGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="var(--accent-cyan)" stopOpacity={0.22} />
-                  <stop offset="95%" stopColor="var(--accent-cyan)" stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--border-light)" vertical={false} />
-              <XAxis dataKey="name" stroke="var(--text-muted)" fontSize={11} tickLine={false} axisLine={false} />
-              <YAxis stroke="var(--text-muted)" fontSize={11} tickLine={false} axisLine={false} tickFormatter={formatK} width={50} />
-              <Tooltip
-                isAnimationActive={!isMobile}
-                contentStyle={{ 
-                  backgroundColor: 'var(--bg-surface)', 
-                  border: '1px solid var(--border-light)', 
-                  borderRadius: '12px', 
-                  fontSize: '0.8rem',
-                  boxShadow: '0 10px 25px rgba(0, 0, 0, 0.2)',
-                  color: 'var(--text-primary)'
-                }}
-                formatter={(v) => [formatCurrency(v), 'Pendapatan']}
-                labelStyle={{ color: 'var(--text-secondary)', marginBottom: '4px', fontWeight: '600' }}
-              />
-              <Area 
-                isAnimationActive={!isMobile}
-                type="monotone" 
-                dataKey="Pendapatan" 
-                stroke="var(--accent-cyan)" 
-                strokeWidth={3} 
-                fillOpacity={1} 
-                fill="url(#cyanGrad)" 
-                dot={{ r: 4, stroke: 'var(--accent-cyan)', strokeWidth: 2, fill: 'var(--bg-surface)' }} 
-                activeDot={{ r: 6, stroke: 'var(--accent-cyan)', strokeWidth: 2, fill: 'var(--accent-cyan)' }} 
-                style={isMobile ? {} : { filter: 'drop-shadow(0 4px 8px rgba(0, 240, 255, 0.25))' }}
-              />
-            </AreaChart>
-          </ResponsiveContainer>
+          <div className="lite-revenue-chart" aria-label="Pendapatan 7 hari terakhir">
+            {revenueChartData.map((item) => {
+              const height = Math.max(6, Math.round((item.Pendapatan / maxRevenue) * 100));
+              return (
+                <div className="lite-revenue-day" key={item.name}>
+                  <div className="lite-revenue-track">
+                    <span className="lite-revenue-bar" style={{ height: `${height}%` }} />
+                  </div>
+                  <strong>{formatK(item.Pendapatan)}</strong>
+                  <span>{item.name}</span>
+                </div>
+              );
+            })}
+          </div>
         </div>
 
         {/* Upcoming Bookings */}
@@ -802,46 +770,34 @@ const DashboardPage = () => {
               <p>Belum ada data inventaris</p>
             </div>
           ) : (
-            <div className="donut-chart-wrapper" style={{ position: 'relative', width: '100%', height: '200px' }}>
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie 
-                    isAnimationActive={!isMobile}
-                    data={inventoryChartData} 
-                    cx="50%" 
-                    cy="50%" 
-                    innerRadius={65} 
-                    outerRadius={80} 
-                    paddingAngle={4} 
-                    cornerRadius={6}
-                    dataKey="value" 
-                    strokeWidth={0}
-                  >
-                    {inventoryChartData.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
-                  </Pie>
-                  <Tooltip 
-                    isAnimationActive={!isMobile}
-                    contentStyle={{ 
-                      backgroundColor: 'var(--bg-surface)', 
-                      border: '1px solid var(--border-light)', 
-                      borderRadius: '12px', 
-                      fontSize: '0.8rem',
-                      boxShadow: '0 10px 25px rgba(0, 0, 0, 0.2)',
-                      color: 'var(--text-primary)'
-                    }} 
-                  />
-                </PieChart>
-              </ResponsiveContainer>
-              <div className="donut-center-label">
+            <div className="lite-inventory-meter">
+              <div className="donut-center-label lite-inventory-total">
                 <span className="donut-center-val">{invStats.totalItems}</span>
                 <span className="donut-center-lbl">Total Alat</span>
+              </div>
+              <div className="lite-inventory-bars">
+                {inventoryChartData.map((item) => (
+                  <div className="lite-inventory-row" key={item.name}>
+                    <span>{item.name}</span>
+                    <div className="lite-inventory-track">
+                      <span
+                        className="lite-inventory-fill"
+                        style={{
+                          width: `${Math.max(4, Math.round((item.value / Math.max(invStats.totalItems, 1)) * 100))}%`,
+                          background: item.color,
+                        }}
+                      />
+                    </div>
+                    <strong>{item.value}</strong>
+                  </div>
+                ))}
               </div>
             </div>
           )}
           <div className="inv-legend">
-            {inventoryChartData.map((d, i) => (
-              <div key={i} className="inv-legend-item">
-                <span className="inv-legend-dot" style={{ background: COLORS[i % COLORS.length] }} />
+            {inventoryChartData.map((d) => (
+              <div key={d.name} className="inv-legend-item">
+                <span className="inv-legend-dot" style={{ background: d.color }} />
                 <span>{d.name}</span>
                 <strong>{d.value}</strong>
               </div>
@@ -901,43 +857,43 @@ const DashboardPage = () => {
       </div>
 
 {/* ===== Smart Insights ===== */}
-      <MotionSection direction="up" className="app-smart-panel app-smart-grid cols-auto">
-        <MotionListItem as="div" className="smart-item">
+      <section className="app-smart-panel app-smart-grid cols-auto">
+        <div className="smart-item">
           <div className="smart-head" style={{color: 'var(--accent-cyan)'}}>
             <Lightbulb size={16} />
             <span style={{fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em'}}>Pola Booking</span>
           </div>
           <strong style={{fontSize: '0.92rem', color: 'var(--text-primary)'}}>{demandInsights.busiestDayCount > 0 ? `${demandInsights.busiestDay}, ${demandInsights.busiestHour}.00` : 'Belum ada pola'}</strong>
           <small style={{fontSize: '0.72rem', color: 'var(--text-secondary)'}}>{demandInsights.favoriteDuration ? `Durasi favorit ${demandInsights.favoriteDuration} jam, okupansi ${demandInsights.occupancyPercent}%` : 'Butuh data booking untuk membaca tren.'}</small>
-        </MotionListItem>
-        <MotionListItem as="div" className="smart-item">
+        </div>
+        <div className="smart-item">
           <div className="smart-head" style={{color: '#4CAF50'}}>
             <Wallet size={16} />
             <span style={{fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em'}}>Forecast Bulan Ini</span>
           </div>
           <strong style={{fontSize: '0.92rem', color: 'var(--text-primary)'}}>{formatCurrency(revenueForecast.conservativeForecast)}</strong>
           <small style={{fontSize: '0.72rem', color: 'var(--text-secondary)'}}>Optimistis {formatCurrency(revenueForecast.optimisticForecast)} termasuk sisa tagihan.</small>
-        </MotionListItem>
-        <MotionListItem as="div" className="smart-item">
+        </div>
+        <div className="smart-item">
           <div className="smart-head" style={{color: '#FFA000'}}>
             <Clock size={16} />
             <span style={{fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em'}}>Follow-up Billing</span>
           </div>
           <strong style={{fontSize: '0.92rem', color: 'var(--text-primary)'}}>{billingInsights.followUpsToday.length} prioritas hari ini</strong>
           <small style={{fontSize: '0.72rem', color: 'var(--text-secondary)'}}>{billingInsights.summary}</small>
-        </MotionListItem>
-        <MotionListItem as="div" className="smart-item">
+        </div>
+        <div className="smart-item">
           <div className="smart-head" style={{color: anomalies.length ? 'var(--accent-pink)' : '#4CAF50'}}>
             <Activity size={16} />
             <span style={{fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em'}}>Anomali Data</span>
           </div>
           <strong style={{fontSize: '0.92rem', color: 'var(--text-primary)'}}>{anomalies.length ? `${anomalies.length} perlu dicek` : 'Tidak ada anomali'}</strong>
           <small style={{fontSize: '0.72rem', color: 'var(--text-secondary)'}}>{anomalies[0]?.detail || 'Harga, DP, jam, dan overlap jadwal terlihat normal.'}</small>
-        </MotionListItem>
-      </MotionSection>
+        </div>
+      </section>
 
       {/* ===== Operational Command Center ===== */}
-      <MotionSection direction="up" delay={0.1} className="dash-command-grid">
+      <section className="dash-command-grid">
         <section className="dash-command-panel glass-panel">
           <div className="dash-command-head">
             <div className="dash-command-title">
@@ -1068,7 +1024,7 @@ const DashboardPage = () => {
             </button>
           </div>
         </section>
-      </MotionSection>
+      </section>
       {/* Quick Booking Modal */}
       <Modal isOpen={isQuickBookingOpen} onClose={() => setIsQuickBookingOpen(false)} title="Tambah Booking Cepat">
         <form className="finance-form quick-dash-form" onSubmit={handleQuickBookingSubmit}>
