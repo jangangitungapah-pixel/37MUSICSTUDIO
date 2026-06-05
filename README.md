@@ -1,16 +1,197 @@
-# React + Vite
+# 37 Music Studio
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Aplikasi web/PWA untuk manajemen operasional studio musik: landing page publik, kalender booking, request booking pelanggan, dashboard admin, pelanggan, inventory, billing, finance, staff, galeri, export laporan, dan push notification.
 
-Currently, two official plugins are available:
+## Ringkasan stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- React + Vite
+- React Router
+- Zustand untuk state management
+- Firebase Auth, Firestore, Hosting, dan optional Cloud Messaging
+- Vite PWA / Workbox
+- Vitest untuk unit test
+- ESLint untuk quality gate
+- ExcelJS dan React PDF untuk export laporan
 
-## React Compiler
+## Fitur utama
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- Landing page publik untuk promosi studio
+- Kalender publik untuk cek slot dan kirim request booking
+- Dashboard admin/staff berbasis role dan permission
+- Booking management dengan status pending, DP, confirmed, maintenance, dan cancelled
+- Data pelanggan, inventory alat, finance, billing, staff, dan galeri
+- Export workbook dashboard multi-sheet
+- PWA dengan service worker dan manifest
+- Push notification opsional via Firebase Cloud Messaging
 
-## Expanding the ESLint configuration
+## Prasyarat lokal
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Gunakan Node.js versi 22 atau lebih baru, lalu install dependency dengan npm.
+
+```bash
+npm ci
+```
+
+## Setup environment
+
+Salin file template environment:
+
+```bash
+cp .env.example .env
+```
+
+Isi nilai Firebase dari Firebase Console > Project settings > General > Your apps > Web app.
+
+Minimal variable yang wajib diisi:
+
+```bash
+VITE_FIREBASE_API_KEY=
+VITE_FIREBASE_AUTH_DOMAIN=
+VITE_FIREBASE_PROJECT_ID=
+VITE_FIREBASE_MESSAGING_SENDER_ID=
+VITE_FIREBASE_APP_ID=
+```
+
+Opsional:
+
+```bash
+VITE_FIREBASE_MEASUREMENT_ID=
+VITE_FIREBASE_VAPID_KEY=
+VITE_ALLOWED_HOSTS=
+```
+
+> Jangan commit file `.env` asli. File `.gitignore` sudah mengecualikan `.env`.
+
+## Menjalankan project
+
+```bash
+npm run dev
+```
+
+Buka URL yang diberikan Vite, biasanya `http://localhost:5173`.
+
+Untuk expose dev server lewat tunnel:
+
+```bash
+npm run online
+```
+
+## Quality gate lokal
+
+Sebelum push atau deploy, jalankan:
+
+```bash
+npm run lint
+npm test
+npm run build
+```
+
+## Firebase setup checklist
+
+### Authentication
+
+Aktifkan provider berikut di Firebase Console:
+
+- Email/Password untuk admin dan staff
+- Anonymous Auth untuk akses kalender publik
+
+### Firestore
+
+Deploy rules:
+
+```bash
+firebase deploy --only firestore:rules
+```
+
+Rules utama ada di:
+
+```txt
+firestore.rules
+```
+
+Desain data penting:
+
+- `bookings` menyimpan booking lengkap dan hanya boleh diakses admin/staff.
+- `publicBookings` menyimpan data booking minimal untuk kalender publik.
+- `bookingRequests` menyimpan request dari pelanggan.
+- `users` menyimpan profile, role, permission, dan FCM token.
+
+### Hosting
+
+Build lalu deploy:
+
+```bash
+npm run build
+firebase deploy --only hosting
+```
+
+Konfigurasi hosting ada di:
+
+```txt
+firebase.json
+```
+
+### Push notification opsional
+
+Untuk Web Push / FCM:
+
+1. Buka Firebase Console.
+2. Masuk Project settings > Cloud Messaging.
+3. Buat atau salin Web Push certificate key.
+4. Isi ke `.env` sebagai `VITE_FIREBASE_VAPID_KEY`.
+5. Pastikan service worker PWA aktif dari build production.
+
+Catatan: pengiriman notifikasi lintas device idealnya memakai Cloud Functions/Admin SDK, bukan hanya client-side.
+
+## CI
+
+Repo ini punya GitHub Actions workflow di:
+
+```txt
+.github/workflows/ci.yml
+```
+
+Workflow menjalankan:
+
+- `npm ci`
+- `npm run lint`
+- `npm test`
+- `npm run build`
+
+CI berjalan pada pull request ke `main` dan push ke branch tertentu.
+
+## Struktur folder penting
+
+```txt
+src/
+  components/     Komponen reusable dan shell admin
+  pages/          Halaman public/admin
+  store/          Zustand stores dan integrasi Firestore
+  lib/            Helper domain, finance, export, FCM
+  hooks/          Custom hooks
+  styles/         Styling global dan overhaul UI
+firestore.rules   Security rules Firestore
+firebase.json     Firebase Hosting + Firestore config
+.env.example      Template environment lokal/production
+```
+
+## Catatan audit kualitas
+
+Status repo saat ini sudah layak untuk MVP/internal use, tetapi sebelum production penuh sebaiknya lanjutkan perbaikan berikut:
+
+- Tambah test untuk booking overlap, permission, auth flow, billing, dan Firestore rules.
+- Pindahkan operasi sensitif seperti reset password staff ke backend/Cloud Functions.
+- Pecah store besar menjadi service/repository layer agar lebih mudah dirawat.
+- Pastikan semua schema konsisten antara public form, store, notification, dan admin UI.
+- Tambahkan monitoring error production.
+
+## Script npm
+
+```bash
+npm run dev       # menjalankan Vite dev server
+npm run online    # menjalankan Vite host + tunnel
+npm run build     # build production
+npm run lint      # lint source code
+npm test          # menjalankan Vitest
+npm run preview   # preview hasil build
+```
