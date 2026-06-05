@@ -1,0 +1,18 @@
+/* Admin boundary.
+   Legacy admin skins are still loaded lazily from AdminShell because they
+   contain broad selectors. New admin boundary rules should be scoped here. */
+
+.admin-shell.app-container {
+  display: flex;
+}
+
+.admin-shell .main-content {
+  min-width: 0;
+}
+
+.admin-shell .app-page,
+.admin-shell .app-panel,
+.admin-shell .app-page-header,
+.admin-shell .app-page-actions {
+  min-width: 0;
+}

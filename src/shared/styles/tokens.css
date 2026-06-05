@@ -1,0 +1,85 @@
+@import url('https://fonts.googleapis.com/css2?family=Onest:wght@300;400;500;600;700;800;900&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,400&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap');
+
+:root {
+  --bg-dark-rgb: 10, 10, 14;
+  --bg-dark: #0a0a0e;
+  --bg-surface-rgb: 18, 18, 24;
+  --bg-surface: #121218;
+  --bg-surface-hover: #1e1e26;
+
+  --accent-pink-rgb: 255, 42, 95;
+  --accent-pink: #ff2a5f;
+  --accent-pink-hover: #ff4d79;
+  --accent-cyan-rgb: 0, 240, 255;
+  --accent-cyan: #00f0ff;
+
+  --success-rgb: 76, 175, 80;
+  --warning-rgb: 255, 152, 0;
+
+  --text-primary: #f8f8fc;
+  --text-secondary: #a0a0b2;
+  --text-muted: #646476;
+  --text-faint: #3e3e4e;
+
+  --border-light: rgba(255, 255, 255, 0.08);
+  --border-focus: rgba(var(--accent-pink-rgb), 0.55);
+
+  --glass-bg: rgba(var(--bg-surface-rgb), 0.45);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-blur: 28px;
+  --shadow-neon: 0 0 20px rgba(var(--accent-pink-rgb), 0.35);
+  --shadow-spatial: 0 8px 32px 0 rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  --shadow-spatial-hover: 0 16px 48px 0 rgba(0, 0, 0, 0.38), 0 0 25px rgba(var(--accent-pink-rgb), 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+
+  --font-display: 'Onest', 'DM Sans', system-ui, sans-serif;
+  --font-body: 'DM Sans', 'Onest', system-ui, sans-serif;
+  --font-mono: 'DM Mono', 'Fira Code', ui-monospace, monospace;
+
+  --text-xs: 0.72rem;
+  --text-sm: 0.8125rem;
+  --text-base: 0.9rem;
+  --text-md: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.3rem;
+  --text-2xl: 1.55rem;
+  --text-3xl: 1.95rem;
+  --text-4xl: 2.5rem;
+
+  --fw-regular: 400;
+  --fw-medium: 500;
+  --fw-semi: 600;
+  --fw-bold: 700;
+  --fw-black: 800;
+
+  --lh-tight: 1.2;
+  --lh-snug: 1.35;
+  --lh-normal: 1.55;
+  --lh-relaxed: 1.75;
+
+  --ls-tight: -0.04em;
+  --ls-snug: -0.02em;
+  --ls-normal: 0;
+  --ls-wide: 0.04em;
+  --ls-wider: 0.08em;
+  --ls-caps: 0.12em;
+
+  --borderRadiusNone: 0px;
+  --borderRadiusSmall: 4px;
+  --borderRadiusMedium: 14px;
+  --borderRadiusLarge: 18px;
+  --borderRadiusXLarge: 16px;
+  --borderRadiusXXLarge: 24px;
+  --borderRadiusCircular: 9999px;
+
+  --shadow2: 0px 2px 6px rgba(0, 0, 0, 0.2), 0px 0px 4px rgba(0, 0, 0, 0.15);
+  --shadow4: 0px 4px 10px rgba(0, 0, 0, 0.22), 0px 0px 6px rgba(0, 0, 0, 0.15);
+  --shadow8: 0 8px 18px rgba(0, 0, 0, 0.24), 0 0 8px rgba(0, 0, 0, 0.15);
+  --shadow16: 0 16px 32px rgba(0, 0, 0, 0.26), 0 0 12px rgba(0, 0, 0, 0.15);
+  --shadow28: 0 24px 44px rgba(0, 0, 0, 0.28), 0 0 16px rgba(0, 0, 0, 0.15);
+  --shadow64: 0 38px 72px rgba(0, 0, 0, 0.32), 0 0 24px rgba(0, 0, 0, 0.15);
+
+  --strokeWidthThin: 1px;
+  --strokeWidthThick: 2px;
+  --curveEasyEase: cubic-bezier(0.16, 1, 0.3, 1);
+  --durationFast: 200ms;
+}

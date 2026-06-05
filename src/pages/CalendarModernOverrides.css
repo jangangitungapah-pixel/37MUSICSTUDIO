@@ -481,7 +481,7 @@
   display: none;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .calendar-page {
     display: block !important;
     width: 100% !important;
@@ -741,7 +741,7 @@
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .calendar-page .monthly-grid-wrapper {
     overflow-x: auto !important;
     overflow-y: auto !important;
@@ -833,7 +833,7 @@
   justify-content: center !important;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .calendar-page .grid-header-cell {
     min-height: 46px !important;
     height: 46px !important;

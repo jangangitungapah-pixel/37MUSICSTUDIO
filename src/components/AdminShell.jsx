@@ -5,12 +5,11 @@ import { useAuthStore } from '../store/useAuthStore';
 import { ROUTE_PERMISSIONS, hasPermission } from '../lib/permissions';
 import Sidebar from './Sidebar';
 import NotificationToast from './NotificationToast';
-import '../styles/fluent2-assets.css';
-import '../styles/mobile-overhaul.css';
-import '../styles/flat-minimal-system.css';
-import '../styles/showcase-pages.css';
 import '../pages/AuthPage.css';
+import '../styles/fluent2-assets.css';
+import '../styles/flat-minimal-system.css';
 import '../styles/modern-minimal-admin.css';
+import '../styles/mobile-overhaul.css';
 
 const CalendarPage = lazy(() => import('../pages/CalendarPage'));
 const CustomersPage = lazy(() => import('../pages/CustomersPage'));
@@ -214,7 +213,7 @@ const AdminShell = () => {
   }
 
   return (
-    <div className="app-container">
+    <div className="app-container admin-shell">
       <Sidebar />
       <NotificationToast />
       <main className="main-content">

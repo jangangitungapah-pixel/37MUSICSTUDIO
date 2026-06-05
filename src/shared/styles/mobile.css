@@ -1,0 +1,26 @@
+/* Global-safe mobile boundary.
+   The legacy admin mobile overhaul is still loaded from AdminShell only because
+   it contains broad selectors that should not affect public pages. */
+
+:root {
+  --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-area-top: env(safe-area-inset-top, 0px);
+}
+
+.mobile-only {
+  display: none !important;
+}
+
+@media (max-width: 768px) {
+  .desktop-only {
+    display: none !important;
+  }
+
+  .mobile-only {
+    display: revert !important;
+  }
+
+  .admin-shell .main-content {
+    padding-bottom: calc(92px + var(--safe-area-bottom));
+  }
+}

@@ -23,6 +23,7 @@ import { useThemeStore } from '../store/useThemeStore';
 import { CLICK_SOUND } from '../lib/sounds';
 import './CalendarPage.css';
 import './CalendarPrintStyles.css';
+import './CalendarModernOverrides.css';
 
 const CalendarPage = () => {
   const soundEnabled = useThemeStore(state => state.soundEnabled);
@@ -37,7 +38,7 @@ const CalendarPage = () => {
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [detailPos, setDetailPos] = useState({ top: 0, left: 0 });
   const gridWrapperRef = useRef(null);
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 1024);
   const [now, setNow] = useState(new Date());
   const [areTopPanelsCollapsed, setAreTopPanelsCollapsed] = useState(false);
   const [playClickRaw] = useSound(CLICK_SOUND, { volume: 0.25 });
@@ -57,7 +58,7 @@ const CalendarPage = () => {
   }, [isMobile]);
 
   useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    const handleResize = () => setIsMobile(window.innerWidth <= 1024);
     window.addEventListener('resize', handleResize);
     const interval = setInterval(() => setNow(new Date()), 60000); // update every minute
     return () => {
@@ -143,7 +144,6 @@ const CalendarPage = () => {
     movingBooking,
     moveGhost,
     moveTarget,
-    translationRef,
     suppressNextBookingClickRef,
     handleMobileBookingPointerDown,
   } = useCalendarBookingMove({
@@ -485,7 +485,7 @@ const CalendarPage = () => {
 
   const getDateLabel = () => {
     if (viewMode === 'day') return format(currentDate, 'dd MMMM yyyy');
-    if (viewMode === 'week') return `${format(startOfWeek(currentDate, { weekStartsOn: 0 }), 'dd MMM')} – ${format(endOfWeek(currentDate, { weekStartsOn: 0 }), 'dd MMM yyyy')}`;
+    if (viewMode === 'week') return `${format(startOfWeek(currentDate, { weekStartsOn: 0 }), 'dd MMM')} - ${format(endOfWeek(currentDate, { weekStartsOn: 0 }), 'dd MMM yyyy')}`;
     return format(currentDate, 'MMMM yyyy');
   };
 
@@ -505,15 +505,89 @@ const CalendarPage = () => {
         </div>
 
         <div className={`calendar-shell ${selectedBooking ? 'blurred' : ''} ${areTopPanelsCollapsed ? 'panels-collapsed' : ''}`}>
+          {isMobile && (
+            <div className="calendar-mobile-control">
+              <div className="calendar-mobile-titlebar">
+                <div>
+                  <h2 className="mobile-title">Booking Calendar</h2>
+                  <p className="mobile-subtitle">{studioName} - {getDateLabel()}</p>
+                </div>
+                <button className="calendar-mobile-new" onClick={handleNewBooking} aria-label="Booking Baru">
+                  <Plus size={20} />
+                </button>
+              </div>
+
+              <div className="calendar-mobile-search">
+                <Search size={14} className="search-icon" />
+                <input
+                  type="text"
+                  placeholder="Cari band / no HP..."
+                  value={searchQuery}
+                  onChange={e => setSearchQuery(e.target.value)}
+                  aria-label="Cari band atau nomor HP"
+                />
+                {searchQuery && (
+                  <button onClick={() => setSearchQuery('')} aria-label="Bersihkan">
+                    <X size={12} />
+                  </button>
+                )}
+              </div>
+
+              <div className="calendar-mobile-period">
+                <button onClick={handlePrev} aria-label="Sebelumnya">
+                  <ChevronLeft size={16} />
+                </button>
+                <button className="calendar-mobile-today" onClick={handleGoToday}>
+                  Hari Ini
+                </button>
+                <button onClick={handleNext} aria-label="Berikutnya">
+                  <ChevronRight size={16} />
+                </button>
+              </div>
+
+              <div className="calendar-mobile-segments">
+                {viewModes.map(({ id, label, icon: Icon }) => (
+                  <button
+                    key={id}
+                    className={`view-btn ${viewMode === id ? 'active' : ''}`}
+                    onClick={() => setViewMode(id)}
+                  >
+                    <Icon size={12} />
+                    <span>{label}</span>
+                  </button>
+                ))}
+              </div>
+
+              <div className="calendar-mobile-filters">
+                {[
+                  { id: 'all', label: 'Semua' },
+                  { id: 'pending', label: 'Pending' },
+                  { id: 'dp', label: 'DP' },
+                  { id: 'confirmed', label: 'Lunas' },
+                  { id: 'maintenance', label: 'Blokir' },
+                  { id: 'cancelled', label: 'Batal' },
+                ].map(({ id, label }) => (
+                  <button
+                    key={id}
+                    className={`filter-chip ${filterStatus === id ? 'active' : ''}`}
+                    onClick={() => setFilterStatus(id)}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Header */}
-        <header className="calendar-page-header app-page-header">
+          <header className="calendar-page-header app-page-header">
           <div className="app-page-header-left">
             <div className="calendar-header-icon">
               <CalendarCheck size={20} />
             </div>
             <div>
               <h2 className="app-page-title">Booking Calendar</h2>
-              <p className="app-page-subtitle">{studioName} — {format(currentDate, 'MMMM yyyy')}</p>
+              <p className="app-page-subtitle">{studioName} - {format(currentDate, 'MMMM yyyy')}</p>
             </div>
           </div>
           <div className="calendar-header-actions app-page-actions">
@@ -777,7 +851,15 @@ const CalendarPage = () => {
                     const cellBooking = bookingsLookup[`${dateStr}-${hour}`];
                     const isMoveTarget = moveTarget && moveTarget.date === dateStr && Number(moveTarget.hour) === hour;
                     const moveTargetClass = isMoveTarget ? (moveTarget.isValid ? 'move-target-valid' : 'move-target-invalid') : '';
-                    const cellClasses = ['grid-cell', 'empty-cell', hourIdx % 2 === 0 ? 'even-row' : '', isToday ? 'today-col-highlight' : '', isWeekend ? 'weekend-col' : '', isBlocked && !cellBooking ? 'blocked-cell' : '', moveTargetClass].filter(Boolean).join(' ');
+                    const cellClasses = [
+                      'grid-cell',
+                      !cellBooking ? 'empty-cell' : 'covered-cell',
+                      hourIdx % 2 === 0 ? 'even-row' : '',
+                      isToday ? 'today-col-highlight' : '',
+                      isWeekend ? 'weekend-col' : '',
+                      isBlocked && !cellBooking ? 'blocked-cell' : '',
+                      moveTargetClass
+                    ].filter(Boolean).join(' ');
 
                     // Current time line logic
                     const isCurrentHour = isToday && now.getHours() === hour;
@@ -791,16 +873,16 @@ const CalendarPage = () => {
                         data-calendar-cell="true"
                         data-date={dateStr}
                         data-hour={hour}
-                        onClick={() => handleCellClick(dateStr, hour)}
+                        onClick={cellBooking ? undefined : () => handleCellClick(dateStr, hour)}
                         onDragOver={handleDragOver}
                         onDrop={(e) => handleDrop(e, dateStr, hour)}
-                        role="button"
-                        tabIndex={0}
-                        aria-label={`Slot kosong pukul ${hour}.00 tanggal ${meta.ariaLabelDate}. Tekan Enter untuk membuat booking baru.`}
-                        onKeyDown={e => handleCellKeyDown(e, dateStr, hour)}
+                        role={cellBooking ? "presentation" : "button"}
+                        tabIndex={cellBooking ? -1 : 0}
+                        aria-label={cellBooking ? undefined : `Slot kosong pukul ${hour}.00 tanggal ${meta.ariaLabelDate}. Tekan Enter untuk membuat booking baru.`}
+                        onKeyDown={cellBooking ? undefined : e => handleCellKeyDown(e, dateStr, hour)}
                       >
                         {isCurrentHour && <div className="current-time-line" style={{ top: timeLineTop }} />}
-                        <span className="hover-plus">+</span>
+                        {!cellBooking && <span className="hover-plus">+</span>}
                       </div>
                     );
                   })}
@@ -875,7 +957,7 @@ const CalendarPage = () => {
                           <span className="rec-text" style={{ fontSize: '9px', fontWeight: 800 }}>REC</span>
                         </span>
                       )}
-                      <span className="booking-time-label">{booking.hour}.00–{booking.hour + booking.duration}.00</span>
+                      <span className="booking-time-label">{booking.hour}.00-{booking.hour + booking.duration}.00</span>
                     </div>
                   </div>
 
@@ -897,7 +979,6 @@ const CalendarPage = () => {
                 top: moveGhost.y,
                 width: moveGhost.width,
                 height: moveGhost.height,
-                transform: `translate3d(${translationRef.current.dx}px, ${translationRef.current.dy}px, 0)`
               }}
               initial={{ opacity: 0, scale: 0.92, y: 8 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -927,7 +1008,7 @@ const CalendarPage = () => {
       </section>
       </div>
 
-      {/* Booking Detail — Bottom Sheet on mobile, Popup on desktop */}
+      {/* Booking detail: bottom sheet on mobile, popup on desktop */}
       {createPortal(
         <div className="booking-detail-portal-container" style={{ position: 'fixed', inset: 0, zIndex: 100000, pointerEvents: 'none' }}>
           <AnimatePresence>

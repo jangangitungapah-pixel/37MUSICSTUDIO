@@ -1,0 +1,20 @@
+/* Public/showcase boundary for customer-facing surfaces. */
+@import '../../styles/showcase-pages.css';
+
+.landing-container,
+.pc-page,
+.public-gallery-page {
+  isolation: isolate;
+}
+
+.landing-container *,
+.landing-container *::before,
+.landing-container *::after,
+.pc-page *,
+.pc-page *::before,
+.pc-page *::after,
+.public-gallery-page *,
+.public-gallery-page *::before,
+.public-gallery-page *::after {
+  box-sizing: border-box;
+}

@@ -1,0 +1,4 @@
+/* Transitional layer.
+   Keep the historical global stylesheet active while tokens/base/admin/public/mobile
+   are being split into tighter boundaries across small PRs. */
+@import '../../index.css';
