@@ -13,6 +13,27 @@ Aplikasi web/PWA untuk manajemen operasional studio musik: landing page publik, 
 - ESLint untuk quality gate
 - ExcelJS dan React PDF untuk export laporan
 
+## Arah UI design
+
+Kiblat visual terbaru adalah **Modern Flat Minimalist — Premium Studio Ops UI**.
+
+Prinsip utamanya:
+
+- Surface solid dan ringan, bukan glass blur berat.
+- Border 1px halus untuk struktur visual.
+- Shadow tipis hanya untuk hierarki, bukan efek spatial/neon.
+- Accent pink/rose dipakai hemat untuk CTA, active state, dan highlight penting.
+- Motion ringan dan cepat, terutama aman untuk smartphone.
+- Mobile-first performance: ambient blob, backdrop blur, glow, dan hover berat dimatikan.
+
+Layer override utama ada di:
+
+```txt
+src/styles/flat-minimal-system.css
+```
+
+File ini di-import paling akhir di `src/main.jsx` supaya bisa menggeser visual system lama tanpa membongkar semua page sekaligus.
+
 ## Fitur utama
 
 - Landing page publik untuk promosi studio
