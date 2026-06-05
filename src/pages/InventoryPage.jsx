@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect, useCallback } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 import { Search, Plus, Edit2, Trash2, Box, Package, AlertCircle, Wrench, X, Tag, Hash, StickyNote, ChevronDown } from 'lucide-react';
 import { useInventoryStore } from '../store/useInventoryStore';
 import { useBookingStore } from '../store/useBookingStore';
@@ -50,9 +51,19 @@ const validateWithZod = (fieldName) => (value) => {
 };
 
 const InventoryPage = () => {
-  const { soundEnabled } = useThemeStore();
-  const { inventory, categories, addCategory, addEquipment, updateEquipment, deleteEquipment, getStats } = useInventoryStore();
-  const { bookings } = useBookingStore();
+  const soundEnabled = useThemeStore(state => state.soundEnabled);
+  const { inventory, categories, addCategory, addEquipment, updateEquipment, deleteEquipment, getStats } = useInventoryStore(
+    useShallow(state => ({
+      inventory: state.inventory,
+      categories: state.categories,
+      addCategory: state.addCategory,
+      addEquipment: state.addEquipment,
+      updateEquipment: state.updateEquipment,
+      deleteEquipment: state.deleteEquipment,
+      getStats: state.getStats
+    }))
+  );
+  const bookings = useBookingStore(state => state.bookings);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('All');
   const [selectedItem, setSelectedItem] = useState(null);

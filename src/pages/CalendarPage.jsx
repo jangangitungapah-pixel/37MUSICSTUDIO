@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useRef, useEffect, useCallback } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 import { createPortal } from 'react-dom';
 import { Inbox, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, Plus, Search, CalendarCheck, Clock, DollarSign, Trash2, Phone, StickyNote, X, MessageCircle, TrendingUp, Calendar, LayoutGrid, CalendarDays, AlertTriangle, CheckCircle2, XCircle, RotateCcw, Printer } from 'lucide-react';
 import { format, addMonths, subMonths, startOfMonth, endOfMonth, addDays, subDays, getDay, startOfWeek, endOfWeek, eachDayOfInterval, addWeeks, subWeeks } from 'date-fns';
@@ -24,7 +25,7 @@ import './CalendarPage.css';
 import './CalendarPrintStyles.css';
 
 const CalendarPage = () => {
-  const { soundEnabled } = useThemeStore();
+  const soundEnabled = useThemeStore(state => state.soundEnabled);
   const todayStr = useMemo(() => format(new Date(), 'yyyy-MM-dd'), []);
   const [currentDate, setCurrentDate] = useState(new Date());
   const [viewMode, setViewMode] = useState('month');
@@ -73,10 +74,35 @@ const CalendarPage = () => {
     }
   }, [isMobile]);
 
-  const { bookings, addBooking, deleteBooking, updateBookingStatus, updateBooking, cancelBooking, rescheduleBooking, getMonthlyStats } = useBookingStore();
-  const { requests, updateRequestStatus } = useBookingRequestStore();
-  const { pricePerHour, studioName, durationDiscounts = [], recordingSessions = [], operationalHours = { start: 10, end: 23 }, blockedDates = [] } = useSettingsStore();
-  const { inventory } = useInventoryStore();
+  const { bookings, addBooking, deleteBooking, updateBookingStatus, updateBooking, cancelBooking, rescheduleBooking, getMonthlyStats } = useBookingStore(
+    useShallow(state => ({
+      bookings: state.bookings,
+      addBooking: state.addBooking,
+      deleteBooking: state.deleteBooking,
+      updateBookingStatus: state.updateBookingStatus,
+      updateBooking: state.updateBooking,
+      cancelBooking: state.cancelBooking,
+      rescheduleBooking: state.rescheduleBooking,
+      getMonthlyStats: state.getMonthlyStats
+    }))
+  );
+  const { requests, updateRequestStatus } = useBookingRequestStore(
+    useShallow(state => ({
+      requests: state.requests,
+      updateRequestStatus: state.updateRequestStatus
+    }))
+  );
+  const { pricePerHour, studioName, durationDiscounts = [], recordingSessions = [], operationalHours = { start: 10, end: 23 }, blockedDates = [] } = useSettingsStore(
+    useShallow(state => ({
+      pricePerHour: state.pricePerHour,
+      studioName: state.studioName,
+      durationDiscounts: state.durationDiscounts,
+      recordingSessions: state.recordingSessions,
+      operationalHours: state.operationalHours,
+      blockedDates: state.blockedDates
+    }))
+  );
+  const inventory = useInventoryStore(state => state.inventory);
 
   const calculatePrice = useCallback((b, dur) => {
     let base;
@@ -117,6 +143,7 @@ const CalendarPage = () => {
     movingBooking,
     moveGhost,
     moveTarget,
+    translationRef,
     suppressNextBookingClickRef,
     handleMobileBookingPointerDown,
   } = useCalendarBookingMove({
@@ -870,6 +897,7 @@ const CalendarPage = () => {
                 top: moveGhost.y,
                 width: moveGhost.width,
                 height: moveGhost.height,
+                transform: `translate3d(${translationRef.current.dx}px, ${translationRef.current.dy}px, 0)`
               }}
               initial={{ opacity: 0, scale: 0.92, y: 8 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSettingsStore } from '../store/useSettingsStore';
 import { useDemoStore } from '../store/useDemoStore';
@@ -45,10 +46,27 @@ const M3Switch = ({ checked, onChange, ariaLabel, disabled }) => {
 };
 
 const SettingsPage = () => {
-  const storeSettings = useSettingsStore();
-  const { isDemoMode, toggleDemoMode } = useDemoStore();
-  const { bookings } = useBookingStore();
-  const { user } = useAuthStore();
+  const storeSettings = useSettingsStore(
+    useShallow(state => ({
+      studioName: state.studioName,
+      studioAddress: state.studioAddress,
+      studioPhone: state.studioPhone,
+      pricePerHour: state.pricePerHour,
+      durationDiscounts: state.durationDiscounts,
+      recordingSessions: state.recordingSessions,
+      operationalHours: state.operationalHours,
+      blockedDates: state.blockedDates,
+      updateSettings: state.updateSettings
+    }))
+  );
+  const { isDemoMode, toggleDemoMode } = useDemoStore(
+    useShallow(state => ({
+      isDemoMode: state.isDemoMode,
+      toggleDemoMode: state.toggleDemoMode
+    }))
+  );
+  const bookings = useBookingStore(state => state.bookings);
+  const user = useAuthStore(state => state.user);
 
   const [formData, setFormData] = useState({
     studioName: '',

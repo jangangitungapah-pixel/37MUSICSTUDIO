@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 import { useBookingStore } from '../store/useBookingStore';
 import { useFinanceStore } from '../store/useFinanceStore';
 import { useInventoryStore } from '../store/useInventoryStore';
@@ -18,9 +19,16 @@ import {
 import './MaintenancePage.css';
 
 const MaintenancePage = () => {
-  const { bookings, deleteBooking, addBooking, updateBooking } = useBookingStore();
-  const { addTransaction } = useFinanceStore();
-  const { inventory } = useInventoryStore();
+  const { bookings, deleteBooking, addBooking, updateBooking } = useBookingStore(
+    useShallow(state => ({
+      bookings: state.bookings,
+      deleteBooking: state.deleteBooking,
+      addBooking: state.addBooking,
+      updateBooking: state.updateBooking
+    }))
+  );
+  const addTransaction = useFinanceStore(state => state.addTransaction);
+  const inventory = useInventoryStore(state => state.inventory);
 
   const [searchQuery, setSearchQuery] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);

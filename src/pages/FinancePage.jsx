@@ -1,4 +1,5 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 import { useFinanceStore } from '../store/useFinanceStore';
 import { useBookingStore } from '../store/useBookingStore';
 import { useSettingsStore } from '../store/useSettingsStore';
@@ -154,13 +155,79 @@ const formatYAxisTick = (v) => {
   }
   return v;
 };
+const LazyPDFDownloadButton = ({ transaction, settings, iconSize = 14 }) => {
+  const [ready, setReady] = useState(false);
+
+  return ready ? (
+    <PDFDownloadLink
+      document={<ReceiptPDF transaction={transaction} settings={settings} />}
+      fileName={`kuitansi-${transaction.id}.pdf`}
+      style={{ textDecoration: 'none', display: 'inline-flex' }}
+    >
+      {({ loading, url }) => {
+        useEffect(() => {
+          if (!loading && url) {
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `kuitansi-${transaction.id}.pdf`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            const timer = setTimeout(() => setReady(false), 2000);
+            return () => clearTimeout(timer);
+          }
+        }, [loading, url]);
+
+        return (
+          <button
+            className="icon-btn print-btn"
+            disabled={loading}
+            title={loading ? "Menyiapkan PDF..." : "Unduh PDF Kuitansi"}
+            aria-label="Unduh PDF Kuitansi"
+            style={{ color: 'var(--accent-cyan)' }}
+          >
+            <Download size={iconSize} style={{ opacity: loading ? 0.5 : 1 }} />
+          </button>
+        );
+      }}
+    </PDFDownloadLink>
+  ) : (
+    <button
+      className="icon-btn print-btn"
+      onClick={(e) => { e.stopPropagation(); setReady(true); }}
+      title="Unduh PDF Kuitansi"
+      aria-label="Unduh PDF Kuitansi"
+      style={{ color: 'var(--accent-cyan)' }}
+    >
+      <Download size={iconSize} />
+    </button>
+  );
+};
 
 
 const FinancePage = () => {
-  const { transactions, addTransaction, deleteTransaction } = useFinanceStore();
-  const { bookings } = useBookingStore();
-  const { pricePerHour, studioName, studioAddress, studioPhone } = useSettingsStore();
-  const { theme, soundEnabled } = useThemeStore();
+  const { transactions, addTransaction, deleteTransaction } = useFinanceStore(
+    useShallow(state => ({
+      transactions: state.transactions,
+      addTransaction: state.addTransaction,
+      deleteTransaction: state.deleteTransaction
+    }))
+  );
+  const bookings = useBookingStore(state => state.bookings);
+  const { pricePerHour, studioName, studioAddress, studioPhone } = useSettingsStore(
+    useShallow(state => ({
+      pricePerHour: state.pricePerHour,
+      studioName: state.studioName,
+      studioAddress: state.studioAddress,
+      studioPhone: state.studioPhone
+    }))
+  );
+  const { theme, soundEnabled } = useThemeStore(
+    useShallow(state => ({
+      theme: state.theme,
+      soundEnabled: state.soundEnabled
+    }))
+  );
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [playClickRaw] = useSound(CLICK_SOUND, { volume: 0.25 });
   const playClick = useCallback(() => { if (soundEnabled) playClickRaw(); }, [soundEnabled, playClickRaw]);
@@ -192,7 +259,12 @@ const FinancePage = () => {
       : ['#ff2a5f', '#00f0ff', '#a855f7', '#4CAF50', '#FF9800', '#E91E63', '#9C27B0'];
   }, [isLight]);
   
-  const { user, userProfile } = useAuthStore();
+  const { user, userProfile } = useAuthStore(
+    useShallow(state => ({
+      user: state.user,
+      userProfile: state.userProfile
+    }))
+  );
   const [filterPeriod, setFilterPeriod] = useState('month'); // 'day', 'week', 'month', 'year', 'all'
   const [filterType, setFilterType] = useState('all'); // 'all', 'income', 'expense'
   const [searchQuery, setSearchQuery] = useState('');
@@ -340,17 +412,7 @@ const FinancePage = () => {
             <button className="icon-btn print-btn" onClick={() => handlePrint(entry)} title="Cetak Kwitansi" aria-label="Cetak Kwitansi">
               <Printer size={14} />
             </button>
-            <PDFDownloadLink
-              document={<ReceiptPDF transaction={entry} settings={{ studioName, studioAddress, studioPhone }} />}
-              fileName={`kuitansi-${entry.id}.pdf`}
-              style={{ textDecoration: 'none', display: 'inline-flex' }}
-            >
-              {({ loading }) => (
-                <button className="icon-btn print-btn" disabled={loading} title="Unduh PDF Kuitansi" aria-label="Unduh PDF Kuitansi" style={{ color: 'var(--accent-cyan)' }}>
-                  <Download size={14} style={{ opacity: loading ? 0.5 : 1 }} />
-                </button>
-              )}
-            </PDFDownloadLink>
+            <LazyPDFDownloadButton transaction={entry} settings={{ studioName, studioAddress, studioPhone }} iconSize={14} />
             {entry.isManual && (
               <button className="icon-btn delete" onClick={() => { playClick(); if (window.confirm('Hapus transaksi ini?')) deleteTransaction(entry.id); }} title="Hapus" aria-label="Hapus Transaksi">
                 <Trash2 size={14} />
@@ -1023,17 +1085,7 @@ const FinancePage = () => {
                       <button className="icon-btn print-btn" onClick={() => handlePrint(entry)} title="Cetak Kwitansi" aria-label="Cetak Kwitansi">
                         <Printer size={13} />
                       </button>
-                      <PDFDownloadLink
-                        document={<ReceiptPDF transaction={entry} settings={{ studioName, studioAddress, studioPhone }} />}
-                        fileName={`kuitansi-${entry.id}.pdf`}
-                        style={{ textDecoration: 'none', display: 'inline-flex' }}
-                      >
-                        {({ loading }) => (
-                          <button className="icon-btn print-btn" disabled={loading} title="Unduh PDF Kuitansi" aria-label="Unduh PDF Kuitansi" style={{ color: 'var(--accent-cyan)' }}>
-                            <Download size={13} />
-                          </button>
-                        )}
-                      </PDFDownloadLink>
+                      <LazyPDFDownloadButton transaction={entry} settings={{ studioName, studioAddress, studioPhone }} iconSize={13} />
                       {entry.isManual && (
                         <button className="icon-btn delete" onClick={() => { playClick(); if (window.confirm('Hapus transaksi ini?')) deleteTransaction(entry.id); }} title="Hapus" aria-label="Hapus Transaksi">
                           <Trash2 size={13} />

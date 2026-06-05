@@ -529,6 +529,7 @@
   height: calc(100vh - 230px);
   min-height: 520px;
   overflow: auto;
+  -webkit-overflow-scrolling: touch;
   padding: 14px;
   scrollbar-color: rgba(227, 184, 109, 0.56) rgba(255, 255, 255, 0.06);
   scrollbar-width: thin;

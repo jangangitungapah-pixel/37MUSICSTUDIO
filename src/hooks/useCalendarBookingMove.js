@@ -25,6 +25,8 @@ export const useCalendarBookingMove = ({
   const longPressTimerRef = useRef(null);
   const moveTargetRef = useRef(null);
   const suppressNextBookingClickRef = useRef(false);
+  const lastTargetUpdateRef = useRef(0);
+  const translationRef = useRef({ dx: 0, dy: 0 });
 
   const getMoveTargetAtPoint = useCallback((point, booking) => {
     const element = document.elementFromPoint(point.x, point.y)?.closest('[data-calendar-cell="true"]');
@@ -52,8 +54,14 @@ export const useCalendarBookingMove = ({
 
   const applyMoveTarget = useCallback((point, booking) => {
     const target = getMoveTargetAtPoint(point, booking);
-    moveTargetRef.current = target;
-    setMoveTarget(target);
+    const prev = moveTargetRef.current;
+    const hasChanged = (!prev && target) || 
+                       (prev && !target) || 
+                       (prev && target && (prev.date !== target.date || prev.hour !== target.hour || prev.isValid !== target.isValid));
+    if (hasChanged) {
+      moveTargetRef.current = target;
+      setMoveTarget(target);
+    }
   }, [getMoveTargetAtPoint]);
 
   const finishMobileMove = useCallback((booking, target) => {
@@ -123,6 +131,8 @@ export const useCalendarBookingMove = ({
       setMoveGhost(null);
       setMoveTarget(null);
       moveTargetRef.current = null;
+      lastTargetUpdateRef.current = 0;
+      translationRef.current = { dx: 0, dy: 0 };
       if (isActivated) {
         window.setTimeout(() => {
           suppressNextBookingClickRef.current = false;
@@ -156,8 +166,23 @@ export const useCalendarBookingMove = ({
       if (moveEvent.cancelable) moveEvent.preventDefault();
       moveEvent.stopPropagation();
       if (movedDistance > 12) hasDraggedAfterActivation = true;
-      setGhostAtPoint(point);
-      applyMoveTarget(point, booking);
+
+      // Direct DOM update of the ghost position via translate3d for ultra smoothness
+      const dx = point.x - startPoint.x;
+      const dy = point.y - startPoint.y;
+      translationRef.current = { dx, dy };
+
+      const ghostEl = document.querySelector('.mobile-booking-drag-ghost');
+      if (ghostEl) {
+        ghostEl.style.transform = `translate3d(${dx}px, ${dy}px, 0)`;
+      }
+
+      // Throttle hit-testing (document.elementFromPoint) to at most once every 32ms (approx 30fps)
+      const nowTime = performance.now();
+      if (nowTime - lastTargetUpdateRef.current > 32) {
+        applyMoveTarget(point, booking);
+        lastTargetUpdateRef.current = nowTime;
+      }
     };
 
     const handlePointerUp = (upEvent) => {
@@ -192,6 +217,7 @@ export const useCalendarBookingMove = ({
     movingBooking,
     moveGhost,
     moveTarget,
+    translationRef,
     suppressNextBookingClickRef,
     handleMobileBookingPointerDown,
   };

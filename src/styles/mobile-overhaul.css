@@ -123,7 +123,7 @@
     height: 36px !important;
   }
 
-  /* Modals: fixed centered on mobile */
+  /* Modals: fixed centered on tablet, bottom-sheet on smartphone */
   .modal-overlay {
     position: fixed !important;
     inset: 0 !important;
@@ -142,6 +142,8 @@
     justify-content: center !important;
     padding: 16px !important;
     z-index: 10001 !important;
+    height: 100% !important;
+    height: 100dvh !important;
   }
 
   .modal-container,
@@ -149,6 +151,7 @@
     position: relative !important;
     width: calc(100% - 32px) !important;
     max-width: 480px !important;
+    max-height: 82dvh !important;
     max-height: 82vh !important;
     border-radius: 20px !important;
     margin: auto !important;
@@ -161,10 +164,72 @@
     -webkit-backdrop-filter: blur(25px) !important;
     box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6) !important;
     border: 1px solid rgba(255, 255, 255, 0.08) !important;
-    overflow-y: auto !important;
+    overflow: hidden !important; /* Lock header/footer, scroll body */
+    display: flex !important;
+    flex-direction: column !important;
   }
 
+  .modal-body {
+    overflow-y: auto !important;
+    max-height: calc(82dvh - 70px) !important; /* Scroll strictly inside body */
+    max-height: calc(82vh - 70px) !important;
+    -webkit-overflow-scrolling: touch;
+  }
 
+  /* Bottom sheet on smartphones */
+  @media (max-width: 768px) {
+    .modal-overlay {
+      align-items: flex-end !important;
+      padding: 0 !important;
+    }
+    
+    .modal-wrapper {
+      align-items: flex-end !important;
+      padding: 0 !important;
+      height: 100% !important;
+      height: 100dvh !important;
+    }
+    
+    .modal-container,
+    .modal-content {
+      width: 100% !important;
+      max-width: 100% !important;
+      max-height: 85dvh !important;
+      max-height: 85vh !important;
+      border-radius: 24px 24px 0 0 !important;
+      margin: 0 !important;
+      bottom: 0 !important;
+      left: 0 !important;
+      right: 0 !important;
+      top: auto !important;
+    }
+
+    .modal-body {
+      max-height: calc(85dvh - 70px - env(safe-area-inset-bottom, 0px)) !important;
+      max-height: calc(85vh - 70px - env(safe-area-inset-bottom, 0px)) !important;
+      padding-bottom: calc(32px + env(safe-area-inset-bottom, 0px)) !important;
+    }
+  }
+
+  /* Force GPU hardware-accelerated momentum scrolling on all mobile scroll containers */
+  .monthly-grid,
+  .quick-filters,
+  .smart-list,
+  .table-responsive,
+  .notif-panel,
+  .modal-body,
+  .customer-detail-panel.mobile-open,
+  .item-detail-panel.mobile-open,
+  .mobile-billing-list,
+  .mobile-ledger-list,
+  .sidebar-content,
+  .pc-grid-wrapper,
+  .pc-gallery-scroll,
+  [style*="overflow-y: auto"],
+  [style*="overflow-x: auto"] {
+    -webkit-overflow-scrolling: touch !important;
+    will-change: scroll-position !important;
+  }
 }
 
 /* ─────────────────────────────────────────
@@ -238,7 +303,27 @@
    ⑯ MOBILE & TABLET PERFORMANCE OPTIMIZATIONS (≤1024px)
    ══════════════════════════════════════════ */
 @media (max-width: 1024px) {
-  /* Re-enable premium hardware-accelerated backdrop-filter blurs for spatial layering */
+  /* 1. Hilangkan blob latar belakang yang bergerak & membebani GPU */
+  .ambient-glow-wrapper,
+  .ambient-blob,
+  .calendar-ambient-bg,
+  .ambient-orb,
+  .gallery-bg-blobs,
+  .gallery-blob,
+  .auth-bg-blob {
+    display: none !important;
+    animation: none !important;
+  }
+
+  /* Buat latar belakang aurora di admin shell menjadi statis tanpa animasi */
+  .ambient-glow-wrapper {
+    display: block !important;
+    animation: none !important;
+    background: var(--bg-dark) !important;
+    background-size: auto !important;
+  }
+
+  /* 2. Hilangkan backdrop-filter blur berat untuk kelancaran scrolling */
   .glass-panel,
   .app-panel,
   .app-card,
@@ -273,12 +358,31 @@
   .notif-panel,
   .fluent-dialog,
   .fluent-popover,
-  .app-search {
-    backdrop-filter: blur(20px) saturate(200%) !important;
-    -webkit-backdrop-filter: blur(20px) saturate(200%) !important;
+  .app-search,
+  .booked-cell,
+  .view-switcher,
+  .booking-detail-popup,
+  .booking-detail-popup.mobile-sheet,
+  .lightbox-settings-panel,
+  .gallery-lightbox-overlay,
+  .calendar-page .calendar-toolbar,
+  .empty-state-glow,
+  .smart-item,
+  .donut-center-label,
+  .grid-header-cell,
+  .time-label,
+  .grid-corner-cell,
+  .mobile-booking-drag-ghost,
+  .mobile-move-hint,
+  .mobile-maint-card,
+  .maint-smart-panel,
+  .maint-modal-info,
+  .maint-input-wrapper {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
   }
 
-  /* Translucent glass fallback variables on mobile */
+  /* 3. Gunakan fallback warna semi-transparan solid agar estetika tetap terjaga */
   .glass-panel,
   .app-panel,
   .app-card,
@@ -292,52 +396,79 @@
   .billing-stat-card,
   .maint-stat-card,
   .staff-card,
-  .reset-option-card,
-  .pricing-info-card,
-  .cf-status-card,
-  .bf-status-card,
   .mobile-customer-card,
   .mobile-inv-card,
   .mobile-billing-card,
   .mobile-ledger-card,
-  .customer-detail-panel,
-  .item-detail-panel,
-  .card-interactive {
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.015)), var(--glass-bg) !important;
+  .booking-detail-popup,
+  .fluent-dialog,
+  .smart-item,
+  .grid-header-cell,
+  .time-label,
+  .grid-corner-cell,
+  .mobile-booking-drag-ghost,
+  .mobile-move-hint,
+  .mobile-maint-card,
+  .maint-smart-panel,
+  .maint-modal-info,
+  .maint-input-wrapper {
+    background: rgba(22, 22, 28, 0.97) !important; /* Latar belakang solid gelap */
   }
 
-  /* Premium floating bottom navigation bar glass and glow backlight */
+  [data-theme="light"] .glass-panel,
+  [data-theme="light"] .app-panel,
+  [data-theme="light"] .app-card,
+  [data-theme="light"] .app-stat-card,
+  [data-theme="light"] .app-smart-panel,
+  [data-theme="light"] .app-table-panel,
+  [data-theme="light"] .stat-card,
+  [data-theme="light"] .dash-stat-card,
+  [data-theme="light"] .dash-smart-card,
+  [data-theme="light"] .finance-stat-card,
+  [data-theme="light"] .billing-stat-card,
+  [data-theme="light"] .maint-stat-card,
+  [data-theme="light"] .staff-card,
+  [data-theme="light"] .mobile-customer-card,
+  [data-theme="light"] .mobile-inv-card,
+  [data-theme="light"] .mobile-billing-card,
+  [data-theme="light"] .mobile-ledger-card,
+  [data-theme="light"] .booking-detail-popup,
+  [data-theme="light"] .fluent-dialog,
+  [data-theme="light"] .smart-item,
+  [data-theme="light"] .grid-header-cell,
+  [data-theme="light"] .time-label,
+  [data-theme="light"] .grid-corner-cell,
+  [data-theme="light"] .mobile-booking-drag-ghost,
+  [data-theme="light"] .mobile-move-hint,
+  [data-theme="light"] .mobile-maint-card,
+  [data-theme="light"] .maint-smart-panel,
+  [data-theme="light"] .maint-modal-info,
+  [data-theme="light"] .maint-input-wrapper {
+    background: rgba(250, 250, 252, 0.99) !important; /* Latar belakang solid terang */
+  }
+
+  .mobile-command-header {
+    background: rgba(16, 16, 22, 0.98) !important;
+  }
+  [data-theme="light"] .mobile-command-header {
+    background: rgba(250, 250, 252, 0.99) !important;
+  }
+
   .bottom-nav-bar {
-    background: rgba(var(--bg-surface-rgb), 0.72) !important;
-    border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
-    box-shadow: 
-      0 -10px 40px rgba(0, 0, 0, 0.5),
-      0 0 20px rgba(var(--accent-pink-rgb), 0.06) !important;
+    background: rgba(22, 22, 28, 0.98) !important;
   }
-
   [data-theme="light"] .bottom-nav-bar {
-    background: rgba(255, 255, 255, 0.85) !important;
-    border-top-color: rgba(0, 0, 0, 0.06) !important;
-    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.03) !important;
+    background: rgba(250, 250, 252, 0.99) !important;
   }
 
-  /* Enable responsive springy transforms and soft neon glows on hover */
-  .glass-panel,
-  .app-panel,
-  .app-card,
-  .card-interactive,
-  .app-stat-card,
-  .stat-card,
-  .dash-stat-card,
-  .dash-smart-card,
-  .staff-card,
-  .mobile-customer-card,
-  .mobile-inv-card,
-  .mobile-billing-card,
-  .mobile-ledger-card {
-    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.15), box-shadow 0.4s ease, border-color 0.4s ease !important;
+  .calendar-page .calendar-toolbar {
+    background: rgba(22, 22, 28, 0.98) !important;
+  }
+  [data-theme="light"] .calendar-page .calendar-toolbar {
+    background: rgba(250, 250, 252, 0.99) !important;
   }
 
+  /* 4. Nonaktifkan efek hover transformasi yang lengket */
   .app-card:hover,
   .app-panel:hover,
   .glass-panel:hover,
@@ -350,16 +481,84 @@
   .mobile-customer-card:hover,
   .mobile-inv-card:hover,
   .mobile-billing-card:hover,
-  .mobile-ledger-card:hover {
-    transform: translateY(-4px) scale(1.006) !important;
-    border-color: rgba(var(--accent-pink-rgb), 0.35) !important;
-    box-shadow: 
-      0 20px 48px rgba(0, 0, 0, 0.4),
-      0 0 24px rgba(var(--accent-pink-rgb), 0.12),
-      inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
+  .mobile-ledger-card:hover,
+  .booked-cell:hover,
+  .album-card:hover {
+    transform: none !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25) !important;
   }
 
-  /* Satisfaction active scaling feedback on tap (simulating keypress) */
+  /* Reset hover transforms and shadow effects for dashboard interactive elements on mobile */
+  .dash-alert-chip:hover,
+  .dash-work-item.as-button:hover,
+  .dash-slot-item:hover,
+  .dash-stat-card:hover .stat-icon-wrapper,
+  .chart-link-btn:hover,
+  .upcoming-item:hover,
+  .top-cust-row:hover,
+  .qb-btn:hover,
+  .qe-btn:hover,
+  .smart-item:hover,
+  .dash-action-toolbar .btn-secondary:hover,
+  .mobile-maint-card:hover,
+  .maint-smart-item:hover,
+  .permission-card:hover,
+  .reset-option-card:hover,
+  .settings-nav-item:hover,
+  .mobile-ledger-card.income:hover,
+  .mobile-ledger-card.expense:hover {
+    transform: none !important;
+    box-shadow: none !important;
+  }
+
+  /* Nonaktifkan visual stack orbs 3D dari album card di mobile karena lambat */
+  .album-card::before,
+  .album-card::after {
+    display: none !important;
+  }
+
+  /* 5. Nonaktifkan ambilight di lightbox galeri */
+  .lightbox-ambilight {
+    display: none !important;
+  }
+
+  /* 6. Hilangkan animasi filter berat pada background halaman lain */
+  .calendar-ambient-bg .ambient-orb,
+  .gallery-bg-blobs .gallery-blob,
+  .gallery-blob-1,
+  .gallery-blob-2,
+  .gallery-blob-3 {
+    display: none !important;
+    animation: none !important;
+  }
+
+  /* 7. Optimasi Khusus Kalender pada Mobile */
+  .empty-cell,
+  .empty-cell:hover,
+  .empty-cell:hover .hover-plus {
+    transition: none !important;
+    transform: none !important;
+    background: transparent !important;
+  }
+
+  .booked-cell {
+    transition: transform 0.2s, background-color 0.2s, border-color 0.2s !important;
+  }
+  .booked-cell:hover {
+    filter: none !important;
+    transform: none !important;
+  }
+
+  .current-time-line {
+    animation: none !important;
+    box-shadow: none !important;
+  }
+  .current-time-line::before {
+    box-shadow: none !important;
+    animation: none !important;
+  }
+
+  /* Efek sentuhan sederhana pada mobile */
   .glass-panel:active,
   .app-panel:active,
   .app-card:active,
@@ -375,9 +574,7 @@
   .mobile-ledger-card:active,
   .btn:active,
   .icon-btn:active {
-    transform: scale(0.965) translateZ(0) !important;
-    background: rgba(255, 255, 255, 0.08) !important;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25) !important;
-    transition: transform 0.1s cubic-bezier(0.175, 0.885, 0.32, 1) !important;
+    transform: scale(0.98) !important;
+    transition: transform 0.08s ease !important;
   }
 }

@@ -738,32 +738,31 @@ body.calendar-move-lock .main-content {
 .grid-corner-cell {
   position: sticky; top: 0; left: 0;
   z-index: 100;
-  background: rgba(10, 10, 18, 0.9) !important;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background: rgba(13, 13, 20, 0.95) !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
   border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
   display: flex; align-items: center; justify-content: center;
   padding: 12px;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 .corner-label {
-  font-size: 0.65rem; font-weight: 800;
+  font-size: 0.65rem; font-weight: 700;
   text-transform: uppercase; letter-spacing: 0.15em;
   color: var(--accent-cyan);
-  background: linear-gradient(135deg, rgba(var(--accent-cyan-rgb), 0.15), rgba(var(--accent-cyan-rgb), 0.03));
+  background: rgba(var(--accent-cyan-rgb), 0.06);
   padding: 4px 10px;
-  border-radius: 8px;
-  border: 1px solid rgba(var(--accent-cyan-rgb), 0.25);
+  border-radius: 6px;
+  border: 1px solid rgba(var(--accent-cyan-rgb), 0.12);
   font-family: var(--font-display);
 }
 
 /* Day header cells */
 .grid-header-cell {
   position: sticky; top: 0;
-  background: rgba(10, 10, 18, 0.85) !important;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background: rgba(13, 13, 20, 0.9) !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
   border-right: 1px solid rgba(255, 255, 255, 0.03) !important;
   padding: 14px 6px;
@@ -771,13 +770,10 @@ body.calendar-move-lock .main-content {
   z-index: 10;
   display: flex; flex-direction: column;
   align-items: center; gap: 4px;
-  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 .grid-header-cell:hover {
-  background: rgba(18, 18, 30, 0.95) !important;
-  transform: translateY(-2px);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  background: rgba(20, 20, 30, 0.95) !important;
 }
 .grid-header-cell .day-name {
   font-size: 0.62rem; text-transform: uppercase;
@@ -786,21 +782,20 @@ body.calendar-move-lock .main-content {
   font-family: var(--font-display);
 }
 .grid-header-cell .day-number {
-  font-size: 1.15rem; font-weight: 800;
+  font-size: 1.05rem; font-weight: 600;
   color: var(--text-secondary);
-  width: 34px; height: 34px;
+  width: 28px; height: 28px;
   display: flex; align-items: center; justify-content: center;
-  border-radius: 10px;
+  border-radius: 50%;
   font-family: var(--font-mono);
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.04);
-  transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+  background: transparent;
+  border: none;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .grid-header-cell.today {
-  background: rgba(var(--accent-cyan-rgb), 0.05) !important;
-  border-bottom: 2.5px solid var(--accent-cyan) !important;
-  box-shadow: inset 0 0 12px rgba(var(--accent-cyan-rgb), 0.08) !important;
+  background: rgba(var(--accent-cyan-rgb), 0.04) !important;
+  border-bottom: 2px solid var(--accent-cyan) !important;
 }
 .grid-header-cell.today .day-name {
   color: var(--accent-cyan);
@@ -808,11 +803,8 @@ body.calendar-move-lock .main-content {
 }
 .grid-header-cell.today .day-number {
   color: #0f0f1a;
-  background: linear-gradient(135deg, var(--accent-cyan), #00d2ff);
-  font-weight: 900;
-  border: 1px solid rgba(0, 240, 255, 0.3);
-  box-shadow: 0 0 16px rgba(0, 240, 255, 0.45);
-  transform: scale(1.05);
+  background: var(--accent-cyan);
+  font-weight: 800;
 }
 .grid-header-cell.weekend .day-name {
   color: var(--accent-pink);
@@ -820,8 +812,6 @@ body.calendar-move-lock .main-content {
 }
 .grid-header-cell.weekend .day-number {
   color: var(--accent-pink);
-  background: rgba(var(--accent-pink-rgb), 0.03);
-  border: 1px solid rgba(var(--accent-pink-rgb), 0.08);
 }
 
 /* Time label column */
@@ -832,31 +822,14 @@ body.calendar-move-lock .main-content {
   border-bottom: 1px solid rgba(255, 255, 255, 0.03) !important;
   padding: 0 10px;
   display: flex; align-items: center; justify-content: center;
-  background: rgba(10, 10, 18, 0.85) !important;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background: rgba(13, 13, 20, 0.95) !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   min-height: 48px;
-  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
-}
-.time-label::before {
-  content: '';
-  position: absolute;
-  top: 0; bottom: 0; left: 0;
-  width: 2px;
-  background: linear-gradient(180deg, transparent, var(--accent-pink), transparent);
-  opacity: 0;
-  transition: opacity 0.24s cubic-bezier(0.16, 1, 0.3, 1);
-  pointer-events: none;
+  transition: background-color 0.2s ease;
 }
 .time-label:hover {
-  background: rgba(18, 18, 30, 0.95) !important;
-  transform: translateX(2px);
-  box-shadow: 6px 0 20px rgba(0, 0, 0, 0.35);
-  z-index: 25;
-}
-.time-label:hover::before {
-  opacity: 1;
+  background: rgba(20, 20, 30, 0.95) !important;
 }
 .time-label.even-row {
   background: rgba(255, 255, 255, 0.01) !important;
@@ -865,13 +838,11 @@ body.calendar-move-lock .main-content {
   position: relative;
   background: rgba(var(--accent-pink-rgb), 0.05) !important;
   border-right: 2px solid var(--accent-pink) !important;
-  box-shadow: inset -4px 0 12px rgba(var(--accent-pink-rgb), 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.04) !important;
   z-index: 25;
 }
 .time-label.current-hour-highlight .time-range {
   color: var(--accent-pink);
-  font-weight: 900;
-  text-shadow: 0 0 10px rgba(var(--accent-pink-rgb), 0.4);
+  font-weight: 700;
   opacity: 1;
 }
 
@@ -906,18 +877,15 @@ body.calendar-move-lock .main-content {
   transition: background 0.2s ease;
 }
 .empty-cell:hover {
-  background: rgba(var(--accent-cyan-rgb), 0.04) !important;
-  box-shadow: inset 0 0 8px rgba(var(--accent-cyan-rgb), 0.08) !important;
+  background: rgba(255, 255, 255, 0.03) !important;
 }
 .hover-plus {
   opacity: 0; color: var(--accent-cyan);
-  font-size: 1.25rem; font-weight: 300;
-  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-  transform: scale(0.8);
+  font-size: 1.1rem; font-weight: 300;
+  transition: opacity 0.2s ease;
 }
 .empty-cell:hover .hover-plus {
-  opacity: 0.9;
-  transform: scale(1.2);
+  opacity: 0.7;
 }
 
 /* ===== Radix UI Components ===== */
@@ -1021,18 +989,19 @@ body.calendar-move-lock .main-content {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  border-radius: 12px !important;
+  border-radius: 8px !important;
   overflow: hidden;
   cursor: pointer;
-  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.15), box-shadow 0.4s ease, filter 0.2s ease, opacity 0.2s ease !important;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease, opacity 0.2s ease !important;
   user-select: none;
   touch-action: none;
 }
 
 .booked-cell:hover {
   z-index: 10;
-  transform: scale(1.025) translateY(-2px) translateZ(0) !important;
+  transform: scale(1.005) translateZ(0) !important;
   filter: brightness(1.08);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
 }
 
 /* Disable pointer interactions during active drag to allow document.elementFromPoint to resolve underlying grid cells */
@@ -1047,95 +1016,76 @@ body.calendar-move-lock .main-content {
   pointer-events: none !important;
 }
 
-/* Status Confirmed (Paid) - Neon Cyan Glow */
+/* Status Confirmed (Paid) - Clean Cyan */
 .booked-cell.status-confirmed {
-  background: linear-gradient(135deg, rgba(var(--accent-cyan-rgb), 0.16), rgba(var(--accent-cyan-rgb), 0.05)) !important;
-  border: 1px solid rgba(var(--accent-cyan-rgb), 0.25) !important;
-  border-left: 4.5px solid var(--accent-cyan) !important;
-  box-shadow: 
-    inset 0 1px 0 rgba(255, 255, 255, 0.08),
-    0 4px 15px rgba(var(--accent-cyan-rgb), 0.08) !important;
+  background: rgba(var(--accent-cyan-rgb), 0.08) !important;
+  border: 1px solid rgba(var(--accent-cyan-rgb), 0.18) !important;
+  border-left: 3px solid var(--accent-cyan) !important;
+  box-shadow: none !important;
 }
 .booked-cell.status-confirmed:hover {
-  box-shadow: 
-    0 12px 28px rgba(0, 0, 0, 0.45),
-    0 0 20px rgba(var(--accent-cyan-rgb), 0.45),
-    inset 0 1px 0 rgba(255, 255, 255, 0.18) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
 }
 
-/* Status Down Payment (DP) - Neon Amber Glow */
+/* Status Down Payment (DP) - Clean Amber */
 .booked-cell.status-dp {
-  background: linear-gradient(135deg, rgba(255, 193, 7, 0.14), rgba(255, 193, 7, 0.04)) !important;
-  border: 1px solid rgba(255, 193, 7, 0.25) !important;
-  border-left: 4.5px solid #FFC107 !important;
-  box-shadow: 
-    inset 0 1px 0 rgba(255, 255, 255, 0.08),
-    0 4px 15px rgba(255, 193, 7, 0.08) !important;
+  background: rgba(255, 193, 7, 0.08) !important;
+  border: 1px solid rgba(255, 193, 7, 0.18) !important;
+  border-left: 3px solid #FFC107 !important;
+  box-shadow: none !important;
 }
 .booked-cell.status-dp:hover {
-  box-shadow: 
-    0 12px 28px rgba(0, 0, 0, 0.45),
-    0 0 20px rgba(255, 193, 7, 0.45),
-    inset 0 1px 0 rgba(255, 255, 255, 0.18) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
 }
 
-/* Status Pending (Belum Bayar) - Neon Pink Glow */
+/* Status Pending (Belum Bayar) - Clean Pink */
 .booked-cell.status-pending {
-  background: linear-gradient(135deg, rgba(var(--accent-pink-rgb), 0.16), rgba(var(--accent-pink-rgb), 0.05)) !important;
-  border: 1px solid rgba(var(--accent-pink-rgb), 0.25) !important;
-  border-left: 4.5px solid var(--accent-pink) !important;
-  box-shadow: 
-    inset 0 1px 0 rgba(255, 255, 255, 0.08),
-    0 4px 15px rgba(var(--accent-pink-rgb), 0.08) !important;
+  background: rgba(var(--accent-pink-rgb), 0.08) !important;
+  border: 1px solid rgba(var(--accent-pink-rgb), 0.18) !important;
+  border-left: 3px solid var(--accent-pink) !important;
+  box-shadow: none !important;
 }
 .booked-cell.status-pending:hover {
-  box-shadow: 
-    0 12px 28px rgba(0, 0, 0, 0.45),
-    0 0 20px rgba(var(--accent-pink-rgb), 0.45),
-    inset 0 1px 0 rgba(255, 255, 255, 0.18) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
 }
 
 /* Status Maintenance (Blocked) */
 .booked-cell.status-maintenance {
   background: repeating-linear-gradient(
     45deg,
-    rgba(107, 107, 118, 0.05), rgba(107, 107, 118, 0.05) 8px,
-    rgba(107, 107, 118, 0.12) 8px, rgba(107, 107, 118, 0.12) 16px
+    rgba(107, 107, 118, 0.04), rgba(107, 107, 118, 0.04) 8px,
+    rgba(107, 107, 118, 0.08) 8px, rgba(107, 107, 118, 0.08) 16px
   ) !important;
-  border: 1px solid rgba(107, 107, 118, 0.2) !important;
-  border-left: 3.5px solid #6b6b76 !important;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid rgba(107, 107, 118, 0.15) !important;
+  border-left: 3px solid #6b6b76 !important;
+  box-shadow: none !important;
 }
 .booked-cell.status-maintenance:hover {
-  filter: brightness(1.15);
+  filter: brightness(1.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
 }
 
 /* VIP Booking Styling */
 .booked-cell.booking-vip {
-  background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(255, 215, 0, 0.04)) !important;
-  border: 1px solid rgba(255, 215, 0, 0.3) !important;
-  border-left: 4.5px solid #FFD700 !important;
-  box-shadow: 
-    inset 0 1px 0 rgba(255, 255, 255, 0.12),
-    0 4px 16px rgba(255, 215, 0, 0.15) !important;
+  background: rgba(255, 215, 0, 0.08) !important;
+  border: 1px solid rgba(255, 215, 0, 0.2) !important;
+  border-left: 3px solid #FFD700 !important;
+  box-shadow: none !important;
 }
 .booked-cell.booking-vip .booking-band-name {
   color: #FFD700 !important;
-  font-weight: 900;
-  text-shadow: 0 0 6px rgba(255, 215, 0, 0.35);
+  font-weight: 700;
+  text-shadow: none;
 }
 .booked-cell.booking-vip:hover {
-  box-shadow: 
-    0 14px 32px rgba(0, 0, 0, 0.5),
-    0 0 20px rgba(255, 215, 0, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.22) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
 }
 
 /* Recording Booking Styling */
 .booked-cell.booking-recording {
-  background: linear-gradient(135deg, rgba(255, 59, 48, 0.15), rgba(255, 59, 48, 0.04)) !important;
-  border: 1px solid rgba(255, 59, 48, 0.25) !important;
-  border-left: 4.5px solid #ff453a !important;
+  background: rgba(255, 59, 48, 0.08) !important;
+  border: 1px solid rgba(255, 59, 48, 0.18) !important;
+  border-left: 3px solid #ff453a !important;
 }
 
 /* Resizing styling */
@@ -2420,62 +2370,52 @@ body.calendar-move-lock .main-content {
 
 /* 2. Glassmorphic Booked Cells & Hover States */
 .booked-cell {
-  background: rgba(255, 255, 255, 0.03) !important;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.05) !important;
-  border-left-width: 4px !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.04);
-  transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
+  border-left-width: 3px !important;
+  box-shadow: none;
 }
 
 .booked-cell.status-confirmed {
   border-left-color: var(--accent-cyan) !important;
-  box-shadow: 0 4px 14px rgba(var(--accent-cyan-rgb), 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  box-shadow: none !important;
 }
 
 .booked-cell.status-dp {
   border-left-color: #FFC107 !important;
-  box-shadow: 0 4px 14px rgba(255, 193, 7, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  box-shadow: none !important;
 }
 
 .booked-cell.status-pending {
   border-left-color: var(--accent-pink) !important;
-  box-shadow: 0 4px 14px rgba(var(--accent-pink-rgb), 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  box-shadow: none !important;
 }
 
 .booked-cell.status-maintenance {
   border-left-color: #6b6b76 !important;
-  background: repeating-linear-gradient(
-    45deg,
-    rgba(107, 107, 118, 0.04), rgba(107, 107, 118, 0.04) 8px,
-    rgba(107, 107, 118, 0.08) 8px, rgba(107, 107, 118, 0.08) 16px
-  ) !important;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.02);
+  box-shadow: none !important;
 }
 
 /* Hover Zoom & Saturate */
 .booked-cell:hover {
-  filter: brightness(1.22) saturate(1.1) !important;
-  transform: scale(1.01) translateY(-1px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28) !important;
-  z-index: 10 !important;
+  filter: brightness(1.08) !important;
+  transform: scale(1.005) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
 }
 
 /* 3. Empty Cells Minimal Styling */
 .empty-cell {
   background: transparent;
-  transition: all 0.15s ease;
 }
 
 .empty-cell:hover {
-  background: rgba(255, 255, 255, 0.035) !important;
+  background: rgba(255, 255, 255, 0.03) !important;
 }
 
 .empty-cell:hover .hover-plus {
   opacity: 0.7;
-  color: var(--accent-pink);
-  transform: scale(1.2);
+  color: var(--accent-cyan);
+  transform: none;
 }
 
 /* 4. Laser Current Time Line Indicator */
@@ -2638,24 +2578,22 @@ body.calendar-move-lock .main-content {
 
 /* Light mode overrides for calendar */
 [data-theme="light"] .booked-cell {
-  background: rgba(255, 255, 255, 0.78) !important;
-  border-color: rgba(17, 17, 40, 0.08) !important;
-  box-shadow: 0 4px 12px rgba(17, 17, 40, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  box-shadow: 0 2px 6px rgba(17, 17, 40, 0.06) !important;
 }
 
 [data-theme="light"] .booked-cell.status-confirmed {
   background: rgba(var(--accent-cyan-rgb), 0.08) !important;
-  box-shadow: 0 4px 12px rgba(var(--accent-cyan-rgb), 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  box-shadow: none !important;
 }
 
 [data-theme="light"] .booked-cell.status-dp {
   background: rgba(255, 193, 7, 0.08) !important;
-  box-shadow: 0 4px 12px rgba(255, 193, 7, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  box-shadow: none !important;
 }
 
 [data-theme="light"] .booked-cell.status-pending {
   background: rgba(var(--accent-pink-rgb), 0.08) !important;
-  box-shadow: 0 4px 12px rgba(var(--accent-pink-rgb), 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  box-shadow: none !important;
 }
 
 [data-theme="light"] .booking-detail-popup {
@@ -2705,18 +2643,18 @@ body.calendar-move-lock .main-content {
   background: rgba(245, 245, 249, 0.9) !important;
   border-bottom: 1px solid rgba(0, 0, 0, 0.08) !important;
   border-right: 1px solid rgba(0, 0, 0, 0.04) !important;
-  box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.04);
+  box-shadow: none;
 }
 [data-theme="light"] .grid-header-cell:hover {
   background: rgba(232, 232, 240, 0.98) !important;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08), inset 0 -1px 0 rgba(0, 0, 0, 0.05) !important;
+  box-shadow: none !important;
 }
 [data-theme="light"] .grid-header-cell.today {
   background: rgba(0, 210, 230, 0.06) !important;
   border-bottom: 2px solid var(--accent-cyan) !important;
 }
 [data-theme="light"] .grid-header-cell.today:hover {
-  background: rgba(0, 210, 230, 0.11) !important;
+  background: rgba(0, 210, 230, 0.09) !important;
 }
 [data-theme="light"] .grid-header-cell .day-name {
   color: var(--text-muted);
@@ -2726,8 +2664,8 @@ body.calendar-move-lock .main-content {
 }
 [data-theme="light"] .grid-header-cell.today .day-number {
   color: #fff;
-  background: linear-gradient(135deg, #00c8d4, #00a0cc);
-  box-shadow: 0 0 14px rgba(0, 200, 212, 0.3);
+  background: var(--accent-cyan);
+  box-shadow: none;
 }
 
 /* ── Time Label Column ── */
@@ -2739,7 +2677,6 @@ body.calendar-move-lock .main-content {
 }
 [data-theme="light"] .time-label:hover {
   background: rgba(232, 232, 240, 0.98) !important;
-  box-shadow: 4px 0 16px rgba(0, 0, 0, 0.07) !important;
 }
 [data-theme="light"] .time-label.even-row {
   background: rgba(238, 238, 245, 0.55) !important;
@@ -2774,34 +2711,7 @@ body.calendar-move-lock .main-content {
   background: rgba(0, 0, 0, 0.03) !important;
 }
 
-/* ── Metronome pulse — light variants ── */
-[data-theme="light"] .grid-header-cell.today {
-  animation: metronomePulseHeaderLight 1s cubic-bezier(0.25, 0.8, 0.25, 1) infinite;
-}
-@keyframes metronomePulseHeaderLight {
-  0%, 100% {
-    background: rgba(0, 210, 230, 0.06) !important;
-    box-shadow: inset 0 0 8px rgba(0, 200, 212, 0.04);
-  }
-  12% {
-    background: rgba(0, 210, 230, 0.13) !important;
-    box-shadow: inset 0 0 16px rgba(0, 200, 212, 0.16), 0 0 8px rgba(0, 200, 212, 0.1);
-  }
-}
-
-[data-theme="light"] .time-label.current-hour-highlight {
-  animation: metronomePulseHourLight 1s cubic-bezier(0.25, 0.8, 0.25, 1) infinite;
-}
-@keyframes metronomePulseHourLight {
-  0%, 100% {
-    background: rgba(var(--accent-pink-rgb), 0.04) !important;
-    box-shadow: inset 2px 0 0 rgba(var(--accent-pink-rgb), 0.3);
-  }
-  12% {
-    background: rgba(var(--accent-pink-rgb), 0.09) !important;
-    box-shadow: inset 4px 0 0 var(--accent-pink), 0 0 8px rgba(var(--accent-pink-rgb), 0.1);
-  }
-}
+/* ── Metronome pulse — removed for performance, using flat highlights instead ── */
 
 /* ── Corner label ── */
 [data-theme="light"] .corner-label {

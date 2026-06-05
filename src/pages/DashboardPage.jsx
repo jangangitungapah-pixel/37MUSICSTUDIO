@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 import { useBookingStore } from '../store/useBookingStore';
 import { useBookingRequestStore } from '../store/useBookingRequestStore';
 import { useCustomerStore } from '../store/useCustomerStore';
@@ -41,17 +42,58 @@ const COLORS = [
 ];
 
 const DashboardPage = () => {
-  const { bookings, getMonthlyStats, addBooking, updateBookingStatus } = useBookingStore();
-  const { requests, updateRequestStatus } = useBookingRequestStore();
-  const { customers } = useCustomerStore();
-  const { inventory, getStats: getInvStats, updateEquipment } = useInventoryStore();
-  const { transactions, addTransaction } = useFinanceStore();
-  const { pricePerHour, studioName, operationalHours = { start: 10, end: 23 } } = useSettingsStore();
-  const { staffMembers } = useStaffStore();
-  const { user, userProfile } = useAuthStore();
+  const { bookings, getMonthlyStats, addBooking, updateBookingStatus } = useBookingStore(
+    useShallow(state => ({
+      bookings: state.bookings,
+      getMonthlyStats: state.getMonthlyStats,
+      addBooking: state.addBooking,
+      updateBookingStatus: state.updateBookingStatus
+    }))
+  );
+  const { requests, updateRequestStatus } = useBookingRequestStore(
+    useShallow(state => ({
+      requests: state.requests,
+      updateRequestStatus: state.updateRequestStatus
+    }))
+  );
+  const customers = useCustomerStore(state => state.customers);
+  const { inventory, getStats: getInvStats, updateEquipment } = useInventoryStore(
+    useShallow(state => ({
+      inventory: state.inventory,
+      getStats: state.getStats,
+      updateEquipment: state.updateEquipment
+    }))
+  );
+  const { transactions, addTransaction } = useFinanceStore(
+    useShallow(state => ({
+      transactions: state.transactions,
+      addTransaction: state.addTransaction
+    }))
+  );
+  const { pricePerHour, studioName, operationalHours = { start: 10, end: 23 } } = useSettingsStore(
+    useShallow(state => ({
+      pricePerHour: state.pricePerHour,
+      studioName: state.studioName,
+      operationalHours: state.operationalHours
+    }))
+  );
+  const staffMembers = useStaffStore(state => state.staffMembers);
+  const { user, userProfile } = useAuthStore(
+    useShallow(state => ({
+      user: state.user,
+      userProfile: state.userProfile
+    }))
+  );
   const navigate = useNavigate();
 
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [currentTime, setCurrentTime] = useState(new Date());
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -650,6 +692,7 @@ const DashboardPage = () => {
               <XAxis dataKey="name" stroke="var(--text-muted)" fontSize={11} tickLine={false} axisLine={false} />
               <YAxis stroke="var(--text-muted)" fontSize={11} tickLine={false} axisLine={false} tickFormatter={formatK} width={50} />
               <Tooltip
+                isAnimationActive={!isMobile}
                 contentStyle={{ 
                   backgroundColor: 'var(--bg-surface)', 
                   border: '1px solid var(--border-light)', 
@@ -662,6 +705,7 @@ const DashboardPage = () => {
                 labelStyle={{ color: 'var(--text-secondary)', marginBottom: '4px', fontWeight: '600' }}
               />
               <Area 
+                isAnimationActive={!isMobile}
                 type="monotone" 
                 dataKey="Pendapatan" 
                 stroke="var(--accent-cyan)" 
@@ -670,7 +714,7 @@ const DashboardPage = () => {
                 fill="url(#cyanGrad)" 
                 dot={{ r: 4, stroke: 'var(--accent-cyan)', strokeWidth: 2, fill: 'var(--bg-surface)' }} 
                 activeDot={{ r: 6, stroke: 'var(--accent-cyan)', strokeWidth: 2, fill: 'var(--accent-cyan)' }} 
-                style={{ filter: 'drop-shadow(0 4px 8px rgba(0, 240, 255, 0.25))' }}
+                style={isMobile ? {} : { filter: 'drop-shadow(0 4px 8px rgba(0, 240, 255, 0.25))' }}
               />
             </AreaChart>
           </ResponsiveContainer>
@@ -762,6 +806,7 @@ const DashboardPage = () => {
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie 
+                    isAnimationActive={!isMobile}
                     data={inventoryChartData} 
                     cx="50%" 
                     cy="50%" 
@@ -775,6 +820,7 @@ const DashboardPage = () => {
                     {inventoryChartData.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
                   </Pie>
                   <Tooltip 
+                    isAnimationActive={!isMobile}
                     contentStyle={{ 
                       backgroundColor: 'var(--bg-surface)', 
                       border: '1px solid var(--border-light)', 

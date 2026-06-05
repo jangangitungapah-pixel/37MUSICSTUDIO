@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 import { useBookingStore } from '../store/useBookingStore';
 import { useSettingsStore } from '../store/useSettingsStore';
 import { Printer, CheckCircle, AlertCircle, FileText, Search, X, Share2, MessageCircle, Copy, Download, Check, Bell, ChevronDown } from 'lucide-react';
@@ -16,8 +17,20 @@ import { pagePreset } from '../animations';
 import './BillingPage.css';
 
 const BillingPage = () => {
-  const { bookings, updateBookingStatus } = useBookingStore();
-  const { pricePerHour, studioName, studioAddress, studioPhone } = useSettingsStore();
+  const { bookings, updateBookingStatus } = useBookingStore(
+    useShallow(state => ({
+      bookings: state.bookings,
+      updateBookingStatus: state.updateBookingStatus
+    }))
+  );
+  const { pricePerHour, studioName, studioAddress, studioPhone } = useSettingsStore(
+    useShallow(state => ({
+      pricePerHour: state.pricePerHour,
+      studioName: state.studioName,
+      studioAddress: state.studioAddress,
+      studioPhone: state.studioPhone
+    }))
+  );
   const [activeTab, setActiveTab] = useState('Semua');
   const [isFilterDropdownOpen, setIsFilterDropdownOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');

@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 import { Search, Plus, Edit2, Trash2, Mail, Phone, Calendar as CalendarIcon, Users, UserCheck, DollarSign, X, AtSign, MapPin, Clock, Star, StickyNote, MessageCircle, Gift, Award, ChevronDown } from 'lucide-react';
 import { useCustomerStore } from '../store/useCustomerStore';
 import { useBookingStore } from '../store/useBookingStore';
@@ -53,8 +54,16 @@ const validateWithZod = (fieldName) => (value) => {
 };
 
 const CustomersPage = () => {
-  const { customers, addCustomer, updateCustomer, deleteCustomer, getStats } = useCustomerStore();
-  const { bookings } = useBookingStore();
+  const { customers, addCustomer, updateCustomer, deleteCustomer, getStats } = useCustomerStore(
+    useShallow(state => ({
+      customers: state.customers,
+      addCustomer: state.addCustomer,
+      updateCustomer: state.updateCustomer,
+      deleteCustomer: state.deleteCustomer,
+      getStats: state.getStats
+    }))
+  );
+  const bookings = useBookingStore(state => state.bookings);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState('all'); // 'all', 'Active', 'Inactive'
   const [selectedCustomer, setSelectedCustomer] = useState(null);
