@@ -1,7 +1,16 @@
-import { isFirebaseConfigured } from '../firebase';
+const REQUIRED_FIREBASE_ENV = [
+  'VITE_FIREBASE_API_KEY',
+  'VITE_FIREBASE_AUTH_DOMAIN',
+  'VITE_FIREBASE_PROJECT_ID',
+  'VITE_FIREBASE_MESSAGING_SENDER_ID',
+  'VITE_FIREBASE_APP_ID',
+];
 
 const FirebaseConfigNotice = () => {
-  if (isFirebaseConfigured || import.meta.env.PROD) return null;
+  if (import.meta.env.PROD) return null;
+
+  const isFirebaseEnvConfigured = REQUIRED_FIREBASE_ENV.every((key) => Boolean(import.meta.env[key]));
+  if (isFirebaseEnvConfigured) return null;
 
   return (
     <div

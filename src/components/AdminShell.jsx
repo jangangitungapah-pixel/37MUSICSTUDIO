@@ -1,12 +1,16 @@
 import { Suspense, lazy, useState } from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
-import { AnimatePresence } from 'framer-motion';
 import { Loader2, LockKeyhole, LogOut, ShieldAlert } from 'lucide-react';
 import { useAuthStore } from '../store/useAuthStore';
 import { ROUTE_PERMISSIONS, hasPermission } from '../lib/permissions';
 import Sidebar from './Sidebar';
 import NotificationToast from './NotificationToast';
-import PageTransition from './PageTransition';
+import '../styles/fluent2-assets.css';
+import '../styles/mobile-overhaul.css';
+import '../styles/flat-minimal-system.css';
+import '../styles/showcase-pages.css';
+import '../pages/AuthPage.css';
+import '../styles/modern-minimal-admin.css';
 
 const CalendarPage = lazy(() => import('../pages/CalendarPage'));
 const CustomersPage = lazy(() => import('../pages/CustomersPage'));
@@ -159,25 +163,21 @@ const RequiredPasswordChange = () => {
 };
 
 const AnimatedRoutes = () => {
-  const location = useLocation();
-
   return (
     <Suspense fallback={null}>
-      <AnimatePresence mode="wait">
-        <Routes location={location} key={location.pathname}>
-          <Route path="/dashboard" element={<PageTransition><DashboardPage /></PageTransition>} />
-          <Route path="/calendar" element={<PageTransition><CalendarPage /></PageTransition>} />
-          <Route path="/customers" element={<PageTransition><CustomersPage /></PageTransition>} />
-          <Route path="/inventory" element={<PageTransition><InventoryPage /></PageTransition>} />
-          <Route path="/billing" element={<PageTransition><BillingPage /></PageTransition>} />
-          <Route path="/finance" element={<PageTransition><FinancePage /></PageTransition>} />
-          <Route path="/staff" element={<PageTransition><StaffPage /></PageTransition>} />
-          <Route path="/maintenance" element={<PageTransition><MaintenancePage /></PageTransition>} />
-          <Route path="/gallery" element={<PageTransition><GalleryPage /></PageTransition>} />
-          <Route path="/settings" element={<PageTransition><SettingsPage /></PageTransition>} />
-          <Route path="*" element={<Navigate to="/dashboard" replace />} />
-        </Routes>
-      </AnimatePresence>
+      <Routes>
+        <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path="/calendar" element={<CalendarPage />} />
+        <Route path="/customers" element={<CustomersPage />} />
+        <Route path="/inventory" element={<InventoryPage />} />
+        <Route path="/billing" element={<BillingPage />} />
+        <Route path="/finance" element={<FinancePage />} />
+        <Route path="/staff" element={<StaffPage />} />
+        <Route path="/maintenance" element={<MaintenancePage />} />
+        <Route path="/gallery" element={<GalleryPage />} />
+        <Route path="/settings" element={<SettingsPage />} />
+        <Route path="*" element={<Navigate to="/dashboard" replace />} />
+      </Routes>
     </Suspense>
   );
 };
@@ -215,11 +215,6 @@ const AdminShell = () => {
 
   return (
     <div className="app-container">
-      <div className="ambient-glow-wrapper">
-        <div className="ambient-blob blob-cyan" />
-        <div className="ambient-blob blob-pink" />
-        <div className="ambient-blob blob-purple" />
-      </div>
       <Sidebar />
       <NotificationToast />
       <main className="main-content">
