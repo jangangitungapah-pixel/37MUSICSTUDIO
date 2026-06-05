@@ -221,6 +221,310 @@
   transform: scale(1.055) !important;
 }
 
+/* Lower landing page polish: pricing, proof, and footer need to feel like showcase too. */
+.pricing-section,
+.proof-section,
+.landing-footer {
+  position: relative !important;
+  isolation: isolate !important;
+}
+
+.pricing-section::before,
+.proof-section::before,
+.landing-footer::before {
+  content: '';
+  position: absolute;
+  inset: -120px 0 auto;
+  height: 360px;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 24% 20%, rgba(240, 197, 121, 0.12), transparent 26rem),
+    radial-gradient(circle at 76% 40%, rgba(88, 224, 233, 0.07), transparent 24rem);
+  opacity: 0.86;
+}
+
+.pricing-shell {
+  gap: 18px !important;
+  align-items: stretch !important;
+}
+
+.pricing-copy,
+.price-card {
+  min-height: 238px !important;
+  border-radius: 24px !important;
+}
+
+.pricing-copy {
+  position: relative !important;
+  overflow: hidden !important;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.095), rgba(255, 255, 255, 0.028)),
+    rgba(13, 12, 10, 0.62) !important;
+  border: 1px solid var(--landing-showcase-line) !important;
+  box-shadow: var(--landing-showcase-shadow) !important;
+  -webkit-backdrop-filter: blur(18px) saturate(1.16) !important;
+  backdrop-filter: blur(18px) saturate(1.16) !important;
+}
+
+.pricing-copy::after {
+  content: '';
+  position: absolute;
+  right: -80px;
+  top: -80px;
+  width: 220px;
+  height: 220px;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(240, 197, 121, 0.16), transparent 70%);
+  pointer-events: none;
+}
+
+.pricing-copy h2,
+.footer-contact h3,
+.footer-map h3 {
+  color: var(--landing-ink) !important;
+  text-shadow: 0 10px 30px rgba(0, 0, 0, 0.40) !important;
+}
+
+.pricing-copy p,
+.footer-brand p,
+.footer-contact p,
+.footer-bottom {
+  color: rgba(255, 247, 234, 0.68) !important;
+}
+
+.pricing-includes {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 10px !important;
+  margin-top: 20px !important;
+}
+
+.pricing-includes > div {
+  min-height: 38px !important;
+  padding: 9px 12px !important;
+  border-radius: 14px !important;
+  background: rgba(255, 255, 255, 0.060) !important;
+  border: 1px solid rgba(255, 232, 188, 0.12) !important;
+  color: rgba(255, 247, 234, 0.84) !important;
+}
+
+.pricing-includes svg,
+.proof-grid svg,
+.footer-contact svg {
+  color: var(--landing-gold) !important;
+}
+
+.price-card {
+  position: relative !important;
+  overflow: hidden !important;
+  background:
+    linear-gradient(145deg, rgba(240, 197, 121, 0.14), rgba(255, 255, 255, 0.040)),
+    rgba(18, 16, 13, 0.70) !important;
+  border-color: rgba(240, 197, 121, 0.26) !important;
+}
+
+.price-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.10), transparent 34%),
+    radial-gradient(circle at 88% 12%, rgba(240, 197, 121, 0.18), transparent 14rem);
+}
+
+.price-card > * {
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+.price-card-top span,
+.price-currency,
+.price-unit {
+  color: rgba(255, 247, 234, 0.72) !important;
+}
+
+.price-amount {
+  color: var(--landing-ink) !important;
+  text-shadow: 0 12px 36px rgba(0, 0, 0, 0.45) !important;
+}
+
+.proof-section {
+  padding-block: 24px 70px !important;
+}
+
+.proof-grid {
+  gap: 14px !important;
+}
+
+.proof-grid > div {
+  min-height: 112px !important;
+  padding: 20px !important;
+  border-radius: 22px !important;
+  transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease !important;
+}
+
+.proof-grid > div:hover {
+  transform: translateY(-3px) !important;
+  border-color: rgba(240, 197, 121, 0.28) !important;
+  box-shadow: 0 32px 82px rgba(0, 0, 0, 0.50), 0 0 34px rgba(240, 197, 121, 0.06) !important;
+}
+
+.proof-grid strong {
+  color: var(--landing-ink) !important;
+  font-size: 1rem !important;
+}
+
+.proof-grid span {
+  color: rgba(255, 247, 234, 0.66) !important;
+}
+
+.landing-footer {
+  margin-top: 0 !important;
+  padding: 72px clamp(18px, 4vw, 48px) 28px !important;
+  background:
+    linear-gradient(180deg, rgba(5, 5, 5, 0.18), rgba(5, 5, 5, 0.92) 28%, #050505 100%),
+    radial-gradient(circle at 20% 12%, rgba(240, 197, 121, 0.11), transparent 28rem),
+    radial-gradient(circle at 78% 36%, rgba(255, 61, 102, 0.08), transparent 30rem) !important;
+  border-top: 1px solid rgba(255, 232, 188, 0.12) !important;
+}
+
+.footer-content {
+  width: min(1180px, 100%) !important;
+  margin: 0 auto !important;
+  display: grid !important;
+  grid-template-columns: minmax(260px, 1.05fr) minmax(260px, 0.95fr) minmax(320px, 1.25fr) !important;
+  gap: 18px !important;
+  align-items: stretch !important;
+}
+
+.footer-brand,
+.footer-contact,
+.footer-map {
+  position: relative !important;
+  min-height: 260px !important;
+  padding: 24px !important;
+  border-radius: 26px !important;
+  overflow: hidden !important;
+}
+
+.footer-brand {
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.080), rgba(255, 255, 255, 0.020)),
+    rgba(13, 12, 10, 0.50) !important;
+  border: 1px solid rgba(255, 232, 188, 0.12) !important;
+}
+
+.footer-brand::after,
+.footer-contact::after,
+.footer-map::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), transparent 38%) !important;
+  opacity: 0.75;
+}
+
+.footer-brand > *,
+.footer-contact > *,
+.footer-map > * {
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+.footer-brand .nav-brand {
+  margin-bottom: 22px !important;
+}
+
+.footer-brand .nav-brand-mark {
+  width: 54px !important;
+  height: 54px !important;
+  border-radius: 16px !important;
+}
+
+.footer-brand .brand-text {
+  max-width: none !important;
+  font-size: 1rem !important;
+  color: var(--landing-ink) !important;
+}
+
+.footer-social {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 10px !important;
+  margin-top: 24px !important;
+}
+
+.footer-social a,
+.footer-contact-link {
+  min-height: 42px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 0 14px !important;
+  border-radius: 999px !important;
+  color: var(--landing-ink) !important;
+  text-decoration: none !important;
+  background: rgba(255, 255, 255, 0.070) !important;
+  border: 1px solid rgba(255, 232, 188, 0.14) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  backdrop-filter: blur(12px) !important;
+}
+
+.footer-social a:hover,
+.footer-contact-link:hover {
+  background: rgba(240, 197, 121, 0.12) !important;
+  border-color: rgba(240, 197, 121, 0.26) !important;
+  transform: translateY(-1px) !important;
+}
+
+.footer-contact h3,
+.footer-map h3 {
+  margin-bottom: 18px !important;
+  font-size: clamp(1.2rem, 2vw, 1.55rem) !important;
+}
+
+.footer-contact p {
+  display: flex !important;
+  align-items: flex-start !important;
+  gap: 12px !important;
+  margin: 0 0 14px !important;
+  line-height: 1.65 !important;
+}
+
+.footer-contact p svg {
+  flex: 0 0 auto !important;
+  margin-top: 4px !important;
+}
+
+.footer-map {
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.map-container {
+  flex: 1 !important;
+  min-height: 220px !important;
+  overflow: hidden !important;
+  border-radius: 20px !important;
+  background: rgba(0, 0, 0, 0.30) !important;
+}
+
+.map-container iframe {
+  filter: saturate(0.88) contrast(1.02) brightness(0.92) !important;
+}
+
+.footer-bottom {
+  width: min(1180px, 100%) !important;
+  margin: 24px auto 0 !important;
+  padding-top: 20px !important;
+  border-top: 1px solid rgba(255, 232, 188, 0.10) !important;
+  text-align: center !important;
+  font-size: 0.82rem !important;
+}
+
 /* --------------------------------------------------------------------------
    Public calendar: premium booking experience
    -------------------------------------------------------------------------- */
@@ -412,6 +716,22 @@
   border: 1px solid rgba(240, 197, 121, 0.24) !important;
 }
 
+@media (max-width: 980px) {
+  .footer-content {
+    grid-template-columns: 1fr !important;
+  }
+
+  .footer-brand,
+  .footer-contact,
+  .footer-map {
+    min-height: auto !important;
+  }
+
+  .map-container {
+    min-height: 280px !important;
+  }
+}
+
 @media (max-width: 768px) {
   .landing-container,
   .pc-page {
@@ -460,6 +780,25 @@
     box-shadow: 0 18px 48px rgba(0, 0, 0, 0.34) !important;
     -webkit-backdrop-filter: blur(14px) saturate(1.12) !important;
     backdrop-filter: blur(14px) saturate(1.12) !important;
+  }
+
+  .pricing-includes {
+    grid-template-columns: 1fr !important;
+  }
+
+  .landing-footer {
+    padding: 56px 14px calc(98px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  .footer-content {
+    gap: 14px !important;
+  }
+
+  .footer-brand,
+  .footer-contact,
+  .footer-map {
+    padding: 20px !important;
+    border-radius: 22px !important;
   }
 
   .pc-topbar {
