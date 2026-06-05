@@ -40,10 +40,11 @@ export const useBookingRequestStore = create((set, get) => {
             snapshot.docChanges().forEach((change) => {
               if (change.type === 'added') {
                 const req = normalizeRequestDoc(change.doc);
+                const requestName = req.band || req.bandName || 'Pelanggan';
                 addNotification({
                   type: 'customer',
                   title: 'Permintaan Booking Baru 📝',
-                  message: `Band: ${req.bandName || 'Pelanggan'} - ${req.date || ''}, ${req.hour || ''}.00 (${req.duration || 1} jam)`,
+                  message: `Band: ${requestName} - ${req.date || ''}, ${req.hour || ''}.00 (${req.duration || 1} jam)`,
                 });
               }
             });
