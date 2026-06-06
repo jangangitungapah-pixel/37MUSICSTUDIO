@@ -5732,3 +5732,1000 @@ body,
   background: rgba(20,23,32,0.050) !important;
 }
 
+/* ════════════════════════════════════════════════════════════════════════════
+   37 LANDING COMPOSITION SPACING REPAIR
+   --------------------------------------------------------------------------
+   Fixes the remaining landing-page visual issues:
+   - oversized empty black gaps
+   - inconsistent section widths
+   - floating/isolated cards
+   - weak gallery composition
+   - rate/footer sections not matching spatial design language
+   - anchor scroll hidden behind sticky header
+   ════════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  --lp-readable: 760px;
+  --lp-content: 1120px;
+  --lp-content-wide: 1280px;
+  --lp-section-tight: clamp(56px, 6.5vw, 92px);
+  --lp-section-normal: clamp(72px, 8vw, 116px);
+  --lp-section-loose: clamp(86px, 9vw, 132px);
+  --lp-card-line-final: rgba(255,255,255,0.105);
+  --lp-card-line-soft-final: rgba(255,255,255,0.070);
+  --lp-panel-final:
+    radial-gradient(circle at 14% 0%, rgba(243, 200, 111, 0.070), transparent 42%),
+    radial-gradient(circle at 86% 0%, rgba(var(--accent-cyan-rgb), 0.052), transparent 38%),
+    linear-gradient(180deg, rgba(255,255,255,0.052), rgba(255,255,255,0.012)),
+    rgba(13, 16, 24, 0.78);
+  --lp-panel-final-strong:
+    radial-gradient(circle at 14% 0%, rgba(243, 200, 111, 0.105), transparent 42%),
+    radial-gradient(circle at 86% 0%, rgba(var(--accent-pink-rgb), 0.072), transparent 38%),
+    linear-gradient(180deg, rgba(255,255,255,0.066), rgba(255,255,255,0.014)),
+    rgba(15, 18, 27, 0.90);
+}
+
+/* Anchor scroll should not hide section titles under the fixed header */
+.landing-container [id] {
+  scroll-margin-top: 92px !important;
+}
+
+@media (max-width: 768px) {
+  .landing-container [id] {
+    scroll-margin-top: 78px !important;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   GLOBAL SECTION RHYTHM FIX
+   ────────────────────────────────────────────────────────────────────────── */
+
+.landing-container section:not(.hero-section) {
+  min-height: auto !important;
+  padding-top: var(--lp-section-normal) !important;
+  padding-bottom: var(--lp-section-normal) !important;
+  overflow: hidden !important;
+}
+
+.landing-container section:not(.hero-section) > .section-shell,
+.landing-container section:not(.hero-section) > .experience-shell,
+.landing-container section:not(.hero-section) > .service-shell,
+.landing-container section:not(.hero-section) > .services-shell,
+.landing-container section:not(.hero-section) > .pricing-shell,
+.landing-container section:not(.hero-section) > .rate-shell,
+.landing-container section:not(.hero-section) > .gallery-shell,
+.landing-container section:not(.hero-section) > .workflow-shell,
+.landing-container section:not(.hero-section) > .steps-shell,
+.landing-container section:not(.hero-section) > .cta-shell,
+.landing-container section:not(.hero-section) > .final-cta-shell {
+  width: min(var(--lp-content), 100%) !important;
+  margin-inline: auto !important;
+  min-height: auto !important;
+}
+
+.landing-container section:not(.hero-section) .section-header,
+.landing-container section:not(.hero-section) .experience-header,
+.landing-container section:not(.hero-section) .services-header,
+.landing-container section:not(.hero-section) .pricing-header,
+.landing-container section:not(.hero-section) .rate-header,
+.landing-container section:not(.hero-section) .gallery-header,
+.landing-container section:not(.hero-section) .workflow-header,
+.landing-container section:not(.hero-section) .steps-header,
+.landing-container section:not(.hero-section) .cta-header {
+  max-width: var(--lp-readable) !important;
+  margin-inline: auto !important;
+  text-align: center !important;
+}
+
+.landing-container section:not(.hero-section) .section-kicker,
+.landing-container section:not(.hero-section) .experience-kicker,
+.landing-container section:not(.hero-section) .services-kicker,
+.landing-container section:not(.hero-section) .pricing-kicker,
+.landing-container section:not(.hero-section) .rate-kicker,
+.landing-container section:not(.hero-section) .gallery-kicker,
+.landing-container section:not(.hero-section) .workflow-kicker,
+.landing-container section:not(.hero-section) .steps-kicker,
+.landing-container section:not(.hero-section) .cta-kicker {
+  margin-inline: auto !important;
+}
+
+.landing-container section:not(.hero-section) .section-title,
+.landing-container section:not(.hero-section) .experience-title,
+.landing-container section:not(.hero-section) .services-title,
+.landing-container section:not(.hero-section) .pricing-title,
+.landing-container section:not(.hero-section) .rate-title,
+.landing-container section:not(.hero-section) .gallery-title,
+.landing-container section:not(.hero-section) .workflow-title,
+.landing-container section:not(.hero-section) .steps-title,
+.landing-container section:not(.hero-section) .cta-title,
+.landing-container section:not(.hero-section) h2 {
+  max-width: 820px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  text-align: inherit !important;
+}
+
+.landing-container section:not(.hero-section) .section-subtitle,
+.landing-container section:not(.hero-section) .experience-subtitle,
+.landing-container section:not(.hero-section) .services-subtitle,
+.landing-container section:not(.hero-section) .pricing-subtitle,
+.landing-container section:not(.hero-section) .rate-subtitle,
+.landing-container section:not(.hero-section) .gallery-subtitle,
+.landing-container section:not(.hero-section) .workflow-subtitle,
+.landing-container section:not(.hero-section) .steps-subtitle,
+.landing-container section:not(.hero-section) .cta-subtitle,
+.landing-container section:not(.hero-section) .section-header p,
+.landing-container section:not(.hero-section) .experience-header p,
+.landing-container section:not(.hero-section) .gallery-header p {
+  max-width: 680px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  text-align: inherit !important;
+}
+
+/* Avoid dark rectangular islands that look like accidental blocks */
+.landing-container .experience-shell,
+.landing-container .service-shell,
+.landing-container .services-shell,
+.landing-container .pricing-shell,
+.landing-container .rate-shell,
+.landing-container .gallery-shell,
+.landing-container .workflow-shell,
+.landing-container .steps-shell {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   EXPERIENCE SECTION: LESS EMPTY, MORE LOUNGE
+   ────────────────────────────────────────────────────────────────────────── */
+
+.experience-section {
+  padding-top: var(--lp-section-tight) !important;
+  padding-bottom: var(--lp-section-tight) !important;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(var(--accent-pink-rgb),0.050), transparent 34rem),
+    radial-gradient(circle at 18% 18%, rgba(243, 200, 111, 0.050), transparent 26rem),
+    linear-gradient(180deg, rgba(7,7,6,0.98), rgba(9,10,12,1) 54%, rgba(7,7,6,0.98)) !important;
+}
+
+.experience-section .experience-shell,
+.experience-section .section-shell {
+  display: grid !important;
+  gap: clamp(24px, 4vw, 44px) !important;
+}
+
+.experience-section .experience-grid,
+.experience-section .features-grid,
+.experience-section .value-grid,
+.experience-section .service-grid {
+  width: min(1040px, 100%) !important;
+  margin-inline: auto !important;
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 18px !important;
+}
+
+.experience-section .experience-card,
+.experience-section .feature-card,
+.experience-section .value-card,
+.experience-section .service-card {
+  min-height: 204px !important;
+  padding: 26px !important;
+  border-radius: 28px !important;
+  background: var(--lp-panel-final) !important;
+  border-color: var(--lp-card-line-final) !important;
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   MOBILE-FIRST / WORKFLOW SECTION: FIX FLOATING ISLAND
+   ────────────────────────────────────────────────────────────────────────── */
+
+.landing-container .workflow-section,
+.landing-container .steps-section,
+.landing-container .how-section,
+.landing-container .booking-flow-section,
+.landing-container .mobile-booking-section,
+.landing-container section[id*="booking"],
+.landing-container section[id*="flow"] {
+  padding-top: clamp(52px, 6vw, 86px) !important;
+  padding-bottom: clamp(58px, 7vw, 96px) !important;
+  background:
+    radial-gradient(circle at 18% 0%, rgba(243, 200, 111, 0.060), transparent 28rem),
+    radial-gradient(circle at 88% 8%, rgba(var(--accent-cyan-rgb), 0.048), transparent 30rem),
+    linear-gradient(180deg, rgba(7,7,6,0.98), rgba(9,10,12,1), rgba(7,7,6,0.98)) !important;
+}
+
+.landing-container .workflow-shell,
+.landing-container .steps-shell,
+.landing-container .how-shell,
+.landing-container .booking-flow-shell,
+.landing-container .mobile-booking-shell {
+  width: min(1040px, 100%) !important;
+  margin-inline: auto !important;
+}
+
+.landing-container .workflow-section .workflow-shell,
+.landing-container .steps-section .steps-shell,
+.landing-container .how-section .how-shell,
+.landing-container .booking-flow-section .booking-flow-shell,
+.landing-container .mobile-booking-section .mobile-booking-shell {
+  padding: clamp(20px, 3vw, 28px) !important;
+  border-radius: 30px !important;
+  border: 1px solid var(--lp-card-line-final) !important;
+  background: var(--lp-panel-final) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.065),
+    0 18px 48px rgba(0,0,0,0.24) !important;
+}
+
+.landing-container .workflow-grid,
+.landing-container .steps-grid,
+.landing-container .how-grid,
+.landing-container .booking-flow-grid,
+.landing-container .mobile-booking-grid {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 12px !important;
+}
+
+.landing-container .workflow-card,
+.landing-container .step-card {
+  min-height: 168px !important;
+  border-radius: 18px !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.040), rgba(255,255,255,0.010)),
+    rgba(255,255,255,0.018) !important;
+  box-shadow: none !important;
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   GALLERY: DESKTOP COMPOSITION FIX
+   ────────────────────────────────────────────────────────────────────────── */
+
+.landing-container .gallery-section,
+.landing-container .studio-gallery-section,
+.landing-container section[id*="gallery"],
+.landing-container section[id*="vibe"] {
+  padding-top: var(--lp-section-tight) !important;
+  padding-bottom: var(--lp-section-normal) !important;
+  background:
+    radial-gradient(circle at 14% 0%, rgba(var(--accent-pink-rgb),0.060), transparent 30rem),
+    radial-gradient(circle at 90% 14%, rgba(243, 200, 111, 0.052), transparent 30rem),
+    linear-gradient(180deg, rgba(7,7,6,0.98), rgba(9,10,12,1), rgba(7,7,6,0.98)) !important;
+}
+
+.landing-container .gallery-shell,
+.landing-container .studio-gallery-shell {
+  width: min(1040px, 100%) !important;
+  display: grid !important;
+  grid-template-columns: minmax(300px, 0.72fr) minmax(420px, 1fr) !important;
+  align-items: center !important;
+  gap: clamp(22px, 4vw, 46px) !important;
+}
+
+.landing-container .gallery-section .section-header,
+.landing-container .studio-gallery-section .section-header,
+.landing-container .gallery-section .gallery-header,
+.landing-container .studio-gallery-section .gallery-header {
+  margin: 0 !important;
+  max-width: 460px !important;
+  text-align: left !important;
+}
+
+.landing-container .gallery-section .section-kicker,
+.landing-container .studio-gallery-section .section-kicker,
+.landing-container .gallery-section .gallery-kicker,
+.landing-container .studio-gallery-section .gallery-kicker {
+  margin-left: 0 !important;
+  margin-right: auto !important;
+}
+
+.landing-container .gallery-section .section-title,
+.landing-container .studio-gallery-section .section-title,
+.landing-container .gallery-section .gallery-title,
+.landing-container .studio-gallery-section .gallery-title,
+.landing-container .gallery-section h2,
+.landing-container .studio-gallery-section h2 {
+  text-align: left !important;
+  margin-left: 0 !important;
+}
+
+.landing-container .gallery-section .section-subtitle,
+.landing-container .studio-gallery-section .section-subtitle,
+.landing-container .gallery-section .gallery-subtitle,
+.landing-container .studio-gallery-section .gallery-subtitle,
+.landing-container .gallery-section p,
+.landing-container .studio-gallery-section p {
+  text-align: left !important;
+  margin-left: 0 !important;
+}
+
+.landing-container .gallery-grid {
+  width: 100% !important;
+  margin: 0 !important;
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) !important;
+  gap: 14px !important;
+}
+
+.landing-container .gallery-card,
+.landing-container .gallery-item,
+.landing-container .gallery-grid > * {
+  min-height: clamp(330px, 31vw, 460px) !important;
+  border-radius: 28px !important;
+  overflow: hidden !important;
+  border: 1px solid var(--lp-card-line-final) !important;
+  background: var(--lp-panel-final) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.070),
+    0 22px 58px rgba(0,0,0,0.28) !important;
+}
+
+.landing-container .gallery-section .btn,
+.landing-container .gallery-section .btn-secondary,
+.landing-container .gallery-section a[class*="btn"],
+.landing-container .studio-gallery-section .btn,
+.landing-container .studio-gallery-section .btn-secondary,
+.landing-container .studio-gallery-section a[class*="btn"] {
+  width: fit-content !important;
+  margin-left: 0 !important;
+  margin-top: 20px !important;
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   RATE / PRICING: REDUCE EMPTY BLACK SPACE, MAKE IT A REAL SECTION
+   ────────────────────────────────────────────────────────────────────────── */
+
+.landing-container .rate-section,
+.landing-container .pricing-section,
+.landing-container .packages-section,
+.landing-container section[id*="rate"],
+.landing-container section[id*="price"] {
+  padding-top: var(--lp-section-tight) !important;
+  padding-bottom: var(--lp-section-tight) !important;
+  background:
+    radial-gradient(circle at 20% 0%, rgba(var(--accent-pink-rgb),0.060), transparent 30rem),
+    radial-gradient(circle at 82% 0%, rgba(243, 200, 111, 0.070), transparent 30rem),
+    linear-gradient(180deg, rgba(7,7,6,0.98), rgba(10,11,14,1), rgba(7,7,6,0.98)) !important;
+}
+
+.landing-container .rate-shell,
+.landing-container .pricing-shell,
+.landing-container .packages-shell {
+  width: min(1040px, 100%) !important;
+  margin-inline: auto !important;
+}
+
+.landing-container .rate-grid,
+.landing-container .pricing-grid,
+.landing-container .packages-grid {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1.6fr) minmax(320px, 0.9fr) !important;
+  align-items: stretch !important;
+  gap: 16px !important;
+}
+
+.landing-container .rate-card,
+.landing-container .pricing-card,
+.landing-container .package-card {
+  min-height: auto !important;
+  padding: clamp(22px, 3vw, 32px) !important;
+  border-radius: 28px !important;
+  background: var(--lp-panel-final) !important;
+  border-color: var(--lp-card-line-final) !important;
+}
+
+.landing-container .rate-card.featured,
+.landing-container .pricing-card.featured,
+.landing-container .package-card.featured,
+.landing-container .rate-price-card,
+.landing-container .pricing-price-card {
+  background: var(--lp-panel-final-strong) !important;
+  border-color: rgba(243, 200, 111, 0.20) !important;
+}
+
+.landing-container .rate-section .feature-grid,
+.landing-container .pricing-section .feature-grid,
+.landing-container .rate-section .proof-grid,
+.landing-container .pricing-section .proof-grid {
+  width: min(1040px, 100%) !important;
+  margin: 18px auto 0 !important;
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 14px !important;
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   FOOTER: REMOVE RAW BOX LOOK
+   ────────────────────────────────────────────────────────────────────────── */
+
+.landing-footer {
+  padding-top: clamp(56px, 7vw, 86px) !important;
+  border-top: 1px solid rgba(255,255,255,0.075) !important;
+  background:
+    radial-gradient(circle at 18% 0%, rgba(243, 200, 111, 0.050), transparent 28rem),
+    radial-gradient(circle at 84% 0%, rgba(var(--accent-cyan-rgb),0.040), transparent 26rem),
+    linear-gradient(180deg, rgba(7,7,6,0.98), rgba(4,4,5,1)) !important;
+}
+
+.landing-footer .footer-shell,
+.landing-footer .footer-grid,
+.landing-footer > div:first-child {
+  width: min(1040px, 100%) !important;
+  margin-inline: auto !important;
+}
+
+.landing-footer .footer-grid,
+.landing-footer > div:first-child {
+  display: grid !important;
+  grid-template-columns: minmax(260px, 0.9fr) minmax(280px, 1fr) minmax(320px, 1.25fr) !important;
+  gap: 18px !important;
+  align-items: stretch !important;
+}
+
+.landing-footer .footer-card,
+.landing-footer .footer-info,
+.landing-footer .footer-contact,
+.landing-footer .footer-location,
+.landing-footer .footer-map,
+.landing-footer iframe,
+.landing-footer > div:first-child > div {
+  border-radius: 24px !important;
+}
+
+.landing-footer > div:first-child > div,
+.landing-footer .footer-card,
+.landing-footer .footer-contact,
+.landing-footer .footer-location {
+  padding: 22px !important;
+  border: 1px solid var(--lp-card-line-soft-final) !important;
+  background:
+    radial-gradient(circle at 14% 0%, rgba(243, 200, 111, 0.060), transparent 42%),
+    linear-gradient(180deg, rgba(255,255,255,0.040), rgba(255,255,255,0.010)),
+    rgba(13, 16, 24, 0.68) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.045),
+    0 14px 34px rgba(0,0,0,0.18) !important;
+}
+
+.landing-footer iframe {
+  width: 100% !important;
+  min-height: 230px !important;
+  border: 1px solid rgba(255,255,255,0.085) !important;
+  overflow: hidden !important;
+  filter: saturate(0.92) contrast(0.98) brightness(0.92) !important;
+}
+
+.landing-footer h3,
+.landing-footer h4,
+.landing-footer strong {
+  color: #fffaf0 !important;
+  letter-spacing: -0.035em !important;
+}
+
+.landing-footer p,
+.landing-footer span,
+.landing-footer li {
+  color: rgba(255,250,240,0.66) !important;
+}
+
+.landing-footer .copyright,
+.landing-footer .footer-bottom,
+.landing-footer > div:last-child {
+  width: min(1040px, 100%) !important;
+  margin: 24px auto 0 !important;
+  padding-top: 18px !important;
+  border-top: 1px solid rgba(255,255,255,0.070) !important;
+  color: rgba(255,250,240,0.42) !important;
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   DESKTOP HEADER MICRO-FIX
+   ────────────────────────────────────────────────────────────────────────── */
+
+@media (min-width: 1024px) {
+  .landing-nav {
+    height: 64px !important;
+    padding-top: 0 !important;
+  }
+
+  .landing-nav.scrolled {
+    height: 60px !important;
+  }
+
+  .nav-brand-mark {
+    width: 38px !important;
+    height: 38px !important;
+    border-radius: 15px !important;
+  }
+
+  .brand-text {
+    font-size: 0.78rem !important;
+  }
+
+  .nav-links {
+    gap: 28px !important;
+  }
+
+  .nav-links a {
+    font-size: 0.78rem !important;
+    letter-spacing: -0.01em !important;
+  }
+
+  .nav-theme-btn,
+  .nav-login-btn,
+  .nav-book-btn {
+    height: 38px !important;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   RESPONSIVE COMPOSITION
+   ────────────────────────────────────────────────────────────────────────── */
+
+@media (max-width: 980px) {
+  .experience-section .experience-grid,
+  .experience-section .features-grid,
+  .experience-section .value-grid,
+  .experience-section .service-grid,
+  .landing-container .workflow-grid,
+  .landing-container .steps-grid,
+  .landing-container .how-grid,
+  .landing-container .booking-flow-grid,
+  .landing-container .mobile-booking-grid,
+  .landing-container .rate-section .feature-grid,
+  .landing-container .pricing-section .feature-grid,
+  .landing-container .rate-section .proof-grid,
+  .landing-container .pricing-section .proof-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .landing-container .gallery-shell,
+  .landing-container .studio-gallery-shell,
+  .landing-container .rate-grid,
+  .landing-container .pricing-grid,
+  .landing-container .packages-grid,
+  .landing-footer .footer-grid,
+  .landing-footer > div:first-child {
+    grid-template-columns: 1fr !important;
+  }
+
+  .landing-container .gallery-section .section-header,
+  .landing-container .studio-gallery-section .section-header,
+  .landing-container .gallery-section .gallery-header,
+  .landing-container .studio-gallery-section .gallery-header,
+  .landing-container .gallery-section .section-title,
+  .landing-container .studio-gallery-section .section-title,
+  .landing-container .gallery-section .gallery-title,
+  .landing-container .studio-gallery-section .gallery-title,
+  .landing-container .gallery-section h2,
+  .landing-container .studio-gallery-section h2,
+  .landing-container .gallery-section p,
+  .landing-container .studio-gallery-section p {
+    text-align: center !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+
+  .landing-container .gallery-section .section-kicker,
+  .landing-container .studio-gallery-section .section-kicker,
+  .landing-container .gallery-section .gallery-kicker,
+  .landing-container .studio-gallery-section .gallery-kicker,
+  .landing-container .gallery-section .btn,
+  .landing-container .gallery-section .btn-secondary,
+  .landing-container .gallery-section a[class*="btn"],
+  .landing-container .studio-gallery-section .btn,
+  .landing-container .studio-gallery-section .btn-secondary,
+  .landing-container .studio-gallery-section a[class*="btn"] {
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+}
+
+@media (max-width: 768px) {
+  :root {
+    --lp-section-tight: 46px;
+    --lp-section-normal: 56px;
+    --lp-section-loose: 64px;
+  }
+
+  .landing-container section:not(.hero-section) {
+    padding-top: var(--lp-section-normal) !important;
+    padding-bottom: var(--lp-section-normal) !important;
+  }
+
+  .experience-section {
+    padding-top: 52px !important;
+  }
+
+  .experience-section .experience-card,
+  .experience-section .feature-card,
+  .experience-section .value-card,
+  .experience-section .service-card {
+    min-height: auto !important;
+    padding: 20px !important;
+    border-radius: 22px !important;
+  }
+
+  .landing-container .workflow-section .workflow-shell,
+  .landing-container .steps-section .steps-shell,
+  .landing-container .how-section .how-shell,
+  .landing-container .booking-flow-section .booking-flow-shell,
+  .landing-container .mobile-booking-section .mobile-booking-shell {
+    padding: 16px !important;
+    border-radius: 24px !important;
+  }
+
+  .landing-container .gallery-card,
+  .landing-container .gallery-item,
+  .landing-container .gallery-grid > * {
+    min-height: 260px !important;
+    border-radius: 22px !important;
+  }
+
+  .landing-container .rate-card,
+  .landing-container .pricing-card,
+  .landing-container .package-card {
+    padding: 20px !important;
+    border-radius: 24px !important;
+  }
+
+  .landing-footer {
+    padding-top: 48px !important;
+  }
+
+  .landing-footer > div:first-child > div,
+  .landing-footer .footer-card,
+  .landing-footer .footer-contact,
+  .landing-footer .footer-location {
+    padding: 18px !important;
+    border-radius: 22px !important;
+  }
+
+  .landing-footer iframe {
+    min-height: 220px !important;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   LIGHT MODE
+   ────────────────────────────────────────────────────────────────────────── */
+
+[data-theme="light"] .experience-section,
+[data-theme="light"] .landing-container .workflow-section,
+[data-theme="light"] .landing-container .steps-section,
+[data-theme="light"] .landing-container .how-section,
+[data-theme="light"] .landing-container .booking-flow-section,
+[data-theme="light"] .landing-container .mobile-booking-section,
+[data-theme="light"] .landing-container .gallery-section,
+[data-theme="light"] .landing-container .studio-gallery-section,
+[data-theme="light"] .landing-container .rate-section,
+[data-theme="light"] .landing-container .pricing-section,
+[data-theme="light"] .landing-container .packages-section {
+  background:
+    radial-gradient(circle at 14% 0%, rgba(243, 200, 111, 0.052), transparent 30rem),
+    radial-gradient(circle at 88% 8%, rgba(var(--accent-cyan-rgb), 0.040), transparent 30rem),
+    linear-gradient(180deg, rgba(247,244,239,0.98), rgba(255,255,255,1), rgba(247,244,239,0.98)) !important;
+}
+
+[data-theme="light"] .landing-footer > div:first-child > div,
+[data-theme="light"] .landing-footer .footer-card,
+[data-theme="light"] .landing-footer .footer-contact,
+[data-theme="light"] .landing-footer .footer-location,
+[data-theme="light"] .landing-container .workflow-section .workflow-shell,
+[data-theme="light"] .landing-container .steps-section .steps-shell,
+[data-theme="light"] .landing-container .how-section .how-shell,
+[data-theme="light"] .landing-container .booking-flow-section .booking-flow-shell,
+[data-theme="light"] .landing-container .mobile-booking-section .mobile-booking-shell {
+  border-color: rgba(20,23,32,0.085) !important;
+  background:
+    radial-gradient(circle at 14% 0%, rgba(243, 200, 111, 0.055), transparent 42%),
+    linear-gradient(180deg, rgba(255,255,255,0.98), rgba(248,249,252,0.84)),
+    rgba(255,255,255,0.92) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.84),
+    0 14px 34px rgba(20,23,32,0.07) !important;
+}
+
+[data-theme="light"] .landing-footer h3,
+[data-theme="light"] .landing-footer h4,
+[data-theme="light"] .landing-footer strong {
+  color: rgba(20,23,32,0.90) !important;
+}
+
+[data-theme="light"] .landing-footer p,
+[data-theme="light"] .landing-footer span,
+[data-theme="light"] .landing-footer li {
+  color: rgba(20,23,32,0.62) !important;
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   37 REMOVE SECTION BOX GLITCH
+   --------------------------------------------------------------------------
+   Removes the unwanted frameless dark rectangles behind each landing section.
+   Only real cards/panels should own surfaces. Section wrappers must be
+   transparent so the page feels seamless, not boxed.
+   ════════════════════════════════════════════════════════════════════════════ */
+
+/* Smooth full-page section background */
+.landing-container {
+  background:
+    radial-gradient(circle at 16% 6%, rgba(243, 200, 111, 0.060), transparent 30rem),
+    radial-gradient(circle at 88% 12%, rgba(var(--accent-cyan-rgb), 0.045), transparent 32rem),
+    radial-gradient(circle at 50% 42%, rgba(var(--accent-pink-rgb), 0.034), transparent 36rem),
+    linear-gradient(180deg, #080807 0%, #0b0c0e 38%, #080807 100%) !important;
+}
+
+/* Section itself may have full-width ambience, but never inner boxed backgrounds */
+.landing-container section:not(.hero-section) {
+  background:
+    radial-gradient(circle at 14% 0%, rgba(243, 200, 111, 0.034), transparent 30rem),
+    radial-gradient(circle at 86% 8%, rgba(var(--accent-cyan-rgb), 0.026), transparent 30rem),
+    transparent !important;
+}
+
+/* Kill frameless box effect on wrapper/shell containers */
+.landing-container .section-shell,
+.landing-container .experience-shell,
+.landing-container .service-shell,
+.landing-container .services-shell,
+.landing-container .pricing-shell,
+.landing-container .rate-shell,
+.landing-container .gallery-shell,
+.landing-container .studio-gallery-shell,
+.landing-container .workflow-shell,
+.landing-container .steps-shell,
+.landing-container .how-shell,
+.landing-container .booking-flow-shell,
+.landing-container .mobile-booking-shell,
+.landing-container .final-cta-shell,
+.landing-container .cta-shell,
+.landing-container .footer-shell {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  outline: 0 !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* Kill pseudo overlays on shells that can create invisible rectangles */
+.landing-container .section-shell::before,
+.landing-container .section-shell::after,
+.landing-container .experience-shell::before,
+.landing-container .experience-shell::after,
+.landing-container .service-shell::before,
+.landing-container .service-shell::after,
+.landing-container .services-shell::before,
+.landing-container .services-shell::after,
+.landing-container .pricing-shell::before,
+.landing-container .pricing-shell::after,
+.landing-container .rate-shell::before,
+.landing-container .rate-shell::after,
+.landing-container .gallery-shell::before,
+.landing-container .gallery-shell::after,
+.landing-container .studio-gallery-shell::before,
+.landing-container .studio-gallery-shell::after,
+.landing-container .workflow-shell::before,
+.landing-container .workflow-shell::after,
+.landing-container .steps-shell::before,
+.landing-container .steps-shell::after,
+.landing-container .how-shell::before,
+.landing-container .how-shell::after,
+.landing-container .booking-flow-shell::before,
+.landing-container .booking-flow-shell::after,
+.landing-container .mobile-booking-shell::before,
+.landing-container .mobile-booking-shell::after,
+.landing-container .final-cta-shell::before,
+.landing-container .final-cta-shell::after,
+.landing-container .cta-shell::before,
+.landing-container .cta-shell::after,
+.landing-container .footer-shell::before,
+.landing-container .footer-shell::after {
+  display: none !important;
+  content: none !important;
+}
+
+/* Undo previous patch that turned workflow shell into a big panel */
+.landing-container .workflow-section .workflow-shell,
+.landing-container .steps-section .steps-shell,
+.landing-container .how-section .how-shell,
+.landing-container .booking-flow-section .booking-flow-shell,
+.landing-container .mobile-booking-section .mobile-booking-shell {
+  padding: 0 !important;
+  border-radius: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+/* Sections should breathe through spacing, not through dark framed boxes */
+.experience-section,
+.landing-container .workflow-section,
+.landing-container .steps-section,
+.landing-container .how-section,
+.landing-container .booking-flow-section,
+.landing-container .mobile-booking-section,
+.landing-container .gallery-section,
+.landing-container .studio-gallery-section,
+.landing-container .rate-section,
+.landing-container .pricing-section,
+.landing-container .packages-section {
+  isolation: isolate !important;
+  overflow: visible !important;
+}
+
+/* Remove large rectangular wash overlays that look like broken containers */
+.experience-section::after,
+.landing-container .gallery-section::after,
+.landing-container .studio-gallery-section::after,
+.landing-container .rate-section::after,
+.landing-container .pricing-section::after,
+.landing-container .workflow-section::after,
+.landing-container .steps-section::after {
+  display: none !important;
+  content: none !important;
+}
+
+/* Keep subtle section separators only, not rectangular blocks */
+.experience-section::before,
+.landing-container .gallery-section::before,
+.landing-container .studio-gallery-section::before,
+.landing-container .rate-section::before,
+.landing-container .pricing-section::before,
+.landing-container .workflow-section::before,
+.landing-container .steps-section::before {
+  height: 1px !important;
+  width: min(980px, calc(100% - 32px)) !important;
+  opacity: 0.36 !important;
+  background:
+    linear-gradient(90deg, transparent, rgba(243, 200, 111, 0.15), rgba(var(--accent-cyan-rgb), 0.10), transparent) !important;
+}
+
+/* Actual cards keep the spatial surface */
+.landing-container .experience-card,
+.landing-container .service-card,
+.landing-container .services-card,
+.landing-container .feature-card,
+.landing-container .value-card,
+.landing-container .pricing-card,
+.landing-container .package-card,
+.landing-container .rate-card,
+.landing-container .gallery-card,
+.landing-container .gallery-item,
+.landing-container .workflow-card,
+.landing-container .step-card,
+.landing-container .proof-card,
+.landing-container .testimonial-card,
+.landing-container .faq-card,
+.landing-container .stat-card,
+.landing-container .final-cta-card,
+.landing-container .cta-card,
+.landing-container .booking-cta-card {
+  background:
+    radial-gradient(circle at 14% 0%, rgba(243, 200, 111, 0.070), transparent 42%),
+    radial-gradient(circle at 86% 0%, rgba(var(--accent-cyan-rgb), 0.050), transparent 38%),
+    linear-gradient(180deg, rgba(255,255,255,0.052), rgba(255,255,255,0.012)),
+    rgba(13, 16, 24, 0.78) !important;
+  border: 1px solid rgba(255,255,255,0.095) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.060),
+    0 16px 42px rgba(0,0,0,0.20) !important;
+}
+
+/* Experience card grid should float cleanly on the page, no big parent box */
+.experience-section .experience-grid,
+.experience-section .features-grid,
+.experience-section .value-grid,
+.experience-section .service-grid {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+/* Gallery must not sit inside a huge dark rectangle */
+.landing-container .gallery-grid,
+.landing-container .studio-gallery-grid {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+/* Footer map/contact cards remain cards, but parent footer grid is transparent */
+.landing-footer .footer-grid,
+.landing-footer > div:first-child {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+/* Remove visual rectangular clipping caused by overflow hidden on normal sections */
+.landing-container section:not(.hero-section) {
+  overflow-x: clip !important;
+  overflow-y: visible !important;
+}
+
+/* More seamless vertical rhythm after removing section boxes */
+.experience-section {
+  padding-top: clamp(68px, 7vw, 104px) !important;
+  padding-bottom: clamp(70px, 7vw, 108px) !important;
+}
+
+.landing-container .workflow-section,
+.landing-container .steps-section,
+.landing-container .how-section,
+.landing-container .booking-flow-section,
+.landing-container .mobile-booking-section,
+.landing-container .gallery-section,
+.landing-container .studio-gallery-section,
+.landing-container .rate-section,
+.landing-container .pricing-section,
+.landing-container .packages-section {
+  padding-top: clamp(66px, 7vw, 104px) !important;
+  padding-bottom: clamp(66px, 7vw, 104px) !important;
+}
+
+/* Mobile keeps everything seamless too */
+@media (max-width: 768px) {
+  .landing-container section:not(.hero-section) {
+    background:
+      radial-gradient(circle at 20% 0%, rgba(243, 200, 111, 0.030), transparent 22rem),
+      radial-gradient(circle at 80% 8%, rgba(var(--accent-cyan-rgb), 0.024), transparent 22rem),
+      transparent !important;
+  }
+
+  .experience-section,
+  .landing-container .workflow-section,
+  .landing-container .steps-section,
+  .landing-container .how-section,
+  .landing-container .booking-flow-section,
+  .landing-container .mobile-booking-section,
+  .landing-container .gallery-section,
+  .landing-container .studio-gallery-section,
+  .landing-container .rate-section,
+  .landing-container .pricing-section,
+  .landing-container .packages-section {
+    padding-top: 54px !important;
+    padding-bottom: 54px !important;
+  }
+
+  .landing-container .workflow-section .workflow-shell,
+  .landing-container .steps-section .steps-shell,
+  .landing-container .how-section .how-shell,
+  .landing-container .booking-flow-section .booking-flow-shell,
+  .landing-container .mobile-booking-section .mobile-booking-shell {
+    padding: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+  }
+}
+
+/* Light mode seamless background */
+[data-theme="light"] .landing-container {
+  background:
+    radial-gradient(circle at 16% 6%, rgba(243, 200, 111, 0.060), transparent 30rem),
+    radial-gradient(circle at 88% 12%, rgba(var(--accent-cyan-rgb), 0.040), transparent 32rem),
+    linear-gradient(180deg, #f7f4ef 0%, #fdfbf8 44%, #f5f1ea 100%) !important;
+}
+
+[data-theme="light"] .landing-container section:not(.hero-section),
+[data-theme="light"] .experience-section,
+[data-theme="light"] .landing-container .workflow-section,
+[data-theme="light"] .landing-container .steps-section,
+[data-theme="light"] .landing-container .how-section,
+[data-theme="light"] .landing-container .booking-flow-section,
+[data-theme="light"] .landing-container .mobile-booking-section,
+[data-theme="light"] .landing-container .gallery-section,
+[data-theme="light"] .landing-container .studio-gallery-section,
+[data-theme="light"] .landing-container .rate-section,
+[data-theme="light"] .landing-container .pricing-section,
+[data-theme="light"] .landing-container .packages-section {
+  background:
+    radial-gradient(circle at 18% 0%, rgba(243, 200, 111, 0.040), transparent 28rem),
+    radial-gradient(circle at 84% 8%, rgba(var(--accent-cyan-rgb), 0.030), transparent 28rem),
+    transparent !important;
+}
+
