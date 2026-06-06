@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { createPortal } from 'react-dom';
 import { motion } from 'framer-motion';
 import { CalendarDays, Users, Package, CreditCard, Settings, BookOpen, PieChart, LogOut, Bell, ChevronRight, ChevronLeft, FlaskConical, Sun, Moon, Shield, Hammer, MoreHorizontal, Image, Volume2, VolumeX } from 'lucide-react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
@@ -173,41 +172,38 @@ const Sidebar = () => {
       </header>
 
       {/* ===== BOTTOM NAV BAR (MOBILE ONLY) ===== */}
-      {typeof document !== 'undefined' && createPortal(
-        <nav className="bottom-nav-bar" aria-label="Navigasi utama mobile">
-          {primaryMobileMenus.filter((item) => hasPermission(userProfile, ROUTE_PERMISSIONS[item.path])).map((item) => {
-            const isActive = location.pathname.startsWith(item.path) || (item.path === '/dashboard' && location.pathname === '/');
-            return (
-              <NavLink 
-                key={item.path}
-                to={item.path} 
-                className={`bn-item ${isActive ? 'active' : ''}`}
-                onClick={playClick}
-              >
-                <motion.div whileTap={navTap} className="bn-icon-wrapper">
-                  {item.icon}
-                  {isActive && <motion.div layoutId="bn-indicator" className="bn-indicator" transition={activeIndicatorTransition} />}
-                </motion.div>
-                <span className="bn-label">{item.label === 'Dashboard' ? 'Home' : item.label}</span>
-              </NavLink>
-            );
-          })}
-          <button 
-            className="bn-item" 
-            onClick={() => { playClick(); setMobileOpen(true); }}
-            aria-label="Menu Lainnya"
-            aria-haspopup="dialog"
-            aria-expanded={mobileOpen}
-          >
-            <motion.div whileTap={navTap} className="bn-icon-wrapper">
-              <MoreHorizontal size={19} />
-            </motion.div>
-            <span className="bn-label">Lainnya</span>
-          </button>
-        </nav>,
-        document.body
-      )}
-  
+      <nav className="bottom-nav-bar">
+        {primaryMobileMenus.filter((item) => hasPermission(userProfile, ROUTE_PERMISSIONS[item.path])).map((item) => {
+          const isActive = location.pathname.startsWith(item.path) || (item.path === '/dashboard' && location.pathname === '/');
+          return (
+            <NavLink 
+              key={item.path}
+              to={item.path} 
+              className={`bn-item ${isActive ? 'active' : ''}`}
+              onClick={playClick}
+            >
+              <motion.div whileTap={navTap} className="bn-icon-wrapper">
+                {item.icon}
+                {isActive && <motion.div layoutId="bn-indicator" className="bn-indicator" transition={activeIndicatorTransition} />}
+              </motion.div>
+              <span className="bn-label">{item.label === 'Dashboard' ? 'Home' : item.label}</span>
+            </NavLink>
+          );
+        })}
+        <button 
+          className="bn-item" 
+          onClick={() => { playClick(); setMobileOpen(true); }}
+          aria-label="Menu Lainnya"
+          aria-haspopup="dialog"
+          aria-expanded={mobileOpen}
+        >
+          <motion.div whileTap={navTap} className="bn-icon-wrapper">
+            <MoreHorizontal size={19} />
+          </motion.div>
+          <span className="bn-label">Lainnya</span>
+        </button>
+      </nav>
+ 
       {/* ===== MOBILE "MORE" BOTTOM SHEET ===== */}
       <Modal 
         isOpen={mobileOpen} 

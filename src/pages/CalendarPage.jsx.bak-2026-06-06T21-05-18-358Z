@@ -714,7 +714,7 @@ const CalendarPage = () => {
                 { id: 'confirmed', label: 'Lunas', shortLabel: 'L' },
                 { id: 'maintenance', label: 'Blokir', shortLabel: 'B' },
                 { id: 'cancelled', label: 'Batal', shortLabel: 'X' },
-              ].map(({ id, label }) => (
+              ].map(({ id, label, shortLabel }) => (
                 <Tooltip.Root key={id}>
                   <Tooltip.Trigger asChild>
                     <button 
@@ -724,7 +724,7 @@ const CalendarPage = () => {
                       aria-label={`Filter status ${label}`}
                     >
                       {id !== 'all' && <span className={`dot ${id}`} style={id === 'maintenance' ? { background: '#6b6b76' } : undefined} />}
-                      {label}
+                      {isMobile ? shortLabel : label}
                     </button>
                   </Tooltip.Trigger>
                   <Tooltip.Portal>
