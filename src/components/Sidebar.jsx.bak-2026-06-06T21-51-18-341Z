@@ -174,7 +174,7 @@ const Sidebar = () => {
 
       {/* ===== BOTTOM NAV BAR (MOBILE ONLY) ===== */}
       {typeof document !== 'undefined' && createPortal(
-        <nav className={`bottom-nav-bar ${mobileOpen ? 'is-hidden-by-sheet' : ''}`} aria-label="Navigasi utama mobile">
+        <nav className="bottom-nav-bar" aria-label="Navigasi utama mobile">
           {primaryMobileMenus.filter((item) => hasPermission(userProfile, ROUTE_PERMISSIONS[item.path])).map((item) => {
             const isActive = location.pathname.startsWith(item.path) || (item.path === '/dashboard' && location.pathname === '/');
             return (

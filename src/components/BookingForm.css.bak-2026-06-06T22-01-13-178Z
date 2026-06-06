@@ -1,0 +1,565 @@
+/* ===== Booking Form Base ===== */
+.booking-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ===== Type Toggle ===== */
+.bf-type-toggle {
+  display: flex;
+  gap: 6px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: var(--fluent-radius-medium);
+  border: 1px solid var(--fluent-color-neutral-stroke-1);
+  padding: 4px;
+}
+
+.bf-type-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 10px 14px;
+  border-radius: 9px;
+  border: none;
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.22s;
+  color: var(--text-secondary);
+  background: transparent;
+}
+
+.bf-type-btn:hover {
+  background: rgba(255,255,255,0.05);
+  color: var(--text-primary);
+}
+
+.bf-type-btn.active.booking {
+  background: rgba(0,240,255,0.1);
+  color: var(--accent-cyan);
+  border: 1px solid rgba(0,240,255,0.15);
+  box-shadow: 0 2px 10px rgba(0,240,255,0.08);
+}
+
+.bf-type-btn.active.maintenance {
+  background: rgba(255,42,95,0.1);
+  color: var(--accent-pink);
+  border: 1px solid rgba(255,42,95,0.15);
+  box-shadow: 0 2px 10px rgba(255,42,95,0.08);
+}
+
+/* ===== Section ===== */
+.bf-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.bf-section-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  color: var(--text-muted);
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+/* ===== Row ===== */
+.bf-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+/* ===== Field ===== */
+.bf-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.bf-label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.bf-required {
+  color: var(--accent-pink);
+  font-size: 0.9rem;
+}
+
+/* ===== Input ===== */
+.bf-input {
+  background: rgba(0, 0, 0, 0.28) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  backdrop-filter: blur(10px) !important;
+  border: 1px solid var(--fluent-color-neutral-stroke-1) !important;
+  border-radius: var(--fluent-radius-medium) !important;
+  padding: 12px 14px;
+  color: var(--text-primary) !important;
+  font-size: 0.95rem;
+  font-family: inherit;
+  transition: all var(--fluent-duration-fast) var(--fluent-curve-easy-ease) !important;
+  outline: none;
+  width: 100%;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2) !important;
+}
+
+[data-theme="light"] .bf-input {
+  background: rgba(255, 255, 255, 0.65) !important;
+  border-color: rgba(0, 0, 0, 0.12) !important;
+  color: var(--text-primary) !important;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+}
+
+.bf-input:focus {
+  border-color: var(--fluent-color-accent-line) !important;
+  background: rgba(0, 0, 0, 0.35) !important;
+  box-shadow: 0 0 0 3px rgba(var(--accent-cyan-rgb), 0.25) !important;
+}
+
+.bf-input::placeholder {
+  color: var(--text-muted);
+  opacity: 0.6;
+}
+
+/* Fix select text visibility */
+select.bf-input {
+  color: var(--text-primary);
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 36px;
+}
+
+select.bf-input option {
+  background-color: #1a1a24;
+  color: var(--text-primary);
+}
+
+.bf-textarea {
+  resize: vertical;
+  min-height: 60px;
+  line-height: 1.5;
+}
+
+/* ===== Input with VIP Badge ===== */
+.bf-input-wrap {
+  position: relative;
+}
+
+.bf-input-wrap .bf-input {
+  padding-right: 72px;
+}
+
+.bf-vip-badge {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  background: rgba(255,193,7,0.15);
+  border: 1px solid rgba(255,193,7,0.3);
+  color: #FFC107;
+  font-size: 0.65rem;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  pointer-events: none;
+}
+
+/* ===== Duration Picker ===== */
+.bf-duration-picker {
+  display: flex;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.28);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--fluent-color-neutral-stroke-1);
+  border-radius: var(--fluent-radius-medium);
+  overflow: hidden;
+  height: 45px;
+}
+
+.bf-dur-btn {
+  width: 40px;
+  height: 100%;
+  background: rgba(255,255,255,0.04);
+  border: none;
+  color: var(--text-secondary);
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: inherit;
+  flex-shrink: 0;
+}
+
+.bf-dur-btn:hover:not(:disabled) {
+  background: rgba(0,240,255,0.1);
+  color: var(--accent-cyan);
+}
+
+.bf-dur-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.bf-dur-val {
+  flex: 1;
+  text-align: center;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.bf-dur-val small {
+  font-size: 0.7rem;
+  font-weight: 400;
+  color: var(--text-muted);
+  margin-left: 2px;
+}
+
+/* ===== Time Preview ===== */
+.bf-time-preview {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  background: rgba(0,240,255,0.04);
+  border: 1px solid rgba(0,240,255,0.08);
+  border-radius: 8px;
+  font-size: 0.82rem;
+  color: var(--accent-cyan);
+  font-weight: 600;
+}
+
+.bf-time-dot {
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+/* ===== Status Grid ===== */
+.bf-status-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.bf-status-card {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background: rgba(255,255,255,0.02);
+  border: 1.5px solid rgba(255,255,255,0.07);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.18s;
+}
+
+.bf-status-card:hover {
+  border-color: var(--status-color);
+  background: color-mix(in srgb, var(--status-color) 5%, transparent);
+}
+
+.bf-status-card.selected {
+  border-color: var(--status-color);
+  background: color-mix(in srgb, var(--status-color) 10%, transparent);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--status-color) 20%, transparent);
+}
+
+.bf-status-radio {
+  display: none;
+}
+
+.bf-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.bf-status-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.bf-status-card.selected .bf-status-label {
+  color: var(--text-primary);
+}
+
+/* ===== Price Card ===== */
+.bf-price-card {
+  background: rgba(0, 0, 0, 0.16);
+  border: 1px solid var(--fluent-color-neutral-stroke-1);
+  border-radius: var(--fluent-radius-medium);
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.bf-price-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+.bf-price-row.vip {
+  color: #FFC107;
+  font-size: 0.78rem;
+}
+
+.bf-price-row.total {
+  font-weight: 700;
+  color: var(--text-primary);
+  padding-top: 8px;
+  border-top: 1px solid rgba(255,255,255,0.07);
+  font-size: 0.9rem;
+}
+
+.bf-total-val {
+  color: var(--accent-cyan);
+  font-size: 1rem;
+}
+
+/* ===== DP Section ===== */
+.bf-dp-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px;
+  background: rgba(var(--accent-cyan-rgb), 0.05);
+  border: 1px solid rgba(var(--accent-cyan-rgb), 0.18);
+  border-radius: var(--fluent-radius-medium);
+}
+
+.bf-remaining {
+  display: flex;
+  align-items: center;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.bf-remaining.unpaid {
+  color: #FF9800;
+  border-color: rgba(255,152,0,0.2);
+  background: rgba(255,152,0,0.05);
+}
+
+.bf-remaining.paid {
+  color: #4CAF50;
+  border-color: rgba(76,175,80,0.2);
+  background: rgba(76,175,80,0.05);
+}
+
+/* DP Progress Bar */
+.bf-dp-progress {
+  height: 4px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.bf-dp-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent-cyan), #4CAF50);
+  border-radius: 4px;
+  transition: width 0.4s ease;
+}
+
+.bf-dp-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+.bf-dp-pct {
+  color: var(--accent-cyan);
+  font-weight: 600;
+}
+
+/* ===== Paid Notice ===== */
+.bf-paid-notice {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: rgba(76,175,80,0.06);
+  border: 1px solid rgba(76,175,80,0.18);
+  border-radius: 10px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #4CAF50;
+}
+
+.bf-recurring-panel,
+.bf-deadline-field {
+  margin-top: 12px;
+  padding: 12px;
+  border: 1px solid var(--fluent-color-neutral-stroke-1);
+  border-radius: var(--fluent-radius-medium);
+  background: rgba(0, 0, 0, 0.18);
+}
+
+.bf-recurring-toggle {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.bf-recurring-toggle input {
+  accent-color: var(--accent-cyan);
+}
+
+.bf-field-hint {
+  display: block;
+  margin-top: 6px;
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  line-height: 1.4;
+}
+
+/* ===== Actions ===== */
+.bf-actions {
+  display: flex;
+  gap: 10px;
+  padding-top: 4px;
+}
+
+
+
+.bf-actions .btn-secondary {
+  flex: 1;
+  justify-content: center;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 480px) {
+  .bf-row {
+    grid-template-columns: 1fr;
+  }
+
+  .bf-status-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+  }
+
+  .bf-status-card {
+    padding: 8px 8px;
+    gap: 5px;
+  }
+
+  .bf-status-label {
+    font-size: 0.72rem;
+  }
+
+  .bf-type-btn {
+    font-size: 0.78rem;
+    padding: 9px 8px;
+    gap: 5px;
+  }
+}
+
+@media (max-width: 360px) {
+  .bf-label {
+    font-size: 0.72rem;
+  }
+
+  .bf-input {
+    font-size: 0.84rem;
+    padding: 9px 12px;
+  }
+
+  .bf-status-grid {
+    gap: 4px;
+  }
+
+  .bf-actions {
+    gap: 6px;
+  }
+}
+
+/* ══════════════════════════════════════════
+   ⑨ BOOKING FORM (≤768px) — Mobile Overrides
+   ══════════════════════════════════════════ */
+@media (max-width: 768px) {
+
+  .bf-section {
+    padding: 14px var(--mob-card-px);
+    border-radius: var(--mob-radius);
+    gap: 12px;
+  }
+
+  .bf-section-title {
+    font-size: 0.78rem;
+  }
+
+  .bf-input,
+  .form-input {
+    font-size: 0.9rem;
+    padding: 10px 12px;
+    border-radius: var(--mob-radius-sm);
+  }
+
+  .bf-price-card {
+    padding: 12px var(--mob-card-px);
+    border-radius: var(--mob-radius-sm);
+    gap: 8px;
+  }
+
+  .bf-price-row {
+    font-size: 0.8rem;
+  }
+
+  .bf-price-row.total {
+    font-size: 0.9rem;
+  }
+
+  /* Type buttons */
+  .bf-type-btn {
+    padding: 9px 12px;
+    font-size: 0.8rem;
+    border-radius: var(--mob-radius-sm);
+  }
+
+  /* Form actions */
+  .form-actions,
+  .bf-form-actions {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .form-actions > button,
+  .bf-form-actions > button {
+    width: 100%;
+    justify-content: center;
+    min-height: 44px;
+  }
+}
