@@ -34,6 +34,7 @@ import {
 } from 'lucide-react';
 import { usePublicStudioSettings } from '../hooks/usePublicStudioSettings';
 import { useThemeStore } from '../store/useThemeStore';
+import { getPortalPathForProfile } from '../lib/roles';
 import './LandingPage.css';
 
 const FALLBACK_HERO_PHOTO = {
@@ -140,7 +141,6 @@ const LandingPage = () => {
 
     try {
       const { useAuthStore } = await import('../store/useAuthStore');
-      const { getPortalPathForProfile } = await import('../lib/roles');
 
       const profile = await useAuthStore.getState().loginWithGoogle();
       navigate(getPortalPathForProfile(profile, '/client/dashboard'), { replace: true });
