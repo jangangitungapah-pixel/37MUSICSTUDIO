@@ -52,15 +52,9 @@ const CalendarPage = () => {
   const [rescheduleDraft, setRescheduleDraft] = useState(null);
 
   const getCalendarCellHeight = useCallback(() => {
-    const cell = gridWrapperRef.current?.querySelector('.timeline-slot-cell, .grid-cell');
-    const rect = cell?.getBoundingClientRect();
-
-    if (rect?.width) return rect.width;
-
-    if (viewMode === 'day') return isMobile ? 124 : 168;
-    if (viewMode === 'week') return isMobile ? 108 : 138;
-    return isMobile ? 96 : 128;
-  }, [isMobile, viewMode]);
+    const cell = gridWrapperRef.current?.querySelector('.grid-cell');
+    return cell?.getBoundingClientRect().height || (isMobile ? 36 : 45);
+  }, [isMobile]);
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth <= 768);
@@ -494,10 +488,10 @@ const CalendarPage = () => {
     return format(currentDate, 'MMMM yyyy');
   };
 
-  const hourColWidth = isMobile 
-    ? (viewMode === 'day' ? '124px' : viewMode === 'week' ? '108px' : '96px')
-    : (viewMode === 'day' ? '168px' : viewMode === 'week' ? '138px' : '128px');
-  const dateColWidth = isMobile ? '82px' : '118px';
+  const colWidth = isMobile 
+    ? (viewMode === 'day' ? '220px' : viewMode === 'week' ? '118px' : '82px')
+    : (viewMode === 'day' ? '360px' : viewMode === 'week' ? '158px' : '118px');
+  const timeColWidth = isMobile ? '58px' : '78px';
 
   return (
     <Tooltip.Provider delayDuration={200}>
@@ -752,85 +746,59 @@ const CalendarPage = () => {
         </div>
 
         {/* Grid */}
-        <div
-          className={['monthly-grid-wrapper', 'calendar-timeline-wrapper', resizingBooking ? 'is-resize-active' : '', movingBooking ? 'is-move-active' : ''].filter(Boolean).join(' ')}
-          ref={gridWrapperRef}
-          onTouchStart={handleTouchStart}
-          onTouchEnd={handleTouchEnd}
-        >
-          <div
-            className={['monthly-grid', 'calendar-timeline-grid', 'timeline-view-' + viewMode].filter(Boolean).join(' ')}
-            style={{
-              gridTemplateColumns: dateColWidth + ' repeat(' + hoursArray.length + ', minmax(' + hourColWidth + ', ' + hourColWidth + '))',
-              gridTemplateRows: '48px repeat(' + daysMetadata.length + ', ' + (viewMode === 'day' ? (isMobile ? '76px' : '86px') : viewMode === 'week' ? (isMobile ? '62px' : '70px') : (isMobile ? '52px' : '58px')) + ')',
-            }}
-          >
-            <div className="grid-corner-cell timeline-corner" style={{ gridRow: 1, gridColumn: 1 }}>
-              <span className="corner-label">TGL</span>
-            </div>
+        <div className={`monthly-grid-wrapper ${resizingBooking ? 'is-resize-active' : ''} ${movingBooking ? 'is-move-active' : ''}`} ref={gridWrapperRef} onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
+          <div className="monthly-grid" style={{ gridTemplateColumns: `${timeColWidth} repeat(${numDays}, minmax(${colWidth}, 1fr))`, gridTemplateRows: `auto repeat(${hoursArray.length}, minmax(48px, 1fr))` }}>
+            <div className="grid-corner-cell" style={{ gridRow: 1, gridColumn: 1 }}><span className="corner-label">JAM</span></div>
 
-            {hoursArray.map((hour, hourIdx) => {
-              const isCurrentHour = now.getHours() === hour;
+            {daysMetadata.map((meta, idx) => {
               return (
-                <div
-                  key={'hour-' + hour}
-                  className={['grid-header-cell', 'timeline-hour-header', hourIdx % 2 === 0 ? 'even-hour' : '', isCurrentHour ? 'current-hour' : ''].filter(Boolean).join(' ')}
-                  style={{ gridRow: 1, gridColumn: hourIdx + 2 }}
-                >
-                  <span className="timeline-hour-label">{String(hour).padStart(2, '0')}.00</span>
-                  <span className="timeline-hour-end">{String(hour + 1).padStart(2, '0')}.00</span>
+                <div key={idx} className={`grid-header-cell ${meta.isToday ? 'today' : ''} ${meta.isWeekend ? 'weekend' : ''}`} style={{ gridRow: 1, gridColumn: idx + 2 }}>
+                  <span className="day-name">{dayNames[meta.dow]} {meta.isBlocked && <AlertTriangle size={12} color="var(--accent-pink)" style={{marginLeft: 4, display: 'inline'}} />}</span>
+                  <span className={`day-number ${meta.isToday ? 'today-circle' : ''}`}>{meta.dayNum}</span>
                 </div>
               );
             })}
 
-            {daysMetadata.map((meta, dayIdx) => {
-              const rowNumber = dayIdx + 2;
-
+            {hoursArray.map((hour, hourIdx) => {
+              const isCurrentHour = now.getHours() === hour;
               return (
-                <React.Fragment key={meta.dateStr}>
-                  <div
-                    className={['time-label', 'sticky-col', 'timeline-date-cell', meta.isToday ? 'today-date' : '', meta.isWeekend ? 'weekend-date' : '', meta.isBlocked ? 'blocked-date' : ''].filter(Boolean).join(' ')}
-                    style={{ gridRow: rowNumber, gridColumn: 1 }}
-                  >
-                    <span className="timeline-date-day">{dayNames[meta.dow]}</span>
-                    <span className="timeline-date-number">{meta.dayNum}</span>
-                    {meta.isBlocked && <AlertTriangle size={11} className="timeline-date-alert" />}
+                <React.Fragment key={hour}>
+                  <div className={`time-label sticky-col ${hourIdx % 2 === 0 ? 'even-row' : ''} ${isCurrentHour ? 'current-hour-highlight' : ''}`} style={{ gridRow: hourIdx + 2, gridColumn: 1 }}>
+                    <span className="time-range">
+                      {String(hour).padStart(2, '0')}.00
+                    </span>
                   </div>
-
-                  {hoursArray.map((hour, hourIdx) => {
-                    const isCurrentSlot = meta.isToday && now.getHours() === hour;
-                    const timeLineLeft = isCurrentSlot ? String((now.getMinutes() / 60) * 100) + '%' : null;
-                    const isMoveTarget = moveTarget && moveTarget.date === meta.dateStr && Number(moveTarget.hour) === hour;
+                  {daysMetadata.map((meta, dayIdx) => {
+                    const dateStr = meta.dateStr;
+                    const isToday = meta.isToday;
+                    const isWeekend = meta.isWeekend;
+                    const isBlocked = meta.isBlocked;
+                    const cellBooking = bookingsLookup[`${dateStr}-${hour}`];
+                    const isMoveTarget = moveTarget && moveTarget.date === dateStr && Number(moveTarget.hour) === hour;
                     const moveTargetClass = isMoveTarget ? (moveTarget.isValid ? 'move-target-valid' : 'move-target-invalid') : '';
+                    const cellClasses = ['grid-cell', 'empty-cell', hourIdx % 2 === 0 ? 'even-row' : '', isToday ? 'today-col-highlight' : '', isWeekend ? 'weekend-col' : '', isBlocked && !cellBooking ? 'blocked-cell' : '', moveTargetClass].filter(Boolean).join(' ');
 
-                    const cellClasses = [
-                      'grid-cell',
-                      'empty-cell',
-                      'timeline-slot-cell',
-                      hourIdx % 2 === 0 ? 'even-hour' : '',
-                      meta.isToday ? 'today-row-highlight' : '',
-                      meta.isWeekend ? 'weekend-row' : '',
-                      meta.isBlocked ? 'blocked-cell' : '',
-                      moveTargetClass,
-                    ].filter(Boolean).join(' ');
+                    // Current time line logic
+                    const isCurrentHour = isToday && now.getHours() === hour;
+                    const timeLineTop = isCurrentHour ? `${(now.getMinutes() / 60) * 100}%` : null;
 
                     return (
-                      <div
-                        key={meta.dateStr + '-' + hour}
-                        className={cellClasses}
-                        style={{ gridRow: rowNumber, gridColumn: hourIdx + 2 }}
+                      <div 
+                        key={`${hour}-${dayIdx}`} 
+                        className={cellClasses} 
+                        style={{ gridRow: hourIdx + 2, gridColumn: dayIdx + 2 }}
                         data-calendar-cell="true"
-                        data-date={meta.dateStr}
+                        data-date={dateStr}
                         data-hour={hour}
-                        onClick={() => handleCellClick(meta.dateStr, hour)}
+                        onClick={() => handleCellClick(dateStr, hour)}
                         onDragOver={handleDragOver}
-                        onDrop={(event) => handleDrop(event, meta.dateStr, hour)}
+                        onDrop={(e) => handleDrop(e, dateStr, hour)}
                         role="button"
                         tabIndex={0}
-                        aria-label={'Slot kosong pukul ' + hour + '.00 tanggal ' + meta.ariaLabelDate + '. Tekan Enter untuk membuat booking baru.'}
-                        onKeyDown={(event) => handleCellKeyDown(event, meta.dateStr, hour)}
+                        aria-label={`Slot kosong pukul ${hour}.00 tanggal ${meta.ariaLabelDate}. Tekan Enter untuk membuat booking baru.`}
+                        onKeyDown={e => handleCellKeyDown(e, dateStr, hour)}
                       >
-                        {isCurrentSlot && <div className="current-time-line vertical-time-line" style={{ left: timeLineLeft }} />}
+                        {isCurrentHour && <div className="current-time-line" style={{ top: timeLineTop }} />}
                         <span className="hover-plus">+</span>
                       </div>
                     );
@@ -839,33 +807,32 @@ const CalendarPage = () => {
               );
             })}
 
-            {/* Floating Booking Timeline Bars */}
+            {/* Floating Booking Cards */}
             {visibleBookings.map((booking) => {
-              const dayIdx = daysMetadata.findIndex((day) => day.dateStr === booking.date);
+              const dayIdx = daysMetadata.findIndex(d => d.dateStr === booking.date);
               if (dayIdx === -1) return null;
 
-              const bookingHour = Number(booking.hour);
-              const bookingDuration = Number(booking.duration || 1);
-              const startColumn = Math.max(2, bookingHour - startHour + 2);
-              const endColumn = Math.min(hoursArray.length + 2, startColumn + bookingDuration);
-              const rowNumber = dayIdx + 2;
+              const startRow = (booking.hour - startHour) + 2;
+              const endRow = startRow + booking.duration;
+              const gridColumn = dayIdx + 2;
 
               const isMovingSource = movingBooking && movingBooking.id === booking.id;
+              
+              // Current time line logic inside the contiguous card
               const isToday = daysMetadata[dayIdx].isToday;
-              const hasCurrentTime = isToday && now.getHours() >= bookingHour && now.getHours() < (bookingHour + bookingDuration);
-              const timeLineLeft = hasCurrentTime
-                ? String(((now.getHours() - bookingHour + (now.getMinutes() / 60)) / bookingDuration) * 100) + '%'
+              const hasCurrentTime = isToday && now.getHours() >= booking.hour && now.getHours() < (booking.hour + booking.duration);
+              const timeLineTop = hasCurrentTime 
+                ? `${((now.getHours() - booking.hour + (now.getMinutes() / 60)) / booking.duration) * 100}%`
                 : null;
 
               const cardClasses = [
                 'grid-cell',
                 'booked-cell',
-                'timeline-booking-card',
-                'status-' + booking.status,
+                `status-${booking.status}`,
                 booking.isResizing ? 'is-resizing' : '',
                 isMovingSource ? 'is-moving-source' : '',
                 booking.isVIP ? 'booking-vip' : '',
-                booking.type === 'recording' ? 'booking-recording' : '',
+                booking.type === 'recording' ? 'booking-recording' : ''
               ].filter(Boolean).join(' ');
 
               return (
@@ -873,24 +840,24 @@ const CalendarPage = () => {
                   key={booking.id}
                   className={cardClasses}
                   style={{
-                    gridRow: String(rowNumber),
-                    gridColumn: String(startColumn) + ' / ' + String(endColumn),
+                    gridRow: `${startRow} / ${endRow}`,
+                    gridColumn: `${gridColumn}`,
                   }}
-                  onClick={(event) => handleBookingClick(event, booking)}
-                  onPointerDown={(event) => handleMobileBookingPointerDown(event, booking)}
-                  onContextMenu={(event) => event.preventDefault()}
+                  onClick={e => handleBookingClick(e, booking)}
+                  onPointerDown={(e) => handleMobileBookingPointerDown(e, booking)}
+                  onContextMenu={e => e.preventDefault()}
                   draggable={!isMobile}
-                  onDragStart={(event) => handleDragStart(event, booking)}
+                  onDragStart={(e) => handleDragStart(e, booking)}
                   onDragEnd={handleDragEnd}
                   onDragOver={handleDragOver}
-                  onDrop={(event) => handleDrop(event, booking.date, booking.hour)}
+                  onDrop={(e) => handleDrop(e, booking.date, booking.hour)}
                   role="button"
                   tabIndex={0}
-                  aria-label={'Jadwal ' + booking.band + ', pukul ' + booking.hour + '.00 durasi ' + booking.duration + ' jam tanggal ' + daysMetadata[dayIdx].ariaLabelDate + '. Status: ' + getStatusLabel(booking.status) + '.'}
-                  onKeyDown={(event) => handleBookingKeyDown(event, booking)}
+                  aria-label={`Jadwal ${booking.band}, pukul ${booking.hour}.00 durasi ${booking.duration} jam tanggal ${daysMetadata[dayIdx].ariaLabelDate}. Status: ${getStatusLabel(booking.status)}.`}
+                  onKeyDown={e => handleBookingKeyDown(e, booking)}
                 >
-                  {hasCurrentTime && <div className="current-time-line vertical-time-line booking-now-line" style={{ left: timeLineLeft }} />}
-
+                  {hasCurrentTime && <div className="current-time-line" style={{ top: timeLineTop }} />}
+                  
                   <div className="booking-info">
                     <span className="booking-band-name">
                       {booking.isVIP && (
@@ -900,7 +867,6 @@ const CalendarPage = () => {
                       )}
                       {booking.band}
                     </span>
-
                     <div className="booking-meta-row" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                       {booking.type === 'recording' && (
                         <span className="rec-indicator" title="Recording Session">
@@ -912,7 +878,7 @@ const CalendarPage = () => {
                     </div>
                   </div>
 
-                  <div className="resize-handle timeline-resize-handle" onMouseDown={(event) => handleResizeStart(event, booking)} onTouchStart={(event) => handleResizeStart(event, booking)}>
+                  <div className="resize-handle" onMouseDown={(e) => handleResizeStart(e, booking)} onTouchStart={(e) => handleResizeStart(e, booking)}>
                     <div className="resize-line" />
                   </div>
                 </div>

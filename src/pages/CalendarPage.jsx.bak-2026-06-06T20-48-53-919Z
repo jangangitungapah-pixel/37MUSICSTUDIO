@@ -762,7 +762,7 @@ const CalendarPage = () => {
             className={['monthly-grid', 'calendar-timeline-grid', 'timeline-view-' + viewMode].filter(Boolean).join(' ')}
             style={{
               gridTemplateColumns: dateColWidth + ' repeat(' + hoursArray.length + ', minmax(' + hourColWidth + ', ' + hourColWidth + '))',
-              gridTemplateRows: '48px repeat(' + daysMetadata.length + ', ' + (viewMode === 'day' ? (isMobile ? '76px' : '86px') : viewMode === 'week' ? (isMobile ? '62px' : '70px') : (isMobile ? '52px' : '58px')) + ')',
+              gridTemplateRows: 'auto repeat(' + daysMetadata.length + ', minmax(' + (isMobile ? '58px' : '66px') + ', auto))',
             }}
           >
             <div className="grid-corner-cell timeline-corner" style={{ gridRow: 1, gridColumn: 1 }}>

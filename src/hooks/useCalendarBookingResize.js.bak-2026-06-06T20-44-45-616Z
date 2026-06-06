@@ -4,7 +4,7 @@ import { hasBookingOverlap } from '../lib/bookingWorkflows';
 
 const getPointerY = (event) => {
   const source = event.touches?.[0] || event.changedTouches?.[0] || event;
-  return source.clientX ?? 0;
+  return source.clientY ?? 0;
 };
 
 export const useCalendarBookingResize = ({
