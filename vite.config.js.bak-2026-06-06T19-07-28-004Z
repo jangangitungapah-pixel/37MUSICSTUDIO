@@ -67,7 +67,18 @@ export default defineConfig({
       injectManifest: {
         rollupFormat: 'iife',
         globPatterns: [
-          '**/*.{js,css,html,ico,png,svg,webp,woff2}'
+          'index.html',
+          'manifest.webmanifest',
+          'registerSW.js',
+          'assets/index-*.js',
+          'assets/index-*.css',
+          'assets/vendor-react-*.js',
+          'assets/vendor-router-*.js',
+          'assets/vendor-icons-*.js',
+          'assets/vendor-state-*.js',
+          'assets/useThemeStore-*.js',
+          'icon-*.png',
+          'logo.svg'
         ]
       }
     })

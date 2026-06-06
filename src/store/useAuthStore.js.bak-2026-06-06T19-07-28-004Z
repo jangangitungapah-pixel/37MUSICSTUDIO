@@ -1,19 +1,20 @@
 import { create } from 'zustand';
 import { auth, db } from '../firebase';
-import {
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
-  signOut,
+import { 
+  signInWithEmailAndPassword, 
+  createUserWithEmailAndPassword, 
+  signOut, 
   onAuthStateChanged,
   updateProfile,
   updatePassword,
   signInAnonymously
 } from 'firebase/auth';
-import { setDoc, doc, getDoc, updateDoc, deleteDoc } from 'firebase/firestore';
+import { collection, query, where, getDocs, setDoc, doc, getDoc, updateDoc } from 'firebase/firestore';
 
 const DEFAULT_ADMIN_EMAIL = 'admin@37musicstudio.local';
 
 export const useAuthStore = create((set, get) => {
+  // Setup listener
   onAuthStateChanged(auth, async (user) => {
     if (user) {
       if (user.isAnonymous) {
@@ -22,28 +23,39 @@ export const useAuthStore = create((set, get) => {
       }
 
       try {
+        // Fetch additional profile data from Firestore
         const docRef = doc(db, 'users', user.uid);
         const docSnap = await getDoc(docRef);
-
         if (docSnap.exists()) {
           const profileData = docSnap.data();
 
+          // Auto-migration: if staff has custom permissions array but lacks 'gallery' permission,
+          // automatically append it in Firestore and local state.
+          if (profileData.role === 'staff' && Array.isArray(profileData.permissions)) {
+            if (!profileData.permissions.includes('gallery')) {
+              const updatedPermissions = [...profileData.permissions, 'gallery'];
+              profileData.permissions = updatedPermissions;
+              updateDoc(docRef, { permissions: updatedPermissions }).catch((err) => {
+                console.error("Error migrating gallery permission in Firestore:", err);
+              });
+            }
+          }
+
           set({ user, userProfile: profileData, isAuthLoaded: true });
 
+          // Register FCM Token if notification permission is granted
           if ('Notification' in window && Notification.permission === 'granted') {
-            import('../lib/fcm')
-              .then(({ registerFCMToken }) => {
-                registerFCMToken(user.uid);
-              })
-              .catch((err) => {
-                console.error('[FCM] Error loading FCM module:', err);
-              });
+            import('../lib/fcm').then(({ registerFCMToken }) => {
+              registerFCMToken(user.uid);
+            }).catch((err) => {
+              console.error("[FCM] Error loading FCM module:", err);
+            });
           }
         } else {
           set({ user, userProfile: null, isAuthLoaded: true });
         }
       } catch (error) {
-        console.error('Error fetching user profile:', error);
+        console.error("Error fetching user profile:", error);
         set({ user, userProfile: null, isAuthLoaded: true });
       }
     } else {
@@ -60,38 +72,32 @@ export const useAuthStore = create((set, get) => {
 
     login: async (identifier, password) => {
       set({ loading: true, error: null });
-
       try {
         const normalizedIdentifier = identifier.trim().toLowerCase();
         let loginEmail = normalizedIdentifier === 'admin'
           ? DEFAULT_ADMIN_EMAIL
           : normalizedIdentifier;
 
+        // If it's a username (no @), look up the email
         if (!loginEmail.includes('@')) {
           const docRef = doc(db, 'usernames', loginEmail);
           const docSnap = await getDoc(docRef);
-
           if (docSnap.exists()) {
             loginEmail = docSnap.data().email;
           } else {
-            throw new Error('auth/user-not-found');
+             // Let it fail naturally in signInWithEmailAndPassword or throw early
+             throw new Error('auth/user-not-found');
           }
         }
 
         await signInWithEmailAndPassword(auth, loginEmail, password);
         set({ loading: false });
       } catch (error) {
+        // Humanize common errors
         let msg = error.message;
-
-        if (
-          error.code === 'auth/invalid-credential' ||
-          error.code === 'auth/user-not-found' ||
-          error.code === 'auth/wrong-password' ||
-          error.message === 'auth/user-not-found'
-        ) {
+        if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
           msg = 'Username/email atau password salah.';
         }
-
         set({ error: msg, loading: false });
         throw error;
       }
@@ -99,17 +105,14 @@ export const useAuthStore = create((set, get) => {
 
     loginGuest: async () => {
       set({ loading: true, error: null });
-
       try {
         await signInAnonymously(auth);
         set({ loading: false });
       } catch (error) {
         let msg = error.message;
-
         if (error.code === 'auth/operation-not-allowed') {
           msg = 'Fitur Tamu belum diaktifkan (Aktifkan Anonymous Auth di Firebase).';
         }
-
         set({ error: msg, loading: false });
         throw error;
       }
@@ -117,50 +120,40 @@ export const useAuthStore = create((set, get) => {
 
     register: async (email, password, username, phone) => {
       set({ loading: true, error: null });
-
       try {
-        const cleanEmail = email.trim().toLowerCase();
-        const cleanUsername = username.trim().toLowerCase().replace(/\s+/g, '');
-
-        if (!cleanUsername) {
-          throw new Error('Username wajib diisi.');
+        // 1. Check if username is taken
+        const usersRef = collection(db, 'users');
+        const qUsername = query(usersRef, where('username', '==', username));
+        const usernameSnap = await getDocs(qUsername);
+        
+        if (!usernameSnap.empty) {
+          throw new Error("Username sudah digunakan. Silakan pilih username lain.");
         }
 
-        const usernameRef = doc(db, 'usernames', cleanUsername);
-        const usernameDoc = await getDoc(usernameRef);
-
-        if (usernameDoc.exists()) {
-          throw new Error('Username sudah digunakan. Silakan pilih username lain.');
-        }
-
-        const userCredential = await createUserWithEmailAndPassword(auth, cleanEmail, password);
+        // 2. Create Auth user
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
 
-        await updateProfile(user, { displayName: cleanUsername });
+        // 3. Set displayName
+        await updateProfile(user, { displayName: username });
 
+        // 4. Save profile to Firestore
         const newProfile = {
           uid: user.uid,
-          email: cleanEmail,
-          username: cleanUsername,
+          email: email,
+          username: username,
           phone: phone || '',
           createdAt: new Date().toISOString()
         };
-
         await setDoc(doc(db, 'users', user.uid), newProfile);
 
-        await setDoc(usernameRef, {
-          uid: user.uid,
-          email: cleanEmail
-        });
-
+        // State will be updated by onAuthStateChanged, but we can set loading false
         set({ loading: false });
       } catch (error) {
         let msg = error.message;
-
         if (error.code === 'auth/email-already-in-use') {
           msg = 'Email ini sudah terdaftar.';
         }
-
         set({ error: msg, loading: false });
         throw error;
       }
@@ -168,56 +161,37 @@ export const useAuthStore = create((set, get) => {
 
     updateUserProfile: async (newUsername, newPhone) => {
       set({ loading: true, error: null });
-
       try {
         const { user, userProfile } = get();
+        if (!user) throw new Error("Tidak ada user yang sedang login.");
 
-        if (!user) {
-          throw new Error('Tidak ada user yang sedang login.');
-        }
-
-        const cleanNewUsername = newUsername.trim().toLowerCase().replace(/\s+/g, '');
-        const cleanOldUsername = String(userProfile?.username || '').trim().toLowerCase().replace(/\s+/g, '');
-
-        if (!cleanNewUsername) {
-          throw new Error('Username wajib diisi.');
-        }
-
-        if (cleanNewUsername !== cleanOldUsername) {
-          const usernameRef = doc(db, 'usernames', cleanNewUsername);
-          const usernameSnap = await getDoc(usernameRef);
-
-          if (usernameSnap.exists() && usernameSnap.data()?.uid !== user.uid) {
-            throw new Error('Username sudah digunakan oleh orang lain.');
+        // Check if username is taken by someone else
+        if (newUsername !== userProfile?.username) {
+          const usersRef = collection(db, 'users');
+          const qUsername = query(usersRef, where('username', '==', newUsername));
+          const usernameSnap = await getDocs(qUsername);
+          
+          if (!usernameSnap.empty && usernameSnap.docs[0].id !== user.uid) {
+            throw new Error("Username sudah digunakan oleh orang lain.");
           }
         }
 
-        if (cleanNewUsername !== user.displayName) {
-          await updateProfile(user, { displayName: cleanNewUsername });
+        // Update Firebase Auth Profile
+        if (newUsername !== user.displayName) {
+          await updateProfile(user, { displayName: newUsername });
         }
 
+        // Update Firestore Profile
         const docRef = doc(db, 'users', user.uid);
         await updateDoc(docRef, {
-          username: cleanNewUsername,
+          username: newUsername,
           phone: newPhone
         });
 
-        if (cleanNewUsername !== cleanOldUsername) {
-          await setDoc(doc(db, 'usernames', cleanNewUsername), {
-            uid: user.uid,
-            email: user.email || userProfile?.email || ''
-          });
-
-          if (cleanOldUsername) {
-            await deleteDoc(doc(db, 'usernames', cleanOldUsername)).catch((error) => {
-              console.warn('[Auth] Could not delete old username mapping:', error);
-            });
-          }
-        }
-
+        // Update local state
         set((state) => ({
-          user: { ...state.user, displayName: cleanNewUsername },
-          userProfile: { ...state.userProfile, username: cleanNewUsername, phone: newPhone },
+          user: { ...state.user, displayName: newUsername }, // Force re-render for auth user
+          userProfile: { ...state.userProfile, username: newUsername, phone: newPhone },
           loading: false
         }));
       } catch (error) {
@@ -228,23 +202,17 @@ export const useAuthStore = create((set, get) => {
 
     updateUserPassword: async (newPassword) => {
       set({ loading: true, error: null });
-
       try {
         const { user } = get();
-
-        if (!user) {
-          throw new Error('Tidak ada user yang sedang login.');
-        }
-
+        if (!user) throw new Error("Tidak ada user yang sedang login.");
+        
         await updatePassword(user, newPassword);
         set({ loading: false });
       } catch (error) {
         let msg = error.message;
-
         if (error.code === 'auth/requires-recent-login') {
           msg = 'Sesi Anda sudah terlalu lama. Silakan logout dan login kembali sebelum mengganti password.';
         }
-
         set({ error: msg, loading: false });
         throw error;
       }
@@ -252,18 +220,13 @@ export const useAuthStore = create((set, get) => {
 
     completeRequiredPasswordChange: async (newPassword) => {
       set({ loading: true, error: null });
-
       try {
         const { user } = get();
-
-        if (!user) {
-          throw new Error('Tidak ada user yang sedang login.');
-        }
+        if (!user) throw new Error("Tidak ada user yang sedang login.");
 
         await updatePassword(user, newPassword);
 
         const passwordUpdatedAt = new Date().toISOString();
-
         await updateDoc(doc(db, 'users', user.uid), {
           requiresPasswordChange: false,
           passwordUpdatedAt
@@ -279,11 +242,9 @@ export const useAuthStore = create((set, get) => {
         }));
       } catch (error) {
         let msg = error.message;
-
         if (error.code === 'auth/requires-recent-login') {
           msg = 'Sesi Anda sudah terlalu lama. Silakan logout lalu login kembali sebelum mengganti password.';
         }
-
         set({ error: msg, loading: false });
         throw error;
       }
@@ -291,19 +252,16 @@ export const useAuthStore = create((set, get) => {
 
     logout: async () => {
       set({ loading: true, error: null });
-
       try {
         const { user } = get();
-
         if (user && !user.isAnonymous) {
           try {
             const { unregisterFCMToken } = await import('../lib/fcm');
             await unregisterFCMToken(user.uid);
           } catch (err) {
-            console.error('[FCM] Error unregistering token on logout:', err);
+            console.error("[FCM] Error unregistering token on logout:", err);
           }
         }
-
         await signOut(auth);
         set({ loading: false });
       } catch (error) {
@@ -311,7 +269,8 @@ export const useAuthStore = create((set, get) => {
         throw error;
       }
     },
-
+    
     clearError: () => set({ error: null })
   };
 });
+

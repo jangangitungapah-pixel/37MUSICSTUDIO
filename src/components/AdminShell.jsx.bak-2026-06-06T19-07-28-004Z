@@ -202,10 +202,6 @@ const AdminShell = () => {
     return <AccessDenied />;
   }
 
-  if (userProfile?.status && userProfile.status !== 'active') {
-    return <AccessDenied />;
-  }
-
   const requiredPerm = ROUTE_PERMISSIONS[location.pathname];
   const hasPerm = hasPermission(userProfile, requiredPerm);
 

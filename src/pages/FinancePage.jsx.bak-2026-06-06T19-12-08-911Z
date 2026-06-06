@@ -155,39 +155,8 @@ const formatYAxisTick = (v) => {
   }
   return v;
 };
-const ReceiptDownloadRender = ({ loading, url, transaction, iconSize, onDone }) => {
-  useEffect(() => {
-    if (!loading && url) {
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `kuitansi-${transaction.id}.pdf`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-
-      const timer = setTimeout(onDone, 2000);
-      return () => clearTimeout(timer);
-    }
-
-    return undefined;
-  }, [loading, onDone, transaction.id, url]);
-
-  return (
-    <button
-      className="icon-btn print-btn"
-      disabled={loading}
-      title={loading ? 'Menyiapkan PDF...' : 'Unduh PDF Kuitansi'}
-      aria-label="Unduh PDF Kuitansi"
-      style={{ color: 'var(--accent-cyan)' }}
-    >
-      <Download size={iconSize} style={{ opacity: loading ? 0.5 : 1 }} />
-    </button>
-  );
-};
-
 const LazyPDFDownloadButton = ({ transaction, settings, iconSize = 14 }) => {
   const [ready, setReady] = useState(false);
-  const handleDone = useCallback(() => setReady(false), []);
 
   return ready ? (
     <PDFDownloadLink
@@ -195,23 +164,37 @@ const LazyPDFDownloadButton = ({ transaction, settings, iconSize = 14 }) => {
       fileName={`kuitansi-${transaction.id}.pdf`}
       style={{ textDecoration: 'none', display: 'inline-flex' }}
     >
-      {({ loading, url }) => (
-        <ReceiptDownloadRender
-          loading={loading}
-          url={url}
-          transaction={transaction}
-          iconSize={iconSize}
-          onDone={handleDone}
-        />
-      )}
+      {({ loading, url }) => {
+        useEffect(() => {
+          if (!loading && url) {
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `kuitansi-${transaction.id}.pdf`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            const timer = setTimeout(() => setReady(false), 2000);
+            return () => clearTimeout(timer);
+          }
+        }, [loading, url]);
+
+        return (
+          <button
+            className="icon-btn print-btn"
+            disabled={loading}
+            title={loading ? "Menyiapkan PDF..." : "Unduh PDF Kuitansi"}
+            aria-label="Unduh PDF Kuitansi"
+            style={{ color: 'var(--accent-cyan)' }}
+          >
+            <Download size={iconSize} style={{ opacity: loading ? 0.5 : 1 }} />
+          </button>
+        );
+      }}
     </PDFDownloadLink>
   ) : (
     <button
       className="icon-btn print-btn"
-      onClick={(e) => {
-        e.stopPropagation();
-        setReady(true);
-      }}
+      onClick={(e) => { e.stopPropagation(); setReady(true); }}
       title="Unduh PDF Kuitansi"
       aria-label="Unduh PDF Kuitansi"
       style={{ color: 'var(--accent-cyan)' }}
@@ -220,7 +203,6 @@ const LazyPDFDownloadButton = ({ transaction, settings, iconSize = 14 }) => {
     </button>
   );
 };
-
 
 
 const FinancePage = () => {

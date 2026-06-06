@@ -124,7 +124,6 @@ export const useStaffStore = create(
               
               // 3.5. Save username mapping for login lookup
               await setDoc(doc(db, 'usernames', cleanUsername), {
-                uid: newUser.uid,
                 email: finalEmail
               });
             } catch (firestoreError) {
@@ -231,7 +230,6 @@ export const useStaffStore = create(
 
               // Update username mapping
               await setDoc(doc(db, 'usernames', oldStaff.username), {
-                uid: newUser.uid,
                 email: newEmail
               });
             } catch (firestoreError) {

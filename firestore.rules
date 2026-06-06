@@ -1,36 +1,103 @@
 rules_version = '2';
+
 service cloud.firestore {
   match /databases/{database}/documents {
-    function signedInStaff() {
-      return request.auth != null
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function signedInStaffAuth() {
+      return signedIn()
         && request.auth.token.firebase.sign_in_provider != 'anonymous';
     }
 
     function signedInGuestOrStaff() {
-      return request.auth != null;
+      return signedIn();
     }
 
     function userPath() {
       return /databases/$(database)/documents/users/$(request.auth.uid);
     }
 
-    function hasAdminAccess() {
-      return signedInStaff()
+    function hasUserProfile() {
+      return signedInStaffAuth() && exists(userPath());
+    }
+
+    function userData() {
+      return get(userPath()).data;
+    }
+
+    function isActiveUser() {
+      return hasUserProfile()
+        && (
+          !('status' in userData())
+          || userData().status == 'active'
+        );
+    }
+
+    function isAdmin() {
+      return isActiveUser()
         && (
           request.auth.token.admin == true
-          || (
-            exists(userPath())
-            && get(userPath()).data.role in ['admin', 'staff']
-          )
+          || userData().role == 'admin'
+        );
+    }
+
+    function isStaffRole() {
+      return isActiveUser()
+        && userData().role in ['admin', 'staff'];
+    }
+
+    function hasPermission(permission) {
+      return isAdmin()
+        || (
+          isStaffRole()
+          && userData().role == 'staff'
+          && userData().permissions is list
+          && permission in userData().permissions
         );
     }
 
     function isSelf(userId) {
-      return signedInStaff() && request.auth.uid == userId;
+      return signedInStaffAuth() && request.auth.uid == userId;
+    }
+
+    function selfUserSafeUpdate() {
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'username',
+          'phone',
+          'fcmTokens',
+          'requiresPasswordChange',
+          'passwordUpdatedAt'
+        ])
+        && (
+          !request.resource.data.diff(resource.data).affectedKeys().hasAny(['requiresPasswordChange'])
+          || request.resource.data.requiresPasswordChange == false
+        );
+    }
+
+    function isSelfUsernameMappingCreate() {
+      return signedInStaffAuth()
+        && request.resource.data.keys().hasOnly(['uid', 'email'])
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.email == request.auth.token.email;
+    }
+
+    function isSelfUsernameMappingDelete() {
+      return signedInStaffAuth()
+        && resource.data.uid == request.auth.uid;
     }
 
     function isPublicBookingShape() {
-      return request.resource.data.keys().hasOnly(['id', 'date', 'hour', 'duration', 'status', 'type', 'roomId'])
+      return request.resource.data.keys().hasOnly([
+          'id',
+          'date',
+          'hour',
+          'duration',
+          'status',
+          'type',
+          'roomId'
+        ])
         && request.resource.data.id is number
         && request.resource.data.date is string
         && request.resource.data.hour is number
@@ -40,91 +107,103 @@ service cloud.firestore {
         && (!('roomId' in request.resource.data) || request.resource.data.roomId is string);
     }
 
-    // Shared settings/config are readable by the app and public calendar.
-    // Writes require an admin/staff role or a Firebase Auth custom claim.
     match /settings/{document=**} {
       allow read: if true;
-      allow write: if hasAdminAccess();
+      allow write: if isAdmin() || hasPermission('settings');
     }
 
     match /config/{document=**} {
       allow read: if true;
-      allow write: if hasAdminAccess();
+      allow write: if isAdmin() || hasPermission('settings') || hasPermission('inventory');
     }
 
-    // Full booking documents may include customer contact/payment details.
-    // Public calendar must read from publicBookings instead.
     match /bookings/{document=**} {
-      allow read, write: if hasAdminAccess();
+      allow read: if hasPermission('calendar') || hasPermission('billing') || hasPermission('finance');
+      allow write: if hasPermission('calendar') || hasPermission('billing');
     }
 
     match /publicBookings/{bookingId} {
       allow read: if signedInGuestOrStaff();
-      allow create, update: if hasAdminAccess() && isPublicBookingShape();
-      allow delete: if hasAdminAccess();
+      allow create, update: if (hasPermission('calendar') || hasPermission('billing')) && isPublicBookingShape();
+      allow delete: if hasPermission('calendar') || hasPermission('billing');
     }
 
     match /bookingRequests/{requestId} {
-      allow read: if hasAdminAccess();
+      allow read: if hasPermission('calendar') || hasPermission('billing');
       allow create: if signedInGuestOrStaff()
         && request.resource.data.keys().hasOnly([
-          'id', 'band', 'phone', 'date', 'hour', 'duration',
-          'estimatedPrice', 'source', 'status', 'createdAt'
+          'id',
+          'band',
+          'phone',
+          'date',
+          'hour',
+          'duration',
+          'estimatedPrice',
+          'source',
+          'status',
+          'createdAt'
         ])
         && request.resource.data.status == 'pending'
         && request.resource.data.band is string
         && request.resource.data.date is string
         && request.resource.data.hour is number
         && request.resource.data.duration is number;
-      allow update, delete: if hasAdminAccess();
+      allow update, delete: if hasPermission('calendar') || hasPermission('billing');
     }
 
     match /auditLogs/{document=**} {
-      allow read, write: if hasAdminAccess();
+      allow read: if isAdmin() || hasPermission('settings') || hasPermission('staff');
+      allow create: if isStaffRole();
+      allow update, delete: if isAdmin();
     }
 
     match /users/{userId} {
-      allow read: if hasAdminAccess() || isSelf(userId);
-      allow create: if hasAdminAccess()
+      allow read: if isAdmin() || hasPermission('staff') || isSelf(userId);
+
+      allow create: if isAdmin()
         || (
           isSelf(userId)
           && request.resource.data.keys().hasOnly(['uid', 'email', 'username', 'phone', 'createdAt'])
           && request.resource.data.uid == request.auth.uid
           && request.resource.data.email == request.auth.token.email
         );
-      allow update: if hasAdminAccess()
+
+      allow update: if isAdmin()
         || (
           isSelf(userId)
-          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['username', 'phone'])
+          && selfUserSafeUpdate()
         );
-      allow delete: if hasAdminAccess();
+
+      allow delete: if isAdmin();
     }
 
     match /customers/{document=**} {
-      allow read, write: if hasAdminAccess();
+      allow read, write: if hasPermission('customers');
     }
-    
+
     match /inventory/{document=**} {
-      allow read, write: if hasAdminAccess();
+      allow read, write: if hasPermission('inventory');
     }
 
     match /finances/{document=**} {
-      allow read, write: if hasAdminAccess();
+      allow read, write: if hasPermission('finance');
     }
 
     match /gallery/{document=**} {
       allow read: if true;
-      allow write: if hasAdminAccess();
+      allow write: if hasPermission('gallery');
     }
 
     match /albums/{document=**} {
       allow read: if true;
-      allow write: if hasAdminAccess();
+      allow write: if hasPermission('gallery');
     }
 
-    match /usernames/{document=**} {
+    match /usernames/{username} {
       allow read: if true;
-      allow write: if hasAdminAccess();
+      allow create: if isAdmin() || isSelfUsernameMappingCreate();
+      allow update: if isAdmin();
+      allow delete: if isAdmin() || isSelfUsernameMappingDelete();
     }
   }
 }
