@@ -6,8 +6,8 @@ import FirebaseConfigNotice from './components/FirebaseConfigNotice';
 import PWAUpdatePrompt from './components/PWAUpdatePrompt';
 
 const AdminShell = lazy(() => import('./components/AdminShell'));
-const LandingPage = lazy(() => import('./pages/LandingPage'));
 const PortalResolver = lazy(() => import('./pages/PortalResolver'));
+const ClientLandingPage = lazy(() => import('./pages/ClientLandingPage'));
 const ClientDashboardPage = lazy(() => import('./pages/ClientDashboardPage'));
 const AdminLoginPage = lazy(() => import('./pages/AdminLoginPage'));
 const PublicCalendarPage = lazy(() => import('./pages/PublicCalendarPage'));
@@ -123,7 +123,7 @@ function App() {
       <PWAUpdatePrompt />
       <Routes>
         <Route path="/" element={<Suspense fallback={<FullPageLoader />}><PortalResolver /></Suspense>} />
-        <Route path="/client" element={<Suspense fallback={<FullPageLoader />}><LandingPage /></Suspense>} />
+        <Route path="/client" element={<Suspense fallback={<FullPageLoader />}><ClientLandingPage /></Suspense>} />
         <Route path="/client/dashboard" element={<Suspense fallback={<FullPageLoader />}><ClientDashboardPage /></Suspense>} />
 
         <Route path="/admin" element={<Suspense fallback={<FullPageLoader />}><AdminLoginPage /></Suspense>} />

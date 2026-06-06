@@ -4,7 +4,6 @@ import { AnimatePresence } from 'framer-motion';
 import { Loader2, LockKeyhole, LogOut, ShieldAlert } from 'lucide-react';
 import { useAuthStore } from '../store/useAuthStore';
 import { ROUTE_PERMISSIONS, hasPermission } from '../lib/permissions';
-import { stripAdminPrefix } from '../lib/roles';
 import Sidebar from './Sidebar';
 import NotificationToast from './NotificationToast';
 import PageTransition from './PageTransition';
@@ -192,11 +191,11 @@ const AdminShell = () => {
   }
 
   if (!user) {
-    return <Navigate to="/admin" replace />;
+    return <Navigate to="/" replace />;
   }
 
   if (user.isAnonymous) {
-    return <Navigate to="/client" replace />;
+    return <Navigate to="/jadwal-publik" replace />;
   }
 
   if (!STAFF_ROLES.has(userProfile?.role)) {

@@ -1,7 +1,5 @@
-import {
-  create } from 'zustand';
-import { auth,
-  db } from '../firebase';
+import { create } from 'zustand';
+import { auth, db } from '../firebase';
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
@@ -9,9 +7,7 @@ import {
   onAuthStateChanged,
   updateProfile,
   updatePassword,
-  signInAnonymously,
-  GoogleAuthProvider,
-  signInWithPopup
+  signInAnonymously
 } from 'firebase/auth';
 import { setDoc, doc, getDoc, updateDoc, deleteDoc } from 'firebase/firestore';
 
@@ -101,94 +97,6 @@ export const useAuthStore = create((set, get) => {
       }
     },
 
-
-    loginWithGoogle: async () => {
-      set({ loading: true, error: null });
-
-      try {
-        const provider = new GoogleAuthProvider();
-        provider.setCustomParameters({ prompt: 'select_account' });
-
-        const credential = await signInWithPopup(auth, provider);
-        const googleUser = credential.user;
-
-        const docRef = doc(db, 'users', googleUser.uid);
-        const docSnap = await getDoc(docRef);
-        const now = new Date().toISOString();
-
-        if (docSnap.exists()) {
-          const existingProfile = docSnap.data();
-
-          const nextProfile = {
-            ...existingProfile,
-            uid: googleUser.uid,
-            email: googleUser.email || existingProfile.email || '',
-            displayName: googleUser.displayName || existingProfile.displayName || existingProfile.username || '',
-            photoURL: googleUser.photoURL || existingProfile.photoURL || '',
-            provider: existingProfile.provider || 'google',
-            lastLoginAt: now
-          };
-
-          await setDoc(docRef, nextProfile, { merge: true });
-
-          set({
-            user: googleUser,
-            userProfile: nextProfile,
-            loading: false
-          });
-
-          return nextProfile;
-        }
-
-        const email = String(googleUser.email || '').trim().toLowerCase();
-        const fallbackUsername = email
-          ? email.split('@')[0].replace(/[^a-z0-9._-]/g, '').slice(0, 24)
-          : `client_${googleUser.uid.slice(0, 8)}`;
-
-        const newProfile = {
-          uid: googleUser.uid,
-          email,
-          username: fallbackUsername,
-          displayName: googleUser.displayName || fallbackUsername,
-          photoURL: googleUser.photoURL || '',
-          phone: '',
-          role: 'client',
-          status: 'active',
-          provider: 'google',
-          linkedCustomerId: '',
-          createdAt: now,
-          lastLoginAt: now
-        };
-
-        await setDoc(docRef, newProfile, { merge: true });
-
-        set({
-          user: googleUser,
-          userProfile: newProfile,
-          loading: false
-        });
-
-        return newProfile;
-      } catch (error) {
-        let msg = error.message || 'Login Google gagal.';
-
-        if (error.code === 'auth/popup-closed-by-user') {
-          msg = 'Login Google dibatalkan.';
-        }
-
-        if (error.code === 'auth/popup-blocked') {
-          msg = 'Popup Google diblokir browser. Izinkan popup lalu coba lagi.';
-        }
-
-        if (error.code === 'auth/account-exists-with-different-credential') {
-          msg = 'Email ini sudah terdaftar dengan metode login lain. Masuk memakai email/password dulu.';
-        }
-
-        set({ error: msg, loading: false });
-        throw error;
-      }
-    },
-
     loginGuest: async () => {
       set({ loading: true, error: null });
 
@@ -235,9 +143,6 @@ export const useAuthStore = create((set, get) => {
           email: cleanEmail,
           username: cleanUsername,
           phone: phone || '',
-          role: 'client',
-          status: 'active',
-          provider: 'password',
           createdAt: new Date().toISOString()
         };
 

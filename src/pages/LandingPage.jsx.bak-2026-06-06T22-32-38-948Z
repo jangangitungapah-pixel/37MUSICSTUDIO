@@ -133,30 +133,6 @@ const LandingPage = () => {
     };
   }, [navigate]);
 
-
-  const handleGoogleLogin = async () => {
-    setLoginLoading(true);
-    setLoginError('');
-
-    try {
-      const { useAuthStore } = await import('../store/useAuthStore');
-      const { getPortalPathForProfile } = await import('../lib/roles');
-
-      const profile = await useAuthStore.getState().loginWithGoogle();
-      navigate(getPortalPathForProfile(profile, '/client/dashboard'), { replace: true });
-    } catch (error) {
-      try {
-        const { useAuthStore } = await import('../store/useAuthStore');
-        const storeError = useAuthStore.getState?.().error;
-        setLoginError(storeError || error?.message || 'Login Google gagal.');
-      } catch {
-        setLoginError(error?.message || 'Login Google gagal.');
-      }
-    } finally {
-      setLoginLoading(false);
-    }
-  };
-
   const handleLoginSubmit = async (event) => {
     event.preventDefault();
     setLoginLoading(true);
@@ -266,29 +242,11 @@ const LandingPage = () => {
             </div>
             <div>
               <p className="login-dropdown-brand">{studioName || '37 MUSIC STUDIO'}</p>
-              <h4 className="login-dropdown-title">Masuk ke Portal</h4>
+              <h4 className="login-dropdown-title">Masuk Portal</h4>
             </div>
           </div>
 
           <div className="login-dropdown-divider" />
-
-          <button
-            type="button"
-            className="login-google-btn"
-            onClick={handleGoogleLogin}
-            disabled={loginLoading}
-          >
-            {loginLoading ? (
-              <Loader2 className="spinner" size={16} />
-            ) : (
-              <span className="login-google-mark" aria-hidden="true">G</span>
-            )}
-            <span>Lanjutkan dengan Google</span>
-          </button>
-
-          <div className="login-dropdown-or">
-            <span>Email login</span>
-          </div>
 
           <form onSubmit={handleLoginSubmit} className="login-dropdown-form">
             {loginError && (
@@ -350,7 +308,7 @@ const LandingPage = () => {
                 </>
               ) : (
                 <>
-                  <span>Masuk</span>
+                  <span>Masuk Portal</span>
                   <ChevronRight size={16} />
                 </>
               )}
@@ -403,11 +361,11 @@ const LandingPage = () => {
               </div>
               <div>
                 <Headphones size={16} />
-                <span>Operator Ready</span>
+                <span>Operator</span>
               </div>
               <div>
                 <ShieldCheck size={16} />
-                <span>Private Room</span>
+                <span>Private room</span>
               </div>
             </div>
           </div>
@@ -417,9 +375,9 @@ const LandingPage = () => {
       <section id="experience" className="experience-section">
         <div className="section-header">
           <span className="section-eyebrow">The 37 Experience</span>
-          <h2>Satu studio, semua sesi dibuat serius.</h2>
+          <h2>Satu studio, vibe-nya dibuat serius.</h2>
           <p>
-            Dari latihan sampai recording, semua dibuat lebih rapi, nyaman, dan gampang dibooking dari client portal.
+            Layout dibuat untuk band muda, vocalist, solo creator, dan session player yang butuh tempat rapi tanpa ribet teknis.
           </p>
         </div>
 
@@ -448,7 +406,7 @@ const LandingPage = () => {
             </div>
             <span className="experience-label">Session assist</span>
             <h3>Datang, setup, main</h3>
-            <p>Operator Ready bantu sound check, tuning basic, dan kebutuhan teknis supaya sesi tetap jalan.</p>
+            <p>Operator bantu sound check, tuning basic, dan kebutuhan teknis supaya sesi tetap jalan.</p>
           </div>
         </div>
       </section>
@@ -485,7 +443,7 @@ const LandingPage = () => {
         <div className="section-header align-left">
           <span className="section-eyebrow">Vibe check</span>
           <h2>Ruangnya kelihatan sebelum kamu booking.</h2>
-          <p>Preview studio dibuat ringan untuk mobile. Studio Gallery penuh tetap bisa dibuka saat kamu butuh lihat foto lain.</p>
+          <p>Preview studio dibuat ringan untuk mobile. Galeri penuh tetap bisa dibuka saat kamu butuh lihat foto lain.</p>
         </div>
 
         <div className="landing-gallery-grid">
@@ -506,7 +464,7 @@ const LandingPage = () => {
 
         <div className="gallery-actions">
           <Link to="/galeri" className="btn-secondary btn-large">
-            <span>Lihat Studio Gallery</span>
+            <span>Lihat Galeri</span>
             <ArrowUpRight size={18} />
           </Link>
         </div>
@@ -538,7 +496,7 @@ const LandingPage = () => {
               Cocok untuk latihan, demo recording, content session, atau band yang butuh ruang private dengan operator.
             </p>
             <div className="pricing-includes" role="list" aria-label="Yang termasuk dalam harga">
-              <div role="listitem"><CheckCircle2 size={17} /><span>Operator Ready included</span></div>
+              <div role="listitem"><CheckCircle2 size={17} /><span>Operator included</span></div>
               <div role="listitem"><CheckCircle2 size={17} /><span>Full AC dan soundproof</span></div>
               <div role="listitem"><CheckCircle2 size={17} /><span>Drum, ampli gitar, ampli bass</span></div>
               <div role="listitem"><CheckCircle2 size={17} /><span>Mic, interface, monitoring</span></div>

@@ -485,7 +485,7 @@ const LandingPage = () => {
         <div className="section-header align-left">
           <span className="section-eyebrow">Vibe check</span>
           <h2>Ruangnya kelihatan sebelum kamu booking.</h2>
-          <p>Preview studio dibuat ringan untuk mobile. Studio Gallery penuh tetap bisa dibuka saat kamu butuh lihat foto lain.</p>
+          <p>Preview studio dibuat ringan untuk mobile. Galeri penuh tetap bisa dibuka saat kamu butuh lihat foto lain.</p>
         </div>
 
         <div className="landing-gallery-grid">
@@ -506,7 +506,7 @@ const LandingPage = () => {
 
         <div className="gallery-actions">
           <Link to="/galeri" className="btn-secondary btn-large">
-            <span>Lihat Studio Gallery</span>
+            <span>Lihat Galeri</span>
             <ArrowUpRight size={18} />
           </Link>
         </div>
