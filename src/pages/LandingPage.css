@@ -5195,3 +5195,540 @@
   border-top-color: rgba(20,23,32,0.080) !important;
 }
 
+/* ════════════════════════════════════════════════════════════════════════════
+   37 LANDING MOBILE QA FIX
+   --------------------------------------------------------------------------
+   Final QA layer for mobile/PWA:
+   safe areas, auth sheet viewport behavior, z-index order, no horizontal
+   overflow, tiny-screen CTA rescue, touch targets, and reduced motion.
+   ════════════════════════════════════════════════════════════════════════════ */
+
+/* ──────────────────────────────────────────────────────────────────────────
+   GLOBAL MOBILE SAFETY
+   ────────────────────────────────────────────────────────────────────────── */
+
+html,
+body,
+#root {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+.landing-container {
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: clip;
+  touch-action: pan-y;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.landing-container *,
+.landing-container *::before,
+.landing-container *::after {
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.landing-container img,
+.landing-container video,
+.landing-container canvas,
+.landing-container svg {
+  max-width: 100%;
+}
+
+.landing-container a,
+.landing-container button,
+.landing-container input,
+.landing-container textarea,
+.landing-container select {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.landing-container button,
+.landing-container a {
+  touch-action: manipulation;
+}
+
+.landing-container input,
+.landing-container textarea,
+.landing-container select {
+  font-size: 16px;
+}
+
+/* Prevent long text from blowing mobile width */
+.landing-container h1,
+.landing-container h2,
+.landing-container h3,
+.landing-container p,
+.landing-container span,
+.landing-container strong,
+.landing-container a,
+.landing-container button {
+  overflow-wrap: anywhere;
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   Z-INDEX ORDER
+   --------------------------------------------------------------------------
+   Header < mobile backdrop/menu < auth sheet.
+   Auth sheet must always win.
+   ────────────────────────────────────────────────────────────────────────── */
+
+.landing-nav {
+  z-index: 180 !important;
+}
+
+.mobile-nav-backdrop {
+  z-index: 185 !important;
+}
+
+.mobile-nav-menu {
+  z-index: 190 !important;
+}
+
+.nav-login-dropdown {
+  z-index: 220 !important;
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   HEADER HITBOX QA
+   ────────────────────────────────────────────────────────────────────────── */
+
+.nav-theme-btn,
+.nav-login-btn,
+.nav-hamburger,
+.nav-book-btn {
+  position: relative;
+}
+
+.nav-theme-btn:focus-visible,
+.nav-login-btn:focus-visible,
+.nav-hamburger:focus-visible,
+.nav-book-btn:focus-visible,
+.login-google-btn:focus-visible,
+.login-field-toggle:focus-visible,
+.login-dropdown-submit:focus-visible,
+.hero-session a:focus-visible,
+.hero-session button:focus-visible {
+  outline: 2px solid rgba(var(--accent-cyan-rgb), 0.75) !important;
+  outline-offset: 3px !important;
+}
+
+.nav-actions {
+  flex-shrink: 0;
+}
+
+.nav-brand {
+  max-width: calc(100vw - 168px);
+}
+
+.brand-text {
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   AUTH SHEET VIEWPORT / KEYBOARD QA
+   ────────────────────────────────────────────────────────────────────────── */
+
+.nav-login-dropdown {
+  overscroll-behavior: contain !important;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(var(--accent-pink-rgb), 0.55) rgba(255,255,255,0.055);
+}
+
+.nav-login-dropdown::-webkit-scrollbar {
+  width: 7px;
+}
+
+.nav-login-dropdown::-webkit-scrollbar-track {
+  background: rgba(255,255,255,0.045);
+}
+
+.nav-login-dropdown::-webkit-scrollbar-thumb {
+  background: rgba(var(--accent-pink-rgb),0.55);
+  border-radius: 999px;
+}
+
+.login-dropdown-error,
+.login-error {
+  overflow-wrap: anywhere !important;
+}
+
+.login-dropdown-client-row {
+  flex-wrap: wrap;
+}
+
+.login-field-wrap {
+  flex-wrap: nowrap !important;
+}
+
+.login-field-input {
+  min-width: 0 !important;
+}
+
+@supports (height: 100dvh) {
+  @media (max-width: 768px) {
+    .nav-login-dropdown {
+      top: calc(70px + env(safe-area-inset-top, 0px)) !important;
+      max-height: calc(100dvh - 84px - env(safe-area-inset-top, 0px)) !important;
+      padding-bottom: max(0px, env(safe-area-inset-bottom, 0px)) !important;
+    }
+  }
+
+  @media (max-width: 420px) {
+    .nav-login-dropdown {
+      top: calc(66px + env(safe-area-inset-top, 0px)) !important;
+      max-height: calc(100dvh - 78px - env(safe-area-inset-top, 0px)) !important;
+    }
+  }
+}
+
+/* Browser fallback when dvh is not supported */
+@supports not (height: 100dvh) {
+  @media (max-width: 768px) {
+    .nav-login-dropdown {
+      top: calc(70px + env(safe-area-inset-top, 0px)) !important;
+      max-height: calc(100vh - 84px - env(safe-area-inset-top, 0px)) !important;
+    }
+  }
+}
+
+/* If keyboard makes viewport tiny, make sheet more compact */
+@media (max-width: 768px) and (max-height: 680px) {
+  .nav-login-dropdown {
+    top: calc(62px + env(safe-area-inset-top, 0px)) !important;
+    max-height: calc(100dvh - 70px - env(safe-area-inset-top, 0px)) !important;
+  }
+
+  .login-dropdown-header {
+    min-height: 62px !important;
+    padding: 10px 12px !important;
+  }
+
+  .login-dropdown-icon-wrap {
+    width: 40px !important;
+    height: 40px !important;
+    min-width: 40px !important;
+    border-radius: 14px !important;
+  }
+
+  .login-dropdown-icon-wrap img {
+    width: 30px !important;
+    height: 30px !important;
+  }
+
+  .login-google-btn {
+    min-height: 42px !important;
+    margin-top: 10px !important;
+  }
+
+  .login-dropdown-or {
+    margin-top: 9px !important;
+  }
+
+  .login-dropdown-form,
+  .nav-login-dropdown form {
+    padding-top: 10px !important;
+    padding-bottom: 11px !important;
+    gap: 9px !important;
+  }
+
+  .login-field-wrap {
+    min-height: 42px !important;
+  }
+
+  .login-field-input {
+    height: 40px !important;
+    min-height: 40px !important;
+  }
+
+  .login-dropdown-submit {
+    min-height: 43px !important;
+  }
+
+  .login-dropdown-client-row {
+    margin-bottom: 11px !important;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   MOBILE MENU QA
+   ────────────────────────────────────────────────────────────────────────── */
+
+.mobile-nav-menu {
+  max-height: calc(100dvh - 88px - env(safe-area-inset-top, 0px));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border-radius: 22px !important;
+  padding: 9px !important;
+  background:
+    radial-gradient(circle at 14% 0%, rgba(243, 200, 111, 0.095), transparent 42%),
+    radial-gradient(circle at 88% 0%, rgba(var(--accent-cyan-rgb), 0.060), transparent 38%),
+    linear-gradient(180deg, rgba(255,255,255,0.060), rgba(255,255,255,0.014)),
+    rgba(12, 15, 23, 0.94) !important;
+  -webkit-backdrop-filter: blur(22px) saturate(1.12) !important;
+  backdrop-filter: blur(22px) saturate(1.12) !important;
+}
+
+.mobile-nav-menu a {
+  border-radius: 16px !important;
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   HERO / CTA DOCK RESPONSIVE QA
+   ────────────────────────────────────────────────────────────────────────── */
+
+.hero-section {
+  max-width: 100vw;
+}
+
+.hero-shell,
+.hero-copy,
+.hero-actions,
+.hero-session,
+.hero-session-main,
+.hero-session-grid {
+  max-width: 100%;
+}
+
+.hero-title {
+  overflow-wrap: normal !important;
+}
+
+.hero-subtitle {
+  overflow-wrap: break-word !important;
+}
+
+.hero-session-main strong {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hero-session-main span:last-child {
+  white-space: nowrap;
+}
+
+.hero-session .btn-primary,
+.hero-session .btn-large,
+.hero-session a[href*="booking"],
+.hero-session a[href*="Booking"],
+.hero-session a[href*="jadwal"] {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.hero-session-grid div {
+  overflow: hidden;
+}
+
+.hero-session-grid div span,
+.hero-session-grid div strong {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Very narrow phones: stack price and booking button to avoid cramped dock */
+@media (max-width: 360px) {
+  .hero-session-main {
+    grid-template-columns: 1fr !important;
+    gap: 8px !important;
+    padding: 10px !important;
+  }
+
+  .hero-session-main strong {
+    justify-content: center !important;
+    text-align: center !important;
+  }
+
+  .hero-session-main span:last-child {
+    justify-self: center !important;
+  }
+
+  .hero-session .btn-primary,
+  .hero-session .btn-large,
+  .hero-session a[href*="booking"],
+  .hero-session a[href*="Booking"],
+  .hero-session a[href*="jadwal"] {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+
+  .hero-session-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .hero-session-grid div {
+    min-height: 44px !important;
+    grid-template-columns: auto 1fr !important;
+    place-items: center start !important;
+    text-align: left !important;
+    padding-inline: 12px !important;
+  }
+}
+
+/* Landscape phone: don't force giant hero */
+@media (max-width: 900px) and (orientation: landscape) {
+  .hero-section {
+    min-height: auto !important;
+    padding-top: calc(82px + env(safe-area-inset-top, 0px)) !important;
+    padding-bottom: 24px !important;
+  }
+
+  .hero-title {
+    font-size: clamp(2.6rem, 9vw, 4.2rem) !important;
+  }
+
+  .hero-subtitle {
+    font-size: 0.9rem !important;
+    max-width: 680px !important;
+  }
+
+  .hero-session {
+    width: min(720px, 100%) !important;
+  }
+
+  .nav-login-dropdown {
+    top: calc(62px + env(safe-area-inset-top, 0px)) !important;
+    max-height: calc(100dvh - 72px - env(safe-area-inset-top, 0px)) !important;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   SECTION MOBILE QA
+   ────────────────────────────────────────────────────────────────────────── */
+
+@media (max-width: 768px) {
+  .landing-container section:not(.hero-section) {
+    overflow-x: clip;
+  }
+
+  .landing-container .section-shell,
+  .landing-container .experience-shell,
+  .landing-container .service-shell,
+  .landing-container .services-shell,
+  .landing-container .pricing-shell,
+  .landing-container .gallery-shell,
+  .landing-container .workflow-shell,
+  .landing-container .final-cta-shell,
+  .landing-container .cta-shell,
+  .landing-container .footer-shell {
+    width: 100% !important;
+  }
+
+  .landing-container .section-header,
+  .landing-container .experience-header,
+  .landing-container .pricing-header,
+  .landing-container .gallery-header,
+  .landing-container .workflow-header,
+  .landing-container .services-header,
+  .landing-container .cta-header {
+    max-width: 100% !important;
+  }
+
+  .landing-container .section-title,
+  .landing-container .experience-title,
+  .landing-container .pricing-title,
+  .landing-container .gallery-title,
+  .landing-container .workflow-title,
+  .landing-container .services-title,
+  .landing-container .cta-title,
+  .landing-container section:not(.hero-section) h2 {
+    max-width: 100%;
+    text-wrap: balance;
+  }
+
+  .landing-container .section-subtitle,
+  .landing-container .experience-subtitle,
+  .landing-container .pricing-subtitle,
+  .landing-container .gallery-subtitle,
+  .landing-container .workflow-subtitle,
+  .landing-container .services-subtitle,
+  .landing-container .cta-subtitle,
+  .landing-container section:not(.hero-section) p {
+    max-width: 100%;
+  }
+
+  .landing-footer {
+    padding-bottom: max(28px, calc(22px + env(safe-area-inset-bottom, 0px))) !important;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   PWA SAFE AREA
+   ────────────────────────────────────────────────────────────────────────── */
+
+@media (display-mode: standalone) {
+  .landing-nav {
+    padding-top: env(safe-area-inset-top, 0px) !important;
+  }
+
+  .hero-section {
+    padding-bottom: max(32px, calc(24px + env(safe-area-inset-bottom, 0px))) !important;
+  }
+
+  .nav-login-dropdown {
+    padding-bottom: env(safe-area-inset-bottom, 0px) !important;
+  }
+
+  .landing-footer {
+    padding-bottom: max(34px, calc(26px + env(safe-area-inset-bottom, 0px))) !important;
+  }
+}
+
+/* iOS Safari sometimes reports standalone through navigator only; this still helps safe areas */
+@supports (padding: max(0px)) {
+  .landing-nav {
+    padding-left: max(10px, env(safe-area-inset-left, 0px)) !important;
+    padding-right: max(10px, env(safe-area-inset-right, 0px)) !important;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   MOTION / PERFORMANCE QA
+   ────────────────────────────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .landing-container *,
+  .landing-container *::before,
+  .landing-container *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.001ms !important;
+  }
+
+  .hero-background img,
+  .landing-container .gallery-card img,
+  .landing-container .gallery-item img,
+  .landing-container .gallery-grid img {
+    transform: none !important;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   LIGHT MODE QA
+   ────────────────────────────────────────────────────────────────────────── */
+
+[data-theme="light"] .mobile-nav-menu {
+  border-color: rgba(20,23,32,0.085) !important;
+  background:
+    radial-gradient(circle at 14% 0%, rgba(243, 200, 111, 0.070), transparent 42%),
+    radial-gradient(circle at 88% 0%, rgba(var(--accent-cyan-rgb), 0.045), transparent 38%),
+    linear-gradient(180deg, rgba(255,255,255,0.96), rgba(248,249,252,0.84)),
+    rgba(255,255,255,0.94) !important;
+}
+
+[data-theme="light"] .mobile-nav-menu a {
+  color: rgba(20,23,32,0.70) !important;
+}
+
+[data-theme="light"] .mobile-nav-menu a:hover,
+[data-theme="light"] .mobile-nav-menu a:focus-visible {
+  color: rgba(20,23,32,0.92) !important;
+  background: rgba(20,23,32,0.050) !important;
+}
+

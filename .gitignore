@@ -38,4 +38,7 @@ scratch/*
 
 # Environment variables
 .env
-
+# Local generated backups
+.local-backups/
+*.bak-*
+src/**/*.bak-*
