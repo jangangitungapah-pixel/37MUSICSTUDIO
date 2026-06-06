@@ -4,6 +4,7 @@ import { Loader2 } from 'lucide-react';
 import { useThemeStore } from './store/useThemeStore';
 import LandingPage from './pages/LandingPage';
 import FirebaseConfigNotice from './components/FirebaseConfigNotice';
+import PWAUpdatePrompt from './components/PWAUpdatePrompt';
 
 const AdminShell = lazy(() => import('./components/AdminShell'));
 const PublicCalendarPage = lazy(() => import('./pages/PublicCalendarPage'));
@@ -110,6 +111,7 @@ function App() {
       <PageTitleUpdater />
       <LazyToaster theme={theme} />
       <FirebaseConfigNotice />
+      <PWAUpdatePrompt />
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<Navigate to="/" replace />} />

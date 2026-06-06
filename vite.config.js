@@ -35,8 +35,8 @@ export default defineConfig({
       strategies: 'injectManifest',
       srcDir: 'src',
       filename: 'sw.js',
-      registerType: 'autoUpdate',
-      injectRegister: 'auto',
+      registerType: 'prompt',
+      injectRegister: null,
       includeAssets: ['icon-512.png', 'icon-192.png', 'logo.svg'],
       manifest: {
         name: '37 Music Studio',
@@ -67,7 +67,33 @@ export default defineConfig({
       injectManifest: {
         rollupFormat: 'iife',
         globPatterns: [
-          '**/*.{js,css,html,ico,png,svg,webp,woff2}'
+          'index.html',
+          'manifest.webmanifest',
+          'assets/**/*.css',
+          'assets/index-*.js',
+          'assets/vendor-react-*.js',
+          'assets/vendor-router-*.js',
+          'assets/vendor-state-*.js',
+          'assets/vendor-sonner-*.js',
+          'assets/AdminShell-*.js',
+          'assets/DashboardPage-*.js',
+          'assets/CalendarPage-*.js',
+          'assets/PublicCalendarPage-*.js',
+          'assets/PublicGalleryPage-*.js',
+          'assets/RegisterPage-*.js',
+          'assets/firebase-*.js',
+          'assets/useAuthStore-*.js',
+          'assets/useThemeStore-*.js',
+          'assets/useSettingsStore-*.js',
+          'assets/useNotificationStore-*.js',
+          'icon-*.png',
+          'logo.svg'
+        ],
+        globIgnores: [
+          '**/react-pdf.browser-*.js',
+          '**/exceljs.min-*.js',
+          '**/ReceiptPDF-*.js',
+          '**/FileSaver.min-*.js'
         ]
       }
     })

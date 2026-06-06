@@ -26,9 +26,7 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import useSound from 'use-sound';
 import { CLICK_SOUND } from '../lib/sounds';
-import confetti from 'canvas-confetti';
-import { PDFDownloadLink } from '@react-pdf/renderer';
-import { ReceiptPDF } from '../components/ReceiptPDF';
+import confetti from 'canvas-confetti';
 import {
   useReactTable,
   getCoreRowModel,
@@ -187,41 +185,77 @@ const ReceiptDownloadRender = ({ loading, url, transaction, iconSize, onDone }) 
 
 const LazyPDFDownloadButton = ({ transaction, settings, iconSize = 14 }) => {
   const [ready, setReady] = useState(false);
-  const handleDone = useCallback(() => setReady(false), []);
+  const [isPreparing, setIsPreparing] = useState(false);
+  const [pdfModules, setPdfModules] = useState(null);
 
-  return ready ? (
-    <PDFDownloadLink
-      document={<ReceiptPDF transaction={transaction} settings={settings} />}
-      fileName={`kuitansi-${transaction.id}.pdf`}
-      style={{ textDecoration: 'none', display: 'inline-flex' }}
-    >
-      {({ loading, url }) => (
-        <ReceiptDownloadRender
-          loading={loading}
-          url={url}
-          transaction={transaction}
-          iconSize={iconSize}
-          onDone={handleDone}
-        />
-      )}
-    </PDFDownloadLink>
-  ) : (
+  const handleDone = useCallback(() => {
+    setReady(false);
+  }, []);
+
+  const handlePrepare = useCallback(async (event) => {
+    event.stopPropagation();
+
+    if (pdfModules) {
+      setReady(true);
+      return;
+    }
+
+    setIsPreparing(true);
+
+    try {
+      const [{ PDFDownloadLink }, { ReceiptPDF }] = await Promise.all([
+        import('@react-pdf/renderer'),
+        import('../components/ReceiptPDF'),
+      ]);
+
+      setPdfModules({ PDFDownloadLink, ReceiptPDF });
+      setReady(true);
+    } catch (error) {
+      console.error(error);
+      toast.error('Gagal menyiapkan modul PDF.');
+    } finally {
+      setIsPreparing(false);
+    }
+  }, [pdfModules]);
+
+  if (ready && pdfModules) {
+    const {
+      PDFDownloadLink: PDFDownloadLinkComponent,
+      ReceiptPDF: ReceiptPDFComponent,
+    } = pdfModules;
+
+    return (
+      <PDFDownloadLinkComponent
+        document={<ReceiptPDFComponent transaction={transaction} settings={settings} />}
+        fileName={`kuitansi-${transaction.id}.pdf`}
+        style={{ textDecoration: 'none', display: 'inline-flex' }}
+      >
+        {({ loading, url }) => (
+          <ReceiptDownloadRender
+            loading={loading}
+            url={url}
+            transaction={transaction}
+            iconSize={iconSize}
+            onDone={handleDone}
+          />
+        )}
+      </PDFDownloadLinkComponent>
+    );
+  }
+
+  return (
     <button
       className="icon-btn print-btn"
-      onClick={(e) => {
-        e.stopPropagation();
-        setReady(true);
-      }}
-      title="Unduh PDF Kuitansi"
+      onClick={handlePrepare}
+      disabled={isPreparing}
+      title={isPreparing ? 'Menyiapkan modul PDF...' : 'Unduh PDF Kuitansi'}
       aria-label="Unduh PDF Kuitansi"
       style={{ color: 'var(--accent-cyan)' }}
     >
-      <Download size={iconSize} />
+      <Download size={iconSize} style={{ opacity: isPreparing ? 0.5 : 1 }} />
     </button>
   );
 };
-
-
 
 const FinancePage = () => {
   const { transactions, addTransaction, deleteTransaction } = useFinanceStore(
