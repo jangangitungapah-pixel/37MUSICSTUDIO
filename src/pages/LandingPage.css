@@ -5869,3 +5869,175 @@ body[data-theme="light"]:has(.landing-container) #root {
     min-height: 43px !important;
   }
 }
+
+/* ──────────────────────────────────────────────────────────────────────────
+   37 LANDING GALLERY WIDTH REFINEMENT 8.0E
+   --------------------------------------------------------------------------
+   Refines gallery section width:
+   - prevents the gallery media from becoming too wide on desktop
+   - makes the section feel more editorial and centered
+   - balances text column and image card
+   - keeps mobile layout full-width and comfortable
+   ────────────────────────────────────────────────────────────────────────── */
+
+.tw-landing-phase80d .landing-gallery-section {
+  padding-top: clamp(4rem, 7vh, 5.5rem) !important;
+  padding-bottom: clamp(4rem, 7vh, 5.75rem) !important;
+}
+
+.tw-landing-phase80d .landing-gallery-grid {
+  width: min(100%, 1180px) !important;
+  max-width: 1180px !important;
+  margin-inline: auto !important;
+  display: grid !important;
+  grid-template-columns: minmax(280px, 0.72fr) minmax(520px, 1fr) !important;
+  align-items: center !important;
+  gap: clamp(2rem, 4vw, 4rem) !important;
+}
+
+.tw-landing-phase80d .landing-gallery-section .section-header.align-left {
+  max-width: 430px !important;
+  margin: 0 !important;
+}
+
+.tw-landing-phase80d .landing-gallery-section .section-header.align-left h2 {
+  max-width: 430px;
+  font-size: clamp(2.7rem, 4.2vw, 4.55rem) !important;
+  line-height: 1.02 !important;
+  letter-spacing: -0.038em !important;
+  word-spacing: 0.035em;
+}
+
+.tw-landing-phase80d .landing-gallery-section .section-header.align-left p {
+  max-width: 410px !important;
+  margin-top: 1.15rem !important;
+  font-size: 0.94rem !important;
+  line-height: 1.68 !important;
+}
+
+.tw-landing-phase80d .landing-gallery-card {
+  width: min(100%, 760px) !important;
+  max-width: 760px !important;
+  justify-self: end !important;
+  border-radius: 1.7rem !important;
+}
+
+.tw-landing-phase80d .landing-gallery-media {
+  min-height: 0 !important;
+  aspect-ratio: 16 / 8.8 !important;
+  border-radius: 1.65rem !important;
+}
+
+.tw-landing-phase80d .landing-gallery-media img,
+.tw-landing-phase80d .tw-gallery-image {
+  object-fit: cover !important;
+  object-position: center !important;
+}
+
+.tw-landing-phase80d .landing-gallery-overlay {
+  left: 1rem !important;
+  right: 1rem !important;
+  bottom: 1rem !important;
+  min-height: 44px;
+  padding: 0.72rem 0.92rem !important;
+  border-radius: 1rem !important;
+  font-size: 0.82rem !important;
+}
+
+.tw-landing-phase80d .gallery-actions {
+  width: min(100%, 1180px) !important;
+  max-width: 1180px !important;
+  margin-inline: auto !important;
+  justify-content: flex-end !important;
+  padding-right: min(0px, 0vw);
+}
+
+.tw-landing-phase80d .gallery-actions .btn-secondary {
+  min-height: 46px;
+  border-radius: 1rem !important;
+  padding-inline: 1.05rem !important;
+}
+
+@media (min-width: 1440px) {
+  .tw-landing-phase80d .landing-gallery-grid,
+  .tw-landing-phase80d .gallery-actions {
+    width: min(100%, 1220px) !important;
+    max-width: 1220px !important;
+  }
+
+  .tw-landing-phase80d .landing-gallery-card {
+    width: min(100%, 800px) !important;
+    max-width: 800px !important;
+  }
+}
+
+@media (max-width: 1180px) {
+  .tw-landing-phase80d .landing-gallery-grid {
+    grid-template-columns: minmax(260px, 0.72fr) minmax(480px, 1fr) !important;
+    gap: clamp(1.5rem, 3vw, 2.5rem) !important;
+  }
+
+  .tw-landing-phase80d .landing-gallery-card {
+    width: 100% !important;
+    max-width: 720px !important;
+  }
+}
+
+@media (max-width: 1023px) {
+  .tw-landing-phase80d .landing-gallery-grid {
+    width: min(100%, 760px) !important;
+    max-width: 760px !important;
+    grid-template-columns: 1fr !important;
+    gap: 1.35rem !important;
+  }
+
+  .tw-landing-phase80d .landing-gallery-section .section-header.align-left {
+    max-width: 100% !important;
+    text-align: left;
+  }
+
+  .tw-landing-phase80d .landing-gallery-section .section-header.align-left h2,
+  .tw-landing-phase80d .landing-gallery-section .section-header.align-left p {
+    max-width: 100% !important;
+  }
+
+  .tw-landing-phase80d .landing-gallery-card {
+    justify-self: stretch !important;
+    max-width: 100% !important;
+  }
+
+  .tw-landing-phase80d .gallery-actions {
+    width: min(100%, 760px) !important;
+    max-width: 760px !important;
+    justify-content: flex-start !important;
+  }
+}
+
+@media (max-width: 767px) {
+  .tw-landing-phase80d .landing-gallery-section {
+    padding-top: 3.75rem !important;
+    padding-bottom: 3.75rem !important;
+  }
+
+  .tw-landing-phase80d .landing-gallery-section .section-header.align-left h2 {
+    font-size: clamp(2.35rem, 11vw, 3.25rem) !important;
+    line-height: 1.04 !important;
+    letter-spacing: -0.025em !important;
+  }
+
+  .tw-landing-phase80d .landing-gallery-media {
+    aspect-ratio: 4 / 3 !important;
+    border-radius: 1.2rem !important;
+  }
+
+  .tw-landing-phase80d .landing-gallery-card {
+    border-radius: 1.25rem !important;
+  }
+
+  .tw-landing-phase80d .landing-gallery-overlay {
+    left: 0.7rem !important;
+    right: 0.7rem !important;
+    bottom: 0.7rem !important;
+    font-size: 0.76rem !important;
+  }
+}
