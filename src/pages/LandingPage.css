@@ -3044,3 +3044,275 @@ body[data-theme="light"]:has(.landing-container) #root {
     margin-top: 1.25rem;
   }
 }
+
+/* ──────────────────────────────────────────────────────────────────────────
+   37 LANDING HERO LAYOUT REFINEMENT 8.0C-FIX
+   --------------------------------------------------------------------------
+   Refines desktop hero balance after Tailwind migration:
+   - calmer title scale
+   - tighter login panel
+   - trust strip constrained to copy column
+   - better left/right rhythm
+   - cleaner mobile hero stacking
+   ────────────────────────────────────────────────────────────────────────── */
+
+.tw-landing-phase80c {
+  min-height: 100svh;
+}
+
+.tw-landing-phase80c .hero-background img {
+  opacity: 0.74;
+  filter: saturate(0.96) contrast(1.04);
+}
+
+.tw-landing-phase80c .hero-scrim {
+  background:
+    linear-gradient(90deg, rgba(7, 7, 11, 0.96) 0%, rgba(7, 7, 11, 0.80) 38%, rgba(7, 7, 11, 0.46) 72%, rgba(7, 7, 11, 0.70) 100%),
+    radial-gradient(circle at 28% 50%, rgba(0, 0, 0, 0.18), transparent 38%);
+}
+
+.tw-landing-phase80c .hero-shell {
+  min-height: calc(100svh - 74px);
+  max-width: 1240px;
+  grid-template-columns: minmax(0, 0.95fr) minmax(340px, 390px) !important;
+  gap: clamp(2.25rem, 4vw, 4.25rem);
+  padding-top: clamp(3.75rem, 7vh, 5.75rem);
+  padding-bottom: clamp(2.25rem, 5vh, 4rem);
+}
+
+.tw-landing-phase80c .hero-copy {
+  max-width: 680px;
+}
+
+.tw-landing-phase80c .hero-kicker {
+  margin-bottom: 0.25rem;
+  padding: 0.55rem 0.82rem;
+  font-size: 0.66rem;
+  letter-spacing: 0.18em;
+}
+
+.tw-landing-phase80c .hero-title {
+  max-width: 700px;
+  font-size: clamp(3.25rem, 5.45vw, 5.85rem) !important;
+  line-height: 0.92 !important;
+  letter-spacing: -0.072em !important;
+  text-wrap: balance;
+}
+
+.tw-landing-phase80c .hero-subtitle {
+  max-width: 610px;
+  margin-top: 0.35rem;
+  font-size: clamp(0.98rem, 1.15vw, 1.08rem) !important;
+  line-height: 1.68 !important;
+  color: rgba(255, 250, 240, 0.76) !important;
+}
+
+.tw-landing-phase80c .hero-actions {
+  margin-top: 1.1rem;
+  gap: 0.72rem;
+}
+
+.tw-landing-phase80c .hero-actions .btn-large {
+  min-height: 48px;
+  padding-inline: 1.18rem;
+  border-radius: 1rem;
+}
+
+.tw-landing-phase80c .hero-trust-strip {
+  max-width: 650px;
+  margin-top: 1.02rem !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.55rem;
+}
+
+.tw-landing-phase80c .hero-trust-strip > div {
+  min-height: 74px;
+  padding: 0.78rem 0.82rem !important;
+  border-radius: 1.15rem !important;
+  background: rgba(255, 255, 255, 0.055) !important;
+  box-shadow: 0 16px 34px rgba(0, 0, 0, 0.16);
+}
+
+.tw-landing-phase80c .hero-trust-strip svg {
+  width: 15px;
+  height: 15px;
+  margin-bottom: 0.38rem !important;
+}
+
+.tw-landing-phase80c .hero-trust-strip strong {
+  font-size: 0.76rem !important;
+  line-height: 1.1;
+}
+
+.tw-landing-phase80c .hero-trust-strip span {
+  margin-top: 0.18rem !important;
+  font-size: 0.67rem !important;
+  line-height: 1.35 !important;
+}
+
+.tw-landing-phase80c .hero-login-panel {
+  width: min(100%, 390px);
+  justify-self: end;
+  padding: 1rem !important;
+  border-radius: 1.55rem !important;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.090), rgba(255, 255, 255, 0.045)),
+    rgba(16, 20, 29, 0.72) !important;
+  box-shadow:
+    0 26px 70px rgba(0, 0, 0, 0.38),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.tw-landing-phase80c .hero-login-top {
+  margin-bottom: 0.72rem !important;
+}
+
+.tw-landing-phase80c .hero-login-top span {
+  font-size: 0.64rem;
+  letter-spacing: 0.08em;
+}
+
+.tw-landing-phase80c .hero-login-top strong {
+  display: block;
+  margin-top: 0.18rem;
+  font-size: 0.9rem;
+  line-height: 1.25;
+}
+
+.tw-landing-phase80c .hero-login-badge {
+  width: 2.35rem;
+  height: 2.35rem;
+  border-radius: 0.95rem;
+}
+
+.tw-landing-phase80c .hero-login-perks {
+  margin-bottom: 0.62rem !important;
+  gap: 0.38rem;
+}
+
+.tw-landing-phase80c .hero-login-perks span {
+  padding-block: 0.38rem !important;
+  border-radius: 999px !important;
+  font-size: 0.62rem !important;
+}
+
+.tw-landing-phase80c .hero-google-login,
+.tw-landing-phase80c .hero-login-submit {
+  min-height: 46px;
+  border-radius: 1rem !important;
+}
+
+.tw-landing-phase80c .hero-login-divider {
+  margin-block: 0.72rem !important;
+  font-size: 0.58rem !important;
+}
+
+.tw-landing-phase80c .hero-login-field {
+  gap: 0.32rem !important;
+}
+
+.tw-landing-phase80c .hero-login-field label {
+  font-size: 0.66rem;
+  font-weight: 850;
+  color: rgba(255, 250, 240, 0.62);
+}
+
+.tw-landing-phase80c .hero-radix-field {
+  min-height: 44px !important;
+  border-radius: 1rem !important;
+}
+
+.tw-landing-phase80c .hero-login-security-note {
+  margin-top: 0.15rem;
+  margin-bottom: 0.2rem;
+  padding: 0.55rem 0.72rem !important;
+  border-radius: 0.9rem !important;
+  font-size: 0.68rem !important;
+  line-height: 1.45 !important;
+}
+
+.tw-landing-phase80c .hero-login-foot {
+  margin-top: 0.62rem !important;
+  padding: 0.68rem 0.78rem !important;
+  border-radius: 1rem !important;
+  font-size: 0.67rem !important;
+}
+
+@media (min-width: 1440px) {
+  .tw-landing-phase80c .hero-shell {
+    max-width: 1320px;
+    grid-template-columns: minmax(0, 0.98fr) minmax(360px, 400px) !important;
+  }
+
+  .tw-landing-phase80c .hero-title {
+    font-size: clamp(4rem, 5.2vw, 6.25rem) !important;
+  }
+}
+
+@media (max-width: 1023px) {
+  .tw-landing-phase80c .hero-shell {
+    grid-template-columns: 1fr !important;
+    max-width: 760px;
+    min-height: auto;
+    padding-top: 5rem;
+  }
+
+  .tw-landing-phase80c .hero-login-panel {
+    justify-self: stretch;
+    width: 100%;
+    max-width: 520px;
+  }
+
+  .tw-landing-phase80c .hero-copy {
+    max-width: 100%;
+  }
+
+  .tw-landing-phase80c .hero-trust-strip {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 767px) {
+  .tw-landing-phase80c .hero-shell {
+    padding-top: 4.35rem;
+    padding-bottom: 2.25rem;
+    gap: 1.25rem;
+  }
+
+  .tw-landing-phase80c .hero-title {
+    font-size: clamp(2.55rem, 13vw, 3.75rem) !important;
+    line-height: 0.95 !important;
+    letter-spacing: -0.055em !important;
+  }
+
+  .tw-landing-phase80c .hero-subtitle {
+    font-size: 0.94rem !important;
+    line-height: 1.62 !important;
+  }
+
+  .tw-landing-phase80c .hero-actions {
+    margin-top: 0.8rem;
+  }
+
+  .tw-landing-phase80c .hero-trust-strip {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+
+  .tw-landing-phase80c .hero-trust-strip > div {
+    min-height: auto;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    column-gap: 0.65rem;
+    align-items: center;
+  }
+
+  .tw-landing-phase80c .hero-trust-strip svg {
+    grid-row: span 2;
+    margin-bottom: 0 !important;
+  }
+
+  .tw-landing-phase80c .hero-login-panel {
+    border-radius: 1.35rem !important;
+  }
+}
