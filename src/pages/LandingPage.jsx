@@ -448,7 +448,11 @@ const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
                     value={identifier}
                     onChange={(event) => setIdentifier(event.target.value)}
                     placeholder="email atau username"
-                    autoComplete="username"
+                    name="studioClientIdentifier"
+                    autoComplete="off"
+                    autoCorrect="off"
+                    autoCapitalize="none"
+                    spellCheck={false}
                     required
                     aria-describedby={loginError ? 'hero-login-error' : undefined}
                   />
@@ -465,7 +469,11 @@ const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
                     value={password}
                     onChange={(event) => setPassword(event.target.value)}
                     placeholder="password akun"
-                    autoComplete="current-password"
+                    name="studioClientAccessKey"
+                    autoComplete="new-password"
+                    autoCorrect="off"
+                    autoCapitalize="none"
+                    spellCheck={false}
                     required
                   />
                   <button

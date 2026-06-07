@@ -5406,3 +5406,88 @@ body[data-theme="light"]:has(.landing-container) #root {
     height: 46px;
   }
 }
+
+/* ──────────────────────────────────────────────────────────────────────────
+   37 LANDING NATIVE LOGIN AUTOFILL PAINT FIX 8.0E
+   --------------------------------------------------------------------------
+   Chrome sometimes paints a dark/yellow rectangular autofill layer directly
+   on the input element. This neutralizes that paint by clipping background to
+   text and preventing browser internal shadows from filling the field body.
+   ────────────────────────────────────────────────────────────────────────── */
+
+.tw-landing-phase80c .hero-login-panel .hero-native-field input,
+.tw-landing-phase80c .hero-login-panel .hero-native-field input:hover,
+.tw-landing-phase80c .hero-login-panel .hero-native-field input:focus,
+.tw-landing-phase80c .hero-login-panel .hero-native-field input:focus-visible,
+.tw-landing-phase80c .hero-login-panel .hero-native-field input:active {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+  outline: 0 !important;
+  border: 0 !important;
+  filter: none !important;
+  color-scheme: dark;
+}
+
+.tw-landing-phase80c .hero-login-panel .hero-native-field input:-webkit-autofill,
+.tw-landing-phase80c .hero-login-panel .hero-native-field input:-webkit-autofill:hover,
+.tw-landing-phase80c .hero-login-panel .hero-native-field input:-webkit-autofill:focus,
+.tw-landing-phase80c .hero-login-panel .hero-native-field input:-webkit-autofill:active {
+  -webkit-text-fill-color: rgba(255, 250, 240, 0.96) !important;
+  caret-color: #58e0e9 !important;
+  color: rgba(255, 250, 240, 0.96) !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+  outline: 0 !important;
+  border: 0 !important;
+  filter: none !important;
+  transition:
+    background-color 999999s ease-out 0s,
+    background-image 999999s ease-out 0s,
+    color 999999s ease-out 0s,
+    -webkit-box-shadow 999999s ease-out 0s;
+}
+
+.tw-landing-phase80c .hero-login-panel .hero-native-field input:-internal-autofill-selected {
+  appearance: none !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  color: rgba(255, 250, 240, 0.96) !important;
+}
+
+.tw-landing-phase80c .hero-login-panel .hero-native-field:focus-within {
+  background: transparent !important;
+  box-shadow: inset 0 -1px 0 rgba(88, 224, 233, 0.78) !important;
+}
+
+.tw-landing-phase80c .hero-login-panel .hero-native-field:focus-within::before {
+  opacity: 0 !important;
+  display: none !important;
+}
+
+[data-theme="light"] .tw-landing-phase80c .hero-login-panel .hero-native-field input {
+  color-scheme: light;
+}
+
+[data-theme="light"] .tw-landing-phase80c .hero-login-panel .hero-native-field input:-webkit-autofill,
+[data-theme="light"] .tw-landing-phase80c .hero-login-panel .hero-native-field input:-webkit-autofill:hover,
+[data-theme="light"] .tw-landing-phase80c .hero-login-panel .hero-native-field input:-webkit-autofill:focus {
+  -webkit-text-fill-color: rgba(33, 28, 22, 0.94) !important;
+  color: rgba(33, 28, 22, 0.94) !important;
+  caret-color: rgba(22, 136, 145, 0.92) !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+}
