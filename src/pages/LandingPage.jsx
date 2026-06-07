@@ -1,7 +1,6 @@
 import {
   useEffect,
   useState } from 'react';
-import { TextField } from '@radix-ui/themes';
 import { Link,
   useNavigate } from 'react-router-dom';
 import {
@@ -36,7 +35,6 @@ import {
 import { usePublicStudioSettings } from '../hooks/usePublicStudioSettings';
 import { useThemeStore } from '../store/useThemeStore';
 import { getPortalPathForProfile } from '../lib/roles';
-import '@radix-ui/themes/styles.css';
 import './LandingPage.css';
 
 const FALLBACK_HERO_PHOTO = {
@@ -442,52 +440,43 @@ const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
               <div className="hero-login-field grid gap-2">
                 <label htmlFor="hero-client-identifier">Email / Username</label>
-                                <TextField.Root
-                  data-radix-field="hero-client-identifier"
-                  id="hero-client-identifier"
-                  className="hero-radix-field hero-radix-identifier"
-                  type="text"
-                  value={identifier}
-                  onChange={(event) => setIdentifier(event.target.value)}
-                  placeholder="email atau username"
-                  autoComplete="username"
-                  required
-                  aria-describedby={loginError ? 'hero-login-error' : undefined}
-                >
-                  <TextField.Slot>
-                    <Mail size={15} />
-                  </TextField.Slot>
-                </TextField.Root>
+                                <div className="hero-native-field hero-native-identifier" data-native-field="hero-client-identifier">
+                  <Mail size={15} aria-hidden="true" />
+                  <input
+                    id="hero-client-identifier"
+                    type="text"
+                    value={identifier}
+                    onChange={(event) => setIdentifier(event.target.value)}
+                    placeholder="email atau username"
+                    autoComplete="username"
+                    required
+                    aria-describedby={loginError ? 'hero-login-error' : undefined}
+                  />
+                </div>
               </div>
 
               <div className="hero-login-field grid gap-2">
                 <label htmlFor="hero-client-password">Password</label>
-                                <TextField.Root
-                  data-radix-field="hero-client-password"
-                  id="hero-client-password"
-                  className="hero-radix-field hero-radix-password"
-                  type={showPass ? 'text' : 'password'}
-                  value={password}
-                  onChange={(event) => setPassword(event.target.value)}
-                  placeholder="password akun"
-                  autoComplete="current-password"
-                  required
-                >
-                  <TextField.Slot>
-                    <Lock size={15} />
-                  </TextField.Slot>
-
-                  <TextField.Slot side="right">
-                    <button
-                      type="button"
-                      className="hero-radix-eye grid size-8 place-items-center rounded-xl text-stone-200/70 transition hover:bg-white/10 hover:text-white"
-                      onClick={() => setShowPass((value) => !value)}
-                      aria-label={showPass ? 'Sembunyikan password' : 'Tampilkan password'}
-                    >
-                      {showPass ? <EyeOff size={15} /> : <Eye size={15} />}
-                    </button>
-                  </TextField.Slot>
-                </TextField.Root>
+                                <div className="hero-native-field hero-native-password" data-native-field="hero-client-password">
+                  <Lock size={15} aria-hidden="true" />
+                  <input
+                    id="hero-client-password"
+                    type={showPass ? 'text' : 'password'}
+                    value={password}
+                    onChange={(event) => setPassword(event.target.value)}
+                    placeholder="password akun"
+                    autoComplete="current-password"
+                    required
+                  />
+                  <button
+                    type="button"
+                    className="hero-native-eye"
+                    onClick={() => setShowPass((value) => !value)}
+                    aria-label={showPass ? 'Sembunyikan password' : 'Tampilkan password'}
+                  >
+                    {showPass ? <EyeOff size={15} /> : <Eye size={15} />}
+                  </button>
+                </div>
               </div>
 
 

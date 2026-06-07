@@ -5221,3 +5221,188 @@ body[data-theme="light"]:has(.landing-container) #root {
   box-shadow: 0 0 0 1000px transparent inset !important;
   -webkit-box-shadow: 0 0 0 1000px transparent inset !important;
 }
+
+/* ──────────────────────────────────────────────────────────────────────────
+   37 LANDING HERO NATIVE LOGIN INPUTS 8.0E
+   --------------------------------------------------------------------------
+   Replaces Radix hero login fields with native custom fields:
+   - no Radix surface
+   - no Chrome/Radix ghost rounded focus layer
+   - frameless field with subtle bottom hairline
+   - clean autofill handling
+   ────────────────────────────────────────────────────────────────────────── */
+
+.tw-landing-phase80c .hero-login-panel .hero-native-field {
+  position: relative;
+  min-height: 48px;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.68rem;
+  padding: 0 0.08rem;
+  border: 0 !important;
+  border-radius: 0 !important;
+  outline: 0 !important;
+  background: transparent !important;
+  box-shadow: inset 0 -1px 0 rgba(255, 250, 240, 0.16);
+  overflow: visible;
+  isolation: isolate;
+}
+
+.tw-landing-phase80c .hero-login-panel .hero-native-field::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(88, 224, 233, 0.88), transparent);
+  opacity: 0;
+  transform: scaleX(0.78);
+  transition: opacity 170ms ease, transform 170ms ease;
+  pointer-events: none;
+}
+
+.tw-landing-phase80c .hero-login-panel .hero-native-field:focus-within::before {
+  opacity: 1;
+  transform: scaleX(1);
+}
+
+.tw-landing-phase80c .hero-login-panel .hero-native-field > svg {
+  width: 16px;
+  height: 16px;
+  margin-left: 0.82rem;
+  color: rgba(255, 250, 240, 0.45);
+  transition: color 170ms ease, transform 170ms ease;
+}
+
+.tw-landing-phase80c .hero-login-panel .hero-native-field:focus-within > svg {
+  color: rgba(88, 224, 233, 0.92);
+  transform: translateY(-1px);
+}
+
+.tw-landing-phase80c .hero-login-panel .hero-native-field input {
+  width: 100%;
+  min-width: 0;
+  height: 48px;
+  padding: 0;
+  border: 0 !important;
+  border-radius: 0 !important;
+  outline: 0 !important;
+  outline-offset: 0 !important;
+  color: rgba(255, 250, 240, 0.96);
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+  filter: none !important;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 850;
+  letter-spacing: -0.015em;
+  caret-color: #58e0e9;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.tw-landing-phase80c .hero-login-panel .hero-native-field input::placeholder {
+  color: rgba(255, 250, 240, 0.32);
+  font-weight: 750;
+}
+
+.tw-landing-phase80c .hero-login-panel .hero-native-field input:focus,
+.tw-landing-phase80c .hero-login-panel .hero-native-field input:focus-visible {
+  outline: 0 !important;
+  outline-offset: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+}
+
+.tw-landing-phase80c .hero-login-panel .hero-native-field input:-webkit-autofill,
+.tw-landing-phase80c .hero-login-panel .hero-native-field input:-webkit-autofill:hover,
+.tw-landing-phase80c .hero-login-panel .hero-native-field input:-webkit-autofill:focus,
+.tw-landing-phase80c .hero-login-panel .hero-native-field input:-webkit-autofill:active {
+  -webkit-text-fill-color: rgba(255, 250, 240, 0.96) !important;
+  caret-color: #58e0e9 !important;
+  border: 0 !important;
+  outline: 0 !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  box-shadow: 0 0 0 1000px rgba(16, 20, 29, 0.01) inset !important;
+  -webkit-box-shadow: 0 0 0 1000px rgba(16, 20, 29, 0.01) inset !important;
+  transition:
+    background-color 999999s ease-out 0s,
+    color 999999s ease-out 0s,
+    box-shadow 999999s ease-out 0s;
+}
+
+.tw-landing-phase80c .hero-login-panel .hero-native-eye {
+  width: 34px;
+  height: 34px;
+  min-width: 34px;
+  display: grid;
+  place-items: center;
+  margin-right: 0.45rem;
+  border: 0 !important;
+  border-radius: 999px;
+  outline: 0 !important;
+  color: rgba(255, 250, 240, 0.46);
+  background: transparent !important;
+  box-shadow: none !important;
+  cursor: pointer;
+  transition: color 170ms ease, background 170ms ease, transform 170ms ease;
+}
+
+.tw-landing-phase80c .hero-login-panel .hero-native-eye:hover,
+.tw-landing-phase80c .hero-login-panel .hero-native-eye:focus-visible {
+  color: rgba(255, 250, 240, 0.9);
+  background: radial-gradient(circle, rgba(255,255,255,0.095), rgba(255,255,255,0.025)) !important;
+  transform: translateY(-1px);
+}
+
+.tw-landing-phase80c .hero-login-panel .hero-native-eye svg {
+  width: 15px;
+  height: 15px;
+}
+
+[data-theme="light"] .tw-landing-phase80c .hero-login-panel .hero-native-field {
+  box-shadow: inset 0 -1px 0 rgba(33, 28, 22, 0.15);
+}
+
+[data-theme="light"] .tw-landing-phase80c .hero-login-panel .hero-native-field input {
+  color: rgba(33, 28, 22, 0.94);
+  caret-color: rgba(22, 136, 145, 0.92);
+}
+
+[data-theme="light"] .tw-landing-phase80c .hero-login-panel .hero-native-field input::placeholder {
+  color: rgba(33, 28, 22, 0.34);
+}
+
+[data-theme="light"] .tw-landing-phase80c .hero-login-panel .hero-native-field > svg,
+[data-theme="light"] .tw-landing-phase80c .hero-login-panel .hero-native-eye {
+  color: rgba(33, 28, 22, 0.44);
+}
+
+[data-theme="light"] .tw-landing-phase80c .hero-login-panel .hero-native-field:focus-within > svg {
+  color: rgba(22, 136, 145, 0.9);
+}
+
+[data-theme="light"] .tw-landing-phase80c .hero-login-panel .hero-native-field input:-webkit-autofill,
+[data-theme="light"] .tw-landing-phase80c .hero-login-panel .hero-native-field input:-webkit-autofill:hover,
+[data-theme="light"] .tw-landing-phase80c .hero-login-panel .hero-native-field input:-webkit-autofill:focus {
+  -webkit-text-fill-color: rgba(33, 28, 22, 0.94) !important;
+  box-shadow: 0 0 0 1000px rgba(255,255,255,0.01) inset !important;
+  -webkit-box-shadow: 0 0 0 1000px rgba(255,255,255,0.01) inset !important;
+}
+
+@media (max-width: 767px) {
+  .tw-landing-phase80c .hero-login-panel .hero-native-field,
+  .tw-landing-phase80c .hero-login-panel .hero-native-field input {
+    min-height: 46px;
+    height: 46px;
+  }
+}
