@@ -1,0 +1,10 @@
+37 Music Studio — Phase 7.0N Rules Repair v5
+Generated: 2026-06-07T20:21:19.301Z
+
+Files touched:
+- firestore.rules
+
+Fix:
+- Replaced bookingRequests section from first bookingRequests marker until clientMessages marker.
+- Removed duplicate broken bookingRequests leftovers.
+- Kept professional profile metadata whitelist and type checks.
