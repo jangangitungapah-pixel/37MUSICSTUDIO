@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import tailwindcss from '@tailwindcss/vite'
 import { VitePWA } from 'vite-plugin-pwa'
 
 const allowedHosts = (process.env.VITE_ALLOWED_HOSTS || '')
@@ -30,6 +31,7 @@ const splitVendorChunk = (id) => {
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
+    tailwindcss(),
     react(),
     VitePWA({
       strategies: 'injectManifest',
