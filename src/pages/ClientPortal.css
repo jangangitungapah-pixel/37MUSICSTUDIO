@@ -3594,3 +3594,1074 @@
     border-radius: 16px !important;
   }
 }
+
+/* ──────────────────────────────────────────────────────────────────────────
+   37 CLIENT DASHBOARD PRIORITY LAYOUT 7.0B
+   --------------------------------------------------------------------------
+   New order:
+   1. Jadwal terdekat
+   2. Status pembayaran
+   3. Quick summary
+   4. Pesan/update
+   5. Histori
+   ────────────────────────────────────────────────────────────────────────── */
+
+.client-dashboard-focus-layout,
+.client-dashboard-secondary-layout,
+.client-dashboard-quick-stats {
+  position: relative;
+  z-index: 1;
+  width: min(1180px, 100%);
+  margin-inline: auto;
+}
+
+.client-dashboard-focus-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.38fr) minmax(310px, 0.62fr);
+  gap: 14px;
+  align-items: stretch;
+}
+
+.client-dashboard-secondary-layout {
+  display: grid;
+  grid-template-columns: minmax(320px, 0.72fr) minmax(0, 1fr);
+  gap: 14px;
+}
+
+.client-priority-panel {
+  min-height: 350px;
+}
+
+.client-priority-side-panel {
+  min-height: 350px;
+}
+
+.client-priority-panel,
+.client-priority-side-panel,
+.client-update-panel,
+.client-history-panel {
+  align-content: start;
+}
+
+.client-session-list.priority {
+  display: grid;
+  gap: 10px;
+}
+
+.client-session-item.featured {
+  min-height: 96px;
+  border-color: rgba(239,197,110,0.22) !important;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(239,197,110,0.12), transparent 44%),
+    linear-gradient(180deg, rgba(255,255,255,0.052), rgba(255,255,255,0.010)),
+    rgba(255,255,255,0.030) !important;
+}
+
+.client-session-item.featured .client-session-date {
+  color: #171006;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255,255,255,0.34), transparent 58%),
+    linear-gradient(135deg, var(--client-gold), var(--client-gold-2));
+  box-shadow: 0 12px 28px rgba(239,197,110,0.18);
+}
+
+.client-billing-priority-value {
+  display: grid;
+  gap: 7px;
+  padding: 16px;
+  border-radius: 22px;
+  border: 1px solid rgba(239,197,110,0.16);
+  background:
+    radial-gradient(circle at 90% 0%, rgba(239,197,110,0.12), transparent 42%),
+    rgba(239,197,110,0.055);
+}
+
+.client-billing-priority-value small {
+  color: var(--client-muted-soft);
+  font-size: 0.70rem;
+  font-weight: 950;
+  letter-spacing: 0.065em;
+  text-transform: uppercase;
+}
+
+.client-billing-priority-value strong {
+  color: var(--client-ink);
+  font-size: clamp(2.15rem, 4vw, 3.35rem);
+  line-height: 0.92;
+  letter-spacing: -0.075em;
+}
+
+.client-billing-mini-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.client-billing-mini-grid > div {
+  min-height: 76px;
+  display: grid;
+  align-content: center;
+  gap: 4px;
+  padding: 12px;
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,0.070);
+  background: rgba(255,255,255,0.028);
+}
+
+.client-billing-mini-grid span {
+  color: var(--client-muted-soft);
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0.055em;
+  text-transform: uppercase;
+}
+
+.client-billing-mini-grid strong {
+  color: var(--client-ink);
+  font-size: 1.45rem;
+  font-weight: 950;
+  letter-spacing: -0.055em;
+}
+
+.client-dashboard-quick-stats {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.client-dashboard-quick-stats .client-stat-card {
+  min-height: 140px;
+}
+
+.client-message-actions-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.client-message-actions-row .client-submit-btn,
+.client-message-actions-row .client-secondary-btn {
+  min-height: 42px;
+}
+
+.client-panel-link-primary {
+  color: #171006 !important;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255,255,255,0.34), transparent 58%),
+    linear-gradient(135deg, var(--client-gold), var(--client-gold-2)) !important;
+  border-color: rgba(239,197,110,0.26) !important;
+}
+
+[data-theme="light"] .client-billing-mini-grid > div,
+[data-theme="light"] .client-session-item.featured {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.74), rgba(255,255,255,0.42)),
+    rgba(255,255,255,0.58) !important;
+  border-color: rgba(78,54,28,0.10) !important;
+}
+
+[data-theme="light"] .client-billing-priority-value {
+  background:
+    radial-gradient(circle at 90% 0%, rgba(239,197,110,0.18), transparent 42%),
+    rgba(255,255,255,0.48);
+  border-color: rgba(183,121,42,0.16);
+}
+
+@media (max-width: 980px) {
+  .client-dashboard-focus-layout,
+  .client-dashboard-secondary-layout,
+  .client-dashboard-quick-stats {
+    grid-template-columns: 1fr !important;
+  }
+
+  .client-priority-panel,
+  .client-priority-side-panel {
+    min-height: auto;
+  }
+}
+
+@media (max-width: 720px) {
+  .client-dashboard-focus-layout,
+  .client-dashboard-secondary-layout {
+    gap: 12px;
+  }
+
+  .client-dashboard-quick-stats {
+    gap: 8px;
+  }
+
+  .client-dashboard-quick-stats .client-stat-card {
+    min-height: 118px;
+    padding: 14px;
+  }
+
+  .client-billing-mini-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .client-message-actions-row {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .client-message-actions-row .client-submit-btn,
+  .client-message-actions-row .client-secondary-btn {
+    width: 100%;
+    border-radius: 16px;
+  }
+}
+
+@media (max-width: 420px) {
+  .client-billing-mini-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   37 CLIENT SUBPAGE DENSITY & FORM POLISH 7.0C
+   --------------------------------------------------------------------------
+   Applies compact premium layout to Profile, Billing, and Messages pages.
+   Dashboard remains more hero-driven; subpages become focused app screens.
+   ────────────────────────────────────────────────────────────────────────── */
+
+.client-profile-page,
+.client-billing-page,
+.client-message-center-page {
+  align-content: start;
+}
+
+.client-profile-hero,
+.client-billing-hero,
+.client-message-center-hero {
+  width: min(1180px, 100%);
+  margin: 0 auto 12px;
+  min-height: auto !important;
+  align-items: center !important;
+}
+
+.client-profile-hero h1,
+.client-billing-hero h1,
+.client-message-center-hero h1 {
+  max-width: 760px;
+  font-size: clamp(3.05rem, 6.2vw, 5.7rem) !important;
+  line-height: 0.90 !important;
+  letter-spacing: 0.012em !important;
+}
+
+.client-profile-hero p,
+.client-billing-hero p,
+.client-message-center-hero p {
+  max-width: 640px;
+  margin-top: 10px !important;
+  font-size: clamp(0.95rem, 1.25vw, 1.05rem) !important;
+  line-height: 1.56 !important;
+}
+
+.client-profile-card,
+.client-billing-profile-card,
+.client-message-profile-card {
+  min-height: 168px !important;
+  border-radius: 28px !important;
+}
+
+.client-profile-avatar {
+  width: 62px !important;
+  height: 62px !important;
+  border-radius: 22px !important;
+  font-size: 1.82rem !important;
+}
+
+.client-profile-copy strong {
+  font-size: 1.28rem !important;
+}
+
+.client-profile-status {
+  min-height: 32px !important;
+  padding-inline: 10px !important;
+}
+
+.client-panel {
+  padding: clamp(15px, 2vw, 20px);
+  display: grid;
+  gap: 14px;
+}
+
+.client-panel-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.client-panel-header h2 {
+  margin: 3px 0 0;
+  color: var(--client-ink);
+  font-size: clamp(1.18rem, 2vw, 1.58rem);
+  line-height: 1.04;
+  letter-spacing: -0.055em;
+}
+
+.client-panel-header > svg {
+  flex: 0 0 auto;
+  color: var(--client-gold);
+}
+
+.client-profile-form,
+.client-message-compose-panel,
+.client-message-history-panel,
+.client-billing-list-panel {
+  gap: 14px !important;
+}
+
+.client-profile-form-grid,
+.client-profile-section-grid {
+  gap: 12px !important;
+}
+
+.client-profile-field,
+.client-message-field {
+  gap: 7px !important;
+}
+
+.client-profile-field > span,
+.client-message-field > span {
+  color: var(--client-muted-strong) !important;
+  font-size: 0.74rem !important;
+  font-weight: 900 !important;
+  letter-spacing: 0.045em;
+}
+
+.client-profile-input-wrap,
+.client-input-wrap,
+.client-billing-search,
+.client-message-search,
+.client-message-field select,
+.client-message-field textarea,
+.client-message-preview {
+  border-radius: 18px !important;
+}
+
+.client-profile-input-wrap,
+.client-input-wrap,
+.client-billing-search,
+.client-message-search {
+  min-height: 48px !important;
+}
+
+.client-profile-input-wrap input,
+.client-profile-input-wrap select,
+.client-input-wrap input,
+.client-billing-search input,
+.client-message-search input,
+.client-message-field select,
+.client-message-field textarea,
+.client-message-preview {
+  color: var(--client-ink) !important;
+  caret-color: var(--client-cyan);
+}
+
+.client-profile-input-wrap input::placeholder,
+.client-input-wrap input::placeholder,
+.client-billing-search input::placeholder,
+.client-message-search input::placeholder,
+.client-message-field textarea::placeholder,
+.client-message-preview::placeholder {
+  color: var(--client-muted-soft) !important;
+}
+
+.client-message-field textarea,
+.client-message-preview {
+  min-height: 132px !important;
+  line-height: 1.55 !important;
+}
+
+.client-billing-stats,
+.client-message-stats {
+  width: min(1180px, 100%);
+  margin-inline: auto;
+  gap: 10px !important;
+}
+
+.client-billing-stats .client-stat-card,
+.client-message-stats .client-stat-card {
+  min-height: 132px !important;
+  padding: 16px !important;
+}
+
+.client-billing-list-panel,
+.client-message-center-layout,
+.client-profile-layout {
+  width: min(1180px, 100%);
+  margin-inline: auto;
+}
+
+.client-invoice-card,
+.client-message-thread-card {
+  border-radius: 22px !important;
+  padding: 14px !important;
+}
+
+.client-invoice-money-grid > div {
+  min-height: 68px !important;
+  border-radius: 17px !important;
+}
+
+.client-invoice-top strong,
+.client-message-thread-top strong {
+  letter-spacing: -0.035em;
+}
+
+.client-invoice-actions button,
+.client-message-tabs button,
+.client-panel-link {
+  min-height: 40px;
+  border-radius: 999px;
+}
+
+.client-submit-btn,
+.client-primary-btn,
+.client-secondary-btn {
+  min-height: 44px;
+}
+
+.client-empty-state {
+  border-radius: 20px;
+  padding: 14px;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(88,224,233,0.075), transparent 42%),
+    rgba(255,255,255,0.026);
+  border: 1px solid rgba(255,255,255,0.070);
+}
+
+[data-theme="light"] .client-empty-state {
+  background:
+    radial-gradient(circle at 0% 0%, rgba(88,224,233,0.11), transparent 42%),
+    rgba(255,255,255,0.58);
+  border-color: rgba(78,54,28,0.085);
+}
+
+@media (min-width: 981px) {
+  .client-profile-hero,
+  .client-billing-hero,
+  .client-message-center-hero {
+    grid-template-columns: minmax(0, 1fr) minmax(300px, 360px) !important;
+  }
+
+  .client-message-center-layout {
+    grid-template-columns: minmax(310px, 0.66fr) minmax(0, 1fr) !important;
+  }
+}
+
+@media (max-width: 720px) {
+  .client-profile-hero,
+  .client-billing-hero,
+  .client-message-center-hero {
+    display: grid;
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+    margin-bottom: 10px;
+  }
+
+  .client-profile-hero h1,
+  .client-billing-hero h1,
+  .client-message-center-hero h1 {
+    font-size: clamp(2.45rem, 13vw, 3.6rem) !important;
+    line-height: 0.93 !important;
+  }
+
+  .client-profile-hero p,
+  .client-billing-hero p,
+  .client-message-center-hero p {
+    font-size: 0.9rem !important;
+    line-height: 1.48 !important;
+  }
+
+  .client-profile-card,
+  .client-billing-profile-card,
+  .client-message-profile-card {
+    min-height: auto !important;
+    grid-template-columns: 54px minmax(0, 1fr);
+    align-items: center;
+    gap: 12px;
+  }
+
+  .client-profile-card .client-profile-status,
+  .client-billing-profile-card .client-profile-status,
+  .client-message-profile-card .client-profile-status {
+    grid-column: 1 / -1;
+  }
+
+  .client-profile-avatar {
+    width: 54px !important;
+    height: 54px !important;
+    border-radius: 19px !important;
+    font-size: 1.52rem !important;
+  }
+
+  .client-billing-stats,
+  .client-message-stats {
+    grid-template-columns: 1fr !important;
+  }
+
+  .client-billing-stats .client-stat-card,
+  .client-message-stats .client-stat-card {
+    min-height: 108px !important;
+  }
+
+  .client-panel {
+    padding: 14px;
+    gap: 12px;
+  }
+
+  .client-panel-header {
+    align-items: center;
+  }
+
+  .client-panel-header h2 {
+    font-size: 1.18rem;
+  }
+
+  .client-invoice-money-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .client-invoice-actions,
+  .client-message-actions-row {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+  }
+
+  .client-invoice-actions button,
+  .client-message-actions-row .client-submit-btn,
+  .client-message-actions-row .client-secondary-btn {
+    width: 100%;
+    border-radius: 16px !important;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   37 CLIENT INTERACTION & MOBILE TOUCH POLISH 7.0D
+   --------------------------------------------------------------------------
+   Makes the client portal feel more like a premium mobile app:
+   - better tap/hover/focus feedback
+   - polished bottom nav behavior
+   - smoother panels and list items
+   - modern scrollbar
+   - shimmer loading utility
+   - reduced motion support
+   ────────────────────────────────────────────────────────────────────────── */
+
+.client-portal-page {
+  scroll-behavior: smooth;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior-y: contain;
+}
+
+.client-portal-page * {
+  box-sizing: border-box;
+}
+
+.client-portal-page ::selection {
+  color: #171006;
+  background: rgba(239,197,110,0.82);
+}
+
+.client-portal-page::-webkit-scrollbar,
+.client-message-thread-list::-webkit-scrollbar,
+.client-invoice-list::-webkit-scrollbar,
+.client-session-list::-webkit-scrollbar,
+.client-activity-list::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.client-portal-page::-webkit-scrollbar-track,
+.client-message-thread-list::-webkit-scrollbar-track,
+.client-invoice-list::-webkit-scrollbar-track,
+.client-session-list::-webkit-scrollbar-track,
+.client-activity-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.client-portal-page::-webkit-scrollbar-thumb,
+.client-message-thread-list::-webkit-scrollbar-thumb,
+.client-invoice-list::-webkit-scrollbar-thumb,
+.client-session-list::-webkit-scrollbar-thumb,
+.client-activity-list::-webkit-scrollbar-thumb {
+  border: 3px solid transparent;
+  border-radius: 999px;
+  background-clip: padding-box;
+  background-color: rgba(239,197,110,0.30);
+}
+
+.client-portal-page::-webkit-scrollbar-thumb:hover,
+.client-message-thread-list::-webkit-scrollbar-thumb:hover,
+.client-invoice-list::-webkit-scrollbar-thumb:hover,
+.client-session-list::-webkit-scrollbar-thumb:hover,
+.client-activity-list::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(239,197,110,0.48);
+}
+
+.client-ghost-btn,
+.client-secondary-btn,
+.client-primary-btn,
+.client-submit-btn,
+.client-action-card,
+.client-panel-link,
+.client-invoice-actions button,
+.client-message-tabs button,
+.client-profile-nudge-btn {
+  user-select: none;
+  touch-action: manipulation;
+  transition:
+    transform 160ms ease,
+    border-color 160ms ease,
+    background 160ms ease,
+    color 160ms ease,
+    box-shadow 160ms ease,
+    opacity 160ms ease;
+}
+
+.client-ghost-btn:active,
+.client-secondary-btn:active,
+.client-primary-btn:active,
+.client-submit-btn:active,
+.client-action-card:active,
+.client-panel-link:active,
+.client-invoice-actions button:active,
+.client-message-tabs button:active,
+.client-profile-nudge-btn:active {
+  transform: translateY(1px) scale(0.985);
+}
+
+.client-ghost-btn:focus-visible,
+.client-secondary-btn:focus-visible,
+.client-primary-btn:focus-visible,
+.client-submit-btn:focus-visible,
+.client-action-card:focus-visible,
+.client-panel-link:focus-visible,
+.client-invoice-actions button:focus-visible,
+.client-message-tabs button:focus-visible,
+.client-profile-nudge-btn:focus-visible,
+.client-input-wrap:focus-within,
+.client-profile-input-wrap:focus-within,
+.client-billing-search:focus-within,
+.client-message-search:focus-within,
+.client-message-field select:focus-visible,
+.client-message-field textarea:focus-visible,
+.client-message-preview:focus-visible {
+  outline: 0;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.060),
+    0 0 0 3px rgba(88,224,233,0.10),
+    0 16px 42px rgba(0,0,0,0.18) !important;
+}
+
+.client-panel,
+.client-stat-card,
+.client-profile-card,
+.client-invoice-card,
+.client-message-thread-card,
+.client-session-item,
+.client-activity-item,
+.client-message-history-item {
+  transition:
+    transform 190ms ease,
+    border-color 190ms ease,
+    background 190ms ease,
+    box-shadow 190ms ease;
+}
+
+.client-session-item:hover,
+.client-activity-item:hover,
+.client-message-history-item:hover {
+  transform: translateY(-1px);
+  border-color: rgba(239,197,110,0.18) !important;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(239,197,110,0.080), transparent 42%),
+    rgba(255,255,255,0.035) !important;
+}
+
+.client-stat-card:hover .client-stat-icon,
+.client-panel:hover .client-panel-header > svg,
+.client-invoice-card:hover .client-status-pill,
+.client-message-thread-card:hover .client-status-pill {
+  transform: translateY(-1px) scale(1.035);
+}
+
+.client-stat-icon,
+.client-panel-header > svg,
+.client-status-pill {
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.client-panel-link {
+  position: relative;
+  overflow: hidden;
+}
+
+.client-panel-link::after,
+.client-primary-btn::after,
+.client-submit-btn::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  background: linear-gradient(110deg, transparent 0%, rgba(255,255,255,0.24) 42%, transparent 72%);
+  transform: translateX(-120%);
+}
+
+.client-panel-link:hover::after,
+.client-primary-btn:hover::after,
+.client-submit-btn:hover::after {
+  opacity: 1;
+  animation: clientSheen 820ms ease forwards;
+}
+
+@keyframes clientSheen {
+  from { transform: translateX(-120%); }
+  to { transform: translateX(120%); }
+}
+
+.client-skeleton-line,
+.client-skeleton-card {
+  position: relative;
+  overflow: hidden;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.052), rgba(255,255,255,0.016)),
+    rgba(255,255,255,0.030);
+}
+
+.client-skeleton-line::after,
+.client-skeleton-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(110deg, transparent 0%, rgba(255,255,255,0.10) 42%, transparent 72%);
+  transform: translateX(-120%);
+  animation: clientSkeletonMove 1.35s ease-in-out infinite;
+}
+
+.client-skeleton-line {
+  height: 12px;
+  border-radius: 999px;
+}
+
+.client-skeleton-card {
+  min-height: 96px;
+  border-radius: 22px;
+}
+
+@keyframes clientSkeletonMove {
+  from { transform: translateX(-120%); }
+  to { transform: translateX(120%); }
+}
+
+.client-empty-icon {
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.075),
+    0 12px 28px rgba(0,0,0,0.16);
+}
+
+.client-empty-state strong {
+  color: var(--client-ink);
+}
+
+.client-empty-state p {
+  color: var(--client-muted-strong);
+}
+
+.client-status-pill {
+  white-space: nowrap;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+[data-theme="light"] .client-session-item:hover,
+[data-theme="light"] .client-activity-item:hover,
+[data-theme="light"] .client-message-history-item:hover {
+  background:
+    radial-gradient(circle at 0% 0%, rgba(239,197,110,0.13), transparent 42%),
+    rgba(255,255,255,0.64) !important;
+}
+
+[data-theme="light"] .client-skeleton-line,
+[data-theme="light"] .client-skeleton-card {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.72), rgba(255,255,255,0.38)),
+    rgba(255,255,255,0.56);
+}
+
+[data-theme="light"] .client-skeleton-line::after,
+[data-theme="light"] .client-skeleton-card::after {
+  background: linear-gradient(110deg, transparent 0%, rgba(239,197,110,0.18) 42%, transparent 72%);
+}
+
+@media (max-width: 720px) {
+  .client-nav.client-unified-nav {
+    transform: translateZ(0);
+  }
+
+  .client-unified-nav-actions .client-ghost-btn {
+    position: relative;
+  }
+
+  .client-unified-nav-actions .client-ghost-btn::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: 5px;
+    width: 4px;
+    height: 4px;
+    border-radius: 999px;
+    opacity: 0;
+    transform: translateX(-50%) scale(0.6);
+    background: currentColor;
+    transition: opacity 160ms ease, transform 160ms ease;
+  }
+
+  .client-unified-nav-actions .client-ghost-btn.active::after {
+    opacity: 0.85;
+    transform: translateX(-50%) scale(1);
+  }
+
+  .client-unified-nav-actions .client-ghost-btn:active {
+    transform: scale(0.94);
+  }
+
+  .client-dashboard-actions,
+  .client-hero-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .client-dashboard-actions .client-primary-btn,
+  .client-dashboard-actions .client-secondary-btn,
+  .client-hero-actions .client-primary-btn,
+  .client-hero-actions .client-secondary-btn {
+    width: 100%;
+    border-radius: 18px;
+  }
+
+  .client-session-item,
+  .client-activity-item,
+  .client-message-history-item {
+    transform: none !important;
+  }
+
+  .client-panel:hover,
+  .client-stat-card:hover,
+  .client-profile-card:hover,
+  .client-invoice-card:hover,
+  .client-message-thread-card:hover {
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .client-portal-page,
+  .client-portal-page *,
+  .client-portal-page *::before,
+  .client-portal-page *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   37 CLIENT PROFILE HUB POLISH 7.0E
+   --------------------------------------------------------------------------
+   Turns profile page into a useful client hub:
+   - profile readiness checklist
+   - quick shortcuts
+   - customer sync hint
+   ────────────────────────────────────────────────────────────────────────── */
+
+.client-profile-readiness-card {
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+  border-radius: 20px;
+  border: 1px solid rgba(239,197,110,0.15);
+  background:
+    radial-gradient(circle at 90% 0%, rgba(239,197,110,0.12), transparent 42%),
+    linear-gradient(180deg, rgba(255,255,255,0.042), rgba(255,255,255,0.010)),
+    rgba(239,197,110,0.045);
+}
+
+.client-profile-readiness-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.client-profile-readiness-head span {
+  display: block;
+  color: var(--client-gold);
+  font-size: 0.68rem;
+  font-weight: 950;
+  letter-spacing: 0.075em;
+  text-transform: uppercase;
+}
+
+.client-profile-readiness-head strong {
+  display: block;
+  margin-top: 2px;
+  color: var(--client-ink);
+  font-size: 1rem;
+  font-weight: 950;
+  letter-spacing: -0.04em;
+}
+
+.client-profile-readiness-head em {
+  min-width: 54px;
+  min-height: 34px;
+  display: grid;
+  place-items: center;
+  padding: 0 10px;
+  border-radius: 999px;
+  color: #171006;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255,255,255,0.34), transparent 58%),
+    linear-gradient(135deg, var(--client-gold), var(--client-gold-2));
+  font-size: 0.78rem;
+  font-style: normal;
+  font-weight: 950;
+}
+
+.client-profile-readiness-list {
+  display: grid;
+  gap: 8px;
+}
+
+.client-profile-readiness-list > div {
+  min-height: 46px;
+  display: grid;
+  grid-template-columns: 26px minmax(0, 1fr);
+  align-items: center;
+  gap: 9px;
+  padding: 8px 10px;
+  border-radius: 15px;
+  color: var(--client-muted-soft);
+  background: rgba(255,255,255,0.030);
+  border: 1px solid rgba(255,255,255,0.065);
+}
+
+.client-profile-readiness-list > div.complete {
+  color: var(--client-green);
+  border-color: rgba(130,216,160,0.15);
+  background: rgba(130,216,160,0.055);
+}
+
+.client-profile-readiness-list strong,
+.client-profile-readiness-list small {
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.client-profile-readiness-list strong {
+  color: var(--client-ink);
+  font-size: 0.82rem;
+  font-weight: 900;
+}
+
+.client-profile-readiness-list small {
+  margin-top: 2px;
+  color: var(--client-muted-strong);
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.client-profile-shortcuts {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
+
+.client-profile-shortcuts a {
+  min-height: 46px;
+  display: grid;
+  grid-template-columns: 26px minmax(0, 1fr) 20px;
+  align-items: center;
+  gap: 9px;
+  padding: 8px 11px;
+  border-radius: 16px;
+  color: var(--client-ink);
+  text-decoration: none;
+  border: 1px solid rgba(255,255,255,0.075);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.046), rgba(255,255,255,0.010)),
+    rgba(255,255,255,0.025);
+  font-size: 0.84rem;
+  font-weight: 900;
+  transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
+}
+
+.client-profile-shortcuts a:hover {
+  transform: translateY(-1px);
+  border-color: rgba(239,197,110,0.22);
+  background: rgba(239,197,110,0.075);
+}
+
+.client-profile-shortcuts a svg:first-child {
+  color: var(--client-gold);
+}
+
+.client-profile-shortcuts a svg:last-child {
+  color: var(--client-muted-soft);
+}
+
+.client-profile-sync-hint {
+  display: grid;
+  grid-template-columns: 26px minmax(0, 1fr);
+  gap: 9px;
+  align-items: start;
+  padding: 12px;
+  border-radius: 17px;
+  color: var(--client-cyan);
+  background: rgba(88,224,233,0.065);
+  border: 1px solid rgba(88,224,233,0.15);
+}
+
+.client-profile-sync-hint p {
+  margin: 0;
+  color: var(--client-muted-strong);
+  line-height: 1.45;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+[data-theme="light"] .client-profile-readiness-card {
+  background:
+    radial-gradient(circle at 90% 0%, rgba(239,197,110,0.18), transparent 42%),
+    rgba(255,255,255,0.58);
+  border-color: rgba(183,121,42,0.14);
+}
+
+[data-theme="light"] .client-profile-readiness-list > div,
+[data-theme="light"] .client-profile-shortcuts a {
+  background: rgba(255,255,255,0.58);
+  border-color: rgba(78,54,28,0.085);
+}
+
+[data-theme="light"] .client-profile-sync-hint {
+  background: rgba(88,224,233,0.090);
+  border-color: rgba(88,224,233,0.16);
+}
+
+@media (max-width: 720px) {
+  .client-profile-readiness-card,
+  .client-profile-sync-hint {
+    border-radius: 18px;
+  }
+
+  .client-profile-shortcuts a {
+    min-height: 44px;
+    border-radius: 15px;
+  }
+}

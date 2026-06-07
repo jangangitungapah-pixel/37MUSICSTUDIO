@@ -389,35 +389,20 @@ const ClientDashboardPage = () => {
         </section>
       )}
 
-      <section className="client-dashboard-grid" aria-label="Ringkasan aktivitas client">
-        {clientStats.map(({ label, value, caption, icon: Icon, tone }) => (
-          <article className={'client-stat-card client-stat-' + tone} key={label}>
-            <div className="client-stat-top">
-              <span className="client-stat-icon">
-                <Icon size={20} />
-              </span>
-              <span>{label}</span>
-            </div>
-            <strong>{isDataLoading ? '...' : value}</strong>
-            <small>{caption}</small>
-          </article>
-        ))}
-      </section>
-
-      <section className="client-dashboard-layout">
-        <article className="client-panel client-upcoming-panel">
+      <section className="client-dashboard-focus-layout" aria-label="Prioritas client portal">
+        <article className="client-panel client-upcoming-panel client-priority-panel">
           <div className="client-panel-header">
             <div>
-              <span>Jadwal Mendatang</span>
+              <span>Jadwal Terdekat</span>
               <h2>{upcomingSessions.length > 0 ? 'Sesi berikutnya.' : 'Belum ada booking aktif.'}</h2>
             </div>
             <Calendar size={20} />
           </div>
 
           {upcomingSessions.length > 0 ? (
-            <div className="client-session-list">
-              {upcomingSessions.map((session) => (
-                <div className="client-session-item" key={session.kind + '-' + session.id}>
+            <div className="client-session-list priority">
+              {upcomingSessions.map((session, index) => (
+                <div className={'client-session-item ' + (index === 0 ? 'featured' : '')} key={session.kind + '-' + session.id}>
                   <div className="client-session-date">
                     <strong>{session.date ? format(new Date(session.date + 'T00:00:00'), 'dd', { locale: localeId }) : '--'}</strong>
                     <span>{session.date ? format(new Date(session.date + 'T00:00:00'), 'MMM', { locale: localeId }) : 'TBA'}</span>
@@ -433,28 +418,80 @@ const ClientDashboardPage = () => {
               ))}
             </div>
           ) : (
-            <div className="client-empty-state">
+            <div className="client-empty-state client-empty-priority">
               <div className="client-empty-icon">
                 <Clock3 size={22} />
               </div>
               <div>
                 <strong>Booking pertama kamu akan muncul di sini.</strong>
-                <p>Pilih slot kosong dari kalender publik, lalu admin akan mengonfirmasi jadwal melalui WhatsApp.</p>
+                <p>Pilih slot kosong dari kalender publik, lalu admin akan mengonfirmasi jadwal kamu.</p>
               </div>
             </div>
           )}
 
-          <Link to="/jadwal-publik" className="client-panel-link">
-            Cek slot studio
+          <Link to="/jadwal-publik" className="client-panel-link client-panel-link-primary">
+            Booking Jadwal
             <ChevronRight size={16} />
           </Link>
         </article>
 
-        <article className="client-panel client-message-panel" id="client-message-panel">
+        <article className="client-panel client-billing-panel client-priority-side-panel">
           <div className="client-panel-header">
             <div>
-              <span>Message to Admin</span>
-              <h2>Kirim catatan ke studio.</h2>
+              <span>Status Pembayaran</span>
+              <h2>Billing aktif.</h2>
+            </div>
+            <ReceiptText size={20} />
+          </div>
+
+          <div className="client-billing-value client-billing-priority-value">
+            <small>Tagihan berjalan</small>
+            <strong>{summary.activeBillAmount > 0 ? formatMoney(summary.activeBillAmount) : 'Rp0'}</strong>
+          </div>
+
+          <div className="client-billing-mini-grid">
+            <div>
+              <span>Invoice aktif</span>
+              <strong>{summary.activeBillCount}</strong>
+            </div>
+            <div>
+              <span>Total jam</span>
+              <strong>{summary.totalHours}</strong>
+            </div>
+          </div>
+
+          <p>
+            Cek invoice, DP, dan status pembayaran dari booking yang sudah terhubung ke akun client kamu.
+          </p>
+
+          <Link to="/client/billing" className="client-panel-link">
+            Buka Billing
+            <ChevronRight size={16} />
+          </Link>
+        </article>
+      </section>
+
+      <section className="client-dashboard-grid client-dashboard-quick-stats" aria-label="Ringkasan cepat client">
+        {clientStats.map(({ label, value, caption, icon: Icon, tone }) => (
+          <article className={'client-stat-card client-stat-' + tone} key={label}>
+            <div className="client-stat-top">
+              <span className="client-stat-icon">
+                <Icon size={20} />
+              </span>
+              <span>{label}</span>
+            </div>
+            <strong>{isDataLoading ? '...' : value}</strong>
+            <small>{caption}</small>
+          </article>
+        ))}
+      </section>
+
+      <section className="client-dashboard-secondary-layout" aria-label="Update dan riwayat client">
+        <article className="client-panel client-message-panel client-update-panel" id="client-message-panel">
+          <div className="client-panel-header">
+            <div>
+              <span>Pesan & Update</span>
+              <h2>Hubungi admin studio.</h2>
             </div>
             <MessageCircle size={20} />
           </div>
@@ -469,10 +506,17 @@ const ClientDashboardPage = () => {
               rows={5}
             />
 
-            <button type="submit" className="client-submit-btn" disabled={isSendingMessage}>
-              {isSendingMessage ? <Loader2 className="spinner" size={16} /> : <Send size={16} />}
-              {isSendingMessage ? 'Mengirim...' : 'Kirim Pesan'}
-            </button>
+            <div className="client-message-actions-row">
+              <button type="submit" className="client-submit-btn" disabled={isSendingMessage}>
+                {isSendingMessage ? <Loader2 className="spinner" size={16} /> : <Send size={16} />}
+                {isSendingMessage ? 'Mengirim...' : 'Kirim Cepat'}
+              </button>
+
+              <Link to="/client/messages" className="client-secondary-btn">
+                Buka Inbox
+                <ChevronRight size={16} />
+              </Link>
+            </div>
           </form>
 
           {latestMessages.length > 0 && (
@@ -489,11 +533,11 @@ const ClientDashboardPage = () => {
           )}
         </article>
 
-        <article className="client-panel client-activity-panel">
+        <article className="client-panel client-activity-panel client-history-panel">
           <div className="client-panel-header">
             <div>
-              <span>Aktivitas Terakhir</span>
-              <h2>Riwayat client.</h2>
+              <span>Histori</span>
+              <h2>Aktivitas terakhir.</h2>
             </div>
             <History size={20} />
           </div>
@@ -524,30 +568,6 @@ const ClientDashboardPage = () => {
               </div>
             </div>
           )}
-        </article>
-
-        <article className="client-panel client-billing-panel">
-          <div className="client-panel-header">
-            <div>
-              <span>Billing</span>
-              <h2>Invoice & pembayaran.</h2>
-            </div>
-            <ReceiptText size={20} />
-          </div>
-
-          <div className="client-billing-value">
-            <small>Tagihan berjalan</small>
-            <strong>{summary.activeBillAmount > 0 ? formatMoney(summary.activeBillAmount) : 'Rp0'}</strong>
-          </div>
-
-          <p>
-            Ketika admin membuat invoice atau DP untuk booking kamu, statusnya akan tampil di panel ini.
-          </p>
-
-          <Link to="/client/billing" className="client-panel-link">
-            Buka Billing
-            <ChevronRight size={16} />
-          </Link>
         </article>
       </section>
     </main>

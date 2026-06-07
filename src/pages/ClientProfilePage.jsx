@@ -1,19 +1,25 @@
 import {
-  useEffect,
-  useMemo,
-  useState } from 'react';
-import { Link,
-  Navigate } from 'react-router-dom';
-import {
-  ArrowLeft,
+  Calendar,
   CheckCircle2,
+  ChevronRight,
+  Link,
+  Link2,
   Loader2,
   Mail,
+  MessageCircle,
+  Navigate,
   Phone,
+  ReceiptText,
   Save,
   ShieldCheck,
   Sparkles,
-  UserRound
+  useEffect,
+  useMemo,
+  UserRound,
+  useState } from 'react';
+import { Link } from 'react-router-dom';
+import {
+  ArrowLeft
 } from 'lucide-react';
 import { useAuthStore } from '../store/useAuthStore';
 import { useNotificationStore } from '../store/useNotificationStore';
@@ -71,7 +77,19 @@ const ClientProfilePage = () => {
   const emailLabel = user?.email || userProfile?.email || 'Email belum tersedia';
   const firstLetter = displayName?.trim()?.charAt(0)?.toUpperCase() || 'C';
   const hasPhone = digits(phone).length >= 9;
-  const completionScore = hasPhone ? 100 : 70;
+  const isCustomerLinked = Boolean(userProfile?.linkedCustomerId);
+  const hasEmail = Boolean(user?.email || userProfile?.email);
+  const completionScore = Math.round(([
+    hasEmail,
+    hasPhone,
+    isCustomerLinked,
+  ].filter(Boolean).length / 3) * 100);
+
+  const profileReadinessItems = [
+    { label: 'Email login', value: hasEmail ? emailLabel : 'Belum tersedia', complete: hasEmail },
+    { label: 'Nomor WhatsApp', value: hasPhone ? 'Siap untuk follow up admin' : 'Belum lengkap', complete: hasPhone },
+    { label: 'Customer sync', value: isCustomerLinked ? 'Terhubung ke database customer' : 'Akan tersinkron saat booking/approve', complete: isCustomerLinked },
+  ];
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -136,8 +154,7 @@ const ClientProfilePage = () => {
 
             <h1>Profil client studio.</h1>
             <p>
-              Simpan username dan nomor WhatsApp aktif agar request booking, pesan ke admin,
-              dan histori studio kamu lebih mudah tersambung.
+              Lengkapi identitas utama supaya booking, pesan admin, billing, dan histori studio lebih gampang tersambung ke akun kamu.
             </p>
           </div>
 
@@ -146,7 +163,7 @@ const ClientProfilePage = () => {
             <div>
               <span>Kelengkapan profil</span>
               <strong>{completionScore}%</strong>
-              <small>{hasPhone ? 'Profil siap dipakai.' : 'Tambahkan nomor WhatsApp.'}</small>
+              <small>{hasPhone ? (isCustomerLinked ? 'Profil & customer sudah tersambung.' : 'Profil siap, customer akan tersinkron dari booking.') : 'Tambahkan nomor WhatsApp.'}</small>
             </div>
           </aside>
         </header>
@@ -238,6 +255,53 @@ const ClientProfilePage = () => {
                 mengenali riwayat booking yang terkait dengan akun kamu.
               </p>
             </div>
+
+            <div className="client-profile-readiness-card">
+              <div className="client-profile-readiness-head">
+                <div>
+                  <span>Checklist akun</span>
+                  <strong>Kesiapan portal</strong>
+                </div>
+                <em>{completionScore}%</em>
+              </div>
+
+              <div className="client-profile-readiness-list">
+                {profileReadinessItems.map((item) => (
+                  <div className={item.complete ? "complete" : ""} key={item.label}>
+                    <CheckCircle2 size={16} />
+                    <span>
+                      <strong>{item.label}</strong>
+                      <small>{item.value}</small>
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="client-profile-shortcuts">
+              <Link to="/jadwal-publik">
+                <Calendar size={16} />
+                <span>Booking Jadwal</span>
+                <ChevronRight size={14} />
+              </Link>
+              <Link to="/client/messages">
+                <MessageCircle size={16} />
+                <span>Message Admin</span>
+                <ChevronRight size={14} />
+              </Link>
+              <Link to="/client/billing">
+                <ReceiptText size={16} />
+                <span>Billing</span>
+                <ChevronRight size={14} />
+              </Link>
+            </div>
+
+            {!isCustomerLinked && (
+              <div className="client-profile-sync-hint">
+                <Link2 size={16} />
+                <p>Customer sync akan otomatis tersambung saat booking client dibuat dan admin approve request. Nomor WhatsApp yang sama bikin matching lebih akurat.</p>
+              </div>
+            )
           </aside>
         </section>
       </section>
