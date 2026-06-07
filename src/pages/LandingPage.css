@@ -5082,3 +5082,142 @@ body[data-theme="light"]:has(.landing-container) #root {
   box-shadow: 0 0 0 1000px rgba(255, 255, 255, 0.01) inset !important;
   -webkit-box-shadow: 0 0 0 1000px rgba(255, 255, 255, 0.01) inset !important;
 }
+
+/* ──────────────────────────────────────────────────────────────────────────
+   37 LANDING LOGIN FOCUS GHOST LAYER FIX 8.0E
+   --------------------------------------------------------------------------
+   Chrome/Radix focus cleanup:
+   - removes global yellow focus-visible outline inside hero login fields
+   - kills Radix focus pseudo surface remnants
+   - replaces focus box with seamless bottom hairline glow
+   ────────────────────────────────────────────────────────────────────────── */
+
+.tw-landing-phase80c .hero-login-panel .hero-radix-field,
+.tw-landing-phase80c .hero-login-panel .hero-radix-field *,
+.tw-landing-phase80c .hero-login-panel [data-radix-field],
+.tw-landing-phase80c .hero-login-panel [data-radix-field] * {
+  outline: none !important;
+  outline-offset: 0 !important;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.tw-landing-phase80c .hero-login-panel .hero-radix-field:focus,
+.tw-landing-phase80c .hero-login-panel .hero-radix-field:focus-visible,
+.tw-landing-phase80c .hero-login-panel .hero-radix-field:focus-within,
+.tw-landing-phase80c .hero-login-panel [data-radix-field]:focus,
+.tw-landing-phase80c .hero-login-panel [data-radix-field]:focus-visible,
+.tw-landing-phase80c .hero-login-panel [data-radix-field]:focus-within,
+.tw-landing-phase80c .hero-login-panel .hero-radix-field :where(input:focus),
+.tw-landing-phase80c .hero-login-panel .hero-radix-field :where(input:focus-visible),
+.tw-landing-phase80c .hero-login-panel [data-radix-field] :where(input:focus),
+.tw-landing-phase80c .hero-login-panel [data-radix-field] :where(input:focus-visible) {
+  outline: none !important;
+  outline-offset: 0 !important;
+  border-color: transparent !important;
+}
+
+.tw-landing-phase80c .hero-login-panel .hero-radix-field,
+.tw-landing-phase80c .hero-login-panel [data-radix-field].rt-TextFieldRoot {
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  box-shadow: inset 0 -1px 0 rgba(255, 250, 240, 0.14) !important;
+  filter: none !important;
+}
+
+.tw-landing-phase80c .hero-login-panel .hero-radix-field:focus-within,
+.tw-landing-phase80c .hero-login-panel [data-radix-field].rt-TextFieldRoot:focus-within {
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  box-shadow:
+    inset 0 -1px 0 rgba(88, 224, 233, 0.82),
+    0 9px 18px rgba(88, 224, 233, 0.035) !important;
+  filter: none !important;
+}
+
+.tw-landing-phase80c .hero-login-panel .hero-radix-field::before,
+.tw-landing-phase80c .hero-login-panel .hero-radix-field::after,
+.tw-landing-phase80c .hero-login-panel [data-radix-field].rt-TextFieldRoot::before,
+.tw-landing-phase80c .hero-login-panel [data-radix-field].rt-TextFieldRoot::after,
+.tw-landing-phase80c .hero-login-panel .hero-radix-field :where(input)::before,
+.tw-landing-phase80c .hero-login-panel .hero-radix-field :where(input)::after {
+  content: none !important;
+  display: none !important;
+  opacity: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.tw-landing-phase80c .hero-login-panel .hero-radix-field :where(.rt-TextFieldSlot),
+.tw-landing-phase80c .hero-login-panel [data-radix-field] :where(.rt-TextFieldSlot) {
+  background: transparent !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+  border: 0 !important;
+}
+
+.tw-landing-phase80c .hero-login-panel .hero-radix-field :where(input),
+.tw-landing-phase80c .hero-login-panel [data-radix-field] :where(input),
+.tw-landing-phase80c .hero-login-panel .hero-radix-field :where(.rt-TextFieldInput) {
+  outline: none !important;
+  outline-offset: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+  filter: none !important;
+}
+
+.tw-landing-phase80c .hero-login-panel .hero-radix-field :where(input:-webkit-autofill),
+.tw-landing-phase80c .hero-login-panel .hero-radix-field :where(input:-webkit-autofill:hover),
+.tw-landing-phase80c .hero-login-panel .hero-radix-field :where(input:-webkit-autofill:focus),
+.tw-landing-phase80c .hero-login-panel .hero-radix-field :where(input:-webkit-autofill:active) {
+  outline: none !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  -webkit-text-fill-color: rgba(255, 250, 240, 0.95) !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  box-shadow: 0 0 0 1000px transparent inset !important;
+  -webkit-box-shadow: 0 0 0 1000px transparent inset !important;
+  caret-color: #58e0e9 !important;
+  transition:
+    background-color 999999s ease-out 0s,
+    color 999999s ease-out 0s,
+    box-shadow 999999s ease-out 0s;
+}
+
+.tw-landing-phase80c .hero-login-panel .hero-radix-field:focus-within :where(.rt-TextFieldSlot),
+.tw-landing-phase80c .hero-login-panel [data-radix-field]:focus-within :where(.rt-TextFieldSlot) {
+  color: rgba(88, 224, 233, 0.88) !important;
+}
+
+[data-theme="light"] .tw-landing-phase80c .hero-login-panel .hero-radix-field,
+[data-theme="light"] .tw-landing-phase80c .hero-login-panel [data-radix-field].rt-TextFieldRoot {
+  box-shadow: inset 0 -1px 0 rgba(33, 28, 22, 0.14) !important;
+}
+
+[data-theme="light"] .tw-landing-phase80c .hero-login-panel .hero-radix-field:focus-within,
+[data-theme="light"] .tw-landing-phase80c .hero-login-panel [data-radix-field].rt-TextFieldRoot:focus-within {
+  box-shadow:
+    inset 0 -1px 0 rgba(22, 136, 145, 0.76),
+    0 9px 18px rgba(22, 136, 145, 0.03) !important;
+}
+
+[data-theme="light"] .tw-landing-phase80c .hero-login-panel .hero-radix-field :where(input:-webkit-autofill),
+[data-theme="light"] .tw-landing-phase80c .hero-login-panel .hero-radix-field :where(input:-webkit-autofill:hover),
+[data-theme="light"] .tw-landing-phase80c .hero-login-panel .hero-radix-field :where(input:-webkit-autofill:focus) {
+  -webkit-text-fill-color: rgba(33, 28, 22, 0.92) !important;
+  box-shadow: 0 0 0 1000px transparent inset !important;
+  -webkit-box-shadow: 0 0 0 1000px transparent inset !important;
+}
