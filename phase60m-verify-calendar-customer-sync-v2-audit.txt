@@ -1,0 +1,11 @@
+37 Music Studio — Phase 6.0M-VERIFY v2 Calendar Customer Sync
+Generated: 2026-06-07T17:19:18.941Z
+
+Files touched:
+- src/pages/CalendarPage.jsx
+
+Verified:
+- CalendarPage imports useCustomerStore.
+- CalendarPage reads incrementBookingCount.
+- handleApproveRequest calls incrementBookingCount before updateRequestStatus approved.
+- Customer sync failure shows warning but does not block booking approval.

@@ -138,7 +138,7 @@ export const useBookingStore = create((set, get) => {
 
       if (useDemoStore.getState().isDemoMode) {
         set((state) => ({ bookings: [...state.bookings, bookingData] }));
-        return;
+        return bookingData;
       }
 
       localActionIds.add(id);
@@ -148,13 +148,22 @@ export const useBookingStore = create((set, get) => {
         batch.set(doc(bookingsRef, id.toString()), bookingData);
         batch.set(doc(publicBookingsRef, id.toString()), toPublicBooking(bookingData));
         await batch.commit();
+
         await useAuditLogStore.getState().addLog({
           action: 'booking_create',
           entityType: 'booking',
           entityId: id,
-          summary: `Booking dibuat untuk ${bookingData.band || 'pelanggan'} pada ${bookingData.date}`,
-          metadata: { date: bookingData.date, hour: bookingData.hour, status: bookingData.status },
+          summary: 'Booking dibuat untuk ' + (bookingData.band || 'pelanggan') + ' pada ' + bookingData.date,
+          metadata: {
+            date: bookingData.date,
+            hour: bookingData.hour,
+            status: bookingData.status,
+            clientUid: bookingData.clientUid || '',
+            clientEmail: bookingData.clientEmail || '',
+          },
         });
+
+        return bookingData;
       } catch (error) {
         localActionIds.delete(id);
         throw error;

@@ -1,5 +1,8 @@
-import { useMemo, useState } from 'react';
-import { Link, Navigate } from 'react-router-dom';
+import {
+  useMemo,
+  useState } from 'react';
+import { Link,
+  Navigate } from 'react-router-dom';
 import { format } from 'date-fns';
 import { id as localeId } from 'date-fns/locale';
 import {
@@ -8,21 +11,20 @@ import {
   Clock3,
   History,
   Loader2,
-  LogOut,
   MessageCircle,
   Mic2,
   Music2,
   ReceiptText,
   Send,
   ShieldCheck,
-  Sparkles,
-  UserRound,
+  Sparkles
 } from 'lucide-react';
 import { useAuthStore } from '../store/useAuthStore';
 import { useBookingStore } from '../store/useBookingStore';
 import { useBookingRequestStore } from '../store/useBookingRequestStore';
 import { useClientMessageStore } from '../store/useClientMessageStore';
 import { useNotificationStore } from '../store/useNotificationStore';
+import ClientPortalNav from '../components/ClientPortalNav';
 import './ClientPortal.css';
 
 const clean = (value) => String(value || '').trim().toLowerCase();
@@ -329,32 +331,7 @@ const ClientDashboardPage = () => {
         <span className="client-blob client-blob-pink" />
         <span className="client-blob client-blob-cyan" />
       </div>
-
-      <nav className="client-nav client-dashboard-nav">
-        <Link to="/client/dashboard" className="client-brand">
-          <span className="client-brand-mark">37</span>
-          <span>Client Portal</span>
-        </Link>
-
-        <div className="client-nav-actions">
-          <Link to="/jadwal-publik" className="client-ghost-btn">
-            <Calendar size={15} />
-            Cek Slot
-          </Link>
-          <Link to="/client/profile" className="client-ghost-btn">
-            <UserRound size={15} />
-            Profil
-          </Link>
-          <Link to="/client/billing" className="client-ghost-btn">
-            <ReceiptText size={15} />
-            Billing
-          </Link>
-          <button type="button" className="client-ghost-btn" onClick={logout}>
-            <LogOut size={15} />
-            Keluar
-          </button>
-        </div>
-      </nav>
+      <ClientPortalNav title="Client Portal" onLogout={logout} />
 
       <section className="client-dashboard-hero">
         <div className="client-dashboard-copy">
@@ -374,10 +351,10 @@ const ClientDashboardPage = () => {
               Booking Jadwal
               <ChevronRight size={17} />
             </Link>
-            <a href="#client-message-panel" className="client-secondary-btn">
+            <Link to="/client/messages" className="client-secondary-btn">
               <MessageCircle size={16} />
               Message to Admin
-            </a>
+            </Link>
           </div>
         </div>
 

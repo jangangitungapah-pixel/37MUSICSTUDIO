@@ -2148,3 +2148,41 @@ tr:hover
   border-color: rgba(76,175,80,0.18);
 }
 
+/* ──────────────────────────────────────────────────────────────────────────
+   37 CUSTOMER BACKFILL FROM OLD BOOKINGS
+   --------------------------------------------------------------------------
+   Manual action to create missing customers from existing approved/client bookings.
+   ────────────────────────────────────────────────────────────────────────── */
+
+.customer-backfill-btn {
+  min-height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(var(--accent-cyan-rgb),0.18);
+  color: var(--accent-cyan);
+  background:
+    radial-gradient(circle at 50% 0%, rgba(var(--accent-cyan-rgb),0.13), transparent 62%),
+    rgba(var(--accent-cyan-rgb),0.065);
+  font-weight: 900;
+}
+
+.customer-backfill-btn:hover:not(:disabled) {
+  border-color: rgba(var(--accent-cyan-rgb),0.30);
+  background: rgba(var(--accent-cyan-rgb),0.10);
+}
+
+.customer-backfill-btn:disabled {
+  opacity: 0.62;
+  cursor: wait;
+}
+
+@media (max-width: 720px) {
+  .customer-backfill-btn,
+  .customers-page .app-page-actions .btn-primary {
+    width: 100%;
+  }
+}

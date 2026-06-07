@@ -2751,3 +2751,389 @@
   }
 }
 
+/* ──────────────────────────────────────────────────────────────────────────
+   37 UNIFIED CLIENT PORTAL NAVIGATION
+   --------------------------------------------------------------------------
+   Shared Client Portal navigation for dashboard, billing, profile, and public schedule.
+   ────────────────────────────────────────────────────────────────────────── */
+
+.client-unified-nav {
+  isolation: isolate;
+}
+
+.client-unified-nav-actions {
+  flex-wrap: wrap;
+}
+
+.client-nav-pill {
+  position: relative;
+  overflow: hidden;
+}
+
+.client-nav-pill::before {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  z-index: -1;
+  border-radius: inherit;
+  opacity: 0;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255,255,255,0.28), transparent 58%),
+    linear-gradient(135deg, rgba(239,197,110,0.28), rgba(88,224,233,0.10));
+  transition: opacity 180ms ease;
+}
+
+.client-nav-pill.active {
+  color: var(--client-text);
+  border-color: rgba(239,197,110,0.22);
+  background: rgba(239,197,110,0.075);
+}
+
+.client-nav-pill.active::before,
+.client-nav-pill:hover::before {
+  opacity: 1;
+}
+
+.client-nav-logout {
+  color: rgba(255,250,240,0.68);
+}
+
+.client-nav-logout:hover {
+  color: var(--client-pink);
+  border-color: rgba(255,42,95,0.20);
+  background: rgba(255,42,95,0.070);
+}
+
+[data-theme="light"] .client-nav-pill.active {
+  color: rgba(33,28,22,0.94);
+  border-color: rgba(183,121,42,0.20);
+  background: rgba(183,121,42,0.075);
+}
+
+[data-theme="light"] .client-nav-logout {
+  color: rgba(33,28,22,0.62);
+}
+
+@media (max-width: 720px) {
+  .client-unified-nav {
+    grid-template-columns: 1fr;
+  }
+
+  .client-unified-nav .client-brand {
+    justify-content: center;
+  }
+
+  .client-unified-nav-actions {
+    display: grid !important;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    width: 100%;
+    gap: 6px !important;
+  }
+
+  .client-unified-nav-actions .client-ghost-btn {
+    width: 100% !important;
+    min-height: 44px !important;
+    padding: 0 !important;
+    justify-content: center;
+    border-radius: 16px !important;
+  }
+
+  .client-unified-nav-actions .client-ghost-btn span {
+    display: none;
+  }
+}
+
+@media (max-width: 380px) {
+  .client-unified-nav-actions {
+    gap: 5px !important;
+  }
+
+  .client-unified-nav-actions .client-ghost-btn {
+    min-height: 40px !important;
+    border-radius: 14px !important;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   37 CLIENT MESSAGE CENTER PAGE
+   --------------------------------------------------------------------------
+   Dedicated client-side message center for sending messages and reading admin replies.
+   ────────────────────────────────────────────────────────────────────────── */
+
+.client-message-center-page {
+  min-height: 100svh;
+}
+
+.client-message-center-hero {
+  position: relative;
+  z-index: 1;
+  width: min(1180px, 100%);
+  margin: 0 auto 14px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 370px);
+  gap: clamp(18px, 4vw, 42px);
+  align-items: end;
+}
+
+.client-message-center-hero h1 {
+  max-width: 790px;
+  margin: 0;
+  color: #fffaf0;
+  font-family: 'Bebas Neue', Impact, 'Arial Narrow', sans-serif;
+  font-size: clamp(4rem, 8vw, 7rem) !important;
+  font-weight: 400;
+  line-height: 0.88;
+  letter-spacing: 0.018em !important;
+  text-transform: uppercase;
+  text-wrap: balance;
+  text-shadow: 0 18px 48px rgba(0,0,0,0.36);
+}
+
+.client-message-center-hero p {
+  max-width: 690px;
+  margin: 12px 0 0;
+  color: rgba(255,250,240,0.78);
+  font-size: clamp(1rem, 1.5vw, 1.12rem);
+  line-height: 1.62;
+  font-weight: 560;
+}
+
+.client-message-stats {
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+}
+
+.client-message-center-layout {
+  position: relative;
+  z-index: 1;
+  width: min(1180px, 100%);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(320px, 0.72fr) minmax(0, 1fr);
+  gap: 14px;
+}
+
+.client-message-compose-panel,
+.client-message-history-panel {
+  align-content: start;
+}
+
+.client-message-field {
+  display: grid;
+  gap: 8px;
+}
+
+.client-message-field > span {
+  color: rgba(255,250,240,0.70);
+  font-size: 0.78rem;
+  font-weight: 900;
+}
+
+.client-message-field select,
+.client-message-field textarea,
+.client-message-search input {
+  width: 100%;
+  border: 0;
+  outline: 0;
+  color: var(--client-text);
+  background: transparent;
+  font: inherit;
+  font-size: 0.92rem;
+  font-weight: 750;
+}
+
+.client-message-field select,
+.client-message-field textarea {
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,0.085);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.040), rgba(255,255,255,0.010)),
+    rgba(255,255,255,0.022);
+}
+
+.client-message-field select {
+  min-height: 48px;
+  padding: 0 14px;
+}
+
+.client-message-field textarea {
+  min-height: 152px;
+  padding: 14px;
+  resize: vertical;
+  line-height: 1.55;
+}
+
+.client-message-toolbar {
+  display: grid;
+  grid-template-columns: auto minmax(220px, 1fr);
+  gap: 10px;
+  align-items: center;
+}
+
+.client-message-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.client-message-tabs button {
+  min-height: 36px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.085);
+  color: var(--client-soft);
+  background: rgba(255,255,255,0.025);
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.client-message-tabs button.active {
+  color: #130f08;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255,255,255,0.34), transparent 58%),
+    linear-gradient(135deg, var(--client-gold), #d49a3e);
+  border-color: rgba(239,197,110,0.30);
+}
+
+.client-message-search {
+  min-height: 42px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 0 12px;
+  border-radius: 16px;
+  color: var(--client-soft);
+  background: rgba(255,255,255,0.030);
+  border: 1px solid rgba(255,255,255,0.075);
+}
+
+.client-message-thread-list {
+  display: grid;
+  gap: 9px;
+}
+
+.client-message-thread-card {
+  display: grid;
+  gap: 10px;
+  padding: 13px;
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.075);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.038), rgba(255,255,255,0.008)),
+    rgba(255,255,255,0.020);
+}
+
+.client-message-thread-top {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+}
+
+.client-message-thread-top span:first-child {
+  color: var(--client-gold);
+  font-size: 0.68rem;
+  font-weight: 950;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.client-message-thread-top strong {
+  display: block;
+  margin-top: 4px;
+  color: var(--client-text);
+  line-height: 1.45;
+  font-size: 0.94rem;
+  font-weight: 850;
+}
+
+.client-message-thread-top small {
+  display: block;
+  margin-top: 5px;
+  color: var(--client-soft);
+  font-size: 0.74rem;
+  font-weight: 700;
+}
+
+.client-admin-reply-note {
+  display: flex;
+  gap: 9px;
+  padding: 11px;
+  border-radius: 16px;
+  color: var(--client-green);
+  background: rgba(130,216,160,0.075);
+  border: 1px solid rgba(130,216,160,0.16);
+}
+
+.client-admin-reply-note p {
+  margin: 0;
+  color: rgba(255,250,240,0.78);
+  line-height: 1.45;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.client-message-alert {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 11px;
+  border-radius: 16px;
+  color: var(--client-pink);
+  background: rgba(255,42,95,0.075);
+  border: 1px solid rgba(255,42,95,0.16);
+  font-weight: 800;
+}
+
+[data-theme="light"] .client-message-center-hero h1 {
+  color: var(--client-text);
+  text-shadow: none;
+}
+
+[data-theme="light"] .client-message-center-hero p,
+[data-theme="light"] .client-message-field > span,
+[data-theme="light"] .client-admin-reply-note p {
+  color: rgba(33,28,22,0.66);
+}
+
+[data-theme="light"] .client-message-field select,
+[data-theme="light"] .client-message-field textarea,
+[data-theme="light"] .client-message-search,
+[data-theme="light"] .client-message-thread-card {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.72), rgba(255,255,255,0.38)),
+    rgba(255,252,246,0.58);
+  border-color: rgba(90,66,36,0.11);
+}
+
+@media (max-width: 980px) {
+  .client-message-center-hero,
+  .client-message-center-layout,
+  .client-message-stats {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (max-width: 560px) {
+  .client-message-center-hero h1 {
+    font-size: clamp(2.85rem, 15.5vw, 4.35rem) !important;
+    line-height: 0.92;
+  }
+
+  .client-message-toolbar {
+    grid-template-columns: 1fr;
+  }
+
+  .client-message-tabs {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .client-message-tabs button {
+    width: 100%;
+  }
+
+  .client-message-thread-top {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,11 @@
+37 Music Studio — Phase 6.0R Lint Fix Unused Client Nav Imports
+Generated: 2026-06-07T17:46:12.385Z
+
+Files touched:
+- src/pages/ClientBillingPage.jsx
+- src/pages/ClientProfilePage.jsx
+
+Fixed:
+- Removed unused ArrowLeft from ClientBillingPage.
+- Removed unused ArrowLeft from ClientProfilePage.
+- Removed unused Link from ClientProfilePage.

@@ -106,6 +106,7 @@ export default defineConfig({
           'assets/LandingPage-*.js',
           'assets/PortalResolver-*.js',
           'assets/ClientDashboardPage-*.js',
+          'assets/ClientMessageCenterPage-*.js',
           'assets/PublicCalendarPage-*.js',
           'assets/PublicGalleryPage-*.js',
           'assets/RegisterPage-*.js',

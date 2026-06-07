@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { useShallow } from 'zustand/react/shallow';
-import { Search, Plus, Edit2, Trash2, Mail, Phone, Calendar as CalendarIcon, Users, UserCheck, DollarSign, X, AtSign, MapPin, Clock, Star, StickyNote, MessageCircle, Gift, Award, ChevronDown, Link2, Unlink2, UserPlus } from 'lucide-react';
+import { Search, Plus, Edit2, Trash2, Mail, Phone, Calendar as CalendarIcon, Users, UserCheck, DollarSign, X, AtSign, MapPin, Clock, Star, StickyNote, MessageCircle, Gift, Award, ChevronDown, Link2, Unlink2, UserPlus, RefreshCw } from 'lucide-react';
 import { useCustomerStore } from '../store/useCustomerStore';
 import { useBookingStore } from '../store/useBookingStore';
 import { useStaffStore } from '../store/useStaffStore';
@@ -100,6 +100,45 @@ const matchesCustomerBooking = (customer, booking) => {
   return Boolean(customerName && bookingName && customerName === bookingName);
 };
 
+const getBookingBackfillKey = (booking) => {
+  const uid = normalizeCustomerText(booking.clientUid || booking.customerUid || booking.userId || booking.createdBy);
+  if (uid) return "uid:" + uid;
+
+  const email = normalizeCustomerText(booking.clientEmail || booking.customerEmail || booking.email || booking.userEmail);
+  if (email) return "email:" + email;
+
+  const phone = normalizeCustomerPhone(booking.clientPhone || booking.customerPhone || booking.phone || booking.whatsapp || booking.wa);
+  if (phone) return "phone:" + phone;
+
+  const name = normalizeCustomerText(booking.band || booking.bandName || booking.clientName || booking.customerName);
+  return name ? "name:" + name : "";
+};
+
+const getBookingBackfillName = (booking) => (
+  booking.band ||
+  booking.bandName ||
+  booking.clientName ||
+  booking.customerName ||
+  "Pelanggan Baru"
+);
+
+const getBookingBackfillTotal = (booking) => Number(
+  booking.totalPrice ||
+  booking.estimatedPrice ||
+  booking.price ||
+  booking.sessionPrice ||
+  0
+);
+
+const isBackfillableBooking = (booking) => {
+  if (!booking) return false;
+  if (['maintenance', 'cancelled'].includes(normalizeCustomerText(booking.status))) return false;
+  return Boolean(getBookingBackfillKey(booking));
+};
+
+const customerAlreadyMatchesBooking = (customers, booking) => (
+  customers.some((customer) => matchesCustomerBooking(customer, booking))
+);
 const customerSchema = z.object({
   name: z.string().min(2, 'Nama minimal 2 karakter'),
   phone: z.string()
@@ -122,13 +161,14 @@ const validateWithZod = (fieldName) => (value) => {
 };
 
 const CustomersPage = () => {
-  const { customers, addCustomer, updateCustomer, deleteCustomer, getStats } = useCustomerStore(
+  const { customers, addCustomer, updateCustomer, deleteCustomer, getStats, incrementBookingCount } = useCustomerStore(
     useShallow(state => ({
       customers: state.customers,
       addCustomer: state.addCustomer,
       updateCustomer: state.updateCustomer,
       deleteCustomer: state.deleteCustomer,
-      getStats: state.getStats
+      getStats: state.getStats,
+      incrementBookingCount: state.incrementBookingCount
     }))
   );
   const bookings = useBookingStore(state => state.bookings);
@@ -137,6 +177,7 @@ const CustomersPage = () => {
   const [activeFilter, setActiveFilter] = useState('all'); // 'all', 'Active', 'Inactive'
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [isFilterDropdownOpen, setIsFilterDropdownOpen] = useState(false);
+  const [isSyncingCustomers, setIsSyncingCustomers] = useState(false);
   const clientAccounts = useMemo(
     () => staffMembers.filter((member) => normalizeCustomerText(member.role) === 'client'),
     [staffMembers]
@@ -320,6 +361,73 @@ const CustomersPage = () => {
     }
   };
 
+  const handleBackfillMissingClientCustomers = async () => {
+    const candidates = bookings
+      .filter(isBackfillableBooking)
+      .filter((booking) => !customerAlreadyMatchesBooking(customers, booking));
+
+    if (candidates.length === 0) {
+      toast.info('Tidak ada booking client lama yang perlu disinkronkan.');
+      return;
+    }
+
+    const seenKeys = new Set();
+    let successCount = 0;
+    let skippedCount = 0;
+    let failedCount = 0;
+
+    setIsSyncingCustomers(true);
+
+    try {
+      for (const booking of candidates) {
+        const key = getBookingBackfillKey(booking);
+
+        if (!key || seenKeys.has(key)) {
+          skippedCount += 1;
+          continue;
+        }
+
+        seenKeys.add(key);
+
+        try {
+          await incrementBookingCount(getBookingBackfillName(booking), {
+            ...booking,
+            phone: booking.phone || booking.clientPhone || booking.customerPhone || '',
+            clientUid: booking.clientUid || '',
+            clientEmail: booking.clientEmail || booking.email || '',
+            clientName: booking.clientName || getBookingBackfillName(booking),
+            clientPhone: booking.clientPhone || booking.phone || '',
+            linkedCustomerId: booking.linkedCustomerId || '',
+            sourceBookingId: booking.id || '',
+            sourceRequestId: booking.sourceRequestId || booking.requestId || '',
+            duration: Number(booking.duration || 0),
+            totalPrice: getBookingBackfillTotal(booking),
+            estimatedPrice: getBookingBackfillTotal(booking),
+          });
+
+          successCount += 1;
+        } catch (error) {
+          console.warn('[Customers] Backfill customer failed:', error);
+          failedCount += 1;
+        }
+      }
+
+      if (successCount > 0) {
+        toast.success('Sinkron customer selesai', {
+          description: successCount + ' customer lama dibuat/diupdate. ' + skippedCount + ' booking dilewati.'
+        });
+      } else if (failedCount > 0) {
+        toast.warning('Sinkron customer belum berhasil', {
+          description: failedCount + ' data gagal disimpan. Cek permission customers di Firestore.'
+        });
+      } else {
+        toast.info('Tidak ada customer baru yang perlu dibuat.');
+      }
+    } finally {
+      setIsSyncingCustomers(false);
+    }
+  };
+
   const onSubmitForm = (data) => {
     if (editingCustomer) {
       updateCustomer(editingCustomer.id, { ...editingCustomer, ...data });
@@ -375,6 +483,17 @@ const CustomersPage = () => {
         </div>
         
         <div className="app-page-actions">
+
+          <button
+            type="button"
+            className="btn-secondary customer-backfill-btn"
+            onClick={handleBackfillMissingClientCustomers}
+            disabled={isSyncingCustomers}
+            title="Buat customer dari booking client lama yang belum masuk database pelanggan"
+          >
+            <RefreshCw size={18} className={isSyncingCustomers ? "spinner" : ""} />
+            <span>{isSyncingCustomers ? "Menyinkronkan..." : "Sinkron Booking Lama"}</span>
+          </button>
 
           <button className="btn-primary" onClick={handleOpenNew}>
             <Plus size={18} />

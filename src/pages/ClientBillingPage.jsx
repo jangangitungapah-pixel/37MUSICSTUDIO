@@ -1,5 +1,8 @@
-import { useMemo, useState } from 'react';
-import { Link, Navigate } from 'react-router-dom';
+import {
+  useMemo,
+  useState } from 'react';
+import { Link,
+  Navigate } from 'react-router-dom';
 import { format } from 'date-fns';
 import { id as localeId } from 'date-fns/locale';
 import {
@@ -10,18 +13,18 @@ import {
   Clock3,
   Copy,
   FileText,
-  LogOut,
   MessageCircle,
   ReceiptText,
   Search,
   ShieldCheck,
   Sparkles,
-  WalletCards,
+  WalletCards
 } from 'lucide-react';
 import { useAuthStore } from '../store/useAuthStore';
 import { useBookingStore } from '../store/useBookingStore';
 import { useSettingsStore } from '../store/useSettingsStore';
 import { useNotificationStore } from '../store/useNotificationStore';
+import ClientPortalNav from '../components/ClientPortalNav';
 import './ClientPortal.css';
 
 const clean = (value) => String(value || '').trim().toLowerCase();
@@ -310,24 +313,7 @@ const ClientBillingPage = () => {
         <span className="client-blob client-blob-pink" />
         <span className="client-blob client-blob-cyan" />
       </div>
-
-      <nav className="client-nav client-dashboard-nav">
-        <Link to="/client/dashboard" className="client-brand">
-          <span className="client-brand-mark">37</span>
-          <span>Client Billing</span>
-        </Link>
-
-        <div className="client-nav-actions">
-          <Link to="/client/dashboard" className="client-ghost-btn">
-            <ArrowLeft size={15} />
-            Dashboard
-          </Link>
-          <button type="button" className="client-ghost-btn" onClick={logout}>
-            <LogOut size={15} />
-            Keluar
-          </button>
-        </div>
-      </nav>
+      <ClientPortalNav title="Client Billing" onLogout={logout} />
 
       <section className="client-billing-hero">
         <div>

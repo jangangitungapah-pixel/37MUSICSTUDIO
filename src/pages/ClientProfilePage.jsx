@@ -1,19 +1,23 @@
-import { useEffect, useMemo, useState } from 'react';
-import { Link, Navigate } from 'react-router-dom';
+import {
+  useEffect,
+  useMemo,
+  useState } from 'react';
+import { Link,
+  Navigate } from 'react-router-dom';
 import {
   ArrowLeft,
   CheckCircle2,
   Loader2,
-  LogOut,
   Mail,
   Phone,
   Save,
   ShieldCheck,
   Sparkles,
-  UserRound,
+  UserRound
 } from 'lucide-react';
 import { useAuthStore } from '../store/useAuthStore';
 import { useNotificationStore } from '../store/useNotificationStore';
+import ClientPortalNav from '../components/ClientPortalNav';
 import './ClientPortal.css';
 
 const digits = (value) => String(value || '').replace(/\D/g, '');
@@ -120,24 +124,7 @@ const ClientProfilePage = () => {
         <span className="client-blob client-blob-pink" />
         <span className="client-blob client-blob-cyan" />
       </div>
-
-      <nav className="client-nav client-dashboard-nav">
-        <Link to="/client/dashboard" className="client-brand">
-          <span className="client-brand-mark">37</span>
-          <span>Client Profile</span>
-        </Link>
-
-        <div className="client-nav-actions">
-          <Link to="/client/dashboard" className="client-ghost-btn">
-            <ArrowLeft size={15} />
-            Dashboard
-          </Link>
-          <button type="button" className="client-ghost-btn" onClick={logout}>
-            <LogOut size={15} />
-            Keluar
-          </button>
-        </div>
-      </nav>
+      <ClientPortalNav title="Client Profile" onLogout={logout} />
 
       <section className="client-profile-shell">
         <header className="client-profile-hero">
