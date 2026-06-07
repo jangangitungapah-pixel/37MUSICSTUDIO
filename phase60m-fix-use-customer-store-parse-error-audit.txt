@@ -1,0 +1,9 @@
+37 Music Studio — Phase 6.0M-FIX v3 useCustomerStore parse repair
+Generated: 2026-06-07T17:09:55.731Z
+
+Fixed:
+- Rewrote src/store/useCustomerStore.js with valid syntax.
+- Preserved add/update/delete customer behavior.
+- Added smarter auto-create/update customer from approved booking request.
+- Matching now uses linkedCustomerId, clientUid, clientEmail, phone, then name.
+- Customer records now keep clientUid/clientEmail/clientName/sourceRequestId metadata.

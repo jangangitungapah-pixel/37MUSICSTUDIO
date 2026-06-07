@@ -7,6 +7,7 @@ import { useBookingStore } from '../store/useBookingStore';
 import { useSettingsStore } from '../store/useSettingsStore';
 import { useInventoryStore } from '../store/useInventoryStore';
 import { useBookingRequestStore } from '../store/useBookingRequestStore';
+import { useCustomerStore } from '../store/useCustomerStore';
 import { useNotificationStore } from '../store/useNotificationStore';
 import { AnimatePresence, motion } from 'framer-motion';
 import * as Tooltip from '@radix-ui/react-tooltip';
@@ -109,6 +110,7 @@ const CalendarPage = () => {
     }))
   );
   const inventory = useInventoryStore(state => state.inventory);
+  const incrementBookingCount = useCustomerStore(state => state.incrementBookingCount);
 
   const calculatePrice = useCallback((b, dur) => {
     let base;
@@ -365,6 +367,24 @@ const CalendarPage = () => {
         createdBy: request.createdBy || request.clientUid || '',
       });
 
+      // Auto-sync customer after approved request.
+      // Jangan sampai approval booking gagal hanya karena customer sync gagal.
+      await incrementBookingCount(requestName, {
+        phone: requestPhone,
+        duration: Number(request.duration || 1),
+        totalPrice: estimatedPrice,
+        estimatedPrice,
+        clientUid: request.clientUid || '',
+        clientEmail: request.clientEmail || '',
+        clientName: request.clientName || requestName,
+        clientPhone: request.clientPhone || requestPhone,
+        linkedCustomerId: request.linkedCustomerId || '',
+        sourceRequestId: request.id,
+        createdBy: request.createdBy || request.clientUid || '',
+      }).catch((syncError) => {
+        console.warn('[Calendar] Customer sync skipped:', syncError);
+      });
+
       await updateRequestStatus(request.id, 'approved', {
         approvedAt: new Date().toISOString(),
         approvedBookingId: createdBooking?.id || '',
@@ -377,7 +397,7 @@ const CalendarPage = () => {
 
       useNotificationStore.getState().addNotification({
         title: 'Request disetujui',
-        message: `${requestName} masuk ke kalender dan metadata client ikut tersimpan.`,
+        message: `${requestName} masuk ke kalender, customer otomatis disinkronkan, dan metadata client ikut tersimpan.`,
         type: 'success',
       });
     } catch (error) {

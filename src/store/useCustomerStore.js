@@ -6,6 +6,64 @@ import { format } from 'date-fns';
 import { useDemoStore } from './useDemoStore';
 import { useAuditLogStore } from './useAuditLogStore';
 
+const normalizeCustomerText = (value) => String(value || '').trim().toLowerCase();
+const normalizeCustomerPhone = (value) => String(value || '').replace(/\D/g, '');
+
+const getBookingPhone = (bookingData = {}) => (
+  bookingData.phone ||
+  bookingData.clientPhone ||
+  bookingData.customerPhone ||
+  bookingData.whatsapp ||
+  bookingData.wa ||
+  ''
+);
+
+const getBookingTotal = (bookingData = {}) => Number(
+  bookingData.totalPrice ||
+  bookingData.estimatedPrice ||
+  bookingData.price ||
+  0
+);
+
+const buildCustomerMetadataPatch = (bookingData = {}) => {
+  const clientUid = String(bookingData.clientUid || '').trim();
+  const clientEmail = normalizeCustomerText(bookingData.clientEmail || bookingData.email || '');
+  const linkedCustomerId = String(bookingData.linkedCustomerId || '').trim();
+
+  return {
+    ...(clientUid ? { clientUid } : {}),
+    ...(clientEmail ? { clientEmail } : {}),
+    ...(bookingData.clientName ? { clientName: bookingData.clientName } : {}),
+    ...(linkedCustomerId ? { linkedCustomerId } : {}),
+    ...(bookingData.sourceRequestId ? { sourceRequestId: bookingData.sourceRequestId } : {}),
+    ...(bookingData.createdBy ? { createdBy: bookingData.createdBy } : {}),
+  };
+};
+
+const findMatchingCustomer = (customers, name, bookingData = {}) => {
+  const normalizedName = normalizeCustomerText(name || bookingData.clientName || bookingData.band);
+  const bookingPhone = normalizeCustomerPhone(getBookingPhone(bookingData));
+  const clientUid = String(bookingData.clientUid || '').trim();
+  const clientEmail = normalizeCustomerText(bookingData.clientEmail || bookingData.email || '');
+  const linkedCustomerId = String(bookingData.linkedCustomerId || '').trim();
+
+  return customers.find((candidate) => {
+    const candidateId = String(candidate.id || '').trim();
+    const candidateUid = String(candidate.clientUid || '').trim();
+    const candidateEmail = normalizeCustomerText(candidate.clientEmail || candidate.email || '');
+    const candidatePhone = normalizeCustomerPhone(candidate.phone || candidate.clientPhone || candidate.whatsapp || candidate.wa || '');
+    const candidateName = normalizeCustomerText(candidate.name || candidate.clientName);
+
+    if (linkedCustomerId && candidateId === linkedCustomerId) return true;
+    if (clientUid && candidateUid === clientUid) return true;
+    if (clientEmail && candidateEmail === clientEmail) return true;
+    if (bookingPhone && candidatePhone === bookingPhone) return true;
+    if (normalizedName && candidateName === normalizedName) return true;
+
+    return false;
+  });
+};
+
 export const useCustomerStore = create((set, get) => {
   const customersRef = collection(db, 'customers');
   let realCustomers = [];
@@ -19,16 +77,23 @@ export const useCustomerStore = create((set, get) => {
 
     if (!user || user.isAnonymous) {
       realCustomers = [];
-      set({ customers: [], isLoaded: true });
+      set({ customers: [], isLoaded: true, error: null });
       return;
     }
 
     unsubscribeCustomers = onSnapshot(customersRef, (snapshot) => {
-      realCustomers = snapshot.docs.map(doc => doc.data());
+      realCustomers = snapshot.docs.map((docSnap) => {
+        const data = docSnap.data();
+        return {
+          id: data.id ?? docSnap.id,
+          ...data,
+        };
+      });
+
       if (!useDemoStore.getState().isDemoMode) {
-        set({ customers: realCustomers, isLoaded: true });
+        set({ customers: realCustomers, isLoaded: true, error: null });
       } else {
-        set({ isLoaded: true });
+        set({ isLoaded: true, error: null });
       }
     }, (error) => {
       console.error('Error loading customers:', error);
@@ -38,43 +103,54 @@ export const useCustomerStore = create((set, get) => {
 
   useDemoStore.subscribe((demoState) => {
     if (demoState.isDemoMode) {
-      set({ customers: demoState.demoCustomers });
+      set({ customers: demoState.demoCustomers, isLoaded: true });
     } else {
-      set({ customers: realCustomers });
+      set({ customers: realCustomers, isLoaded: true });
     }
   });
 
   return {
     customers: [],
     isLoaded: false,
-    
+    error: null,
+
     addCustomer: async (newCustomer) => {
       const id = Date.now();
-      const customerData = { 
-        ...newCustomer, 
-        id, 
-        joinDate: format(new Date(), 'yyyy-MM-dd'),
-        totalBookings: 0,
-        totalHours: 0,
-        totalSpent: 0,
-        lastBooking: '-'
+      const customerData = {
+        ...newCustomer,
+        id,
+        joinDate: newCustomer.joinDate || format(new Date(), 'yyyy-MM-dd'),
+        totalBookings: Number(newCustomer.totalBookings || 0),
+        totalHours: Number(newCustomer.totalHours || 0),
+        totalSpent: Number(newCustomer.totalSpent || 0),
+        lastBooking: newCustomer.lastBooking || '-',
       };
+
       set((state) => ({ customers: [...state.customers, customerData] }));
-      if (useDemoStore.getState().isDemoMode) return;
+
+      if (useDemoStore.getState().isDemoMode) return customerData;
+
       await setDoc(doc(customersRef, id.toString()), customerData);
       await useAuditLogStore.getState().addLog({
         action: 'customer_create',
         entityType: 'customer',
         entityId: id,
-        summary: `Pelanggan ${customerData.name} ditambahkan`,
+        summary: 'Pelanggan ' + customerData.name + ' ditambahkan',
+        metadata: customerData,
       });
+
+      return customerData;
     },
 
     updateCustomer: async (id, updatedData) => {
       set((state) => ({
-        customers: state.customers.map(c => c.id === id ? { ...c, ...updatedData } : c)
+        customers: state.customers.map((customer) => (
+          customer.id === id ? { ...customer, ...updatedData } : customer
+        )),
       }));
+
       if (useDemoStore.getState().isDemoMode) return;
+
       await updateDoc(doc(customersRef, id.toString()), updatedData);
       await useAuditLogStore.getState().addLog({
         action: 'customer_update',
@@ -86,8 +162,10 @@ export const useCustomerStore = create((set, get) => {
     },
 
     deleteCustomer: async (id) => {
-      set((state) => ({ customers: state.customers.filter(c => c.id !== id) }));
+      set((state) => ({ customers: state.customers.filter((customer) => customer.id !== id) }));
+
       if (useDemoStore.getState().isDemoMode) return;
+
       await deleteDoc(doc(customersRef, id.toString()));
       await useAuditLogStore.getState().addLog({
         action: 'customer_delete',
@@ -99,59 +177,104 @@ export const useCustomerStore = create((set, get) => {
 
     incrementBookingCount: async (name, bookingData = {}) => {
       const state = get();
-      const customer = state.customers.find(c => c.name.toLowerCase() === name.toLowerCase());
-      
+      const cleanName = String(name || bookingData.clientName || bookingData.band || 'Pelanggan Baru').trim();
+      const bookingPhone = getBookingPhone(bookingData);
+      const bookingPhoneDigits = normalizeCustomerPhone(bookingPhone);
+      const clientEmail = normalizeCustomerText(bookingData.clientEmail || bookingData.email || '');
+      const totalPrice = getBookingTotal(bookingData);
+      const duration = Number(bookingData.duration || 0);
+      const metadataPatch = buildCustomerMetadataPatch(bookingData);
+      const customer = findMatchingCustomer(state.customers, cleanName, bookingData);
+
       if (customer) {
-        // Customer exists — increment stats
-        const updatedData = { 
-          totalBookings: customer.totalBookings + 1, 
-          totalHours: (customer.totalHours || 0) + (bookingData.duration || 0),
-          totalSpent: (customer.totalSpent || 0) + (bookingData.totalPrice || 0),
+        const updatedData = {
+          totalBookings: Number(customer.totalBookings || 0) + 1,
+          totalHours: Number(customer.totalHours || 0) + duration,
+          totalSpent: Number(customer.totalSpent || 0) + totalPrice,
           lastBooking: format(new Date(), 'yyyy-MM-dd'),
-          status: 'Active'
-        };
-        // Update phone if customer had none but booking has one
-        if (!customer.phone && bookingData.phone) {
-          updatedData.phone = bookingData.phone;
-        }
-        set((state) => ({
-          customers: state.customers.map(c => c.id === customer.id ? { ...c, ...updatedData } : c)
-        }));
-        if (useDemoStore.getState().isDemoMode) return;
-        await updateDoc(doc(customersRef, customer.id.toString()), updatedData);
-      } else {
-        // Customer doesn't exist — auto-create
-        const id = Date.now();
-        const newCustomer = {
-          id,
-          name: name.trim(),
-          phone: bookingData.phone || '',
-          email: '',
-          instagram: '',
-          address: '',
           status: 'Active',
-          notes: '',
-          joinDate: format(new Date(), 'yyyy-MM-dd'),
-          totalBookings: 1,
-          totalHours: bookingData.duration || 0,
-          totalSpent: bookingData.totalPrice || 0,
-          lastBooking: format(new Date(), 'yyyy-MM-dd')
+          ...metadataPatch,
         };
-        set((state) => ({ customers: [...state.customers, newCustomer] }));
-        if (useDemoStore.getState().isDemoMode) return;
-        await setDoc(doc(customersRef, id.toString()), newCustomer);
+
+        if (!customer.phone && bookingPhone) {
+          updatedData.phone = bookingPhone;
+        }
+
+        if (!customer.email && clientEmail) {
+          updatedData.email = clientEmail;
+        }
+
+        set((currentState) => ({
+          customers: currentState.customers.map((candidate) => (
+            candidate.id === customer.id ? { ...candidate, ...updatedData } : candidate
+          )),
+        }));
+
+        if (useDemoStore.getState().isDemoMode) return { ...customer, ...updatedData };
+
+        await updateDoc(doc(customersRef, customer.id.toString()), updatedData);
+        await useAuditLogStore.getState().addLog({
+          action: 'customer_booking_increment',
+          entityType: 'customer',
+          entityId: customer.id,
+          summary: 'Stat pelanggan ' + (customer.name || cleanName || customer.id) + ' diperbarui dari approve request',
+          metadata: updatedData,
+        });
+
+        return { ...customer, ...updatedData };
       }
+
+      const id = Date.now();
+      const newCustomer = {
+        id,
+        name: cleanName || 'Pelanggan Baru',
+        phone: bookingPhoneDigits ? bookingPhone : '',
+        email: clientEmail,
+        instagram: '',
+        address: '',
+        status: 'Active',
+        notes: bookingData.sourceRequestId ? 'Auto-created dari request booking #' + bookingData.sourceRequestId : 'Auto-created dari booking client.',
+        joinDate: format(new Date(), 'yyyy-MM-dd'),
+        totalBookings: 1,
+        totalHours: duration,
+        totalSpent: totalPrice,
+        lastBooking: format(new Date(), 'yyyy-MM-dd'),
+        ...metadataPatch,
+      };
+
+      set((currentState) => ({ customers: [...currentState.customers, newCustomer] }));
+
+      if (useDemoStore.getState().isDemoMode) return newCustomer;
+
+      await setDoc(doc(customersRef, id.toString()), newCustomer);
+      await useAuditLogStore.getState().addLog({
+        action: 'customer_auto_create',
+        entityType: 'customer',
+        entityId: id,
+        summary: 'Pelanggan ' + newCustomer.name + ' otomatis dibuat dari approve request',
+        metadata: newCustomer,
+      });
+
+      return newCustomer;
     },
 
     getStats: () => {
       const state = get();
       const total = state.customers.length;
-      const active = state.customers.filter(c => c.status === 'Active').length;
-      const inactive = state.customers.filter(c => c.status === 'Inactive').length;
-      const totalBookingsAll = state.customers.reduce((sum, c) => sum + c.totalBookings, 0);
-      const totalHoursAll = state.customers.reduce((sum, c) => sum + (c.totalHours || 0), 0);
-      const totalRevenueAll = state.customers.reduce((sum, c) => sum + c.totalSpent, 0);
-      return { total, active, inactive, totalBookingsAll, totalHoursAll, totalRevenueAll };
-    }
+      const active = state.customers.filter((customer) => customer.status === 'Active').length;
+      const inactive = state.customers.filter((customer) => customer.status === 'Inactive').length;
+      const totalBookingsAll = state.customers.reduce((sum, customer) => sum + Number(customer.totalBookings || 0), 0);
+      const totalHoursAll = state.customers.reduce((sum, customer) => sum + Number(customer.totalHours || 0), 0);
+      const totalRevenueAll = state.customers.reduce((sum, customer) => sum + Number(customer.totalSpent || 0), 0);
+
+      return {
+        total,
+        active,
+        inactive,
+        totalBookingsAll,
+        totalHoursAll,
+        totalRevenueAll,
+      };
+    },
   };
 });
