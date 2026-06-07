@@ -3135,3 +3135,305 @@ html[data-pwa-mode="admin"] {
   --pwa-shell-theme: #0d0d12;
 }
 
+/* ──────────────────────────────────────────────────────────────────────────
+   37 PWA INSTALL UPDATE PROMPT POLISH
+   --------------------------------------------------------------------------
+   Route-aware install prompt + update toast.
+   Works for Client/Admin PWA identity.
+   ────────────────────────────────────────────────────────────────────────── */
+
+.pwa-toast,
+.pwa-install-card {
+  position: fixed;
+  z-index: 10000;
+  color: #fffaf0;
+  font-family: 'Space Grotesk', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  border: 1px solid rgba(255,255,255,0.12);
+  background:
+    radial-gradient(circle at 12% 0%, rgba(239,197,110,0.095), transparent 42%),
+    radial-gradient(circle at 92% 0%, rgba(88,224,233,0.055), transparent 38%),
+    linear-gradient(180deg, rgba(255,255,255,0.060), rgba(255,255,255,0.014)),
+    rgba(16,19,28,0.94);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.075),
+    0 26px 74px rgba(0,0,0,0.42);
+  -webkit-backdrop-filter: blur(22px) saturate(1.12);
+  backdrop-filter: blur(22px) saturate(1.12);
+}
+
+.pwa-toast {
+  right: 16px;
+  bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  width: min(92vw, 390px);
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px;
+  border-radius: 20px;
+}
+
+.pwa-toast-icon,
+.pwa-install-mark {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(255,255,255,0.10);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.055),
+    0 10px 24px rgba(0,0,0,0.18);
+}
+
+.pwa-toast-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 14px;
+}
+
+.pwa-toast.is-update .pwa-toast-icon {
+  color: #ff9eb5;
+  background: rgba(255,61,112,0.13);
+  border-color: rgba(255,61,112,0.22);
+}
+
+.pwa-toast.is-offline .pwa-toast-icon {
+  color: #58e0e9;
+  background: rgba(88,224,233,0.12);
+  border-color: rgba(88,224,233,0.20);
+}
+
+.pwa-toast-copy {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  gap: 4px;
+}
+
+.pwa-toast-copy strong,
+.pwa-install-copy strong {
+  color: #fffaf0;
+  font-weight: 950;
+  letter-spacing: -0.025em;
+}
+
+.pwa-toast-copy strong {
+  font-size: 0.92rem;
+}
+
+.pwa-toast-copy span,
+.pwa-install-copy p {
+  color: rgba(255,250,240,0.72);
+  line-height: 1.45;
+  font-weight: 650;
+}
+
+.pwa-toast-copy span {
+  font-size: 0.80rem;
+}
+
+.pwa-toast-primary,
+.pwa-install-primary,
+.pwa-install-secondary,
+.pwa-toast-close,
+.pwa-install-close {
+  font: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.pwa-toast-primary {
+  width: fit-content;
+  min-height: 34px;
+  margin-top: 6px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 999px;
+  color: #130f08;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255,255,255,0.32), transparent 58%),
+    linear-gradient(135deg, #efc56e, #d49a3e);
+  font-size: 0.78rem;
+  font-weight: 950;
+}
+
+.pwa-toast-close,
+.pwa-install-close {
+  display: grid;
+  place-items: center;
+  border: 0;
+  color: rgba(255,250,240,0.68);
+  background: transparent;
+}
+
+.pwa-toast-close {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+}
+
+.pwa-install-card {
+  right: 16px;
+  bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+  width: min(94vw, 430px);
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr) 30px;
+  gap: 13px;
+  padding: 15px;
+  border-radius: 24px;
+}
+
+.pwa-install-client {
+  background:
+    radial-gradient(circle at 12% 0%, rgba(239,197,110,0.105), transparent 42%),
+    radial-gradient(circle at 92% 0%, rgba(88,224,233,0.055), transparent 38%),
+    linear-gradient(180deg, rgba(255,255,255,0.060), rgba(255,255,255,0.014)),
+    rgba(10,13,20,0.94);
+}
+
+.pwa-install-admin {
+  background:
+    radial-gradient(circle at 12% 0%, rgba(255,61,112,0.105), transparent 42%),
+    radial-gradient(circle at 92% 0%, rgba(88,224,233,0.055), transparent 38%),
+    linear-gradient(180deg, rgba(255,255,255,0.060), rgba(255,255,255,0.014)),
+    rgba(16,19,28,0.94);
+}
+
+.pwa-install-mark {
+  width: 48px;
+  height: 48px;
+  border-radius: 18px;
+  color: #130f08;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255,255,255,0.34), transparent 58%),
+    linear-gradient(135deg, #efc56e, #d49a3e);
+}
+
+.pwa-install-copy {
+  min-width: 0;
+  display: grid;
+  gap: 6px;
+}
+
+.pwa-install-copy > span {
+  width: fit-content;
+  min-height: 26px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0 9px;
+  border-radius: 999px;
+  color: #58e0e9;
+  background: rgba(88,224,233,0.10);
+  border: 1px solid rgba(88,224,233,0.18);
+  font-size: 0.68rem;
+  font-weight: 950;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.pwa-install-copy strong {
+  font-size: 1rem;
+}
+
+.pwa-install-copy p {
+  margin: 0;
+  font-size: 0.82rem;
+}
+
+.pwa-install-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.pwa-install-primary,
+.pwa-install-secondary {
+  min-height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 13px;
+  border-radius: 999px;
+  font-size: 0.80rem;
+  font-weight: 950;
+}
+
+.pwa-install-primary {
+  border: 0;
+  color: #130f08;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255,255,255,0.32), transparent 58%),
+    linear-gradient(135deg, #efc56e, #d49a3e);
+  box-shadow: 0 12px 28px rgba(239,197,110,0.18);
+}
+
+.pwa-install-primary:disabled {
+  opacity: 0.66;
+  cursor: not-allowed;
+}
+
+.pwa-install-secondary {
+  border: 1px solid rgba(255,255,255,0.10);
+  color: rgba(255,250,240,0.78);
+  background: rgba(255,255,255,0.035);
+}
+
+.pwa-install-close {
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border-radius: 12px;
+}
+
+.pwa-install-close:hover,
+.pwa-toast-close:hover {
+  color: #fff;
+  background: rgba(255,255,255,0.06);
+}
+
+@media (max-width: 560px) {
+  .pwa-toast,
+  .pwa-install-card {
+    right: 10px;
+    left: 10px;
+    width: auto;
+  }
+
+  .pwa-toast {
+    bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+    border-radius: 20px;
+  }
+
+  .pwa-install-card {
+    bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+    grid-template-columns: 44px minmax(0, 1fr) 28px;
+    gap: 11px;
+    padding: 13px;
+    border-radius: 22px;
+  }
+
+  .pwa-install-mark {
+    width: 44px;
+    height: 44px;
+    border-radius: 16px;
+  }
+
+  .pwa-install-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .pwa-install-primary,
+  .pwa-install-secondary {
+    min-height: 38px;
+    padding: 0 10px;
+  }
+}
+
+@media (display-mode: standalone) {
+  .pwa-install-card {
+    display: none !important;
+  }
+}
+

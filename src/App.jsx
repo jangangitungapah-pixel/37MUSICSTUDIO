@@ -4,6 +4,7 @@ import { Loader2 } from 'lucide-react';
 import { useThemeStore } from './store/useThemeStore';
 import FirebaseConfigNotice from './components/FirebaseConfigNotice';
 import PWAUpdatePrompt from './components/PWAUpdatePrompt';
+import PWAInstallPrompt from './components/PWAInstallPrompt';
 import PWAMetaManager from './components/PWAMetaManager';
 
 const AdminShell = lazy(() => import('./components/AdminShell'));
@@ -124,6 +125,7 @@ function App() {
       <LazyToaster theme={theme} />
       <FirebaseConfigNotice />
       <PWAUpdatePrompt />
+      <PWAInstallPrompt />
       <Routes>
         <Route path="/" element={<Suspense fallback={<FullPageLoader />}><PortalResolver /></Suspense>} />
         <Route path="/client" element={<Suspense fallback={<FullPageLoader />}><LandingPage /></Suspense>} />
