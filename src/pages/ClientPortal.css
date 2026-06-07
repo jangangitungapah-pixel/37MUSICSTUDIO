@@ -5511,3 +5511,90 @@
     background: #fff !important;
   }
 }
+
+/* ──────────────────────────────────────────────────────────────────────────
+   37 SMART CLIENT NAV BADGES 7.0L
+   --------------------------------------------------------------------------
+   Adds contextual badges to Client Portal nav:
+   - Billing badge for active remaining invoices
+   - Pesan badge for open messages
+   - Profile attention dot when phone/customer sync is incomplete
+   ────────────────────────────────────────────────────────────────────────── */
+
+.client-nav-pill.has-badge {
+  padding-right: 10px !important;
+}
+
+.client-nav-badge {
+  min-width: 20px;
+  height: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 2px;
+  padding: 0 6px;
+  border-radius: 999px;
+  color: #171006;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255,255,255,0.34), transparent 58%),
+    linear-gradient(135deg, var(--client-gold), var(--client-gold-2));
+  font-size: 0.66rem;
+  font-style: normal;
+  font-weight: 950;
+  line-height: 1;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.22),
+    0 8px 18px rgba(239,197,110,0.16);
+}
+
+.client-nav-badge.badge-messages {
+  color: #061013;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255,255,255,0.34), transparent 58%),
+    linear-gradient(135deg, var(--client-cyan), #3aaeb8);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.22),
+    0 8px 18px rgba(88,224,233,0.16);
+}
+
+.client-nav-badge.badge-profile {
+  min-width: 18px;
+  height: 18px;
+  padding: 0;
+  color: #fff;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255,255,255,0.22), transparent 58%),
+    linear-gradient(135deg, var(--client-danger), #c72b55);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.18),
+    0 8px 18px rgba(255,93,126,0.16);
+}
+
+.client-nav-pill.active .client-nav-badge {
+  background: rgba(23,16,6,0.16);
+  color: #171006;
+  box-shadow: none;
+}
+
+@media (max-width: 720px) {
+  .client-nav-pill.has-badge {
+    padding-right: 0 !important;
+  }
+
+  .client-unified-nav-actions .client-nav-badge {
+    position: absolute;
+    top: 5px;
+    right: 7px;
+    margin-left: 0;
+    min-width: 17px;
+    height: 17px;
+    padding: 0 5px;
+    font-size: 0.58rem;
+  }
+
+  .client-unified-nav-actions .client-nav-badge.badge-profile {
+    min-width: 15px;
+    height: 15px;
+    right: 8px;
+  }
+}
