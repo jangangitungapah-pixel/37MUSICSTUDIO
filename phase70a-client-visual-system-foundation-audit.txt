@@ -1,0 +1,16 @@
+37 Music Studio — Phase 7.0A Client Visual System Foundation
+Generated: 2026-06-07T18:04:50.659Z
+
+Design direction applied:
+- B + A: spatial ambient UI with premium studio mood.
+- Dark mode remains hero look, light mode polished.
+- Floating island nav on desktop.
+- Bottom floating nav on mobile/PWA.
+- Semi-frameless spatial cards.
+- Warmer gold primary actions, cyan accents, softer surfaces.
+
+Files touched:
+- src/pages/ClientPortal.css
+
+Next suggested phase:
+- Phase 7.0B Dashboard structure overhaul: nearest schedule first, then billing, messages/update, history.
