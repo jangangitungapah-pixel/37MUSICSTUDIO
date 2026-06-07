@@ -52,21 +52,7 @@ const buildCustomerMetadataPatch = (bookingData = {}) => {
     ...(cleanText(bookingData.paymentPreference) ? { paymentPreference: cleanText(bookingData.paymentPreference) } : {}),
     ...(cleanText(bookingData.clientLevel) ? { clientLevel: cleanText(bookingData.clientLevel) } : {}),
   };
-};) => {
-  const clientUid = String(bookingData.clientUid || '').trim();
-  const clientEmail = normalizeCustomerText(bookingData.clientEmail || bookingData.email || '');
-  const linkedCustomerId = String(bookingData.linkedCustomerId || '').trim();
-
-  return {
-    ...(clientUid ? { clientUid } : {}),
-    ...(clientEmail ? { clientEmail } : {}),
-    ...(bookingData.clientName ? { clientName: bookingData.clientName } : {}),
-    ...(linkedCustomerId ? { linkedCustomerId } : {}),
-    ...(bookingData.sourceRequestId ? { sourceRequestId: bookingData.sourceRequestId } : {}),
-    ...(bookingData.createdBy ? { createdBy: bookingData.createdBy } : {}),
-  };
 };
-
 const findMatchingCustomer = (customers, name, bookingData = {}) => {
   const normalizedName = normalizeCustomerText(name || bookingData.clientName || bookingData.band);
   const bookingPhone = normalizeCustomerPhone(getBookingPhone(bookingData));

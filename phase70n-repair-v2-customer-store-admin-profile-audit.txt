@@ -1,0 +1,15 @@
+37 Music Studio — Phase 7.0N Repair v2 Customer Store + Admin Professional Profile
+Generated: 2026-06-07T20:04:17.746Z
+
+Files touched:
+- src/store/useCustomerStore.js
+- src/pages/CustomersPage.jsx
+- src/pages/ClientPortal.css
+- src/pages/CustomersPage.css
+
+Fixes:
+- Uses LF normalization to avoid CRLF snippet mismatch.
+- Repairs malformed buildCustomerMetadataPatch.
+- Replaces customerSchema via schema block boundary.
+- Replaces useForm/reset/patch objects via brace matching.
+- Adds admin Professional Profile UI and CSS.

@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { useShallow } from 'zustand/react/shallow';
-import { Search, Plus, Edit2, Trash2, Mail, Phone, Calendar as CalendarIcon, Users, UserCheck, DollarSign, X, AtSign, MapPin, Clock, Star, StickyNote, MessageCircle, Gift, Award, ChevronDown, Link2, Unlink2, UserPlus, RefreshCw } from 'lucide-react';
+import { Search, Plus, Edit2, Trash2, Mail, Phone, Calendar as CalendarIcon, Users, UserCheck, DollarSign, X, AtSign, MapPin, Clock, Star, StickyNote, MessageCircle, Gift, Award, ChevronDown, Link2, Unlink2, UserPlus, RefreshCw, Music2 } from 'lucide-react';
 import { useCustomerStore } from '../store/useCustomerStore';
 import { useBookingStore } from '../store/useBookingStore';
 import { useStaffStore } from '../store/useStaffStore';
@@ -139,6 +139,12 @@ const isBackfillableBooking = (booking) => {
 const customerAlreadyMatchesBooking = (customers, booking) => (
   customers.some((customer) => matchesCustomerBooking(customer, booking))
 );
+const clientTypeOptions = ['Band', 'Solo Artist', 'Content Creator', 'Podcaster', 'Producer', 'Komunitas', 'Umum'];
+const genreOptions = ['Pop', 'Rock', 'Metal', 'Indie', 'Jazz', 'Worship', 'Dangdut', 'EDM', 'Hip Hop', 'Podcast / Talk', 'Lainnya'];
+const needOptions = ['Rehearsal', 'Recording', 'Mixing', 'Podcast', 'Content', 'Event Prep', 'Lainnya'];
+const preferredTimeOptions = ['Pagi', 'Siang', 'Sore', 'Malam', 'Weekend', 'Fleksibel'];
+const paymentOptions = ['Cash', 'Transfer', 'QRIS', 'DP dulu', 'Fleksibel'];
+
 const customerSchema = z.object({
   name: z.string().min(2, 'Nama minimal 2 karakter'),
   phone: z.string()
@@ -150,9 +156,21 @@ const customerSchema = z.object({
   address: z.string().optional(),
   status: z.enum(['Active', 'Inactive']),
   isVIP: z.boolean().optional(),
-  notes: z.string().optional()
+  notes: z.string().optional(),
+  projectName: z.string().optional(),
+  clientType: z.string().optional(),
+  primaryGenre: z.string().optional(),
+  mainNeed: z.string().optional(),
+  memberCount: z.string().optional(),
+  preferredDuration: z.string().optional(),
+  preferredTime: z.string().optional(),
+  preferredDays: z.string().optional(),
+  socialLink: z.string().optional(),
+  gearNotes: z.string().optional(),
+  invoiceName: z.string().optional(),
+  paymentPreference: z.string().optional(),
+  clientLevel: z.string().optional()
 });
-
 const validateWithZod = (fieldName) => (value) => {
   const fieldSchema = customerSchema.shape[fieldName];
   if (!fieldSchema) return true;
@@ -216,7 +234,20 @@ const CustomersPage = () => {
       address: '',
       status: 'Active',
       isVIP: false,
-      notes: ''
+      notes: '',
+      projectName: '',
+      clientType: '',
+      primaryGenre: '',
+      mainNeed: '',
+      memberCount: '',
+      preferredDuration: '',
+      preferredTime: '',
+      preferredDays: '',
+      socialLink: '',
+      gearNotes: '',
+      invoiceName: '',
+      paymentPreference: '',
+      clientLevel: 'New'
     }
   });
 
@@ -243,7 +274,7 @@ const CustomersPage = () => {
     // Filter by search query with Fuse.js for fuzzy matching
     if (searchQuery.trim()) {
       const fuse = new Fuse(result, {
-        keys: ['name', 'phone', 'email', 'instagram', 'clientName', 'clientEmail', 'clientUid', 'linkedCustomerId', 'notes'],
+        keys: ['name', 'phone', 'email', 'instagram', 'clientName', 'clientEmail', 'clientUid', 'linkedCustomerId', 'notes', 'projectName', 'clientType', 'primaryGenre', 'mainNeed', 'socialLink', 'gearNotes', 'invoiceName', 'paymentPreference'],
         threshold: 0.35,
         ignoreLocation: true
       });
@@ -255,7 +286,29 @@ const CustomersPage = () => {
 
   const handleOpenNew = () => {
     setEditingCustomer(null);
-    reset({ name: '', phone: '', email: '', instagram: '', address: '', status: 'Active', isVIP: false, notes: '' });
+    reset({
+      name: '',
+      phone: '',
+      email: '',
+      instagram: '',
+      address: '',
+      status: 'Active',
+      isVIP: false,
+      notes: '',
+      projectName: '',
+      clientType: '',
+      primaryGenre: '',
+      mainNeed: '',
+      memberCount: '',
+      preferredDuration: '',
+      preferredTime: '',
+      preferredDays: '',
+      socialLink: '',
+      gearNotes: '',
+      invoiceName: '',
+      paymentPreference: '',
+      clientLevel: 'New'
+    });
     setIsModalOpen(true);
   };
 
@@ -277,7 +330,7 @@ const CustomersPage = () => {
 
   const handleOpenEdit = (customer) => {
     setEditingCustomer(customer);
-    reset({ 
+    reset({
       name: customer.name || '',
       phone: customer.phone || '',
       email: customer.email || '',
@@ -285,7 +338,20 @@ const CustomersPage = () => {
       address: customer.address || '',
       status: customer.status || 'Active',
       isVIP: customer.isVIP || false,
-      notes: customer.notes || ''
+      notes: customer.notes || '',
+      projectName: customer.projectName || '',
+      clientType: customer.clientType || '',
+      primaryGenre: customer.primaryGenre || '',
+      mainNeed: customer.mainNeed || '',
+      memberCount: customer.memberCount || '',
+      preferredDuration: customer.preferredDuration || '',
+      preferredTime: customer.preferredTime || '',
+      preferredDays: customer.preferredDays || '',
+      socialLink: customer.socialLink || '',
+      gearNotes: customer.gearNotes || '',
+      invoiceName: customer.invoiceName || '',
+      paymentPreference: customer.paymentPreference || '',
+      clientLevel: customer.clientLevel || 'New'
     });
     setIsModalOpen(true);
     setSelectedCustomer(null);
@@ -319,6 +385,19 @@ const CustomersPage = () => {
       linkedCustomerId: String(selectedCustomer.id || ''),
       phone: selectedCustomer.phone || clientAccount.phone || '',
       email: selectedCustomer.email || clientAccount.email || '',
+      projectName: selectedCustomer.projectName || clientAccount.projectName || clientAccount.clientName || '',
+      clientType: selectedCustomer.clientType || clientAccount.clientType || '',
+      primaryGenre: selectedCustomer.primaryGenre || clientAccount.primaryGenre || '',
+      mainNeed: selectedCustomer.mainNeed || clientAccount.mainNeed || '',
+      memberCount: selectedCustomer.memberCount || clientAccount.memberCount || '',
+      preferredDuration: selectedCustomer.preferredDuration || clientAccount.preferredDuration || '',
+      preferredTime: selectedCustomer.preferredTime || clientAccount.preferredTime || '',
+      preferredDays: selectedCustomer.preferredDays || clientAccount.preferredDays || '',
+      socialLink: selectedCustomer.socialLink || clientAccount.socialLink || '',
+      gearNotes: selectedCustomer.gearNotes || clientAccount.gearNotes || '',
+      invoiceName: selectedCustomer.invoiceName || clientAccount.invoiceName || '',
+      paymentPreference: selectedCustomer.paymentPreference || clientAccount.paymentPreference || '',
+      clientLevel: selectedCustomer.clientLevel || clientAccount.clientLevel || 'New',
     };
 
     try {
@@ -738,6 +817,11 @@ const CustomersPage = () => {
                                 {customer.isVIP && <Star size={12} color="#FFC107" fill="#FFC107" title="VIP Member" />}
                                 {isClientLinkedCustomer(customer) && <span className="client-app-badge">Client App</span>}
                               </span>
+                              {(customer.projectName || customer.clientType || customer.primaryGenre || customer.mainNeed) && (
+                                <span className="customer-pro-tags">
+                                  {[customer.projectName, customer.clientType, customer.primaryGenre, customer.mainNeed].filter(Boolean).slice(0, 3).join(' • ')}
+                                </span>
+                              )}
                               {customer.notes && <span className="customer-note">{customer.notes}</span>}
                             </div>
                           </div>
@@ -940,6 +1024,47 @@ const CustomersPage = () => {
                 {selectedCustomer.address && <div className="detail-item"><MapPin size={14} /> <span>{selectedCustomer.address}</span></div>}
               </div>
 
+              <div className="detail-section professional-profile-section">
+                <h4 className="section-title">Professional Profile</h4>
+                <div className="customer-pro-card">
+                  <div>
+                    <span>Project</span>
+                    <strong>{selectedCustomer.projectName || selectedCustomer.name}</strong>
+                  </div>
+                  <div>
+                    <span>Tipe</span>
+                    <strong>{selectedCustomer.clientType || '-'}</strong>
+                  </div>
+                  <div>
+                    <span>Genre</span>
+                    <strong>{selectedCustomer.primaryGenre || '-'}</strong>
+                  </div>
+                  <div>
+                    <span>Kebutuhan</span>
+                    <strong>{selectedCustomer.mainNeed || '-'}</strong>
+                  </div>
+                  <div>
+                    <span>Personel</span>
+                    <strong>{selectedCustomer.memberCount || '-'}</strong>
+                  </div>
+                  <div>
+                    <span>Durasi favorit</span>
+                    <strong>{selectedCustomer.preferredDuration ? selectedCustomer.preferredDuration + ' jam' : '-'}</strong>
+                  </div>
+                  <div>
+                    <span>Waktu favorit</span>
+                    <strong>{selectedCustomer.preferredTime || selectedCustomer.preferredDays || '-'}</strong>
+                  </div>
+                  <div>
+                    <span>Pembayaran</span>
+                    <strong>{selectedCustomer.paymentPreference || '-'}</strong>
+                  </div>
+                </div>
+                {selectedCustomer.socialLink && <div className="detail-item"><AtSign size={14} /> <span>{selectedCustomer.socialLink}</span></div>}
+                {selectedCustomer.invoiceName && <div className="detail-item"><Mail size={14} /> <span>Invoice: {selectedCustomer.invoiceName}</span></div>}
+                {selectedCustomer.gearNotes && <p className="detail-notes gear-notes">{selectedCustomer.gearNotes}</p>}
+              </div>
+
               {/* Membership Tier */}
               {(() => {
                 const tier = getMembershipTier(selectedCustomer.totalBookings, selectedCustomer.totalSpent);
@@ -1131,6 +1256,102 @@ const CustomersPage = () => {
                   {...register('address')}
                 />
               </div>
+            </div>
+          </div>
+
+          {/* Section: Studio Profile */}
+          <div className="cf-section customer-pro-form-section">
+            <div className="cf-section-title"><Music2 size={12} /> Studio Profile</div>
+            <div className="cf-row">
+              <div className="cf-field">
+                <label className="cf-label">Nama Band / Project</label>
+                <input type="text" placeholder="contoh: Naufal Band" className="cf-input" {...register('projectName')} />
+              </div>
+              <div className="cf-field">
+                <label className="cf-label">Tipe Client</label>
+                <select className="cf-input" {...register('clientType')}>
+                  <option value="">Pilih tipe</option>
+                  {clientTypeOptions.map((option) => <option key={option} value={option}>{option}</option>)}
+                </select>
+              </div>
+            </div>
+            <div className="cf-row">
+              <div className="cf-field">
+                <label className="cf-label">Genre / Kategori</label>
+                <select className="cf-input" {...register('primaryGenre')}>
+                  <option value="">Pilih genre</option>
+                  {genreOptions.map((option) => <option key={option} value={option}>{option}</option>)}
+                </select>
+              </div>
+              <div className="cf-field">
+                <label className="cf-label">Kebutuhan Utama</label>
+                <select className="cf-input" {...register('mainNeed')}>
+                  <option value="">Pilih kebutuhan</option>
+                  {needOptions.map((option) => <option key={option} value={option}>{option}</option>)}
+                </select>
+              </div>
+            </div>
+            <div className="cf-row">
+              <div className="cf-field">
+                <label className="cf-label">Jumlah Personel</label>
+                <input type="text" placeholder="contoh: 4" className="cf-input" {...register('memberCount')} />
+              </div>
+              <div className="cf-field">
+                <label className="cf-label">Social / Portfolio</label>
+                <input type="text" placeholder="Instagram, YouTube, Spotify..." className="cf-input" {...register('socialLink')} />
+              </div>
+            </div>
+          </div>
+
+          {/* Section: Booking Preference */}
+          <div className="cf-section customer-pro-form-section">
+            <div className="cf-section-title"><Clock size={12} /> Booking Preference</div>
+            <div className="cf-row">
+              <div className="cf-field">
+                <label className="cf-label">Durasi Favorit</label>
+                <select className="cf-input" {...register('preferredDuration')}>
+                  <option value="">Pilih durasi</option>
+                  <option value="1">1 jam</option>
+                  <option value="2">2 jam</option>
+                  <option value="3">3 jam</option>
+                  <option value="4">4 jam</option>
+                  <option value="5">5 jam</option>
+                </select>
+              </div>
+              <div className="cf-field">
+                <label className="cf-label">Waktu Favorit</label>
+                <select className="cf-input" {...register('preferredTime')}>
+                  <option value="">Pilih waktu</option>
+                  {preferredTimeOptions.map((option) => <option key={option} value={option}>{option}</option>)}
+                </select>
+              </div>
+            </div>
+            <div className="cf-row">
+              <div className="cf-field">
+                <label className="cf-label">Hari Favorit</label>
+                <input type="text" placeholder="contoh: Sabtu malam" className="cf-input" {...register('preferredDays')} />
+              </div>
+              <div className="cf-field">
+                <label className="cf-label">Preferensi Pembayaran</label>
+                <select className="cf-input" {...register('paymentPreference')}>
+                  <option value="">Pilih metode</option>
+                  {paymentOptions.map((option) => <option key={option} value={option}>{option}</option>)}
+                </select>
+              </div>
+            </div>
+            <div className="cf-row">
+              <div className="cf-field">
+                <label className="cf-label">Nama Invoice</label>
+                <input type="text" placeholder="nama untuk invoice" className="cf-input" {...register('invoiceName')} />
+              </div>
+              <div className="cf-field">
+                <label className="cf-label">Level Client</label>
+                <input type="text" placeholder="New / Regular / VIP / Partner" className="cf-input" {...register('clientLevel')} />
+              </div>
+            </div>
+            <div className="cf-field">
+              <label className="cf-label">Catatan Gear / Setup</label>
+              <textarea placeholder="Mic extra, DI box, keyboard, setup drum, request operator..." className="cf-input cf-textarea" rows="2" {...register('gearNotes')} />
             </div>
           </div>
 

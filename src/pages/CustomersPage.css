@@ -2186,3 +2186,96 @@ tr:hover
     width: 100%;
   }
 }
+
+/* ──────────────────────────────────────────────────────────────────────────
+   37 ADMIN CUSTOMER PROFESSIONAL PROFILE 7.0N
+   --------------------------------------------------------------------------
+   Adds professional customer profile display and form polish to admin portal.
+   ────────────────────────────────────────────────────────────────────────── */
+
+.customer-pro-tags {
+  display: inline-flex;
+  width: fit-content;
+  max-width: 100%;
+  margin-top: 4px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  color: var(--accent-cyan);
+  background: rgba(0, 240, 255, 0.075);
+  border: 1px solid rgba(0, 240, 255, 0.14);
+  font-size: 0.68rem;
+  font-weight: 800;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.professional-profile-section {
+  border: 1px solid rgba(0, 240, 255, 0.11);
+  border-radius: 18px;
+  padding: 12px;
+  background: radial-gradient(circle at 0% 0%, rgba(0, 240, 255, 0.08), transparent 42%), rgba(255,255,255,0.020);
+}
+
+.customer-pro-card {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.customer-pro-card > div {
+  min-height: 62px;
+  display: grid;
+  align-content: center;
+  gap: 4px;
+  padding: 10px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.065);
+  background: rgba(255,255,255,0.025);
+}
+
+.customer-pro-card span {
+  color: var(--text-muted);
+  font-size: 0.66rem;
+  font-weight: 850;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.customer-pro-card strong {
+  color: var(--text-primary);
+  font-size: 0.86rem;
+  font-weight: 900;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.detail-notes.gear-notes {
+  margin-top: 9px;
+  padding: 10px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.065);
+  background: rgba(255,255,255,0.025);
+}
+
+.customer-pro-form-section {
+  border: 1px solid rgba(0, 240, 255, 0.10);
+  border-radius: 18px;
+  padding: 12px;
+  background: radial-gradient(circle at 0% 0%, rgba(0, 240, 255, 0.06), transparent 42%), rgba(255,255,255,0.012);
+}
+
+.customer-pro-form-section select.cf-input {
+  appearance: none;
+}
+
+@media (max-width: 720px) {
+  .customer-pro-card {
+    grid-template-columns: 1fr;
+  }
+
+  .customer-pro-tags {
+    white-space: normal;
+  }
+}
