@@ -4026,3 +4026,446 @@ button.pc-cell {
   }
 }
 
+/* ──────────────────────────────────────────────────────────────────────────
+   37 CLIENT BOOKING JOURNEY BRIDGE 7.0I
+   --------------------------------------------------------------------------
+   Connects public calendar booking flow with the Client Portal visual system:
+   - Client Portal shortcut for authenticated users
+   - client booking context strip
+   - app-like mobile polish
+   ────────────────────────────────────────────────────────────────────────── */
+
+.pc-client-portal-btn {
+  min-height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(239, 197, 110, 0.24);
+  color: #171006;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255,255,255,0.34), transparent 58%),
+    linear-gradient(135deg, var(--pc-gold), #d49a3e);
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.24),
+    0 12px 28px rgba(239,197,110,0.18);
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.pc-client-portal-btn:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.28),
+    0 16px 36px rgba(239,197,110,0.24);
+}
+
+.pc-client-booking-strip {
+  width: min(1180px, 100%);
+  margin: 0 auto 12px;
+  display: grid;
+  grid-template-columns: 54px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 13px;
+  padding: 13px;
+  border-radius: 24px;
+  border: 1px solid rgba(239,197,110,0.15);
+  color: var(--pc-text);
+  background:
+    radial-gradient(circle at 8% 0%, rgba(239,197,110,0.12), transparent 42%),
+    radial-gradient(circle at 92% 0%, rgba(88,224,233,0.08), transparent 42%),
+    linear-gradient(180deg, rgba(255,255,255,0.060), rgba(255,255,255,0.012)),
+    rgba(16,19,26,0.74);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.070),
+    0 16px 42px rgba(0,0,0,0.20);
+  -webkit-backdrop-filter: blur(18px) saturate(1.08);
+  backdrop-filter: blur(18px) saturate(1.08);
+}
+
+.pc-client-booking-avatar {
+  width: 54px;
+  height: 54px;
+  display: grid;
+  place-items: center;
+  border-radius: 20px;
+  color: #171006;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255,255,255,0.34), transparent 58%),
+    linear-gradient(135deg, var(--pc-gold), #d49a3e);
+  font-size: 1.35rem;
+  font-weight: 950;
+  box-shadow: 0 12px 28px rgba(239,197,110,0.18);
+}
+
+.pc-client-booking-copy {
+  display: grid;
+  gap: 3px;
+}
+
+.pc-client-booking-copy span {
+  color: var(--pc-gold);
+  font-size: 0.68rem;
+  font-weight: 950;
+  letter-spacing: 0.075em;
+  text-transform: uppercase;
+}
+
+.pc-client-booking-copy strong {
+  color: var(--pc-text);
+  font-size: 1.06rem;
+  line-height: 1;
+  font-weight: 950;
+  letter-spacing: -0.04em;
+}
+
+.pc-client-booking-copy p {
+  margin: 0;
+  color: var(--pc-muted);
+  font-size: 0.82rem;
+  line-height: 1.42;
+  font-weight: 650;
+}
+
+.pc-client-booking-link {
+  min-height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 0 13px;
+  border-radius: 999px;
+  border: 1px solid rgba(88,224,233,0.18);
+  color: var(--pc-cyan);
+  background: rgba(88,224,233,0.060);
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.pc-client-booking-link:hover {
+  border-color: rgba(88,224,233,0.28);
+  background: rgba(88,224,233,0.095);
+}
+
+.pc-grid-panel {
+  scroll-margin-top: 96px;
+}
+
+.pc-cell.available {
+  position: relative;
+}
+
+.pc-cell.available::after {
+  content: "";
+  position: absolute;
+  inset: 5px;
+  border-radius: inherit;
+  opacity: 0;
+  pointer-events: none;
+  border: 1px solid rgba(130,216,160,0.24);
+  transition: opacity 160ms ease;
+}
+
+.pc-cell.available:hover::after {
+  opacity: 1;
+}
+
+.pc-public-status {
+  border-radius: 18px;
+  border: 1px solid rgba(88,224,233,0.15);
+  background:
+    radial-gradient(circle at 0% 0%, rgba(88,224,233,0.10), transparent 42%),
+    rgba(88,224,233,0.055);
+}
+
+.pc-public-status.error {
+  border-color: rgba(255,107,138,0.20);
+  background:
+    radial-gradient(circle at 0% 0%, rgba(255,107,138,0.12), transparent 42%),
+    rgba(255,107,138,0.070);
+}
+
+[data-theme="light"] .pc-client-booking-strip {
+  color: rgba(33,28,22,0.94);
+  background:
+    radial-gradient(circle at 8% 0%, rgba(239,197,110,0.18), transparent 42%),
+    radial-gradient(circle at 92% 0%, rgba(88,224,233,0.11), transparent 42%),
+    linear-gradient(180deg, rgba(255,255,255,0.86), rgba(255,255,255,0.48)),
+    rgba(255,255,255,0.72);
+  border-color: rgba(78,54,28,0.105);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.84),
+    0 16px 42px rgba(92,64,28,0.09);
+}
+
+[data-theme="light"] .pc-client-booking-copy strong {
+  color: rgba(33,28,22,0.94);
+}
+
+[data-theme="light"] .pc-client-booking-copy p {
+  color: rgba(33,28,22,0.62);
+}
+
+@media (max-width: 860px) {
+  .pc-client-booking-strip {
+    grid-template-columns: 48px minmax(0, 1fr);
+  }
+
+  .pc-client-booking-link {
+    grid-column: 1 / -1;
+    width: 100%;
+    border-radius: 16px;
+  }
+
+  .pc-client-booking-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 18px;
+  }
+}
+
+@media (max-width: 640px) {
+  .pc-client-portal-btn span,
+  .pc-exit-btn span {
+    display: none;
+  }
+
+  .pc-client-portal-btn,
+  .pc-exit-btn {
+    width: 42px;
+    padding: 0;
+    border-radius: 15px;
+  }
+
+  .pc-client-booking-strip {
+    margin-bottom: 10px;
+    padding: 11px;
+    border-radius: 21px;
+  }
+
+  .pc-client-booking-copy strong {
+    font-size: 0.98rem;
+  }
+
+  .pc-client-booking-copy p {
+    font-size: 0.76rem;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   37 PUBLIC BOOKING MODAL COMFORT POLISH 7.0J
+   --------------------------------------------------------------------------
+   Improves booking modal clarity and trust:
+   - logged-in client identity strip
+   - field helper text
+   - duration helper
+   - price breakdown
+   - safer submit guidance
+   ────────────────────────────────────────────────────────────────────────── */
+
+.pc-modal-client-strip {
+  display: grid;
+  grid-template-columns: 46px minmax(0, 1fr);
+  align-items: center;
+  gap: 11px;
+  margin: 12px 0 0;
+  padding: 12px;
+  border-radius: 18px;
+  border: 1px solid rgba(239,197,110,0.16);
+  background:
+    radial-gradient(circle at 0% 0%, rgba(239,197,110,0.12), transparent 44%),
+    linear-gradient(180deg, rgba(255,255,255,0.052), rgba(255,255,255,0.012)),
+    rgba(255,255,255,0.026);
+}
+
+.pc-modal-client-avatar {
+  width: 46px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  border-radius: 17px;
+  color: #171006;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255,255,255,0.34), transparent 58%),
+    linear-gradient(135deg, var(--pc-gold), #d49a3e);
+  font-size: 1.15rem;
+  font-weight: 950;
+}
+
+.pc-modal-client-strip span {
+  display: block;
+  color: var(--pc-gold);
+  font-size: 0.66rem;
+  font-weight: 950;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.pc-modal-client-strip strong {
+  display: block;
+  margin-top: 2px;
+  color: var(--pc-text);
+  font-size: 0.95rem;
+  font-weight: 950;
+  letter-spacing: -0.035em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pc-modal-client-strip p {
+  margin: 4px 0 0;
+  color: var(--pc-muted);
+  font-size: 0.74rem;
+  line-height: 1.38;
+  font-weight: 650;
+}
+
+.pc-field-helper {
+  display: block;
+  margin-top: 6px;
+  color: var(--pc-soft);
+  font-size: 0.72rem;
+  line-height: 1.35;
+  font-weight: 700;
+}
+
+.pc-duration-helper {
+  min-height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 11px;
+  border-radius: 15px;
+  color: var(--pc-muted);
+  background: rgba(88,224,233,0.060);
+  border: 1px solid rgba(88,224,233,0.14);
+}
+
+.pc-duration-helper span {
+  font-size: 0.72rem;
+  font-weight: 850;
+}
+
+.pc-duration-helper strong {
+  color: var(--pc-cyan);
+  font-size: 0.82rem;
+  font-weight: 950;
+}
+
+.pc-price-breakdown {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.pc-price-breakdown > div {
+  min-height: 54px;
+  display: grid;
+  align-content: center;
+  gap: 3px;
+  padding: 8px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.070);
+  background: rgba(255,255,255,0.030);
+}
+
+.pc-price-breakdown span {
+  color: var(--pc-soft);
+  font-size: 0.64rem;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.pc-price-breakdown strong {
+  color: var(--pc-text);
+  font-size: 0.76rem;
+  font-weight: 950;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pc-submit-helper {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr);
+  align-items: start;
+  gap: 8px;
+  padding: 10px;
+  border-radius: 15px;
+  color: var(--pc-green);
+  background: rgba(130,216,160,0.070);
+  border: 1px solid rgba(130,216,160,0.14);
+}
+
+.pc-submit-helper span {
+  color: var(--pc-muted);
+  font-size: 0.74rem;
+  line-height: 1.38;
+  font-weight: 720;
+}
+
+.pc-modal-note {
+  align-items: flex-start !important;
+}
+
+.pc-modal-note span {
+  line-height: 1.42;
+}
+
+[data-theme="light"] .pc-modal-client-strip {
+  background:
+    radial-gradient(circle at 0% 0%, rgba(239,197,110,0.17), transparent 44%),
+    linear-gradient(180deg, rgba(255,255,255,0.82), rgba(255,255,255,0.48)),
+    rgba(255,255,255,0.70);
+  border-color: rgba(183,121,42,0.14);
+}
+
+[data-theme="light"] .pc-modal-client-strip strong {
+  color: rgba(33,28,22,0.94);
+}
+
+[data-theme="light"] .pc-modal-client-strip p,
+[data-theme="light"] .pc-submit-helper span {
+  color: rgba(33,28,22,0.64);
+}
+
+[data-theme="light"] .pc-price-breakdown > div {
+  background: rgba(255,255,255,0.62);
+  border-color: rgba(78,54,28,0.085);
+}
+
+@media (max-width: 640px) {
+  .pc-modal-client-strip {
+    grid-template-columns: 42px minmax(0, 1fr);
+    padding: 10px;
+    border-radius: 16px;
+  }
+
+  .pc-modal-client-avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 15px;
+  }
+
+  .pc-price-breakdown {
+    grid-template-columns: 1fr;
+  }
+
+  .pc-price-breakdown > div {
+    min-height: 46px;
+  }
+
+  .pc-price-breakdown strong {
+    white-space: normal;
+  }
+}

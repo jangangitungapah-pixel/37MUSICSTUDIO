@@ -8,7 +8,7 @@ import PWAInstallPrompt from './components/PWAInstallPrompt';
 import PWAMetaManager from './components/PWAMetaManager';
 
 const AdminShell = lazy(() => import('./components/AdminShell'));
-const LandingPage = lazy(() => import('./pages/LandingPage'));
+const ClientEntryPage = lazy(() => import('./pages/ClientEntryPage'));
 const PortalResolver = lazy(() => import('./pages/PortalResolver'));
 const ClientDashboardPage = lazy(() => import('./pages/ClientDashboardPage'));
 const ClientProfilePage = lazy(() => import('./pages/ClientProfilePage'));
@@ -134,7 +134,7 @@ function App() {
       <PWAInstallPrompt />
       <Routes>
         <Route path="/" element={<Suspense fallback={<FullPageLoader />}><PortalResolver /></Suspense>} />
-        <Route path="/client" element={<Suspense fallback={<FullPageLoader />}><LandingPage /></Suspense>} />
+        <Route path="/client" element={<Suspense fallback={<FullPageLoader />}><ClientEntryPage /></Suspense>} />
         <Route path="/client/dashboard" element={<Suspense fallback={<FullPageLoader />}><ClientDashboardPage /></Suspense>} />
         <Route path="/client/profile" element={<Suspense fallback={<FullPageLoader />}><ClientProfilePage /></Suspense>} />
         <Route path="/client/billing" element={<Suspense fallback={<FullPageLoader />}><ClientBillingPage /></Suspense>} />

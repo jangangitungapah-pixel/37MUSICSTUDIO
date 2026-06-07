@@ -326,6 +326,18 @@ const PublicCalendarPage = () => {
             >
               {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
             </button>
+
+            {user && !user.isAnonymous && (
+              <button
+                className="pc-client-portal-btn"
+                type="button"
+                onClick={() => navigate("/client/dashboard")}
+              >
+                <ShieldCheck size={16} />
+                <span>Client Portal</span>
+              </button>
+            )}
+
             <button className="pc-exit-btn" type="button" onClick={handleExitPublic}>
               <LogOut size={16} />
               <span>Kembali</span>
@@ -339,7 +351,7 @@ const PublicCalendarPage = () => {
             <span>Live public booking calendar</span>
           </div>
           <h1 className="pc-hero-title">{studioName || '37 MUSIC STUDIO'}</h1>
-          <p className="pc-hero-sub">Pilih slot kosong, ajukan sesi, lalu lanjut konfirmasi langsung lewat WhatsApp. Dibuat ringkas untuk booking dari HP.</p>
+          <p className="pc-hero-sub">Pilih slot kosong, ajukan sesi, lalu admin akan review request kamu. Ringkas, cepat, dan enak dipakai dari HP.</p>
 
           <div className="pc-hero-actions">
             <a className="pc-primary-link" href="#pc-booking-calendar">
@@ -402,8 +414,25 @@ const PublicCalendarPage = () => {
             <span>Booking board</span>
             <h2>Pilih jam kosong yang paling pas.</h2>
           </div>
-          <p>Slot hijau bisa langsung dipilih. Slot merah atau redup berarti sudah terisi, tutup, atau sudah lewat.</p>
+          <p>Slot hijau bisa dipilih. Slot merah atau redup berarti sudah terisi, tutup, atau sudah lewat.</p>
         </MotionSection>
+
+        {user && !user.isAnonymous && (
+          <MotionSection delay={0.08} className="pc-client-booking-strip">
+            <div className="pc-client-booking-avatar">
+              {(userProfile?.displayName || userProfile?.username || user?.displayName || user?.email || "C").trim().charAt(0).toUpperCase()}
+            </div>
+            <div className="pc-client-booking-copy">
+              <span>Booking sebagai akun client</span>
+              <strong>{userProfile?.displayName || userProfile?.username || user?.displayName || user?.email?.split("@")[0] || "Client"}</strong>
+              <p>Nama dan nomor WhatsApp dari profil akan otomatis dipakai saat kamu memilih slot.</p>
+            </div>
+            <button type="button" className="pc-client-booking-link" onClick={() => navigate("/client/profile")}>
+              Lengkapi Profil
+              <ChevronRight size={15} />
+            </button>
+          </MotionSection>
+        )}
 
         <MotionSection delay={0.1} className="pc-toolbar">
           {/* Navigation */}
@@ -645,7 +674,7 @@ const PublicCalendarPage = () => {
                       <CalendarDays size={24} />
                     </div>
                     <div>
-                      <h3 id="pc-booking-title">Ajukan Booking</h3>
+                      <h3 id="pc-booking-title">Ajukan Booking Studio</h3>
                       <p>
                         {selectedSlot.dateStr
                           ? format(new Date(selectedSlot.dateStr + 'T00:00:00'), 'EEEE, dd MMMM yyyy', { locale: localeId })
@@ -668,6 +697,19 @@ const PublicCalendarPage = () => {
                   </span>
                 </div>
 
+                {user && !user.isAnonymous && (
+                  <div className="pc-modal-client-strip">
+                    <div className="pc-modal-client-avatar">
+                      {(userProfile?.displayName || userProfile?.username || user?.displayName || user?.email || "C").trim().charAt(0).toUpperCase()}
+                    </div>
+                    <div>
+                      <span>Booking sebagai akun client</span>
+                      <strong>{userProfile?.displayName || userProfile?.username || user?.displayName || user?.email?.split("@")[0] || "Client"}</strong>
+                      <p>Data client akan ikut tersimpan supaya booking, billing, dan histori lebih gampang tersambung.</p>
+                    </div>
+                  </div>
+                )}
+
                 {/* Form */}
                 <div className="pc-modal-body">
                   <div className="pc-form-group">
@@ -687,6 +729,7 @@ const PublicCalendarPage = () => {
                       aria-describedby={formErrors.bandName ? 'pc-band-error' : undefined}
                     />
                     {formErrors.bandName && <span id="pc-band-error" className="pc-field-error">{formErrors.bandName}</span>}
+                    <span className="pc-field-helper" id="pc-field-helper-name">Boleh isi nama band, nama artis, atau nama project.</span>
                   </div>
 
                   <div className="pc-form-group">
@@ -705,6 +748,7 @@ const PublicCalendarPage = () => {
                       aria-describedby={formErrors.customerPhone ? 'pc-phone-error' : undefined}
                     />
                     {formErrors.customerPhone && <span id="pc-phone-error" className="pc-field-error">{formErrors.customerPhone}</span>}
+                    <span className="pc-field-helper" id="pc-field-helper-phone">Pakai nomor aktif supaya admin bisa follow up konfirmasi jadwal.</span>
                   </div>
 
                   <div className="pc-form-group">
@@ -725,6 +769,11 @@ const PublicCalendarPage = () => {
                     </div>
                   </div>
 
+                  <div className="pc-duration-helper">
+                    <span>Durasi dipilih</span>
+                    <strong>{duration} jam</strong>
+                  </div>
+
                   {/* Price estimate */}
                   <div className="pc-price-estimate">
                     <span className="pc-price-label">Estimasi Harga</span>
@@ -740,10 +789,30 @@ const PublicCalendarPage = () => {
                     </div>
                   </div>
 
+                  <div className="pc-price-breakdown">
+                    <div>
+                      <span>Rate / jam</span>
+                      <strong>Rp {formattedRate}</strong>
+                    </div>
+                    <div>
+                      <span>Durasi</span>
+                      <strong>{duration} jam</strong>
+                    </div>
+                    <div>
+                      <span>Diskon</span>
+                      <strong>{durationDiscountEst > 0 ? "-" + new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(durationDiscountEst) : "Rp0"}</strong>
+                    </div>
+                  </div>
+
                   {/* Info note */}
                   <div className="pc-modal-note">
                     <Info size={16} />
-                    <span>Request booking akan masuk ke admin studio. Setelah itu, tim 37 Music Studio akan follow up lewat WhatsApp.</span>
+                    <span>Request akan masuk ke admin studio untuk direview. Setelah dikonfirmasi, jadwal dan billing akan muncul di Client Portal.</span>
+                  </div>
+
+                  <div className="pc-submit-helper">
+                    <ShieldCheck size={15} />
+                    <span>Pastikan tanggal, jam, durasi, dan nomor WhatsApp sudah benar sebelum kirim.</span>
                   </div>
 
                   <button className="btn-success" type="button" onClick={sendWA} disabled={isSubmittingRequest} aria-busy={isSubmittingRequest}>
