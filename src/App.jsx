@@ -4,6 +4,7 @@ import { Loader2 } from 'lucide-react';
 import { useThemeStore } from './store/useThemeStore';
 import FirebaseConfigNotice from './components/FirebaseConfigNotice';
 import PWAUpdatePrompt from './components/PWAUpdatePrompt';
+import PWAMetaManager from './components/PWAMetaManager';
 
 const AdminShell = lazy(() => import('./components/AdminShell'));
 const LandingPage = lazy(() => import('./pages/LandingPage'));
@@ -38,6 +39,7 @@ const PageTitleUpdater = () => {
       '/admin/staff': 'Staff',
       '/admin/maintenance': 'Maintenance Log',
       '/admin/gallery': 'Galeri',
+      '/admin/messages': 'Pesan Client',
       '/admin/settings': 'Pengaturan',
       '/jadwal-publik': 'Jadwal Publik',
       '/galeri': 'Galeri Publik',
@@ -118,6 +120,7 @@ function App() {
   return (
     <Router>
       <PageTitleUpdater />
+      <PWAMetaManager />
       <LazyToaster theme={theme} />
       <FirebaseConfigNotice />
       <PWAUpdatePrompt />
@@ -143,6 +146,7 @@ function App() {
         <Route path="/staff" element={<Navigate to="/admin/staff" replace />} />
         <Route path="/maintenance" element={<Navigate to="/admin/maintenance" replace />} />
         <Route path="/gallery" element={<Navigate to="/admin/gallery" replace />} />
+        <Route path="/messages" element={<Navigate to="/admin/messages" replace />} />
         <Route path="/settings" element={<Navigate to="/admin/settings" replace />} />
 
         <Route path="*" element={<Navigate to="/client" replace />} />

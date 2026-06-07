@@ -6,7 +6,7 @@ service cloud.firestore {
       return request.auth != null;
     }
 
-    function signedInStaffAuth() {
+    function signedInNonAnonymous() {
       return signedIn()
         && request.auth.token.firebase.sign_in_provider != 'anonymous';
     }
@@ -20,7 +20,7 @@ service cloud.firestore {
     }
 
     function hasUserProfile() {
-      return signedInStaffAuth() && exists(userPath());
+      return signedInNonAnonymous() && exists(userPath());
     }
 
     function userData() {
@@ -59,32 +59,62 @@ service cloud.firestore {
     }
 
     function isSelf(userId) {
-      return signedInStaffAuth() && request.auth.uid == userId;
+      return signedInNonAnonymous() && request.auth.uid == userId;
+    }
+
+    function selfUserCreateShape() {
+      return request.resource.data.keys().hasOnly([
+          'uid',
+          'email',
+          'username',
+          'displayName',
+          'phone',
+          'photoURL',
+          'role',
+          'status',
+          'provider',
+          'linkedCustomerId',
+          'createdAt',
+          'lastLoginAt'
+        ])
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.email == request.auth.token.email
+        && request.resource.data.role == 'client'
+        && request.resource.data.status == 'active';
     }
 
     function selfUserSafeUpdate() {
       return request.resource.data.diff(resource.data).affectedKeys().hasOnly([
           'username',
+          'displayName',
           'phone',
+          'photoURL',
           'fcmTokens',
           'requiresPasswordChange',
-          'passwordUpdatedAt'
+          'passwordUpdatedAt',
+          'lastLoginAt',
+          'provider',
+          'email'
         ])
         && (
           !request.resource.data.diff(resource.data).affectedKeys().hasAny(['requiresPasswordChange'])
           || request.resource.data.requiresPasswordChange == false
+        )
+        && (
+          !request.resource.data.diff(resource.data).affectedKeys().hasAny(['email'])
+          || request.resource.data.email == request.auth.token.email
         );
     }
 
     function isSelfUsernameMappingCreate() {
-      return signedInStaffAuth()
+      return signedInNonAnonymous()
         && request.resource.data.keys().hasOnly(['uid', 'email'])
         && request.resource.data.uid == request.auth.uid
         && request.resource.data.email == request.auth.token.email;
     }
 
     function isSelfUsernameMappingDelete() {
-      return signedInStaffAuth()
+      return signedInNonAnonymous()
         && resource.data.uid == request.auth.uid;
     }
 
@@ -129,7 +159,13 @@ service cloud.firestore {
     }
 
     match /bookingRequests/{requestId} {
-      allow read: if hasPermission('calendar') || hasPermission('billing');
+      allow read: if hasPermission('calendar')
+        || hasPermission('billing')
+        || (
+          signedInNonAnonymous()
+          && resource.data.clientUid == request.auth.uid
+        );
+
       allow create: if signedInGuestOrStaff()
         && request.resource.data.keys().hasOnly([
           'id',
@@ -141,14 +177,91 @@ service cloud.firestore {
           'estimatedPrice',
           'source',
           'status',
-          'createdAt'
+          'createdAt',
+          'clientUid',
+          'clientEmail',
+          'clientName',
+          'clientPhone',
+          'linkedCustomerId',
+          'createdBy'
         ])
         && request.resource.data.status == 'pending'
         && request.resource.data.band is string
+        && request.resource.data.phone is string
         && request.resource.data.date is string
         && request.resource.data.hour is number
-        && request.resource.data.duration is number;
+        && request.resource.data.duration is number
+        && request.resource.data.estimatedPrice is number
+        && request.resource.data.source is string
+        && request.resource.data.createdAt is string
+        && (
+          !('clientUid' in request.resource.data)
+          || request.resource.data.clientUid == ''
+          || (
+            signedInNonAnonymous()
+            && request.resource.data.clientUid == request.auth.uid
+          )
+        )
+        && (!('clientEmail' in request.resource.data) || request.resource.data.clientEmail is string)
+        && (!('clientName' in request.resource.data) || request.resource.data.clientName is string)
+        && (!('clientPhone' in request.resource.data) || request.resource.data.clientPhone is string)
+        && (!('linkedCustomerId' in request.resource.data) || request.resource.data.linkedCustomerId is string)
+        && (!('createdBy' in request.resource.data) || request.resource.data.createdBy is string);
+
       allow update, delete: if hasPermission('calendar') || hasPermission('billing');
+    }
+
+    match /clientMessages/{messageId} {
+      allow read: if isAdmin()
+        || hasPermission('messages')
+        || hasPermission('customers')
+        || (
+          signedInNonAnonymous()
+          && resource.data.clientUid == request.auth.uid
+        );
+
+      allow create: if signedInNonAnonymous()
+        && request.resource.data.keys().hasOnly([
+          'id',
+          'clientUid',
+          'clientEmail',
+          'clientName',
+          'clientPhone',
+          'linkedCustomerId',
+          'message',
+          'subject',
+          'source',
+          'status',
+          'priority',
+          'direction',
+          'isReadByAdmin',
+          'isReadByClient',
+          'createdAt',
+          'updatedAt'
+        ])
+        && request.resource.data.id is string
+        && request.resource.data.clientUid == request.auth.uid
+        && request.resource.data.message is string
+        && request.resource.data.message.size() >= 8
+        && request.resource.data.subject is string
+        && request.resource.data.status == 'open'
+        && request.resource.data.priority in ['low', 'normal', 'high']
+        && request.resource.data.direction == 'client_to_admin'
+        && request.resource.data.isReadByAdmin == false
+        && request.resource.data.isReadByClient == true
+        && request.resource.data.createdAt is string
+        && request.resource.data.updatedAt is string
+        && (!('clientEmail' in request.resource.data) || request.resource.data.clientEmail is string)
+        && (!('clientName' in request.resource.data) || request.resource.data.clientName is string)
+        && (!('clientPhone' in request.resource.data) || request.resource.data.clientPhone is string)
+        && (!('linkedCustomerId' in request.resource.data) || request.resource.data.linkedCustomerId is string)
+        && (!('source' in request.resource.data) || request.resource.data.source is string);
+
+      allow update: if isAdmin()
+        || hasPermission('messages')
+        || hasPermission('customers');
+
+      allow delete: if isAdmin();
     }
 
     match /auditLogs/{document=**} {
@@ -163,9 +276,7 @@ service cloud.firestore {
       allow create: if isAdmin()
         || (
           isSelf(userId)
-          && request.resource.data.keys().hasOnly(['uid', 'email', 'username', 'phone', 'createdAt'])
-          && request.resource.data.uid == request.auth.uid
-          && request.resource.data.email == request.auth.token.email
+          && selfUserCreateShape()
         );
 
       allow update: if isAdmin()

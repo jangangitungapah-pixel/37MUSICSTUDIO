@@ -1,0 +1,57 @@
+{
+  "id": "/client-pwa",
+  "name": "37 Music Studio Client",
+  "short_name": "37 Client",
+  "description": "Portal client 37 Music Studio untuk booking, jadwal, aktivitas, dan pesan ke admin.",
+  "theme_color": "#070706",
+  "background_color": "#070706",
+  "display": "standalone",
+  "orientation": "portrait",
+  "scope": "/",
+  "start_url": "/client",
+  "categories": [
+    "music",
+    "productivity",
+    "business"
+  ],
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Client Dashboard",
+      "short_name": "Dashboard",
+      "description": "Buka dashboard client.",
+      "url": "/client/dashboard",
+      "icons": [
+        {
+          "src": "/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Cek Jadwal Studio",
+      "short_name": "Jadwal",
+      "description": "Lihat slot booking publik.",
+      "url": "/jadwal-publik",
+      "icons": [
+        {
+          "src": "/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ]
+}

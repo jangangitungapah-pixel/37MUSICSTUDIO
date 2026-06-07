@@ -3120,3 +3120,18 @@ input:not([type="checkbox"]):not([type="radio"]):focus, select:focus, textarea:f
   }
 }
 
+/* ──────────────────────────────────────────────────────────────────────────
+   37 ROUTE AWARE PWA IDENTITY HOOKS
+   --------------------------------------------------------------------------
+   The app now sets html[data-pwa-mode="client" | "admin"] so UI can be
+   polished differently for installed Client/Admin PWA later.
+   ────────────────────────────────────────────────────────────────────────── */
+
+html[data-pwa-mode="client"] {
+  --pwa-shell-theme: #070706;
+}
+
+html[data-pwa-mode="admin"] {
+  --pwa-shell-theme: #0d0d12;
+}
+

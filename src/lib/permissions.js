@@ -10,6 +10,7 @@ export const PERMISSIONS = {
   settings: 'settings',
   dataManagement: 'dataManagement',
   gallery: 'gallery',
+  messages: 'messages',
 };
 
 export const PERMISSION_LABELS = {
@@ -24,6 +25,7 @@ export const PERMISSION_LABELS = {
   [PERMISSIONS.settings]: 'Pengaturan',
   [PERMISSIONS.dataManagement]: 'Backup / Reset Data',
   [PERMISSIONS.gallery]: 'Galeri Foto',
+  [PERMISSIONS.messages]: 'Pesan Client',
 };
 
 export const ADMIN_PERMISSIONS = Object.values(PERMISSIONS);
@@ -36,6 +38,7 @@ export const STAFF_DEFAULT_PERMISSIONS = [
   PERMISSIONS.billing,
   PERMISSIONS.maintenance,
   PERMISSIONS.gallery,
+  PERMISSIONS.messages,
 ];
 
 export const ROUTE_PERMISSIONS = {
@@ -49,6 +52,8 @@ export const ROUTE_PERMISSIONS = {
   '/maintenance': PERMISSIONS.maintenance,
   '/settings': PERMISSIONS.settings,
   '/gallery': PERMISSIONS.gallery,
+  '/messages': PERMISSIONS.messages,
+  '/admin/messages': PERMISSIONS.messages,
 };
 
 export const getDefaultPermissionsForRole = (role) => (

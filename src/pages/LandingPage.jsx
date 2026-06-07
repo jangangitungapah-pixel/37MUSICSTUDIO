@@ -1,6 +1,9 @@
-import { useEffect, useState } from 'react';
+import {
+  useEffect,
+  useState } from 'react';
 import { TextField } from '@radix-ui/themes';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link,
+  useNavigate } from 'react-router-dom';
 import {
   Activity,
   AlertCircle,
@@ -9,12 +12,10 @@ import {
   Camera,
   CheckCircle2,
   ChevronRight,
-  Clock3,
   Disc3,
   Eye,
   EyeOff,
   Gauge,
-  Headphones,
   Lock,
   Mail,
   MapPin,
@@ -25,13 +26,12 @@ import {
   Music2,
   Phone,
   PlayCircle,
-  ShieldCheck,
   Sparkles,
   Sun,
   Users2,
   Volume2,
   X,
-  Loader2,
+  Loader2
 } from 'lucide-react';
 import { usePublicStudioSettings } from '../hooks/usePublicStudioSettings';
 import { useThemeStore } from '../store/useThemeStore';
@@ -61,8 +61,8 @@ const LandingPage = () => {
   const navigate = useNavigate();
 
   const [lightboxPhoto, setLightboxPhoto] = useState(null);
-  const [isLoginOpen, setIsLoginOpen] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isLoginOpen] = useState(false);
+const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [showPass, setShowPass] = useState(false);

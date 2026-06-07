@@ -1,0 +1,1 @@
+37 Music Studio — Phase 6.0C Build Fix\nGenerated: 2026-06-07T07:30:42.815Z\n\nFixed:\n- Repaired corrupted rgba fragment in ClientPortal.css.\n- Replaced .client-dashboard-nav block with valid CSS.\n- Added quick sanity scan for malformed CSS fragments.\n\nNext:\n- npm run lint\n- npm test\n- npm run build

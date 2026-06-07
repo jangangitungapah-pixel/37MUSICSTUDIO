@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { motion } from 'framer-motion';
-import { CalendarDays, Users, Package, CreditCard, Settings, BookOpen, PieChart, LogOut, Bell, ChevronRight, ChevronLeft, FlaskConical, Sun, Moon, Shield, Hammer, MoreHorizontal, Image, Volume2, VolumeX } from 'lucide-react';
+import { CalendarDays, Users, Package, CreditCard, Settings, BookOpen, PieChart, LogOut, Bell, ChevronRight, ChevronLeft, FlaskConical, Sun, Moon, Shield, Hammer, MoreHorizontal, Image, Volume2, VolumeX, MessageCircle } from 'lucide-react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import useSound from 'use-sound';
 import { CLICK_SOUND, HOVER_SOUND } from '../lib/sounds';
@@ -98,6 +98,7 @@ const Sidebar = () => {
     { icon: <PieChart size={19} />, label: 'Dashboard', path: '/dashboard' },
     { icon: <CalendarDays size={19} />, label: 'Calendar', path: '/calendar' },
     { icon: <Users size={19} />, label: 'Customers', path: '/customers' },
+    { icon: <MessageCircle size={19} />, label: 'Pesan Client', path: '/messages' },
     { icon: <Package size={19} />, label: 'Inventory', path: '/inventory' },
     { icon: <CreditCard size={19} />, label: 'Billing / POS', path: '/billing' },
     { icon: <BookOpen size={19} />, label: 'Pembukuan', path: '/finance' },

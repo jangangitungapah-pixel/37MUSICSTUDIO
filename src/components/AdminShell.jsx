@@ -4,7 +4,6 @@ import { AnimatePresence } from 'framer-motion';
 import { Loader2, LockKeyhole, LogOut, ShieldAlert } from 'lucide-react';
 import { useAuthStore } from '../store/useAuthStore';
 import { ROUTE_PERMISSIONS, hasPermission } from '../lib/permissions';
-import { stripAdminPrefix } from '../lib/roles';
 import Sidebar from './Sidebar';
 import NotificationToast from './NotificationToast';
 import PageTransition from './PageTransition';
@@ -19,6 +18,7 @@ const DashboardPage = lazy(() => import('../pages/DashboardPage'));
 const StaffPage = lazy(() => import('../pages/StaffPage'));
 const MaintenancePage = lazy(() => import('../pages/MaintenancePage'));
 const GalleryPage = lazy(() => import('../pages/GalleryPage'));
+const ClientMessagesPage = lazy(() => import('../pages/ClientMessagesPage'));
 
 const STAFF_ROLES = new Set(['admin', 'staff']);
 
@@ -175,6 +175,7 @@ const AnimatedRoutes = () => {
           <Route path="/staff" element={<PageTransition><StaffPage /></PageTransition>} />
           <Route path="/maintenance" element={<PageTransition><MaintenancePage /></PageTransition>} />
           <Route path="/gallery" element={<PageTransition><GalleryPage /></PageTransition>} />
+          <Route path="/messages" element={<PageTransition><ClientMessagesPage /></PageTransition>} />
           <Route path="/settings" element={<PageTransition><SettingsPage /></PageTransition>} />
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
