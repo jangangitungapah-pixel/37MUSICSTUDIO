@@ -16,6 +16,7 @@ import {
   Send,
   ShieldCheck,
   Sparkles,
+  UserRound,
 } from 'lucide-react';
 import { useAuthStore } from '../store/useAuthStore';
 import { useBookingStore } from '../store/useBookingStore';
@@ -339,6 +340,10 @@ const ClientDashboardPage = () => {
             <Calendar size={15} />
             Cek Slot
           </Link>
+          <Link to="/client/profile" className="client-ghost-btn">
+            <UserRound size={15} />
+            Profil
+          </Link>
           <button type="button" className="client-ghost-btn" onClick={logout}>
             <LogOut size={15} />
             Keluar
@@ -382,6 +387,10 @@ const ClientDashboardPage = () => {
             <ShieldCheck size={15} />
             {isDataLoading ? 'Sinkronisasi...' : 'Terverifikasi'}
           </div>
+          <Link to="/client/profile" className="client-profile-edit-link">
+            Lengkapi Profil
+            <ChevronRight size={14} />
+          </Link>
         </aside>
       </section>
 

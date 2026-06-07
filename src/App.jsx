@@ -11,6 +11,7 @@ const AdminShell = lazy(() => import('./components/AdminShell'));
 const LandingPage = lazy(() => import('./pages/LandingPage'));
 const PortalResolver = lazy(() => import('./pages/PortalResolver'));
 const ClientDashboardPage = lazy(() => import('./pages/ClientDashboardPage'));
+const ClientProfilePage = lazy(() => import('./pages/ClientProfilePage'));
 const AdminLoginPage = lazy(() => import('./pages/AdminLoginPage'));
 const PublicCalendarPage = lazy(() => import('./pages/PublicCalendarPage'));
 const PublicGalleryPage = lazy(() => import('./pages/PublicGalleryPage'));
@@ -30,6 +31,7 @@ const PageTitleUpdater = () => {
       '/': 'Portal',
       '/client': 'Client Portal',
       '/client/dashboard': 'Client Dashboard',
+      '/client/profile': 'Profil Client',
       '/admin': 'Admin Login',
       '/admin/dashboard': 'Dashboard',
       '/admin/calendar': 'Kalender',
@@ -130,6 +132,7 @@ function App() {
         <Route path="/" element={<Suspense fallback={<FullPageLoader />}><PortalResolver /></Suspense>} />
         <Route path="/client" element={<Suspense fallback={<FullPageLoader />}><LandingPage /></Suspense>} />
         <Route path="/client/dashboard" element={<Suspense fallback={<FullPageLoader />}><ClientDashboardPage /></Suspense>} />
+        <Route path="/client/profile" element={<Suspense fallback={<FullPageLoader />}><ClientProfilePage /></Suspense>} />
 
         <Route path="/admin" element={<Suspense fallback={<FullPageLoader />}><AdminLoginPage /></Suspense>} />
         <Route path="/admin/*" element={<Suspense fallback={<FullPageLoader />}><AdminShell /></Suspense>} />

@@ -37,7 +37,14 @@ export default defineConfig({
       filename: 'sw.js',
       registerType: 'prompt',
       injectRegister: null,
-      includeAssets: ['icon-512.png', 'icon-192.png', 'logo.svg'],
+      includeAssets: [
+          'icon-512.png',
+          'icon-192.png',
+          'logo.svg',
+          'client.webmanifest',
+          'admin.webmanifest',
+          'offline.html'
+        ],
       manifest: {
         name: '37 Music Studio',
         short_name: '37 Studio',
@@ -69,23 +76,49 @@ export default defineConfig({
         globPatterns: [
           'index.html',
           'manifest.webmanifest',
+          'client.webmanifest',
+          'admin.webmanifest',
+          'offline.html',
+
           'assets/**/*.css',
           'assets/index-*.js',
+
           'assets/vendor-react-*.js',
           'assets/vendor-router-*.js',
           'assets/vendor-state-*.js',
+          'assets/vendor-icons-*.js',
           'assets/vendor-sonner-*.js',
+
           'assets/AdminShell-*.js',
+          'assets/AdminLoginPage-*.js',
           'assets/DashboardPage-*.js',
           'assets/CalendarPage-*.js',
+          'assets/CustomerPage-*.js',
+          'assets/InventoryPage-*.js',
+          'assets/BillingPage-*.js',
+          'assets/FinancePage-*.js',
+          'assets/StaffPage-*.js',
+          'assets/MaintenancePage-*.js',
+          'assets/GalleryPage-*.js',
+          'assets/SettingsPage-*.js',
+          'assets/ClientMessagesPage-*.js',
+
+          'assets/LandingPage-*.js',
+          'assets/PortalResolver-*.js',
+          'assets/ClientDashboardPage-*.js',
           'assets/PublicCalendarPage-*.js',
           'assets/PublicGalleryPage-*.js',
           'assets/RegisterPage-*.js',
+
           'assets/firebase-*.js',
           'assets/useAuthStore-*.js',
           'assets/useThemeStore-*.js',
           'assets/useSettingsStore-*.js',
           'assets/useNotificationStore-*.js',
+          'assets/useBookingStore-*.js',
+          'assets/useBookingRequestStore-*.js',
+          'assets/useClientMessageStore-*.js',
+
           'icon-*.png',
           'logo.svg'
         ],

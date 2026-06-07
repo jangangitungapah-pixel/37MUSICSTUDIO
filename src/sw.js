@@ -1,5 +1,7 @@
 import { cleanupOutdatedCaches, precacheAndRoute } from 'workbox-precaching';
 import { clientsClaim } from 'workbox-core';
+import { NavigationRoute, registerRoute } from 'workbox-routing';
+import { createHandlerBoundToURL } from 'workbox-precaching';
 
 // Take control immediately
 self.skipWaiting();
@@ -8,6 +10,20 @@ clientsClaim();
 // Precache all Vite-built assets
 cleanupOutdatedCaches();
 precacheAndRoute(self.__WB_MANIFEST);
+
+// ===== 37 ROUTE FALLBACK FOR SPA =====
+// Keep deep links like /client/dashboard and /admin/messages working after install/refresh.
+registerRoute(new NavigationRoute(createHandlerBoundToURL('/index.html'), {
+  denylist: [
+    /^\/__/,
+    /^\/api\//,
+    /^\/firebase-messaging-sw\.js$/,
+    /^\/sw\.js$/,
+    /^\/client\.webmanifest$/,
+    /^\/admin\.webmanifest$/,
+    /^\/manifest\.webmanifest$/,
+  ],
+}));
 
 // ===== Push Notification Click Handler =====
 self.addEventListener('notificationclick', (event) => {
