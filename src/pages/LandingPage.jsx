@@ -96,7 +96,7 @@ const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
     const handleEscape = (event) => {
       if (event.key === 'Escape') {
-        setIsMobileMenuOpen(false);
+        setIsMobileMenuOpen(false);
         setLightboxPhoto(null);
       }
     };
@@ -176,26 +176,26 @@ const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   };
 
   return (
-    <div className="landing-container">
-      <nav className={`landing-nav ${scrolled ? 'scrolled' : ''}`}>
-        <Link to="/client" className="nav-brand" aria-label={`${studioName || '37 Music Studio'} home`}>
-          <span className="nav-brand-mark" aria-hidden="true">
-            <span className="nav-brand-monogram">37</span>
+    <div className="landing-container tw-landing-phase80b min-h-screen w-full overflow-x-hidden bg-[#07070b] text-[#fffaf0] antialiased selection:bg-amber-300/30 selection:text-white">
+      <nav className={`landing-nav tw-landing-nav fixed inset-x-0 top-0 z-50 flex items-center justify-between border-b border-white/10 bg-[#0b0d11]/85 px-3 shadow-2xl shadow-black/25 backdrop-blur-2xl transition-all duration-300 ${scrolled ? 'scrolled' : ''}`}>
+        <Link to="/client" className="nav-brand group inline-flex items-center gap-2 rounded-2xl outline-none transition hover:opacity-95 focus-visible:ring-2 focus-visible:ring-amber-300/60" aria-label={`${studioName || '37 Music Studio'} home`}>
+          <span className="nav-brand-mark group inline-flex items-center gap-2 rounded-2xl outline-none transition hover:opacity-95 focus-visible:ring-2 focus-visible:ring-amber-300/60 grid place-items-center border border-amber-300/30 bg-white/5 shadow-lg shadow-black/20 group-hover:border-amber-200/50" aria-hidden="true">
+            <span className="nav-brand-monogram group inline-flex items-center gap-2 rounded-2xl outline-none transition hover:opacity-95 focus-visible:ring-2 focus-visible:ring-amber-300/60">37</span>
           </span>
-          <span className="brand-text">{studioName || '37 MUSIC STUDIO'}</span>
+          <span className="brand-text truncate text-xs font-black uppercase tracking-tight text-stone-50/95">{studioName || '37 MUSIC STUDIO'}</span>
         </Link>
 
-        <div className="nav-links hide-on-mobile" role="navigation" aria-label="Navigasi utama">
+        <div className="nav-links hide-on-mobile hidden items-center gap-1 rounded-full border border-white/10 bg-white/[0.035] p-1 md:flex" role="navigation" aria-label="Navigasi utama">
           <a href="#experience">Fasilitas</a>
           <a href="#gallery">Galeri</a>
           <a href="#pricing">Harga</a>
           <a href="#location">Lokasi</a>
         </div>
 
-        <div className="nav-actions">
+        <div className="nav-actions flex shrink-0 items-center gap-2">
           <button
             type="button"
-            className="nav-theme-btn"
+            className="nav-theme-btn grid place-items-center rounded-2xl border border-white/10 bg-white/5 text-stone-100/75 transition hover:-translate-y-0.5 hover:border-amber-300/35 hover:bg-white/10 hover:text-white"
             onClick={toggleTheme}
             title={theme === 'dark' ? 'Ganti ke Light Mode' : 'Ganti ke Dark Mode'}
             aria-label={theme === 'dark' ? 'Aktifkan Light Mode' : 'Aktifkan Dark Mode'}
@@ -204,7 +204,7 @@ const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
           </button>
 
 
-          <Link to="/jadwal-publik" className="nav-book-btn" aria-label="Cek slot booking studio">
+          <Link to="/jadwal-publik" className="nav-book-btn hidden rounded-2xl bg-amber-300 px-4 font-black text-neutral-950 shadow-lg shadow-amber-500/15 transition hover:-translate-y-0.5 hover:bg-amber-200 sm:inline-flex" aria-label="Cek slot booking studio">
             <Calendar size={16} />
             <span>Booking</span>
           </Link>
@@ -213,7 +213,7 @@ const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
             type="button"
             className={`nav-hamburger ${isMobileMenuOpen ? 'open' : ''}`}
             onClick={() => {
-              setIsMobileMenuOpen(!isMobileMenuOpen);
+              setIsMobileMenuOpen(!isMobileMenuOpen);
             }}
             aria-label={isMobileMenuOpen ? 'Tutup menu navigasi' : 'Buka menu navigasi'}
             aria-expanded={isMobileMenuOpen}
@@ -228,11 +228,11 @@ const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
         <>
           <button
             type="button"
-            className="mobile-nav-backdrop"
+            className="mobile-nav-backdrop fixed inset-0 z-40 bg-black/60 backdrop-blur-sm"
             aria-label="Tutup menu navigasi"
             onClick={() => setIsMobileMenuOpen(false)}
           />
-          <div id="landing-mobile-menu" className="mobile-nav-menu" role="navigation" aria-label="Menu navigasi mobile">
+          <div id="landing-mobile-menu" className="mobile-nav-menu fixed left-3 right-3 top-20 z-50 grid gap-2 rounded-3xl border border-white/10 bg-[#0d1017]/95 p-3 shadow-2xl shadow-black/40 backdrop-blur-2xl" role="navigation" aria-label="Menu navigasi mobile">
             <a href="#experience" onClick={() => setIsMobileMenuOpen(false)}>Fasilitas</a>
             <a href="#gallery" onClick={() => setIsMobileMenuOpen(false)}>Galeri</a>
             <a href="#pricing" onClick={() => setIsMobileMenuOpen(false)}>Harga</a>
@@ -346,39 +346,39 @@ const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
         </div>
       )}
 
-      <section className="hero-section" aria-label="37 Music Studio landing hero">
-        <div className="hero-background" aria-hidden="true">
+      <section className="hero-section relative isolate min-h-[100svh] overflow-hidden pt-[calc(74px+env(safe-area-inset-top,0px))]" aria-label="37 Music Studio landing hero">
+        <div className="hero-background absolute inset-0 -z-10 overflow-hidden" aria-hidden="true">
           <img src={currentHeroPhoto.url} alt="" loading="eager" decoding="async" fetchPriority="high" />
           <div className="hero-scrim" />
         </div>
 
-        <div className="hero-shell">
-          <div className="hero-copy">
-            <div className="hero-kicker">
+        <div className="hero-shell mx-auto grid min-h-[calc(100svh-74px)] w-full max-w-7xl items-center gap-8 px-4 py-10 sm:px-6 lg:grid-cols-[minmax(0,1.08fr)_minmax(360px,0.62fr)] lg:px-8">
+          <div className="hero-copy max-w-3xl space-y-6">
+            <div className="hero-kicker inline-flex w-fit items-center gap-2 rounded-full border border-amber-300/20 bg-amber-300/10 px-3 py-2 text-xs font-black uppercase tracking-[0.18em] text-amber-200">
               <Sparkles size={16} />
               <span>Rehearsal & recording room di Tangerang</span>
             </div>
 
-            <h1 className="hero-title">Studio private untuk latihan dan recording yang lebih rapi.</h1>
+            <h1 className="hero-title max-w-4xl text-balance text-5xl font-black leading-[0.9] tracking-[-0.08em] text-white sm:text-6xl lg:text-7xl">Studio private untuk latihan dan recording yang lebih rapi.</h1>
 
-            <p className="hero-subtitle">
+            <p className="hero-subtitle max-w-2xl text-pretty text-base font-semibold leading-8 text-stone-100/75 sm:text-lg">
               Booking jadwal, latihan, recording, dan konten musik dalam satu ruang private. Gear siap, operator bantu setup, kamu tinggal datang dan main.
             </p>
 
-            <div className="hero-actions">
-              <Link to="/jadwal-publik" className="btn-primary btn-large">
+            <div className="hero-actions flex flex-col gap-3 sm:flex-row sm:items-center">
+              <Link to="/jadwal-publik" className="btn-primary btn-large inline-flex items-center justify-center gap-2 rounded-2xl bg-amber-300 px-5 py-3 font-black text-neutral-950 shadow-xl shadow-amber-500/20 transition hover:-translate-y-0.5 hover:bg-amber-200">
                 <Calendar size={20} />
                 <span>Cek Slot Booking</span>
               </Link>
-              <a href={YOUTUBE_URL} target="_blank" rel="noopener noreferrer" className="btn-secondary btn-large">
+              <a href={YOUTUBE_URL} target="_blank" rel="noopener noreferrer" className="btn-secondary btn-large inline-flex items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-5 py-3 font-black text-white/85 shadow-xl shadow-black/10 backdrop-blur-xl transition hover:-translate-y-0.5 hover:border-white/20 hover:bg-white/10 hover:text-white">
                 <PlayCircle size={20} />
                 <span>Lihat Video</span>
               </a>
             </div>
           </div>
 
-                    <div className="hero-login-panel" aria-label="Masuk atau daftar akun client">
-            <div className="hero-login-top">
+                    <div className="hero-login-panel rounded-[2rem] border border-white/10 bg-white/[0.07] p-4 shadow-2xl shadow-black/30 backdrop-blur-2xl sm:p-5" aria-label="Masuk atau daftar akun client">
+            <div className="hero-login-top mb-4 flex items-start gap-3">
               <div className="hero-login-badge">
                 <Lock size={16} />
               </div>
@@ -390,7 +390,7 @@ const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
             <button
               type="button"
-              className="hero-google-login"
+              className="hero-google-login inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/95 px-4 py-3 font-black text-neutral-950 shadow-lg shadow-black/10 transition hover:-translate-y-0.5 hover:bg-white disabled:cursor-not-allowed disabled:opacity-60"
               onClick={handleGoogleLogin}
               disabled={loginLoading}
             >
@@ -406,7 +406,7 @@ const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
               <span>atau masuk dengan email</span>
             </div>
 
-            <form onSubmit={handleLoginSubmit} className="hero-login-form">
+            <form onSubmit={handleLoginSubmit} className="hero-login-form grid gap-3">
               {loginError && (
                 <div id="hero-login-error" role="alert" className="hero-login-error">
                   <AlertCircle size={14} />
@@ -464,7 +464,7 @@ const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
                 </TextField.Root>
               </div>
 
-              <button type="submit" className="hero-login-submit" disabled={loginLoading}>
+              <button type="submit" className="hero-login-submit inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-amber-300 px-4 py-3 font-black text-neutral-950 shadow-lg shadow-amber-500/20 transition hover:-translate-y-0.5 hover:bg-amber-200 disabled:cursor-not-allowed disabled:opacity-60" disabled={loginLoading}>
                 {loginLoading ? (
                   <>
                     <Loader2 className="spinner" size={16} />
@@ -487,17 +487,17 @@ const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
         </div>
       </section>
 
-      <section id="experience" className="experience-section">
-        <div className="section-header">
-          <span className="section-eyebrow">Kenapa 37</span>
+      <section id="experience" className="experience-section mx-auto w-full max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+        <div className="section-header mx-auto mb-10 max-w-3xl text-center">
+          <span className="section-eyebrow mb-3 inline-flex w-fit rounded-full border border-amber-300/20 bg-amber-300/10 px-3 py-1.5 text-xs font-black uppercase tracking-[0.18em] text-amber-200">Kenapa 37</span>
           <h2>Sesi musik lebih rapi, tanpa ribet teknis.</h2>
           <p>
             Kami siapkan ruang, alat, dan bantuan teknis supaya kamu bisa fokus latihan, rekaman, atau bikin konten.
           </p>
         </div>
 
-        <div className="experience-grid">
-          <div className="experience-card">
+        <div className="experience-grid grid gap-4 md:grid-cols-3">
+          <div className="experience-card rounded-[1.75rem] border border-white/10 bg-white/[0.045] p-5 shadow-xl shadow-black/10 backdrop-blur-xl transition hover:-translate-y-1 hover:border-amber-300/25 hover:bg-white/[0.07]">
             <div className="experience-icon">
               <Music2 size={26} />
             </div>
@@ -506,7 +506,7 @@ const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
             <p>Drum, ampli gitar, ampli bass, AC, dan ruang soundproof siap dipakai sejak awal sesi.</p>
           </div>
 
-          <div className="experience-card featured">
+          <div className="experience-card featured rounded-[1.75rem] border border-white/10 bg-white/[0.045] p-5 shadow-xl shadow-black/10 backdrop-blur-xl transition hover:-translate-y-1 hover:border-amber-300/25 hover:bg-white/[0.07]">
             <div className="experience-icon">
               <Mic2 size={26} />
             </div>
@@ -515,7 +515,7 @@ const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
             <p>Mic, interface, monitoring, dan operator siap bantu tracking agar materi cepat jadi.</p>
           </div>
 
-          <div className="experience-card">
+          <div className="experience-card rounded-[1.75rem] border border-white/10 bg-white/[0.045] p-5 shadow-xl shadow-black/10 backdrop-blur-xl transition hover:-translate-y-1 hover:border-amber-300/25 hover:bg-white/[0.07]">
             <div className="experience-icon">
               <Gauge size={26} />
             </div>
@@ -526,26 +526,26 @@ const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
         </div>
       </section>
 
-      <section className="booking-flow-section">
-        <div className="flow-panel">
+      <section className="booking-flow-section mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+        <div className="flow-panel grid gap-6 rounded-[2rem] border border-white/10 bg-white/[0.05] p-5 shadow-2xl shadow-black/20 backdrop-blur-2xl md:grid-cols-[0.8fr_1.2fr] md:p-7">
           <div className="flow-copy">
-            <span className="section-eyebrow">Booking cepat</span>
+            <span className="section-eyebrow mb-3 inline-flex w-fit rounded-full border border-amber-300/20 bg-amber-300/10 px-3 py-1.5 text-xs font-black uppercase tracking-[0.18em] text-amber-200">Booking cepat</span>
             <h2>Cek jadwal, pilih slot, langsung kirim request.</h2>
             <p>Dirancang untuk dibuka dari HP. Kamu bisa lihat slot kosong, isi kebutuhan sesi, lalu lanjut konfirmasi via WhatsApp.</p>
           </div>
 
-          <div className="flow-steps" aria-label="Alur booking">
-            <div className="flow-step">
+          <div className="flow-steps grid gap-3 sm:grid-cols-3" aria-label="Alur booking">
+            <div className="flow-step rounded-3xl border border-white/10 bg-black/15 p-4">
               <span>01</span>
               <strong>Lihat slot</strong>
               <p>Pilih tanggal dan jam yang tersedia.</p>
             </div>
-            <div className="flow-step">
+            <div className="flow-step rounded-3xl border border-white/10 bg-black/15 p-4">
               <span>02</span>
               <strong>Isi detail</strong>
               <p>Tulis nama band/artist dan kebutuhan sesi.</p>
             </div>
-            <div className="flow-step">
+            <div className="flow-step rounded-3xl border border-white/10 bg-black/15 p-4">
               <span>03</span>
               <strong>Konfirmasi</strong>
               <p>Request masuk, tim studio follow up via WhatsApp.</p>
@@ -554,9 +554,9 @@ const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
         </div>
       </section>
 
-      <section id="gallery" className="landing-gallery-section">
-        <div className="section-header align-left">
-          <span className="section-eyebrow">Lihat ruang</span>
+      <section id="gallery" className="landing-gallery-section mx-auto w-full max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+        <div className="section-header align-left mx-auto mb-10 max-w-3xl text-center">
+          <span className="section-eyebrow mb-3 inline-flex w-fit rounded-full border border-amber-300/20 bg-amber-300/10 px-3 py-1.5 text-xs font-black uppercase tracking-[0.18em] text-amber-200">Lihat ruang</span>
           <h2>Cek dulu ruangnya sebelum datang.</h2>
           <p>Preview singkat biar kamu tahu suasana studio. Untuk foto lengkap, buka halaman galeri.</p>
         </div>
@@ -578,7 +578,7 @@ const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
         </div>
 
         <div className="gallery-actions">
-          <Link to="/galeri" className="btn-secondary btn-large">
+          <Link to="/galeri" className="btn-secondary btn-large inline-flex items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-5 py-3 font-black text-white/85 shadow-xl shadow-black/10 backdrop-blur-xl transition hover:-translate-y-0.5 hover:border-white/20 hover:bg-white/10 hover:text-white">
             <span>Lihat Galeri Studio</span>
             <ArrowUpRight size={18} />
           </Link>
@@ -602,10 +602,10 @@ const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
         )}
       </section>
 
-      <section id="pricing" className="pricing-section">
+      <section id="pricing" className="pricing-section mx-auto w-full max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
         <div className="pricing-shell">
           <div className="pricing-copy">
-            <span className="section-eyebrow">Harga studio</span>
+            <span className="section-eyebrow mb-3 inline-flex w-fit rounded-full border border-amber-300/20 bg-amber-300/10 px-3 py-1.5 text-xs font-black uppercase tracking-[0.18em] text-amber-200">Harga studio</span>
             <h2>Satu rate, fasilitas utama sudah termasuk.</h2>
             <p>
               Untuk latihan, demo recording, content session, atau sesi band yang butuh ruang private plus bantuan operator.
@@ -628,7 +628,7 @@ const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
               <span className="price-amount">{formattedPrice}</span>
               <span className="price-unit">/ jam</span>
             </div>
-            <Link to="/jadwal-publik" className="btn-primary btn-large">
+            <Link to="/jadwal-publik" className="btn-primary btn-large inline-flex items-center justify-center gap-2 rounded-2xl bg-amber-300 px-5 py-3 font-black text-neutral-950 shadow-xl shadow-amber-500/20 transition hover:-translate-y-0.5 hover:bg-amber-200">
               <Calendar size={19} />
               <span>Cek Slot Kosong</span>
             </Link>
@@ -659,11 +659,11 @@ const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
       <footer id="location" className="landing-footer">
         <div className="footer-content">
           <div className="footer-brand">
-            <Link to="/client" className="nav-brand">
-              <span className="nav-brand-mark" aria-hidden="true">
+            <Link to="/client" className="nav-brand group inline-flex items-center gap-2 rounded-2xl outline-none transition hover:opacity-95 focus-visible:ring-2 focus-visible:ring-amber-300/60">
+              <span className="nav-brand-mark group inline-flex items-center gap-2 rounded-2xl outline-none transition hover:opacity-95 focus-visible:ring-2 focus-visible:ring-amber-300/60 grid place-items-center border border-amber-300/30 bg-white/5 shadow-lg shadow-black/20 group-hover:border-amber-200/50" aria-hidden="true">
                 <img src="/logo.svg" alt="" />
               </span>
-              <span className="brand-text">{studioName || '37 MUSIC STUDIO'}</span>
+              <span className="brand-text truncate text-xs font-black uppercase tracking-tight text-stone-50/95">{studioName || '37 MUSIC STUDIO'}</span>
             </Link>
             <p>Studio private di Tangerang untuk latihan band, demo recording, vokal, dan content session.</p>
             <div className="footer-social">
@@ -704,7 +704,7 @@ const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
               <iframe
                 src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.345151531122!2d106.6089336!3d-6.218134099999999!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69fea3cbcf857d%3A0x58b169d1a6502414!2s37%20Music%20Studio%20TANGERANG!5e0!3m2!1sen!2sid!4v1779439398167!5m2!1sen!2sid"
                 width="100%"
-                height="100%"
+                height="100%"
                 allowFullScreen=""
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
