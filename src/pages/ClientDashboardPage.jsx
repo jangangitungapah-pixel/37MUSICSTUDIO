@@ -237,6 +237,7 @@ const ClientDashboardPage = () => {
 
   const latestMessages = clientMessages.slice(0, 3);
   const isDataLoading = !bookingsLoaded || !requestsLoaded || !messagesLoaded;
+  const isProfileIncomplete = digits(userProfile?.phone).length < 9;
 
   const handleMessageSubmit = async (event) => {
     event.preventDefault();
@@ -393,6 +394,19 @@ const ClientDashboardPage = () => {
           </Link>
         </aside>
       </section>
+
+      {isProfileIncomplete && (
+        <section className="client-profile-nudge">
+          <div>
+            <strong>Lengkapi nomor WhatsApp dulu, bro.</strong>
+            <p>Nomor WhatsApp membantu sistem menghubungkan request booking, histori studio, dan pesan admin ke akun client kamu.</p>
+          </div>
+          <Link to="/client/profile" className="client-profile-nudge-btn">
+            Lengkapi Profil
+            <ChevronRight size={15} />
+          </Link>
+        </section>
+      )}
 
       <section className="client-dashboard-grid" aria-label="Ringkasan aktivitas client">
         {clientStats.map(({ label, value, caption, icon: Icon, tone }) => (

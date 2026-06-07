@@ -35,7 +35,7 @@ const getPublicPhotoCaption = (photo, index = 0) => {
 
 const PublicCalendarPage = () => {
   const navigate = useNavigate();
-  const { user, logout, loginGuest, isAuthLoaded, loading: authLoading } = useAuthStore();
+  const { user, userProfile, logout, loginGuest, isAuthLoaded, loading: authLoading } = useAuthStore();
   const { theme, toggleTheme } = useThemeStore();
   const { bookings } = useBookingStore();
   const { addRequest } = useBookingRequestStore();
@@ -194,9 +194,18 @@ const PublicCalendarPage = () => {
   // Open booking modal
   const openModal = (dateStr, hour, triggerElement) => {
     lastSlotButtonRef.current = triggerElement || null;
+
+    const savedClientName =
+      userProfile?.displayName ||
+      userProfile?.username ||
+      user?.displayName ||
+      '';
+
+    const savedClientPhone = userProfile?.phone || '';
+
     setSelectedSlot({ dateStr, hour });
-    setBandName('');
-    setCustomerPhone('');
+    setBandName(savedClientName);
+    setCustomerPhone(savedClientPhone);
     setDuration(2);
     setFormErrors({});
     setModalOpen(true);
@@ -238,6 +247,16 @@ const PublicCalendarPage = () => {
         duration,
         estimatedPrice: priceEst,
         source: 'public-calendar',
+        clientUid: user && !user.isAnonymous ? user.uid : '',
+        clientEmail: user && !user.isAnonymous ? (user.email || userProfile?.email || '') : '',
+        clientName:
+          userProfile?.displayName ||
+          userProfile?.username ||
+          user?.displayName ||
+          bandName.trim(),
+        clientPhone: customerPhone.trim(),
+        linkedCustomerId: userProfile?.linkedCustomerId || '',
+        createdBy: user && !user.isAnonymous ? user.uid : 'public-guest',
       });
       useNotificationStore.getState().addNotification({
         title: 'Permintaan terkirim',

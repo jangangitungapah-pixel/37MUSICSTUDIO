@@ -1,0 +1,10 @@
+37 Music Studio — Phase 6.0K Lint Fix v2 PublicCalendar userProfile
+Generated: 2026-06-07T15:18:11.580Z
+
+Fixed:
+- openModal now prefills client name and phone from userProfile.
+- addRequest payload now stores client metadata.
+- userProfile no-unused-vars should be resolved.
+
+Method:
+- Used brace scanner instead of fragile regex comment matching.

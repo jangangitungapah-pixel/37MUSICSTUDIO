@@ -93,7 +93,7 @@ export default defineConfig({
           'assets/AdminLoginPage-*.js',
           'assets/DashboardPage-*.js',
           'assets/CalendarPage-*.js',
-          'assets/CustomerPage-*.js',
+          'assets/CustomersPage-*.js',
           'assets/InventoryPage-*.js',
           'assets/BillingPage-*.js',
           'assets/FinancePage-*.js',
