@@ -1878,5 +1878,273 @@ tr:hover
   }
 }
 
+/* ──────────────────────────────────────────────────────────────────────────
+   37 CUSTOMER CLIENT LINK VISIBILITY
+   --------------------------------------------------------------------------
+   Shows whether a customer is connected to a Client Portal account and
+   improves booking timeline relationship matching visually.
+   ────────────────────────────────────────────────────────────────────────── */
 
+.stat-icon-linked-client {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(var(--accent-cyan-rgb),0.18), transparent 64%),
+    rgba(var(--accent-cyan-rgb),0.08) !important;
+  border-color: rgba(var(--accent-cyan-rgb),0.18) !important;
+}
+
+.client-app-badge {
+  min-height: 20px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 7px;
+  border-radius: 999px;
+  color: var(--accent-cyan);
+  background: rgba(var(--accent-cyan-rgb),0.09);
+  border: 1px solid rgba(var(--accent-cyan-rgb),0.18);
+  font-size: 0.58rem;
+  line-height: 1;
+  font-weight: 900;
+  letter-spacing: 0.045em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.client-app-badge.mobile {
+  width: fit-content;
+  min-height: 18px;
+  margin-top: 4px;
+  padding: 0 6px;
+  font-size: 0.52rem;
+}
+
+.client-link-detail-section {
+  position: relative;
+}
+
+.client-link-card {
+  display: grid;
+  gap: 8px;
+  padding: 13px;
+  border-radius: 18px;
+  border: 1px solid rgba(var(--accent-cyan-rgb),0.18);
+  background:
+    radial-gradient(circle at 90% 0%, rgba(var(--accent-cyan-rgb),0.12), transparent 42%),
+    linear-gradient(180deg, rgba(255,255,255,0.040), rgba(255,255,255,0.010)),
+    rgba(var(--accent-cyan-rgb),0.050);
+}
+
+.client-link-card strong {
+  display: block;
+  color: var(--text-primary);
+  font-weight: 900;
+}
+
+.client-link-card span,
+.client-link-card small,
+.client-link-card em {
+  display: block;
+  color: var(--text-secondary);
+  overflow-wrap: anywhere;
+  line-height: 1.42;
+  font-size: 0.78rem;
+  font-style: normal;
+  font-weight: 650;
+}
+
+.client-link-card small {
+  color: var(--accent-cyan);
+}
+
+[data-theme="light"] .client-link-card,
+[data-theme="light"] .client-app-badge {
+  background: rgba(var(--accent-cyan-rgb),0.075);
+  border-color: rgba(var(--accent-cyan-rgb),0.18);
+}
+
+@media (max-width: 768px) {
+  .mobile-card-info .client-app-badge {
+    margin-left: 0;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   37 MANUAL CUSTOMER CLIENT LINK
+   --------------------------------------------------------------------------
+   Manual link/unlink controls for connecting existing customers to Client App
+   user accounts.
+   ────────────────────────────────────────────────────────────────────────── */
+
+.client-link-action-section {
+  position: relative;
+}
+
+.client-link-action-card {
+  display: grid;
+  gap: 10px;
+  padding: 13px;
+  border-radius: 18px;
+  border: 1px solid rgba(var(--accent-cyan-rgb),0.16);
+  background:
+    radial-gradient(circle at 90% 0%, rgba(var(--accent-cyan-rgb),0.10), transparent 42%),
+    linear-gradient(180deg, rgba(255,255,255,0.040), rgba(255,255,255,0.010)),
+    rgba(var(--accent-cyan-rgb),0.040);
+}
+
+.client-link-action-card.linked {
+  border-color: rgba(76,175,80,0.22);
+  background:
+    radial-gradient(circle at 90% 0%, rgba(76,175,80,0.12), transparent 42%),
+    linear-gradient(180deg, rgba(255,255,255,0.040), rgba(255,255,255,0.010)),
+    rgba(76,175,80,0.045);
+}
+
+.client-link-action-card p {
+  margin: 0;
+  color: var(--text-secondary);
+  line-height: 1.48;
+  font-size: 0.82rem;
+  font-weight: 650;
+}
+
+.client-link-action-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.client-link-action-head strong {
+  display: block;
+  color: var(--text-primary);
+  font-weight: 900;
+}
+
+.client-link-action-head span,
+.client-link-action-card small {
+  display: block;
+  color: var(--text-secondary);
+  overflow-wrap: anywhere;
+  line-height: 1.42;
+  font-size: 0.78rem;
+  font-weight: 650;
+}
+
+.client-link-action-card > small {
+  color: var(--accent-cyan);
+}
+
+.client-link-suggestions {
+  display: grid;
+  gap: 8px;
+}
+
+.client-link-suggestion {
+  min-height: 52px;
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 9px;
+  padding: 8px 10px;
+  border-radius: 15px;
+  border: 1px solid rgba(255,255,255,0.075);
+  color: var(--text-primary);
+  background: rgba(255,255,255,0.035);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.client-link-suggestion:hover {
+  border-color: rgba(var(--accent-cyan-rgb),0.28);
+  background: rgba(var(--accent-cyan-rgb),0.075);
+}
+
+.client-link-suggestion > svg {
+  color: var(--accent-cyan);
+}
+
+.client-link-suggestion strong,
+.client-link-suggestion small {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.client-link-suggestion strong {
+  font-size: 0.82rem;
+  font-weight: 900;
+}
+
+.client-link-suggestion small {
+  margin-top: 2px;
+  color: var(--text-secondary);
+  font-size: 0.72rem;
+}
+
+.client-link-suggestion em {
+  min-height: 24px;
+  display: grid;
+  place-items: center;
+  padding: 0 8px;
+  border-radius: 999px;
+  color: var(--accent-cyan);
+  background: rgba(var(--accent-cyan-rgb),0.10);
+  border: 1px solid rgba(var(--accent-cyan-rgb),0.18);
+  font-size: 0.68rem;
+  font-style: normal;
+  font-weight: 900;
+}
+
+.client-link-empty {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 10px;
+  border-radius: 15px;
+  color: var(--text-secondary);
+  background: rgba(255,255,255,0.030);
+  font-size: 0.78rem;
+  line-height: 1.42;
+}
+
+.client-link-empty svg {
+  flex: 0 0 auto;
+  color: var(--accent-cyan);
+}
+
+.client-link-danger-btn {
+  min-height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: fit-content;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,42,95,0.22);
+  color: var(--accent-pink);
+  background: rgba(255,42,95,0.075);
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.client-link-danger-btn:hover {
+  background: rgba(255,42,95,0.12);
+}
+
+[data-theme="light"] .client-link-action-card,
+[data-theme="light"] .client-link-suggestion,
+[data-theme="light"] .client-link-empty {
+  background: rgba(20,23,32,0.035);
+  border-color: rgba(20,23,32,0.08);
+}
+
+[data-theme="light"] .client-link-action-card.linked {
+  background: rgba(76,175,80,0.065);
+  border-color: rgba(76,175,80,0.18);
+}
 

@@ -1,0 +1,10 @@
+37 Music Studio — Phase 6.0N Lint Fix v2
+Generated: 2026-06-07T15:42:40.549Z
+
+Fixed:
+- selectedCustomerBookings now uses matchesCustomerBooking().
+- linkedClientCount is now displayed by injecting a Client Terhubung stat card after stats-bar.
+- Optional Client App badge injected when missing.
+
+Method:
+- Avoided fragile Active stat-card target.

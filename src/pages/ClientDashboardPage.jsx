@@ -345,6 +345,10 @@ const ClientDashboardPage = () => {
             <UserRound size={15} />
             Profil
           </Link>
+          <Link to="/client/billing" className="client-ghost-btn">
+            <ReceiptText size={15} />
+            Billing
+          </Link>
           <button type="button" className="client-ghost-btn" onClick={logout}>
             <LogOut size={15} />
             Keluar
@@ -562,6 +566,11 @@ const ClientDashboardPage = () => {
           <p>
             Ketika admin membuat invoice atau DP untuk booking kamu, statusnya akan tampil di panel ini.
           </p>
+
+          <Link to="/client/billing" className="client-panel-link">
+            Buka Billing
+            <ChevronRight size={16} />
+          </Link>
         </article>
       </section>
     </main>

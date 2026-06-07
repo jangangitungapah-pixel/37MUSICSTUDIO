@@ -1,8 +1,9 @@
 import { useState, useMemo } from 'react';
 import { useShallow } from 'zustand/react/shallow';
-import { Search, Plus, Edit2, Trash2, Mail, Phone, Calendar as CalendarIcon, Users, UserCheck, DollarSign, X, AtSign, MapPin, Clock, Star, StickyNote, MessageCircle, Gift, Award, ChevronDown } from 'lucide-react';
+import { Search, Plus, Edit2, Trash2, Mail, Phone, Calendar as CalendarIcon, Users, UserCheck, DollarSign, X, AtSign, MapPin, Clock, Star, StickyNote, MessageCircle, Gift, Award, ChevronDown, Link2, Unlink2, UserPlus } from 'lucide-react';
 import { useCustomerStore } from '../store/useCustomerStore';
 import { useBookingStore } from '../store/useBookingStore';
+import { useStaffStore } from '../store/useStaffStore';
 import { toast } from 'sonner';
 import Modal from '../components/Modal';
 import { getMembershipTier, TIER_CONFIG, getLoyaltyPoints, sendWelcomeMessage, sendPromoMessage, sendMembershipUpgrade } from '../lib/whatsappService';
@@ -31,6 +32,73 @@ const getAvatarColor = (name) => {
 };
 
 const formatCurrency = (num) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(num);
+
+const normalizeCustomerText = (value) => String(value || '').trim().toLowerCase();
+const normalizeCustomerPhone = (value) => String(value || '').replace(/\D/g, '');
+
+const isClientLinkedCustomer = (customer) => Boolean(
+  customer?.clientUid ||
+  customer?.clientEmail ||
+  customer?.linkedCustomerId ||
+  customer?.clientName
+);
+
+const getClientAccountLabel = (clientAccount) => (
+  clientAccount?.name ||
+  clientAccount?.username ||
+  clientAccount?.displayName ||
+  clientAccount?.email ||
+  'Client'
+);
+
+const getClientAccountScore = (customer, clientAccount) => {
+  if (!customer || !clientAccount) return 0;
+
+  let score = 0;
+
+  const customerPhone = normalizeCustomerPhone(customer.phone || customer.clientPhone || customer.whatsapp || customer.wa);
+  const clientPhone = normalizeCustomerPhone(clientAccount.phone);
+
+  if (customerPhone && clientPhone && customerPhone === clientPhone) score += 60;
+
+  const customerEmail = normalizeCustomerText(customer.clientEmail || customer.email);
+  const clientEmail = normalizeCustomerText(clientAccount.email);
+
+  if (customerEmail && clientEmail && customerEmail === clientEmail) score += 50;
+
+  const customerName = normalizeCustomerText(customer.name || customer.clientName);
+  const clientName = normalizeCustomerText(clientAccount.name || clientAccount.username || clientAccount.displayName);
+
+  if (customerName && clientName && (customerName === clientName || clientName.includes(customerName) || customerName.includes(clientName))) {
+    score += 25;
+  }
+
+  return score;
+};
+
+const matchesCustomerBooking = (customer, booking) => {
+  if (!customer || !booking) return false;
+
+  const customerUid = normalizeCustomerText(customer.clientUid);
+  const bookingUid = normalizeCustomerText(booking.clientUid || booking.customerUid || booking.userId || booking.createdBy);
+
+  if (customerUid && bookingUid && customerUid === bookingUid) return true;
+
+  const customerEmail = normalizeCustomerText(customer.clientEmail || customer.email);
+  const bookingEmail = normalizeCustomerText(booking.clientEmail || booking.customerEmail || booking.email || booking.userEmail);
+
+  if (customerEmail && bookingEmail && customerEmail === bookingEmail) return true;
+
+  const customerPhone = normalizeCustomerPhone(customer.phone || customer.clientPhone || customer.whatsapp || customer.wa);
+  const bookingPhone = normalizeCustomerPhone(booking.phone || booking.clientPhone || booking.customerPhone || booking.whatsapp || booking.wa);
+
+  if (customerPhone && bookingPhone && customerPhone === bookingPhone) return true;
+
+  const customerName = normalizeCustomerText(customer.name || customer.clientName);
+  const bookingName = normalizeCustomerText(booking.band || booking.bandName || booking.clientName || booking.customerName);
+
+  return Boolean(customerName && bookingName && customerName === bookingName);
+};
 
 const customerSchema = z.object({
   name: z.string().min(2, 'Nama minimal 2 karakter'),
@@ -64,14 +132,32 @@ const CustomersPage = () => {
     }))
   );
   const bookings = useBookingStore(state => state.bookings);
+  const staffMembers = useStaffStore(state => state.staffMembers);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState('all'); // 'all', 'Active', 'Inactive'
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [isFilterDropdownOpen, setIsFilterDropdownOpen] = useState(false);
+  const clientAccounts = useMemo(
+    () => staffMembers.filter((member) => normalizeCustomerText(member.role) === 'client'),
+    [staffMembers]
+  );
+  const customerClientSuggestions = useMemo(() => {
+    if (!selectedCustomer || isClientLinkedCustomer(selectedCustomer)) return [];
+
+    return clientAccounts
+      .map((clientAccount) => ({
+        clientAccount,
+        score: getClientAccountScore(selectedCustomer, clientAccount),
+      }))
+      .filter((item) => item.score > 0)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 4);
+  }, [clientAccounts, selectedCustomer]);
+
   const selectedCustomerBookings = useMemo(() => {
     if (!selectedCustomer) return [];
     return bookings
-      .filter((booking) => booking.band?.toLowerCase() === selectedCustomer.name.toLowerCase() && booking.status !== 'maintenance')
+      .filter((booking) => matchesCustomerBooking(selectedCustomer, booking) && booking.status !== 'maintenance')
       .sort((a, b) => new Date(b.date) - new Date(a.date))
       .slice(0, 8);
   }, [bookings, selectedCustomer]);
@@ -101,6 +187,7 @@ const CustomersPage = () => {
   const passiveCustomers = retentionInsights.passiveCustomers;
 
   const stats = getStats();
+  const linkedClientCount = useMemo(() => customers.filter(isClientLinkedCustomer).length, [customers]);
 
   const filteredCustomers = useMemo(() => {
     let result = customers;
@@ -115,7 +202,7 @@ const CustomersPage = () => {
     // Filter by search query with Fuse.js for fuzzy matching
     if (searchQuery.trim()) {
       const fuse = new Fuse(result, {
-        keys: ['name', 'phone', 'email', 'instagram'],
+        keys: ['name', 'phone', 'email', 'instagram', 'clientName', 'clientEmail', 'clientUid', 'linkedCustomerId', 'notes'],
         threshold: 0.35,
         ignoreLocation: true
       });
@@ -179,6 +266,58 @@ const CustomersPage = () => {
         onClick: () => {}
       }
     });
+  };
+
+  const handleLinkClientAccount = async (clientAccount) => {
+    if (!selectedCustomer || !clientAccount) return;
+
+    const patch = {
+      clientUid: clientAccount.id || clientAccount.uid || '',
+      clientEmail: clientAccount.email || '',
+      clientName: getClientAccountLabel(clientAccount),
+      linkedCustomerId: String(selectedCustomer.id || ''),
+      phone: selectedCustomer.phone || clientAccount.phone || '',
+      email: selectedCustomer.email || clientAccount.email || '',
+    };
+
+    try {
+      await updateCustomer(selectedCustomer.id, patch);
+
+      setSelectedCustomer((current) => (
+        current ? { ...current, ...patch } : current
+      ));
+
+      toast.success('Customer berhasil dihubungkan ke akun client.');
+    } catch (error) {
+      toast.error('Gagal menghubungkan akun client.', {
+        description: error.message || 'Coba lagi beberapa saat lagi.',
+      });
+    }
+  };
+
+  const handleUnlinkClientAccount = async () => {
+    if (!selectedCustomer) return;
+
+    const patch = {
+      clientUid: '',
+      clientEmail: '',
+      clientName: '',
+      linkedCustomerId: '',
+    };
+
+    try {
+      await updateCustomer(selectedCustomer.id, patch);
+
+      setSelectedCustomer((current) => (
+        current ? { ...current, ...patch } : current
+      ));
+
+      toast.success('Koneksi akun client dilepas.');
+    } catch (error) {
+      toast.error('Gagal melepas koneksi akun client.', {
+        description: error.message || 'Coba lagi beberapa saat lagi.',
+      });
+    }
   };
 
   const onSubmitForm = (data) => {
@@ -245,6 +384,15 @@ const CustomersPage = () => {
       </header>
 
       <div className="stats-bar">
+        <div className="stat-card">
+          <div className="stat-icon stat-icon-linked-client">
+            <UserCheck size={20} color="var(--accent-cyan)" />
+          </div>
+          <div className="stat-data">
+            <span className="stat-value">{linkedClientCount}</span>
+            <span className="stat-label">Client Terhubung</span>
+          </div>
+        </div>
         <div className="stat-card">
           <div className="stat-icon stat-icon-total">
             <Users size={20} color="var(--accent-cyan)" />
@@ -469,6 +617,7 @@ const CustomersPage = () => {
                               <span className="customer-name" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                                 {customer.name}
                                 {customer.isVIP && <Star size={12} color="#FFC107" fill="#FFC107" title="VIP Member" />}
+                                {isClientLinkedCustomer(customer) && <span className="client-app-badge">Client App</span>}
                               </span>
                               {customer.notes && <span className="customer-note">{customer.notes}</span>}
                             </div>
@@ -613,6 +762,57 @@ const CustomersPage = () => {
             </div>
 
             <div className="detail-panel-body">
+              <div className="detail-section client-link-action-section">
+                <h4 className="section-title">Koneksi Client Portal</h4>
+
+                {isClientLinkedCustomer(selectedCustomer) ? (
+                  <div className="client-link-action-card linked">
+                    <div className="client-link-action-head">
+                      <div>
+                        <strong>{selectedCustomer.clientName || selectedCustomer.name}</strong>
+                        <span>{selectedCustomer.clientEmail || selectedCustomer.email || 'Email client belum tersedia'}</span>
+                      </div>
+                      <span className="client-app-badge">Client App</span>
+                    </div>
+
+                    <small>{selectedCustomer.clientUid ? 'UID: ' + selectedCustomer.clientUid : 'Terhubung via customer metadata'}</small>
+
+                    <button type="button" className="client-link-danger-btn" onClick={handleUnlinkClientAccount}>
+                      <Unlink2 size={14} />
+                      Lepas Koneksi
+                    </button>
+                  </div>
+                ) : (
+                  <div className="client-link-action-card">
+                    <p>Customer ini belum terhubung ke akun client. Hubungkan supaya histori booking dan portal client lebih rapi.</p>
+
+                    {customerClientSuggestions.length > 0 ? (
+                      <div className="client-link-suggestions">
+                        {customerClientSuggestions.map(({ clientAccount, score }) => (
+                          <button
+                            type="button"
+                            key={clientAccount.id || clientAccount.email}
+                            className="client-link-suggestion"
+                            onClick={() => handleLinkClientAccount(clientAccount)}
+                          >
+                            <UserPlus size={14} />
+                            <span>
+                              <strong>{getClientAccountLabel(clientAccount)}</strong>
+                              <small>{clientAccount.email || clientAccount.phone || 'Akun client'}</small>
+                            </span>
+                            <em>{score}%</em>
+                          </button>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="client-link-empty">
+                        <Link2 size={15} />
+                        <span>Belum ada kandidat akun client yang cocok dari email/nomor/nama.</span>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
               <div className="detail-section">
                 <h4 className="section-title">Kontak</h4>
                 <div className="detail-item"><Phone size={14} /> <span>{selectedCustomer.phone}</span></div>
