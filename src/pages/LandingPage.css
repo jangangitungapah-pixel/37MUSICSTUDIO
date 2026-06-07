@@ -5491,3 +5491,155 @@ body[data-theme="light"]:has(.landing-container) #root {
   box-shadow: none !important;
   -webkit-box-shadow: none !important;
 }
+
+/* ──────────────────────────────────────────────────────────────────────────
+   37 LANDING HERO LOGIN INPUT SURFACE BLEND 8.0E
+   --------------------------------------------------------------------------
+   Chrome can still paint the native input body. Instead of leaving the input
+   area visually isolated, this blends the whole field row into one seamless
+   surface so there is no visible middle rectangle.
+   ────────────────────────────────────────────────────────────────────────── */
+
+.tw-landing-phase80c .hero-login-panel {
+  --hero-login-field-surface: rgba(20, 24, 34, 0.42);
+  --hero-login-field-surface-focus: rgba(22, 29, 40, 0.46);
+  --hero-login-field-line: rgba(255, 250, 240, 0.14);
+  --hero-login-field-line-focus: rgba(88, 224, 233, 0.82);
+}
+
+.tw-landing-phase80c .hero-login-panel .hero-native-field {
+  min-height: 46px !important;
+  height: 46px !important;
+  display: grid !important;
+  grid-template-columns: 38px minmax(0, 1fr) 38px !important;
+  gap: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  outline: 0 !important;
+  background: var(--hero-login-field-surface) !important;
+  background-color: var(--hero-login-field-surface) !important;
+  background-image: none !important;
+  box-shadow: inset 0 -1px 0 var(--hero-login-field-line) !important;
+  overflow: hidden !important;
+}
+
+.tw-landing-phase80c .hero-login-panel .hero-native-field:focus-within {
+  background: var(--hero-login-field-surface-focus) !important;
+  background-color: var(--hero-login-field-surface-focus) !important;
+  background-image: none !important;
+  box-shadow: inset 0 -1px 0 var(--hero-login-field-line-focus) !important;
+}
+
+.tw-landing-phase80c .hero-login-panel .hero-native-field::before,
+.tw-landing-phase80c .hero-login-panel .hero-native-field::after {
+  content: none !important;
+  display: none !important;
+}
+
+.tw-landing-phase80c .hero-login-panel .hero-native-field > svg {
+  justify-self: center;
+  margin: 0 !important;
+  color: rgba(255, 250, 240, 0.45) !important;
+  position: relative;
+  z-index: 2;
+}
+
+.tw-landing-phase80c .hero-login-panel .hero-native-field:focus-within > svg {
+  color: rgba(88, 224, 233, 0.92) !important;
+}
+
+.tw-landing-phase80c .hero-login-panel .hero-native-field input {
+  all: unset !important;
+  box-sizing: border-box !important;
+  width: 100% !important;
+  height: 46px !important;
+  min-height: 46px !important;
+  display: block !important;
+  padding: 0 0.25rem !important;
+  color: rgba(255, 250, 240, 0.95) !important;
+  background: var(--hero-login-field-surface) !important;
+  background-color: var(--hero-login-field-surface) !important;
+  background-image: none !important;
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+  font-family: inherit !important;
+  font-size: 0.88rem !important;
+  font-weight: 850 !important;
+  letter-spacing: -0.015em !important;
+  caret-color: #58e0e9 !important;
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  color-scheme: dark !important;
+}
+
+.tw-landing-phase80c .hero-login-panel .hero-native-field:focus-within input {
+  background: var(--hero-login-field-surface-focus) !important;
+  background-color: var(--hero-login-field-surface-focus) !important;
+}
+
+.tw-landing-phase80c .hero-login-panel .hero-native-field input::placeholder {
+  color: rgba(255, 250, 240, 0.36) !important;
+  font-weight: 760 !important;
+}
+
+.tw-landing-phase80c .hero-login-panel .hero-native-field input:-webkit-autofill,
+.tw-landing-phase80c .hero-login-panel .hero-native-field input:-webkit-autofill:hover,
+.tw-landing-phase80c .hero-login-panel .hero-native-field input:-webkit-autofill:focus,
+.tw-landing-phase80c .hero-login-panel .hero-native-field input:-webkit-autofill:active {
+  -webkit-text-fill-color: rgba(255, 250, 240, 0.95) !important;
+  caret-color: #58e0e9 !important;
+  background: var(--hero-login-field-surface-focus) !important;
+  background-color: var(--hero-login-field-surface-focus) !important;
+  background-image: none !important;
+  box-shadow: 0 0 0 1000px var(--hero-login-field-surface-focus) inset !important;
+  -webkit-box-shadow: 0 0 0 1000px var(--hero-login-field-surface-focus) inset !important;
+  transition:
+    background-color 999999s ease-out 0s,
+    background-image 999999s ease-out 0s,
+    color 999999s ease-out 0s,
+    -webkit-box-shadow 999999s ease-out 0s;
+}
+
+.tw-landing-phase80c .hero-login-panel .hero-native-eye {
+  justify-self: center;
+  width: 32px !important;
+  height: 32px !important;
+  min-width: 32px !important;
+  margin: 0 !important;
+  border: 0 !important;
+  border-radius: 999px !important;
+  outline: 0 !important;
+  color: rgba(255, 250, 240, 0.45) !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  position: relative;
+  z-index: 2;
+}
+
+.tw-landing-phase80c .hero-login-panel .hero-native-eye:hover,
+.tw-landing-phase80c .hero-login-panel .hero-native-eye:focus-visible {
+  color: rgba(255, 250, 240, 0.9) !important;
+  background: rgba(255, 255, 255, 0.075) !important;
+}
+
+[data-theme="light"] .tw-landing-phase80c .hero-login-panel {
+  --hero-login-field-surface: rgba(255, 255, 255, 0.45);
+  --hero-login-field-surface-focus: rgba(255, 255, 255, 0.62);
+  --hero-login-field-line: rgba(33, 28, 22, 0.14);
+  --hero-login-field-line-focus: rgba(22, 136, 145, 0.72);
+}
+
+[data-theme="light"] .tw-landing-phase80c .hero-login-panel .hero-native-field input {
+  color: rgba(33, 28, 22, 0.94) !important;
+  color-scheme: light !important;
+}
+
+[data-theme="light"] .tw-landing-phase80c .hero-login-panel .hero-native-field input::placeholder {
+  color: rgba(33, 28, 22, 0.38) !important;
+}
+
+[data-theme="light"] .tw-landing-phase80c .hero-login-panel .hero-native-field > svg,
+[data-theme="light"] .tw-landing-phase80c .hero-login-panel .hero-native-eye {
+  color: rgba(33, 28, 22, 0.48) !important;
+}
