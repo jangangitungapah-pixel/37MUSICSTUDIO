@@ -54,6 +54,29 @@ const filterOptions = [
   { key: 'done', label: 'Selesai' },
 ];
 
+const messageTemplates = [
+  {
+    label: 'Tanya slot',
+    subject: 'Pertanyaan Booking',
+    message: 'Halo admin, saya mau tanya ketersediaan slot studio untuk hari/tanggal ... jam ... Apakah masih available?',
+  },
+  {
+    label: 'Reschedule',
+    subject: 'Reschedule Jadwal',
+    message: 'Halo admin, saya ingin reschedule booking saya. Jadwal awal ... ingin dipindah ke ... Apakah memungkinkan?',
+  },
+  {
+    label: 'Konfirmasi bayar',
+    subject: 'Konfirmasi Pembayaran',
+    message: 'Halo admin, saya ingin konfirmasi pembayaran/DP untuk booking saya. Mohon dicek ya.',
+  },
+  {
+    label: 'Recording',
+    subject: 'Kebutuhan Recording',
+    message: 'Halo admin, saya mau konsultasi kebutuhan recording. Rencananya untuk ... dengan estimasi durasi ... jam.',
+  },
+];
+
 const ClientMessageCenterPage = () => {
   const { user, userProfile, isAuthLoaded, logout } = useAuthStore();
   const { messages, addMessage, isLoaded, error } = useClientMessageStore();
@@ -104,6 +127,8 @@ const ClientMessageCenterPage = () => {
   const openCount = sortedMessages.filter((message) => clean(message.status) !== 'done' && clean(message.status) !== 'replied').length;
   const repliedCount = sortedMessages.filter((message) => clean(message.status) === 'replied').length;
   const doneCount = sortedMessages.filter((message) => clean(message.status) === 'done').length;
+  const messageLength = messageDraft.trim().length;
+  const latestAdminReply = sortedMessages.find((message) => message.adminReplyNote);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -223,6 +248,19 @@ const ClientMessageCenterPage = () => {
         </article>
       </section>
 
+      {latestAdminReply && (
+        <section className="client-message-reply-strip" aria-label="Balasan admin terbaru">
+          <div className="client-message-reply-icon">
+            <Reply size={18} />
+          </div>
+          <div>
+            <span>Balasan admin terbaru</span>
+            <strong>{latestAdminReply.subject || "Pesan Client Portal"}</strong>
+            <p>{latestAdminReply.adminReplyNote}</p>
+          </div>
+        </section>
+      )}
+
       <section className="client-message-center-layout">
         <form className="client-panel client-message-compose-panel" onSubmit={handleSubmit}>
           <div className="client-panel-header">
@@ -244,17 +282,39 @@ const ClientMessageCenterPage = () => {
             </select>
           </label>
 
+          <div className="client-message-template-section">
+            <span>Template cepat</span>
+            <div className="client-message-template-chips">
+              {messageTemplates.map((template) => (
+                <button
+                  type="button"
+                  key={template.label}
+                  onClick={() => {
+                    setSubject(template.subject);
+                    setMessageDraft(template.message);
+                  }}
+                >
+                  {template.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
           <label className="client-message-field">
             <span>Isi pesan</span>
             <textarea
               value={messageDraft}
               onChange={(event) => setMessageDraft(event.target.value)}
-              placeholder="Tulis pesan kamu ke admin studio..."
+              placeholder="Tulis detailnya singkat tapi jelas. Contoh: tanggal, jam, jenis sesi, atau kendala pembayaran."
               rows={7}
             />
+            <div className="client-message-compose-helper">
+              <small>{messageLength < 8 ? "Minimal 8 karakter supaya admin paham konteksnya." : "Sudah cukup jelas. Kirim kalau detailnya sudah benar."}</small>
+              <em>{messageLength} karakter</em>
+            </div>
           </label>
 
-          <button type="submit" className="client-submit-btn" disabled={isSending}>
+          <button type="submit" className="client-submit-btn" disabled={isSending || messageLength < 8}>
             {isSending ? <Loader2 className="spinner" size={16} /> : <Send size={16} />}
             {isSending ? 'Mengirim...' : 'Kirim Pesan'}
           </button>
@@ -325,7 +385,10 @@ const ClientMessageCenterPage = () => {
                     <div>
                       <span>{message.subject || 'Pesan Client Portal'}</span>
                       <strong>{message.message}</strong>
-                      <small>{formatDateTime(message.updatedAt || message.createdAt)}</small>
+                      <div className="client-message-thread-meta">
+                        <small>{formatDateTime(message.updatedAt || message.createdAt)}</small>
+                        {message.source && <small>{message.source === "client-message-center" ? "Client Center" : message.source}</small>}
+                      </div>
                     </div>
                     <span className={'client-status-pill status-' + statusTone(message.status)}>
                       {statusLabel(message.status)}

@@ -15,9 +15,9 @@ import {
   Sparkles,
   UserRound
 } from 'lucide-react';
+import ClientPortalNav from '../components/ClientPortalNav';
 import { useAuthStore } from '../store/useAuthStore';
 import { useNotificationStore } from '../store/useNotificationStore';
-import ClientPortalNav from '../components/ClientPortalNav';
 import './ClientPortal.css';
 
 const digits = (value) => String(value || '').replace(/\D/g, '');
@@ -71,13 +71,9 @@ const ClientProfilePage = () => {
   const emailLabel = user?.email || userProfile?.email || 'Email belum tersedia';
   const firstLetter = displayName?.trim()?.charAt(0)?.toUpperCase() || 'C';
   const hasPhone = digits(phone).length >= 9;
-  const isCustomerLinked = Boolean(userProfile?.linkedCustomerId);
   const hasEmail = Boolean(user?.email || userProfile?.email);
-  const completionScore = Math.round(([
-    hasEmail,
-    hasPhone,
-    isCustomerLinked,
-  ].filter(Boolean).length / 3) * 100);
+  const isCustomerLinked = Boolean(userProfile?.linkedCustomerId);
+  const completionScore = Math.round(([hasEmail, hasPhone, isCustomerLinked].filter(Boolean).length / 3) * 100);
 
   const profileReadinessItems = [
     { label: 'Email login', value: hasEmail ? emailLabel : 'Belum tersedia', complete: hasEmail },
@@ -136,6 +132,7 @@ const ClientProfilePage = () => {
         <span className="client-blob client-blob-pink" />
         <span className="client-blob client-blob-cyan" />
       </div>
+
       <ClientPortalNav title="Client Profile" onLogout={logout} />
 
       <section className="client-profile-shell">
@@ -146,7 +143,7 @@ const ClientProfilePage = () => {
               <span>Lengkapi data client</span>
             </div>
 
-            <h1>Profil client studio.</h1>
+            <h1>Profil client kamu.</h1>
             <p>
               Lengkapi identitas utama supaya booking, pesan admin, billing, dan histori studio lebih gampang tersambung ke akun kamu.
             </p>
@@ -245,8 +242,7 @@ const ClientProfilePage = () => {
             <div className="client-profile-note">
               <strong>Kenapa nomor WhatsApp penting?</strong>
               <p>
-                Jika admin pernah membuat data customer berdasarkan nomor WA, dashboard client bisa lebih mudah
-                mengenali riwayat booking yang terkait dengan akun kamu.
+                Jika admin pernah membuat data customer berdasarkan nomor WA, dashboard client bisa lebih mudah mengenali riwayat booking yang terkait dengan akun kamu.
               </p>
             </div>
 
@@ -261,7 +257,7 @@ const ClientProfilePage = () => {
 
               <div className="client-profile-readiness-list">
                 {profileReadinessItems.map((item) => (
-                  <div className={item.complete ? "complete" : ""} key={item.label}>
+                  <div className={item.complete ? 'complete' : ''} key={item.label}>
                     <CheckCircle2 size={16} />
                     <span>
                       <strong>{item.label}</strong>
@@ -295,7 +291,7 @@ const ClientProfilePage = () => {
                 <Link2 size={16} />
                 <p>Customer sync akan otomatis tersambung saat booking client dibuat dan admin approve request. Nomor WhatsApp yang sama bikin matching lebih akurat.</p>
               </div>
-            )
+            )}
           </aside>
         </section>
       </section>

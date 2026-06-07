@@ -1,3 +1,7 @@
+import { useMemo, useState } from 'react';
+import { Link, Navigate } from 'react-router-dom';
+import { format } from 'date-fns';
+import { id as localeId } from 'date-fns/locale';
 import { useAuthStore } from '../store/useAuthStore';
 import { useBookingStore } from '../store/useBookingStore';
 import { useSettingsStore } from '../store/useSettingsStore';
@@ -314,9 +318,9 @@ const ClientBillingPage = () => {
             <span>Invoice Client</span>
           </div>
 
-          <h1>Tagihan & invoice studio.</h1>
+          <h1>Billing studio kamu.</h1>
           <p>
-            Pantau invoice dari booking kamu, sisa pembayaran, DP, dan status lunas tanpa harus menunggu admin kirim ulang.
+            Lihat invoice, DP, sisa pembayaran, dan status lunas dari booking studio yang terhubung ke akun client kamu.
           </p>
         </div>
 
@@ -360,6 +364,45 @@ const ClientBillingPage = () => {
           </div>
           <strong>{formatMoney(totals.totalRemaining)}</strong>
           <small>{totals.activeBills} invoice masih perlu diselesaikan.</small>
+        </article>
+      </section>
+
+      <section className="client-billing-guide-strip" aria-label="Panduan billing client">
+        <article className="client-billing-guide-card primary">
+          <div className="client-billing-guide-icon">
+            <WalletCards size={20} />
+          </div>
+          <div>
+            <span>Sisa pembayaran</span>
+            <strong>{formatMoney(totals.totalRemaining)}</strong>
+            <p>{totals.activeBills > 0 ? totals.activeBills + " invoice masih perlu diselesaikan." : "Semua invoice yang tercatat sudah aman."}</p>
+          </div>
+        </article>
+
+        <article className="client-billing-guide-card">
+          <div className="client-billing-guide-icon">
+            <ReceiptText size={20} />
+          </div>
+          <div>
+            <span>Status invoice</span>
+            <strong>{totals.activeBills > 0 ? "Perlu dicek" : "Aman"}</strong>
+            <p>Gunakan Copy Invoice untuk menyimpan detail invoice atau Share WA untuk follow up cepat.</p>
+          </div>
+        </article>
+
+        <article className="client-billing-guide-card action">
+          <div className="client-billing-guide-icon">
+            <MessageCircle size={20} />
+          </div>
+          <div>
+            <span>Butuh bantuan?</span>
+            <strong>Chat admin</strong>
+            <p>Tanya pembayaran, DP, bukti transfer, atau koreksi invoice langsung dari portal.</p>
+          </div>
+          <Link to="/client/messages" className="client-billing-guide-link">
+            Message Admin
+            <ChevronRight size={15} />
+          </Link>
         </article>
       </section>
 

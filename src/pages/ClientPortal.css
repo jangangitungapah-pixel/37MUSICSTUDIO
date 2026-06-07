@@ -4665,3 +4665,849 @@
     border-radius: 15px;
   }
 }
+
+/* ──────────────────────────────────────────────────────────────────────────
+   37 CLIENT BILLING TRUST POLISH 7.0F
+   --------------------------------------------------------------------------
+   Makes billing feel clearer and more trustworthy:
+   - payment guide strip
+   - stronger invoice cards
+   - clearer remaining payment hierarchy
+   - better mobile billing flow
+   ────────────────────────────────────────────────────────────────────────── */
+
+.client-billing-guide-strip {
+  position: relative;
+  z-index: 1;
+  width: min(1180px, 100%);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1.15fr 1fr 1fr;
+  gap: 10px;
+}
+
+.client-billing-guide-card {
+  min-height: 132px;
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr);
+  align-items: start;
+  gap: 12px;
+  padding: 15px;
+  border-radius: 24px;
+  border: 1px solid var(--client-line);
+  background:
+    radial-gradient(circle at 12% 0%, rgba(88,224,233,0.080), transparent 42%),
+    linear-gradient(180deg, rgba(255,255,255,0.058), rgba(255,255,255,0.012)),
+    var(--client-surface);
+  box-shadow:
+    var(--client-inner-line),
+    var(--client-shadow-soft);
+  -webkit-backdrop-filter: blur(18px) saturate(1.08);
+  backdrop-filter: blur(18px) saturate(1.08);
+}
+
+.client-billing-guide-card.primary {
+  border-color: rgba(239,197,110,0.18);
+  background:
+    radial-gradient(circle at 10% 0%, rgba(239,197,110,0.135), transparent 42%),
+    linear-gradient(180deg, rgba(255,255,255,0.062), rgba(255,255,255,0.012)),
+    var(--client-surface);
+}
+
+.client-billing-guide-card.action {
+  grid-template-columns: 42px minmax(0, 1fr);
+}
+
+.client-billing-guide-icon {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 16px;
+  color: #171006;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255,255,255,0.34), transparent 58%),
+    linear-gradient(135deg, var(--client-gold), var(--client-gold-2));
+  box-shadow: 0 12px 28px rgba(239,197,110,0.16);
+}
+
+.client-billing-guide-card span {
+  display: block;
+  color: var(--client-muted-soft);
+  font-size: 0.68rem;
+  font-weight: 950;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.client-billing-guide-card strong {
+  display: block;
+  margin-top: 3px;
+  color: var(--client-ink);
+  font-size: clamp(1.12rem, 2vw, 1.52rem);
+  line-height: 1;
+  font-weight: 950;
+  letter-spacing: -0.055em;
+}
+
+.client-billing-guide-card.primary strong {
+  font-size: clamp(1.45rem, 2.7vw, 2.25rem);
+}
+
+.client-billing-guide-card p {
+  margin: 8px 0 0;
+  color: var(--client-muted-strong);
+  font-size: 0.78rem;
+  line-height: 1.45;
+  font-weight: 700;
+}
+
+.client-billing-guide-link {
+  grid-column: 1 / -1;
+  min-height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  width: fit-content;
+  padding: 0 12px;
+  border-radius: 999px;
+  color: #171006;
+  text-decoration: none;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255,255,255,0.34), transparent 58%),
+    linear-gradient(135deg, var(--client-gold), var(--client-gold-2));
+  font-size: 0.78rem;
+  font-weight: 950;
+}
+
+.client-billing-list-panel {
+  gap: 15px !important;
+}
+
+.client-invoice-list {
+  gap: 11px !important;
+}
+
+.client-invoice-card {
+  position: relative;
+}
+
+.client-invoice-card::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 18px;
+  bottom: 18px;
+  width: 3px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, var(--client-gold), rgba(88,224,233,0.62));
+  opacity: 0.72;
+}
+
+.client-invoice-money-grid > div:last-child {
+  border-color: rgba(239,197,110,0.18) !important;
+  background:
+    radial-gradient(circle at 90% 0%, rgba(239,197,110,0.12), transparent 42%),
+    rgba(239,197,110,0.050) !important;
+}
+
+.client-invoice-money-grid > div:last-child strong {
+  color: var(--client-gold);
+}
+
+.client-invoice-actions button:first-child {
+  color: var(--client-cyan);
+  border-color: rgba(88,224,233,0.18);
+  background: rgba(88,224,233,0.060);
+}
+
+.client-invoice-actions button:last-child {
+  color: var(--client-green);
+  border-color: rgba(130,216,160,0.18);
+  background: rgba(130,216,160,0.065);
+}
+
+[data-theme="light"] .client-billing-guide-card {
+  background:
+    radial-gradient(circle at 12% 0%, rgba(88,224,233,0.110), transparent 42%),
+    linear-gradient(180deg, rgba(255,255,255,0.86), rgba(255,255,255,0.48)),
+    rgba(255,255,255,0.72);
+  border-color: rgba(78,54,28,0.10);
+}
+
+[data-theme="light"] .client-billing-guide-card.primary {
+  background:
+    radial-gradient(circle at 10% 0%, rgba(239,197,110,0.18), transparent 42%),
+    linear-gradient(180deg, rgba(255,255,255,0.86), rgba(255,255,255,0.48)),
+    rgba(255,255,255,0.72);
+  border-color: rgba(183,121,42,0.14);
+}
+
+[data-theme="light"] .client-invoice-card::before {
+  opacity: 0.58;
+}
+
+@media (max-width: 980px) {
+  .client-billing-guide-strip {
+    grid-template-columns: 1fr;
+  }
+
+  .client-billing-guide-card {
+    min-height: auto;
+  }
+}
+
+@media (max-width: 720px) {
+  .client-billing-guide-strip {
+    gap: 8px;
+  }
+
+  .client-billing-guide-card {
+    grid-template-columns: 38px minmax(0, 1fr);
+    padding: 13px;
+    border-radius: 21px;
+  }
+
+.client-billing-guide-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 14px;
+  }
+
+  .client-billing-guide-link {
+    width: 100%;
+    border-radius: 15px;
+  }
+
+  .client-invoice-card::before {
+    top: 14px;
+    bottom: 14px;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   37 CLIENT MESSAGE COMFORT POLISH 7.0G
+   --------------------------------------------------------------------------
+   Improves message center usability:
+   - quick templates
+   - character helper
+   - latest admin reply strip
+   - clearer thread metadata
+   - safer disabled send state
+   ────────────────────────────────────────────────────────────────────────── */
+
+.client-message-reply-strip {
+  position: relative;
+  z-index: 1;
+  width: min(1180px, 100%);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
+  padding: 15px;
+  border-radius: 24px;
+  border: 1px solid rgba(130,216,160,0.18);
+  background:
+    radial-gradient(circle at 0% 0%, rgba(130,216,160,0.12), transparent 42%),
+    linear-gradient(180deg, rgba(255,255,255,0.058), rgba(255,255,255,0.012)),
+    var(--client-surface);
+  box-shadow:
+    var(--client-inner-line),
+    var(--client-shadow-soft);
+  -webkit-backdrop-filter: blur(18px) saturate(1.08);
+  backdrop-filter: blur(18px) saturate(1.08);
+}
+
+.client-message-reply-icon {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 16px;
+  color: var(--client-green);
+  background: rgba(130,216,160,0.090);
+  border: 1px solid rgba(130,216,160,0.18);
+}
+
+.client-message-reply-strip span,
+.client-message-template-section > span {
+  display: block;
+  color: var(--client-gold);
+  font-size: 0.68rem;
+  font-weight: 950;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.client-message-reply-strip strong {
+  display: block;
+  margin-top: 3px;
+  color: var(--client-ink);
+  font-size: 1.05rem;
+  font-weight: 950;
+  letter-spacing: -0.04em;
+}
+
+.client-message-reply-strip p {
+  margin: 7px 0 0;
+  color: var(--client-muted-strong);
+  line-height: 1.48;
+  font-size: 0.84rem;
+  font-weight: 720;
+}
+
+.client-message-template-section {
+  display: grid;
+  gap: 8px;
+}
+
+.client-message-template-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.client-message-template-chips button {
+  min-height: 34px;
+  padding: 0 11px;
+  border-radius: 999px;
+  border: 1px solid rgba(88,224,233,0.16);
+  color: var(--client-cyan);
+  background: rgba(88,224,233,0.060);
+  font: inherit;
+  font-size: 0.76rem;
+  font-weight: 900;
+  cursor: pointer;
+  transition: transform 160ms ease, background 160ms ease, border-color 160ms ease;
+}
+
+.client-message-template-chips button:hover {
+  transform: translateY(-1px);
+  border-color: rgba(88,224,233,0.28);
+  background: rgba(88,224,233,0.095);
+}
+
+.client-message-compose-helper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  color: var(--client-muted-soft);
+  font-size: 0.72rem;
+  font-weight: 760;
+}
+
+.client-message-compose-helper small,
+.client-message-compose-helper em {
+  color: inherit;
+  font: inherit;
+  font-style: normal;
+}
+
+.client-message-compose-helper em {
+  flex: 0 0 auto;
+  color: var(--client-cyan);
+}
+
+.client-message-compose-panel .client-submit-btn:disabled {
+  filter: saturate(0.82);
+}
+
+.client-message-thread-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.client-message-thread-meta small {
+  min-height: 22px;
+  display: inline-flex !important;
+  align-items: center;
+  width: fit-content;
+  padding: 0 8px;
+  border-radius: 999px;
+  color: var(--client-muted-strong) !important;
+  background: rgba(255,255,255,0.040);
+  border: 1px solid rgba(255,255,255,0.065);
+  font-size: 0.68rem !important;
+  font-weight: 850 !important;
+}
+
+.client-admin-reply-note {
+  position: relative;
+  overflow: hidden;
+}
+
+.client-admin-reply-note::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 10px;
+  bottom: 10px;
+  width: 3px;
+  border-radius: 999px;
+  background: var(--client-green);
+  opacity: 0.70;
+}
+
+[data-theme="light"] .client-message-reply-strip {
+  background:
+    radial-gradient(circle at 0% 0%, rgba(130,216,160,0.16), transparent 42%),
+    linear-gradient(180deg, rgba(255,255,255,0.86), rgba(255,255,255,0.48)),
+    rgba(255,255,255,0.72);
+  border-color: rgba(67,142,94,0.16);
+}
+
+[data-theme="light"] .client-message-thread-meta small {
+  background: rgba(255,255,255,0.62);
+  border-color: rgba(78,54,28,0.085);
+}
+
+@media (max-width: 720px) {
+  .client-message-reply-strip {
+    grid-template-columns: 40px minmax(0, 1fr);
+    padding: 13px;
+    border-radius: 21px;
+  }
+
+  .client-message-reply-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 15px;
+  }
+
+  .client-message-template-chips {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .client-message-template-chips button {
+    width: 100%;
+  }
+
+  .client-message-compose-helper {
+    display: grid;
+    gap: 4px;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   37 CLIENT PORTAL FINAL QA POLISH 7.0H
+   --------------------------------------------------------------------------
+   Final polish pass for the client portal:
+   - safer mobile spacing
+   - overflow protection
+   - better empty/loading states
+   - light mode consistency
+   - iOS/PWA touch improvements
+   - invoice/message/profile layout guardrails
+   ────────────────────────────────────────────────────────────────────────── */
+
+.client-portal-page {
+  width: 100%;
+  overflow-x: clip;
+  text-rendering: geometricPrecision;
+}
+
+.client-portal-page a,
+.client-portal-page button,
+.client-portal-page input,
+.client-portal-page select,
+.client-portal-page textarea {
+  -webkit-font-smoothing: antialiased;
+}
+
+.client-portal-page input,
+.client-portal-page select,
+.client-portal-page textarea {
+  min-width: 0;
+  appearance: none;
+}
+
+.client-portal-page select {
+  background-image:
+    linear-gradient(45deg, transparent 50%, currentColor 50%),
+    linear-gradient(135deg, currentColor 50%, transparent 50%);
+  background-position:
+    calc(100% - 18px) 50%,
+    calc(100% - 13px) 50%;
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+  padding-right: 34px !important;
+}
+
+.client-brand,
+.client-profile-copy,
+.client-profile-copy strong,
+.client-profile-copy small,
+.client-panel-header h2,
+.client-session-copy,
+.client-session-copy strong,
+.client-session-copy p,
+.client-activity-item strong,
+.client-activity-item p,
+.client-invoice-top strong,
+.client-invoice-top p,
+.client-message-thread-top strong,
+.client-message-thread-top p,
+.client-profile-info-list p,
+.client-profile-readiness-list strong,
+.client-profile-readiness-list small {
+  min-width: 0;
+}
+
+.client-profile-copy strong,
+.client-profile-copy small,
+.client-session-copy strong,
+.client-session-copy p,
+.client-activity-item strong,
+.client-activity-item p,
+.client-invoice-top strong,
+.client-invoice-top p,
+.client-message-thread-top span:first-child,
+.client-profile-info-list p {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.client-profile-copy small,
+.client-session-copy p,
+.client-invoice-top p,
+.client-profile-info-list p {
+  white-space: nowrap;
+}
+
+.client-message-thread-top strong,
+.client-admin-reply-note p,
+.client-message-reply-strip p,
+.client-billing-guide-card p,
+.client-profile-sync-hint p {
+  overflow-wrap: anywhere;
+}
+
+.client-dashboard-hero,
+.client-dashboard-focus-layout,
+.client-dashboard-quick-stats,
+.client-dashboard-secondary-layout,
+.client-profile-shell,
+.client-billing-hero,
+.client-billing-stats,
+.client-billing-guide-strip,
+.client-billing-list-panel,
+.client-message-center-hero,
+.client-message-stats,
+.client-message-reply-strip,
+.client-message-center-layout {
+  scroll-margin-top: 96px;
+}
+
+.client-dashboard-focus-layout + .client-dashboard-quick-stats,
+.client-dashboard-quick-stats + .client-dashboard-secondary-layout,
+.client-billing-stats + .client-billing-guide-strip,
+.client-billing-guide-strip + .client-billing-list-panel,
+.client-message-stats + .client-message-reply-strip,
+.client-message-reply-strip + .client-message-center-layout {
+  margin-top: 14px;
+}
+
+.client-empty-state {
+  min-height: 112px;
+  align-items: center;
+}
+
+.client-empty-state .client-empty-icon {
+  flex: 0 0 auto;
+}
+
+.client-empty-state strong {
+  display: block;
+  margin-bottom: 3px;
+  letter-spacing: -0.035em;
+}
+
+.client-loader-card {
+  border: 1px solid var(--client-line);
+  background:
+    radial-gradient(circle at 12% 0%, rgba(239,197,110,0.090), transparent 42%),
+    linear-gradient(180deg, rgba(255,255,255,0.064), rgba(255,255,255,0.014)),
+    var(--client-surface);
+  box-shadow:
+    var(--client-inner-line),
+    var(--client-shadow-soft);
+  -webkit-backdrop-filter: blur(20px) saturate(1.08);
+  backdrop-filter: blur(20px) saturate(1.08);
+}
+
+.client-loader-card span {
+  color: var(--client-muted-strong);
+  font-weight: 850;
+}
+
+.client-stat-card strong,
+.client-billing-priority-value strong,
+.client-billing-guide-card strong,
+.client-invoice-money-grid strong {
+  font-variant-numeric: tabular-nums;
+}
+
+.client-invoice-money-grid > div,
+.client-billing-mini-grid > div,
+.client-message-thread-card,
+.client-profile-readiness-card,
+.client-profile-shortcuts a {
+  contain: layout paint;
+}
+
+.client-invoice-actions button,
+.client-message-actions-row button,
+.client-message-actions-row a,
+.client-profile-shortcuts a,
+.client-billing-guide-link {
+  min-width: 0;
+}
+
+.client-invoice-actions button svg,
+.client-message-actions-row svg,
+.client-profile-shortcuts svg,
+.client-billing-guide-link svg {
+  flex: 0 0 auto;
+}
+
+.client-invoice-actions button,
+.client-message-actions-row button,
+.client-message-actions-row a,
+.client-profile-shortcuts a,
+.client-billing-guide-link {
+  overflow: hidden;
+}
+
+.client-invoice-actions button,
+.client-message-actions-row button,
+.client-message-actions-row a {
+  white-space: nowrap;
+}
+
+.client-profile-save-btn:disabled,
+.client-submit-btn:disabled,
+.client-primary-btn:disabled,
+.client-secondary-btn:disabled {
+  opacity: 0.62;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+.client-profile-save-btn:disabled::after,
+.client-submit-btn:disabled::after,
+.client-primary-btn:disabled::after,
+.client-secondary-btn:disabled::after {
+  display: none;
+}
+
+.client-status-pill.status-green {
+  border-color: rgba(130,216,160,0.24);
+}
+
+.client-status-pill.status-gold {
+  border-color: rgba(239,197,110,0.24);
+}
+
+.client-status-pill.status-cyan {
+  border-color: rgba(88,224,233,0.24);
+}
+
+.client-status-pill.status-red {
+  border-color: rgba(255,93,126,0.24);
+}
+
+[data-theme="light"] .client-loader-card {
+  background:
+    radial-gradient(circle at 12% 0%, rgba(239,197,110,0.16), transparent 42%),
+    linear-gradient(180deg, rgba(255,255,255,0.86), rgba(255,255,255,0.48)),
+    rgba(255,255,255,0.72);
+  border-color: rgba(78,54,28,0.10);
+}
+
+[data-theme="light"] .client-loader-card span {
+  color: rgba(33,28,22,0.68);
+}
+
+[data-theme="light"] .client-status-pill.status-green {
+  color: #2f8b55;
+  background: rgba(47,139,85,0.080);
+}
+
+[data-theme="light"] .client-status-pill.status-gold {
+  color: #a86d18;
+  background: rgba(168,109,24,0.085);
+}
+
+[data-theme="light"] .client-status-pill.status-cyan {
+  color: #168891;
+  background: rgba(22,136,145,0.080);
+}
+
+[data-theme="light"] .client-status-pill.status-red {
+  color: #b83255;
+  background: rgba(184,50,85,0.080);
+}
+
+@supports (height: 100dvh) {
+  .client-portal-page,
+  .client-portal-loader {
+    min-height: 100dvh;
+  }
+}
+
+@media (max-width: 980px) {
+  .client-dashboard-focus-layout + .client-dashboard-quick-stats,
+  .client-dashboard-quick-stats + .client-dashboard-secondary-layout,
+  .client-billing-stats + .client-billing-guide-strip,
+  .client-billing-guide-strip + .client-billing-list-panel,
+  .client-message-stats + .client-message-reply-strip,
+  .client-message-reply-strip + .client-message-center-layout {
+    margin-top: 12px;
+  }
+}
+
+@media (max-width: 720px) {
+  .client-portal-page {
+    min-height: 100svh;
+    padding-inline: 10px;
+    padding-top: 10px;
+    padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .client-dashboard-hero,
+  .client-profile-hero,
+  .client-billing-hero,
+  .client-message-center-hero {
+    scroll-margin-top: 16px;
+  }
+
+  .client-dashboard-hero h1,
+  .client-profile-hero h1,
+  .client-billing-hero h1,
+  .client-message-center-hero h1 {
+    max-width: 11ch;
+    text-wrap: balance;
+  }
+
+  .client-dashboard-hero p,
+  .client-profile-hero p,
+  .client-billing-hero p,
+  .client-message-center-hero p {
+    max-width: 100%;
+  }
+
+  .client-panel-header h2 {
+    max-width: 18ch;
+  }
+
+  .client-stat-card small,
+  .client-panel-header span,
+  .client-billing-guide-card p,
+  .client-message-reply-strip p {
+    line-height: 1.42;
+  }
+
+  .client-session-item,
+  .client-activity-item {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .client-session-item .client-status-pill,
+  .client-activity-item .client-status-pill {
+    grid-column: 1 / -1;
+    width: fit-content;
+    margin-left: auto;
+  }
+
+  .client-nav.client-unified-nav {
+    bottom: calc(9px + env(safe-area-inset-bottom, 0px));
+    left: 9px;
+    right: 9px;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.080),
+      0 18px 60px rgba(0,0,0,0.38);
+  }
+
+  .client-unified-nav-actions .client-ghost-btn {
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .client-profile-copy small,
+  .client-profile-info-list p {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .client-message-thread-meta {
+    gap: 5px;
+  }
+
+  .client-message-thread-meta small {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 420px) {
+  .client-portal-page {
+    padding-inline: 8px;
+  }
+
+  .client-dashboard-hero h1,
+  .client-profile-hero h1,
+  .client-billing-hero h1,
+  .client-message-center-hero h1 {
+    max-width: 10ch;
+  }
+
+  .client-unified-nav-actions {
+    gap: 4px !important;
+  }
+
+  .client-unified-nav-actions .client-ghost-btn {
+    min-height: 41px !important;
+  }
+
+  .client-panel,
+  .client-stat-card,
+  .client-profile-card,
+  .client-profile-score-card,
+  .client-billing-guide-card,
+  .client-message-reply-strip {
+    border-radius: 20px !important;
+  }
+}
+
+@media print {
+  .client-nav,
+  .client-ambient-bg,
+  .client-billing-guide-strip,
+  .client-billing-search,
+  .client-invoice-actions,
+  .client-panel-link {
+    display: none !important;
+  }
+
+  .client-portal-page {
+    min-height: auto;
+    padding: 0;
+    color: #111;
+    background: #fff !important;
+  }
+
+  .client-panel,
+  .client-invoice-card,
+  .client-stat-card {
+    box-shadow: none !important;
+    border-color: #ddd !important;
+    background: #fff !important;
+  }
+}
