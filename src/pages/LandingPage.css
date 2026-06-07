@@ -4005,3 +4005,206 @@ body[data-theme="light"]:has(.landing-container) #root {
     font-size: 0.58rem !important;
   }
 }
+
+/* ──────────────────────────────────────────────────────────────────────────
+   37 LANDING BOOKING FLOW COMPACT FIX 8.0D
+   --------------------------------------------------------------------------
+   Refines booking flow section:
+   - compact premium Booking Cepat badge
+   - shorter step cards
+   - denser text rhythm
+   - more balanced left/right composition
+   ────────────────────────────────────────────────────────────────────────── */
+
+.tw-landing-phase80d .booking-flow-section {
+  padding-top: clamp(0.25rem, 1.2vh, 0.85rem) !important;
+  padding-bottom: clamp(3.25rem, 6vh, 4.75rem) !important;
+}
+
+.tw-landing-phase80d .flow-panel {
+  max-width: 1040px;
+  min-height: 0 !important;
+  grid-template-columns: minmax(0, 0.86fr) minmax(440px, 1.14fr) !important;
+  align-items: center !important;
+  gap: clamp(1rem, 1.8vw, 1.45rem) !important;
+  padding: clamp(1.05rem, 1.7vw, 1.45rem) !important;
+  border-radius: 1.55rem !important;
+}
+
+.tw-landing-phase80d .flow-copy {
+  min-height: 0 !important;
+  justify-content: center !important;
+  padding: 0.15rem 0;
+}
+
+.tw-landing-phase80d .flow-copy .section-eyebrow {
+  width: auto !important;
+  max-width: max-content !important;
+  min-height: 24px;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: 0.42rem;
+  margin-bottom: 0.95rem !important;
+  padding: 0.28rem 0.62rem !important;
+  border-radius: 999px !important;
+  border: 1px solid rgba(255, 56, 113, 0.24) !important;
+  background:
+    linear-gradient(90deg, rgba(255, 56, 113, 0.13), rgba(239, 197, 110, 0.06)),
+    rgba(255, 255, 255, 0.025) !important;
+  color: #ff4778 !important;
+  box-shadow: none !important;
+  font-size: 0.61rem !important;
+  line-height: 1 !important;
+  font-weight: 950 !important;
+  letter-spacing: 0.13em !important;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.tw-landing-phase80d .flow-copy .section-eyebrow::before {
+  content: "";
+  width: 0.32rem;
+  height: 0.32rem;
+  border-radius: 999px;
+  background: currentColor;
+  box-shadow: 0 0 12px currentColor;
+  opacity: 0.88;
+}
+
+.tw-landing-phase80d .flow-copy h2 {
+  max-width: 430px;
+  font-size: clamp(2.3rem, 3.05vw, 3.35rem) !important;
+  line-height: 1.045 !important;
+  letter-spacing: -0.026em !important;
+  word-spacing: 0.045em;
+}
+
+.tw-landing-phase80d .flow-copy p {
+  max-width: 450px !important;
+  margin-top: 1rem !important;
+  color: rgba(255, 250, 240, 0.68) !important;
+  font-size: 0.88rem !important;
+  line-height: 1.62 !important;
+  font-weight: 720 !important;
+}
+
+.tw-landing-phase80d .flow-steps {
+  align-self: stretch;
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 0.72rem !important;
+}
+
+.tw-landing-phase80d .flow-step {
+  min-height: 198px !important;
+  height: auto !important;
+  justify-content: flex-start !important;
+  padding: 1rem !important;
+  border-radius: 1.18rem !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.040), rgba(255, 255, 255, 0.018)),
+    rgba(10, 13, 21, 0.68) !important;
+}
+
+.tw-landing-phase80d .flow-step span {
+  margin-bottom: 1.35rem !important;
+  color: var(--landing-cyan) !important;
+  font-size: 0.66rem !important;
+  line-height: 1;
+}
+
+.tw-landing-phase80d .flow-step strong {
+  font-size: 0.94rem !important;
+  line-height: 1.15 !important;
+  letter-spacing: -0.015em !important;
+}
+
+.tw-landing-phase80d .flow-step p {
+  max-width: 14ch;
+  margin-top: 0.72rem !important;
+  color: rgba(255, 250, 240, 0.64) !important;
+  font-size: 0.76rem !important;
+  line-height: 1.5 !important;
+  font-weight: 650;
+}
+
+.tw-landing-phase80d .flow-step:hover {
+  transform: translateY(-3px);
+}
+
+[data-theme="light"] .tw-landing-phase80d .flow-copy .section-eyebrow {
+  border-color: rgba(185, 38, 78, 0.20) !important;
+  background: rgba(185, 38, 78, 0.07) !important;
+  color: rgba(185, 38, 78, 0.92) !important;
+}
+
+[data-theme="light"] .tw-landing-phase80d .flow-copy p,
+[data-theme="light"] .tw-landing-phase80d .flow-step p {
+  color: rgba(33, 28, 22, 0.62) !important;
+}
+
+@media (min-width: 1440px) {
+  .tw-landing-phase80d .flow-panel {
+    max-width: 1100px;
+  }
+
+  .tw-landing-phase80d .flow-copy h2 {
+    font-size: clamp(2.55rem, 2.85vw, 3.65rem) !important;
+  }
+
+  .tw-landing-phase80d .flow-step {
+    min-height: 206px !important;
+  }
+}
+
+@media (max-width: 1023px) {
+  .tw-landing-phase80d .flow-panel {
+    grid-template-columns: 1fr !important;
+    align-items: stretch !important;
+  }
+
+  .tw-landing-phase80d .flow-copy h2,
+  .tw-landing-phase80d .flow-copy p {
+    max-width: 100% !important;
+  }
+
+  .tw-landing-phase80d .flow-step {
+    min-height: 170px !important;
+  }
+}
+
+@media (max-width: 767px) {
+  .tw-landing-phase80d .booking-flow-section {
+    padding-top: 0.75rem !important;
+  }
+
+  .tw-landing-phase80d .flow-copy .section-eyebrow {
+    min-height: 22px;
+    padding: 0.25rem 0.56rem !important;
+    font-size: 0.58rem !important;
+  }
+
+  .tw-landing-phase80d .flow-copy h2 {
+    font-size: clamp(2.05rem, 9.4vw, 2.82rem) !important;
+    line-height: 1.075 !important;
+    word-spacing: 0.025em;
+  }
+
+  .tw-landing-phase80d .flow-steps {
+    grid-template-columns: 1fr !important;
+  }
+
+  .tw-landing-phase80d .flow-step {
+    min-height: auto !important;
+    padding: 0.92rem !important;
+  }
+
+  .tw-landing-phase80d .flow-step span {
+    margin-bottom: 0.75rem !important;
+  }
+
+  .tw-landing-phase80d .flow-step p {
+    max-width: 100%;
+  }
+}
