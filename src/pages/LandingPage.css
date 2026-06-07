@@ -3316,3 +3316,64 @@ body[data-theme="light"]:has(.landing-container) #root {
     border-radius: 1.35rem !important;
   }
 }
+
+/* ──────────────────────────────────────────────────────────────────────────
+   37 LANDING HERO TITLE TYPOGRAPHY FIX 8.0C
+   --------------------------------------------------------------------------
+   Gives the condensed hero headline more breathing room:
+   - less aggressive negative tracking
+   - more comfortable line height
+   - better word spacing
+   - cleaner mobile title rhythm
+   ────────────────────────────────────────────────────────────────────────── */
+
+.tw-landing-phase80c .hero-title {
+  max-width: 760px;
+  letter-spacing: -0.032em !important;
+  line-height: 1.035 !important;
+  word-spacing: 0.055em;
+  font-kerning: normal;
+  text-rendering: geometricPrecision;
+}
+
+.tw-landing-phase80c .hero-title br {
+  display: none;
+}
+
+.tw-landing-phase80c .hero-copy {
+  row-gap: 1.15rem;
+}
+
+@media (min-width: 1280px) {
+  .tw-landing-phase80c .hero-title {
+    font-size: clamp(3.6rem, 4.85vw, 5.65rem) !important;
+    line-height: 1.04 !important;
+    letter-spacing: -0.028em !important;
+    word-spacing: 0.06em;
+  }
+}
+
+@media (min-width: 1536px) {
+  .tw-landing-phase80c .hero-title {
+    max-width: 820px;
+    font-size: clamp(4rem, 4.65vw, 5.95rem) !important;
+  }
+}
+
+@media (max-width: 1023px) {
+  .tw-landing-phase80c .hero-title {
+    max-width: 100%;
+    letter-spacing: -0.024em !important;
+    line-height: 1.055 !important;
+    word-spacing: 0.045em;
+  }
+}
+
+@media (max-width: 767px) {
+  .tw-landing-phase80c .hero-title {
+    font-size: clamp(2.35rem, 11.7vw, 3.45rem) !important;
+    letter-spacing: -0.018em !important;
+    line-height: 1.075 !important;
+    word-spacing: 0.035em;
+  }
+}
