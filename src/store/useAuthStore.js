@@ -261,7 +261,7 @@ export const useAuthStore = create((set, get) => {
       }
     },
 
-    updateUserProfile: async (newUsername, newPhone) => {
+        updateUserProfile: async (newUsername, newPhone, extraProfileData = {}) => {
       set({ loading: true, error: null });
 
       try {
@@ -271,7 +271,8 @@ export const useAuthStore = create((set, get) => {
           throw new Error('Tidak ada user yang sedang login.');
         }
 
-        const cleanNewUsername = newUsername.trim().toLowerCase().replace(/\s+/g, '');
+        const cleanText = (value) => String(value || '').trim();
+        const cleanNewUsername = cleanText(newUsername).toLowerCase().replace(/\s+/g, '');
         const cleanOldUsername = String(userProfile?.username || '').trim().toLowerCase().replace(/\s+/g, '');
 
         if (!cleanNewUsername) {
@@ -291,11 +292,32 @@ export const useAuthStore = create((set, get) => {
           await updateProfile(user, { displayName: cleanNewUsername });
         }
 
-        const docRef = doc(db, 'users', user.uid);
-        await updateDoc(docRef, {
+        const professionalPatch = {
+          projectName: cleanText(extraProfileData.projectName),
+          clientType: cleanText(extraProfileData.clientType),
+          primaryGenre: cleanText(extraProfileData.primaryGenre),
+          mainNeed: cleanText(extraProfileData.mainNeed),
+          memberCount: cleanText(extraProfileData.memberCount),
+          preferredDuration: cleanText(extraProfileData.preferredDuration),
+          preferredTime: cleanText(extraProfileData.preferredTime),
+          preferredDays: cleanText(extraProfileData.preferredDays),
+          socialLink: cleanText(extraProfileData.socialLink),
+          gearNotes: cleanText(extraProfileData.gearNotes),
+          invoiceName: cleanText(extraProfileData.invoiceName),
+          paymentPreference: cleanText(extraProfileData.paymentPreference),
+          clientLevel: cleanText(extraProfileData.clientLevel) || userProfile?.clientLevel || 'New',
+        };
+
+        const updatePayload = {
           username: cleanNewUsername,
-          phone: newPhone
-        });
+          displayName: cleanNewUsername,
+          phone: cleanText(newPhone),
+          ...professionalPatch,
+          profileUpdatedAt: new Date().toISOString(),
+        };
+
+        const docRef = doc(db, 'users', user.uid);
+        await updateDoc(docRef, updatePayload);
 
         if (cleanNewUsername !== cleanOldUsername) {
           await setDoc(doc(db, 'usernames', cleanNewUsername), {
@@ -312,7 +334,7 @@ export const useAuthStore = create((set, get) => {
 
         set((state) => ({
           user: { ...state.user, displayName: cleanNewUsername },
-          userProfile: { ...state.userProfile, username: cleanNewUsername, phone: newPhone },
+          userProfile: { ...state.userProfile, ...updatePayload },
           loading: false
         }));
       } catch (error) {

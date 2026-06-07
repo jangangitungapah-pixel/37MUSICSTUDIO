@@ -26,6 +26,33 @@ const getBookingTotal = (bookingData = {}) => Number(
 );
 
 const buildCustomerMetadataPatch = (bookingData = {}) => {
+  const cleanText = (value) => String(value || '').trim();
+  const clientUid = cleanText(bookingData.clientUid);
+  const clientEmail = normalizeCustomerText(bookingData.clientEmail || bookingData.email || '');
+  const linkedCustomerId = cleanText(bookingData.linkedCustomerId);
+
+  return {
+    ...(clientUid ? { clientUid } : {}),
+    ...(clientEmail ? { clientEmail } : {}),
+    ...(bookingData.clientName ? { clientName: bookingData.clientName } : {}),
+    ...(linkedCustomerId ? { linkedCustomerId } : {}),
+    ...(bookingData.sourceRequestId ? { sourceRequestId: bookingData.sourceRequestId } : {}),
+    ...(bookingData.createdBy ? { createdBy: bookingData.createdBy } : {}),
+    ...(cleanText(bookingData.projectName) ? { projectName: cleanText(bookingData.projectName) } : {}),
+    ...(cleanText(bookingData.clientType) ? { clientType: cleanText(bookingData.clientType) } : {}),
+    ...(cleanText(bookingData.primaryGenre) ? { primaryGenre: cleanText(bookingData.primaryGenre) } : {}),
+    ...(cleanText(bookingData.mainNeed) ? { mainNeed: cleanText(bookingData.mainNeed) } : {}),
+    ...(cleanText(bookingData.memberCount) ? { memberCount: cleanText(bookingData.memberCount) } : {}),
+    ...(cleanText(bookingData.preferredDuration) ? { preferredDuration: cleanText(bookingData.preferredDuration) } : {}),
+    ...(cleanText(bookingData.preferredTime) ? { preferredTime: cleanText(bookingData.preferredTime) } : {}),
+    ...(cleanText(bookingData.preferredDays) ? { preferredDays: cleanText(bookingData.preferredDays) } : {}),
+    ...(cleanText(bookingData.socialLink) ? { socialLink: cleanText(bookingData.socialLink) } : {}),
+    ...(cleanText(bookingData.gearNotes) ? { gearNotes: cleanText(bookingData.gearNotes) } : {}),
+    ...(cleanText(bookingData.invoiceName) ? { invoiceName: cleanText(bookingData.invoiceName) } : {}),
+    ...(cleanText(bookingData.paymentPreference) ? { paymentPreference: cleanText(bookingData.paymentPreference) } : {}),
+    ...(cleanText(bookingData.clientLevel) ? { clientLevel: cleanText(bookingData.clientLevel) } : {}),
+  };
+};) => {
   const clientUid = String(bookingData.clientUid || '').trim();
   const clientEmail = normalizeCustomerText(bookingData.clientEmail || bookingData.email || '');
   const linkedCustomerId = String(bookingData.linkedCustomerId || '').trim();
@@ -232,6 +259,19 @@ export const useCustomerStore = create((set, get) => {
         email: clientEmail,
         instagram: '',
         address: '',
+        projectName: bookingData.projectName || '',
+        clientType: bookingData.clientType || '',
+        primaryGenre: bookingData.primaryGenre || '',
+        mainNeed: bookingData.mainNeed || '',
+        memberCount: bookingData.memberCount || '',
+        preferredDuration: bookingData.preferredDuration || '',
+        preferredTime: bookingData.preferredTime || '',
+        preferredDays: bookingData.preferredDays || '',
+        socialLink: bookingData.socialLink || '',
+        gearNotes: bookingData.gearNotes || '',
+        invoiceName: bookingData.invoiceName || '',
+        paymentPreference: bookingData.paymentPreference || '',
+        clientLevel: bookingData.clientLevel || 'New',
         status: 'Active',
         notes: bookingData.sourceRequestId ? 'Auto-created dari request booking #' + bookingData.sourceRequestId : 'Auto-created dari booking client.',
         joinDate: format(new Date(), 'yyyy-MM-dd'),

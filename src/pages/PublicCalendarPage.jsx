@@ -196,6 +196,7 @@ const PublicCalendarPage = () => {
     lastSlotButtonRef.current = triggerElement || null;
 
     const savedClientName =
+      userProfile?.projectName ||
       userProfile?.displayName ||
       userProfile?.username ||
       user?.displayName ||
@@ -256,6 +257,19 @@ const PublicCalendarPage = () => {
           bandName.trim(),
         clientPhone: customerPhone.trim(),
         linkedCustomerId: userProfile?.linkedCustomerId || '',
+        projectName: userProfile?.projectName || bandName.trim(),
+        clientType: userProfile?.clientType || '',
+        primaryGenre: userProfile?.primaryGenre || '',
+        mainNeed: userProfile?.mainNeed || '',
+        memberCount: userProfile?.memberCount || '',
+        preferredDuration: userProfile?.preferredDuration || '',
+        preferredTime: userProfile?.preferredTime || '',
+        preferredDays: userProfile?.preferredDays || '',
+        socialLink: userProfile?.socialLink || '',
+        gearNotes: userProfile?.gearNotes || '',
+        invoiceName: userProfile?.invoiceName || '',
+        paymentPreference: userProfile?.paymentPreference || '',
+        clientLevel: userProfile?.clientLevel || 'New',
         createdBy: user && !user.isAnonymous ? user.uid : 'public-guest',
       });
       useNotificationStore.getState().addNotification({
