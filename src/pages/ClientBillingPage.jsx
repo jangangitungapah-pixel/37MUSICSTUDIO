@@ -1,12 +1,8 @@
+import { useAuthStore } from '../store/useAuthStore';
+import { useBookingStore } from '../store/useBookingStore';
+import { useSettingsStore } from '../store/useSettingsStore';
+import { useNotificationStore } from '../store/useNotificationStore';
 import {
-  useMemo,
-  useState } from 'react';
-import { Link,
-  Navigate } from 'react-router-dom';
-import { format } from 'date-fns';
-import { id as localeId } from 'date-fns/locale';
-import {
-  ArrowLeft,
   Calendar,
   CheckCircle2,
   ChevronRight,
@@ -20,10 +16,6 @@ import {
   Sparkles,
   WalletCards
 } from 'lucide-react';
-import { useAuthStore } from '../store/useAuthStore';
-import { useBookingStore } from '../store/useBookingStore';
-import { useSettingsStore } from '../store/useSettingsStore';
-import { useNotificationStore } from '../store/useNotificationStore';
 import ClientPortalNav from '../components/ClientPortalNav';
 import './ClientPortal.css';
 
