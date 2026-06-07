@@ -2976,3 +2976,71 @@ body[data-theme="light"]:has(.landing-container) #root {
   }
 }
 
+/* ──────────────────────────────────────────────────────────────────────────
+   37 LANDING HERO LOGIN TAILWIND POLISH 8.0C
+   --------------------------------------------------------------------------
+   Small bridge so Tailwind phase 8.0C utilities win over older landing CSS.
+   Existing LandingPage.css remains as fallback while migration continues.
+   ────────────────────────────────────────────────────────────────────────── */
+
+.tw-landing-phase80c .hero-background img {
+  object-fit: cover;
+  object-position: var(--hero-image-position);
+}
+
+.tw-landing-phase80c .hero-login-panel {
+  isolation: isolate;
+}
+
+.tw-landing-phase80c .hero-login-panel::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  z-index: -1;
+  border-radius: inherit;
+  background:
+    radial-gradient(circle at 18% 0%, rgba(239, 197, 110, 0.18), transparent 34%),
+    radial-gradient(circle at 100% 18%, rgba(88, 224, 233, 0.12), transparent 34%);
+  pointer-events: none;
+}
+
+.tw-landing-phase80c .hero-trust-strip strong,
+.tw-landing-phase80c .hero-login-perks span {
+  letter-spacing: -0.015em;
+}
+
+.tw-landing-phase80c .hero-radix-field input {
+  color: #fffaf0 !important;
+  font-weight: 800;
+}
+
+.tw-landing-phase80c .hero-radix-field input::placeholder {
+  color: rgba(255, 250, 240, 0.42) !important;
+}
+
+[data-theme="light"] .tw-landing-phase80c {
+  background:
+    radial-gradient(circle at 20% 10%, rgba(183, 121, 42, 0.12), transparent 32%),
+    radial-gradient(circle at 90% 20%, rgba(22, 136, 145, 0.10), transparent 30%),
+    #f7efe2;
+}
+
+[data-theme="light"] .tw-landing-phase80c .hero-trust-strip > div,
+[data-theme="light"] .tw-landing-phase80c .hero-login-panel {
+  background: rgba(255, 255, 255, 0.62);
+  border-color: rgba(78, 54, 28, 0.10);
+}
+
+[data-theme="light"] .tw-landing-phase80c .hero-login-security-note {
+  color: rgba(20, 83, 45, 0.82);
+}
+
+@media (max-width: 767px) {
+  .tw-landing-phase80c .hero-title {
+    letter-spacing: -0.065em;
+  }
+
+  .tw-landing-phase80c .hero-trust-strip {
+    margin-top: 1.25rem;
+  }
+}

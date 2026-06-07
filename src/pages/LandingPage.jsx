@@ -268,7 +268,7 @@ const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
             {loginLoading ? (
               <Loader2 className="spinner" size={16} />
             ) : (
-              <span className="login-google-mark" aria-hidden="true">G</span>
+              <span className="login-google-mark grid size-6 place-items-center rounded-full bg-white text-sm font-black text-neutral-950" aria-hidden="true">G</span>
             )}
             <span>Masuk / daftar dengan Google</span>
           </button>
@@ -346,22 +346,22 @@ const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
         </div>
       )}
 
-      <section className="hero-section relative isolate min-h-[100svh] overflow-hidden pt-[calc(74px+env(safe-area-inset-top,0px))]" aria-label="37 Music Studio landing hero">
+      <section className="hero-section relative isolate min-h-[100svh] overflow-hidden pt-[calc(74px+env(safe-area-inset-top,0px))] tw-landing-phase80c bg-[radial-gradient(circle_at_20%_10%,rgba(239,197,110,0.16),transparent_32%),radial-gradient(circle_at_90%_20%,rgba(88,224,233,0.12),transparent_30%),#07070b]" aria-label="37 Music Studio landing hero">
         <div className="hero-background absolute inset-0 -z-10 overflow-hidden" aria-hidden="true">
-          <img src={currentHeroPhoto.url} alt="" loading="eager" decoding="async" fetchPriority="high" />
-          <div className="hero-scrim" />
+          <img className="h-full w-full scale-[1.03] object-cover opacity-85 blur-0 transition duration-700" src={currentHeroPhoto.url} alt="" loading="eager" decoding="async" fetchPriority="high" />
+          <div className="hero-scrim absolute inset-0 bg-[linear-gradient(90deg,rgba(7,7,11,0.95)_0%,rgba(7,7,11,0.78)_42%,rgba(7,7,11,0.42)_100%)]" />
         </div>
 
         <div className="hero-shell mx-auto grid min-h-[calc(100svh-74px)] w-full max-w-7xl items-center gap-8 px-4 py-10 sm:px-6 lg:grid-cols-[minmax(0,1.08fr)_minmax(360px,0.62fr)] lg:px-8">
-          <div className="hero-copy max-w-3xl space-y-6">
-            <div className="hero-kicker inline-flex w-fit items-center gap-2 rounded-full border border-amber-300/20 bg-amber-300/10 px-3 py-2 text-xs font-black uppercase tracking-[0.18em] text-amber-200">
+          <div className="hero-copy max-w-3xl space-y-6 relative z-10">
+            <div className="hero-kicker inline-flex w-fit items-center gap-2 rounded-full border border-amber-300/20 bg-amber-300/10 px-3 py-2 text-xs font-black uppercase tracking-[0.18em] text-amber-200 shadow-lg shadow-amber-500/10 backdrop-blur-xl">
               <Sparkles size={16} />
               <span>Rehearsal & recording room di Tangerang</span>
             </div>
 
-            <h1 className="hero-title max-w-4xl text-balance text-5xl font-black leading-[0.9] tracking-[-0.08em] text-white sm:text-6xl lg:text-7xl">Studio private untuk latihan dan recording yang lebih rapi.</h1>
+            <h1 className="hero-title max-w-4xl text-balance text-5xl font-black leading-[0.9] tracking-[-0.08em] text-white sm:text-6xl lg:text-7xl drop-shadow-[0_14px_42px_rgba(0,0,0,0.45)]">Studio private untuk latihan dan recording yang lebih rapi.</h1>
 
-            <p className="hero-subtitle max-w-2xl text-pretty text-base font-semibold leading-8 text-stone-100/75 sm:text-lg">
+            <p className="hero-subtitle max-w-2xl text-pretty text-base font-semibold leading-8 text-stone-100/75 sm:text-lg drop-shadow-[0_10px_28px_rgba(0,0,0,0.38)]">
               Booking jadwal, latihan, recording, dan konten musik dalam satu ruang private. Gear siap, operator bantu setup, kamu tinggal datang dan main.
             </p>
 
@@ -375,17 +375,43 @@ const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
                 <span>Lihat Video</span>
               </a>
             </div>
+
+            <div className="hero-trust-strip mt-7 grid gap-3 sm:grid-cols-3" aria-label="Highlight 37 Music Studio">
+              <div className="rounded-3xl border border-white/10 bg-white/[0.055] p-4 shadow-xl shadow-black/10 backdrop-blur-2xl">
+                <CheckCircle2 size={18} className="mb-3 text-amber-200" />
+                <strong className="block text-sm font-black text-white">Private Room</strong>
+                <span className="mt-1 block text-xs font-semibold leading-5 text-stone-200/65">Latihan dan recording lebih fokus.</span>
+              </div>
+              <div className="rounded-3xl border border-white/10 bg-white/[0.055] p-4 shadow-xl shadow-black/10 backdrop-blur-2xl">
+                <Volume2 size={18} className="mb-3 text-cyan-200" />
+                <strong className="block text-sm font-black text-white">Ready Gear</strong>
+                <span className="mt-1 block text-xs font-semibold leading-5 text-stone-200/65">Setup dasar sudah disiapkan.</span>
+              </div>
+              <div className="rounded-3xl border border-white/10 bg-white/[0.055] p-4 shadow-xl shadow-black/10 backdrop-blur-2xl">
+                <Users2 size={18} className="mb-3 text-emerald-200" />
+                <strong className="block text-sm font-black text-white">Client Portal</strong>
+                <span className="mt-1 block text-xs font-semibold leading-5 text-stone-200/65">Booking, billing, dan pesan rapi.</span>
+              </div>
+            </div>
+
           </div>
 
-                    <div className="hero-login-panel rounded-[2rem] border border-white/10 bg-white/[0.07] p-4 shadow-2xl shadow-black/30 backdrop-blur-2xl sm:p-5" aria-label="Masuk atau daftar akun client">
+                    <div className="hero-login-panel rounded-[2rem] border border-white/10 bg-white/[0.07] p-4 shadow-2xl shadow-black/30 backdrop-blur-2xl sm:p-5 relative overflow-hidden ring-1 ring-white/10 before:pointer-events-none before:absolute before:inset-x-8 before:top-0 before:h-px before:bg-gradient-to-r before:from-transparent before:via-amber-200/70 before:to-transparent" aria-label="Masuk atau daftar akun client">
             <div className="hero-login-top mb-4 flex items-start gap-3">
-              <div className="hero-login-badge">
+              <div className="hero-login-badge grid size-11 shrink-0 place-items-center rounded-2xl border border-amber-200/20 bg-amber-300/10 text-amber-100 shadow-lg shadow-amber-500/10">
                 <Lock size={16} />
               </div>
               <div>
                 <span>Client Portal</span>
                 <strong>Booking lebih cepat pakai akun studio.</strong>
               </div>
+            </div>
+
+
+            <div className="hero-login-perks mb-4 grid grid-cols-3 gap-2">
+              <span className="rounded-2xl border border-white/10 bg-white/[0.04] px-3 py-2 text-center text-[0.68rem] font-black text-stone-100/70">Fast</span>
+              <span className="rounded-2xl border border-white/10 bg-white/[0.04] px-3 py-2 text-center text-[0.68rem] font-black text-stone-100/70">Secure</span>
+              <span className="rounded-2xl border border-white/10 bg-white/[0.04] px-3 py-2 text-center text-[0.68rem] font-black text-stone-100/70">Synced</span>
             </div>
 
             <button
@@ -397,29 +423,29 @@ const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
               {loginLoading ? (
                 <Loader2 className="spinner" size={16} />
               ) : (
-                <span className="login-google-mark" aria-hidden="true">G</span>
+                <span className="login-google-mark grid size-6 place-items-center rounded-full bg-white text-sm font-black text-neutral-950" aria-hidden="true">G</span>
               )}
               <span>Masuk / daftar dengan Google</span>
             </button>
 
-            <div className="hero-login-divider">
+            <div className="hero-login-divider my-4 flex items-center gap-3 text-xs font-black uppercase tracking-[0.16em] text-stone-300/55 before:h-px before:flex-1 before:bg-white/10 after:h-px after:flex-1 after:bg-white/10">
               <span>atau masuk dengan email</span>
             </div>
 
             <form onSubmit={handleLoginSubmit} className="hero-login-form grid gap-3">
               {loginError && (
-                <div id="hero-login-error" role="alert" className="hero-login-error">
+                <div id="hero-login-error" role="alert" className="hero-login-error rounded-2xl border border-red-300/20 bg-red-500/10 px-3 py-2 text-sm font-semibold text-red-50">
                   <AlertCircle size={14} />
                   <span>{loginError}</span>
                 </div>
               )}
 
-              <div className="hero-login-field">
+              <div className="hero-login-field grid gap-2">
                 <label htmlFor="hero-client-identifier">Email / Username</label>
                                 <TextField.Root
                   data-radix-field="hero-client-identifier"
                   id="hero-client-identifier"
-                  className="hero-radix-field hero-radix-identifier"
+                  className="hero-radix-field hero-radix-identifier !min-h-12 !rounded-2xl !border !border-white/10 !bg-white/[0.07] !px-1 !text-white !shadow-inner !shadow-black/10 !outline-none transition focus-within:!border-amber-200/35 focus-within:!bg-white/[0.09]"
                   type="text"
                   value={identifier}
                   onChange={(event) => setIdentifier(event.target.value)}
@@ -434,12 +460,12 @@ const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
                 </TextField.Root>
               </div>
 
-              <div className="hero-login-field">
+              <div className="hero-login-field grid gap-2">
                 <label htmlFor="hero-client-password">Password</label>
                                 <TextField.Root
                   data-radix-field="hero-client-password"
                   id="hero-client-password"
-                  className="hero-radix-field hero-radix-password"
+                  className="hero-radix-field hero-radix-password !min-h-12 !rounded-2xl !border !border-white/10 !bg-white/[0.07] !px-1 !text-white !shadow-inner !shadow-black/10 !outline-none transition focus-within:!border-amber-200/35 focus-within:!bg-white/[0.09]"
                   type={showPass ? 'text' : 'password'}
                   value={password}
                   onChange={(event) => setPassword(event.target.value)}
@@ -454,7 +480,7 @@ const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
                   <TextField.Slot side="right">
                     <button
                       type="button"
-                      className="hero-radix-eye"
+                      className="hero-radix-eye grid size-8 place-items-center rounded-xl text-stone-200/70 transition hover:bg-white/10 hover:text-white"
                       onClick={() => setShowPass((value) => !value)}
                       aria-label={showPass ? 'Sembunyikan password' : 'Tampilkan password'}
                     >
@@ -462,6 +488,11 @@ const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
                     </button>
                   </TextField.Slot>
                 </TextField.Root>
+              </div>
+
+
+              <div className="hero-login-security-note rounded-2xl border border-emerald-300/15 bg-emerald-300/10 px-3 py-2 text-xs font-semibold leading-5 text-emerald-50/75">
+                Data akun dipakai untuk menyambungkan booking, billing, dan histori client studio.
               </div>
 
               <button type="submit" className="hero-login-submit inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-amber-300 px-4 py-3 font-black text-neutral-950 shadow-lg shadow-amber-500/20 transition hover:-translate-y-0.5 hover:bg-amber-200 disabled:cursor-not-allowed disabled:opacity-60" disabled={loginLoading}>
@@ -479,7 +510,7 @@ const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
               </button>
             </form>
 
-            <div className="hero-login-foot">
+            <div className="hero-login-foot mt-4 rounded-3xl border border-white/10 bg-black/10 p-3 text-xs font-semibold leading-5 text-stone-200/60">
               <span>Belum punya akun? Pakai Google untuk daftar cepat.</span>
               <Link to="/jadwal-publik">Cek slot tanpa login</Link>
             </div>
