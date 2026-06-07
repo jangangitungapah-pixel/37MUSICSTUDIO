@@ -1,39 +1,45 @@
 /* ──────────────────────────────────────────────────────────────────────────
    37 Music Studio Landing Page
-   Consolidated clean CSS
+   Phase 5.0P — Consolidated CSS + Premium Light Mode
    --------------------------------------------------------------------------
-   No append-patch cascade. No frameless section boxes.
-   Only real cards/panels own surfaces.
+   Total rewrite. No stacked patch cascade.
+   Dark mode: solid premium studio black.
+   Light mode: warm ivory premium, not native white.
    ────────────────────────────────────────────────────────────────────────── */
 
 @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Grotesk:wght@400;500;600;700;800&display=swap');
 
 .landing-container {
-  --landing-bg: #070706;
-  --landing-bg-2: #0c0d10;
+  --landing-bg-solid: #0b0d11;
+  --landing-bg-elevated: #11141c;
+  --landing-surface: rgba(24, 28, 38, 0.88);
+  --landing-surface-soft: rgba(22, 26, 35, 0.78);
+  --landing-surface-strong: rgba(29, 33, 44, 0.96);
+
   --landing-text: #fffaf0;
-  --landing-muted: rgba(255, 250, 240, 0.72);
+  --landing-muted: rgba(255, 250, 240, 0.70);
   --landing-soft: rgba(255, 250, 240, 0.48);
-  --landing-line: rgba(255, 255, 255, 0.105);
-  --landing-line-soft: rgba(255, 255, 255, 0.07);
+  --landing-faint: rgba(255, 250, 240, 0.32);
+
+  --landing-line: rgba(255, 255, 255, 0.10);
+  --landing-line-soft: rgba(255, 255, 255, 0.065);
+  --landing-line-strong: rgba(255, 255, 255, 0.15);
+
   --landing-gold: #efc56e;
   --landing-gold-deep: #d49a3e;
   --landing-pink: #ff3d70;
   --landing-cyan: #58e0e9;
   --landing-green: #82d8a0;
-  --landing-card:
-    radial-gradient(circle at 12% 0%, rgba(239, 197, 110, 0.075), transparent 42%),
-    radial-gradient(circle at 88% 0%, rgba(88, 224, 233, 0.045), transparent 38%),
-    linear-gradient(180deg, rgba(255,255,255,0.055), rgba(255,255,255,0.012)),
-    rgba(15, 18, 27, 0.76);
-  --landing-card-strong:
-    radial-gradient(circle at 14% 0%, rgba(255, 61, 112, 0.105), transparent 42%),
-    radial-gradient(circle at 86% 0%, rgba(239, 197, 110, 0.105), transparent 38%),
-    linear-gradient(180deg, rgba(255,255,255,0.066), rgba(255,255,255,0.014)),
-    rgba(16, 19, 28, 0.9);
-  --landing-shadow: 0 22px 58px rgba(0, 0, 0, 0.28);
-  --landing-shadow-soft: 0 14px 34px rgba(0, 0, 0, 0.18);
+
+  --landing-shadow: 0 22px 52px rgba(0, 0, 0, 0.28);
+  --landing-shadow-soft: 0 12px 30px rgba(0, 0, 0, 0.18);
+  --landing-shadow-lift: 0 26px 62px rgba(0, 0, 0, 0.34);
+
+  --nav-bg: rgba(17, 20, 28, 0.92);
   --hero-image-position: 24% center;
+  --hero-text: #fffaf0;
+  --hero-muted: rgba(255, 250, 240, 0.84);
+  --hero-fade-mid: rgba(11, 13, 17, 0.58);
 
   min-height: 100vh;
   width: 100%;
@@ -41,11 +47,7 @@
   overflow-x: clip;
   position: relative;
   color: var(--landing-text);
-  background:
-    radial-gradient(circle at 14% 0%, rgba(239, 197, 110, 0.065), transparent 34rem),
-    radial-gradient(circle at 90% 10%, rgba(88, 224, 233, 0.040), transparent 32rem),
-    radial-gradient(circle at 52% 42%, rgba(255, 61, 112, 0.028), transparent 38rem),
-    linear-gradient(180deg, #070706 0%, #0c0d10 46%, #070706 100%);
+  background: var(--landing-bg-solid);
   font-family: 'Space Grotesk', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   -webkit-tap-highlight-color: transparent;
 }
@@ -57,18 +59,14 @@
   min-width: 0;
 }
 
-.landing-container::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background:
-    linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,0.014) 1px, transparent 1px);
-  background-size: 58px 58px;
-  mask-image: linear-gradient(to bottom, rgba(0,0,0,0.55), transparent 70%);
-  -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,0.55), transparent 70%);
+.landing-container img,
+.landing-container svg,
+.landing-container iframe {
+  max-width: 100%;
+}
+
+.landing-container a {
+  color: inherit;
 }
 
 .landing-container section,
@@ -76,15 +74,6 @@
   position: relative;
   z-index: 1;
   scroll-margin-top: 92px;
-}
-
-.landing-container img,
-.landing-container svg {
-  max-width: 100%;
-}
-
-.landing-container a {
-  color: inherit;
 }
 
 /* ─── Header ─────────────────────────────────────────────────────────────── */
@@ -100,25 +89,21 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background:
-    radial-gradient(circle at 10% 0%, rgba(239, 197, 110, 0.07), transparent 44%),
-    radial-gradient(circle at 90% 0%, rgba(88, 224, 233, 0.045), transparent 38%),
-    linear-gradient(180deg, rgba(255,255,255,0.055), rgba(255,255,255,0.012)),
-    rgba(10, 13, 20, 0.82);
-  border-bottom: 1px solid rgba(255,255,255,0.075);
+  background: var(--nav-bg);
+  border-bottom: 1px solid var(--landing-line-soft);
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.070),
-    0 12px 34px rgba(0,0,0,0.24);
-  -webkit-backdrop-filter: blur(22px) saturate(1.12);
-  backdrop-filter: blur(22px) saturate(1.12);
-  transition: height 180ms ease, background 180ms ease, box-shadow 180ms ease;
+    inset 0 1px 0 rgba(255, 255, 255, 0.045),
+    0 12px 32px rgba(0, 0, 0, 0.22);
+  -webkit-backdrop-filter: blur(22px) saturate(1.08);
+  backdrop-filter: blur(22px) saturate(1.08);
+  transition:
+    height 180ms ease,
+    background 180ms ease,
+    box-shadow 180ms ease;
 }
 
 .landing-nav.scrolled {
   height: calc(60px + env(safe-area-inset-top, 0px));
-  background:
-    linear-gradient(180deg, rgba(255,255,255,0.052), rgba(255,255,255,0.012)),
-    rgba(8, 10, 16, 0.93);
 }
 
 .nav-brand {
@@ -138,14 +123,11 @@
   place-items: center;
   overflow: hidden;
   border-radius: 15px;
-  border: 1px solid rgba(239, 197, 110, 0.32);
-  background:
-    radial-gradient(circle at 50% 0%, rgba(255,255,255,0.15), transparent 58%),
-    linear-gradient(135deg, rgba(239, 197, 110, 0.14), rgba(255, 61, 112, 0.05)),
-    rgba(255,255,255,0.030);
+  border: 1px solid rgba(239, 197, 110, 0.34);
+  background: rgba(255, 255, 255, 0.035);
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.070),
-    0 10px 24px rgba(0,0,0,0.20);
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 10px 24px rgba(0, 0, 0, 0.18);
 }
 
 .nav-brand-mark img {
@@ -165,7 +147,7 @@
 .brand-text {
   max-width: 150px;
   overflow: hidden;
-  color: rgba(255,250,240,0.92);
+  color: var(--landing-text);
   font-size: 0.76rem;
   font-weight: 850;
   letter-spacing: -0.01em;
@@ -179,7 +161,7 @@
 }
 
 .nav-links a {
-  color: rgba(255,250,240,0.70);
+  color: var(--landing-muted);
   font-size: 0.78rem;
   font-weight: 850;
   text-decoration: none;
@@ -207,18 +189,20 @@
   align-items: center;
   justify-content: center;
   gap: 7px;
-  border: 1px solid rgba(255,255,255,0.085);
+  border: 1px solid var(--landing-line);
   border-radius: 14px;
-  color: rgba(255,250,240,0.84);
-  background:
-    linear-gradient(180deg, rgba(255,255,255,0.050), rgba(255,255,255,0.010)),
-    rgba(255,255,255,0.020);
+  color: var(--landing-muted);
+  background: rgba(255, 255, 255, 0.045);
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.050),
-    0 8px 18px rgba(0,0,0,0.14);
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 8px 18px rgba(0, 0, 0, 0.12);
   cursor: pointer;
   text-decoration: none;
-  transition: transform 150ms ease, color 150ms ease, background 150ms ease, border-color 150ms ease;
+  transition:
+    transform 150ms ease,
+    color 150ms ease,
+    background 150ms ease,
+    border-color 150ms ease;
 }
 
 .nav-login-btn {
@@ -241,12 +225,17 @@
 .nav-hamburger:hover,
 .nav-hamburger.open {
   transform: translateY(-1px);
-  color: #fff;
-  border-color: rgba(239, 197, 110, 0.28);
-  background:
-    radial-gradient(circle at 50% 0%, rgba(239, 197, 110, 0.11), transparent 62%),
-    linear-gradient(180deg, rgba(255,255,255,0.070), rgba(255,255,255,0.016)),
-    rgba(255,255,255,0.030);
+  color: var(--landing-text);
+  border-color: rgba(239, 197, 110, 0.30);
+  background: rgba(255, 255, 255, 0.075);
+}
+
+.nav-book-btn,
+.landing-container .btn-primary.btn-large,
+.mobile-sticky-cta strong {
+  color: #120f0a;
+  background: var(--landing-gold);
+  box-shadow: 0 12px 28px rgba(239, 197, 110, 0.18);
 }
 
 /* ─── Mobile menu ───────────────────────────────────────────────────────── */
@@ -256,7 +245,7 @@
   inset: 0;
   z-index: 185;
   border: 0;
-  background: rgba(0,0,0,0.54);
+  background: rgba(0, 0, 0, 0.54);
 }
 
 .mobile-nav-menu {
@@ -270,11 +259,10 @@
   padding: 10px;
   border-radius: 22px;
   border: 1px solid var(--landing-line);
-  background:
-    radial-gradient(circle at 14% 0%, rgba(239,197,110,0.10), transparent 42%),
-    linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.014)),
-    rgba(12,15,23,0.96);
+  background: var(--landing-surface-strong);
   box-shadow: var(--landing-shadow);
+  -webkit-backdrop-filter: blur(22px) saturate(1.08);
+  backdrop-filter: blur(22px) saturate(1.08);
 }
 
 .mobile-nav-menu a {
@@ -284,21 +272,21 @@
   justify-content: space-between;
   padding: 0 14px;
   border-radius: 16px;
-  color: rgba(255,250,240,0.76);
+  color: var(--landing-muted);
   font-weight: 850;
   text-decoration: none;
 }
 
 .mobile-nav-menu a:hover {
   color: var(--landing-text);
-  background: rgba(255,255,255,0.065);
+  background: rgba(255, 255, 255, 0.065);
 }
 
 .mobile-nav-menu .mobile-menu-booking {
   justify-content: center;
   gap: 9px;
-  color: #130f08;
-  background: linear-gradient(135deg, var(--landing-gold), var(--landing-gold-deep));
+  color: #120f0a;
+  background: var(--landing-gold);
 }
 
 /* ─── Auth panel ─────────────────────────────────────────────────────────── */
@@ -313,16 +301,12 @@
   overflow-y: auto;
   border-radius: 24px;
   border: 1px solid var(--landing-line);
-  background:
-    radial-gradient(circle at 14% 0%, rgba(255,61,112,0.12), transparent 38%),
-    radial-gradient(circle at 88% 0%, rgba(88,224,233,0.075), transparent 34%),
-    linear-gradient(180deg, rgba(255,255,255,0.060), rgba(255,255,255,0.014)),
-    rgba(14,17,25,0.965);
+  background: var(--landing-surface-strong);
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.08),
-    0 24px 70px rgba(0,0,0,0.42);
-  -webkit-backdrop-filter: blur(22px) saturate(1.1);
-  backdrop-filter: blur(22px) saturate(1.1);
+    inset 0 1px 0 rgba(255, 255, 255, 0.055),
+    var(--landing-shadow-lift);
+  -webkit-backdrop-filter: blur(22px) saturate(1.08);
+  backdrop-filter: blur(22px) saturate(1.08);
 }
 
 .login-dropdown-header {
@@ -331,10 +315,8 @@
   align-items: center;
   gap: 13px;
   padding: 14px;
-  border-bottom: 1px solid rgba(255,255,255,0.060);
-  background:
-    linear-gradient(180deg, rgba(255,255,255,0.045), rgba(255,255,255,0.010)),
-    rgba(255,255,255,0.010);
+  border-bottom: 1px solid var(--landing-line-soft);
+  background: rgba(255, 255, 255, 0.026);
 }
 
 .login-dropdown-icon-wrap {
@@ -344,10 +326,8 @@
   display: grid;
   place-items: center;
   border-radius: 16px;
-  border: 1px solid rgba(255,255,255,0.070);
-  background:
-    radial-gradient(circle at 50% 0%, rgba(255,255,255,0.12), transparent 58%),
-    rgba(255,255,255,0.045);
+  border: 1px solid var(--landing-line-soft);
+  background: rgba(255, 255, 255, 0.04);
 }
 
 .login-dropdown-icon-wrap img {
@@ -371,7 +351,7 @@
 }
 
 .login-dropdown-title {
-  color: #fff;
+  color: var(--landing-text);
   font-size: 1rem;
   line-height: 1.05;
   font-weight: 950;
@@ -391,11 +371,9 @@
   justify-content: center;
   gap: 10px;
   border-radius: 999px;
-  border: 1px solid rgba(255,255,255,0.095);
-  color: rgba(248,250,255,0.94);
-  background:
-    linear-gradient(180deg, rgba(255,255,255,0.052), rgba(255,255,255,0.012)),
-    rgba(255,255,255,0.022);
+  border: 1px solid var(--landing-line);
+  color: var(--landing-text);
+  background: rgba(255, 255, 255, 0.045);
   font: inherit;
   font-size: 0.80rem;
   font-weight: 900;
@@ -419,7 +397,7 @@
   align-items: center;
   gap: 10px;
   margin: 11px 14px 0;
-  color: rgba(234,238,248,0.36);
+  color: var(--landing-faint);
   font-size: 0.58rem;
   font-weight: 950;
   letter-spacing: 0.085em;
@@ -431,7 +409,7 @@
   content: "";
   flex: 1;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.085), transparent);
+  background: var(--landing-line-soft);
 }
 
 .login-dropdown-form {
@@ -445,8 +423,8 @@
   gap: 8px;
   padding: 10px 11px;
   border-radius: 14px;
-  border: 1px solid rgba(255,61,112,0.20);
-  background: rgba(255,61,112,0.085);
+  border: 1px solid rgba(255, 61, 112, 0.22);
+  background: rgba(255, 61, 112, 0.09);
   color: #ff7c98;
   font-size: 0.78rem;
   font-weight: 800;
@@ -458,7 +436,7 @@
 }
 
 .login-field-label {
-  color: rgba(232,237,248,0.68);
+  color: var(--landing-muted);
   font-size: 0.70rem;
   font-weight: 850;
 }
@@ -470,20 +448,18 @@
   gap: 9px;
   padding: 0 12px;
   border-radius: 15px;
-  border: 1px solid rgba(255,255,255,0.082);
-  background:
-    linear-gradient(180deg, rgba(255,255,255,0.034), rgba(255,255,255,0.006)),
-    rgba(7,10,16,0.56);
+  border: 1px solid var(--landing-line);
+  background: rgba(0, 0, 0, 0.16);
 }
 
 .login-field-wrap:focus-within {
-  border-color: rgba(88,224,233,0.36);
-  box-shadow: 0 0 0 2px rgba(88,224,233,0.105);
+  border-color: rgba(88, 224, 233, 0.46);
+  box-shadow: 0 0 0 2px rgba(88, 224, 233, 0.12);
 }
 
 .login-field-icon {
   flex: 0 0 auto;
-  color: rgba(232,237,248,0.42);
+  color: var(--landing-soft);
 }
 
 .login-field-input {
@@ -492,11 +468,15 @@
   height: 43px;
   border: 0;
   outline: 0;
-  color: rgba(255,255,255,0.96);
+  color: var(--landing-text);
   background: transparent;
   font: inherit;
   font-size: 16px;
   font-weight: 780;
+}
+
+.login-field-input::placeholder {
+  color: var(--landing-faint);
 }
 
 .login-field-toggle {
@@ -506,8 +486,8 @@
   place-items: center;
   border: 0;
   border-radius: 12px;
-  color: rgba(232,237,248,0.44);
-  background: rgba(255,255,255,0.032);
+  color: var(--landing-soft);
+  background: rgba(255, 255, 255, 0.045);
   cursor: pointer;
 }
 
@@ -520,9 +500,8 @@
   border: 0;
   border-radius: 15px;
   color: #fff;
-  background:
-    radial-gradient(circle at 50% 0%, rgba(255,255,255,0.18), transparent 58%),
-    linear-gradient(135deg, rgba(255,61,112,0.96), rgba(255,61,112,0.72));
+  background: var(--landing-pink);
+  box-shadow: 0 12px 28px rgba(255, 61, 112, 0.20);
   font: inherit;
   font-size: 0.86rem;
   font-weight: 950;
@@ -539,6 +518,26 @@
   isolation: isolate;
   overflow: hidden;
   padding: calc(80px + env(safe-area-inset-top, 0px)) 14px 30px;
+  background: var(--landing-bg-solid);
+}
+
+.hero-section::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  z-index: 1;
+  height: clamp(160px, 24vh, 280px);
+  pointer-events: none;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(11, 13, 17, 0) 0%,
+      rgba(11, 13, 17, 0.18) 26%,
+      var(--hero-fade-mid) 62%,
+      var(--landing-bg-solid) 100%
+    );
 }
 
 .hero-background,
@@ -550,7 +549,7 @@
 
 .hero-background {
   z-index: -2;
-  background: #080807;
+  background: var(--landing-bg-solid);
 }
 
 .hero-background img {
@@ -558,17 +557,26 @@
   height: 100%;
   object-fit: cover;
   object-position: var(--hero-image-position);
-  filter: saturate(1.08) contrast(1.06) brightness(1.02);
+  filter: saturate(1.05) contrast(1.04) brightness(1);
   transform: scale(1.01);
 }
 
 .hero-scrim {
   z-index: 1;
   background:
-    radial-gradient(circle at 18% 16%, rgba(239,197,110,0.10), transparent 26rem),
-    radial-gradient(circle at 86% 18%, rgba(88,224,233,0.060), transparent 22rem),
-    linear-gradient(180deg, rgba(0,0,0,0.28) 0%, rgba(0,0,0,0.08) 28%, rgba(7,7,6,0.70) 70%, rgba(7,7,6,0.98) 100%),
-    linear-gradient(90deg, rgba(0,0,0,0.26) 0%, rgba(0,0,0,0.06) 48%, rgba(0,0,0,0.52) 100%);
+    linear-gradient(
+      180deg,
+      rgba(0, 0, 0, 0.18) 0%,
+      rgba(0, 0, 0, 0.10) 34%,
+      rgba(0, 0, 0, 0.54) 72%,
+      var(--landing-bg-solid) 100%
+    ),
+    linear-gradient(
+      90deg,
+      rgba(0, 0, 0, 0.36) 0%,
+      rgba(0, 0, 0, 0.08) 48%,
+      rgba(0, 0, 0, 0.50) 100%
+    );
 }
 
 .hero-shell {
@@ -594,21 +602,19 @@
   gap: 8px;
   padding: 0 10px;
   border-radius: 999px;
-  border: 1px solid rgba(239,197,110,0.30);
+  border: 1px solid rgba(239, 197, 110, 0.34);
   color: var(--landing-gold);
-  background:
-    radial-gradient(circle at 50% 0%, rgba(239,197,110,0.14), transparent 62%),
-    rgba(8,10,14,0.42);
+  background: rgba(8, 10, 14, 0.50);
   font-size: 0.72rem;
   font-weight: 850;
-  -webkit-backdrop-filter: blur(14px) saturate(1.1);
-  backdrop-filter: blur(14px) saturate(1.1);
+  -webkit-backdrop-filter: blur(14px) saturate(1.05);
+  backdrop-filter: blur(14px) saturate(1.05);
 }
 
 .hero-title {
   max-width: 780px;
   margin: 0;
-  color: #fffaf0;
+  color: var(--hero-text);
   font-family: 'Bebas Neue', Impact, 'Arial Narrow', sans-serif;
   font-size: clamp(3rem, 14vw, 4.4rem);
   font-weight: 400;
@@ -616,17 +622,17 @@
   letter-spacing: 0.02em;
   text-transform: uppercase;
   text-wrap: balance;
-  text-shadow: 0 18px 48px rgba(0,0,0,0.36);
+  text-shadow: 0 18px 48px rgba(0, 0, 0, 0.36);
 }
 
 .hero-subtitle {
   max-width: 630px;
   margin: 0;
-  color: rgba(255,250,240,0.84);
+  color: var(--hero-muted);
   font-size: 0.96rem;
   line-height: 1.60;
   font-weight: 550;
-  text-shadow: 0 8px 24px rgba(0,0,0,0.26);
+  text-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
 }
 
 .hero-actions {
@@ -651,20 +657,13 @@
 }
 
 .landing-container .btn-primary.btn-large {
-  border: 1px solid rgba(255,255,255,0.18);
-  color: #130f08;
-  background:
-    radial-gradient(circle at 50% 0%, rgba(255,255,255,0.30), transparent 58%),
-    linear-gradient(135deg, var(--landing-gold), var(--landing-gold-deep));
-  box-shadow: 0 16px 34px rgba(239,197,110,0.22);
+  border: 1px solid rgba(255, 255, 255, 0.18);
 }
 
 .landing-container .btn-secondary.btn-large {
-  border: 1px solid rgba(255,255,255,0.16);
+  border: 1px solid rgba(255, 255, 255, 0.16);
   color: #fffaf0;
-  background:
-    linear-gradient(180deg, rgba(255,255,255,0.052), rgba(255,255,255,0.012)),
-    rgba(255,255,255,0.045);
+  background: rgba(255, 255, 255, 0.055);
 }
 
 .hero-session {
@@ -674,14 +673,10 @@
   padding: 9px;
   border-radius: 24px;
   border: 1px solid var(--landing-line);
-  background:
-    radial-gradient(circle at 12% 0%, rgba(239,197,110,0.13), transparent 40%),
-    radial-gradient(circle at 88% 0%, rgba(88,224,233,0.070), transparent 36%),
-    linear-gradient(180deg, rgba(255,255,255,0.060), rgba(255,255,255,0.014)),
-    rgba(8,10,14,0.82);
+  background: var(--landing-surface-strong);
   box-shadow: var(--landing-shadow-soft);
-  -webkit-backdrop-filter: blur(18px) saturate(1.12);
-  backdrop-filter: blur(18px) saturate(1.12);
+  -webkit-backdrop-filter: blur(18px) saturate(1.08);
+  backdrop-filter: blur(18px) saturate(1.08);
 }
 
 .hero-session-main {
@@ -692,10 +687,8 @@
   gap: 10px;
   padding: 4px 4px 4px 12px;
   border-radius: 19px;
-  border: 1px solid rgba(255,255,255,0.075);
-  background:
-    linear-gradient(180deg, rgba(255,255,255,0.040), rgba(255,255,255,0.010)),
-    rgba(0,0,0,0.34);
+  border: 1px solid var(--landing-line-soft);
+  background: rgba(255, 255, 255, 0.035);
 }
 
 .hero-session-main .session-label {
@@ -706,7 +699,7 @@
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  color: rgba(255,250,240,0.96);
+  color: var(--landing-text);
   font-size: 0.86rem;
   line-height: 1;
   font-weight: 950;
@@ -721,7 +714,7 @@
 }
 
 .hero-session-main span:last-child {
-  color: rgba(255,250,240,0.68);
+  color: var(--landing-muted);
   font-size: 0.72rem;
   font-weight: 850;
   white-space: nowrap;
@@ -740,12 +733,9 @@
   gap: 5px;
   padding: 8px 4px;
   border-radius: 15px;
-  border: 1px solid rgba(255,255,255,0.085);
-  color: rgba(255,250,240,0.80);
-  background:
-    radial-gradient(circle at 50% 0%, rgba(239,197,110,0.075), transparent 60%),
-    linear-gradient(180deg, rgba(255,255,255,0.052), rgba(255,255,255,0.012)),
-    rgba(255,255,255,0.018);
+  border: 1px solid var(--landing-line-soft);
+  color: var(--landing-muted);
+  background: rgba(255, 255, 255, 0.035);
   font-size: 0.62rem;
   font-weight: 850;
   text-align: center;
@@ -765,9 +755,7 @@
   width: 100%;
   margin: 0;
   padding: 64px 14px;
-  background:
-    radial-gradient(circle at 16% 0%, rgba(239,197,110,0.030), transparent 28rem),
-    radial-gradient(circle at 84% 8%, rgba(88,224,233,0.024), transparent 28rem);
+  background: var(--landing-bg-solid);
 }
 
 .section-header {
@@ -822,6 +810,9 @@
   margin-inline: auto;
   display: grid;
   gap: 14px;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
 }
 
 .experience-card {
@@ -832,12 +823,12 @@
   padding: 20px;
   border-radius: 24px;
   border: 1px solid var(--landing-line);
-  background: var(--landing-card);
+  background: var(--landing-surface);
   box-shadow: var(--landing-shadow-soft);
 }
 
 .experience-card.featured {
-  border-color: rgba(239,197,110,0.20);
+  border-color: rgba(239, 197, 110, 0.22);
 }
 
 .experience-icon {
@@ -846,11 +837,9 @@
   display: grid;
   place-items: center;
   border-radius: 16px;
-  border: 1px solid rgba(239,197,110,0.26);
+  border: 1px solid rgba(239, 197, 110, 0.26);
   color: var(--landing-gold);
-  background:
-    radial-gradient(circle at 50% 0%, rgba(239,197,110,0.18), transparent 64%),
-    rgba(255,255,255,0.034);
+  background: rgba(255, 255, 255, 0.04);
 }
 
 .experience-label {
@@ -886,7 +875,7 @@
   padding: 20px;
   border-radius: 28px;
   border: 1px solid var(--landing-line);
-  background: var(--landing-card-strong);
+  background: var(--landing-surface-strong);
   box-shadow: var(--landing-shadow-soft);
 }
 
@@ -912,9 +901,7 @@
   padding: 16px;
   border-radius: 18px;
   border: 1px solid var(--landing-line-soft);
-  background:
-    linear-gradient(180deg, rgba(255,255,255,0.040), rgba(255,255,255,0.010)),
-    rgba(255,255,255,0.016);
+  background: rgba(255, 255, 255, 0.035);
 }
 
 .flow-step span {
@@ -953,6 +940,9 @@
 .landing-gallery-grid {
   display: grid;
   gap: 12px;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
 }
 
 .landing-gallery-card {
@@ -962,7 +952,7 @@
   overflow: hidden;
   border: 1px solid var(--landing-line);
   border-radius: 24px;
-  background: var(--landing-card);
+  background: var(--landing-surface);
   box-shadow: var(--landing-shadow-soft);
   cursor: pointer;
 }
@@ -989,7 +979,7 @@
   gap: 8px;
   padding: 12px;
   color: #fffaf0;
-  background: linear-gradient(180deg, transparent, rgba(0,0,0,0.74));
+  background: linear-gradient(180deg, transparent, rgba(0, 0, 0, 0.74));
   font-size: 0.88rem;
   font-weight: 850;
 }
@@ -1008,7 +998,7 @@
   align-items: center;
   justify-content: center;
   padding: 18px;
-  background: rgba(0,0,0,0.88);
+  background: rgba(0, 0, 0, 0.88);
 }
 
 .lightbox-close {
@@ -1020,9 +1010,9 @@
   display: grid;
   place-items: center;
   border-radius: 999px;
-  border: 1px solid rgba(255,255,255,0.18);
+  border: 1px solid rgba(255, 255, 255, 0.18);
   color: #fff;
-  background: rgba(255,255,255,0.09);
+  background: rgba(255, 255, 255, 0.09);
   cursor: pointer;
 }
 
@@ -1052,6 +1042,9 @@
   margin-inline: auto;
   display: grid;
   gap: 14px;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
 }
 
 .pricing-copy,
@@ -1059,7 +1052,7 @@
   padding: 20px;
   border-radius: 24px;
   border: 1px solid var(--landing-line);
-  background: var(--landing-card);
+  background: var(--landing-surface);
   box-shadow: var(--landing-shadow-soft);
 }
 
@@ -1086,8 +1079,8 @@
   padding: 7px 9px;
   border-radius: 12px;
   border: 1px solid var(--landing-line-soft);
-  color: rgba(255,250,240,0.86);
-  background: rgba(255,255,255,0.025);
+  color: var(--landing-muted);
+  background: rgba(255, 255, 255, 0.035);
   font-size: 0.90rem;
   font-weight: 780;
 }
@@ -1101,7 +1094,7 @@
   display: grid;
   align-content: space-between;
   gap: 20px;
-  background: var(--landing-card-strong);
+  background: var(--landing-surface-strong);
 }
 
 .price-card-top {
@@ -1146,6 +1139,9 @@
   margin-inline: auto;
   display: grid;
   gap: 12px;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
 }
 
 .proof-grid div {
@@ -1154,7 +1150,7 @@
   padding: 18px;
   border-radius: 22px;
   border: 1px solid var(--landing-line);
-  background: var(--landing-card);
+  background: var(--landing-surface);
   box-shadow: var(--landing-shadow-soft);
 }
 
@@ -1173,22 +1169,23 @@
   line-height: 1.5;
 }
 
-/* ─── Footer ─────────────────────────────────────────────────────────────── */
+/* ─── Footer frameless ───────────────────────────────────────────────────── */
 
 .landing-footer {
-  padding: 54px 14px calc(92px + env(safe-area-inset-bottom, 0px));
-  border-top: 1px solid rgba(255,255,255,0.075);
-  background:
-    radial-gradient(circle at 18% 0%, rgba(239,197,110,0.050), transparent 28rem),
-    radial-gradient(circle at 84% 0%, rgba(88,224,233,0.040), transparent 26rem),
-    linear-gradient(180deg, rgba(7,7,6,0.98), rgba(4,4,5,1));
+  padding: 56px 18px max(34px, calc(30px + env(safe-area-inset-bottom, 0px)));
+  border-top: 1px solid var(--landing-line-soft);
+  background: var(--landing-bg-solid);
 }
 
 .footer-content {
   width: min(1040px, 100%);
   margin-inline: auto;
   display: grid;
-  gap: 18px;
+  gap: 30px;
+  align-items: start;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
 }
 
 .footer-brand,
@@ -1196,27 +1193,53 @@
 .footer-map {
   display: grid;
   align-content: start;
-  gap: 14px;
-  padding: 20px;
-  border-radius: 24px;
-  border: 1px solid var(--landing-line-soft);
-  background:
-    radial-gradient(circle at 14% 0%, rgba(239,197,110,0.060), transparent 42%),
-    linear-gradient(180deg, rgba(255,255,255,0.040), rgba(255,255,255,0.010)),
-    rgba(13,16,24,0.68);
+  gap: 16px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.footer-brand {
+  max-width: 360px;
+}
+
+.footer-brand > div:first-child {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.footer-brand img {
+  width: 38px;
+  height: 38px;
+  object-fit: contain;
+}
+
+.footer-brand strong,
+.footer-contact h3,
+.footer-map h3 {
+  margin: 0;
+  color: var(--landing-text);
+  font-size: 1.06rem;
+  line-height: 1.15;
+  font-weight: 900;
+  letter-spacing: -0.035em;
 }
 
 .footer-brand p,
 .footer-contact p {
   margin: 0;
   color: var(--landing-muted);
-  line-height: 1.65;
+  font-size: 0.94rem;
+  line-height: 1.75;
 }
 
 .footer-social {
   display: flex;
   flex-wrap: wrap;
-  gap: 9px;
+  gap: 10px;
 }
 
 .footer-social a,
@@ -1226,29 +1249,25 @@
 }
 
 .footer-social a {
-  min-height: 40px;
+  min-height: 42px;
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 0 13px;
-  border: 1px solid var(--landing-line);
+  padding: 0 14px;
   border-radius: 999px;
-  background: rgba(255,255,255,0.055);
+  border: 1px solid var(--landing-line);
+  background: rgba(255, 255, 255, 0.045);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.038),
+    0 8px 20px rgba(0, 0, 0, 0.10);
   font-weight: 780;
 }
 
-.footer-contact h3,
-.footer-map h3 {
-  margin: 0;
-  color: var(--landing-text);
-  font-size: 1.06rem;
-  font-weight: 850;
-}
-
 .footer-contact p {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr);
+  align-items: start;
+  gap: 11px;
 }
 
 .footer-contact svg {
@@ -1258,28 +1277,50 @@
 }
 
 .map-container {
+  position: relative;
   height: 240px;
   overflow: hidden;
-  border-radius: 20px;
-  border: 1px solid var(--landing-line);
-  background: rgba(255,255,255,0.04);
+  border: 0;
+  border-radius: 22px;
+  background: transparent;
+  box-shadow:
+    0 22px 52px rgba(0, 0, 0, 0.34),
+    0 8px 18px rgba(0, 0, 0, 0.20);
+}
+
+.map-container::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  border-radius: inherit;
+  box-shadow:
+    inset 0 0 0 1px var(--landing-line-soft),
+    inset 0 1px 0 rgba(255, 255, 255, 0.10),
+    inset 0 -26px 40px rgba(0, 0, 0, 0.08);
 }
 
 .map-container iframe,
 .footer-map iframe {
+  display: block;
   width: 100%;
   height: 100%;
   border: 0;
-  filter: saturate(0.92) contrast(0.98) brightness(0.92);
+  border-radius: inherit;
+  filter: saturate(0.92) contrast(0.98) brightness(0.96);
 }
 
 .footer-bottom {
   width: min(1040px, 100%);
-  margin: 24px auto 0;
-  padding-top: 18px;
-  border-top: 1px solid rgba(255,255,255,0.070);
-  color: rgba(255,250,240,0.42);
-  font-size: 0.84rem;
+  margin: 30px auto 0;
+  padding-top: 20px;
+  border-top: 1px solid var(--landing-line-soft);
+  color: var(--landing-faint);
+  font-size: 0.82rem;
+  text-align: center;
+  background: transparent;
+  box-shadow: none;
 }
 
 /* ─── Mobile sticky CTA ─────────────────────────────────────────────────── */
@@ -1296,10 +1337,10 @@
   justify-content: space-between;
   gap: 12px;
   padding: 9px 10px 9px 14px;
-  border: 1px solid rgba(255,255,255,0.16);
+  border: 1px solid var(--landing-line-strong);
   border-radius: 999px;
   color: var(--landing-text);
-  background: rgba(9,8,7,0.88);
+  background: rgba(9, 8, 7, 0.88);
   text-decoration: none;
   box-shadow: var(--landing-shadow);
   -webkit-backdrop-filter: blur(18px);
@@ -1324,13 +1365,11 @@
   min-height: 42px;
   padding: 0 16px;
   border-radius: 999px;
-  color: #120f0a;
-  background: linear-gradient(135deg, var(--landing-gold), var(--landing-gold-deep));
   font-size: 0.95rem;
   font-weight: 900;
 }
 
-/* ─── Focus / loading ───────────────────────────────────────────────────── */
+/* ─── Focus / motion ────────────────────────────────────────────────────── */
 
 .spinner {
   animation: landing-spin 850ms linear infinite;
@@ -1347,6 +1386,17 @@
 .landing-container input:focus-visible {
   outline: 2px solid var(--landing-gold);
   outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing-container *,
+  .landing-container *::before,
+  .landing-container *::after {
+    animation-duration: 0.001ms;
+    animation-iteration-count: 1;
+    scroll-behavior: auto;
+    transition-duration: 0.001ms;
+  }
 }
 
 /* ─── Responsive ─────────────────────────────────────────────────────────── */
@@ -1395,11 +1445,6 @@
     display: inline-flex;
     min-width: auto;
     padding: 0 16px;
-    color: #130f08;
-    background:
-      radial-gradient(circle at 50% 0%, rgba(255,255,255,0.30), transparent 58%),
-      linear-gradient(135deg, var(--landing-pink), #ff4778);
-    border-color: rgba(255,255,255,0.16);
     font-size: 0.82rem;
     font-weight: 900;
   }
@@ -1441,10 +1486,6 @@
 
   .hero-session {
     justify-self: end;
-  }
-
-  .hero-actions {
-    margin-top: 2px;
   }
 
   .experience-section,
@@ -1522,12 +1563,26 @@
   }
 
   .footer-content {
-    grid-template-columns: 1fr 0.95fr 1.25fr;
-    align-items: stretch;
+    grid-template-columns: minmax(230px, 0.9fr) minmax(260px, 0.92fr) minmax(360px, 1.24fr);
+    gap: clamp(24px, 4vw, 42px);
+  }
+
+  .footer-map {
+    transform: translateY(-4px);
+  }
+
+  .map-container {
+    height: clamp(230px, 23vw, 300px);
+    border-radius: 24px;
+    transform: translateY(-2px);
   }
 
   .landing-footer {
     padding: 58px 32px 32px;
+  }
+
+  .footer-bottom {
+    text-align: left;
   }
 
   .mobile-sticky-cta {
@@ -1577,65 +1632,1347 @@
   }
 }
 
-/* ─── Light theme ───────────────────────────────────────────────────────── */
+/* ──────────────────────────────────────────────────────────────────────────
+   Premium Light Mode
+   --------------------------------------------------------------------------
+   Warm ivory, soft contrast, studio-lounge feel.
+   Not native white, not dashboard grey.
+   ────────────────────────────────────────────────────────────────────────── */
 
 [data-theme="light"] .landing-container {
-  --landing-text: #141722;
-  --landing-muted: rgba(20,23,32,0.64);
-  --landing-soft: rgba(20,23,32,0.46);
-  --landing-line: rgba(20,23,32,0.085);
-  --landing-line-soft: rgba(20,23,32,0.065);
+  --landing-bg-solid: #f4efe5;
+  --landing-bg-elevated: #fffaf2;
+  --landing-surface: rgba(255, 255, 255, 0.74);
+  --landing-surface-soft: rgba(255, 255, 255, 0.58);
+  --landing-surface-strong: rgba(255, 255, 255, 0.88);
+
+  --landing-text: #1f1b15;
+  --landing-muted: rgba(31, 27, 21, 0.68);
+  --landing-soft: rgba(31, 27, 21, 0.48);
+  --landing-faint: rgba(31, 27, 21, 0.34);
+
+  --landing-line: rgba(80, 63, 42, 0.13);
+  --landing-line-soft: rgba(80, 63, 42, 0.09);
+  --landing-line-strong: rgba(80, 63, 42, 0.18);
+
+  --landing-gold: #b7792a;
+  --landing-gold-deep: #9b641f;
+  --landing-pink: #d83160;
+  --landing-cyan: #0c8f9e;
+  --landing-green: #2c8a62;
+
+  --landing-shadow: 0 22px 52px rgba(88, 63, 34, 0.14);
+  --landing-shadow-soft: 0 12px 30px rgba(88, 63, 34, 0.10);
+  --landing-shadow-lift: 0 26px 62px rgba(88, 63, 34, 0.16);
+
+  --nav-bg: rgba(255, 249, 239, 0.88);
+  --hero-fade-mid: rgba(244, 239, 229, 0.58);
+
+  background: var(--landing-bg-solid);
+}
+
+[data-theme="light"] .landing-nav {
+  color: var(--landing-text);
+  border-bottom-color: rgba(80, 63, 42, 0.10);
+  background: var(--nav-bg);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.72),
+    0 12px 32px rgba(88, 63, 34, 0.10);
+}
+
+[data-theme="light"] .nav-brand-mark {
+  border-color: rgba(183, 121, 42, 0.26);
+  background: rgba(255, 255, 255, 0.68);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.82),
+    0 8px 18px rgba(88, 63, 34, 0.10);
+}
+
+[data-theme="light"] .nav-theme-btn,
+[data-theme="light"] .nav-login-btn,
+[data-theme="light"] .nav-hamburger,
+[data-theme="light"] .nav-book-btn {
+  color: var(--landing-muted);
+  border-color: var(--landing-line);
+  background: rgba(255, 255, 255, 0.58);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.75),
+    0 8px 18px rgba(88, 63, 34, 0.08);
+}
+
+[data-theme="light"] .nav-theme-btn:hover,
+[data-theme="light"] .nav-login-btn:hover,
+[data-theme="light"] .nav-login-btn.active,
+[data-theme="light"] .nav-hamburger:hover,
+[data-theme="light"] .nav-hamburger.open {
+  color: var(--landing-text);
+  background: rgba(255, 255, 255, 0.84);
+  border-color: rgba(183, 121, 42, 0.28);
+}
+
+[data-theme="light"] .nav-book-btn,
+[data-theme="light"] .landing-container .btn-primary.btn-large,
+[data-theme="light"] .mobile-sticky-cta strong {
+  color: #fffaf0;
+  background: #b7792a;
+  box-shadow: 0 12px 28px rgba(183, 121, 42, 0.20);
+}
+
+[data-theme="light"] .hero-section::after {
   background:
-    radial-gradient(circle at 14% 0%, rgba(239,197,110,0.065), transparent 34rem),
-    radial-gradient(circle at 90% 10%, rgba(88,224,233,0.040), transparent 32rem),
-    linear-gradient(180deg, #f7f4ef 0%, #fdfbf8 48%, #f5f1ea 100%);
+    linear-gradient(
+      180deg,
+      rgba(244, 239, 229, 0) 0%,
+      rgba(244, 239, 229, 0.18) 26%,
+      rgba(244, 239, 229, 0.58) 62%,
+      var(--landing-bg-solid) 100%
+    );
 }
 
-[data-theme="light"] .landing-container::before {
-  opacity: 0.34;
+[data-theme="light"] .hero-scrim {
+  background:
+    linear-gradient(
+      180deg,
+      rgba(0, 0, 0, 0.14) 0%,
+      rgba(0, 0, 0, 0.08) 34%,
+      rgba(0, 0, 0, 0.42) 72%,
+      var(--landing-bg-solid) 100%
+    ),
+    linear-gradient(
+      90deg,
+      rgba(0, 0, 0, 0.30) 0%,
+      rgba(0, 0, 0, 0.06) 48%,
+      rgba(0, 0, 0, 0.34) 100%
+    );
 }
 
-[data-theme="light"] .landing-nav,
+[data-theme="light"] .hero-kicker {
+  color: #f4c96f;
+  border-color: rgba(244, 201, 111, 0.36);
+  background: rgba(24, 20, 15, 0.46);
+}
+
+[data-theme="light"] .hero-session,
+[data-theme="light"] .nav-login-dropdown,
+[data-theme="light"] .mobile-nav-menu {
+  border-color: rgba(80, 63, 42, 0.13);
+  background: rgba(255, 250, 241, 0.88);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.74),
+    var(--landing-shadow);
+}
+
+[data-theme="light"] .hero-session-main,
+[data-theme="light"] .hero-session-grid div,
+[data-theme="light"] .login-dropdown-header,
+[data-theme="light"] .login-field-wrap,
+[data-theme="light"] .flow-step,
+[data-theme="light"] .pricing-includes div,
+[data-theme="light"] .footer-social a {
+  color: var(--landing-muted);
+  border-color: var(--landing-line-soft);
+  background: rgba(255, 255, 255, 0.52);
+}
+
+[data-theme="light"] .landing-container .btn-secondary.btn-large {
+  color: #fffaf0;
+  border-color: rgba(255, 255, 255, 0.24);
+  background: rgba(0, 0, 0, 0.26);
+}
+
 [data-theme="light"] .experience-card,
 [data-theme="light"] .flow-panel,
-[data-theme="light"] .flow-step,
 [data-theme="light"] .landing-gallery-card,
 [data-theme="light"] .pricing-copy,
 [data-theme="light"] .price-card,
-[data-theme="light"] .proof-grid div,
-[data-theme="light"] .footer-brand,
-[data-theme="light"] .footer-contact,
-[data-theme="light"] .footer-map {
-  border-color: rgba(20,23,32,0.085);
-  background:
-    radial-gradient(circle at 14% 0%, rgba(239,197,110,0.060), transparent 40%),
-    radial-gradient(circle at 88% 8%, rgba(88,224,233,0.040), transparent 36%),
-    linear-gradient(180deg, rgba(255,255,255,0.98), rgba(248,249,252,0.84)),
-    rgba(255,255,255,0.92);
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.84),
-    0 14px 34px rgba(20,23,32,0.07);
+[data-theme="light"] .proof-grid div {
+  border-color: var(--landing-line);
+  background: var(--landing-surface);
+  box-shadow: var(--landing-shadow-soft);
 }
 
-[data-theme="light"] .brand-text,
+[data-theme="light"] .experience-icon {
+  background: rgba(255, 255, 255, 0.62);
+  border-color: rgba(183, 121, 42, 0.18);
+}
+
+[data-theme="light"] .experience-label,
+[data-theme="light"] .section-eyebrow {
+  color: var(--landing-pink);
+}
+
+[data-theme="light"] .login-field-input {
+  color: var(--landing-text);
+}
+
+[data-theme="light"] .login-google-mark {
+  box-shadow: 0 6px 14px rgba(88, 63, 34, 0.10);
+}
+
+[data-theme="light"] .login-dropdown-submit {
+  background: #d83160;
+  box-shadow: 0 12px 28px rgba(216, 49, 96, 0.18);
+}
+
+[data-theme="light"] .mobile-sticky-cta {
+  color: var(--landing-text);
+  background: rgba(255, 250, 241, 0.88);
+  border-color: var(--landing-line);
+}
+
+[data-theme="light"] .mobile-sticky-cta span {
+  color: var(--landing-muted);
+}
+
+[data-theme="light"] .landing-footer {
+  border-top-color: rgba(80, 63, 42, 0.10);
+  background: var(--landing-bg-solid);
+}
+
+[data-theme="light"] .map-container {
+  box-shadow:
+    0 20px 48px rgba(88, 63, 34, 0.16),
+    0 8px 18px rgba(88, 63, 34, 0.08);
+}
+
+[data-theme="light"] .map-container::before {
+  box-shadow:
+    inset 0 0 0 1px rgba(80, 63, 42, 0.10),
+    inset 0 1px 0 rgba(255, 255, 255, 0.72),
+    inset 0 -24px 38px rgba(88, 63, 34, 0.04);
+}
+
+[data-theme="light"] .footer-bottom {
+  border-top-color: rgba(80, 63, 42, 0.10);
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   37 LIGHT MODE HERO CONTRAST POLISH
+   --------------------------------------------------------------------------
+   Fixes light-mode hero:
+   - less washed-out white fog
+   - better hero text readability
+   - safer hero spacing under fixed header
+   - warmer cards, stronger muted text
+   - secondary CTA remains readable over photo
+   ────────────────────────────────────────────────────────────────────────── */
+
+/* Global light-mode contrast tuning */
+[data-theme="light"] .landing-container {
+  --landing-bg-solid: #f1eadf;
+  --landing-bg-elevated: #fff8ee;
+
+  --landing-surface: rgba(255, 252, 246, 0.72);
+  --landing-surface-soft: rgba(255, 252, 246, 0.60);
+  --landing-surface-strong: rgba(255, 251, 244, 0.90);
+
+  --landing-text: #211c16;
+  --landing-muted: rgba(33, 28, 22, 0.74);
+  --landing-soft: rgba(33, 28, 22, 0.54);
+  --landing-faint: rgba(33, 28, 22, 0.38);
+
+  --landing-line: rgba(90, 66, 36, 0.14);
+  --landing-line-soft: rgba(90, 66, 36, 0.095);
+  --landing-line-strong: rgba(90, 66, 36, 0.20);
+
+  --landing-shadow: 0 24px 58px rgba(84, 58, 27, 0.15);
+  --landing-shadow-soft: 0 14px 34px rgba(84, 58, 27, 0.105);
+  --landing-shadow-lift: 0 28px 68px rgba(84, 58, 27, 0.17);
+
+  --hero-fade-mid: rgba(241, 234, 223, 0.36);
+}
+
+/* Light header: a bit less flat, more polished */
+[data-theme="light"] .landing-nav {
+  background: rgba(255, 249, 239, 0.82) !important;
+  border-bottom-color: rgba(90, 66, 36, 0.105) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.82),
+    0 12px 32px rgba(84, 58, 27, 0.105) !important;
+}
+
+[data-theme="light"] .landing-nav.scrolled {
+  background: rgba(255, 249, 239, 0.92) !important;
+}
+
+/* Hero in light mode: darker photo, less milky fog */
+[data-theme="light"] .hero-background img {
+  filter:
+    saturate(1.05)
+    contrast(1.08)
+    brightness(0.82) !important;
+}
+
+[data-theme="light"] .hero-section::after {
+  height: clamp(110px, 16vh, 190px) !important;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(241, 234, 223, 0) 0%,
+      rgba(241, 234, 223, 0.05) 30%,
+      rgba(241, 234, 223, 0.28) 68%,
+      var(--landing-bg-solid) 100%
+    ) !important;
+}
+
+[data-theme="light"] .hero-scrim {
+  background:
+    linear-gradient(
+      180deg,
+      rgba(0, 0, 0, 0.24) 0%,
+      rgba(0, 0, 0, 0.18) 34%,
+      rgba(0, 0, 0, 0.44) 76%,
+      rgba(241, 234, 223, 0.98) 100%
+    ),
+    linear-gradient(
+      90deg,
+      rgba(0, 0, 0, 0.46) 0%,
+      rgba(0, 0, 0, 0.16) 48%,
+      rgba(0, 0, 0, 0.50) 100%
+    ) !important;
+}
+
+/* Hero text should stay safely below header and readable */
+[data-theme="light"] .hero-section {
+  padding-top: calc(104px + env(safe-area-inset-top, 0px)) !important;
+}
+
+[data-theme="light"] .hero-shell {
+  transform: translateY(8px) !important;
+}
+
+[data-theme="light"] .hero-title {
+  color: #fffaf0 !important;
+  text-shadow:
+    0 2px 0 rgba(0, 0, 0, 0.18),
+    0 16px 42px rgba(0, 0, 0, 0.54),
+    0 0 1px rgba(0, 0, 0, 0.55) !important;
+}
+
+[data-theme="light"] .hero-subtitle {
+  color: rgba(255, 250, 240, 0.91) !important;
+  text-shadow:
+    0 10px 28px rgba(0, 0, 0, 0.58),
+    0 0 1px rgba(0, 0, 0, 0.52) !important;
+}
+
+/* Kicker should look intentional over photo */
+[data-theme="light"] .hero-kicker {
+  color: #ffe0a3 !important;
+  border-color: rgba(255, 224, 163, 0.38) !important;
+  background: rgba(17, 14, 11, 0.58) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 10px 22px rgba(0, 0, 0, 0.18) !important;
+}
+
+/* Secondary CTA must remain readable on busy image */
+[data-theme="light"] .landing-container .btn-secondary.btn-large {
+  color: #fffaf0 !important;
+  border-color: rgba(255, 255, 255, 0.24) !important;
+  background: rgba(12, 13, 15, 0.44) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.11),
+    0 14px 30px rgba(0, 0, 0, 0.20) !important;
+  -webkit-backdrop-filter: blur(14px) saturate(1.04) !important;
+  backdrop-filter: blur(14px) saturate(1.04) !important;
+}
+
+[data-theme="light"] .landing-container .btn-secondary.btn-large:hover {
+  background: rgba(12, 13, 15, 0.56) !important;
+}
+
+/* Hero price dock: warm white but not dead-white */
+[data-theme="light"] .hero-session {
+  background: rgba(255, 250, 241, 0.88) !important;
+  border-color: rgba(90, 66, 36, 0.13) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.84),
+    0 20px 44px rgba(64, 42, 18, 0.18) !important;
+}
+
+[data-theme="light"] .hero-session-main,
+[data-theme="light"] .hero-session-grid div {
+  color: rgba(33, 28, 22, 0.72) !important;
+  background: rgba(255, 255, 255, 0.48) !important;
+  border-color: rgba(90, 66, 36, 0.095) !important;
+}
+
+[data-theme="light"] .hero-session-main strong {
+  color: rgba(33, 28, 22, 0.92) !important;
+}
+
+[data-theme="light"] .hero-session-main span:last-child {
+  color: rgba(33, 28, 22, 0.60) !important;
+}
+
+/* Body cards: warmer, less sterile white */
+[data-theme="light"] .experience-card,
+[data-theme="light"] .flow-panel,
+[data-theme="light"] .landing-gallery-card,
+[data-theme="light"] .pricing-copy,
+[data-theme="light"] .price-card,
+[data-theme="light"] .proof-grid div {
+  background: rgba(255, 252, 246, 0.74) !important;
+  border-color: rgba(90, 66, 36, 0.13) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.88),
+    0 14px 32px rgba(84, 58, 27, 0.105) !important;
+}
+
+[data-theme="light"] .experience-card:hover,
+[data-theme="light"] .flow-panel:hover,
+[data-theme="light"] .landing-gallery-card:hover,
+[data-theme="light"] .pricing-copy:hover,
+[data-theme="light"] .price-card:hover,
+[data-theme="light"] .proof-grid div:hover {
+  border-color: rgba(183, 121, 42, 0.20) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.92),
+    0 18px 42px rgba(84, 58, 27, 0.13) !important;
+}
+
+/* Text contrast polish in light mode */
+[data-theme="light"] .section-header p,
+[data-theme="light"] .flow-copy p,
+[data-theme="light"] .pricing-copy p,
+[data-theme="light"] .experience-card p,
+[data-theme="light"] .flow-step p,
+[data-theme="light"] .proof-grid span,
+[data-theme="light"] .footer-brand p,
+[data-theme="light"] .footer-contact p {
+  color: rgba(33, 28, 22, 0.70) !important;
+}
+
 [data-theme="light"] .section-header h2,
 [data-theme="light"] .flow-copy h2,
 [data-theme="light"] .pricing-copy h2,
 [data-theme="light"] .experience-card h3,
 [data-theme="light"] .flow-step strong,
-[data-theme="light"] .proof-grid strong,
-[data-theme="light"] .footer-contact h3,
-[data-theme="light"] .footer-map h3 {
-  color: rgba(20,23,32,0.92);
+[data-theme="light"] .proof-grid strong {
+  color: rgba(33, 28, 22, 0.94) !important;
 }
 
-[data-theme="light"] .hero-title,
-[data-theme="light"] .hero-subtitle {
-  color: #fffaf0;
+/* Icon chips need more depth on light mode */
+[data-theme="light"] .experience-icon {
+  color: var(--landing-gold) !important;
+  background: rgba(255, 248, 236, 0.82) !important;
+  border-color: rgba(183, 121, 42, 0.20) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.88),
+    0 8px 18px rgba(84, 58, 27, 0.08) !important;
 }
 
+/* Footer/link chips in light mode should not feel native */
+[data-theme="light"] .footer-social a {
+  color: rgba(33, 28, 22, 0.80) !important;
+  background: rgba(255, 252, 246, 0.68) !important;
+  border-color: rgba(90, 66, 36, 0.12) !important;
+}
+
+[data-theme="light"] .footer-social a:hover {
+  color: rgba(33, 28, 22, 0.96) !important;
+  background: rgba(255, 252, 246, 0.92) !important;
+  border-color: rgba(183, 121, 42, 0.20) !important;
+}
+
+/* Desktop specific: make hero not collide visually with fixed header */
+@media (min-width: 768px) {
+  [data-theme="light"] .hero-section {
+    padding-top: 128px !important;
+    padding-bottom: 54px !important;
+  }
+
+  [data-theme="light"] .hero-shell {
+    transform: translateY(12px) !important;
+  }
+}
+
+/* Mobile light mode: keep fade short and text readable */
+@media (max-width: 767px) {
+  [data-theme="light"] .hero-section {
+    padding-top: calc(92px + env(safe-area-inset-top, 0px)) !important;
+  }
+
+  [data-theme="light"] .hero-section::after {
+    height: 142px !important;
+  }
+
+  [data-theme="light"] .hero-shell {
+    transform: translateY(4px) !important;
+  }
+
+  [data-theme="light"] .hero-background img {
+    filter:
+      saturate(1.05)
+      contrast(1.08)
+      brightness(0.78) !important;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   37 FULL-BLEED LIGHT SECTION BACKGROUND FIX
+   --------------------------------------------------------------------------
+   Fixes the white/grey side blocks visible in light mode.
+   Cause: .landing-gallery-section was content-width, so the parent/body
+   background showed on the left and right sides.
+   Solution: keep content visually maxed at 1040px using dynamic padding,
+   but let the section background span full width.
+   ────────────────────────────────────────────────────────────────────────── */
+
+/* Make the page behind landing use the same solid background. */
+body:has(.landing-container),
+body:has(.landing-container) #root {
+  background: #0b0d11 !important;
+}
+
+html[data-theme="light"] body:has(.landing-container),
+html[data-theme="light"] body:has(.landing-container) #root,
+body[data-theme="light"]:has(.landing-container),
+body[data-theme="light"]:has(.landing-container) #root {
+  background: #f1eadf !important;
+}
+
+/* Gallery section must be full-bleed, while its content remains visually centered. */
+.landing-gallery-section {
+  width: 100% !important;
+  max-width: none !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  padding-left: max(14px, calc((100% - 1040px) / 2)) !important;
+  padding-right: max(14px, calc((100% - 1040px) / 2)) !important;
+  background: var(--landing-bg-solid) !important;
+  background-color: var(--landing-bg-solid) !important;
+  background-image: none !important;
+}
+
+/* Prevent any old content-width section background from exposing parent color. */
+.experience-section,
+.booking-flow-section,
+.pricing-section,
+.proof-section,
+.landing-footer {
+  width: 100% !important;
+  max-width: none !important;
+  background: var(--landing-bg-solid) !important;
+  background-color: var(--landing-bg-solid) !important;
+  background-image: none !important;
+}
+
+/* Keep actual content constrained where needed. */
+.experience-grid,
+.flow-panel,
+.pricing-shell,
+.proof-grid,
+.footer-content,
+.footer-bottom {
+  width: min(1040px, 100%) !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+/* Gallery desktop layout remains 2-column inside the centered content area. */
+@media (min-width: 768px) {
+  .landing-gallery-section {
+    grid-template-columns: minmax(300px, 0.72fr) minmax(420px, 1fr) !important;
+    column-gap: 46px !important;
+  }
+}
+
+/* Mobile keeps normal side padding. */
+@media (max-width: 767px) {
+  .landing-gallery-section {
+    padding-left: 14px !important;
+    padding-right: 14px !important;
+  }
+}
+
+/* Light mode color lock, so no browser/default/app background leaks through. */
+[data-theme="light"] .landing-container,
+[data-theme="light"] .experience-section,
+[data-theme="light"] .booking-flow-section,
+[data-theme="light"] .landing-gallery-section,
+[data-theme="light"] .pricing-section,
+[data-theme="light"] .proof-section,
 [data-theme="light"] .landing-footer {
-  background:
-    radial-gradient(circle at 16% 0%, rgba(239,197,110,0.055), transparent 26rem),
-    linear-gradient(180deg, rgba(255,255,255,0.96), rgba(248,249,252,1));
+  background: #f1eadf !important;
+  background-color: #f1eadf !important;
+  background-image: none !important;
 }
+
+/* Dark mode color lock too. */
+.landing-container,
+.experience-section,
+.booking-flow-section,
+.landing-gallery-section,
+.pricing-section,
+.proof-section,
+.landing-footer {
+  background-color: var(--landing-bg-solid) !important;
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   37 HERO PORTAL LOGIN PANEL ROBUST
+   --------------------------------------------------------------------------
+   Replaces old hero price dock visual with premium client portal login panel.
+   Safe CSS layer after consolidated landing CSS.
+   ────────────────────────────────────────────────────────────────────────── */
+
+.hero-login-panel {
+  width: 100%;
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 28px;
+  border: 1px solid var(--landing-line);
+  color: var(--landing-text);
+  background: var(--landing-surface-strong);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.055),
+    var(--landing-shadow-lift);
+  -webkit-backdrop-filter: blur(20px) saturate(1.08);
+  backdrop-filter: blur(20px) saturate(1.08);
+}
+
+.hero-login-top {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
+}
+
+.hero-login-badge {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 15px;
+  color: var(--landing-gold);
+  border: 1px solid rgba(239, 197, 110, 0.26);
+  background: rgba(255, 255, 255, 0.045);
+}
+
+.hero-login-top span {
+  display: block;
+  margin-bottom: 3px;
+  color: var(--landing-pink);
+  font-size: 0.66rem;
+  font-weight: 950;
+  letter-spacing: 0.075em;
+  text-transform: uppercase;
+}
+
+.hero-login-top strong {
+  display: block;
+  color: var(--landing-text);
+  font-size: 1.05rem;
+  line-height: 1.18;
+  font-weight: 950;
+  letter-spacing: -0.045em;
+}
+
+.hero-google-login {
+  min-height: 46px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border-radius: 999px;
+  border: 1px solid var(--landing-line);
+  color: var(--landing-text);
+  background: rgba(255, 255, 255, 0.045);
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.045),
+    0 10px 22px rgba(0, 0, 0, 0.10);
+}
+
+.hero-login-divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--landing-faint);
+  font-size: 0.58rem;
+  font-weight: 950;
+  letter-spacing: 0.085em;
+  text-transform: uppercase;
+}
+
+.hero-login-divider::before,
+.hero-login-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--landing-line-soft);
+}
+
+.hero-login-form {
+  display: grid;
+  gap: 10px;
+}
+
+.hero-login-error {
+  display: flex;
+  gap: 8px;
+  padding: 10px 11px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 61, 112, 0.22);
+  background: rgba(255, 61, 112, 0.09);
+  color: #ff7c98;
+  font-size: 0.76rem;
+  font-weight: 800;
+}
+
+.hero-login-field {
+  display: grid;
+  gap: 6px;
+}
+
+.hero-login-field label {
+  color: var(--landing-muted);
+  font-size: 0.68rem;
+  font-weight: 850;
+}
+
+.hero-login-input {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 0 11px;
+  border-radius: 15px;
+  border: 1px solid var(--landing-line);
+  background: rgba(0, 0, 0, 0.16);
+}
+
+.hero-login-input:focus-within {
+  border-color: rgba(88, 224, 233, 0.46);
+  box-shadow: 0 0 0 2px rgba(88, 224, 233, 0.12);
+}
+
+.hero-login-input svg {
+  flex: 0 0 auto;
+  color: var(--landing-soft);
+}
+
+.hero-login-input input {
+  min-width: 0;
+  flex: 1;
+  height: 42px;
+  border: 0;
+  outline: 0;
+  color: var(--landing-text);
+  background: transparent;
+  font: inherit;
+  font-size: 16px;
+  font-weight: 780;
+}
+
+.hero-login-input input::placeholder {
+  color: var(--landing-faint);
+}
+
+.hero-login-eye {
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 11px;
+  color: var(--landing-soft);
+  background: rgba(255, 255, 255, 0.045);
+  cursor: pointer;
+}
+
+.hero-login-submit {
+  min-height: 46px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  border: 0;
+  border-radius: 15px;
+  color: #fff;
+  background: var(--landing-pink);
+  box-shadow: 0 12px 28px rgba(255, 61, 112, 0.20);
+  font: inherit;
+  font-size: 0.86rem;
+  font-weight: 950;
+  cursor: pointer;
+}
+
+.hero-login-foot {
+  display: grid;
+  gap: 7px;
+  padding-top: 2px;
+  color: var(--landing-soft);
+  font-size: 0.72rem;
+  line-height: 1.45;
+}
+
+.hero-login-foot a {
+  width: fit-content;
+  color: var(--landing-gold);
+  font-weight: 900;
+  text-decoration: none;
+}
+
+.hero-login-foot a:hover {
+  text-decoration: underline;
+}
+
+/* Safety: if stale hero-session exists from cache/merge conflict, hide it. */
+.hero-session {
+  display: none !important;
+}
+
+@media (min-width: 768px) {
+  .hero-shell {
+    grid-template-columns: minmax(0, 1fr) minmax(380px, 420px) !important;
+    align-items: end !important;
+  }
+
+  .hero-login-panel {
+    justify-self: end;
+  }
+}
+
+@media (max-width: 767px) {
+  .hero-login-panel {
+    margin-top: 8px;
+    padding: 14px;
+    border-radius: 24px;
+  }
+
+  .hero-login-top {
+    grid-template-columns: 38px minmax(0, 1fr);
+  }
+
+  .hero-login-badge {
+    width: 38px;
+    height: 38px;
+    border-radius: 14px;
+  }
+
+  .hero-login-top strong {
+    font-size: 0.98rem;
+  }
+
+  .hero-google-login,
+  .hero-login-submit {
+    min-height: 44px;
+  }
+
+  .hero-login-foot {
+    font-size: 0.70rem;
+  }
+}
+
+[data-theme="light"] .hero-login-panel {
+  color: var(--landing-text);
+  background: rgba(255, 250, 241, 0.90) !important;
+  border-color: rgba(90, 66, 36, 0.13) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.84),
+    0 24px 58px rgba(64, 42, 18, 0.18) !important;
+}
+
+[data-theme="light"] .hero-login-badge,
+[data-theme="light"] .hero-google-login,
+[data-theme="light"] .hero-login-input,
+[data-theme="light"] .hero-login-eye {
+  background: rgba(255, 255, 255, 0.52) !important;
+  border-color: rgba(90, 66, 36, 0.095) !important;
+}
+
+[data-theme="light"] .hero-google-login {
+  color: rgba(33, 28, 22, 0.92) !important;
+}
+
+[data-theme="light"] .hero-login-input input {
+  color: rgba(33, 28, 22, 0.94) !important;
+}
+
+[data-theme="light"] .hero-login-submit {
+  background: #d83160 !important;
+  box-shadow: 0 12px 28px rgba(216, 49, 96, 0.18) !important;
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   37 REMOVE DUPLICATE HEADER LOGIN
+   --------------------------------------------------------------------------
+   Hero already owns the login panel. Header login entry is removed to avoid
+   duplicate login surfaces.
+   ────────────────────────────────────────────────────────────────────────── */
+
+.nav-login-btn,
+.nav-login-dropdown {
+  display: none !important;
+}
+
+.nav-actions {
+  gap: 8px !important;
+}
+
+@media (max-width: 767px) {
+  .nav-actions {
+    gap: 7px !important;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   37 HERO CENTER STAGE ALIGNMENT
+   --------------------------------------------------------------------------
+   After replacing the old price dock with the taller portal login panel,
+   the hero felt too bottom-heavy. This centers the whole hero composition
+   better inside the photo area.
+   ────────────────────────────────────────────────────────────────────────── */
+
+/* Desktop/tablet: hero content should sit in the visual center of the photo */
+@media (min-width: 768px) {
+  .hero-section {
+    min-height: 88svh !important;
+    align-items: center !important;
+    padding-top: calc(92px + env(safe-area-inset-top, 0px)) !important;
+    padding-bottom: 72px !important;
+  }
+
+  .hero-shell {
+    align-items: center !important;
+    transform: translateY(-18px) !important;
+  }
+
+  [data-theme="light"] .hero-section {
+    padding-top: calc(96px + env(safe-area-inset-top, 0px)) !important;
+    padding-bottom: 76px !important;
+  }
+
+  [data-theme="light"] .hero-shell {
+    transform: translateY(-18px) !important;
+  }
+
+  .hero-copy {
+    transform: translateY(-2px) !important;
+  }
+
+  .hero-login-panel {
+    transform: translateY(2px) !important;
+  }
+}
+
+/* Large desktop: a little more cinematic center lift */
+@media (min-width: 1200px) {
+  .hero-section {
+    min-height: 86svh !important;
+    padding-top: calc(88px + env(safe-area-inset-top, 0px)) !important;
+    padding-bottom: 70px !important;
+  }
+
+  .hero-shell,
+  [data-theme="light"] .hero-shell {
+    transform: translateY(-24px) !important;
+  }
+}
+
+/* Short laptop screens: don't push it too high */
+@media (min-width: 768px) and (max-height: 760px) {
+  .hero-section {
+    min-height: 92svh !important;
+    padding-top: calc(86px + env(safe-area-inset-top, 0px)) !important;
+    padding-bottom: 44px !important;
+  }
+
+  .hero-shell,
+  [data-theme="light"] .hero-shell {
+    transform: translateY(-10px) !important;
+  }
+
+  .hero-title {
+    font-size: clamp(3.7rem, 6.4vw, 5.1rem) !important;
+  }
+
+  .hero-login-panel {
+    gap: 10px !important;
+    padding: 14px !important;
+  }
+}
+
+/* Mobile: keep it readable, not perfectly centered, because the login card is tall */
+@media (max-width: 767px) {
+  .hero-section {
+    align-items: center !important;
+    padding-top: calc(78px + env(safe-area-inset-top, 0px)) !important;
+    padding-bottom: 54px !important;
+  }
+
+  .hero-shell,
+  [data-theme="light"] .hero-shell {
+    transform: translateY(-8px) !important;
+  }
+}
+
+/* Very small phones: avoid cutting the login panel */
+@media (max-width: 380px) {
+  .hero-section {
+    align-items: flex-start !important;
+    padding-top: calc(82px + env(safe-area-inset-top, 0px)) !important;
+    padding-bottom: 48px !important;
+  }
+
+  .hero-shell,
+  [data-theme="light"] .hero-shell {
+    transform: none !important;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   37 HERO RADIX INPUT CLEAN FINAL
+   --------------------------------------------------------------------------
+   Final clean Radix TextField styling for hero login.
+   Important fix:
+   Chrome autofill is masked with SOLID field color, not transparent.
+   ────────────────────────────────────────────────────────────────────────── */
+
+.landing-container .hero-login-panel {
+  --hero-input-bg: #1a1f2a;
+  --hero-input-bg-focus: #1c2330;
+  --hero-input-text: rgba(255, 250, 240, 0.95);
+  --hero-input-muted: rgba(255, 250, 240, 0.34);
+  --hero-input-line: rgba(255, 255, 255, 0.095);
+  --hero-input-icon: rgba(255, 250, 240, 0.48);
+}
+
+.landing-container .hero-login-panel .hero-radix-field,
+.landing-container .hero-login-panel .rt-TextFieldRoot.hero-radix-field {
+  position: relative !important;
+  width: 100% !important;
+  height: 48px !important;
+  min-height: 48px !important;
+  display: flex !important;
+  align-items: center !important;
+  overflow: hidden !important;
+
+  border-radius: 18px !important;
+  border: 1px solid var(--hero-input-line) !important;
+  background: var(--hero-input-bg) !important;
+  background-color: var(--hero-input-bg) !important;
+  background-image: none !important;
+
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.055),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.24),
+    0 10px 24px rgba(0, 0, 0, 0.14) !important;
+
+  transition:
+    transform 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    background-color 160ms ease !important;
+}
+
+/* Kill Radix native chrome/pseudo overlay */
+.landing-container .hero-login-panel .hero-radix-field::before,
+.landing-container .hero-login-panel .hero-radix-field::after,
+.landing-container .hero-login-panel .hero-radix-field :where(.rt-TextFieldChrome)::before,
+.landing-container .hero-login-panel .hero-radix-field :where(.rt-TextFieldChrome)::after {
+  display: none !important;
+  content: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  border: 0 !important;
+}
+
+/* Slots */
+.landing-container .hero-login-panel .hero-radix-field :where(.rt-TextFieldSlot) {
+  background: transparent !important;
+  background-color: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  color: var(--hero-input-icon) !important;
+}
+
+.landing-container .hero-login-panel .hero-radix-field :where(svg) {
+  color: var(--hero-input-icon) !important;
+}
+
+/* Actual Radix input */
+.landing-container .hero-login-panel .hero-radix-field :where(input),
+.landing-container .hero-login-panel .hero-radix-field input,
+.landing-container .hero-login-panel .hero-radix-field input:hover,
+.landing-container .hero-login-panel .hero-radix-field input:focus,
+.landing-container .hero-login-panel .hero-radix-field input:active,
+.landing-container .hero-login-panel .hero-radix-field input:focus-visible {
+  height: 46px !important;
+  min-height: 46px !important;
+  line-height: 46px !important;
+  min-width: 0 !important;
+
+  padding: 0 !important;
+  margin: 0 !important;
+
+  border: 0 !important;
+  outline: 0 !important;
+  border-radius: 0 !important;
+
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  color: var(--hero-input-text) !important;
+  -webkit-text-fill-color: var(--hero-input-text) !important;
+  caret-color: #efc56e !important;
+
+  appearance: none !important;
+  -webkit-appearance: none !important;
+
+  font-family: inherit !important;
+  font-size: 0.9rem !important;
+  font-weight: 850 !important;
+  letter-spacing: -0.01em !important;
+  text-align: left !important;
+
+  filter: none !important;
+  opacity: 1 !important;
+}
+
+/* THE FIX: Chrome autofill harus ditutup pakai warna solid field */
+.landing-container .hero-login-panel .hero-radix-field input:-webkit-autofill,
+.landing-container .hero-login-panel .hero-radix-field input:-webkit-autofill:hover,
+.landing-container .hero-login-panel .hero-radix-field input:-webkit-autofill:focus,
+.landing-container .hero-login-panel .hero-radix-field input:-webkit-autofill:active {
+  border: 0 !important;
+  outline: 0 !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+
+  -webkit-box-shadow: 0 0 0 1000px var(--hero-input-bg) inset !important;
+  box-shadow: 0 0 0 1000px var(--hero-input-bg) inset !important;
+
+  color: var(--hero-input-text) !important;
+  -webkit-text-fill-color: var(--hero-input-text) !important;
+  caret-color: #efc56e !important;
+
+  transition:
+    background-color 999999s ease-in-out 0s,
+    color 999999s ease-in-out 0s !important;
+}
+
+/* Placeholder */
+.landing-container .hero-login-panel .hero-radix-field input::placeholder {
+  color: var(--hero-input-muted) !important;
+  -webkit-text-fill-color: var(--hero-input-muted) !important;
+}
+
+/* Parent focus */
+.landing-container .hero-login-panel .hero-radix-field:focus-within {
+  transform: translateY(-1px) !important;
+  border-color: rgba(88, 224, 233, 0.36) !important;
+  background: var(--hero-input-bg-focus) !important;
+  background-color: var(--hero-input-bg-focus) !important;
+  background-image: none !important;
+
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.065),
+    0 0 0 3px rgba(88, 224, 233, 0.095),
+    0 14px 30px rgba(0, 0, 0, 0.18) !important;
+}
+
+.landing-container .hero-login-panel .hero-radix-field:focus-within input:-webkit-autofill,
+.landing-container .hero-login-panel .hero-radix-field:focus-within input:-webkit-autofill:hover,
+.landing-container .hero-login-panel .hero-radix-field:focus-within input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 1000px var(--hero-input-bg-focus) inset !important;
+  box-shadow: 0 0 0 1000px var(--hero-input-bg-focus) inset !important;
+}
+
+.landing-container .hero-login-panel .hero-radix-field:focus-within :where(svg) {
+  color: rgba(88, 224, 233, 0.78) !important;
+}
+
+/* Eye button */
+.landing-container .hero-login-panel .hero-radix-eye {
+  width: 34px !important;
+  height: 34px !important;
+  display: grid !important;
+  place-items: center !important;
+  padding: 0 !important;
+  margin: 0 !important;
+
+  border: 0 !important;
+  border-radius: 14px !important;
+  color: var(--hero-input-icon) !important;
+  background: rgba(255, 255, 255, 0.055) !important;
+
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.050),
+    0 8px 16px rgba(0, 0, 0, 0.12) !important;
+
+  cursor: pointer !important;
+}
+
+.landing-container .hero-login-panel .hero-radix-eye:hover {
+  color: rgba(255, 250, 240, 0.86) !important;
+  background: rgba(255, 255, 255, 0.085) !important;
+}
+
+/* Hide stale old custom input wrapper if somehow still rendered */
+.landing-container .hero-login-panel .hero-login-input,
+.landing-container .hero-login-panel .hero-login-visual-value {
+  display: none !important;
+}
+
+/* Light mode */
+[data-theme="light"] .landing-container .hero-login-panel {
+  --hero-input-bg: #fff8ed;
+  --hero-input-bg-focus: #fffdf8;
+  --hero-input-text: rgba(33, 28, 22, 0.94);
+  --hero-input-muted: rgba(33, 28, 22, 0.36);
+  --hero-input-line: rgba(90, 66, 36, 0.12);
+  --hero-input-icon: rgba(33, 28, 22, 0.46);
+}
+
+[data-theme="light"] .landing-container .hero-login-panel .hero-radix-field,
+[data-theme="light"] .landing-container .hero-login-panel .rt-TextFieldRoot.hero-radix-field {
+  border-color: var(--hero-input-line) !important;
+  background: var(--hero-input-bg) !important;
+  background-color: var(--hero-input-bg) !important;
+  background-image: none !important;
+
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.86),
+    inset 0 -1px 0 rgba(90, 66, 36, 0.035),
+    0 10px 22px rgba(84, 58, 27, 0.075) !important;
+}
+
+[data-theme="light"] .landing-container .hero-login-panel .hero-radix-field:focus-within {
+  border-color: rgba(12, 143, 158, 0.30) !important;
+  background: var(--hero-input-bg-focus) !important;
+  background-color: var(--hero-input-bg-focus) !important;
+  background-image: none !important;
+
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.90),
+    0 0 0 3px rgba(12, 143, 158, 0.085),
+    0 14px 30px rgba(84, 58, 27, 0.12) !important;
+}
+
+@media (max-width: 767px) {
+  .landing-container .hero-login-panel .hero-radix-field,
+  .landing-container .hero-login-panel .rt-TextFieldRoot.hero-radix-field {
+    height: 46px !important;
+    min-height: 46px !important;
+    border-radius: 17px !important;
+  }
+
+  .landing-container .hero-login-panel .hero-radix-eye {
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: 13px !important;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   37 RADIX HERO INPUT ICON TEXT ALIGNMENT
+   --------------------------------------------------------------------------
+   Final micro-positioning for Radix hero login fields:
+   - icon gets a clean fixed slot
+   - text starts with better breathing room
+   - right eye button aligns proportionally
+   ────────────────────────────────────────────────────────────────────────── */
+
+.landing-container .hero-login-panel .hero-radix-field,
+.landing-container .hero-login-panel .rt-TextFieldRoot.hero-radix-field {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0 !important;
+  padding-left: 13px !important;
+  padding-right: 9px !important;
+}
+
+/* Left icon slot */
+.landing-container .hero-login-panel .hero-radix-field > .rt-TextFieldSlot:first-child,
+.landing-container .hero-login-panel .hero-radix-field .rt-TextFieldSlot:first-of-type {
+  flex: 0 0 28px !important;
+  width: 28px !important;
+  height: 100% !important;
+  display: grid !important;
+  place-items: center !important;
+  padding: 0 !important;
+  margin: 0 8px 0 0 !important;
+}
+
+/* Icon size and optical alignment */
+.landing-container .hero-login-panel .hero-radix-field > .rt-TextFieldSlot:first-child svg,
+.landing-container .hero-login-panel .hero-radix-field .rt-TextFieldSlot:first-of-type svg {
+  width: 16px !important;
+  height: 16px !important;
+  display: block !important;
+  transform: translateY(0.5px) !important;
+}
+
+/* Text input should start after icon slot, not stick to it */
+.landing-container .hero-login-panel .hero-radix-field input,
+.landing-container .hero-login-panel .hero-radix-field :where(input) {
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  padding-left: 0 !important;
+  padding-right: 8px !important;
+  margin-left: 0 !important;
+  text-align: left !important;
+}
+
+/* Right slot for password eye */
+.landing-container .hero-login-panel .hero-radix-field .rt-TextFieldSlot:has(.hero-radix-eye) {
+  flex: 0 0 38px !important;
+  width: 38px !important;
+  height: 100% !important;
+  display: grid !important;
+  place-items: center !important;
+  padding: 0 !important;
+  margin: 0 0 0 8px !important;
+}
+
+.landing-container .hero-login-panel .hero-radix-eye {
+  transform: translateY(0) !important;
+}
+
+/* Label spacing above field */
+.landing-container .hero-login-panel .hero-login-field label {
+  padding-left: 1px !important;
+  margin-bottom: 1px !important;
+}
+
+/* Dark mode fine tune */
+.landing-container .hero-login-panel .hero-radix-field:focus-within > .rt-TextFieldSlot:first-child svg,
+.landing-container .hero-login-panel .hero-radix-field:focus-within .rt-TextFieldSlot:first-of-type svg {
+  filter: drop-shadow(0 0 8px rgba(88, 224, 233, 0.16)) !important;
+}
+
+/* Mobile: slightly tighter but still breathable */
+@media (max-width: 767px) {
+  .landing-container .hero-login-panel .hero-radix-field,
+  .landing-container .hero-login-panel .rt-TextFieldRoot.hero-radix-field {
+    padding-left: 12px !important;
+    padding-right: 8px !important;
+  }
+
+  .landing-container .hero-login-panel .hero-radix-field > .rt-TextFieldSlot:first-child,
+  .landing-container .hero-login-panel .hero-radix-field .rt-TextFieldSlot:first-of-type {
+    flex-basis: 27px !important;
+    width: 27px !important;
+    margin-right: 7px !important;
+  }
+
+  .landing-container .hero-login-panel .hero-radix-field .rt-TextFieldSlot:has(.hero-radix-eye) {
+    flex-basis: 36px !important;
+    width: 36px !important;
+    margin-left: 7px !important;
+  }
+}
+

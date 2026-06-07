@@ -2772,4 +2772,351 @@ input:not([type="checkbox"]):not([type="radio"]):focus, select:focus, textarea:f
   box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.08) !important;
 }
 
+/* ──────────────────────────────────────────────────────────────────────────
+   37 HERO RADIX INPUT CLEAN FINAL
+   --------------------------------------------------------------------------
+   Final clean Radix TextField styling for hero login.
+   Important fix:
+   Chrome autofill is masked with SOLID field color, not transparent.
+   ────────────────────────────────────────────────────────────────────────── */
+
+.landing-container .hero-login-panel {
+  --hero-input-bg: #1a1f2a;
+  --hero-input-bg-focus: #1c2330;
+  --hero-input-text: rgba(255, 250, 240, 0.95);
+  --hero-input-muted: rgba(255, 250, 240, 0.34);
+  --hero-input-line: rgba(255, 255, 255, 0.095);
+  --hero-input-icon: rgba(255, 250, 240, 0.48);
+}
+
+.landing-container .hero-login-panel .hero-radix-field,
+.landing-container .hero-login-panel .rt-TextFieldRoot.hero-radix-field {
+  position: relative !important;
+  width: 100% !important;
+  height: 48px !important;
+  min-height: 48px !important;
+  display: flex !important;
+  align-items: center !important;
+  overflow: hidden !important;
+
+  border-radius: 18px !important;
+  border: 1px solid var(--hero-input-line) !important;
+  background: var(--hero-input-bg) !important;
+  background-color: var(--hero-input-bg) !important;
+  background-image: none !important;
+
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.055),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.24),
+    0 10px 24px rgba(0, 0, 0, 0.14) !important;
+
+  transition:
+    transform 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    background-color 160ms ease !important;
+}
+
+/* Kill Radix native chrome/pseudo overlay */
+.landing-container .hero-login-panel .hero-radix-field::before,
+.landing-container .hero-login-panel .hero-radix-field::after,
+.landing-container .hero-login-panel .hero-radix-field :where(.rt-TextFieldChrome)::before,
+.landing-container .hero-login-panel .hero-radix-field :where(.rt-TextFieldChrome)::after {
+  display: none !important;
+  content: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  border: 0 !important;
+}
+
+/* Slots */
+.landing-container .hero-login-panel .hero-radix-field :where(.rt-TextFieldSlot) {
+  background: transparent !important;
+  background-color: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  color: var(--hero-input-icon) !important;
+}
+
+.landing-container .hero-login-panel .hero-radix-field :where(svg) {
+  color: var(--hero-input-icon) !important;
+}
+
+/* Actual Radix input */
+.landing-container .hero-login-panel .hero-radix-field :where(input),
+.landing-container .hero-login-panel .hero-radix-field input,
+.landing-container .hero-login-panel .hero-radix-field input:hover,
+.landing-container .hero-login-panel .hero-radix-field input:focus,
+.landing-container .hero-login-panel .hero-radix-field input:active,
+.landing-container .hero-login-panel .hero-radix-field input:focus-visible {
+  height: 46px !important;
+  min-height: 46px !important;
+  line-height: 46px !important;
+  min-width: 0 !important;
+
+  padding: 0 !important;
+  margin: 0 !important;
+
+  border: 0 !important;
+  outline: 0 !important;
+  border-radius: 0 !important;
+
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  color: var(--hero-input-text) !important;
+  -webkit-text-fill-color: var(--hero-input-text) !important;
+  caret-color: #efc56e !important;
+
+  appearance: none !important;
+  -webkit-appearance: none !important;
+
+  font-family: inherit !important;
+  font-size: 0.9rem !important;
+  font-weight: 850 !important;
+  letter-spacing: -0.01em !important;
+  text-align: left !important;
+
+  filter: none !important;
+  opacity: 1 !important;
+}
+
+/* THE FIX: Chrome autofill harus ditutup pakai warna solid field */
+.landing-container .hero-login-panel .hero-radix-field input:-webkit-autofill,
+.landing-container .hero-login-panel .hero-radix-field input:-webkit-autofill:hover,
+.landing-container .hero-login-panel .hero-radix-field input:-webkit-autofill:focus,
+.landing-container .hero-login-panel .hero-radix-field input:-webkit-autofill:active {
+  border: 0 !important;
+  outline: 0 !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+
+  -webkit-box-shadow: 0 0 0 1000px var(--hero-input-bg) inset !important;
+  box-shadow: 0 0 0 1000px var(--hero-input-bg) inset !important;
+
+  color: var(--hero-input-text) !important;
+  -webkit-text-fill-color: var(--hero-input-text) !important;
+  caret-color: #efc56e !important;
+
+  transition:
+    background-color 999999s ease-in-out 0s,
+    color 999999s ease-in-out 0s !important;
+}
+
+/* Placeholder */
+.landing-container .hero-login-panel .hero-radix-field input::placeholder {
+  color: var(--hero-input-muted) !important;
+  -webkit-text-fill-color: var(--hero-input-muted) !important;
+}
+
+/* Parent focus */
+.landing-container .hero-login-panel .hero-radix-field:focus-within {
+  transform: translateY(-1px) !important;
+  border-color: rgba(88, 224, 233, 0.36) !important;
+  background: var(--hero-input-bg-focus) !important;
+  background-color: var(--hero-input-bg-focus) !important;
+  background-image: none !important;
+
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.065),
+    0 0 0 3px rgba(88, 224, 233, 0.095),
+    0 14px 30px rgba(0, 0, 0, 0.18) !important;
+}
+
+.landing-container .hero-login-panel .hero-radix-field:focus-within input:-webkit-autofill,
+.landing-container .hero-login-panel .hero-radix-field:focus-within input:-webkit-autofill:hover,
+.landing-container .hero-login-panel .hero-radix-field:focus-within input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 1000px var(--hero-input-bg-focus) inset !important;
+  box-shadow: 0 0 0 1000px var(--hero-input-bg-focus) inset !important;
+}
+
+.landing-container .hero-login-panel .hero-radix-field:focus-within :where(svg) {
+  color: rgba(88, 224, 233, 0.78) !important;
+}
+
+/* Eye button */
+.landing-container .hero-login-panel .hero-radix-eye {
+  width: 34px !important;
+  height: 34px !important;
+  display: grid !important;
+  place-items: center !important;
+  padding: 0 !important;
+  margin: 0 !important;
+
+  border: 0 !important;
+  border-radius: 14px !important;
+  color: var(--hero-input-icon) !important;
+  background: rgba(255, 255, 255, 0.055) !important;
+
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.050),
+    0 8px 16px rgba(0, 0, 0, 0.12) !important;
+
+  cursor: pointer !important;
+}
+
+.landing-container .hero-login-panel .hero-radix-eye:hover {
+  color: rgba(255, 250, 240, 0.86) !important;
+  background: rgba(255, 255, 255, 0.085) !important;
+}
+
+/* Hide stale old custom input wrapper if somehow still rendered */
+.landing-container .hero-login-panel .hero-login-input,
+.landing-container .hero-login-panel .hero-login-visual-value {
+  display: none !important;
+}
+
+/* Light mode */
+[data-theme="light"] .landing-container .hero-login-panel {
+  --hero-input-bg: #fff8ed;
+  --hero-input-bg-focus: #fffdf8;
+  --hero-input-text: rgba(33, 28, 22, 0.94);
+  --hero-input-muted: rgba(33, 28, 22, 0.36);
+  --hero-input-line: rgba(90, 66, 36, 0.12);
+  --hero-input-icon: rgba(33, 28, 22, 0.46);
+}
+
+[data-theme="light"] .landing-container .hero-login-panel .hero-radix-field,
+[data-theme="light"] .landing-container .hero-login-panel .rt-TextFieldRoot.hero-radix-field {
+  border-color: var(--hero-input-line) !important;
+  background: var(--hero-input-bg) !important;
+  background-color: var(--hero-input-bg) !important;
+  background-image: none !important;
+
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.86),
+    inset 0 -1px 0 rgba(90, 66, 36, 0.035),
+    0 10px 22px rgba(84, 58, 27, 0.075) !important;
+}
+
+[data-theme="light"] .landing-container .hero-login-panel .hero-radix-field:focus-within {
+  border-color: rgba(12, 143, 158, 0.30) !important;
+  background: var(--hero-input-bg-focus) !important;
+  background-color: var(--hero-input-bg-focus) !important;
+  background-image: none !important;
+
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.90),
+    0 0 0 3px rgba(12, 143, 158, 0.085),
+    0 14px 30px rgba(84, 58, 27, 0.12) !important;
+}
+
+@media (max-width: 767px) {
+  .landing-container .hero-login-panel .hero-radix-field,
+  .landing-container .hero-login-panel .rt-TextFieldRoot.hero-radix-field {
+    height: 46px !important;
+    min-height: 46px !important;
+    border-radius: 17px !important;
+  }
+
+  .landing-container .hero-login-panel .hero-radix-eye {
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: 13px !important;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   37 RADIX HERO INPUT ICON TEXT ALIGNMENT
+   --------------------------------------------------------------------------
+   Final micro-positioning for Radix hero login fields:
+   - icon gets a clean fixed slot
+   - text starts with better breathing room
+   - right eye button aligns proportionally
+   ────────────────────────────────────────────────────────────────────────── */
+
+.landing-container .hero-login-panel .hero-radix-field,
+.landing-container .hero-login-panel .rt-TextFieldRoot.hero-radix-field {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0 !important;
+  padding-left: 13px !important;
+  padding-right: 9px !important;
+}
+
+/* Left icon slot */
+.landing-container .hero-login-panel .hero-radix-field > .rt-TextFieldSlot:first-child,
+.landing-container .hero-login-panel .hero-radix-field .rt-TextFieldSlot:first-of-type {
+  flex: 0 0 28px !important;
+  width: 28px !important;
+  height: 100% !important;
+  display: grid !important;
+  place-items: center !important;
+  padding: 0 !important;
+  margin: 0 8px 0 0 !important;
+}
+
+/* Icon size and optical alignment */
+.landing-container .hero-login-panel .hero-radix-field > .rt-TextFieldSlot:first-child svg,
+.landing-container .hero-login-panel .hero-radix-field .rt-TextFieldSlot:first-of-type svg {
+  width: 16px !important;
+  height: 16px !important;
+  display: block !important;
+  transform: translateY(0.5px) !important;
+}
+
+/* Text input should start after icon slot, not stick to it */
+.landing-container .hero-login-panel .hero-radix-field input,
+.landing-container .hero-login-panel .hero-radix-field :where(input) {
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  padding-left: 0 !important;
+  padding-right: 8px !important;
+  margin-left: 0 !important;
+  text-align: left !important;
+}
+
+/* Right slot for password eye */
+.landing-container .hero-login-panel .hero-radix-field .rt-TextFieldSlot:has(.hero-radix-eye) {
+  flex: 0 0 38px !important;
+  width: 38px !important;
+  height: 100% !important;
+  display: grid !important;
+  place-items: center !important;
+  padding: 0 !important;
+  margin: 0 0 0 8px !important;
+}
+
+.landing-container .hero-login-panel .hero-radix-eye {
+  transform: translateY(0) !important;
+}
+
+/* Label spacing above field */
+.landing-container .hero-login-panel .hero-login-field label {
+  padding-left: 1px !important;
+  margin-bottom: 1px !important;
+}
+
+/* Dark mode fine tune */
+.landing-container .hero-login-panel .hero-radix-field:focus-within > .rt-TextFieldSlot:first-child svg,
+.landing-container .hero-login-panel .hero-radix-field:focus-within .rt-TextFieldSlot:first-of-type svg {
+  filter: drop-shadow(0 0 8px rgba(88, 224, 233, 0.16)) !important;
+}
+
+/* Mobile: slightly tighter but still breathable */
+@media (max-width: 767px) {
+  .landing-container .hero-login-panel .hero-radix-field,
+  .landing-container .hero-login-panel .rt-TextFieldRoot.hero-radix-field {
+    padding-left: 12px !important;
+    padding-right: 8px !important;
+  }
+
+  .landing-container .hero-login-panel .hero-radix-field > .rt-TextFieldSlot:first-child,
+  .landing-container .hero-login-panel .hero-radix-field .rt-TextFieldSlot:first-of-type {
+    flex-basis: 27px !important;
+    width: 27px !important;
+    margin-right: 7px !important;
+  }
+
+  .landing-container .hero-login-panel .hero-radix-field .rt-TextFieldSlot:has(.hero-radix-eye) {
+    flex-basis: 36px !important;
+    width: 36px !important;
+    margin-left: 7px !important;
+  }
+}
 

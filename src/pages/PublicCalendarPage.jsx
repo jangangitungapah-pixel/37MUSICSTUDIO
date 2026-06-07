@@ -592,7 +592,7 @@ const PublicCalendarPage = () => {
             >
               <img src={lightboxPhoto.url} alt={lightboxPhoto.displayCaption || 'Foto studio'} />
               <div className="lightbox-footer">
-                <h3 style={{ color: '#fff', fontSize: '1.1rem', margin: '12px 0 0 0', fontWeight: '600' }}>{lightboxPhoto.displayCaption || 'Foto studio'}</h3>
+                <h3 className="pc-lightbox-title">{lightboxPhoto.displayCaption || 'Foto studio'}</h3>
               </div>
             </motion.div>
           </motion.div>
@@ -626,7 +626,7 @@ const PublicCalendarPage = () => {
                       <CalendarDays size={24} />
                     </div>
                     <div>
-                      <h3 id="pc-booking-title">Pesan Studio</h3>
+                      <h3 id="pc-booking-title">Ajukan Booking</h3>
                       <p>
                         {selectedSlot.dateStr
                           ? format(new Date(selectedSlot.dateStr + 'T00:00:00'), 'EEEE, dd MMMM yyyy', { locale: localeId })
@@ -724,12 +724,12 @@ const PublicCalendarPage = () => {
                   {/* Info note */}
                   <div className="pc-modal-note">
                     <Info size={16} />
-                    <span>Booking akan diajukan ke admin studio untuk ditinjau dan dikonfirmasi melalui pesan WhatsApp.</span>
+                    <span>Request booking akan masuk ke admin studio. Setelah itu, tim 37 Music Studio akan follow up lewat WhatsApp.</span>
                   </div>
 
-                  <button className="btn-success" type="button" style={{width: '100%', padding: '14px'}} onClick={sendWA} disabled={isSubmittingRequest} aria-busy={isSubmittingRequest}>
+                  <button className="btn-success" type="button" onClick={sendWA} disabled={isSubmittingRequest} aria-busy={isSubmittingRequest}>
                     <MessageCircle size={22} />
-                    <span>{isSubmittingRequest ? 'Sedang Memproses...' : 'Kirim Booking via WhatsApp'}</span>
+                    <span>{isSubmittingRequest ? 'Mengirim Request...' : 'Kirim Request Booking'}</span>
                   </button>
                 </div>
               </div>

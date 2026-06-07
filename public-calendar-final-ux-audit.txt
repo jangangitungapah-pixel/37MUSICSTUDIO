@@ -1,0 +1,23 @@
+37 Music Studio — Public Calendar Final UX Audit
+Generated: 2026-06-07T05:21:17.047Z
+
+Selector presence:
+.pc-topbar: FOUND
+.pc-hero: FOUND
+.pc-body: FOUND
+.pc-calendar-intro: FOUND
+.pc-toolbar: FOUND
+.pc-grid-panel: FOUND
+.pc-grid-wrapper: FOUND
+.pc-gallery-section: FOUND
+.pc-modal: FOUND
+
+Patch markers detected:
+37 PUBLIC CALENDAR CONTINUOUS GRID BOARD: FOUND
+37 PUBLIC CALENDAR HIDE PLUS UNTIL HOVER: FOUND
+37 PUBLIC HERO HEADER LANDING MATCH: FOUND
+37 PUBLIC CALENDAR BOARD HEADER POLISH: FOUND
+37 PUBLIC BOOKING MODAL POLISH: FOUND
+37 PUBLIC GALLERY LIGHTBOX POLISH: FOUND
+
+Next patch: scoped final UX polish only. No JSX rewrite.

@@ -1,0 +1,5278 @@
+﻿
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\components\BookingForm.css:103 =====
+  color: var(--accent-pink);
+  font-size: 0.9rem;
+}
+
+>> /* ===== Input ===== */
+.bf-input {
+  background: rgba(0, 0, 0, 0.28) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  backdrop-filter: blur(10px) !important;
+  border: 1px solid var(--fluent-color-neutral-stroke-1) !important;
+  border-radius: var(--fluent-radius-medium) !important;
+  padding: 12px 14px;
+  color: var(--text-primary) !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\components\BookingForm.css:104 =====
+  font-size: 0.9rem;
+}
+
+/* ===== Input ===== */
+>> .bf-input {
+  background: rgba(0, 0, 0, 0.28) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  backdrop-filter: blur(10px) !important;
+  border: 1px solid var(--fluent-color-neutral-stroke-1) !important;
+  border-radius: var(--fluent-radius-medium) !important;
+  padding: 12px 14px;
+  color: var(--text-primary) !important;
+  font-size: 0.95rem;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\components\BookingForm.css:120 =====
+  width: 100%;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2) !important;
+}
+
+>> [data-theme="light"] .bf-input {
+  background: rgba(255, 255, 255, 0.65) !important;
+  border-color: rgba(0, 0, 0, 0.12) !important;
+  color: var(--text-primary) !important;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+}
+
+.bf-input:focus {
+  border-color: var(--fluent-color-accent-line) !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\components\BookingForm.css:127 =====
+  color: var(--text-primary) !important;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+}
+
+>> .bf-input:focus {
+  border-color: var(--fluent-color-accent-line) !important;
+  background: rgba(0, 0, 0, 0.35) !important;
+  box-shadow: 0 0 0 3px rgba(var(--accent-cyan-rgb), 0.25) !important;
+}
+
+.bf-input::placeholder {
+  color: var(--text-muted);
+  opacity: 0.6;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\components\BookingForm.css:133 =====
+  background: rgba(0, 0, 0, 0.35) !important;
+  box-shadow: 0 0 0 3px rgba(var(--accent-cyan-rgb), 0.25) !important;
+}
+
+>> .bf-input::placeholder {
+  color: var(--text-muted);
+  opacity: 0.6;
+}
+
+/* Fix select text visibility */
+select.bf-input {
+  color: var(--text-primary);
+  cursor: pointer;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\components\BookingForm.css:139 =====
+  opacity: 0.6;
+}
+
+/* Fix select text visibility */
+>> select.bf-input {
+  color: var(--text-primary);
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 36px;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\components\BookingForm.css:150 =====
+  background-position: right 12px center;
+  padding-right: 36px;
+}
+
+>> select.bf-input option {
+  background-color: #1a1a24;
+  color: var(--text-primary);
+}
+
+.bf-textarea {
+  resize: vertical;
+  min-height: 60px;
+  line-height: 1.5;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\components\BookingForm.css:161 =====
+  min-height: 60px;
+  line-height: 1.5;
+}
+
+>> /* ===== Input with VIP Badge ===== */
+.bf-input-wrap {
+  position: relative;
+}
+
+.bf-input-wrap .bf-input {
+  padding-right: 72px;
+}
+
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\components\BookingForm.css:162 =====
+  line-height: 1.5;
+}
+
+/* ===== Input with VIP Badge ===== */
+>> .bf-input-wrap {
+  position: relative;
+}
+
+.bf-input-wrap .bf-input {
+  padding-right: 72px;
+}
+
+.bf-vip-badge {
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\components\BookingForm.css:166 =====
+.bf-input-wrap {
+  position: relative;
+}
+
+>> .bf-input-wrap .bf-input {
+  padding-right: 72px;
+}
+
+.bf-vip-badge {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\components\BookingForm.css:437 =====
+  font-weight: 700;
+  cursor: pointer;
+}
+
+>> .bf-recurring-toggle input {
+  accent-color: var(--accent-cyan);
+}
+
+.bf-field-hint {
+  display: block;
+  margin-top: 6px;
+  color: var(--text-muted);
+  font-size: 0.72rem;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\components\BookingForm.css:495 =====
+  .bf-label {
+    font-size: 0.72rem;
+  }
+
+>>   .bf-input {
+    font-size: 0.84rem;
+    padding: 9px 12px;
+  }
+
+  .bf-status-grid {
+    gap: 4px;
+  }
+
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\components\BookingForm.css:524 =====
+  .bf-section-title {
+    font-size: 0.78rem;
+  }
+
+>>   .bf-input,
+  .form-input {
+    font-size: 0.9rem;
+    padding: 10px 12px;
+    border-radius: var(--mob-radius-sm);
+  }
+
+  .bf-price-card {
+    padding: 12px var(--mob-card-px);
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\components\BookingForm.css:525 =====
+    font-size: 0.78rem;
+  }
+
+  .bf-input,
+>>   .form-input {
+    font-size: 0.9rem;
+    padding: 10px 12px;
+    border-radius: var(--mob-radius-sm);
+  }
+
+  .bf-price-card {
+    padding: 12px var(--mob-card-px);
+    border-radius: var(--mob-radius-sm);
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\components\BookingForm.css:571 =====
+/* ════════════════════════════════════════════════════════════════════════════
+   37 BOOKING FORM SPATIAL MODAL
+   --------------------------------------------------------------------------
+   Premium spatial ambient booking form:
+>>    hero summary, raised sections, tactile inputs, modern payment/status cards.
+   ════════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  --bf-radius-lg: 24px;
+  --bf-radius-md: 18px;
+  --bf-radius-sm: 14px;
+  --bf-line: rgba(255,255,255,0.085);
+  --bf-line-strong: rgba(255,255,255,0.14);
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\components\BookingForm.css:884 =====
+  font-size: 0.76rem !important;
+  font-weight: 850 !important;
+}
+
+>> /* Inputs */
+.bf-input,
+.bf-duration-picker,
+.bf-remaining {
+  min-height: 44px !important;
+  border-radius: var(--bf-radius-sm) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.045), rgba(255,255,255,0.010)),
+    rgba(12,15,22,0.80) !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\components\BookingForm.css:885 =====
+  font-weight: 850 !important;
+}
+
+/* Inputs */
+>> .bf-input,
+.bf-duration-picker,
+.bf-remaining {
+  min-height: 44px !important;
+  border-radius: var(--bf-radius-sm) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.045), rgba(255,255,255,0.010)),
+    rgba(12,15,22,0.80) !important;
+  border: 1px solid rgba(255,255,255,0.090) !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\components\BookingForm.css:906 =====
+    background-color 150ms cubic-bezier(0.2, 0, 0, 1),
+    box-shadow 150ms cubic-bezier(0.2, 0, 0, 1) !important;
+}
+
+>> .bf-input:focus {
+  border-color: rgba(var(--accent-pink-rgb),0.44) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.060), rgba(255,255,255,0.014)),
+    rgba(14,18,26,0.96) !important;
+  box-shadow:
+    0 0 0 3px rgba(var(--accent-pink-rgb),0.14),
+    inset 0 1px 0 rgba(255,255,255,0.060) !important;
+}
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\components\BookingForm.css:916 =====
+    0 0 0 3px rgba(var(--accent-pink-rgb),0.14),
+    inset 0 1px 0 rgba(255,255,255,0.060) !important;
+}
+
+>> select.bf-input {
+  background-color: rgba(12,15,22,0.88) !important;
+}
+
+.bf-textarea {
+  min-height: 74px !important;
+}
+
+/* Duration picker */
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\components\BookingForm.css:980 =====
+    rgba(255,255,255,0.020) !important;
+  border: 1px solid rgba(255,255,255,0.075) !important;
+}
+
+>> .bf-equipment-list label:has(input:checked) {
+  border-color: rgba(var(--accent-cyan-rgb),0.38) !important;
+  background:
+    linear-gradient(180deg, rgba(var(--accent-cyan-rgb),0.095), rgba(255,255,255,0.010)),
+    rgba(255,255,255,0.022) !important;
+}
+
+/* Status cards */
+.bf-status-grid {
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\components\BookingForm.css:1175 =====
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+
+>>   .bf-input,
+  .bf-duration-picker,
+  .bf-remaining {
+    min-height: 44px !important;
+    font-size: 0.86rem !important;
+  }
+
+  .bf-status-grid {
+    grid-template-columns: 1fr !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\components\BookingForm.css:1267 =====
+    inset 0 1px 0 rgba(255,255,255,0.84),
+    0 10px 24px rgba(20,23,32,0.06) !important;
+}
+
+>> [data-theme="light"] .bf-input,
+[data-theme="light"] .bf-duration-picker,
+[data-theme="light"] .bf-remaining {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.98), rgba(248,249,252,0.80)),
+    rgba(255,255,255,0.92) !important;
+  border-color: rgba(20,23,32,0.09) !important;
+  color: var(--text-primary) !important;
+}
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\components\ProfileModal.css:44 =====
+  gap: 8px;
+  color: var(--text-secondary);
+}
+
+>> .profile-form .form-input.disabled {
+  background: rgba(255, 255, 255, 0.02);
+  color: var(--text-muted);
+  cursor: not-allowed;
+}
+
+.alert-box {
+  display: flex;
+  align-items: center;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\AuthPage.css:345 =====
+  color: rgba(255,255,255,0.5);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+>> .form-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.form-input-icon {
+  position: absolute;
+  left: 14px;
+  color: rgba(255,255,255,0.3);
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\AuthPage.css:350 =====
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+>> .form-input-icon {
+  position: absolute;
+  left: 14px;
+  color: rgba(255,255,255,0.3);
+  pointer-events: none;
+  transition: color 0.2s;
+}
+.form-input {
+  width: 100%;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\AuthPage.css:357 =====
+  color: rgba(255,255,255,0.3);
+  pointer-events: none;
+  transition: color 0.2s;
+}
+>> .form-input {
+  width: 100%;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  padding: 13px 16px 13px 44px;
+  color: var(--text-primary);
+  font-size: var(--text-base);
+  font-family: var(--font-display);
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\AuthPage.css:370 =====
+  font-weight: var(--fw-medium);
+  outline: none;
+  transition: all 0.2s;
+}
+>> .form-input:focus {
+  border-color: rgba(var(--accent-pink-rgb),0.4);
+  background: rgba(var(--accent-pink-rgb),0.04);
+  box-shadow: 0 0 0 3px rgba(var(--accent-pink-rgb),0.08);
+}
+.form-input::placeholder { color: rgba(255,255,255,0.2); }
+.form-input:focus + .form-input-icon,
+.form-input-wrap:focus-within .form-input-icon {
+  color: rgba(var(--accent-pink-rgb),0.7);
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\AuthPage.css:375 =====
+  border-color: rgba(var(--accent-pink-rgb),0.4);
+  background: rgba(var(--accent-pink-rgb),0.04);
+  box-shadow: 0 0 0 3px rgba(var(--accent-pink-rgb),0.08);
+}
+>> .form-input::placeholder { color: rgba(255,255,255,0.2); }
+.form-input:focus + .form-input-icon,
+.form-input-wrap:focus-within .form-input-icon {
+  color: rgba(var(--accent-pink-rgb),0.7);
+}
+.form-input-action {
+  position: absolute;
+  right: 12px;
+  background: none;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\AuthPage.css:376 =====
+  background: rgba(var(--accent-pink-rgb),0.04);
+  box-shadow: 0 0 0 3px rgba(var(--accent-pink-rgb),0.08);
+}
+.form-input::placeholder { color: rgba(255,255,255,0.2); }
+>> .form-input:focus + .form-input-icon,
+.form-input-wrap:focus-within .form-input-icon {
+  color: rgba(var(--accent-pink-rgb),0.7);
+}
+.form-input-action {
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: none;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\AuthPage.css:377 =====
+  box-shadow: 0 0 0 3px rgba(var(--accent-pink-rgb),0.08);
+}
+.form-input::placeholder { color: rgba(255,255,255,0.2); }
+.form-input:focus + .form-input-icon,
+>> .form-input-wrap:focus-within .form-input-icon {
+  color: rgba(var(--accent-pink-rgb),0.7);
+}
+.form-input-action {
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.3);
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\AuthPage.css:380 =====
+.form-input:focus + .form-input-icon,
+.form-input-wrap:focus-within .form-input-icon {
+  color: rgba(var(--accent-pink-rgb),0.7);
+}
+>> .form-input-action {
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.3);
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\AuthPage.css:392 =====
+  display: flex;
+  align-items: center;
+  transition: color 0.2s;
+}
+>> .form-input-action:hover { color: rgba(255,255,255,0.7); }
+
+/* No icon variant */
+.form-input.no-icon { padding-left: 16px; }
+
+/* ── Submit Button ── */
+.auth-submit {
+  width: 100%;
+  padding: 14px;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\AuthPage.css:395 =====
+}
+.form-input-action:hover { color: rgba(255,255,255,0.7); }
+
+/* No icon variant */
+>> .form-input.no-icon { padding-left: 16px; }
+
+/* ── Submit Button ── */
+.auth-submit {
+  width: 100%;
+  padding: 14px;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  font-weight: 700;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\AuthPage.css:566 =====
+  .auth-header p {
+    font-size: 0.82rem;
+  }
+
+>>   .form-input {
+    padding: 12px 14px;
+    font-size: 0.9rem;
+    border-radius: var(--mob-radius-sm);
+  }
+
+  .auth-submit {
+    min-height: 46px;
+    font-size: 0.92rem;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\CalendarPage.css:3590 =====
+      #141922 !important;
+    border: 1px solid rgba(255,255,255,0.075) !important;
+  }
+
+>>   .calendar-page .app-search-input {
+    font-size: 0.86rem !important;
+  }
+
+  /* Stats become readable compact cards */
+  .calendar-stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+  }
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\ClientPortal.css:308 =====
+  font-size: 0.76rem;
+  font-weight: 850;
+}
+
+>> .client-input-wrap {
+  min-height: 46px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 0 12px;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.09);
+  background:
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\ClientPortal.css:322 =====
+    rgba(12,15,22,0.80);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+}
+
+>> .client-input-wrap input {
+  min-width: 0;
+  flex: 1;
+  color: var(--text-primary);
+  background: transparent;
+  border: 0;
+  outline: 0;
+  font: inherit;
+  font-weight: 750;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\ClientPortal.css:333 =====
+  font: inherit;
+  font-weight: 750;
+}
+
+>> .client-input-wrap button {
+  border: 0;
+  background: transparent;
+  color: var(--text-muted);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\ClientPortal.css:576 =====
+    inset 0 1px 0 rgba(255,255,255,0.84),
+    0 18px 44px rgba(20,23,32,0.08);
+}
+
+>> [data-theme="light"] .client-input-wrap {
+  background: rgba(255,255,255,0.92);
+  border-color: rgba(20,23,32,0.09);
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   37 GOOGLE LOGIN PORTAL BUTTON
+   --------------------------------------------------------------------------
+   Google sign-in/sign-up button for client/admin portal panels.
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\CustomersPage.css:908 =====
+.cf-label svg { color: var(--text-muted); }
+
+.cf-required { color: var(--accent-pink); }
+
+>> /* Input */
+.cf-input {
+  background: rgba(0,0,0,0.2);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 10px;
+  padding: 10px 14px;
+  color: var(--text-primary);
+  font-size: 0.88rem;
+  font-family: inherit;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\CustomersPage.css:909 =====
+
+.cf-required { color: var(--accent-pink); }
+
+/* Input */
+>> .cf-input {
+  background: rgba(0,0,0,0.2);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 10px;
+  padding: 10px 14px;
+  color: var(--text-primary);
+  font-size: 0.88rem;
+  font-family: inherit;
+  transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\CustomersPage.css:923 =====
+  width: 100%;
+  box-sizing: border-box;
+}
+
+>> .cf-input:focus {
+  border-color: var(--accent-cyan) !important;
+  background: rgba(var(--accent-cyan-rgb),0.03) !important;
+  box-shadow: 0 0 0 3px rgba(var(--accent-cyan-rgb),0.08), 0 4px 12px rgba(0,0,0,0.15) !important;
+}
+
+.cf-input::placeholder { color: var(--text-muted); opacity: 0.55; }
+
+.cf-textarea {
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\CustomersPage.css:929 =====
+  background: rgba(var(--accent-cyan-rgb),0.03) !important;
+  box-shadow: 0 0 0 3px rgba(var(--accent-cyan-rgb),0.08), 0 4px 12px rgba(0,0,0,0.15) !important;
+}
+
+>> .cf-input::placeholder { color: var(--text-muted); opacity: 0.55; }
+
+.cf-textarea {
+  resize: vertical;
+  min-height: 64px;
+  line-height: 1.55;
+}
+
+/* Prefix Input (Instagram @) */
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\CustomersPage.css:937 =====
+  min-height: 64px;
+  line-height: 1.55;
+}
+
+>> /* Prefix Input (Instagram @) */
+.cf-prefix-input {
+  display: flex;
+  align-items: stretch;
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 10px;
+  overflow: hidden;
+  transition: border-color 0.22s, box-shadow 0.22s;
+}
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\CustomersPage.css:938 =====
+  line-height: 1.55;
+}
+
+/* Prefix Input (Instagram @) */
+>> .cf-prefix-input {
+  display: flex;
+  align-items: stretch;
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 10px;
+  overflow: hidden;
+  transition: border-color 0.22s, box-shadow 0.22s;
+}
+
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\CustomersPage.css:947 =====
+  overflow: hidden;
+  transition: border-color 0.22s, box-shadow 0.22s;
+}
+
+>> .cf-prefix-input:focus-within {
+  border-color: var(--accent-cyan) !important;
+  box-shadow: 0 0 0 3px rgba(var(--accent-cyan-rgb),0.08) !important;
+}
+
+.cf-prefix {
+  display: flex;
+  align-items: center;
+  padding: 0 11px;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\CustomersPage.css:964 =====
+  border-right: 1px solid rgba(255,255,255,0.06);
+  flex-shrink: 0;
+}
+
+>> .cf-input-prefixed {
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  flex: 1;
+}
+
+/* Status Cards */
+.cf-status-row {
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\CustomersPage.css:1506 =====
+[data-theme="light"] .customer-booking-item:hover {
+  background: var(--bg-surface-hover);
+}
+
+>> [data-theme="light"] .cf-input {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-medium);
+  color: var(--text-primary);
+}
+
+[data-theme="light"] .cf-input:focus {
+  background: var(--bg-surface) !important;
+}
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\CustomersPage.css:1512 =====
+  border: 1px solid var(--border-medium);
+  color: var(--text-primary);
+}
+
+>> [data-theme="light"] .cf-input:focus {
+  background: var(--bg-surface) !important;
+}
+
+[data-theme="light"] .cf-prefix-input {
+  border: 1px solid var(--border-medium);
+  background: var(--bg-surface);
+}
+
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\CustomersPage.css:1516 =====
+[data-theme="light"] .cf-input:focus {
+  background: var(--bg-surface) !important;
+}
+
+>> [data-theme="light"] .cf-prefix-input {
+  border: 1px solid var(--border-medium);
+  background: var(--bg-surface);
+}
+
+[data-theme="light"] .cf-prefix {
+  background: var(--bg-surface-hover);
+  border-right: 1px solid var(--border-medium);
+  color: var(--text-secondary);
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\DashboardPage.css:949 =====
+  transform: translateY(-1px);
+  box-shadow: 0 0 20px rgba(var(--accent-pink-rgb), 0.5);
+}
+
+>> /* Small adjustments to form-input fields in modal */
+.quick-dash-form .form-input {
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .quick-dash-form .form-row {
+    grid-template-columns: 1fr;
+  }
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\DashboardPage.css:950 =====
+  box-shadow: 0 0 20px rgba(var(--accent-pink-rgb), 0.5);
+}
+
+/* Small adjustments to form-input fields in modal */
+>> .quick-dash-form .form-input {
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .quick-dash-form .form-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\GalleryPage.css:1174 =====
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+>> .modal-toggle-card input {
+  display: none;
+}
+
+.toggle-indicator {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\GalleryPage.css:1313 =====
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+>> .queue-caption-input.bf-input {
+  height: 32px;
+  padding: 4px 10px;
+  font-size: 0.8rem;
+  margin: 0;
+}
+
+.queue-remove-btn {
+  background: transparent;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\GalleryPage.css:1350 =====
+  transition: border-color 0.2s, background-color 0.2s;
+}
+
+.album-filter-select option,
+>> .bf-input option {
+  background-color: #16161c !important;
+  color: #ffffff !important;
+}
+
+[data-theme="light"] .album-filter-select option,
+[data-theme="light"] .bf-input option {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\GalleryPage.css:1356 =====
+  color: #ffffff !important;
+}
+
+[data-theme="light"] .album-filter-select option,
+>> [data-theme="light"] .bf-input option {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .album-filter-select {
+  background-color: rgba(0, 0, 0, 0.03) !important;
+  border-color: rgba(0, 0, 0, 0.08) !important;
+  color: #0f172a !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\GalleryPage.css:1703 =====
+  background: rgba(0, 0, 0, 0.02);
+  border-color: rgba(0, 0, 0, 0.08);
+}
+
+>> .bulk-select-input {
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  outline: none;
+  cursor: pointer;
+  padding-right: 4px;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\GalleryPage.css:1715 =====
+  padding-right: 4px;
+  font-family: inherit;
+}
+
+>> .bulk-select-input option {
+  background: #121218;
+  color: #fff;
+}
+
+[data-theme="light"] .bulk-select-input option {
+  background: #fff;
+  color: #0f172a;
+}
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\GalleryPage.css:1720 =====
+  background: #121218;
+  color: #fff;
+}
+
+>> [data-theme="light"] .bulk-select-input option {
+  background: #fff;
+  color: #0f172a;
+}
+
+.bulk-action-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\GalleryPage.css:1787 =====
+  .bulk-action-select-wrap {
+    flex: 1;
+    justify-content: center;
+  }
+>>   .bulk-select-input {
+    width: 100%;
+  }
+  .bulk-action-btn {
+    flex: 1;
+    justify-content: center;
+  }
+}
+
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\InventoryPage.css:1020 =====
+}
+
+.inventory-form .form-group .required { color: var(--accent-pink); }
+
+>> /* Form inputs */
+.inventory-form .form-input {
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 10px;
+  padding: 10px 14px;
+  color: var(--text-primary);
+  font-size: 0.88rem;
+  transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\InventoryPage.css:1021 =====
+
+.inventory-form .form-group .required { color: var(--accent-pink); }
+
+/* Form inputs */
+>> .inventory-form .form-input {
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 10px;
+  padding: 10px 14px;
+  color: var(--text-primary);
+  font-size: 0.88rem;
+  transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: inherit;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\InventoryPage.css:1034 =====
+  width: 100%;
+  box-sizing: border-box;
+}
+
+>> .inventory-form .form-input:focus {
+  outline: none;
+  border-color: var(--accent-cyan) !important;
+  box-shadow: 0 0 0 3px rgba(var(--accent-cyan-rgb), 0.08), 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+  background: rgba(var(--accent-cyan-rgb), 0.03) !important;
+}
+
+.inventory-form select.form-input {
+  appearance: none;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\InventoryPage.css:1041 =====
+  box-shadow: 0 0 0 3px rgba(var(--accent-cyan-rgb), 0.08), 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+  background: rgba(var(--accent-cyan-rgb), 0.03) !important;
+}
+
+>> .inventory-form select.form-input {
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23666%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+  background-repeat: no-repeat, repeat;
+  background-position: right 14px top 50%, 0 0;
+  background-size: 0.6em auto, 100%;
+  padding-right: 34px;
+  cursor: pointer;
+}
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\InventoryPage.css:1051 =====
+  padding-right: 34px;
+  cursor: pointer;
+}
+
+>> .inventory-form select.form-input option {
+  background: var(--bg-dark);
+  color: var(--text-primary);
+}
+
+.inventory-form input[type="date"].form-input::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  opacity: 0.4;
+  cursor: pointer;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\InventoryPage.css:1056 =====
+  background: var(--bg-dark);
+  color: var(--text-primary);
+}
+
+>> .inventory-form input[type="date"].form-input::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  opacity: 0.4;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.inventory-form input[type="date"].form-input::-webkit-calendar-picker-indicator:hover { opacity: 0.75; }
+
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\InventoryPage.css:1063 =====
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+>> .inventory-form input[type="date"].form-input::-webkit-calendar-picker-indicator:hover { opacity: 0.75; }
+
+.inventory-form .form-textarea {
+  resize: vertical;
+  min-height: 80px;
+  line-height: 1.55;
+}
+
+/* Form Actions */
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\InventoryPage.css:1137 =====
+  opacity: 1;
+  box-shadow: 0 0 8px currentColor;
+}
+
+>> /* New Category Input */
+.new-category-input {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.new-category-input .form-input { flex: 1; }
+
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\InventoryPage.css:1138 =====
+  box-shadow: 0 0 8px currentColor;
+}
+
+/* New Category Input */
+>> .new-category-input {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.new-category-input .form-input { flex: 1; }
+
+.btn-icon-sm {
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\InventoryPage.css:1144 =====
+  gap: 6px;
+  align-items: center;
+}
+
+>> .new-category-input .form-input { flex: 1; }
+
+.btn-icon-sm {
+  width: 38px;
+  height: 38px;
+  border-radius: 9px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-secondary);
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\InventoryPage.css:1687 =====
+  border-color: rgba(255, 193, 7, 0.25);
+  color: #ff9100;
+}
+
+>> [data-theme="light"] .inventory-form .form-input {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-medium);
+  color: var(--text-primary);
+}
+
+[data-theme="light"] .inventory-form .form-input:focus {
+  background: var(--bg-surface) !important;
+}
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\InventoryPage.css:1693 =====
+  border: 1px solid var(--border-medium);
+  color: var(--text-primary);
+}
+
+>> [data-theme="light"] .inventory-form .form-input:focus {
+  background: var(--bg-surface) !important;
+}
+
+[data-theme="light"] .inventory-form select.form-input option {
+  background: var(--bg-surface);
+  color: var(--text-primary);
+}
+
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\InventoryPage.css:1697 =====
+[data-theme="light"] .inventory-form .form-input:focus {
+  background: var(--bg-surface) !important;
+}
+
+>> [data-theme="light"] .inventory-form select.form-input option {
+  background: var(--bg-surface);
+  color: var(--text-primary);
+}
+
+[data-theme="light"] .inventory-form input[type="date"].form-input::-webkit-calendar-picker-indicator {
+  filter: none;
+  opacity: 0.6;
+}
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\InventoryPage.css:1702 =====
+  background: var(--bg-surface);
+  color: var(--text-primary);
+}
+
+>> [data-theme="light"] .inventory-form input[type="date"].form-input::-webkit-calendar-picker-indicator {
+  filter: none;
+  opacity: 0.6;
+}
+
+[data-theme="light"] .condition-option {
+  background: var(--bg-surface);
+  border: 1.5px solid var(--border-medium);
+  color: var(--text-secondary);
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:465 =====
+  flex: 0 0 auto;
+  color: var(--landing-soft);
+}
+
+>> .login-field-input {
+  min-width: 0;
+  flex: 1;
+  height: 43px;
+  border: 0;
+  outline: 0;
+  color: var(--landing-text);
+  background: transparent;
+  font: inherit;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:478 =====
+  font-size: 16px;
+  font-weight: 780;
+}
+
+>> .login-field-input::placeholder {
+  color: var(--landing-faint);
+}
+
+.login-field-toggle {
+  width: 31px;
+  height: 31px;
+  display: grid;
+  place-items: center;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:1386 =====
+}
+
+.landing-container a:focus-visible,
+.landing-container button:focus-visible,
+>> .landing-container input:focus-visible {
+  outline: 2px solid var(--landing-gold);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing-container *,
+  .landing-container *::before,
+  .landing-container *::after {
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:1804 =====
+[data-theme="light"] .section-eyebrow {
+  color: var(--landing-pink);
+}
+
+>> [data-theme="light"] .login-field-input {
+  color: var(--landing-text);
+}
+
+[data-theme="light"] .login-google-mark {
+  box-shadow: 0 6px 14px rgba(88, 63, 34, 0.10);
+}
+
+[data-theme="light"] .login-dropdown-submit {
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:2340 =====
+  font-size: 0.68rem;
+  font-weight: 850;
+}
+
+>> .hero-login-input {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 0 11px;
+  border-radius: 15px;
+  border: 1px solid var(--landing-line);
+  background: rgba(0, 0, 0, 0.16);
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:2351 =====
+  border: 1px solid var(--landing-line);
+  background: rgba(0, 0, 0, 0.16);
+}
+
+>> .hero-login-input:focus-within {
+  border-color: rgba(88, 224, 233, 0.46);
+  box-shadow: 0 0 0 2px rgba(88, 224, 233, 0.12);
+}
+
+.hero-login-input svg {
+  flex: 0 0 auto;
+  color: var(--landing-soft);
+}
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:2356 =====
+  border-color: rgba(88, 224, 233, 0.46);
+  box-shadow: 0 0 0 2px rgba(88, 224, 233, 0.12);
+}
+
+>> .hero-login-input svg {
+  flex: 0 0 auto;
+  color: var(--landing-soft);
+}
+
+.hero-login-input input {
+  min-width: 0;
+  flex: 1;
+  height: 42px;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:2361 =====
+  flex: 0 0 auto;
+  color: var(--landing-soft);
+}
+
+>> .hero-login-input input {
+  min-width: 0;
+  flex: 1;
+  height: 42px;
+  border: 0;
+  outline: 0;
+  color: var(--landing-text);
+  background: transparent;
+  font: inherit;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:2374 =====
+  font-size: 16px;
+  font-weight: 780;
+}
+
+>> .hero-login-input input::placeholder {
+  color: var(--landing-faint);
+}
+
+.hero-login-eye {
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:2485 =====
+}
+
+[data-theme="light"] .hero-login-badge,
+[data-theme="light"] .hero-google-login,
+>> [data-theme="light"] .hero-login-input,
+[data-theme="light"] .hero-login-eye {
+  background: rgba(255, 255, 255, 0.52) !important;
+  border-color: rgba(90, 66, 36, 0.095) !important;
+}
+
+[data-theme="light"] .hero-google-login {
+  color: rgba(33, 28, 22, 0.92) !important;
+}
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:2495 =====
+[data-theme="light"] .hero-google-login {
+  color: rgba(33, 28, 22, 0.92) !important;
+}
+
+>> [data-theme="light"] .hero-login-input input {
+  color: rgba(33, 28, 22, 0.94) !important;
+}
+
+[data-theme="light"] .hero-login-submit {
+  background: #d83160 !important;
+  box-shadow: 0 12px 28px rgba(216, 49, 96, 0.18) !important;
+}
+
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:2632 =====
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+>>    37 HERO LOGIN FRAMELESS INPUT POLISH
+   --------------------------------------------------------------------------
+   Fixes nested-looking input fields in hero login panel.
+   Direction:
+   - no box inside box
+   - one seamless spatial field surface
+   - cleaner icon slot
+   - modern floating focus glow
+   ────────────────────────────────────────────────────────────────────────── */
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:2634 =====
+
+/* ──────────────────────────────────────────────────────────────────────────
+   37 HERO LOGIN FRAMELESS INPUT POLISH
+   --------------------------------------------------------------------------
+>>    Fixes nested-looking input fields in hero login panel.
+   Direction:
+   - no box inside box
+   - one seamless spatial field surface
+   - cleaner icon slot
+   - modern floating focus glow
+   ────────────────────────────────────────────────────────────────────────── */
+
+.hero-login-field {
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:2654 =====
+  font-weight: 850 !important;
+  letter-spacing: -0.01em !important;
+}
+
+>> .hero-login-input {
+  position: relative !important;
+  min-height: 48px !important;
+  display: grid !important;
+  grid-template-columns: 22px minmax(0, 1fr) auto !important;
+  align-items: center !important;
+  gap: 10px !important;
+  padding: 0 10px 0 13px !important;
+  border-radius: 18px !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:2679 =====
+    background 160ms ease,
+    transform 160ms ease !important;
+}
+
+>> .hero-login-input::before {
+  content: "" !important;
+  position: absolute !important;
+  inset: 1px !important;
+  z-index: 0 !important;
+  border-radius: inherit !important;
+  pointer-events: none !important;
+  background:
+    radial-gradient(circle at 16% 0%, rgba(239, 197, 110, 0.060), transparent 42%),
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:2692 =====
+    radial-gradient(circle at 90% 0%, rgba(88, 224, 233, 0.045), transparent 38%) !important;
+  opacity: 0.58 !important;
+}
+
+>> .hero-login-input:focus-within {
+  transform: translateY(-1px) !important;
+  border-color: rgba(88, 224, 233, 0.34) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.052), rgba(255, 255, 255, 0.014)),
+    rgba(10, 14, 22, 0.52) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.060),
+    0 0 0 3px rgba(88, 224, 233, 0.095),
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:2704 =====
+    0 0 0 3px rgba(88, 224, 233, 0.095),
+    0 14px 30px rgba(0, 0, 0, 0.18) !important;
+}
+
+>> .hero-login-input > svg {
+  position: relative !important;
+  z-index: 1 !important;
+  width: 16px !important;
+  height: 16px !important;
+  justify-self: center !important;
+  color: rgba(255, 250, 240, 0.42) !important;
+  filter: drop-shadow(0 0 10px rgba(88, 224, 233, 0.08)) !important;
+}
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:2714 =====
+  color: rgba(255, 250, 240, 0.42) !important;
+  filter: drop-shadow(0 0 10px rgba(88, 224, 233, 0.08)) !important;
+}
+
+>> .hero-login-input:focus-within > svg {
+  color: rgba(88, 224, 233, 0.76) !important;
+}
+
+/* Critical fix: kill global input styling so it no longer becomes a box inside a box */
+.hero-login-input input,
+.hero-login-input input:-webkit-autofill,
+.hero-login-input input:-webkit-autofill:hover,
+.hero-login-input input:-webkit-autofill:focus {
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:2718 =====
+.hero-login-input:focus-within > svg {
+  color: rgba(88, 224, 233, 0.76) !important;
+}
+
+>> /* Critical fix: kill global input styling so it no longer becomes a box inside a box */
+.hero-login-input input,
+.hero-login-input input:-webkit-autofill,
+.hero-login-input input:-webkit-autofill:hover,
+.hero-login-input input:-webkit-autofill:focus {
+  position: relative !important;
+  z-index: 1 !important;
+  width: 100% !important;
+  min-width: 0 !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:2719 =====
+  color: rgba(88, 224, 233, 0.76) !important;
+}
+
+/* Critical fix: kill global input styling so it no longer becomes a box inside a box */
+>> .hero-login-input input,
+.hero-login-input input:-webkit-autofill,
+.hero-login-input input:-webkit-autofill:hover,
+.hero-login-input input:-webkit-autofill:focus {
+  position: relative !important;
+  z-index: 1 !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  height: 46px !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:2720 =====
+}
+
+/* Critical fix: kill global input styling so it no longer becomes a box inside a box */
+.hero-login-input input,
+>> .hero-login-input input:-webkit-autofill,
+.hero-login-input input:-webkit-autofill:hover,
+.hero-login-input input:-webkit-autofill:focus {
+  position: relative !important;
+  z-index: 1 !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  height: 46px !important;
+  min-height: 46px !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:2721 =====
+
+/* Critical fix: kill global input styling so it no longer becomes a box inside a box */
+.hero-login-input input,
+.hero-login-input input:-webkit-autofill,
+>> .hero-login-input input:-webkit-autofill:hover,
+.hero-login-input input:-webkit-autofill:focus {
+  position: relative !important;
+  z-index: 1 !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  height: 46px !important;
+  min-height: 46px !important;
+  padding: 0 !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:2722 =====
+/* Critical fix: kill global input styling so it no longer becomes a box inside a box */
+.hero-login-input input,
+.hero-login-input input:-webkit-autofill,
+.hero-login-input input:-webkit-autofill:hover,
+>> .hero-login-input input:-webkit-autofill:focus {
+  position: relative !important;
+  z-index: 1 !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  height: 46px !important;
+  min-height: 46px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:2747 =====
+  appearance: none !important;
+  -webkit-appearance: none !important;
+}
+
+>> .hero-login-input input::placeholder {
+  color: rgba(255, 250, 240, 0.32) !important;
+  font-weight: 760 !important;
+}
+
+.hero-login-eye {
+  position: relative !important;
+  z-index: 1 !important;
+  width: 34px !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:2785 =====
+  width: 15px !important;
+  height: 15px !important;
+}
+
+>> /* Chrome autofill dark rescue */
+.hero-login-input input:-webkit-autofill {
+  -webkit-text-fill-color: rgba(255, 250, 240, 0.94) !important;
+  transition: background-color 9999s ease-in-out 0s !important;
+}
+
+/* Light mode version */
+[data-theme="light"] .hero-login-field label {
+  color: rgba(33, 28, 22, 0.62) !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:2786 =====
+  height: 15px !important;
+}
+
+/* Chrome autofill dark rescue */
+>> .hero-login-input input:-webkit-autofill {
+  -webkit-text-fill-color: rgba(255, 250, 240, 0.94) !important;
+  transition: background-color 9999s ease-in-out 0s !important;
+}
+
+/* Light mode version */
+[data-theme="light"] .hero-login-field label {
+  color: rgba(33, 28, 22, 0.62) !important;
+}
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:2796 =====
+[data-theme="light"] .hero-login-field label {
+  color: rgba(33, 28, 22, 0.62) !important;
+}
+
+>> [data-theme="light"] .hero-login-input {
+  border-color: rgba(90, 66, 36, 0.095) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.66), rgba(255, 255, 255, 0.34)),
+    rgba(255, 252, 246, 0.52) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.78),
+    inset 0 -1px 0 rgba(90, 66, 36, 0.035),
+    0 10px 22px rgba(84, 58, 27, 0.075) !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:2807 =====
+    inset 0 -1px 0 rgba(90, 66, 36, 0.035),
+    0 10px 22px rgba(84, 58, 27, 0.075) !important;
+}
+
+>> [data-theme="light"] .hero-login-input::before {
+  background:
+    radial-gradient(circle at 16% 0%, rgba(183, 121, 42, 0.050), transparent 42%),
+    radial-gradient(circle at 90% 0%, rgba(12, 143, 158, 0.035), transparent 38%) !important;
+  opacity: 0.7 !important;
+}
+
+[data-theme="light"] .hero-login-input:focus-within {
+  border-color: rgba(12, 143, 158, 0.30) !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:2814 =====
+    radial-gradient(circle at 90% 0%, rgba(12, 143, 158, 0.035), transparent 38%) !important;
+  opacity: 0.7 !important;
+}
+
+>> [data-theme="light"] .hero-login-input:focus-within {
+  border-color: rgba(12, 143, 158, 0.30) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.86), rgba(255, 255, 255, 0.50)),
+    rgba(255, 252, 246, 0.74) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.88),
+    0 0 0 3px rgba(12, 143, 158, 0.085),
+    0 14px 30px rgba(84, 58, 27, 0.12) !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:2825 =====
+    0 0 0 3px rgba(12, 143, 158, 0.085),
+    0 14px 30px rgba(84, 58, 27, 0.12) !important;
+}
+
+>> [data-theme="light"] .hero-login-input > svg {
+  color: rgba(33, 28, 22, 0.42) !important;
+}
+
+[data-theme="light"] .hero-login-input:focus-within > svg {
+  color: rgba(12, 143, 158, 0.76) !important;
+}
+
+[data-theme="light"] .hero-login-input input,
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:2829 =====
+[data-theme="light"] .hero-login-input > svg {
+  color: rgba(33, 28, 22, 0.42) !important;
+}
+
+>> [data-theme="light"] .hero-login-input:focus-within > svg {
+  color: rgba(12, 143, 158, 0.76) !important;
+}
+
+[data-theme="light"] .hero-login-input input,
+[data-theme="light"] .hero-login-input input:-webkit-autofill,
+[data-theme="light"] .hero-login-input input:-webkit-autofill:hover,
+[data-theme="light"] .hero-login-input input:-webkit-autofill:focus {
+  color: rgba(33, 28, 22, 0.94) !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:2833 =====
+[data-theme="light"] .hero-login-input:focus-within > svg {
+  color: rgba(12, 143, 158, 0.76) !important;
+}
+
+>> [data-theme="light"] .hero-login-input input,
+[data-theme="light"] .hero-login-input input:-webkit-autofill,
+[data-theme="light"] .hero-login-input input:-webkit-autofill:hover,
+[data-theme="light"] .hero-login-input input:-webkit-autofill:focus {
+  color: rgba(33, 28, 22, 0.94) !important;
+  -webkit-text-fill-color: rgba(33, 28, 22, 0.94) !important;
+  caret-color: var(--landing-gold) !important;
+  background: transparent !important;
+  background-color: transparent !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:2834 =====
+  color: rgba(12, 143, 158, 0.76) !important;
+}
+
+[data-theme="light"] .hero-login-input input,
+>> [data-theme="light"] .hero-login-input input:-webkit-autofill,
+[data-theme="light"] .hero-login-input input:-webkit-autofill:hover,
+[data-theme="light"] .hero-login-input input:-webkit-autofill:focus {
+  color: rgba(33, 28, 22, 0.94) !important;
+  -webkit-text-fill-color: rgba(33, 28, 22, 0.94) !important;
+  caret-color: var(--landing-gold) !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:2835 =====
+}
+
+[data-theme="light"] .hero-login-input input,
+[data-theme="light"] .hero-login-input input:-webkit-autofill,
+>> [data-theme="light"] .hero-login-input input:-webkit-autofill:hover,
+[data-theme="light"] .hero-login-input input:-webkit-autofill:focus {
+  color: rgba(33, 28, 22, 0.94) !important;
+  -webkit-text-fill-color: rgba(33, 28, 22, 0.94) !important;
+  caret-color: var(--landing-gold) !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:2836 =====
+
+[data-theme="light"] .hero-login-input input,
+[data-theme="light"] .hero-login-input input:-webkit-autofill,
+[data-theme="light"] .hero-login-input input:-webkit-autofill:hover,
+>> [data-theme="light"] .hero-login-input input:-webkit-autofill:focus {
+  color: rgba(33, 28, 22, 0.94) !important;
+  -webkit-text-fill-color: rgba(33, 28, 22, 0.94) !important;
+  caret-color: var(--landing-gold) !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:2845 =====
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+
+>> [data-theme="light"] .hero-login-input input::placeholder {
+  color: rgba(33, 28, 22, 0.34) !important;
+}
+
+[data-theme="light"] .hero-login-eye {
+  color: rgba(33, 28, 22, 0.42) !important;
+  background: rgba(255, 255, 255, 0.48) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.72),
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:2862 =====
+  color: rgba(33, 28, 22, 0.78) !important;
+  background: rgba(255, 255, 255, 0.74) !important;
+}
+
+>> /* Mobile compact input polish */
+@media (max-width: 767px) {
+  .hero-login-input {
+    min-height: 46px !important;
+    border-radius: 17px !important;
+  }
+
+  .hero-login-input input {
+    height: 44px !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:2864 =====
+}
+
+/* Mobile compact input polish */
+@media (max-width: 767px) {
+>>   .hero-login-input {
+    min-height: 46px !important;
+    border-radius: 17px !important;
+  }
+
+  .hero-login-input input {
+    height: 44px !important;
+    min-height: 44px !important;
+    font-size: 0.86rem !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:2869 =====
+    min-height: 46px !important;
+    border-radius: 17px !important;
+  }
+
+>>   .hero-login-input input {
+    height: 44px !important;
+    min-height: 44px !important;
+    font-size: 0.86rem !important;
+  }
+
+  .hero-login-eye {
+    width: 32px !important;
+    height: 32px !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:2883 =====
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+>>    37 KILL INNER INPUT BOX
+   --------------------------------------------------------------------------
+   Fixes the ugly rectangular inner background caused by browser autofill /
+   global input styles. The actual input becomes visually frameless; only the
+   parent field owns the surface.
+   ────────────────────────────────────────────────────────────────────────── */
+
+.hero-login-panel .hero-login-input {
+  display: flex !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:2885 =====
+
+/* ──────────────────────────────────────────────────────────────────────────
+   37 KILL INNER INPUT BOX
+   --------------------------------------------------------------------------
+>>    Fixes the ugly rectangular inner background caused by browser autofill /
+   global input styles. The actual input becomes visually frameless; only the
+   parent field owns the surface.
+   ────────────────────────────────────────────────────────────────────────── */
+
+.hero-login-panel .hero-login-input {
+  display: flex !important;
+  align-items: center !important;
+  gap: 11px !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:2886 =====
+/* ──────────────────────────────────────────────────────────────────────────
+   37 KILL INNER INPUT BOX
+   --------------------------------------------------------------------------
+   Fixes the ugly rectangular inner background caused by browser autofill /
+>>    global input styles. The actual input becomes visually frameless; only the
+   parent field owns the surface.
+   ────────────────────────────────────────────────────────────────────────── */
+
+.hero-login-panel .hero-login-input {
+  display: flex !important;
+  align-items: center !important;
+  gap: 11px !important;
+  min-height: 48px !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:2890 =====
+   global input styles. The actual input becomes visually frameless; only the
+   parent field owns the surface.
+   ────────────────────────────────────────────────────────────────────────── */
+
+>> .hero-login-panel .hero-login-input {
+  display: flex !important;
+  align-items: center !important;
+  gap: 11px !important;
+  min-height: 48px !important;
+  padding: 0 10px 0 14px !important;
+  border-radius: 18px !important;
+  overflow: hidden !important;
+}
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:2901 =====
+  overflow: hidden !important;
+}
+
+/* Parent owns the whole field surface */
+>> .hero-login-panel .hero-login-input {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.042), rgba(255,255,255,0.010)),
+    rgba(8, 11, 17, 0.48) !important;
+  border: 1px solid rgba(255,255,255,0.085) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.050),
+    inset 0 -1px 0 rgba(0,0,0,0.24),
+    0 10px 22px rgba(0,0,0,0.12) !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:2913 =====
+    0 10px 22px rgba(0,0,0,0.12) !important;
+}
+
+/* Icon slot */
+>> .hero-login-panel .hero-login-input > svg {
+  flex: 0 0 18px !important;
+  width: 18px !important;
+  height: 18px !important;
+  color: rgba(255,250,240,0.44) !important;
+}
+
+/* THE IMPORTANT PART: kill every possible inner input surface */
+.hero-login-panel .hero-login-input > input,
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:2920 =====
+  height: 18px !important;
+  color: rgba(255,250,240,0.44) !important;
+}
+
+>> /* THE IMPORTANT PART: kill every possible inner input surface */
+.hero-login-panel .hero-login-input > input,
+.hero-login-panel .hero-login-input input,
+.hero-login-panel .hero-login-input input:hover,
+.hero-login-panel .hero-login-input input:focus,
+.hero-login-panel .hero-login-input input:active,
+.hero-login-panel .hero-login-input input:-webkit-autofill,
+.hero-login-panel .hero-login-input input:-webkit-autofill:hover,
+.hero-login-panel .hero-login-input input:-webkit-autofill:focus,
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:2921 =====
+  color: rgba(255,250,240,0.44) !important;
+}
+
+/* THE IMPORTANT PART: kill every possible inner input surface */
+>> .hero-login-panel .hero-login-input > input,
+.hero-login-panel .hero-login-input input,
+.hero-login-panel .hero-login-input input:hover,
+.hero-login-panel .hero-login-input input:focus,
+.hero-login-panel .hero-login-input input:active,
+.hero-login-panel .hero-login-input input:-webkit-autofill,
+.hero-login-panel .hero-login-input input:-webkit-autofill:hover,
+.hero-login-panel .hero-login-input input:-webkit-autofill:focus,
+.hero-login-panel .hero-login-input input:-webkit-autofill:active {
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:2922 =====
+}
+
+/* THE IMPORTANT PART: kill every possible inner input surface */
+.hero-login-panel .hero-login-input > input,
+>> .hero-login-panel .hero-login-input input,
+.hero-login-panel .hero-login-input input:hover,
+.hero-login-panel .hero-login-input input:focus,
+.hero-login-panel .hero-login-input input:active,
+.hero-login-panel .hero-login-input input:-webkit-autofill,
+.hero-login-panel .hero-login-input input:-webkit-autofill:hover,
+.hero-login-panel .hero-login-input input:-webkit-autofill:focus,
+.hero-login-panel .hero-login-input input:-webkit-autofill:active {
+  flex: 1 1 auto !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:2923 =====
+
+/* THE IMPORTANT PART: kill every possible inner input surface */
+.hero-login-panel .hero-login-input > input,
+.hero-login-panel .hero-login-input input,
+>> .hero-login-panel .hero-login-input input:hover,
+.hero-login-panel .hero-login-input input:focus,
+.hero-login-panel .hero-login-input input:active,
+.hero-login-panel .hero-login-input input:-webkit-autofill,
+.hero-login-panel .hero-login-input input:-webkit-autofill:hover,
+.hero-login-panel .hero-login-input input:-webkit-autofill:focus,
+.hero-login-panel .hero-login-input input:-webkit-autofill:active {
+  flex: 1 1 auto !important;
+  width: 100% !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:2924 =====
+/* THE IMPORTANT PART: kill every possible inner input surface */
+.hero-login-panel .hero-login-input > input,
+.hero-login-panel .hero-login-input input,
+.hero-login-panel .hero-login-input input:hover,
+>> .hero-login-panel .hero-login-input input:focus,
+.hero-login-panel .hero-login-input input:active,
+.hero-login-panel .hero-login-input input:-webkit-autofill,
+.hero-login-panel .hero-login-input input:-webkit-autofill:hover,
+.hero-login-panel .hero-login-input input:-webkit-autofill:focus,
+.hero-login-panel .hero-login-input input:-webkit-autofill:active {
+  flex: 1 1 auto !important;
+  width: 100% !important;
+  min-width: 0 !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:2925 =====
+.hero-login-panel .hero-login-input > input,
+.hero-login-panel .hero-login-input input,
+.hero-login-panel .hero-login-input input:hover,
+.hero-login-panel .hero-login-input input:focus,
+>> .hero-login-panel .hero-login-input input:active,
+.hero-login-panel .hero-login-input input:-webkit-autofill,
+.hero-login-panel .hero-login-input input:-webkit-autofill:hover,
+.hero-login-panel .hero-login-input input:-webkit-autofill:focus,
+.hero-login-panel .hero-login-input input:-webkit-autofill:active {
+  flex: 1 1 auto !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  height: 46px !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:2926 =====
+.hero-login-panel .hero-login-input input,
+.hero-login-panel .hero-login-input input:hover,
+.hero-login-panel .hero-login-input input:focus,
+.hero-login-panel .hero-login-input input:active,
+>> .hero-login-panel .hero-login-input input:-webkit-autofill,
+.hero-login-panel .hero-login-input input:-webkit-autofill:hover,
+.hero-login-panel .hero-login-input input:-webkit-autofill:focus,
+.hero-login-panel .hero-login-input input:-webkit-autofill:active {
+  flex: 1 1 auto !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  height: 46px !important;
+  min-height: 46px !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:2927 =====
+.hero-login-panel .hero-login-input input:hover,
+.hero-login-panel .hero-login-input input:focus,
+.hero-login-panel .hero-login-input input:active,
+.hero-login-panel .hero-login-input input:-webkit-autofill,
+>> .hero-login-panel .hero-login-input input:-webkit-autofill:hover,
+.hero-login-panel .hero-login-input input:-webkit-autofill:focus,
+.hero-login-panel .hero-login-input input:-webkit-autofill:active {
+  flex: 1 1 auto !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  height: 46px !important;
+  min-height: 46px !important;
+  line-height: 46px !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:2928 =====
+.hero-login-panel .hero-login-input input:focus,
+.hero-login-panel .hero-login-input input:active,
+.hero-login-panel .hero-login-input input:-webkit-autofill,
+.hero-login-panel .hero-login-input input:-webkit-autofill:hover,
+>> .hero-login-panel .hero-login-input input:-webkit-autofill:focus,
+.hero-login-panel .hero-login-input input:-webkit-autofill:active {
+  flex: 1 1 auto !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  height: 46px !important;
+  min-height: 46px !important;
+  line-height: 46px !important;
+  padding: 0 !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:2929 =====
+.hero-login-panel .hero-login-input input:active,
+.hero-login-panel .hero-login-input input:-webkit-autofill,
+.hero-login-panel .hero-login-input input:-webkit-autofill:hover,
+.hero-login-panel .hero-login-input input:-webkit-autofill:focus,
+>> .hero-login-panel .hero-login-input input:-webkit-autofill:active {
+  flex: 1 1 auto !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  height: 46px !important;
+  min-height: 46px !important;
+  line-height: 46px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:2964 =====
+  letter-spacing: -0.01em !important;
+}
+
+/* Hide browser decoration quirks */
+>> .hero-login-panel .hero-login-input input::-webkit-contacts-auto-fill-button,
+.hero-login-panel .hero-login-input input::-webkit-credentials-auto-fill-button,
+.hero-login-panel .hero-login-input input::-ms-reveal,
+.hero-login-panel .hero-login-input input::-ms-clear {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:2965 =====
+}
+
+/* Hide browser decoration quirks */
+.hero-login-panel .hero-login-input input::-webkit-contacts-auto-fill-button,
+>> .hero-login-panel .hero-login-input input::-webkit-credentials-auto-fill-button,
+.hero-login-panel .hero-login-input input::-ms-reveal,
+.hero-login-panel .hero-login-input input::-ms-clear {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+.hero-login-panel .hero-login-input input::placeholder {
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:2966 =====
+
+/* Hide browser decoration quirks */
+.hero-login-panel .hero-login-input input::-webkit-contacts-auto-fill-button,
+.hero-login-panel .hero-login-input input::-webkit-credentials-auto-fill-button,
+>> .hero-login-panel .hero-login-input input::-ms-reveal,
+.hero-login-panel .hero-login-input input::-ms-clear {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+.hero-login-panel .hero-login-input input::placeholder {
+  color: rgba(255,250,240,0.32) !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:2967 =====
+/* Hide browser decoration quirks */
+.hero-login-panel .hero-login-input input::-webkit-contacts-auto-fill-button,
+.hero-login-panel .hero-login-input input::-webkit-credentials-auto-fill-button,
+.hero-login-panel .hero-login-input input::-ms-reveal,
+>> .hero-login-panel .hero-login-input input::-ms-clear {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+.hero-login-panel .hero-login-input input::placeholder {
+  color: rgba(255,250,240,0.32) !important;
+}
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:2973 =====
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+>> .hero-login-panel .hero-login-input input::placeholder {
+  color: rgba(255,250,240,0.32) !important;
+}
+
+/* Eye button should feel like a soft embedded control, not another field */
+.hero-login-panel .hero-login-eye {
+  flex: 0 0 34px !important;
+  width: 34px !important;
+  height: 34px !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:2997 =====
+  background: rgba(255,255,255,0.080) !important;
+  color: rgba(255,250,240,0.82) !important;
+}
+
+>> /* Focus state: parent glows, input stays invisible */
+.hero-login-panel .hero-login-input:focus-within {
+  transform: translateY(-1px) !important;
+  border-color: rgba(88,224,233,0.36) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.055), rgba(255,255,255,0.014)),
+    rgba(10, 14, 22, 0.58) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.060),
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:2998 =====
+  color: rgba(255,250,240,0.82) !important;
+}
+
+/* Focus state: parent glows, input stays invisible */
+>> .hero-login-panel .hero-login-input:focus-within {
+  transform: translateY(-1px) !important;
+  border-color: rgba(88,224,233,0.36) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.055), rgba(255,255,255,0.014)),
+    rgba(10, 14, 22, 0.58) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.060),
+    0 0 0 3px rgba(88,224,233,0.095),
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3010 =====
+    0 0 0 3px rgba(88,224,233,0.095),
+    0 14px 30px rgba(0,0,0,0.18) !important;
+}
+
+>> .hero-login-panel .hero-login-input:focus-within > svg {
+  color: rgba(88,224,233,0.76) !important;
+}
+
+/* Light mode */
+[data-theme="light"] .hero-login-panel .hero-login-input {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.78), rgba(255,255,255,0.46)),
+    rgba(255,252,246,0.62) !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3015 =====
+  color: rgba(88,224,233,0.76) !important;
+}
+
+/* Light mode */
+>> [data-theme="light"] .hero-login-panel .hero-login-input {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.78), rgba(255,255,255,0.46)),
+    rgba(255,252,246,0.62) !important;
+  border-color: rgba(90,66,36,0.105) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.84),
+    inset 0 -1px 0 rgba(90,66,36,0.035),
+    0 10px 22px rgba(84,58,27,0.075) !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3026 =====
+    inset 0 -1px 0 rgba(90,66,36,0.035),
+    0 10px 22px rgba(84,58,27,0.075) !important;
+}
+
+>> [data-theme="light"] .hero-login-panel .hero-login-input > svg {
+  color: rgba(33,28,22,0.44) !important;
+}
+
+[data-theme="light"] .hero-login-panel .hero-login-input > input,
+[data-theme="light"] .hero-login-panel .hero-login-input input,
+[data-theme="light"] .hero-login-panel .hero-login-input input:hover,
+[data-theme="light"] .hero-login-panel .hero-login-input input:focus,
+[data-theme="light"] .hero-login-panel .hero-login-input input:active,
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3030 =====
+[data-theme="light"] .hero-login-panel .hero-login-input > svg {
+  color: rgba(33,28,22,0.44) !important;
+}
+
+>> [data-theme="light"] .hero-login-panel .hero-login-input > input,
+[data-theme="light"] .hero-login-panel .hero-login-input input,
+[data-theme="light"] .hero-login-panel .hero-login-input input:hover,
+[data-theme="light"] .hero-login-panel .hero-login-input input:focus,
+[data-theme="light"] .hero-login-panel .hero-login-input input:active,
+[data-theme="light"] .hero-login-panel .hero-login-input input:-webkit-autofill,
+[data-theme="light"] .hero-login-panel .hero-login-input input:-webkit-autofill:hover,
+[data-theme="light"] .hero-login-panel .hero-login-input input:-webkit-autofill:focus,
+[data-theme="light"] .hero-login-panel .hero-login-input input:-webkit-autofill:active {
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3031 =====
+  color: rgba(33,28,22,0.44) !important;
+}
+
+[data-theme="light"] .hero-login-panel .hero-login-input > input,
+>> [data-theme="light"] .hero-login-panel .hero-login-input input,
+[data-theme="light"] .hero-login-panel .hero-login-input input:hover,
+[data-theme="light"] .hero-login-panel .hero-login-input input:focus,
+[data-theme="light"] .hero-login-panel .hero-login-input input:active,
+[data-theme="light"] .hero-login-panel .hero-login-input input:-webkit-autofill,
+[data-theme="light"] .hero-login-panel .hero-login-input input:-webkit-autofill:hover,
+[data-theme="light"] .hero-login-panel .hero-login-input input:-webkit-autofill:focus,
+[data-theme="light"] .hero-login-panel .hero-login-input input:-webkit-autofill:active {
+  background: transparent !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3032 =====
+}
+
+[data-theme="light"] .hero-login-panel .hero-login-input > input,
+[data-theme="light"] .hero-login-panel .hero-login-input input,
+>> [data-theme="light"] .hero-login-panel .hero-login-input input:hover,
+[data-theme="light"] .hero-login-panel .hero-login-input input:focus,
+[data-theme="light"] .hero-login-panel .hero-login-input input:active,
+[data-theme="light"] .hero-login-panel .hero-login-input input:-webkit-autofill,
+[data-theme="light"] .hero-login-panel .hero-login-input input:-webkit-autofill:hover,
+[data-theme="light"] .hero-login-panel .hero-login-input input:-webkit-autofill:focus,
+[data-theme="light"] .hero-login-panel .hero-login-input input:-webkit-autofill:active {
+  background: transparent !important;
+  background-color: transparent !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3033 =====
+
+[data-theme="light"] .hero-login-panel .hero-login-input > input,
+[data-theme="light"] .hero-login-panel .hero-login-input input,
+[data-theme="light"] .hero-login-panel .hero-login-input input:hover,
+>> [data-theme="light"] .hero-login-panel .hero-login-input input:focus,
+[data-theme="light"] .hero-login-panel .hero-login-input input:active,
+[data-theme="light"] .hero-login-panel .hero-login-input input:-webkit-autofill,
+[data-theme="light"] .hero-login-panel .hero-login-input input:-webkit-autofill:hover,
+[data-theme="light"] .hero-login-panel .hero-login-input input:-webkit-autofill:focus,
+[data-theme="light"] .hero-login-panel .hero-login-input input:-webkit-autofill:active {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3034 =====
+[data-theme="light"] .hero-login-panel .hero-login-input > input,
+[data-theme="light"] .hero-login-panel .hero-login-input input,
+[data-theme="light"] .hero-login-panel .hero-login-input input:hover,
+[data-theme="light"] .hero-login-panel .hero-login-input input:focus,
+>> [data-theme="light"] .hero-login-panel .hero-login-input input:active,
+[data-theme="light"] .hero-login-panel .hero-login-input input:-webkit-autofill,
+[data-theme="light"] .hero-login-panel .hero-login-input input:-webkit-autofill:hover,
+[data-theme="light"] .hero-login-panel .hero-login-input input:-webkit-autofill:focus,
+[data-theme="light"] .hero-login-panel .hero-login-input input:-webkit-autofill:active {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3035 =====
+[data-theme="light"] .hero-login-panel .hero-login-input input,
+[data-theme="light"] .hero-login-panel .hero-login-input input:hover,
+[data-theme="light"] .hero-login-panel .hero-login-input input:focus,
+[data-theme="light"] .hero-login-panel .hero-login-input input:active,
+>> [data-theme="light"] .hero-login-panel .hero-login-input input:-webkit-autofill,
+[data-theme="light"] .hero-login-panel .hero-login-input input:-webkit-autofill:hover,
+[data-theme="light"] .hero-login-panel .hero-login-input input:-webkit-autofill:focus,
+[data-theme="light"] .hero-login-panel .hero-login-input input:-webkit-autofill:active {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+
+  box-shadow: none !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3036 =====
+[data-theme="light"] .hero-login-panel .hero-login-input input:hover,
+[data-theme="light"] .hero-login-panel .hero-login-input input:focus,
+[data-theme="light"] .hero-login-panel .hero-login-input input:active,
+[data-theme="light"] .hero-login-panel .hero-login-input input:-webkit-autofill,
+>> [data-theme="light"] .hero-login-panel .hero-login-input input:-webkit-autofill:hover,
+[data-theme="light"] .hero-login-panel .hero-login-input input:-webkit-autofill:focus,
+[data-theme="light"] .hero-login-panel .hero-login-input input:-webkit-autofill:active {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: 0 0 0 1000px rgba(255, 252, 246, 0) inset !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3037 =====
+[data-theme="light"] .hero-login-panel .hero-login-input input:focus,
+[data-theme="light"] .hero-login-panel .hero-login-input input:active,
+[data-theme="light"] .hero-login-panel .hero-login-input input:-webkit-autofill,
+[data-theme="light"] .hero-login-panel .hero-login-input input:-webkit-autofill:hover,
+>> [data-theme="light"] .hero-login-panel .hero-login-input input:-webkit-autofill:focus,
+[data-theme="light"] .hero-login-panel .hero-login-input input:-webkit-autofill:active {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: 0 0 0 1000px rgba(255, 252, 246, 0) inset !important;
+
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3038 =====
+[data-theme="light"] .hero-login-panel .hero-login-input input:active,
+[data-theme="light"] .hero-login-panel .hero-login-input input:-webkit-autofill,
+[data-theme="light"] .hero-login-panel .hero-login-input input:-webkit-autofill:hover,
+[data-theme="light"] .hero-login-panel .hero-login-input input:-webkit-autofill:focus,
+>> [data-theme="light"] .hero-login-panel .hero-login-input input:-webkit-autofill:active {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: 0 0 0 1000px rgba(255, 252, 246, 0) inset !important;
+
+  color: rgba(33,28,22,0.94) !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3051 =====
+  -webkit-text-fill-color: rgba(33,28,22,0.94) !important;
+  caret-color: var(--landing-gold) !important;
+}
+
+>> [data-theme="light"] .hero-login-panel .hero-login-input input::placeholder {
+  color: rgba(33,28,22,0.34) !important;
+}
+
+[data-theme="light"] .hero-login-panel .hero-login-input:focus-within {
+  border-color: rgba(12,143,158,0.30) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.90), rgba(255,255,255,0.56)),
+    rgba(255,252,246,0.78) !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3055 =====
+[data-theme="light"] .hero-login-panel .hero-login-input input::placeholder {
+  color: rgba(33,28,22,0.34) !important;
+}
+
+>> [data-theme="light"] .hero-login-panel .hero-login-input:focus-within {
+  border-color: rgba(12,143,158,0.30) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.90), rgba(255,255,255,0.56)),
+    rgba(255,252,246,0.78) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.90),
+    0 0 0 3px rgba(12,143,158,0.085),
+    0 14px 30px rgba(84,58,27,0.12) !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3066 =====
+    0 0 0 3px rgba(12,143,158,0.085),
+    0 14px 30px rgba(84,58,27,0.12) !important;
+}
+
+>> [data-theme="light"] .hero-login-panel .hero-login-input:focus-within > svg {
+  color: rgba(12,143,158,0.76) !important;
+}
+
+[data-theme="light"] .hero-login-panel .hero-login-eye {
+  background: rgba(255,255,255,0.52) !important;
+  color: rgba(33,28,22,0.44) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.78),
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3084 =====
+  color: rgba(33,28,22,0.78) !important;
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+>>    37 HERO LOGIN VISUAL MIRROR INPUT
+   --------------------------------------------------------------------------
+   Nuclear fix for stubborn browser/global input background.
+   Real input is still functional but visually transparent.
+   Visible value is rendered by React through .hero-login-visual-value.
+   ────────────────────────────────────────────────────────────────────────── */
+
+.hero-login-panel .hero-login-input {
+  position: relative !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3086 =====
+
+/* ──────────────────────────────────────────────────────────────────────────
+   37 HERO LOGIN VISUAL MIRROR INPUT
+   --------------------------------------------------------------------------
+>>    Nuclear fix for stubborn browser/global input background.
+   Real input is still functional but visually transparent.
+   Visible value is rendered by React through .hero-login-visual-value.
+   ────────────────────────────────────────────────────────────────────────── */
+
+.hero-login-panel .hero-login-input {
+  position: relative !important;
+  display: grid !important;
+  grid-template-columns: 22px minmax(0, 1fr) auto !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3087 =====
+/* ──────────────────────────────────────────────────────────────────────────
+   37 HERO LOGIN VISUAL MIRROR INPUT
+   --------------------------------------------------------------------------
+   Nuclear fix for stubborn browser/global input background.
+>>    Real input is still functional but visually transparent.
+   Visible value is rendered by React through .hero-login-visual-value.
+   ────────────────────────────────────────────────────────────────────────── */
+
+.hero-login-panel .hero-login-input {
+  position: relative !important;
+  display: grid !important;
+  grid-template-columns: 22px minmax(0, 1fr) auto !important;
+  align-items: center !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3091 =====
+   Real input is still functional but visually transparent.
+   Visible value is rendered by React through .hero-login-visual-value.
+   ────────────────────────────────────────────────────────────────────────── */
+
+>> .hero-login-panel .hero-login-input {
+  position: relative !important;
+  display: grid !important;
+  grid-template-columns: 22px minmax(0, 1fr) auto !important;
+  align-items: center !important;
+  gap: 11px !important;
+  min-height: 48px !important;
+  padding: 0 10px 0 14px !important;
+  border-radius: 18px !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3105 =====
+  isolation: isolate !important;
+}
+
+/* One single seamless parent surface */
+>> .hero-login-panel .hero-login-input {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.042), rgba(255,255,255,0.010)),
+    rgba(8, 11, 17, 0.50) !important;
+  border: 1px solid rgba(255,255,255,0.085) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.050),
+    inset 0 -1px 0 rgba(0,0,0,0.24),
+    0 10px 22px rgba(0,0,0,0.12) !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3116 =====
+    inset 0 -1px 0 rgba(0,0,0,0.24),
+    0 10px 22px rgba(0,0,0,0.12) !important;
+}
+
+>> .hero-login-panel .hero-login-input > svg {
+  position: relative !important;
+  z-index: 2 !important;
+  width: 17px !important;
+  height: 17px !important;
+  justify-self: center !important;
+  color: rgba(255,250,240,0.44) !important;
+}
+
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3125 =====
+  justify-self: center !important;
+  color: rgba(255,250,240,0.44) !important;
+}
+
+>> /* Real input: clickable/typable, but visually invisible */
+.hero-login-panel .hero-login-real-input {
+  position: absolute !important;
+  z-index: 4 !important;
+  top: 0 !important;
+  bottom: 0 !important;
+  left: 48px !important;
+  right: 10px !important;
+
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3126 =====
+  color: rgba(255,250,240,0.44) !important;
+}
+
+/* Real input: clickable/typable, but visually invisible */
+>> .hero-login-panel .hero-login-real-input {
+  position: absolute !important;
+  z-index: 4 !important;
+  top: 0 !important;
+  bottom: 0 !important;
+  left: 48px !important;
+  right: 10px !important;
+
+  width: auto !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3161 =====
+  -webkit-appearance: none !important;
+}
+
+/* Password field gives room for eye button */
+>> .hero-login-panel .hero-login-input:has(.hero-login-eye) .hero-login-real-input {
+  right: 52px !important;
+}
+
+/* Visual value shown instead of real input */
+.hero-login-visual-value {
+  position: relative !important;
+  z-index: 2 !important;
+  display: block !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3165 =====
+.hero-login-panel .hero-login-input:has(.hero-login-eye) .hero-login-real-input {
+  right: 52px !important;
+}
+
+>> /* Visual value shown instead of real input */
+.hero-login-visual-value {
+  position: relative !important;
+  z-index: 2 !important;
+  display: block !important;
+  min-width: 0 !important;
+  overflow: hidden !important;
+  color: rgba(255,250,240,0.94) !important;
+  font-size: 0.9rem !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3209 =====
+  color: rgba(255,250,240,0.82) !important;
+  background: rgba(255,255,255,0.080) !important;
+}
+
+>> .hero-login-panel .hero-login-input:focus-within {
+  transform: translateY(-1px) !important;
+  border-color: rgba(88,224,233,0.36) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.055), rgba(255,255,255,0.014)),
+    rgba(10, 14, 22, 0.58) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.060),
+    0 0 0 3px rgba(88,224,233,0.095),
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3221 =====
+    0 0 0 3px rgba(88,224,233,0.095),
+    0 14px 30px rgba(0,0,0,0.18) !important;
+}
+
+>> .hero-login-panel .hero-login-input:focus-within > svg {
+  color: rgba(88,224,233,0.76) !important;
+}
+
+/* Light mode */
+[data-theme="light"] .hero-login-panel .hero-login-input {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.80), rgba(255,255,255,0.46)),
+    rgba(255,252,246,0.64) !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3226 =====
+  color: rgba(88,224,233,0.76) !important;
+}
+
+/* Light mode */
+>> [data-theme="light"] .hero-login-panel .hero-login-input {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.80), rgba(255,255,255,0.46)),
+    rgba(255,252,246,0.64) !important;
+  border-color: rgba(90,66,36,0.105) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.84),
+    inset 0 -1px 0 rgba(90,66,36,0.035),
+    0 10px 22px rgba(84,58,27,0.075) !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3237 =====
+    inset 0 -1px 0 rgba(90,66,36,0.035),
+    0 10px 22px rgba(84,58,27,0.075) !important;
+}
+
+>> [data-theme="light"] .hero-login-panel .hero-login-input > svg {
+  color: rgba(33,28,22,0.44) !important;
+}
+
+[data-theme="light"] .hero-login-visual-value {
+  color: rgba(33,28,22,0.94) !important;
+}
+
+[data-theme="light"] .hero-login-visual-value.is-placeholder {
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3249 =====
+[data-theme="light"] .hero-login-visual-value.is-placeholder {
+  color: rgba(33,28,22,0.34) !important;
+}
+
+>> [data-theme="light"] .hero-login-panel .hero-login-input:focus-within {
+  border-color: rgba(12,143,158,0.30) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.92), rgba(255,255,255,0.58)),
+    rgba(255,252,246,0.78) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.90),
+    0 0 0 3px rgba(12,143,158,0.085),
+    0 14px 30px rgba(84,58,27,0.12) !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3260 =====
+    0 0 0 3px rgba(12,143,158,0.085),
+    0 14px 30px rgba(84,58,27,0.12) !important;
+}
+
+>> [data-theme="light"] .hero-login-panel .hero-login-input:focus-within > svg {
+  color: rgba(12,143,158,0.76) !important;
+}
+
+[data-theme="light"] .hero-login-panel .hero-login-eye {
+  color: rgba(33,28,22,0.44) !important;
+  background: rgba(255,255,255,0.52) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.78),
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3279 =====
+}
+
+/* Mobile */
+@media (max-width: 767px) {
+>>   .hero-login-panel .hero-login-input {
+    min-height: 46px !important;
+    border-radius: 17px !important;
+  }
+
+  .hero-login-panel .hero-login-real-input {
+    left: 46px !important;
+  }
+
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3284 =====
+    min-height: 46px !important;
+    border-radius: 17px !important;
+  }
+
+>>   .hero-login-panel .hero-login-real-input {
+    left: 46px !important;
+  }
+
+  .hero-login-panel .hero-login-input:has(.hero-login-eye) .hero-login-real-input {
+    right: 50px !important;
+  }
+
+  .hero-login-visual-value {
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3288 =====
+  .hero-login-panel .hero-login-real-input {
+    left: 46px !important;
+  }
+
+>>   .hero-login-panel .hero-login-input:has(.hero-login-eye) .hero-login-real-input {
+    right: 50px !important;
+  }
+
+  .hero-login-visual-value {
+    font-size: 0.88rem !important;
+  }
+
+  .hero-login-panel .hero-login-eye {
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3304 =====
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+>>    37 RESTORE REAL INPUT INLINE RESET
+   --------------------------------------------------------------------------
+   Mirror input experiment removed. Real inputs return, with JSX inline reset.
+   This CSS only controls the parent field surface and layout.
+   ────────────────────────────────────────────────────────────────────────── */
+
+/* Kill mirror visuals if stale JSX/CSS survives from cache */
+.hero-login-visual-value {
+  display: none !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3306 =====
+
+/* ──────────────────────────────────────────────────────────────────────────
+   37 RESTORE REAL INPUT INLINE RESET
+   --------------------------------------------------------------------------
+>>    Mirror input experiment removed. Real inputs return, with JSX inline reset.
+   This CSS only controls the parent field surface and layout.
+   ────────────────────────────────────────────────────────────────────────── */
+
+/* Kill mirror visuals if stale JSX/CSS survives from cache */
+.hero-login-visual-value {
+  display: none !important;
+}
+
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3316 =====
+  display: none !important;
+}
+
+/* Restore simple stable layout */
+>> .hero-login-panel .hero-login-input {
+  position: relative !important;
+  display: flex !important;
+  grid-template-columns: none !important;
+  align-items: center !important;
+  gap: 11px !important;
+  min-height: 48px !important;
+  height: 48px !important;
+  padding: 0 10px 0 14px !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3340 =====
+    0 10px 22px rgba(0,0,0,0.12) !important;
+}
+
+/* Remove old pseudo overlays that made layout weird */
+>> .hero-login-panel .hero-login-input::before,
+.hero-login-panel .hero-login-input::after {
+  display: none !important;
+  content: none !important;
+}
+
+.hero-login-panel .hero-login-input > svg {
+  position: static !important;
+  z-index: auto !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3341 =====
+}
+
+/* Remove old pseudo overlays that made layout weird */
+.hero-login-panel .hero-login-input::before,
+>> .hero-login-panel .hero-login-input::after {
+  display: none !important;
+  content: none !important;
+}
+
+.hero-login-panel .hero-login-input > svg {
+  position: static !important;
+  z-index: auto !important;
+  flex: 0 0 18px !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3346 =====
+  display: none !important;
+  content: none !important;
+}
+
+>> .hero-login-panel .hero-login-input > svg {
+  position: static !important;
+  z-index: auto !important;
+  flex: 0 0 18px !important;
+  width: 18px !important;
+  height: 18px !important;
+  color: rgba(255,250,240,0.44) !important;
+}
+
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3355 =====
+  height: 18px !important;
+  color: rgba(255,250,240,0.44) !important;
+}
+
+>> /* Real input: visible again, but visually frameless */
+.hero-login-panel .hero-login-input > input,
+.hero-login-panel .hero-login-input input,
+.hero-login-panel .hero-login-input input:hover,
+.hero-login-panel .hero-login-input input:focus,
+.hero-login-panel .hero-login-input input:active,
+.hero-login-panel .hero-login-input input:-webkit-autofill,
+.hero-login-panel .hero-login-input input:-webkit-autofill:hover,
+.hero-login-panel .hero-login-input input:-webkit-autofill:focus,
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3356 =====
+  color: rgba(255,250,240,0.44) !important;
+}
+
+/* Real input: visible again, but visually frameless */
+>> .hero-login-panel .hero-login-input > input,
+.hero-login-panel .hero-login-input input,
+.hero-login-panel .hero-login-input input:hover,
+.hero-login-panel .hero-login-input input:focus,
+.hero-login-panel .hero-login-input input:active,
+.hero-login-panel .hero-login-input input:-webkit-autofill,
+.hero-login-panel .hero-login-input input:-webkit-autofill:hover,
+.hero-login-panel .hero-login-input input:-webkit-autofill:focus,
+.hero-login-panel .hero-login-input input:-webkit-autofill:active {
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3357 =====
+}
+
+/* Real input: visible again, but visually frameless */
+.hero-login-panel .hero-login-input > input,
+>> .hero-login-panel .hero-login-input input,
+.hero-login-panel .hero-login-input input:hover,
+.hero-login-panel .hero-login-input input:focus,
+.hero-login-panel .hero-login-input input:active,
+.hero-login-panel .hero-login-input input:-webkit-autofill,
+.hero-login-panel .hero-login-input input:-webkit-autofill:hover,
+.hero-login-panel .hero-login-input input:-webkit-autofill:focus,
+.hero-login-panel .hero-login-input input:-webkit-autofill:active {
+  position: static !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3358 =====
+
+/* Real input: visible again, but visually frameless */
+.hero-login-panel .hero-login-input > input,
+.hero-login-panel .hero-login-input input,
+>> .hero-login-panel .hero-login-input input:hover,
+.hero-login-panel .hero-login-input input:focus,
+.hero-login-panel .hero-login-input input:active,
+.hero-login-panel .hero-login-input input:-webkit-autofill,
+.hero-login-panel .hero-login-input input:-webkit-autofill:hover,
+.hero-login-panel .hero-login-input input:-webkit-autofill:focus,
+.hero-login-panel .hero-login-input input:-webkit-autofill:active {
+  position: static !important;
+  z-index: auto !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3359 =====
+/* Real input: visible again, but visually frameless */
+.hero-login-panel .hero-login-input > input,
+.hero-login-panel .hero-login-input input,
+.hero-login-panel .hero-login-input input:hover,
+>> .hero-login-panel .hero-login-input input:focus,
+.hero-login-panel .hero-login-input input:active,
+.hero-login-panel .hero-login-input input:-webkit-autofill,
+.hero-login-panel .hero-login-input input:-webkit-autofill:hover,
+.hero-login-panel .hero-login-input input:-webkit-autofill:focus,
+.hero-login-panel .hero-login-input input:-webkit-autofill:active {
+  position: static !important;
+  z-index: auto !important;
+  opacity: 1 !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3360 =====
+.hero-login-panel .hero-login-input > input,
+.hero-login-panel .hero-login-input input,
+.hero-login-panel .hero-login-input input:hover,
+.hero-login-panel .hero-login-input input:focus,
+>> .hero-login-panel .hero-login-input input:active,
+.hero-login-panel .hero-login-input input:-webkit-autofill,
+.hero-login-panel .hero-login-input input:-webkit-autofill:hover,
+.hero-login-panel .hero-login-input input:-webkit-autofill:focus,
+.hero-login-panel .hero-login-input input:-webkit-autofill:active {
+  position: static !important;
+  z-index: auto !important;
+  opacity: 1 !important;
+
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3361 =====
+.hero-login-panel .hero-login-input input,
+.hero-login-panel .hero-login-input input:hover,
+.hero-login-panel .hero-login-input input:focus,
+.hero-login-panel .hero-login-input input:active,
+>> .hero-login-panel .hero-login-input input:-webkit-autofill,
+.hero-login-panel .hero-login-input input:-webkit-autofill:hover,
+.hero-login-panel .hero-login-input input:-webkit-autofill:focus,
+.hero-login-panel .hero-login-input input:-webkit-autofill:active {
+  position: static !important;
+  z-index: auto !important;
+  opacity: 1 !important;
+
+  flex: 1 1 auto !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3362 =====
+.hero-login-panel .hero-login-input input:hover,
+.hero-login-panel .hero-login-input input:focus,
+.hero-login-panel .hero-login-input input:active,
+.hero-login-panel .hero-login-input input:-webkit-autofill,
+>> .hero-login-panel .hero-login-input input:-webkit-autofill:hover,
+.hero-login-panel .hero-login-input input:-webkit-autofill:focus,
+.hero-login-panel .hero-login-input input:-webkit-autofill:active {
+  position: static !important;
+  z-index: auto !important;
+  opacity: 1 !important;
+
+  flex: 1 1 auto !important;
+  width: 100% !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3363 =====
+.hero-login-panel .hero-login-input input:focus,
+.hero-login-panel .hero-login-input input:active,
+.hero-login-panel .hero-login-input input:-webkit-autofill,
+.hero-login-panel .hero-login-input input:-webkit-autofill:hover,
+>> .hero-login-panel .hero-login-input input:-webkit-autofill:focus,
+.hero-login-panel .hero-login-input input:-webkit-autofill:active {
+  position: static !important;
+  z-index: auto !important;
+  opacity: 1 !important;
+
+  flex: 1 1 auto !important;
+  width: 100% !important;
+  min-width: 0 !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3364 =====
+.hero-login-panel .hero-login-input input:active,
+.hero-login-panel .hero-login-input input:-webkit-autofill,
+.hero-login-panel .hero-login-input input:-webkit-autofill:hover,
+.hero-login-panel .hero-login-input input:-webkit-autofill:focus,
+>> .hero-login-panel .hero-login-input input:-webkit-autofill:active {
+  position: static !important;
+  z-index: auto !important;
+  opacity: 1 !important;
+
+  flex: 1 1 auto !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  height: 46px !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3403 =====
+  letter-spacing: -0.01em !important;
+  text-align: left !important;
+}
+
+>> .hero-login-panel .hero-login-input input::placeholder {
+  color: rgba(255,250,240,0.32) !important;
+}
+
+.hero-login-panel .hero-login-eye {
+  position: static !important;
+  z-index: auto !important;
+  flex: 0 0 34px !important;
+  width: 34px !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3428 =====
+  color: rgba(255,250,240,0.82) !important;
+  background: rgba(255,255,255,0.080) !important;
+}
+
+>> .hero-login-panel .hero-login-input:focus-within {
+  transform: translateY(-1px) !important;
+  border-color: rgba(88,224,233,0.36) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.055), rgba(255,255,255,0.014)),
+    rgba(10, 14, 22, 0.58) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.060),
+    0 0 0 3px rgba(88,224,233,0.095),
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3440 =====
+    0 0 0 3px rgba(88,224,233,0.095),
+    0 14px 30px rgba(0,0,0,0.18) !important;
+}
+
+>> .hero-login-panel .hero-login-input:focus-within > svg {
+  color: rgba(88,224,233,0.76) !important;
+}
+
+/* Light mode */
+[data-theme="light"] .hero-login-panel .hero-login-input {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.80), rgba(255,255,255,0.46)),
+    rgba(255,252,246,0.64) !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3445 =====
+  color: rgba(88,224,233,0.76) !important;
+}
+
+/* Light mode */
+>> [data-theme="light"] .hero-login-panel .hero-login-input {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.80), rgba(255,255,255,0.46)),
+    rgba(255,252,246,0.64) !important;
+  border-color: rgba(90,66,36,0.105) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.84),
+    inset 0 -1px 0 rgba(90,66,36,0.035),
+    0 10px 22px rgba(84,58,27,0.075) !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3456 =====
+    inset 0 -1px 0 rgba(90,66,36,0.035),
+    0 10px 22px rgba(84,58,27,0.075) !important;
+}
+
+>> [data-theme="light"] .hero-login-panel .hero-login-input > svg {
+  color: rgba(33,28,22,0.44) !important;
+}
+
+[data-theme="light"] .hero-login-panel .hero-login-input > input,
+[data-theme="light"] .hero-login-panel .hero-login-input input,
+[data-theme="light"] .hero-login-panel .hero-login-input input:hover,
+[data-theme="light"] .hero-login-panel .hero-login-input input:focus,
+[data-theme="light"] .hero-login-panel .hero-login-input input:active,
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3460 =====
+[data-theme="light"] .hero-login-panel .hero-login-input > svg {
+  color: rgba(33,28,22,0.44) !important;
+}
+
+>> [data-theme="light"] .hero-login-panel .hero-login-input > input,
+[data-theme="light"] .hero-login-panel .hero-login-input input,
+[data-theme="light"] .hero-login-panel .hero-login-input input:hover,
+[data-theme="light"] .hero-login-panel .hero-login-input input:focus,
+[data-theme="light"] .hero-login-panel .hero-login-input input:active,
+[data-theme="light"] .hero-login-panel .hero-login-input input:-webkit-autofill,
+[data-theme="light"] .hero-login-panel .hero-login-input input:-webkit-autofill:hover,
+[data-theme="light"] .hero-login-panel .hero-login-input input:-webkit-autofill:focus,
+[data-theme="light"] .hero-login-panel .hero-login-input input:-webkit-autofill:active {
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3461 =====
+  color: rgba(33,28,22,0.44) !important;
+}
+
+[data-theme="light"] .hero-login-panel .hero-login-input > input,
+>> [data-theme="light"] .hero-login-panel .hero-login-input input,
+[data-theme="light"] .hero-login-panel .hero-login-input input:hover,
+[data-theme="light"] .hero-login-panel .hero-login-input input:focus,
+[data-theme="light"] .hero-login-panel .hero-login-input input:active,
+[data-theme="light"] .hero-login-panel .hero-login-input input:-webkit-autofill,
+[data-theme="light"] .hero-login-panel .hero-login-input input:-webkit-autofill:hover,
+[data-theme="light"] .hero-login-panel .hero-login-input input:-webkit-autofill:focus,
+[data-theme="light"] .hero-login-panel .hero-login-input input:-webkit-autofill:active {
+  background: transparent !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3462 =====
+}
+
+[data-theme="light"] .hero-login-panel .hero-login-input > input,
+[data-theme="light"] .hero-login-panel .hero-login-input input,
+>> [data-theme="light"] .hero-login-panel .hero-login-input input:hover,
+[data-theme="light"] .hero-login-panel .hero-login-input input:focus,
+[data-theme="light"] .hero-login-panel .hero-login-input input:active,
+[data-theme="light"] .hero-login-panel .hero-login-input input:-webkit-autofill,
+[data-theme="light"] .hero-login-panel .hero-login-input input:-webkit-autofill:hover,
+[data-theme="light"] .hero-login-panel .hero-login-input input:-webkit-autofill:focus,
+[data-theme="light"] .hero-login-panel .hero-login-input input:-webkit-autofill:active {
+  background: transparent !important;
+  background-color: transparent !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3463 =====
+
+[data-theme="light"] .hero-login-panel .hero-login-input > input,
+[data-theme="light"] .hero-login-panel .hero-login-input input,
+[data-theme="light"] .hero-login-panel .hero-login-input input:hover,
+>> [data-theme="light"] .hero-login-panel .hero-login-input input:focus,
+[data-theme="light"] .hero-login-panel .hero-login-input input:active,
+[data-theme="light"] .hero-login-panel .hero-login-input input:-webkit-autofill,
+[data-theme="light"] .hero-login-panel .hero-login-input input:-webkit-autofill:hover,
+[data-theme="light"] .hero-login-panel .hero-login-input input:-webkit-autofill:focus,
+[data-theme="light"] .hero-login-panel .hero-login-input input:-webkit-autofill:active {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3464 =====
+[data-theme="light"] .hero-login-panel .hero-login-input > input,
+[data-theme="light"] .hero-login-panel .hero-login-input input,
+[data-theme="light"] .hero-login-panel .hero-login-input input:hover,
+[data-theme="light"] .hero-login-panel .hero-login-input input:focus,
+>> [data-theme="light"] .hero-login-panel .hero-login-input input:active,
+[data-theme="light"] .hero-login-panel .hero-login-input input:-webkit-autofill,
+[data-theme="light"] .hero-login-panel .hero-login-input input:-webkit-autofill:hover,
+[data-theme="light"] .hero-login-panel .hero-login-input input:-webkit-autofill:focus,
+[data-theme="light"] .hero-login-panel .hero-login-input input:-webkit-autofill:active {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3465 =====
+[data-theme="light"] .hero-login-panel .hero-login-input input,
+[data-theme="light"] .hero-login-panel .hero-login-input input:hover,
+[data-theme="light"] .hero-login-panel .hero-login-input input:focus,
+[data-theme="light"] .hero-login-panel .hero-login-input input:active,
+>> [data-theme="light"] .hero-login-panel .hero-login-input input:-webkit-autofill,
+[data-theme="light"] .hero-login-panel .hero-login-input input:-webkit-autofill:hover,
+[data-theme="light"] .hero-login-panel .hero-login-input input:-webkit-autofill:focus,
+[data-theme="light"] .hero-login-panel .hero-login-input input:-webkit-autofill:active {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+  -webkit-box-shadow: 0 0 0 1000px rgba(255,252,246,0) inset !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3466 =====
+[data-theme="light"] .hero-login-panel .hero-login-input input:hover,
+[data-theme="light"] .hero-login-panel .hero-login-input input:focus,
+[data-theme="light"] .hero-login-panel .hero-login-input input:active,
+[data-theme="light"] .hero-login-panel .hero-login-input input:-webkit-autofill,
+>> [data-theme="light"] .hero-login-panel .hero-login-input input:-webkit-autofill:hover,
+[data-theme="light"] .hero-login-panel .hero-login-input input:-webkit-autofill:focus,
+[data-theme="light"] .hero-login-panel .hero-login-input input:-webkit-autofill:active {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+  -webkit-box-shadow: 0 0 0 1000px rgba(255,252,246,0) inset !important;
+  color: rgba(33,28,22,0.94) !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3467 =====
+[data-theme="light"] .hero-login-panel .hero-login-input input:focus,
+[data-theme="light"] .hero-login-panel .hero-login-input input:active,
+[data-theme="light"] .hero-login-panel .hero-login-input input:-webkit-autofill,
+[data-theme="light"] .hero-login-panel .hero-login-input input:-webkit-autofill:hover,
+>> [data-theme="light"] .hero-login-panel .hero-login-input input:-webkit-autofill:focus,
+[data-theme="light"] .hero-login-panel .hero-login-input input:-webkit-autofill:active {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+  -webkit-box-shadow: 0 0 0 1000px rgba(255,252,246,0) inset !important;
+  color: rgba(33,28,22,0.94) !important;
+  -webkit-text-fill-color: rgba(33,28,22,0.94) !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3468 =====
+[data-theme="light"] .hero-login-panel .hero-login-input input:active,
+[data-theme="light"] .hero-login-panel .hero-login-input input:-webkit-autofill,
+[data-theme="light"] .hero-login-panel .hero-login-input input:-webkit-autofill:hover,
+[data-theme="light"] .hero-login-panel .hero-login-input input:-webkit-autofill:focus,
+>> [data-theme="light"] .hero-login-panel .hero-login-input input:-webkit-autofill:active {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+  -webkit-box-shadow: 0 0 0 1000px rgba(255,252,246,0) inset !important;
+  color: rgba(33,28,22,0.94) !important;
+  -webkit-text-fill-color: rgba(33,28,22,0.94) !important;
+  caret-color: var(--landing-gold) !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3480 =====
+  caret-color: var(--landing-gold) !important;
+  text-align: left !important;
+}
+
+>> [data-theme="light"] .hero-login-panel .hero-login-input input::placeholder {
+  color: rgba(33,28,22,0.34) !important;
+}
+
+[data-theme="light"] .hero-login-panel .hero-login-input:focus-within {
+  border-color: rgba(12,143,158,0.30) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.92), rgba(255,255,255,0.58)),
+    rgba(255,252,246,0.78) !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3484 =====
+[data-theme="light"] .hero-login-panel .hero-login-input input::placeholder {
+  color: rgba(33,28,22,0.34) !important;
+}
+
+>> [data-theme="light"] .hero-login-panel .hero-login-input:focus-within {
+  border-color: rgba(12,143,158,0.30) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.92), rgba(255,255,255,0.58)),
+    rgba(255,252,246,0.78) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.90),
+    0 0 0 3px rgba(12,143,158,0.085),
+    0 14px 30px rgba(84,58,27,0.12) !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3495 =====
+    0 0 0 3px rgba(12,143,158,0.085),
+    0 14px 30px rgba(84,58,27,0.12) !important;
+}
+
+>> [data-theme="light"] .hero-login-panel .hero-login-input:focus-within > svg {
+  color: rgba(12,143,158,0.76) !important;
+}
+
+[data-theme="light"] .hero-login-panel .hero-login-eye {
+  color: rgba(33,28,22,0.44) !important;
+  background: rgba(255,255,255,0.52) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.78),
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3513 =====
+  background: rgba(255,255,255,0.76) !important;
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+>>    37 RADIX HERO LOGIN INPUTS
+   --------------------------------------------------------------------------
+   Replaces custom hero inputs with Radix Themes TextField.
+   Goal: modern, consistent, frameless, and less vulnerable to Chrome/global
+   native input weirdness.
+   ────────────────────────────────────────────────────────────────────────── */
+
+/* Kill stale mirror experiment if it still exists in cache */
+.hero-login-visual-value {
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3515 =====
+
+/* ──────────────────────────────────────────────────────────────────────────
+   37 RADIX HERO LOGIN INPUTS
+   --------------------------------------------------------------------------
+>>    Replaces custom hero inputs with Radix Themes TextField.
+   Goal: modern, consistent, frameless, and less vulnerable to Chrome/global
+   native input weirdness.
+   ────────────────────────────────────────────────────────────────────────── */
+
+/* Kill stale mirror experiment if it still exists in cache */
+.hero-login-visual-value {
+  display: none !important;
+}
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3517 =====
+   37 RADIX HERO LOGIN INPUTS
+   --------------------------------------------------------------------------
+   Replaces custom hero inputs with Radix Themes TextField.
+   Goal: modern, consistent, frameless, and less vulnerable to Chrome/global
+>>    native input weirdness.
+   ────────────────────────────────────────────────────────────────────────── */
+
+/* Kill stale mirror experiment if it still exists in cache */
+.hero-login-visual-value {
+  display: none !important;
+}
+
+/* Radix root: one clean spatial field surface */
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3526 =====
+  display: none !important;
+}
+
+/* Radix root: one clean spatial field surface */
+>> .hero-login-panel .hero-radix-field {
+  width: 100% !important;
+  min-height: 48px !important;
+  height: 48px !important;
+  border-radius: 18px !important;
+  border: 1px solid rgba(255, 255, 255, 0.085) !important;
+  color: rgba(255, 250, 240, 0.95) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.044), rgba(255, 255, 255, 0.010)),
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3549 =====
+    background 160ms ease !important;
+}
+
+/* Remove Radix internal chrome if present */
+>> .hero-login-panel .hero-radix-field::before,
+.hero-login-panel .hero-radix-field::after,
+.hero-login-panel .hero-radix-field :where(.rt-TextFieldChrome) {
+  box-shadow: none !important;
+  background: transparent !important;
+  border: 0 !important;
+}
+
+/* TextField input */
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3550 =====
+}
+
+/* Remove Radix internal chrome if present */
+.hero-login-panel .hero-radix-field::before,
+>> .hero-login-panel .hero-radix-field::after,
+.hero-login-panel .hero-radix-field :where(.rt-TextFieldChrome) {
+  box-shadow: none !important;
+  background: transparent !important;
+  border: 0 !important;
+}
+
+/* TextField input */
+.hero-login-panel .hero-radix-field :where(input),
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3551 =====
+
+/* Remove Radix internal chrome if present */
+.hero-login-panel .hero-radix-field::before,
+.hero-login-panel .hero-radix-field::after,
+>> .hero-login-panel .hero-radix-field :where(.rt-TextFieldChrome) {
+  box-shadow: none !important;
+  background: transparent !important;
+  border: 0 !important;
+}
+
+/* TextField input */
+.hero-login-panel .hero-radix-field :where(input),
+.hero-login-panel .hero-radix-field input,
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3557 =====
+  background: transparent !important;
+  border: 0 !important;
+}
+
+>> /* TextField input */
+.hero-login-panel .hero-radix-field :where(input),
+.hero-login-panel .hero-radix-field input,
+.hero-login-panel .hero-radix-field input:hover,
+.hero-login-panel .hero-radix-field input:focus,
+.hero-login-panel .hero-radix-field input:active,
+.hero-login-panel .hero-radix-field input:-webkit-autofill,
+.hero-login-panel .hero-radix-field input:-webkit-autofill:hover,
+.hero-login-panel .hero-radix-field input:-webkit-autofill:focus,
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3558 =====
+  border: 0 !important;
+}
+
+/* TextField input */
+>> .hero-login-panel .hero-radix-field :where(input),
+.hero-login-panel .hero-radix-field input,
+.hero-login-panel .hero-radix-field input:hover,
+.hero-login-panel .hero-radix-field input:focus,
+.hero-login-panel .hero-radix-field input:active,
+.hero-login-panel .hero-radix-field input:-webkit-autofill,
+.hero-login-panel .hero-radix-field input:-webkit-autofill:hover,
+.hero-login-panel .hero-radix-field input:-webkit-autofill:focus,
+.hero-login-panel .hero-radix-field input:-webkit-autofill:active {
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3559 =====
+}
+
+/* TextField input */
+.hero-login-panel .hero-radix-field :where(input),
+>> .hero-login-panel .hero-radix-field input,
+.hero-login-panel .hero-radix-field input:hover,
+.hero-login-panel .hero-radix-field input:focus,
+.hero-login-panel .hero-radix-field input:active,
+.hero-login-panel .hero-radix-field input:-webkit-autofill,
+.hero-login-panel .hero-radix-field input:-webkit-autofill:hover,
+.hero-login-panel .hero-radix-field input:-webkit-autofill:focus,
+.hero-login-panel .hero-radix-field input:-webkit-autofill:active {
+  min-width: 0 !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3560 =====
+
+/* TextField input */
+.hero-login-panel .hero-radix-field :where(input),
+.hero-login-panel .hero-radix-field input,
+>> .hero-login-panel .hero-radix-field input:hover,
+.hero-login-panel .hero-radix-field input:focus,
+.hero-login-panel .hero-radix-field input:active,
+.hero-login-panel .hero-radix-field input:-webkit-autofill,
+.hero-login-panel .hero-radix-field input:-webkit-autofill:hover,
+.hero-login-panel .hero-radix-field input:-webkit-autofill:focus,
+.hero-login-panel .hero-radix-field input:-webkit-autofill:active {
+  min-width: 0 !important;
+  height: 46px !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3561 =====
+/* TextField input */
+.hero-login-panel .hero-radix-field :where(input),
+.hero-login-panel .hero-radix-field input,
+.hero-login-panel .hero-radix-field input:hover,
+>> .hero-login-panel .hero-radix-field input:focus,
+.hero-login-panel .hero-radix-field input:active,
+.hero-login-panel .hero-radix-field input:-webkit-autofill,
+.hero-login-panel .hero-radix-field input:-webkit-autofill:hover,
+.hero-login-panel .hero-radix-field input:-webkit-autofill:focus,
+.hero-login-panel .hero-radix-field input:-webkit-autofill:active {
+  min-width: 0 !important;
+  height: 46px !important;
+  padding: 0 !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3562 =====
+.hero-login-panel .hero-radix-field :where(input),
+.hero-login-panel .hero-radix-field input,
+.hero-login-panel .hero-radix-field input:hover,
+.hero-login-panel .hero-radix-field input:focus,
+>> .hero-login-panel .hero-radix-field input:active,
+.hero-login-panel .hero-radix-field input:-webkit-autofill,
+.hero-login-panel .hero-radix-field input:-webkit-autofill:hover,
+.hero-login-panel .hero-radix-field input:-webkit-autofill:focus,
+.hero-login-panel .hero-radix-field input:-webkit-autofill:active {
+  min-width: 0 !important;
+  height: 46px !important;
+  padding: 0 !important;
+  border: 0 !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3563 =====
+.hero-login-panel .hero-radix-field input,
+.hero-login-panel .hero-radix-field input:hover,
+.hero-login-panel .hero-radix-field input:focus,
+.hero-login-panel .hero-radix-field input:active,
+>> .hero-login-panel .hero-radix-field input:-webkit-autofill,
+.hero-login-panel .hero-radix-field input:-webkit-autofill:hover,
+.hero-login-panel .hero-radix-field input:-webkit-autofill:focus,
+.hero-login-panel .hero-radix-field input:-webkit-autofill:active {
+  min-width: 0 !important;
+  height: 46px !important;
+  padding: 0 !important;
+  border: 0 !important;
+  outline: 0 !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3564 =====
+.hero-login-panel .hero-radix-field input:hover,
+.hero-login-panel .hero-radix-field input:focus,
+.hero-login-panel .hero-radix-field input:active,
+.hero-login-panel .hero-radix-field input:-webkit-autofill,
+>> .hero-login-panel .hero-radix-field input:-webkit-autofill:hover,
+.hero-login-panel .hero-radix-field input:-webkit-autofill:focus,
+.hero-login-panel .hero-radix-field input:-webkit-autofill:active {
+  min-width: 0 !important;
+  height: 46px !important;
+  padding: 0 !important;
+  border: 0 !important;
+  outline: 0 !important;
+  border-radius: 0 !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3565 =====
+.hero-login-panel .hero-radix-field input:focus,
+.hero-login-panel .hero-radix-field input:active,
+.hero-login-panel .hero-radix-field input:-webkit-autofill,
+.hero-login-panel .hero-radix-field input:-webkit-autofill:hover,
+>> .hero-login-panel .hero-radix-field input:-webkit-autofill:focus,
+.hero-login-panel .hero-radix-field input:-webkit-autofill:active {
+  min-width: 0 !important;
+  height: 46px !important;
+  padding: 0 !important;
+  border: 0 !important;
+  outline: 0 !important;
+  border-radius: 0 !important;
+  color: rgba(255, 250, 240, 0.95) !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3566 =====
+.hero-login-panel .hero-radix-field input:active,
+.hero-login-panel .hero-radix-field input:-webkit-autofill,
+.hero-login-panel .hero-radix-field input:-webkit-autofill:hover,
+.hero-login-panel .hero-radix-field input:-webkit-autofill:focus,
+>> .hero-login-panel .hero-radix-field input:-webkit-autofill:active {
+  min-width: 0 !important;
+  height: 46px !important;
+  padding: 0 !important;
+  border: 0 !important;
+  outline: 0 !important;
+  border-radius: 0 !important;
+  color: rgba(255, 250, 240, 0.95) !important;
+  -webkit-text-fill-color: rgba(255, 250, 240, 0.95) !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3587 =====
+  font-weight: 850 !important;
+  letter-spacing: -0.01em !important;
+}
+
+>> .hero-login-panel .hero-radix-field input::placeholder {
+  color: rgba(255, 250, 240, 0.32) !important;
+  -webkit-text-fill-color: rgba(255, 250, 240, 0.32) !important;
+}
+
+/* Slots and icons */
+.hero-login-panel .hero-radix-field :where(svg) {
+  color: rgba(255, 250, 240, 0.44) !important;
+}
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3593 =====
+  -webkit-text-fill-color: rgba(255, 250, 240, 0.32) !important;
+}
+
+/* Slots and icons */
+>> .hero-login-panel .hero-radix-field :where(svg) {
+  color: rgba(255, 250, 240, 0.44) !important;
+}
+
+.hero-login-panel .hero-radix-field:focus-within {
+  transform: translateY(-1px) !important;
+  border-color: rgba(88, 224, 233, 0.36) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.056), rgba(255, 255, 255, 0.014)),
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3597 =====
+.hero-login-panel .hero-radix-field :where(svg) {
+  color: rgba(255, 250, 240, 0.44) !important;
+}
+
+>> .hero-login-panel .hero-radix-field:focus-within {
+  transform: translateY(-1px) !important;
+  border-color: rgba(88, 224, 233, 0.36) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.056), rgba(255, 255, 255, 0.014)),
+    rgba(10, 14, 22, 0.58) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.060),
+    0 0 0 3px rgba(88, 224, 233, 0.095),
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3609 =====
+    0 0 0 3px rgba(88, 224, 233, 0.095),
+    0 14px 30px rgba(0, 0, 0, 0.18) !important;
+}
+
+>> .hero-login-panel .hero-radix-field:focus-within :where(svg) {
+  color: rgba(88, 224, 233, 0.76) !important;
+}
+
+/* Password eye button inside Radix slot */
+.hero-radix-eye {
+  width: 34px !important;
+  height: 34px !important;
+  display: grid !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3614 =====
+  color: rgba(88, 224, 233, 0.76) !important;
+}
+
+/* Password eye button inside Radix slot */
+>> .hero-radix-eye {
+  width: 34px !important;
+  height: 34px !important;
+  display: grid !important;
+  place-items: center !important;
+  border: 0 !important;
+  border-radius: 14px !important;
+  color: rgba(255, 250, 240, 0.46) !important;
+  background: rgba(255, 255, 255, 0.050) !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3629 =====
+    0 8px 16px rgba(0, 0, 0, 0.12) !important;
+  cursor: pointer !important;
+}
+
+>> .hero-radix-eye:hover {
+  color: rgba(255, 250, 240, 0.82) !important;
+  background: rgba(255, 255, 255, 0.080) !important;
+}
+
+/* Hide stale old input layout if a merge/cache leaves it behind */
+.hero-login-panel .hero-login-input {
+  display: none !important;
+}
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3634 =====
+  color: rgba(255, 250, 240, 0.82) !important;
+  background: rgba(255, 255, 255, 0.080) !important;
+}
+
+>> /* Hide stale old input layout if a merge/cache leaves it behind */
+.hero-login-panel .hero-login-input {
+  display: none !important;
+}
+
+/* Light mode */
+[data-theme="light"] .hero-login-panel .hero-radix-field {
+  color: rgba(33, 28, 22, 0.94) !important;
+  border-color: rgba(90, 66, 36, 0.105) !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3635 =====
+  background: rgba(255, 255, 255, 0.080) !important;
+}
+
+/* Hide stale old input layout if a merge/cache leaves it behind */
+>> .hero-login-panel .hero-login-input {
+  display: none !important;
+}
+
+/* Light mode */
+[data-theme="light"] .hero-login-panel .hero-radix-field {
+  color: rgba(33, 28, 22, 0.94) !important;
+  border-color: rgba(90, 66, 36, 0.105) !important;
+  background:
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3640 =====
+  display: none !important;
+}
+
+/* Light mode */
+>> [data-theme="light"] .hero-login-panel .hero-radix-field {
+  color: rgba(33, 28, 22, 0.94) !important;
+  border-color: rgba(90, 66, 36, 0.105) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.82), rgba(255, 255, 255, 0.48)),
+    rgba(255, 252, 246, 0.66) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.86),
+    inset 0 -1px 0 rgba(90, 66, 36, 0.035),
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3652 =====
+    inset 0 -1px 0 rgba(90, 66, 36, 0.035),
+    0 10px 22px rgba(84, 58, 27, 0.075) !important;
+}
+
+>> [data-theme="light"] .hero-login-panel .hero-radix-field :where(input),
+[data-theme="light"] .hero-login-panel .hero-radix-field input,
+[data-theme="light"] .hero-login-panel .hero-radix-field input:hover,
+[data-theme="light"] .hero-login-panel .hero-radix-field input:focus,
+[data-theme="light"] .hero-login-panel .hero-radix-field input:active,
+[data-theme="light"] .hero-login-panel .hero-radix-field input:-webkit-autofill,
+[data-theme="light"] .hero-login-panel .hero-radix-field input:-webkit-autofill:hover,
+[data-theme="light"] .hero-login-panel .hero-radix-field input:-webkit-autofill:focus,
+[data-theme="light"] .hero-login-panel .hero-radix-field input:-webkit-autofill:active {
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3653 =====
+    0 10px 22px rgba(84, 58, 27, 0.075) !important;
+}
+
+[data-theme="light"] .hero-login-panel .hero-radix-field :where(input),
+>> [data-theme="light"] .hero-login-panel .hero-radix-field input,
+[data-theme="light"] .hero-login-panel .hero-radix-field input:hover,
+[data-theme="light"] .hero-login-panel .hero-radix-field input:focus,
+[data-theme="light"] .hero-login-panel .hero-radix-field input:active,
+[data-theme="light"] .hero-login-panel .hero-radix-field input:-webkit-autofill,
+[data-theme="light"] .hero-login-panel .hero-radix-field input:-webkit-autofill:hover,
+[data-theme="light"] .hero-login-panel .hero-radix-field input:-webkit-autofill:focus,
+[data-theme="light"] .hero-login-panel .hero-radix-field input:-webkit-autofill:active {
+  color: rgba(33, 28, 22, 0.94) !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3654 =====
+}
+
+[data-theme="light"] .hero-login-panel .hero-radix-field :where(input),
+[data-theme="light"] .hero-login-panel .hero-radix-field input,
+>> [data-theme="light"] .hero-login-panel .hero-radix-field input:hover,
+[data-theme="light"] .hero-login-panel .hero-radix-field input:focus,
+[data-theme="light"] .hero-login-panel .hero-radix-field input:active,
+[data-theme="light"] .hero-login-panel .hero-radix-field input:-webkit-autofill,
+[data-theme="light"] .hero-login-panel .hero-radix-field input:-webkit-autofill:hover,
+[data-theme="light"] .hero-login-panel .hero-radix-field input:-webkit-autofill:focus,
+[data-theme="light"] .hero-login-panel .hero-radix-field input:-webkit-autofill:active {
+  color: rgba(33, 28, 22, 0.94) !important;
+  -webkit-text-fill-color: rgba(33, 28, 22, 0.94) !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3655 =====
+
+[data-theme="light"] .hero-login-panel .hero-radix-field :where(input),
+[data-theme="light"] .hero-login-panel .hero-radix-field input,
+[data-theme="light"] .hero-login-panel .hero-radix-field input:hover,
+>> [data-theme="light"] .hero-login-panel .hero-radix-field input:focus,
+[data-theme="light"] .hero-login-panel .hero-radix-field input:active,
+[data-theme="light"] .hero-login-panel .hero-radix-field input:-webkit-autofill,
+[data-theme="light"] .hero-login-panel .hero-radix-field input:-webkit-autofill:hover,
+[data-theme="light"] .hero-login-panel .hero-radix-field input:-webkit-autofill:focus,
+[data-theme="light"] .hero-login-panel .hero-radix-field input:-webkit-autofill:active {
+  color: rgba(33, 28, 22, 0.94) !important;
+  -webkit-text-fill-color: rgba(33, 28, 22, 0.94) !important;
+  caret-color: var(--landing-gold) !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3656 =====
+[data-theme="light"] .hero-login-panel .hero-radix-field :where(input),
+[data-theme="light"] .hero-login-panel .hero-radix-field input,
+[data-theme="light"] .hero-login-panel .hero-radix-field input:hover,
+[data-theme="light"] .hero-login-panel .hero-radix-field input:focus,
+>> [data-theme="light"] .hero-login-panel .hero-radix-field input:active,
+[data-theme="light"] .hero-login-panel .hero-radix-field input:-webkit-autofill,
+[data-theme="light"] .hero-login-panel .hero-radix-field input:-webkit-autofill:hover,
+[data-theme="light"] .hero-login-panel .hero-radix-field input:-webkit-autofill:focus,
+[data-theme="light"] .hero-login-panel .hero-radix-field input:-webkit-autofill:active {
+  color: rgba(33, 28, 22, 0.94) !important;
+  -webkit-text-fill-color: rgba(33, 28, 22, 0.94) !important;
+  caret-color: var(--landing-gold) !important;
+  background: transparent !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3657 =====
+[data-theme="light"] .hero-login-panel .hero-radix-field input,
+[data-theme="light"] .hero-login-panel .hero-radix-field input:hover,
+[data-theme="light"] .hero-login-panel .hero-radix-field input:focus,
+[data-theme="light"] .hero-login-panel .hero-radix-field input:active,
+>> [data-theme="light"] .hero-login-panel .hero-radix-field input:-webkit-autofill,
+[data-theme="light"] .hero-login-panel .hero-radix-field input:-webkit-autofill:hover,
+[data-theme="light"] .hero-login-panel .hero-radix-field input:-webkit-autofill:focus,
+[data-theme="light"] .hero-login-panel .hero-radix-field input:-webkit-autofill:active {
+  color: rgba(33, 28, 22, 0.94) !important;
+  -webkit-text-fill-color: rgba(33, 28, 22, 0.94) !important;
+  caret-color: var(--landing-gold) !important;
+  background: transparent !important;
+  background-color: transparent !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3658 =====
+[data-theme="light"] .hero-login-panel .hero-radix-field input:hover,
+[data-theme="light"] .hero-login-panel .hero-radix-field input:focus,
+[data-theme="light"] .hero-login-panel .hero-radix-field input:active,
+[data-theme="light"] .hero-login-panel .hero-radix-field input:-webkit-autofill,
+>> [data-theme="light"] .hero-login-panel .hero-radix-field input:-webkit-autofill:hover,
+[data-theme="light"] .hero-login-panel .hero-radix-field input:-webkit-autofill:focus,
+[data-theme="light"] .hero-login-panel .hero-radix-field input:-webkit-autofill:active {
+  color: rgba(33, 28, 22, 0.94) !important;
+  -webkit-text-fill-color: rgba(33, 28, 22, 0.94) !important;
+  caret-color: var(--landing-gold) !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3659 =====
+[data-theme="light"] .hero-login-panel .hero-radix-field input:focus,
+[data-theme="light"] .hero-login-panel .hero-radix-field input:active,
+[data-theme="light"] .hero-login-panel .hero-radix-field input:-webkit-autofill,
+[data-theme="light"] .hero-login-panel .hero-radix-field input:-webkit-autofill:hover,
+>> [data-theme="light"] .hero-login-panel .hero-radix-field input:-webkit-autofill:focus,
+[data-theme="light"] .hero-login-panel .hero-radix-field input:-webkit-autofill:active {
+  color: rgba(33, 28, 22, 0.94) !important;
+  -webkit-text-fill-color: rgba(33, 28, 22, 0.94) !important;
+  caret-color: var(--landing-gold) !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3660 =====
+[data-theme="light"] .hero-login-panel .hero-radix-field input:active,
+[data-theme="light"] .hero-login-panel .hero-radix-field input:-webkit-autofill,
+[data-theme="light"] .hero-login-panel .hero-radix-field input:-webkit-autofill:hover,
+[data-theme="light"] .hero-login-panel .hero-radix-field input:-webkit-autofill:focus,
+>> [data-theme="light"] .hero-login-panel .hero-radix-field input:-webkit-autofill:active {
+  color: rgba(33, 28, 22, 0.94) !important;
+  -webkit-text-fill-color: rgba(33, 28, 22, 0.94) !important;
+  caret-color: var(--landing-gold) !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+  -webkit-box-shadow: 0 0 0 1000px rgba(255, 252, 246, 0) inset !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3671 =====
+  box-shadow: none !important;
+  -webkit-box-shadow: 0 0 0 1000px rgba(255, 252, 246, 0) inset !important;
+}
+
+>> [data-theme="light"] .hero-login-panel .hero-radix-field input::placeholder {
+  color: rgba(33, 28, 22, 0.34) !important;
+  -webkit-text-fill-color: rgba(33, 28, 22, 0.34) !important;
+}
+
+[data-theme="light"] .hero-login-panel .hero-radix-field :where(svg) {
+  color: rgba(33, 28, 22, 0.44) !important;
+}
+
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3676 =====
+  color: rgba(33, 28, 22, 0.34) !important;
+  -webkit-text-fill-color: rgba(33, 28, 22, 0.34) !important;
+}
+
+>> [data-theme="light"] .hero-login-panel .hero-radix-field :where(svg) {
+  color: rgba(33, 28, 22, 0.44) !important;
+}
+
+[data-theme="light"] .hero-login-panel .hero-radix-field:focus-within {
+  border-color: rgba(12, 143, 158, 0.30) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.58)),
+    rgba(255, 252, 246, 0.78) !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3680 =====
+[data-theme="light"] .hero-login-panel .hero-radix-field :where(svg) {
+  color: rgba(33, 28, 22, 0.44) !important;
+}
+
+>> [data-theme="light"] .hero-login-panel .hero-radix-field:focus-within {
+  border-color: rgba(12, 143, 158, 0.30) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.58)),
+    rgba(255, 252, 246, 0.78) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.90),
+    0 0 0 3px rgba(12, 143, 158, 0.085),
+    0 14px 30px rgba(84, 58, 27, 0.12) !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3691 =====
+    0 0 0 3px rgba(12, 143, 158, 0.085),
+    0 14px 30px rgba(84, 58, 27, 0.12) !important;
+}
+
+>> [data-theme="light"] .hero-login-panel .hero-radix-field:focus-within :where(svg) {
+  color: rgba(12, 143, 158, 0.76) !important;
+}
+
+[data-theme="light"] .hero-radix-eye {
+  color: rgba(33, 28, 22, 0.44) !important;
+  background: rgba(255, 255, 255, 0.52) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.78),
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3695 =====
+[data-theme="light"] .hero-login-panel .hero-radix-field:focus-within :where(svg) {
+  color: rgba(12, 143, 158, 0.76) !important;
+}
+
+>> [data-theme="light"] .hero-radix-eye {
+  color: rgba(33, 28, 22, 0.44) !important;
+  background: rgba(255, 255, 255, 0.52) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.78),
+    0 8px 16px rgba(84, 58, 27, 0.075) !important;
+}
+
+[data-theme="light"] .hero-radix-eye:hover {
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3703 =====
+    inset 0 1px 0 rgba(255, 255, 255, 0.78),
+    0 8px 16px rgba(84, 58, 27, 0.075) !important;
+}
+
+>> [data-theme="light"] .hero-radix-eye:hover {
+  color: rgba(33, 28, 22, 0.78) !important;
+  background: rgba(255, 255, 255, 0.76) !important;
+}
+
+@media (max-width: 767px) {
+  .hero-login-panel .hero-radix-field {
+    min-height: 46px !important;
+    height: 46px !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3709 =====
+  background: rgba(255, 255, 255, 0.76) !important;
+}
+
+@media (max-width: 767px) {
+>>   .hero-login-panel .hero-radix-field {
+    min-height: 46px !important;
+    height: 46px !important;
+    border-radius: 17px !important;
+  }
+
+  .hero-radix-eye {
+    width: 32px !important;
+    height: 32px !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\LandingPage.css:3715 =====
+    height: 46px !important;
+    border-radius: 17px !important;
+  }
+
+>>   .hero-radix-eye {
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: 13px !important;
+  }
+}
+
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\MaintenancePage.css:230 =====
+  color: var(--text-muted);
+  opacity: 0.7;
+}
+
+>> .maint-form textarea.form-input {
+  resize: vertical;
+  min-height: 80px;
+  line-height: 1.5;
+}
+
+.maint-input-wrapper {
+  position: relative;
+  display: flex;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\MaintenancePage.css:236 =====
+  min-height: 80px;
+  line-height: 1.5;
+}
+
+>> .maint-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: var(--fluent-control-height-medium);
+  border-radius: var(--fluent-radius-medium);
+  border: 1px solid var(--fluent-color-neutral-stroke-1);
+  background: rgba(0, 0, 0, 0.28);
+  backdrop-filter: blur(10px);
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\MaintenancePage.css:251 =====
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2);
+  transition: all var(--fluent-duration-fast) var(--fluent-curve-easy-ease);
+}
+
+>> .maint-input-wrapper:focus-within {
+  border-color: var(--fluent-color-accent-line);
+  box-shadow: 0 0 0 3px rgba(var(--accent-cyan-rgb), 0.25);
+}
+
+.maint-input-prefix {
+  padding-left: 14px;
+  color: var(--text-muted);
+  font-size: 0.88rem;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\MaintenancePage.css:256 =====
+  border-color: var(--fluent-color-accent-line);
+  box-shadow: 0 0 0 3px rgba(var(--accent-cyan-rgb), 0.25);
+}
+
+>> .maint-input-prefix {
+  padding-left: 14px;
+  color: var(--text-muted);
+  font-size: 0.88rem;
+  font-weight: 600;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\MaintenancePage.css:265 =====
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+>> .maint-input-wrapper .maint-cost-input {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding-left: 8px !important;
+  width: 100%;
+}
+
+@media (max-width: 480px) {
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\PublicCalendarPage.css:725 =====
+}
+
+.pc-page button:focus-visible,
+.pc-page a:focus-visible,
+>> .pc-form-input:focus-visible,
+.pc-cell:focus-visible,
+.pc-gallery-item:focus-visible {
+  outline: 3px solid rgba(227, 184, 109, 0.86);
+  outline-offset: 3px;
+}
+
+.pc-gallery-section {
+  width: min(1220px, calc(100% - 32px));
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\PublicCalendarPage.css:899 =====
+  font-size: 0.82rem;
+  font-weight: 900;
+}
+
+>> .pc-form-input {
+  width: 100%;
+  min-height: 48px;
+  border: 1px solid var(--pc-line);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.26);
+  color: var(--pc-text);
+  font: inherit;
+  font-size: 1rem;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\PublicCalendarPage.css:912 =====
+  padding: 0 14px;
+  outline: none;
+}
+
+>> .pc-form-input:focus {
+  border-color: rgba(227, 184, 109, 0.72);
+  box-shadow: 0 0 0 4px rgba(227, 184, 109, 0.1);
+}
+
+.pc-form-input[aria-invalid="true"] {
+  border-color: rgba(255, 61, 102, 0.82);
+}
+
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\PublicCalendarPage.css:917 =====
+  border-color: rgba(227, 184, 109, 0.72);
+  box-shadow: 0 0 0 4px rgba(227, 184, 109, 0.1);
+}
+
+>> .pc-form-input[aria-invalid="true"] {
+  border-color: rgba(255, 61, 102, 0.82);
+}
+
+.pc-field-error {
+  color: #ff9cb1;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\PublicCalendarPage.css:1063 =====
+[data-theme="light"] .pc-cell.past {
+  background: rgba(30, 25, 18, 0.05);
+}
+
+>> [data-theme="light"] .pc-form-input {
+  background: #f8f4ed;
+  color: #1a1510;
+}
+
+@media (max-width: 900px) {
+  .pc-hero {
+    min-height: 66svh;
+    padding: calc(14px + env(safe-area-inset-top, 0px)) 16px 36px;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\PublicGalleryPage.css:221 =====
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+>> .pg-search-input {
+  width: 100%;
+  padding: 11px 44px 11px 42px;
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: 12px;
+  color: var(--text-main);
+  font-size: 0.92rem;
+  font-weight: 500;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\PublicGalleryPage.css:234 =====
+  backdrop-filter: blur(16px);
+  transition: all 0.3s cubic-bezier(0.16,1,0.3,1);
+  font-family: inherit;
+}
+>> .pg-search-input:focus {
+  outline: none;
+  border-color: rgba(var(--accent-color-rgb), 0.4);
+  box-shadow: 0 0 0 3px rgba(var(--accent-color-rgb), 0.1);
+}
+.pg-search-input::placeholder { color: rgba(255,255,255,0.25); }
+
+.pg-search-clear {
+  position: absolute;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\PublicGalleryPage.css:239 =====
+  outline: none;
+  border-color: rgba(var(--accent-color-rgb), 0.4);
+  box-shadow: 0 0 0 3px rgba(var(--accent-color-rgb), 0.1);
+}
+>> .pg-search-input::placeholder { color: rgba(255,255,255,0.25); }
+
+.pg-search-clear {
+  position: absolute;
+  right: 12px;
+  background: rgba(255,255,255,0.06);
+  border: none;
+  border-radius: 50%;
+  width: 24px; height: 24px;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\PublicGalleryPage.css:652 =====
+   ========================================= */
+.pg-back-btn:focus-visible,
+.pg-theme-btn:focus-visible,
+.pg-view-btn:focus-visible,
+>> .pg-search-input:focus-visible,
+.pg-lightbox-close:focus-visible,
+.pg-lightbox-nav:focus-visible,
+.pg-masonry-item:focus-visible,
+.pg-album-card:focus-visible,
+.pg-album-back-btn:focus-visible {
+  outline: 2px solid var(--accent-cyan, #00f0ff);
+  outline-offset: 2px;
+}
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\PublicGalleryPage.css:689 =====
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+>> [data-theme="light"] .pg-search-input::placeholder { color: rgba(0,0,0,0.3); }
+[data-theme="light"] .pg-search-input:focus { box-shadow: 0 0 0 3px rgba(var(--accent-color-rgb), 0.1); }
+
+[data-theme="light"] .pg-masonry-item { background: rgba(0,0,0,0.03); }
+
+[data-theme="light"] .pg-album-cover-gradient {
+  background: linear-gradient(to top, rgba(10,10,20,0.8) 0%, transparent 55%);
+}
+
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\PublicGalleryPage.css:690 =====
+  -webkit-text-fill-color: transparent;
+}
+
+[data-theme="light"] .pg-search-input::placeholder { color: rgba(0,0,0,0.3); }
+>> [data-theme="light"] .pg-search-input:focus { box-shadow: 0 0 0 3px rgba(var(--accent-color-rgb), 0.1); }
+
+[data-theme="light"] .pg-masonry-item { background: rgba(0,0,0,0.03); }
+
+[data-theme="light"] .pg-album-cover-gradient {
+  background: linear-gradient(to top, rgba(10,10,20,0.8) 0%, transparent 55%);
+}
+
+[data-theme="light"] .pg-lightbox-overlay {
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\SettingsPage.css:332 =====
+  min-height: 80px;
+  line-height: 1.6;
+}
+
+>> /* Input with prefix */
+.settings-input-group {
+  display: flex;
+  align-items: stretch;
+  border: 1px solid var(--border-light);
+  border-radius: var(--fluent-radius-medium);
+  overflow: hidden;
+  transition: all 0.2s;
+  background: rgba(0, 0, 0, 0.28);
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\SettingsPage.css:333 =====
+  line-height: 1.6;
+}
+
+/* Input with prefix */
+>> .settings-input-group {
+  display: flex;
+  align-items: stretch;
+  border: 1px solid var(--border-light);
+  border-radius: var(--fluent-radius-medium);
+  overflow: hidden;
+  transition: all 0.2s;
+  background: rgba(0, 0, 0, 0.28);
+}
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\SettingsPage.css:343 =====
+  transition: all 0.2s;
+  background: rgba(0, 0, 0, 0.28);
+}
+
+>> .settings-input-group:focus-within {
+  border-color: var(--fluent-color-accent-line);
+  box-shadow: 0 0 0 3px rgba(var(--accent-cyan-rgb), 0.25);
+}
+
+.settings-input-prefix {
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.04);
+  border-right: 1px solid var(--border-light);
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\SettingsPage.css:348 =====
+  border-color: var(--fluent-color-accent-line);
+  box-shadow: 0 0 0 3px rgba(var(--accent-cyan-rgb), 0.25);
+}
+
+>> .settings-input-prefix {
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.04);
+  border-right: 1px solid var(--border-light);
+  color: var(--text-muted);
+  font-size: 0.88rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\SettingsPage.css:361 =====
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+>> .bf-input.with-prefix {
+  border: none !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+/* ===== Studio Preview Card ===== */
+.studio-preview-card {
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\SettingsPage.css:621 =====
+  border-color: rgba(255, 68, 68, 0.3);
+  color: var(--text-primary);
+}
+
+>> .reset-select-all input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: #ff4444;
+}
+
+/* ===== Reset Confirm Area ===== */
+.reset-confirm-area {
+  display: flex;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\SettingsPage.css:1055 =====
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  margin-bottom: 24px;
+}
+
+>> .dd-input-group {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.dd-input-group label {
+  font-size: 0.75rem;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\SettingsPage.css:1062 =====
+  flex-direction: column;
+  gap: 8px;
+}
+
+>> .dd-input-group label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.duration-discount-list {
+  display: flex;
+  flex-direction: column;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\SettingsPage.css:1151 =====
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+>> .restore-upload-btn input {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  /* Layout Transformation */
+  .settings-page {
+    padding-bottom: 90px !important;
+  }
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\pages\StaffPage.css:180 =====
+  outline: 2px solid var(--accent-pink);
+  outline-offset: 2px;
+}
+
+>> .permission-card input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.permission-icon {
+  display: flex;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\styles\flat-minimal-system.css:398 =====
+  box-shadow: none !important;
+}
+
+/* Forms */
+>> input,
+textarea,
+select,
+.form-input,
+.bf-input,
+.login-field-input,
+.app-search,
+.search-bar,
+.search-input-wrapper,
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\styles\flat-minimal-system.css:401 =====
+/* Forms */
+input,
+textarea,
+select,
+>> .form-input,
+.bf-input,
+.login-field-input,
+.app-search,
+.search-bar,
+.search-input-wrapper,
+.maint-input-wrapper,
+[class*="input-wrap"],
+[class*="field-wrap"] {
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\styles\flat-minimal-system.css:402 =====
+input,
+textarea,
+select,
+.form-input,
+>> .bf-input,
+.login-field-input,
+.app-search,
+.search-bar,
+.search-input-wrapper,
+.maint-input-wrapper,
+[class*="input-wrap"],
+[class*="field-wrap"] {
+  background: var(--surface-2) !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\styles\flat-minimal-system.css:403 =====
+textarea,
+select,
+.form-input,
+.bf-input,
+>> .login-field-input,
+.app-search,
+.search-bar,
+.search-input-wrapper,
+.maint-input-wrapper,
+[class*="input-wrap"],
+[class*="field-wrap"] {
+  background: var(--surface-2) !important;
+  color: var(--text-primary) !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\styles\flat-minimal-system.css:406 =====
+.bf-input,
+.login-field-input,
+.app-search,
+.search-bar,
+>> .search-input-wrapper,
+.maint-input-wrapper,
+[class*="input-wrap"],
+[class*="field-wrap"] {
+  background: var(--surface-2) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-subtle) !important;
+  box-shadow: none !important;
+  -webkit-backdrop-filter: none !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\styles\flat-minimal-system.css:407 =====
+.login-field-input,
+.app-search,
+.search-bar,
+.search-input-wrapper,
+>> .maint-input-wrapper,
+[class*="input-wrap"],
+[class*="field-wrap"] {
+  background: var(--surface-2) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-subtle) !important;
+  box-shadow: none !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\styles\flat-minimal-system.css:408 =====
+.app-search,
+.search-bar,
+.search-input-wrapper,
+.maint-input-wrapper,
+>> [class*="input-wrap"],
+[class*="field-wrap"] {
+  background: var(--surface-2) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-subtle) !important;
+  box-shadow: none !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\styles\flat-minimal-system.css:418 =====
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+
+>> input:hover,
+textarea:hover,
+select:hover,
+.form-input:hover,
+.bf-input:hover,
+.login-field-input:hover,
+.app-search:hover,
+.search-bar:hover,
+.search-input-wrapper:hover {
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\styles\flat-minimal-system.css:421 =====
+
+input:hover,
+textarea:hover,
+select:hover,
+>> .form-input:hover,
+.bf-input:hover,
+.login-field-input:hover,
+.app-search:hover,
+.search-bar:hover,
+.search-input-wrapper:hover {
+  border-color: var(--border-strong) !important;
+}
+
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\styles\flat-minimal-system.css:422 =====
+input:hover,
+textarea:hover,
+select:hover,
+.form-input:hover,
+>> .bf-input:hover,
+.login-field-input:hover,
+.app-search:hover,
+.search-bar:hover,
+.search-input-wrapper:hover {
+  border-color: var(--border-strong) !important;
+}
+
+input:focus,
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\styles\flat-minimal-system.css:423 =====
+textarea:hover,
+select:hover,
+.form-input:hover,
+.bf-input:hover,
+>> .login-field-input:hover,
+.app-search:hover,
+.search-bar:hover,
+.search-input-wrapper:hover {
+  border-color: var(--border-strong) !important;
+}
+
+input:focus,
+textarea:focus,
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\styles\flat-minimal-system.css:426 =====
+.bf-input:hover,
+.login-field-input:hover,
+.app-search:hover,
+.search-bar:hover,
+>> .search-input-wrapper:hover {
+  border-color: var(--border-strong) !important;
+}
+
+input:focus,
+textarea:focus,
+select:focus,
+.form-input:focus,
+.bf-input:focus,
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\styles\flat-minimal-system.css:430 =====
+.search-input-wrapper:hover {
+  border-color: var(--border-strong) !important;
+}
+
+>> input:focus,
+textarea:focus,
+select:focus,
+.form-input:focus,
+.bf-input:focus,
+.login-field-input:focus,
+.search-bar:focus-within,
+.search-input-wrapper:focus-within,
+.app-search:focus-within {
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\styles\flat-minimal-system.css:433 =====
+
+input:focus,
+textarea:focus,
+select:focus,
+>> .form-input:focus,
+.bf-input:focus,
+.login-field-input:focus,
+.search-bar:focus-within,
+.search-input-wrapper:focus-within,
+.app-search:focus-within {
+  outline: none !important;
+  border-color: var(--border-focus) !important;
+  box-shadow: 0 0 0 3px rgba(var(--accent-pink-rgb), 0.12) !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\styles\flat-minimal-system.css:434 =====
+input:focus,
+textarea:focus,
+select:focus,
+.form-input:focus,
+>> .bf-input:focus,
+.login-field-input:focus,
+.search-bar:focus-within,
+.search-input-wrapper:focus-within,
+.app-search:focus-within {
+  outline: none !important;
+  border-color: var(--border-focus) !important;
+  box-shadow: 0 0 0 3px rgba(var(--accent-pink-rgb), 0.12) !important;
+}
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\styles\flat-minimal-system.css:435 =====
+textarea:focus,
+select:focus,
+.form-input:focus,
+.bf-input:focus,
+>> .login-field-input:focus,
+.search-bar:focus-within,
+.search-input-wrapper:focus-within,
+.app-search:focus-within {
+  outline: none !important;
+  border-color: var(--border-focus) !important;
+  box-shadow: 0 0 0 3px rgba(var(--accent-pink-rgb), 0.12) !important;
+}
+
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\styles\flat-minimal-system.css:437 =====
+.form-input:focus,
+.bf-input:focus,
+.login-field-input:focus,
+.search-bar:focus-within,
+>> .search-input-wrapper:focus-within,
+.app-search:focus-within {
+  outline: none !important;
+  border-color: var(--border-focus) !important;
+  box-shadow: 0 0 0 3px rgba(var(--accent-pink-rgb), 0.12) !important;
+}
+
+label,
+.login-field-label,
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\styles\flat-minimal-system.css:1192 =====
+.pc-view-btn:active {
+  transform: scale(0.985) !important;
+}
+
+>> /* Inputs */
+input,
+textarea,
+select,
+.form-input,
+.bf-input,
+.login-field-input,
+.app-search,
+.search-bar,
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\styles\flat-minimal-system.css:1193 =====
+  transform: scale(0.985) !important;
+}
+
+/* Inputs */
+>> input,
+textarea,
+select,
+.form-input,
+.bf-input,
+.login-field-input,
+.app-search,
+.search-bar,
+.search-input-wrapper,
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\styles\flat-minimal-system.css:1196 =====
+/* Inputs */
+input,
+textarea,
+select,
+>> .form-input,
+.bf-input,
+.login-field-input,
+.app-search,
+.search-bar,
+.search-input-wrapper,
+.maint-input-wrapper,
+[class*="input-wrap"],
+[class*="field-wrap"] {
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\styles\flat-minimal-system.css:1197 =====
+input,
+textarea,
+select,
+.form-input,
+>> .bf-input,
+.login-field-input,
+.app-search,
+.search-bar,
+.search-input-wrapper,
+.maint-input-wrapper,
+[class*="input-wrap"],
+[class*="field-wrap"] {
+  border-radius: var(--spatial-radius-control) !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\styles\flat-minimal-system.css:1198 =====
+textarea,
+select,
+.form-input,
+.bf-input,
+>> .login-field-input,
+.app-search,
+.search-bar,
+.search-input-wrapper,
+.maint-input-wrapper,
+[class*="input-wrap"],
+[class*="field-wrap"] {
+  border-radius: var(--spatial-radius-control) !important;
+  background: linear-gradient(180deg, rgba(255,255,255,0.035), rgba(255,255,255,0.01)), var(--surface-2) !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\styles\flat-minimal-system.css:1201 =====
+.bf-input,
+.login-field-input,
+.app-search,
+.search-bar,
+>> .search-input-wrapper,
+.maint-input-wrapper,
+[class*="input-wrap"],
+[class*="field-wrap"] {
+  border-radius: var(--spatial-radius-control) !important;
+  background: linear-gradient(180deg, rgba(255,255,255,0.035), rgba(255,255,255,0.01)), var(--surface-2) !important;
+  min-height: 42px;
+}
+
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\styles\flat-minimal-system.css:1202 =====
+.login-field-input,
+.app-search,
+.search-bar,
+.search-input-wrapper,
+>> .maint-input-wrapper,
+[class*="input-wrap"],
+[class*="field-wrap"] {
+  border-radius: var(--spatial-radius-control) !important;
+  background: linear-gradient(180deg, rgba(255,255,255,0.035), rgba(255,255,255,0.01)), var(--surface-2) !important;
+  min-height: 42px;
+}
+
+input:focus,
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\styles\flat-minimal-system.css:1203 =====
+.app-search,
+.search-bar,
+.search-input-wrapper,
+.maint-input-wrapper,
+>> [class*="input-wrap"],
+[class*="field-wrap"] {
+  border-radius: var(--spatial-radius-control) !important;
+  background: linear-gradient(180deg, rgba(255,255,255,0.035), rgba(255,255,255,0.01)), var(--surface-2) !important;
+  min-height: 42px;
+}
+
+input:focus,
+textarea:focus,
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\styles\flat-minimal-system.css:1210 =====
+  background: linear-gradient(180deg, rgba(255,255,255,0.035), rgba(255,255,255,0.01)), var(--surface-2) !important;
+  min-height: 42px;
+}
+
+>> input:focus,
+textarea:focus,
+select:focus,
+.form-input:focus,
+.bf-input:focus,
+.login-field-input:focus,
+.search-bar:focus-within,
+.search-input-wrapper:focus-within,
+.app-search:focus-within {
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\styles\flat-minimal-system.css:1213 =====
+
+input:focus,
+textarea:focus,
+select:focus,
+>> .form-input:focus,
+.bf-input:focus,
+.login-field-input:focus,
+.search-bar:focus-within,
+.search-input-wrapper:focus-within,
+.app-search:focus-within {
+  box-shadow: 0 0 0 3px rgba(var(--accent-pink-rgb), 0.13), var(--depth-line) !important;
+}
+
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\styles\flat-minimal-system.css:1214 =====
+input:focus,
+textarea:focus,
+select:focus,
+.form-input:focus,
+>> .bf-input:focus,
+.login-field-input:focus,
+.search-bar:focus-within,
+.search-input-wrapper:focus-within,
+.app-search:focus-within {
+  box-shadow: 0 0 0 3px rgba(var(--accent-pink-rgb), 0.13), var(--depth-line) !important;
+}
+
+/* Tables */
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\styles\flat-minimal-system.css:1215 =====
+textarea:focus,
+select:focus,
+.form-input:focus,
+.bf-input:focus,
+>> .login-field-input:focus,
+.search-bar:focus-within,
+.search-input-wrapper:focus-within,
+.app-search:focus-within {
+  box-shadow: 0 0 0 3px rgba(var(--accent-pink-rgb), 0.13), var(--depth-line) !important;
+}
+
+/* Tables */
+.app-table-panel,
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\styles\flat-minimal-system.css:1217 =====
+.form-input:focus,
+.bf-input:focus,
+.login-field-input:focus,
+.search-bar:focus-within,
+>> .search-input-wrapper:focus-within,
+.app-search:focus-within {
+  box-shadow: 0 0 0 3px rgba(var(--accent-pink-rgb), 0.13), var(--depth-line) !important;
+}
+
+/* Tables */
+.app-table-panel,
+.table-responsive,
+.app-table-wrapper {
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\styles\fluent2-assets.css:299 =====
+  outline-offset: 2px !important;
+  box-shadow: 0 0 0 4px rgba(var(--accent-cyan-rgb), 0.16) !important;
+}
+
+>> input:not([type="checkbox"]):not([type="radio"]),
+select,
+textarea,
+.form-input,
+.form-select,
+.form-textarea,
+.bf-input,
+.app-search,
+.search-bar,
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\styles\fluent2-assets.css:302 =====
+
+input:not([type="checkbox"]):not([type="radio"]),
+select,
+textarea,
+>> .form-input,
+.form-select,
+.form-textarea,
+.bf-input,
+.app-search,
+.search-bar,
+.search-wrapper,
+.finance-search-wrap {
+  min-height: var(--fluent-control-height-medium);
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\styles\fluent2-assets.css:305 =====
+textarea,
+.form-input,
+.form-select,
+.form-textarea,
+>> .bf-input,
+.app-search,
+.search-bar,
+.search-wrapper,
+.finance-search-wrap {
+  min-height: var(--fluent-control-height-medium);
+  border-radius: var(--fluent-radius-medium) !important;
+  border: 1px solid var(--fluent-color-neutral-stroke-1) !important;
+  background: rgba(0, 0, 0, 0.28) !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\styles\fluent2-assets.css:321 =====
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2) !important;
+  transition: all var(--fluent-duration-fast) var(--fluent-curve-easy-ease) !important;
+}
+
+>> [data-theme="light"] input:not([type="checkbox"]):not([type="radio"]),
+[data-theme="light"] select,
+[data-theme="light"] textarea,
+[data-theme="light"] .form-input,
+[data-theme="light"] .form-select,
+[data-theme="light"] .form-textarea,
+[data-theme="light"] .bf-input,
+[data-theme="light"] .app-search,
+[data-theme="light"] .search-bar,
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\styles\fluent2-assets.css:324 =====
+
+[data-theme="light"] input:not([type="checkbox"]):not([type="radio"]),
+[data-theme="light"] select,
+[data-theme="light"] textarea,
+>> [data-theme="light"] .form-input,
+[data-theme="light"] .form-select,
+[data-theme="light"] .form-textarea,
+[data-theme="light"] .bf-input,
+[data-theme="light"] .app-search,
+[data-theme="light"] .search-bar,
+[data-theme="light"] .search-wrapper,
+[data-theme="light"] .finance-search-wrap {
+  background: rgba(255, 255, 255, 0.65) !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\styles\fluent2-assets.css:327 =====
+[data-theme="light"] textarea,
+[data-theme="light"] .form-input,
+[data-theme="light"] .form-select,
+[data-theme="light"] .form-textarea,
+>> [data-theme="light"] .bf-input,
+[data-theme="light"] .app-search,
+[data-theme="light"] .search-bar,
+[data-theme="light"] .search-wrapper,
+[data-theme="light"] .finance-search-wrap {
+  background: rgba(255, 255, 255, 0.65) !important;
+  border-color: rgba(0, 0, 0, 0.12) !important;
+  color: var(--text-primary) !important;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\styles\fluent2-assets.css:338 =====
+  color: var(--text-primary) !important;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+}
+
+>> input:not([type="checkbox"]):not([type="radio"]):focus,
+select:focus,
+textarea:focus,
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus,
+.bf-input:focus,
+.app-search:focus-within,
+.search-bar:focus-within,
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\styles\fluent2-assets.css:341 =====
+
+input:not([type="checkbox"]):not([type="radio"]):focus,
+select:focus,
+textarea:focus,
+>> .form-input:focus,
+.form-select:focus,
+.form-textarea:focus,
+.bf-input:focus,
+.app-search:focus-within,
+.search-bar:focus-within,
+.search-wrapper:focus-within,
+.finance-search-wrap:focus-within {
+  border-color: var(--fluent-color-accent-line) !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\styles\fluent2-assets.css:344 =====
+textarea:focus,
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus,
+>> .bf-input:focus,
+.app-search:focus-within,
+.search-bar:focus-within,
+.search-wrapper:focus-within,
+.finance-search-wrap:focus-within {
+  border-color: var(--fluent-color-accent-line) !important;
+  outline: 2px solid transparent !important;
+  box-shadow: 0 0 15px rgba(var(--accent-cyan-rgb), 0.15), 0 0 0 3px rgba(var(--accent-cyan-rgb), 0.25) !important;
+}
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\styles\mobile-overhaul.css:77 =====
+  }
+
+  /* Search bars: full width */
+  .search-bar,
+>>   .search-input-wrapper,
+  [class*="search-bar"] {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* Glass panels on mobile */
+  .glass-panel {
+    border-radius: var(--mob-radius);
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\styles\mobile-overhaul.css:380 =====
+  .mobile-move-hint,
+  .mobile-maint-card,
+  .maint-smart-panel,
+  .maint-modal-info,
+>>   .maint-input-wrapper {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  /* 3. Gunakan fallback warna semi-transparan solid agar estetika tetap terjaga */
+  .glass-panel,
+  .app-panel,
+  .app-card,
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\styles\mobile-overhaul.css:414 =====
+  .mobile-move-hint,
+  .mobile-maint-card,
+  .maint-smart-panel,
+  .maint-modal-info,
+>>   .maint-input-wrapper {
+    background: rgba(22, 22, 28, 0.97) !important; /* Latar belakang solid gelap */
+  }
+
+  [data-theme="light"] .glass-panel,
+  [data-theme="light"] .app-panel,
+  [data-theme="light"] .app-card,
+  [data-theme="light"] .app-stat-card,
+  [data-theme="light"] .app-smart-panel,
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\styles\mobile-overhaul.css:446 =====
+  [data-theme="light"] .mobile-move-hint,
+  [data-theme="light"] .mobile-maint-card,
+  [data-theme="light"] .maint-smart-panel,
+  [data-theme="light"] .maint-modal-info,
+>>   [data-theme="light"] .maint-input-wrapper {
+    background: rgba(250, 250, 252, 0.99) !important; /* Latar belakang solid terang */
+  }
+
+  .mobile-command-header {
+    background: rgba(16, 16, 22, 0.98) !important;
+  }
+  [data-theme="light"] .mobile-command-header {
+    background: rgba(250, 250, 252, 0.99) !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\index.css:207 =====
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1;
+}
+
+>> /* ─── Global input / select typography ─── */
+input, textarea, select, button {
+  font-family: var(--font-body);
+}
+
+option {
+  background-color: var(--bg-surface);
+  color: var(--text-primary);
+}
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\index.css:208 =====
+  font-feature-settings: 'tnum' 1;
+}
+
+/* ─── Global input / select typography ─── */
+>> input, textarea, select, button {
+  font-family: var(--font-body);
+}
+
+option {
+  background-color: var(--bg-surface);
+  color: var(--text-primary);
+}
+
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\index.css:544 =====
+  background: rgba(0, 0, 0, 0.02);
+  border-color: rgba(0, 0, 0, 0.06);
+}
+
+>> [data-theme="light"] .bf-input {
+  background: rgba(0, 0, 0, 0.04);
+  border-color: rgba(0, 0, 0, 0.1);
+  color: var(--text-primary);
+}
+
+[data-theme="light"] .bf-input:focus {
+  background: white;
+  border-color: rgba(232, 25, 78, 0.35);
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\index.css:550 =====
+  border-color: rgba(0, 0, 0, 0.1);
+  color: var(--text-primary);
+}
+
+>> [data-theme="light"] .bf-input:focus {
+  background: white;
+  border-color: rgba(232, 25, 78, 0.35);
+}
+
+[data-theme="light"] .bf-price-card {
+  background: rgba(0, 0, 0, 0.03);
+  border-color: rgba(0, 0, 0, 0.07);
+}
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\index.css:589 =====
+  border-color: rgba(0, 0, 0, 0.05);
+  color: var(--text-primary);
+}
+
+>> /* ── Inputs globally ── */
+[data-theme="light"] input,
+[data-theme="light"] textarea,
+[data-theme="light"] select {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.15);
+  color: var(--text-primary);
+}
+
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\index.css:590 =====
+  color: var(--text-primary);
+}
+
+/* ── Inputs globally ── */
+>> [data-theme="light"] input,
+[data-theme="light"] textarea,
+[data-theme="light"] select {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.15);
+  color: var(--text-primary);
+}
+
+[data-theme="light"] input:hover,
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\index.css:598 =====
+  border-color: rgba(0, 0, 0, 0.15);
+  color: var(--text-primary);
+}
+
+>> [data-theme="light"] input:hover,
+[data-theme="light"] textarea:hover,
+[data-theme="light"] select:hover {
+  border-color: rgba(0, 0, 0, 0.28);
+}
+
+[data-theme="light"] input:focus,
+[data-theme="light"] textarea:focus,
+[data-theme="light"] select:focus {
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\index.css:604 =====
+[data-theme="light"] select:hover {
+  border-color: rgba(0, 0, 0, 0.28);
+}
+
+>> [data-theme="light"] input:focus,
+[data-theme="light"] textarea:focus,
+[data-theme="light"] select:focus {
+  background: #ffffff;
+  border-color: var(--accent-pink);
+  box-shadow: 0 0 0 1px var(--accent-pink);
+}
+
+[data-theme="light"] input::placeholder,
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\index.css:612 =====
+  border-color: var(--accent-pink);
+  box-shadow: 0 0 0 1px var(--accent-pink);
+}
+
+>> [data-theme="light"] input::placeholder,
+[data-theme="light"] textarea::placeholder {
+  color: var(--text-faint);
+}
+
+[data-theme="light"] option {
+  background: white;
+  color: var(--text-primary);
+}
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\index.css:662 =====
+[data-theme="light"] .auth-header h1 { color: #111128; }
+[data-theme="light"] .auth-header p  { color: rgba(var(--bg-surface-rgb), 0.45); }
+[data-theme="light"] .auth-header-studio { color: rgba(var(--bg-surface-rgb), 0.4); }
+
+>> [data-theme="light"] .form-input {
+  background: rgba(0,0,0,0.04);
+  border-color: rgba(0,0,0,0.1);
+  color: #111128;
+}
+
+[data-theme="light"] .form-input:focus {
+  background: white;
+  border-color: rgba(232,25,78,0.35);
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\index.css:668 =====
+  border-color: rgba(0,0,0,0.1);
+  color: #111128;
+}
+
+>> [data-theme="light"] .form-input:focus {
+  background: white;
+  border-color: rgba(232,25,78,0.35);
+  box-shadow: 0 0 0 3px rgba(232,25,78,0.08);
+}
+
+[data-theme="light"] .form-input::placeholder { color: rgba(var(--bg-surface-rgb), 0.25); }
+
+[data-theme="light"] .auth-guest-btn {
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\index.css:674 =====
+  border-color: rgba(232,25,78,0.35);
+  box-shadow: 0 0 0 3px rgba(232,25,78,0.08);
+}
+
+>> [data-theme="light"] .form-input::placeholder { color: rgba(var(--bg-surface-rgb), 0.25); }
+
+[data-theme="light"] .auth-guest-btn {
+  background: rgba(0,0,0,0.04);
+  border-color: rgba(0,0,0,0.1);
+  color: rgba(var(--bg-surface-rgb), 0.65);
+}
+
+[data-theme="light"] .auth-guest-btn:hover {
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\index.css:925 =====
+
+
+
+
+>> /* Unified Input Fields */
+input:not([type="checkbox"]):not([type="radio"]), select, textarea, .form-input, .bf-input {
+  background: rgba(255, 255, 255, 0.02) !important;
+  border: var(--strokeWidthThin) solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: var(--borderRadiusMedium) !important; /* Fluent 2 4px radius */
+  padding: 10px 12px !important;
+  color: var(--text-primary) !important;
+  font-family: var(--font-display) !important;
+  font-size: var(--text-base) !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\index.css:926 =====
+
+
+
+/* Unified Input Fields */
+>> input:not([type="checkbox"]):not([type="radio"]), select, textarea, .form-input, .bf-input {
+  background: rgba(255, 255, 255, 0.02) !important;
+  border: var(--strokeWidthThin) solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: var(--borderRadiusMedium) !important; /* Fluent 2 4px radius */
+  padding: 10px 12px !important;
+  color: var(--text-primary) !important;
+  font-family: var(--font-display) !important;
+  font-size: var(--text-base) !important;
+  transition: all var(--durationFast) var(--curveEasyEase) !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\index.css:936 =====
+  font-family: var(--font-display) !important;
+  font-size: var(--text-base) !important;
+  transition: all var(--durationFast) var(--curveEasyEase) !important;
+}
+>> input::placeholder, select::placeholder, textarea::placeholder {
+  color: var(--text-muted) !important;
+  opacity: 0.8;
+}
+input:not([type="checkbox"]):not([type="radio"]):hover, select:hover, textarea:hover, .form-input:hover, .bf-input:hover {
+  border-color: rgba(255, 255, 255, 0.16) !important;
+}
+input:not([type="checkbox"]):not([type="radio"]):focus, select:focus, textarea:focus, .form-input:focus, .bf-input:focus {
+  background: rgba(255, 255, 255, 0.03) !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\index.css:940 =====
+input::placeholder, select::placeholder, textarea::placeholder {
+  color: var(--text-muted) !important;
+  opacity: 0.8;
+}
+>> input:not([type="checkbox"]):not([type="radio"]):hover, select:hover, textarea:hover, .form-input:hover, .bf-input:hover {
+  border-color: rgba(255, 255, 255, 0.16) !important;
+}
+input:not([type="checkbox"]):not([type="radio"]):focus, select:focus, textarea:focus, .form-input:focus, .bf-input:focus {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border-color: var(--accent-pink) !important;
+  box-shadow: 0 0 0 1px var(--accent-pink) !important; /* Precise 1px inner border on focus */
+  outline: none;
+}
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\index.css:943 =====
+}
+input:not([type="checkbox"]):not([type="radio"]):hover, select:hover, textarea:hover, .form-input:hover, .bf-input:hover {
+  border-color: rgba(255, 255, 255, 0.16) !important;
+}
+>> input:not([type="checkbox"]):not([type="radio"]):focus, select:focus, textarea:focus, .form-input:focus, .bf-input:focus {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border-color: var(--accent-pink) !important;
+  box-shadow: 0 0 0 1px var(--accent-pink) !important; /* Precise 1px inner border on focus */
+  outline: none;
+}
+
+/* Unified Search Bars */
+.search-bar, .search-wrapper, .finance-search-wrap {
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\index.css:968 =====
+  border-color: var(--accent-pink) !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+  box-shadow: 0 0 0 3px rgba(255, 42, 95, 0.12), 0 4px 16px rgba(0, 0, 0, 0.15) !important;
+}
+>> .search-bar input, .search-wrapper input, .search-input, .finance-search-wrap input {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+  color: var(--text-primary) !important;
+  font-size: var(--text-base) !important;
+  width: 100% !important;
+  padding: 0 !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\index.css:1499 =====
+  border-color: rgba(46, 125, 50, 0.3) !important;
+  color: #2e7d32 !important;
+  box-shadow: 0 0 10px rgba(46, 125, 50, 0.1) !important;
+}
+>> [data-theme="light"] .maint-input-wrapper {
+  background: rgba(0, 0, 0, 0.04) !important;
+  border-color: rgba(0, 0, 0, 0.1) !important;
+}
+[data-theme="light"] .maint-input-wrapper:focus-within {
+  background: white !important;
+  border-color: rgba(232, 25, 78, 0.35) !important;
+  box-shadow: 0 0 0 3px rgba(232, 25, 78, 0.08) !important;
+}
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\index.css:1503 =====
+[data-theme="light"] .maint-input-wrapper {
+  background: rgba(0, 0, 0, 0.04) !important;
+  border-color: rgba(0, 0, 0, 0.1) !important;
+}
+>> [data-theme="light"] .maint-input-wrapper:focus-within {
+  background: white !important;
+  border-color: rgba(232, 25, 78, 0.35) !important;
+  box-shadow: 0 0 0 3px rgba(232, 25, 78, 0.08) !important;
+}
+[data-theme="light"] .maint-input-prefix {
+  color: var(--text-muted) !important;
+}
+[data-theme="light"] .maint-smart-panel,
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\index.css:1508 =====
+  background: white !important;
+  border-color: rgba(232, 25, 78, 0.35) !important;
+  box-shadow: 0 0 0 3px rgba(232, 25, 78, 0.08) !important;
+}
+>> [data-theme="light"] .maint-input-prefix {
+  color: var(--text-muted) !important;
+}
+[data-theme="light"] .maint-smart-panel,
+[data-theme="light"] .maint-smart-item {
+  background: rgba(0, 0, 0, 0.02) !important;
+  border-color: rgba(0, 0, 0, 0.06) !important;
+}
+[data-theme="light"] .maint-smart-item.kritis,
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\index.css:1777 =====
+  align-items: center;
+  gap: 6px;
+}
+
+>> .form-input, .form-select, .form-textarea {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.35) !important;
+  border: 1px solid var(--glass-border) !important;
+  border-radius: var(--borderRadiusMedium) !important;
+  padding: 12px 16px;
+  color: var(--text-primary);
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\index.css:1790 =====
+  transition: all var(--durationFast) var(--curveEasyEase) !important;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15) !important;
+}
+
+>> .form-input:focus, .form-select:focus, .form-textarea:focus {
+  outline: none;
+  border-color: var(--accent-pink) !important;
+  background: rgba(0, 0, 0, 0.5) !important;
+  box-shadow: 0 0 0 4px rgba(var(--accent-pink-rgb), 0.15), 0 4px 12px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+}
+
+.form-helper {
+  font-size: var(--text-xs);
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\index.css:2094 =====
+  backdrop-filter: blur(10px);
+}
+
+/* Base sizing & padding inside */
+>> .app-page .app-search .app-search-input,
+.app-page .search-bar .app-search-input,
+.app-page .search-wrapper .app-search-input,
+.app-page .finance-search-wrap .app-search-input {
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  width: 100% !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\index.css:2095 =====
+}
+
+/* Base sizing & padding inside */
+.app-page .app-search .app-search-input,
+>> .app-page .search-bar .app-search-input,
+.app-page .search-wrapper .app-search-input,
+.app-page .finance-search-wrap .app-search-input {
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  width: 100% !important;
+  padding: 0 !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\index.css:2096 =====
+
+/* Base sizing & padding inside */
+.app-page .app-search .app-search-input,
+.app-page .search-bar .app-search-input,
+>> .app-page .search-wrapper .app-search-input,
+.app-page .finance-search-wrap .app-search-input {
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  width: 100% !important;
+  padding: 0 !important;
+  font-size: 0.85rem !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\index.css:2097 =====
+/* Base sizing & padding inside */
+.app-page .app-search .app-search-input,
+.app-page .search-bar .app-search-input,
+.app-page .search-wrapper .app-search-input,
+>> .app-page .finance-search-wrap .app-search-input {
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  width: 100% !important;
+  padding: 0 !important;
+  font-size: 0.85rem !important;
+  font-weight: 500 !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\index.css:2109 =====
+  font-weight: 500 !important;
+  letter-spacing: 0.01em !important;
+  color: var(--text-primary) !important;
+}
+>> .app-page .app-search .app-search-input:focus,
+.app-page .search-bar .app-search-input:focus,
+.app-page .search-wrapper .app-search-input:focus,
+.app-page .finance-search-wrap .app-search-input:focus {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\index.css:2110 =====
+  letter-spacing: 0.01em !important;
+  color: var(--text-primary) !important;
+}
+.app-page .app-search .app-search-input:focus,
+>> .app-page .search-bar .app-search-input:focus,
+.app-page .search-wrapper .app-search-input:focus,
+.app-page .finance-search-wrap .app-search-input:focus {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\index.css:2111 =====
+  color: var(--text-primary) !important;
+}
+.app-page .app-search .app-search-input:focus,
+.app-page .search-bar .app-search-input:focus,
+>> .app-page .search-wrapper .app-search-input:focus,
+.app-page .finance-search-wrap .app-search-input:focus {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+.app-page .app-search .app-search-input::placeholder,
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\index.css:2112 =====
+}
+.app-page .app-search .app-search-input:focus,
+.app-page .search-bar .app-search-input:focus,
+.app-page .search-wrapper .app-search-input:focus,
+>> .app-page .finance-search-wrap .app-search-input:focus {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+.app-page .app-search .app-search-input::placeholder,
+.app-page .search-bar .app-search-input::placeholder,
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\index.css:2119 =====
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+>> .app-page .app-search .app-search-input::placeholder,
+.app-page .search-bar .app-search-input::placeholder,
+.app-page .search-wrapper .app-search-input::placeholder,
+.app-page .finance-search-wrap .app-search-input::placeholder {
+  color: var(--text-muted) !important;
+}
+
+.app-page .app-search-icon {
+  color: var(--text-muted) !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\index.css:2120 =====
+  outline: none !important;
+}
+
+.app-page .app-search .app-search-input::placeholder,
+>> .app-page .search-bar .app-search-input::placeholder,
+.app-page .search-wrapper .app-search-input::placeholder,
+.app-page .finance-search-wrap .app-search-input::placeholder {
+  color: var(--text-muted) !important;
+}
+
+.app-page .app-search-icon {
+  color: var(--text-muted) !important;
+  flex-shrink: 0;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\index.css:2121 =====
+}
+
+.app-page .app-search .app-search-input::placeholder,
+.app-page .search-bar .app-search-input::placeholder,
+>> .app-page .search-wrapper .app-search-input::placeholder,
+.app-page .finance-search-wrap .app-search-input::placeholder {
+  color: var(--text-muted) !important;
+}
+
+.app-page .app-search-icon {
+  color: var(--text-muted) !important;
+  flex-shrink: 0;
+  transition: color 0.2s, transform 0.2s !important;
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\index.css:2122 =====
+
+.app-page .app-search .app-search-input::placeholder,
+.app-page .search-bar .app-search-input::placeholder,
+.app-page .search-wrapper .app-search-input::placeholder,
+>> .app-page .finance-search-wrap .app-search-input::placeholder {
+  color: var(--text-muted) !important;
+}
+
+.app-page .app-search-icon {
+  color: var(--text-muted) !important;
+  flex-shrink: 0;
+  transition: color 0.2s, transform 0.2s !important;
+}
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\index.css:2285 =====
+  background: rgba(0, 0, 0, 0.06) !important;
+  border-color: var(--accent-cyan) !important;
+  box-shadow: 0 0 16px rgba(var(--accent-cyan-rgb), 0.15), 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+}
+>> [data-theme="light"] .app-page .app-search-input {
+  color: #333 !important;
+}
+[data-theme="light"] .app-page .app-search-input::placeholder {
+  color: #888 !important;
+}
+[data-theme="light"] .app-page .app-search-icon {
+  color: #777 !important;
+}
+
+===== C:\Users\hazel\source\repos\37MUSICSTUDIO\src\index.css:2288 =====
+}
+[data-theme="light"] .app-page .app-search-input {
+  color: #333 !important;
+}
+>> [data-theme="light"] .app-page .app-search-input::placeholder {
+  color: #888 !important;
+}
+[data-theme="light"] .app-page .app-search-icon {
+  color: #777 !important;
+}
+
+/* Mobile Adjustments */
+@media (max-width: 1024px) {

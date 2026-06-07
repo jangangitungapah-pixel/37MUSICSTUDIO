@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { TextField } from '@radix-ui/themes';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   Activity,
@@ -35,11 +36,12 @@ import {
 import { usePublicStudioSettings } from '../hooks/usePublicStudioSettings';
 import { useThemeStore } from '../store/useThemeStore';
 import { getPortalPathForProfile } from '../lib/roles';
+import '@radix-ui/themes/styles.css';
 import './LandingPage.css';
 
 const FALLBACK_HERO_PHOTO = {
   url: '/studio-hero.webp',
-  caption: '37 Music Studio private room',
+  caption: '37 Music Studio — private rehearsal & recording room',
 };
 
 const YOUTUBE_URL = 'https://youtube.com/@37musicstudio74?si=dq57yhCuJcph0pIf';
@@ -94,8 +96,7 @@ const LandingPage = () => {
 
     const handleEscape = (event) => {
       if (event.key === 'Escape') {
-        setIsMobileMenuOpen(false);
-        setIsLoginOpen(false);
+        setIsMobileMenuOpen(false);
         setLightboxPhoto(null);
       }
     };
@@ -168,7 +169,7 @@ const LandingPage = () => {
       await authStore.getState().login(identifier, password);
     } catch (error) {
       const storeError = authStore?.getState?.().error;
-      setLoginError(storeError || error?.message || 'Login gagal. Periksa username dan password.');
+      setLoginError(storeError || error?.message || 'Login gagal. Cek lagi email/username dan password kamu.');
     } finally {
       setLoginLoading(false);
     }
@@ -185,9 +186,9 @@ const LandingPage = () => {
         </Link>
 
         <div className="nav-links hide-on-mobile" role="navigation" aria-label="Navigasi utama">
-          <a href="#experience">Experience</a>
-          <a href="#gallery">Vibe</a>
-          <a href="#pricing">Rate</a>
+          <a href="#experience">Fasilitas</a>
+          <a href="#gallery">Galeri</a>
+          <a href="#pricing">Harga</a>
           <a href="#location">Lokasi</a>
         </div>
 
@@ -196,27 +197,14 @@ const LandingPage = () => {
             type="button"
             className="nav-theme-btn"
             onClick={toggleTheme}
-            title={theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
+            title={theme === 'dark' ? 'Ganti ke Light Mode' : 'Ganti ke Dark Mode'}
             aria-label={theme === 'dark' ? 'Aktifkan Light Mode' : 'Aktifkan Dark Mode'}
           >
             {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
           </button>
 
-          <button
-            type="button"
-            className={`nav-login-btn ${isLoginOpen ? 'active' : ''}`}
-            onClick={() => {
-              setIsLoginOpen(!isLoginOpen);
-              setIsMobileMenuOpen(false);
-            }}
-            aria-label="Masuk Portal"
-            aria-expanded={isLoginOpen}
-          >
-            <Lock size={16} />
-            <span>Masuk</span>
-          </button>
 
-          <Link to="/jadwal-publik" className="nav-book-btn" aria-label="Booking studio sekarang">
+          <Link to="/jadwal-publik" className="nav-book-btn" aria-label="Cek slot booking studio">
             <Calendar size={16} />
             <span>Booking</span>
           </Link>
@@ -225,8 +213,7 @@ const LandingPage = () => {
             type="button"
             className={`nav-hamburger ${isMobileMenuOpen ? 'open' : ''}`}
             onClick={() => {
-              setIsMobileMenuOpen(!isMobileMenuOpen);
-              setIsLoginOpen(false);
+              setIsMobileMenuOpen(!isMobileMenuOpen);
             }}
             aria-label={isMobileMenuOpen ? 'Tutup menu navigasi' : 'Buka menu navigasi'}
             aria-expanded={isMobileMenuOpen}
@@ -246,27 +233,27 @@ const LandingPage = () => {
             onClick={() => setIsMobileMenuOpen(false)}
           />
           <div id="landing-mobile-menu" className="mobile-nav-menu" role="navigation" aria-label="Menu navigasi mobile">
-            <a href="#experience" onClick={() => setIsMobileMenuOpen(false)}>Experience</a>
-            <a href="#gallery" onClick={() => setIsMobileMenuOpen(false)}>Vibe</a>
-            <a href="#pricing" onClick={() => setIsMobileMenuOpen(false)}>Rate</a>
+            <a href="#experience" onClick={() => setIsMobileMenuOpen(false)}>Fasilitas</a>
+            <a href="#gallery" onClick={() => setIsMobileMenuOpen(false)}>Galeri</a>
+            <a href="#pricing" onClick={() => setIsMobileMenuOpen(false)}>Harga</a>
             <a href="#location" onClick={() => setIsMobileMenuOpen(false)}>Lokasi</a>
             <Link to="/jadwal-publik" className="mobile-menu-booking" onClick={() => setIsMobileMenuOpen(false)}>
               <Calendar size={17} />
-              Booking Studio
+              Cek Slot Studio
             </Link>
           </div>
         </>
       )}
 
       {isLoginOpen && (
-        <div className="nav-login-dropdown" role="dialog" aria-modal="true" aria-label="Masuk Portal">
+        <div className="nav-login-dropdown" role="dialog" aria-modal="true" aria-label="Masuk ke akun studio">
           <div className="login-dropdown-header">
             <div className="login-dropdown-icon-wrap">
               <img src="/logo.svg" alt="" />
             </div>
             <div>
               <p className="login-dropdown-brand">{studioName || '37 MUSIC STUDIO'}</p>
-              <h4 className="login-dropdown-title">Masuk ke Portal</h4>
+              <h4 className="login-dropdown-title">Masuk ke Akun Studio</h4>
             </div>
           </div>
 
@@ -283,11 +270,11 @@ const LandingPage = () => {
             ) : (
               <span className="login-google-mark" aria-hidden="true">G</span>
             )}
-            <span>Lanjutkan dengan Google</span>
+            <span>Masuk / daftar dengan Google</span>
           </button>
 
           <div className="login-dropdown-or">
-            <span>Email login</span>
+            <span>atau masuk dengan email</span>
           </div>
 
           <form onSubmit={handleLoginSubmit} className="login-dropdown-form">
@@ -346,7 +333,7 @@ const LandingPage = () => {
               {loginLoading ? (
                 <>
                   <Loader2 className="spinner" size={16} />
-                  <span>Memverifikasi...</span>
+                  <span>Mengecek akun...</span>
                 </>
               ) : (
                 <>
@@ -369,46 +356,132 @@ const LandingPage = () => {
           <div className="hero-copy">
             <div className="hero-kicker">
               <Sparkles size={16} />
-              <span>Private music room in Tangerang</span>
+              <span>Rehearsal & recording room di Tangerang</span>
             </div>
 
-            <h1 className="hero-title">Studio private buat suara yang lebih mahal.</h1>
+            <h1 className="hero-title">Studio private untuk latihan dan recording yang lebih rapi.</h1>
 
             <p className="hero-subtitle">
-              Satu ruang eksklusif untuk rehearsal, recording, dan konten band. Gear siap, operator standby, booking langsung dari HP.
+              Booking jadwal, latihan, recording, dan konten musik dalam satu ruang private. Gear siap, operator bantu setup, kamu tinggal datang dan main.
             </p>
 
             <div className="hero-actions">
               <Link to="/jadwal-publik" className="btn-primary btn-large">
                 <Calendar size={20} />
-                <span>Booking Slot</span>
+                <span>Cek Slot Booking</span>
               </Link>
               <a href={YOUTUBE_URL} target="_blank" rel="noopener noreferrer" className="btn-secondary btn-large">
                 <PlayCircle size={20} />
-                <span>Play Preview</span>
+                <span>Lihat Video</span>
               </a>
             </div>
           </div>
 
-          <div className="hero-session" aria-label="Informasi singkat studio">
-            <div className="hero-session-main">
-              <span className="session-label">Start from</span>
-              <strong>Rp {formattedPrice}</strong>
-              <span>/ jam</span>
+                    <div className="hero-login-panel" aria-label="Masuk atau daftar akun client">
+            <div className="hero-login-top">
+              <div className="hero-login-badge">
+                <Lock size={16} />
+              </div>
+              <div>
+                <span>Client Portal</span>
+                <strong>Booking lebih cepat pakai akun studio.</strong>
+              </div>
             </div>
-            <div className="hero-session-grid">
-              <div>
-                <Clock3 size={16} />
-                <span>10.00-23.00</span>
+
+            <button
+              type="button"
+              className="hero-google-login"
+              onClick={handleGoogleLogin}
+              disabled={loginLoading}
+            >
+              {loginLoading ? (
+                <Loader2 className="spinner" size={16} />
+              ) : (
+                <span className="login-google-mark" aria-hidden="true">G</span>
+              )}
+              <span>Masuk / daftar dengan Google</span>
+            </button>
+
+            <div className="hero-login-divider">
+              <span>atau masuk dengan email</span>
+            </div>
+
+            <form onSubmit={handleLoginSubmit} className="hero-login-form">
+              {loginError && (
+                <div id="hero-login-error" role="alert" className="hero-login-error">
+                  <AlertCircle size={14} />
+                  <span>{loginError}</span>
+                </div>
+              )}
+
+              <div className="hero-login-field">
+                <label htmlFor="hero-client-identifier">Email / Username</label>
+                                <TextField.Root
+                  data-radix-field="hero-client-identifier"
+                  id="hero-client-identifier"
+                  className="hero-radix-field hero-radix-identifier"
+                  type="text"
+                  value={identifier}
+                  onChange={(event) => setIdentifier(event.target.value)}
+                  placeholder="email atau username"
+                  autoComplete="username"
+                  required
+                  aria-describedby={loginError ? 'hero-login-error' : undefined}
+                >
+                  <TextField.Slot>
+                    <Mail size={15} />
+                  </TextField.Slot>
+                </TextField.Root>
               </div>
-              <div>
-                <Headphones size={16} />
-                <span>Operator Ready</span>
+
+              <div className="hero-login-field">
+                <label htmlFor="hero-client-password">Password</label>
+                                <TextField.Root
+                  data-radix-field="hero-client-password"
+                  id="hero-client-password"
+                  className="hero-radix-field hero-radix-password"
+                  type={showPass ? 'text' : 'password'}
+                  value={password}
+                  onChange={(event) => setPassword(event.target.value)}
+                  placeholder="password akun"
+                  autoComplete="current-password"
+                  required
+                >
+                  <TextField.Slot>
+                    <Lock size={15} />
+                  </TextField.Slot>
+
+                  <TextField.Slot side="right">
+                    <button
+                      type="button"
+                      className="hero-radix-eye"
+                      onClick={() => setShowPass((value) => !value)}
+                      aria-label={showPass ? 'Sembunyikan password' : 'Tampilkan password'}
+                    >
+                      {showPass ? <EyeOff size={15} /> : <Eye size={15} />}
+                    </button>
+                  </TextField.Slot>
+                </TextField.Root>
               </div>
-              <div>
-                <ShieldCheck size={16} />
-                <span>Private Room</span>
-              </div>
+
+              <button type="submit" className="hero-login-submit" disabled={loginLoading}>
+                {loginLoading ? (
+                  <>
+                    <Loader2 className="spinner" size={16} />
+                    <span>Mengecek akun...</span>
+                  </>
+                ) : (
+                  <>
+                    <span>Masuk ke Portal</span>
+                    <ChevronRight size={16} />
+                  </>
+                )}
+              </button>
+            </form>
+
+            <div className="hero-login-foot">
+              <span>Belum punya akun? Pakai Google untuk daftar cepat.</span>
+              <Link to="/jadwal-publik">Cek slot tanpa login</Link>
             </div>
           </div>
         </div>
@@ -416,10 +489,10 @@ const LandingPage = () => {
 
       <section id="experience" className="experience-section">
         <div className="section-header">
-          <span className="section-eyebrow">The 37 Experience</span>
-          <h2>Satu studio, semua sesi dibuat serius.</h2>
+          <span className="section-eyebrow">Kenapa 37</span>
+          <h2>Sesi musik lebih rapi, tanpa ribet teknis.</h2>
           <p>
-            Dari latihan sampai recording, semua dibuat lebih rapi, nyaman, dan gampang dibooking dari client portal.
+            Kami siapkan ruang, alat, dan bantuan teknis supaya kamu bisa fokus latihan, rekaman, atau bikin konten.
           </p>
         </div>
 
@@ -429,8 +502,8 @@ const LandingPage = () => {
               <Music2 size={26} />
             </div>
             <span className="experience-label">Rehearsal</span>
-            <h3>Latihan lebih fokus</h3>
-            <p>Soundproof, AC, drum, ampli gitar, ampli bass, dan routing yang siap dipakai dari awal sesi.</p>
+            <h3>Latihan band lebih fokus</h3>
+            <p>Drum, ampli gitar, ampli bass, AC, dan ruang soundproof siap dipakai sejak awal sesi.</p>
           </div>
 
           <div className="experience-card featured">
@@ -438,8 +511,8 @@ const LandingPage = () => {
               <Mic2 size={26} />
             </div>
             <span className="experience-label">Recording</span>
-            <h3>Take vokal dan demo</h3>
-            <p>Mic, interface, monitoring, dan operator untuk bantu tracking supaya ide lagu cepat jadi materi.</p>
+            <h3>Rekam vokal, demo, dan konten</h3>
+            <p>Mic, interface, monitoring, dan operator siap bantu tracking agar materi cepat jadi.</p>
           </div>
 
           <div className="experience-card">
@@ -447,8 +520,8 @@ const LandingPage = () => {
               <Gauge size={26} />
             </div>
             <span className="experience-label">Session assist</span>
-            <h3>Datang, setup, main</h3>
-            <p>Operator Ready bantu sound check, tuning basic, dan kebutuhan teknis supaya sesi tetap jalan.</p>
+            <h3>Setup dibantu dari awal</h3>
+            <p>Butuh sound check, routing, atau tuning basic? Tim studio bantu supaya sesi tetap lancar.</p>
           </div>
         </div>
       </section>
@@ -456,26 +529,26 @@ const LandingPage = () => {
       <section className="booking-flow-section">
         <div className="flow-panel">
           <div className="flow-copy">
-            <span className="section-eyebrow">Mobile-first booking</span>
-            <h2>Slot kosong bisa dicek sambil jalan.</h2>
-            <p>Cocok buat user yang buka dari HP: cek jadwal, isi data, lalu konfirmasi lewat WhatsApp.</p>
+            <span className="section-eyebrow">Booking cepat</span>
+            <h2>Cek jadwal, pilih slot, langsung kirim request.</h2>
+            <p>Dirancang untuk dibuka dari HP. Kamu bisa lihat slot kosong, isi kebutuhan sesi, lalu lanjut konfirmasi via WhatsApp.</p>
           </div>
 
           <div className="flow-steps" aria-label="Alur booking">
             <div className="flow-step">
               <span>01</span>
-              <strong>Cek slot</strong>
-              <p>Lihat jadwal publik yang masih kosong.</p>
+              <strong>Lihat slot</strong>
+              <p>Pilih tanggal dan jam yang tersedia.</p>
             </div>
             <div className="flow-step">
               <span>02</span>
-              <strong>Isi sesi</strong>
-              <p>Pilih jam, tulis kebutuhan, dan kirim request.</p>
+              <strong>Isi detail</strong>
+              <p>Tulis nama band/artist dan kebutuhan sesi.</p>
             </div>
             <div className="flow-step">
               <span>03</span>
-              <strong>Datang main</strong>
-              <p>Tim studio bantu setup saat kamu tiba.</p>
+              <strong>Konfirmasi</strong>
+              <p>Request masuk, tim studio follow up via WhatsApp.</p>
             </div>
           </div>
         </div>
@@ -483,9 +556,9 @@ const LandingPage = () => {
 
       <section id="gallery" className="landing-gallery-section">
         <div className="section-header align-left">
-          <span className="section-eyebrow">Vibe check</span>
-          <h2>Ruangnya kelihatan sebelum kamu booking.</h2>
-          <p>Preview studio dibuat ringan untuk mobile. Studio Gallery penuh tetap bisa dibuka saat kamu butuh lihat foto lain.</p>
+          <span className="section-eyebrow">Lihat ruang</span>
+          <h2>Cek dulu ruangnya sebelum datang.</h2>
+          <p>Preview singkat biar kamu tahu suasana studio. Untuk foto lengkap, buka halaman galeri.</p>
         </div>
 
         <div className="landing-gallery-grid">
@@ -506,7 +579,7 @@ const LandingPage = () => {
 
         <div className="gallery-actions">
           <Link to="/galeri" className="btn-secondary btn-large">
-            <span>Lihat Studio Gallery</span>
+            <span>Lihat Galeri Studio</span>
             <ArrowUpRight size={18} />
           </Link>
         </div>
@@ -532,22 +605,22 @@ const LandingPage = () => {
       <section id="pricing" className="pricing-section">
         <div className="pricing-shell">
           <div className="pricing-copy">
-            <span className="section-eyebrow">Studio rate</span>
-            <h2>Harga jelas, fasilitas udah include.</h2>
+            <span className="section-eyebrow">Harga studio</span>
+            <h2>Satu rate, fasilitas utama sudah termasuk.</h2>
             <p>
-              Cocok untuk latihan, demo recording, content session, atau band yang butuh ruang private dengan operator.
+              Untuk latihan, demo recording, content session, atau sesi band yang butuh ruang private plus bantuan operator.
             </p>
             <div className="pricing-includes" role="list" aria-label="Yang termasuk dalam harga">
-              <div role="listitem"><CheckCircle2 size={17} /><span>Operator Ready included</span></div>
-              <div role="listitem"><CheckCircle2 size={17} /><span>Full AC dan soundproof</span></div>
-              <div role="listitem"><CheckCircle2 size={17} /><span>Drum, ampli gitar, ampli bass</span></div>
-              <div role="listitem"><CheckCircle2 size={17} /><span>Mic, interface, monitoring</span></div>
+              <div role="listitem"><CheckCircle2 size={17} /><span>Operator standby</span></div>
+              <div role="listitem"><CheckCircle2 size={17} /><span>AC & ruang soundproof</span></div>
+              <div role="listitem"><CheckCircle2 size={17} /><span>Drum, ampli gitar & bass</span></div>
+              <div role="listitem"><CheckCircle2 size={17} /><span>Mic, interface & monitoring</span></div>
             </div>
           </div>
 
           <div className="price-card">
             <div className="price-card-top">
-              <span>Mulai dari</span>
+              <span>Rate mulai dari</span>
               <Disc3 size={22} />
             </div>
             <div className="price-display">
@@ -557,7 +630,7 @@ const LandingPage = () => {
             </div>
             <Link to="/jadwal-publik" className="btn-primary btn-large">
               <Calendar size={19} />
-              <span>Cek Jadwal</span>
+              <span>Cek Slot Kosong</span>
             </Link>
           </div>
         </div>
@@ -567,18 +640,18 @@ const LandingPage = () => {
         <div className="proof-grid" aria-label="Keunggulan studio">
           <div>
             <Volume2 size={20} />
-            <strong>Sound ready</strong>
-            <span>Gear live dan recording siap sesi.</span>
+            <strong>Ruang siap pakai</strong>
+            <span>Gear live dan recording sudah disiapkan sebelum sesi.</span>
           </div>
           <div>
             <Users2 size={20} />
-            <strong>Youth friendly</strong>
-            <span>Nyaman buat band, creator, dan soloist.</span>
+            <strong>Cocok buat band muda</strong>
+            <span>Nyaman untuk band, soloist, vocalist, dan creator.</span>
           </div>
           <div>
             <MessageCircle size={20} />
-            <strong>Fast response</strong>
-            <span>Konfirmasi booking lewat WhatsApp.</span>
+            <strong>Respons via WhatsApp</strong>
+            <span>Request booking difollow up langsung oleh tim studio.</span>
           </div>
         </div>
       </section>
@@ -592,7 +665,7 @@ const LandingPage = () => {
               </span>
               <span className="brand-text">{studioName || '37 MUSIC STUDIO'}</span>
             </Link>
-            <p>Studio musik private di Tangerang untuk rehearsal, recording, dan session content.</p>
+            <p>Studio private di Tangerang untuk latihan band, demo recording, vokal, dan content session.</p>
             <div className="footer-social">
               <a href={YOUTUBE_URL} target="_blank" rel="noopener noreferrer">
                 <PlayCircle size={17} />
@@ -606,7 +679,7 @@ const LandingPage = () => {
           </div>
 
           <div className="footer-contact">
-            <h3>Hubungi kami</h3>
+            <h3>Kontak studio</h3>
             <p>
               <MapPin size={17} />
               <span>{studioAddress || 'Jl. Musik Indah No. 37, Kota Anda'}</span>
@@ -626,13 +699,12 @@ const LandingPage = () => {
           </div>
 
           <div className="footer-map">
-            <h3>Lokasi studio</h3>
+            <h3>Alamat studio</h3>
             <div className="map-container">
               <iframe
                 src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.345151531122!2d106.6089336!3d-6.218134099999999!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69fea3cbcf857d%3A0x58b169d1a6502414!2s37%20Music%20Studio%20TANGERANG!5e0!3m2!1sen!2sid!4v1779439398167!5m2!1sen!2sid"
                 width="100%"
-                height="100%"
-                style={{ border: 0 }}
+                height="100%"
                 allowFullScreen=""
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
@@ -642,14 +714,14 @@ const LandingPage = () => {
           </div>
         </div>
         <div className="footer-bottom">
-          <span>Copyright {new Date().getFullYear()} {studioName || '37 MUSIC STUDIO'}. All rights reserved.</span>
+          <span>© {new Date().getFullYear()} {studioName || '37 MUSIC STUDIO'}. Semua hak cipta dilindungi.</span>
         </div>
       </footer>
 
-      <Link to="/jadwal-publik" className="mobile-sticky-cta" aria-label="Booking studio sekarang">
+      <Link to="/jadwal-publik" className="mobile-sticky-cta" aria-label="Cek slot booking studio">
         <span>
           <Activity size={15} />
-          Rp {formattedPrice}/jam
+          Mulai Rp {formattedPrice}/jam
         </span>
         <strong>
           Booking
