@@ -4208,3 +4208,301 @@ body[data-theme="light"]:has(.landing-container) #root {
     max-width: 100%;
   }
 }
+
+/* ──────────────────────────────────────────────────────────────────────────
+   37 LANDING TAILWIND STABILIZATION 8.0E
+   --------------------------------------------------------------------------
+   Final stabilization layer for the gradual Tailwind landing migration.
+   Keeps legacy CSS as fallback, but makes the migrated Tailwind shell win:
+   - consistent section rhythm
+   - tighter editorial spacing
+   - safer mobile stacking
+   - better card hierarchy
+   - reduced old CSS collision
+   ────────────────────────────────────────────────────────────────────────── */
+
+.tw-landing-phase80d {
+  --landing-section-x: clamp(1rem, 3vw, 2rem);
+  --landing-section-y: clamp(4rem, 8vh, 6.25rem);
+  --landing-card-radius: 1.45rem;
+  --landing-card-bg: rgba(255, 255, 255, 0.045);
+  --landing-card-border: rgba(255, 255, 255, 0.09);
+}
+
+.tw-landing-phase80d .experience-section,
+.tw-landing-phase80d .booking-flow-section,
+.tw-landing-phase80d .landing-gallery-section,
+.tw-landing-phase80d .pricing-section,
+.tw-landing-phase80d .proof-section {
+  padding-left: var(--landing-section-x) !important;
+  padding-right: var(--landing-section-x) !important;
+}
+
+.tw-landing-phase80d .experience-grid,
+.tw-landing-phase80d .flow-panel,
+.tw-landing-phase80d .landing-gallery-grid,
+.tw-landing-phase80d .pricing-shell,
+.tw-landing-phase80d .proof-grid,
+.tw-landing-phase80d .footer-content {
+  width: min(100%, 1080px);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.tw-landing-phase80d .section-header {
+  margin-bottom: clamp(1.35rem, 3vw, 2.2rem) !important;
+}
+
+.tw-landing-phase80d .section-eyebrow {
+  width: fit-content !important;
+  max-width: max-content !important;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  min-height: 24px;
+  padding: 0.28rem 0.62rem !important;
+  border-radius: 999px !important;
+  font-size: 0.61rem !important;
+  line-height: 1 !important;
+  font-weight: 950 !important;
+  letter-spacing: 0.13em !important;
+  white-space: nowrap;
+}
+
+.tw-landing-phase80d .section-eyebrow::before {
+  content: "";
+  width: 0.32rem;
+  height: 0.32rem;
+  border-radius: 999px;
+  background: currentColor;
+  box-shadow: 0 0 12px currentColor;
+  opacity: 0.82;
+}
+
+.tw-landing-phase80d .section-header:not(.align-left) .section-eyebrow {
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+.tw-landing-phase80d .section-header.align-left .section-eyebrow,
+.tw-landing-phase80d .flow-copy .section-eyebrow {
+  margin-left: 0 !important;
+  margin-right: auto !important;
+}
+
+.tw-landing-phase80d .experience-card,
+.tw-landing-phase80d .flow-panel,
+.tw-landing-phase80d .flow-step,
+.tw-landing-phase80d .landing-gallery-card,
+.tw-landing-phase80d .pricing-shell,
+.tw-landing-phase80d .price-card,
+.tw-landing-phase80d .proof-grid > div,
+.tw-landing-phase80d .footer-contact,
+.tw-landing-phase80d .footer-map {
+  border-color: var(--landing-card-border) !important;
+  background-color: var(--landing-card-bg);
+}
+
+.tw-landing-phase80d .experience-card,
+.tw-landing-phase80d .flow-step,
+.tw-landing-phase80d .landing-gallery-card,
+.tw-landing-phase80d .price-card,
+.tw-landing-phase80d .proof-grid > div {
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    background 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.tw-landing-phase80d .experience-card:hover,
+.tw-landing-phase80d .flow-step:hover,
+.tw-landing-phase80d .landing-gallery-card:hover,
+.tw-landing-phase80d .price-card:hover,
+.tw-landing-phase80d .proof-grid > div:hover {
+  border-color: rgba(239, 197, 110, 0.26) !important;
+  box-shadow: 0 26px 64px rgba(0, 0, 0, 0.20);
+}
+
+.tw-landing-phase80d .experience-card::before,
+.tw-landing-phase80d .flow-panel::before,
+.tw-landing-phase80d .price-card::before {
+  opacity: 0.85;
+}
+
+.tw-landing-phase80d .section-header h2,
+.tw-landing-phase80d .flow-copy h2,
+.tw-landing-phase80d .pricing-copy h2 {
+  font-family: "Bebas Neue", Impact, "Arial Narrow", sans-serif;
+  font-weight: 400;
+  text-transform: uppercase;
+  word-spacing: 0.035em;
+}
+
+.tw-landing-phase80d .section-header p,
+.tw-landing-phase80d .flow-copy p,
+.tw-landing-phase80d .pricing-copy p {
+  text-wrap: pretty;
+}
+
+.tw-landing-phase80d .landing-gallery-media {
+  background: rgba(0, 0, 0, 0.18);
+}
+
+.tw-landing-phase80d .landing-gallery-media img,
+.tw-landing-phase80d .tw-gallery-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.tw-landing-phase80d .gallery-actions {
+  margin-top: clamp(1rem, 2.3vw, 1.55rem) !important;
+}
+
+.tw-landing-phase80d .pricing-shell {
+  align-items: stretch;
+}
+
+.tw-landing-phase80d .price-card {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.tw-landing-phase80d .price-display {
+  align-items: baseline;
+}
+
+.tw-landing-phase80d .proof-section {
+  padding-top: clamp(2rem, 4vh, 3rem) !important;
+  padding-bottom: clamp(4rem, 7vh, 5rem) !important;
+}
+
+.tw-landing-phase80d .proof-grid > div {
+  align-content: start;
+  min-height: 136px;
+}
+
+.tw-landing-phase80d .landing-footer {
+  margin-top: 0 !important;
+}
+
+.tw-landing-phase80d .footer-content {
+  align-items: start;
+}
+
+.tw-landing-phase80d .footer-map iframe {
+  display: block;
+  width: 100%;
+  min-height: 230px;
+  border: 0;
+  filter: grayscale(0.18) contrast(1.02);
+}
+
+.tw-landing-phase80d .footer-social a:hover {
+  transform: translateY(-1px);
+  border-color: rgba(239, 197, 110, 0.24);
+  background: rgba(255, 255, 255, 0.075);
+}
+
+.tw-landing-phase80d a:focus-visible,
+.tw-landing-phase80d button:focus-visible,
+.tw-landing-phase80d input:focus-visible,
+.tw-landing-phase80d textarea:focus-visible {
+  outline: 2px solid rgba(239, 197, 110, 0.68);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tw-landing-phase80d *,
+  .tw-landing-phase80d *::before,
+  .tw-landing-phase80d *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
+[data-theme="light"] .tw-landing-phase80d {
+  --landing-card-bg: rgba(255, 255, 255, 0.68);
+  --landing-card-border: rgba(78, 54, 28, 0.105);
+}
+
+[data-theme="light"] .tw-landing-phase80d .landing-footer {
+  background: #f5eadb;
+}
+
+[data-theme="light"] .tw-landing-phase80d .footer-map iframe {
+  filter: grayscale(0.08) contrast(0.98) saturate(0.92);
+}
+
+@media (max-width: 1023px) {
+  .tw-landing-phase80d .experience-grid,
+  .tw-landing-phase80d .flow-panel,
+  .tw-landing-phase80d .landing-gallery-grid,
+  .tw-landing-phase80d .pricing-shell,
+  .tw-landing-phase80d .proof-grid,
+  .tw-landing-phase80d .footer-content {
+    width: min(100%, 760px);
+  }
+
+  .tw-landing-phase80d .pricing-shell {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (max-width: 767px) {
+  .tw-landing-phase80d {
+    --landing-section-x: 0.92rem;
+    --landing-card-radius: 1.2rem;
+  }
+
+  .tw-landing-phase80d .section-eyebrow {
+    min-height: 22px;
+    padding: 0.24rem 0.54rem !important;
+    font-size: 0.56rem !important;
+    letter-spacing: 0.115em !important;
+  }
+
+  .tw-landing-phase80d .section-header {
+    margin-bottom: 1.2rem !important;
+  }
+
+  .tw-landing-phase80d .experience-card,
+  .tw-landing-phase80d .flow-panel,
+  .tw-landing-phase80d .flow-step,
+  .tw-landing-phase80d .landing-gallery-card,
+  .tw-landing-phase80d .pricing-shell,
+  .tw-landing-phase80d .price-card,
+  .tw-landing-phase80d .proof-grid > div,
+  .tw-landing-phase80d .footer-contact,
+  .tw-landing-phase80d .footer-map {
+    border-radius: var(--landing-card-radius) !important;
+  }
+
+  .tw-landing-phase80d .landing-gallery-overlay {
+    left: 0.75rem !important;
+    right: 0.75rem !important;
+    bottom: 0.75rem !important;
+    padding: 0.75rem 0.85rem !important;
+    border-radius: 1rem !important;
+  }
+
+  .tw-landing-phase80d .pricing-includes {
+    grid-template-columns: 1fr !important;
+  }
+
+  .tw-landing-phase80d .footer-content {
+    gap: 1rem !important;
+  }
+
+  .tw-landing-phase80d .footer-map iframe {
+    min-height: 210px;
+  }
+}
