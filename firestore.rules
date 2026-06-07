@@ -74,6 +74,19 @@ service cloud.firestore {
           'status',
           'provider',
           'linkedCustomerId',
+          'projectName',
+          'clientType',
+          'primaryGenre',
+          'mainNeed',
+          'memberCount',
+          'preferredDuration',
+          'preferredTime',
+          'preferredDays',
+          'socialLink',
+          'gearNotes',
+          'invoiceName',
+          'paymentPreference',
+          'clientLevel',
           'createdAt',
           'lastLoginAt'
         ])
@@ -94,7 +107,21 @@ service cloud.firestore {
           'passwordUpdatedAt',
           'lastLoginAt',
           'provider',
-          'email'
+          'email',
+          'projectName',
+          'clientType',
+          'primaryGenre',
+          'mainNeed',
+          'memberCount',
+          'preferredDuration',
+          'preferredTime',
+          'preferredDays',
+          'socialLink',
+          'gearNotes',
+          'invoiceName',
+          'paymentPreference',
+          'clientLevel',
+          'profileUpdatedAt'
         ])
         && (
           !request.resource.data.diff(resource.data).affectedKeys().hasAny(['requiresPasswordChange'])
@@ -103,6 +130,17 @@ service cloud.firestore {
         && (
           !request.resource.data.diff(resource.data).affectedKeys().hasAny(['email'])
           || request.resource.data.email == request.auth.token.email
+        )
+        && (
+          !request.resource.data.diff(resource.data).affectedKeys().hasAny(['clientLevel'])
+          || (
+            !('clientLevel' in resource.data)
+            && request.resource.data.clientLevel == 'New'
+          )
+          || (
+            'clientLevel' in resource.data
+            && request.resource.data.clientLevel == resource.data.clientLevel
+          )
         );
     }
 
@@ -183,6 +221,19 @@ service cloud.firestore {
           'clientName',
           'clientPhone',
           'linkedCustomerId',
+          'projectName',
+          'clientType',
+          'primaryGenre',
+          'mainNeed',
+          'memberCount',
+          'preferredDuration',
+          'preferredTime',
+          'preferredDays',
+          'socialLink',
+          'gearNotes',
+          'invoiceName',
+          'paymentPreference',
+          'clientLevel',
           'createdBy'
         ])
         && request.resource.data.status == 'pending'
@@ -206,7 +257,97 @@ service cloud.firestore {
         && (!('clientName' in request.resource.data) || request.resource.data.clientName is string)
         && (!('clientPhone' in request.resource.data) || request.resource.data.clientPhone is string)
         && (!('linkedCustomerId' in request.resource.data) || request.resource.data.linkedCustomerId is string)
+        && (!('projectName' in request.resource.data) || request.resource.data.projectName is string)
+        && (!('clientType' in request.resource.data) || request.resource.data.clientType is string)
+        && (!('primaryGenre' in request.resource.data) || request.resource.data.primaryGenre is string)
+        && (!('mainNeed' in request.resource.data) || request.resource.data.mainNeed is string)
+        && (!('memberCount' in request.resource.data) || request.resource.data.memberCount is string)
+        && (!('preferredDuration' in request.resource.data) || request.resource.data.preferredDuration is string)
+        && (!('preferredTime' in request.resource.data) || request.resource.data.preferredTime is string)
+        && (!('preferredDays' in request.resource.data) || request.resource.data.preferredDays is string)
+        && (!('socialLink' in request.resource.data) || request.resource.data.socialLink is string)
+        && (!('gearNotes' in request.resource.data) || request.resource.data.gearNotes is string)
+        && (!('invoiceName' in request.resource.data) || request.resource.data.invoiceName is string)
+        && (!('paymentPreference' in request.resource.data) || request.resource.data.paymentPreference is string)
+        && (!('clientLevel' in request.resource.data) || request.resource.data.clientLevel is string)
         && (!('createdBy' in request.resource.data) || request.resource.data.createdBy is string);
+
+      allow update, delete: if hasPermission('calendar') || hasPermission('billing');
+    } {
+      allow read: if hasPermission('calendar')
+        || hasPermission('billing')
+        || (
+          signedInNonAnonymous()
+          && resource.data.clientUid == request.auth.uid
+        );
+
+      allow create: if signedInGuestOrStaff()
+        && request.resource.data.keys().hasOnly([
+          'id',
+          'band',
+          'phone',
+          'date',
+          'hour',
+          'duration',
+          'estimatedPrice',
+          'source',
+          'status',
+          'createdAt',
+          'clientUid',
+          'clientEmail',
+          'clientName',
+          'clientPhone',
+          'linkedCustomerId',
+          'createdBy'
+                  'projectName',
+          'clientType',
+          'primaryGenre',
+          'mainNeed',
+          'memberCount',
+          'preferredDuration',
+          'preferredTime',
+          'preferredDays',
+          'socialLink',
+          'gearNotes',
+          'invoiceName',
+          'paymentPreference',
+          'clientLevel',
+])
+        && request.resource.data.status == 'pending'
+        && request.resource.data.band is string
+        && request.resource.data.phone is string
+        && request.resource.data.date is string
+        && request.resource.data.hour is number
+        && request.resource.data.duration is number
+        && request.resource.data.estimatedPrice is number
+        && request.resource.data.source is string
+        && request.resource.data.createdAt is string
+        && (
+          !('clientUid' in request.resource.data)
+          || request.resource.data.clientUid == ''
+          || (
+            signedInNonAnonymous()
+            && request.resource.data.clientUid == request.auth.uid
+          )
+        )
+        && (!('clientEmail' in request.resource.data) || request.resource.data.clientEmail is string)
+        && (!('clientName' in request.resource.data) || request.resource.data.clientName is string)
+        && (!('clientPhone' in request.resource.data) || request.resource.data.clientPhone is string)
+        && (!('linkedCustomerId' in request.resource.data) || request.resource.data.linkedCustomerId is string)
+        && (!('createdBy' in request.resource.data) || request.resource.data.createdBy is string)
+        && (!('projectName' in request.resource.data) || request.resource.data.projectName is string)
+        && (!('clientType' in request.resource.data) || request.resource.data.clientType is string)
+        && (!('primaryGenre' in request.resource.data) || request.resource.data.primaryGenre is string)
+        && (!('mainNeed' in request.resource.data) || request.resource.data.mainNeed is string)
+        && (!('memberCount' in request.resource.data) || request.resource.data.memberCount is string)
+        && (!('preferredDuration' in request.resource.data) || request.resource.data.preferredDuration is string)
+        && (!('preferredTime' in request.resource.data) || request.resource.data.preferredTime is string)
+        && (!('preferredDays' in request.resource.data) || request.resource.data.preferredDays is string)
+        && (!('socialLink' in request.resource.data) || request.resource.data.socialLink is string)
+        && (!('gearNotes' in request.resource.data) || request.resource.data.gearNotes is string)
+        && (!('invoiceName' in request.resource.data) || request.resource.data.invoiceName is string)
+        && (!('paymentPreference' in request.resource.data) || request.resource.data.paymentPreference is string)
+        && (!('clientLevel' in request.resource.data) || request.resource.data.clientLevel is string);
 
       allow update, delete: if hasPermission('calendar') || hasPermission('billing');
     }

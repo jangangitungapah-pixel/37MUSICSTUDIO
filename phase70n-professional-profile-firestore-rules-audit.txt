@@ -1,0 +1,13 @@
+37 Music Studio — Phase 7.0N Firestore Rules for Professional Profile
+Generated: 2026-06-07T20:09:25.524Z
+
+Files touched:
+- firestore.rules
+
+Fixes:
+- Allows client profile save for professional profile fields.
+- Allows profileUpdatedAt self update.
+- Allows new client user document to include professional default fields.
+- Allows bookingRequests to carry professional metadata from client profile.
+- Adds booking request type checks for professional metadata.
+- Prevents client self-promotion by guarding clientLevel update.
