@@ -445,7 +445,7 @@ const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
                                 <TextField.Root
                   data-radix-field="hero-client-identifier"
                   id="hero-client-identifier"
-                  className="hero-radix-field hero-radix-identifier !min-h-12 !rounded-2xl !border !border-white/10 !bg-white/[0.07] !px-1 !text-white !shadow-inner !shadow-black/10 !outline-none transition focus-within:!border-amber-200/35 focus-within:!bg-white/[0.09]"
+                  className="hero-radix-field hero-radix-identifier"
                   type="text"
                   value={identifier}
                   onChange={(event) => setIdentifier(event.target.value)}
@@ -465,7 +465,7 @@ const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
                                 <TextField.Root
                   data-radix-field="hero-client-password"
                   id="hero-client-password"
-                  className="hero-radix-field hero-radix-password !min-h-12 !rounded-2xl !border !border-white/10 !bg-white/[0.07] !px-1 !text-white !shadow-inner !shadow-black/10 !outline-none transition focus-within:!border-amber-200/35 focus-within:!bg-white/[0.09]"
+                  className="hero-radix-field hero-radix-password"
                   type={showPass ? 'text' : 'password'}
                   value={password}
                   onChange={(event) => setPassword(event.target.value)}

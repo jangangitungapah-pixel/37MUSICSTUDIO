@@ -4928,3 +4928,157 @@ body[data-theme="light"]:has(.landing-container) #root {
     min-width: 33px !important;
   }
 }
+
+/* ──────────────────────────────────────────────────────────────────────────
+   37 LANDING LOGIN INPUT CHROME FRAMELESS FIX 8.0E-V2
+   --------------------------------------------------------------------------
+   Removes the last framed look from hero login fields:
+   - neutralizes removed Tailwind important utilities
+   - overrides Radix TextField surface/shadow variables
+   - disables hard pseudo frame from previous patch
+   - handles Chrome autofill/password internal background
+   ────────────────────────────────────────────────────────────────────────── */
+
+.tw-landing-phase80c .hero-login-panel .hero-radix-field,
+.tw-landing-phase80c .hero-login-panel [data-radix-field].rt-TextFieldRoot {
+  --text-field-border-width: 0px;
+  --text-field-focus-color: transparent;
+  --text-field-selection-color: rgba(239, 197, 110, 0.24);
+  position: relative;
+  min-height: 47px !important;
+  height: 47px !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  outline: 0 !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: linear-gradient(90deg, rgba(255,255,255,0.035), rgba(255,255,255,0.010)) !important;
+  box-shadow: inset 0 -1px 0 rgba(255, 250, 240, 0.16) !important;
+  overflow: visible !important;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.tw-landing-phase80c .hero-login-panel .hero-radix-field::before,
+.tw-landing-phase80c .hero-login-panel .hero-radix-field::after,
+.tw-landing-phase80c .hero-login-panel [data-radix-field].rt-TextFieldRoot::before,
+.tw-landing-phase80c .hero-login-panel [data-radix-field].rt-TextFieldRoot::after {
+  content: none !important;
+  display: none !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.tw-landing-phase80c .hero-login-panel .hero-radix-field:focus-within,
+.tw-landing-phase80c .hero-login-panel [data-radix-field].rt-TextFieldRoot:focus-within {
+  border: 0 !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: linear-gradient(90deg, rgba(239,197,110,0.060), rgba(255,255,255,0.014)) !important;
+  box-shadow:
+    inset 0 -1px 0 rgba(239, 197, 110, 0.70),
+    0 10px 28px rgba(239, 197, 110, 0.045) !important;
+}
+
+.tw-landing-phase80c .hero-login-panel .hero-radix-field :where(.rt-TextFieldSlot),
+.tw-landing-phase80c .hero-login-panel [data-radix-field] :where(.rt-TextFieldSlot),
+.tw-landing-phase80c .hero-login-panel .hero-radix-field :where([data-side]) {
+  min-width: 0 !important;
+  padding-left: 0.72rem !important;
+  padding-right: 0.68rem !important;
+  border: 0 !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+  color: rgba(255, 250, 240, 0.42) !important;
+}
+
+.tw-landing-phase80c .hero-login-panel .hero-radix-field:focus-within :where(.rt-TextFieldSlot),
+.tw-landing-phase80c .hero-login-panel [data-radix-field]:focus-within :where(.rt-TextFieldSlot) {
+  color: rgba(239, 197, 110, 0.86) !important;
+}
+
+.tw-landing-phase80c .hero-login-panel .hero-radix-field :where(svg) {
+  width: 16px;
+  height: 16px;
+  color: currentColor !important;
+}
+
+.tw-landing-phase80c .hero-login-panel .hero-radix-field :where(input),
+.tw-landing-phase80c .hero-login-panel [data-radix-field] :where(input),
+.tw-landing-phase80c .hero-login-panel .hero-radix-field :where(.rt-TextFieldInput) {
+  height: 47px !important;
+  min-height: 47px !important;
+  padding: 0 !important;
+  border: 0 !important;
+  outline: 0 !important;
+  color: rgba(255, 250, 240, 0.95) !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+  font-size: 0.88rem !important;
+  font-weight: 850 !important;
+  letter-spacing: -0.015em;
+  caret-color: #efc56e;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.tw-landing-phase80c .hero-login-panel .hero-radix-field :where(input)::placeholder {
+  color: rgba(255, 250, 240, 0.34) !important;
+}
+
+.tw-landing-phase80c .hero-login-panel .hero-radix-field :where(input:-webkit-autofill),
+.tw-landing-phase80c .hero-login-panel .hero-radix-field :where(input:-webkit-autofill:hover),
+.tw-landing-phase80c .hero-login-panel .hero-radix-field :where(input:-webkit-autofill:focus),
+.tw-landing-phase80c .hero-login-panel .hero-radix-field :where(input:-webkit-autofill:active) {
+  -webkit-text-fill-color: rgba(255, 250, 240, 0.95) !important;
+  caret-color: #efc56e !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  box-shadow: 0 0 0 1000px rgba(18, 22, 31, 0.01) inset !important;
+  -webkit-box-shadow: 0 0 0 1000px rgba(18, 22, 31, 0.01) inset !important;
+  transition:
+    background-color 999999s ease-out 0s,
+    color 999999s ease-out 0s;
+}
+
+.tw-landing-phase80c .hero-login-panel .hero-radix-eye {
+  width: 34px !important;
+  height: 34px !important;
+  min-width: 34px !important;
+  margin-right: 0.35rem !important;
+  border: 0 !important;
+  border-radius: 999px !important;
+  color: rgba(255, 250, 240, 0.44) !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.tw-landing-phase80c .hero-login-panel .hero-radix-eye:hover {
+  color: rgba(255, 250, 240, 0.88) !important;
+  background: radial-gradient(circle, rgba(255,255,255,0.095), rgba(255,255,255,0.035)) !important;
+}
+
+[data-theme="light"] .tw-landing-phase80c .hero-login-panel .hero-radix-field,
+[data-theme="light"] .tw-landing-phase80c .hero-login-panel [data-radix-field].rt-TextFieldRoot {
+  background-image: linear-gradient(90deg, rgba(33,28,22,0.035), rgba(33,28,22,0.010)) !important;
+  box-shadow: inset 0 -1px 0 rgba(33, 28, 22, 0.15) !important;
+}
+
+[data-theme="light"] .tw-landing-phase80c .hero-login-panel .hero-radix-field :where(input),
+[data-theme="light"] .tw-landing-phase80c .hero-login-panel [data-radix-field] :where(input) {
+  color: rgba(33, 28, 22, 0.92) !important;
+  caret-color: rgba(173, 112, 27, 0.92);
+}
+
+[data-theme="light"] .tw-landing-phase80c .hero-login-panel .hero-radix-field :where(input:-webkit-autofill),
+[data-theme="light"] .tw-landing-phase80c .hero-login-panel .hero-radix-field :where(input:-webkit-autofill:hover),
+[data-theme="light"] .tw-landing-phase80c .hero-login-panel .hero-radix-field :where(input:-webkit-autofill:focus) {
+  -webkit-text-fill-color: rgba(33, 28, 22, 0.92) !important;
+  box-shadow: 0 0 0 1000px rgba(255, 255, 255, 0.01) inset !important;
+  -webkit-box-shadow: 0 0 0 1000px rgba(255, 255, 255, 0.01) inset !important;
+}
