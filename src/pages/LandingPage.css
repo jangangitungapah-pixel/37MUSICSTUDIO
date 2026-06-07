@@ -3704,3 +3704,221 @@ body[data-theme="light"]:has(.landing-container) #root {
     padding-bottom: calc(7rem + env(safe-area-inset-bottom, 0px));
   }
 }
+
+/* ──────────────────────────────────────────────────────────────────────────
+   37 LANDING CONTENT SPACING REFINEMENT 8.0D-FIX
+   --------------------------------------------------------------------------
+   Tightens lower landing rhythm after Phase 8.0D:
+   - reduces excessive empty vertical space
+   - calms booking flow title size
+   - balances experience card size
+   - makes flow step cards more compact
+   - improves desktop and mobile section rhythm
+   ────────────────────────────────────────────────────────────────────────── */
+
+.tw-landing-phase80d .experience-section {
+  padding-top: clamp(4.25rem, 8vh, 6.25rem) !important;
+  padding-bottom: clamp(2.25rem, 4.5vh, 3.5rem) !important;
+}
+
+.tw-landing-phase80d .experience-section .section-header {
+  margin-bottom: clamp(1.35rem, 3vw, 2.25rem) !important;
+}
+
+.tw-landing-phase80d .experience-grid {
+  max-width: 1040px;
+  margin-inline: auto;
+  gap: clamp(0.85rem, 1.35vw, 1.1rem) !important;
+}
+
+.tw-landing-phase80d .experience-card {
+  min-height: 210px;
+  padding: clamp(1rem, 1.35vw, 1.25rem) !important;
+  border-radius: 1.35rem !important;
+}
+
+.tw-landing-phase80d .experience-icon {
+  width: 2.65rem !important;
+  height: 2.65rem !important;
+  margin-bottom: 0.9rem !important;
+  border-radius: 1rem !important;
+}
+
+.tw-landing-phase80d .experience-label {
+  margin-bottom: 0.72rem !important;
+  padding-block: 0.28rem !important;
+  font-size: 0.62rem !important;
+  letter-spacing: 0.11em !important;
+}
+
+.tw-landing-phase80d .experience-card h3 {
+  font-size: clamp(1rem, 1.25vw, 1.16rem) !important;
+  line-height: 1.2 !important;
+  letter-spacing: -0.025em !important;
+}
+
+.tw-landing-phase80d .experience-card p {
+  margin-top: 0.62rem !important;
+  font-size: 0.84rem !important;
+  line-height: 1.55 !important;
+}
+
+.tw-landing-phase80d .booking-flow-section {
+  padding-top: clamp(0.75rem, 2vh, 1.5rem) !important;
+  padding-bottom: clamp(3.75rem, 7vh, 5.25rem) !important;
+}
+
+.tw-landing-phase80d .flow-panel {
+  max-width: 1040px;
+  margin-inline: auto;
+  grid-template-columns: minmax(0, 0.88fr) minmax(420px, 1.12fr) !important;
+  align-items: stretch;
+  gap: clamp(1rem, 2vw, 1.6rem) !important;
+  padding: clamp(1.15rem, 2vw, 1.6rem) !important;
+  border-radius: 1.65rem !important;
+}
+
+.tw-landing-phase80d .flow-copy {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 260px;
+}
+
+.tw-landing-phase80d .flow-copy .section-eyebrow {
+  margin-bottom: 0.78rem !important;
+  padding-block: 0.38rem !important;
+  font-size: 0.64rem !important;
+}
+
+.tw-landing-phase80d .flow-copy h2 {
+  max-width: 440px;
+  font-size: clamp(2.35rem, 3.25vw, 3.55rem) !important;
+  line-height: 1.03 !important;
+  letter-spacing: -0.035em !important;
+  word-spacing: 0.035em;
+}
+
+.tw-landing-phase80d .flow-copy p {
+  max-width: 440px !important;
+  margin-top: 1rem !important;
+  font-size: 0.9rem !important;
+  line-height: 1.65 !important;
+}
+
+.tw-landing-phase80d .flow-steps {
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 0.75rem !important;
+}
+
+.tw-landing-phase80d .flow-step {
+  min-height: 240px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  padding: 1.05rem !important;
+  border-radius: 1.25rem !important;
+}
+
+.tw-landing-phase80d .flow-step span {
+  margin-bottom: 1.55rem !important;
+  font-size: 0.68rem !important;
+}
+
+.tw-landing-phase80d .flow-step strong {
+  font-size: 0.95rem !important;
+  line-height: 1.2 !important;
+}
+
+.tw-landing-phase80d .flow-step p {
+  max-width: 13ch;
+  margin-top: 0.72rem !important;
+  font-size: 0.76rem !important;
+  line-height: 1.55 !important;
+}
+
+.tw-landing-phase80d .landing-gallery-section {
+  padding-top: clamp(4rem, 7vh, 5.5rem) !important;
+}
+
+.tw-landing-phase80d .pricing-section {
+  padding-top: clamp(4rem, 7vh, 5.5rem) !important;
+}
+
+@media (min-width: 1440px) {
+  .tw-landing-phase80d .experience-grid,
+  .tw-landing-phase80d .flow-panel {
+    max-width: 1120px;
+  }
+
+  .tw-landing-phase80d .flow-copy h2 {
+    font-size: clamp(2.55rem, 3.05vw, 3.85rem) !important;
+  }
+}
+
+@media (max-width: 1023px) {
+  .tw-landing-phase80d .experience-section {
+    padding-top: 4rem !important;
+    padding-bottom: 2rem !important;
+  }
+
+  .tw-landing-phase80d .booking-flow-section {
+    padding-top: 1rem !important;
+    padding-bottom: 4rem !important;
+  }
+
+  .tw-landing-phase80d .flow-panel {
+    grid-template-columns: 1fr !important;
+  }
+
+  .tw-landing-phase80d .flow-copy {
+    min-height: auto;
+  }
+
+  .tw-landing-phase80d .flow-copy h2,
+  .tw-landing-phase80d .flow-copy p {
+    max-width: 100% !important;
+  }
+
+  .tw-landing-phase80d .flow-step {
+    min-height: 190px;
+  }
+}
+
+@media (max-width: 767px) {
+  .tw-landing-phase80d .experience-grid {
+    gap: 0.72rem !important;
+  }
+
+  .tw-landing-phase80d .experience-card {
+    min-height: auto;
+    border-radius: 1.2rem !important;
+  }
+
+  .tw-landing-phase80d .flow-panel {
+    padding: 1rem !important;
+    border-radius: 1.35rem !important;
+  }
+
+  .tw-landing-phase80d .flow-copy h2 {
+    font-size: clamp(2.15rem, 10vw, 3rem) !important;
+    line-height: 1.06 !important;
+    letter-spacing: -0.025em !important;
+  }
+
+  .tw-landing-phase80d .flow-steps {
+    grid-template-columns: 1fr !important;
+  }
+
+  .tw-landing-phase80d .flow-step {
+    min-height: auto;
+  }
+
+  .tw-landing-phase80d .flow-step span {
+    margin-bottom: 0.85rem !important;
+  }
+
+  .tw-landing-phase80d .flow-step p {
+    max-width: 100%;
+  }
+}
