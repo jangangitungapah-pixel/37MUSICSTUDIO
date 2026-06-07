@@ -3377,3 +3377,330 @@ body[data-theme="light"]:has(.landing-container) #root {
     word-spacing: 0.035em;
   }
 }
+
+/* ──────────────────────────────────────────────────────────────────────────
+   37 LANDING CONTENT SECTIONS TAILWIND MIGRATION 8.0D
+   --------------------------------------------------------------------------
+   Migrates content sections after hero:
+   - Experience cards
+   - Booking flow
+   - Gallery card
+   - Pricing block
+   - Proof grid
+   - Footer/location
+   Existing CSS remains as fallback while Tailwind utilities take over.
+   ────────────────────────────────────────────────────────────────────────── */
+
+.tw-landing-phase80d .experience-section,
+.tw-landing-phase80d .booking-flow-section,
+.tw-landing-phase80d .landing-gallery-section,
+.tw-landing-phase80d .pricing-section,
+.tw-landing-phase80d .proof-section {
+  background: transparent;
+}
+
+.tw-landing-phase80d .experience-section::before,
+.tw-landing-phase80d .pricing-section::before {
+  content: "";
+  position: absolute;
+  inset: 8% auto auto 50%;
+  width: min(520px, 70vw);
+  height: min(520px, 70vw);
+  transform: translateX(-50%);
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(239, 197, 110, 0.085), transparent 64%);
+  pointer-events: none;
+  z-index: -1;
+}
+
+.tw-landing-phase80d .section-header h2,
+.tw-landing-phase80d .flow-copy h2,
+.tw-landing-phase80d .pricing-copy h2 {
+  margin: 0;
+  color: var(--landing-text);
+  font-size: clamp(2rem, 4.4vw, 4.25rem);
+  line-height: 0.98;
+  letter-spacing: -0.055em;
+  text-wrap: balance;
+}
+
+.tw-landing-phase80d .section-header p,
+.tw-landing-phase80d .flow-copy p,
+.tw-landing-phase80d .pricing-copy p {
+  margin: 0.9rem auto 0;
+  max-width: 660px;
+  color: var(--landing-muted);
+  font-size: 1rem;
+  line-height: 1.75;
+  font-weight: 650;
+}
+
+.tw-landing-phase80d .section-header.align-left {
+  margin-left: 0;
+  text-align: left;
+}
+
+.tw-landing-phase80d .experience-card::before,
+.tw-landing-phase80d .flow-panel::before,
+.tw-landing-phase80d .price-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(239, 197, 110, 0.115), transparent 38%),
+    radial-gradient(circle at 100% 0%, rgba(88, 224, 233, 0.075), transparent 34%);
+  pointer-events: none;
+}
+
+.tw-landing-phase80d .experience-card.featured {
+  border-color: rgba(239, 197, 110, 0.28) !important;
+  background:
+    linear-gradient(145deg, rgba(239, 197, 110, 0.105), rgba(255, 255, 255, 0.045)),
+    rgba(255, 255, 255, 0.045) !important;
+}
+
+.tw-landing-phase80d .experience-card h3 {
+  position: relative;
+  margin: 0;
+  color: var(--landing-text);
+  font-size: 1.25rem;
+  line-height: 1.15;
+  letter-spacing: -0.035em;
+}
+
+.tw-landing-phase80d .experience-card p {
+  position: relative;
+  margin: 0.75rem 0 0;
+  color: var(--landing-muted);
+  font-size: 0.92rem;
+  line-height: 1.65;
+  font-weight: 620;
+}
+
+.tw-landing-phase80d .flow-panel {
+  isolation: isolate;
+}
+
+.tw-landing-phase80d .flow-copy p {
+  margin-left: 0;
+}
+
+.tw-landing-phase80d .flow-step span {
+  display: inline-flex;
+  width: fit-content;
+  margin-bottom: 1rem;
+  color: var(--landing-cyan);
+  font-size: 0.76rem;
+  font-weight: 950;
+  letter-spacing: 0.12em;
+}
+
+.tw-landing-phase80d .flow-step strong {
+  display: block;
+  color: var(--landing-text);
+  font-size: 1rem;
+  font-weight: 950;
+  letter-spacing: -0.025em;
+}
+
+.tw-landing-phase80d .flow-step p {
+  margin: 0.5rem 0 0;
+  color: var(--landing-muted);
+  font-size: 0.82rem;
+  line-height: 1.55;
+}
+
+.tw-landing-phase80d .landing-gallery-card {
+  width: 100%;
+}
+
+.tw-landing-phase80d .landing-gallery-media {
+  min-height: 320px;
+}
+
+.tw-landing-phase80d .landing-gallery-overlay {
+  color: #fffaf0;
+}
+
+.tw-landing-phase80d .pricing-shell {
+  position: relative;
+  overflow: hidden;
+}
+
+.tw-landing-phase80d .pricing-includes > div {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  min-height: 48px;
+  padding: 0.72rem 0.82rem;
+  border: 1px solid rgba(255, 255, 255, 0.085);
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.035);
+  color: var(--landing-muted);
+  font-size: 0.85rem;
+  font-weight: 800;
+}
+
+.tw-landing-phase80d .pricing-includes svg {
+  color: var(--landing-green);
+  flex: 0 0 auto;
+}
+
+.tw-landing-phase80d .price-card {
+  isolation: isolate;
+}
+
+.tw-landing-phase80d .price-card > * {
+  position: relative;
+}
+
+.tw-landing-phase80d .proof-grid > div {
+  display: grid;
+  gap: 0.5rem;
+  min-height: 156px;
+  padding: 1.15rem;
+  border: 1px solid rgba(255, 255, 255, 0.085);
+  border-radius: 1.55rem;
+  background: rgba(255, 255, 255, 0.040);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.12);
+}
+
+.tw-landing-phase80d .proof-grid svg {
+  color: var(--landing-gold);
+}
+
+.tw-landing-phase80d .proof-grid strong {
+  color: var(--landing-text);
+  font-size: 1.02rem;
+  letter-spacing: -0.025em;
+}
+
+.tw-landing-phase80d .proof-grid span {
+  color: var(--landing-muted);
+  font-size: 0.88rem;
+  line-height: 1.55;
+}
+
+.tw-landing-phase80d .landing-footer {
+  overflow: hidden;
+}
+
+.tw-landing-phase80d .landing-footer::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 12% 0%, rgba(239, 197, 110, 0.10), transparent 32%),
+    radial-gradient(circle at 82% 16%, rgba(88, 224, 233, 0.075), transparent 28%);
+  pointer-events: none;
+}
+
+.tw-landing-phase80d .footer-content {
+  position: relative;
+}
+
+.tw-landing-phase80d .footer-brand p,
+.tw-landing-phase80d .footer-contact p {
+  color: var(--landing-muted);
+  line-height: 1.65;
+  font-weight: 650;
+}
+
+.tw-landing-phase80d .footer-social a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 38px;
+  padding: 0 0.82rem;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.045);
+  color: var(--landing-text);
+  font-weight: 850;
+  text-decoration: none;
+}
+
+.tw-landing-phase80d .footer-contact h3 {
+  margin: 0 0 1rem;
+  color: var(--landing-text);
+  font-size: 1.05rem;
+  letter-spacing: -0.025em;
+}
+
+.tw-landing-phase80d .footer-contact p {
+  display: flex;
+  gap: 0.65rem;
+  align-items: flex-start;
+}
+
+.tw-landing-phase80d .footer-contact svg {
+  color: var(--landing-gold);
+  flex: 0 0 auto;
+  margin-top: 0.16rem;
+}
+
+[data-theme="light"] .tw-landing-phase80d .experience-card,
+[data-theme="light"] .tw-landing-phase80d .flow-panel,
+[data-theme="light"] .tw-landing-phase80d .landing-gallery-card,
+[data-theme="light"] .tw-landing-phase80d .pricing-shell,
+[data-theme="light"] .tw-landing-phase80d .proof-grid > div,
+[data-theme="light"] .tw-landing-phase80d .footer-contact {
+  background: rgba(255, 255, 255, 0.64) !important;
+  border-color: rgba(78, 54, 28, 0.10) !important;
+}
+
+[data-theme="light"] .tw-landing-phase80d .section-header h2,
+[data-theme="light"] .tw-landing-phase80d .flow-copy h2,
+[data-theme="light"] .tw-landing-phase80d .pricing-copy h2,
+[data-theme="light"] .tw-landing-phase80d .experience-card h3,
+[data-theme="light"] .tw-landing-phase80d .flow-step strong,
+[data-theme="light"] .tw-landing-phase80d .proof-grid strong,
+[data-theme="light"] .tw-landing-phase80d .footer-contact h3 {
+  color: rgba(33, 28, 22, 0.94);
+}
+
+[data-theme="light"] .tw-landing-phase80d .section-header p,
+[data-theme="light"] .tw-landing-phase80d .flow-copy p,
+[data-theme="light"] .tw-landing-phase80d .pricing-copy p,
+[data-theme="light"] .tw-landing-phase80d .experience-card p,
+[data-theme="light"] .tw-landing-phase80d .flow-step p,
+[data-theme="light"] .tw-landing-phase80d .proof-grid span,
+[data-theme="light"] .tw-landing-phase80d .footer-brand p,
+[data-theme="light"] .tw-landing-phase80d .footer-contact p {
+  color: rgba(33, 28, 22, 0.64);
+}
+
+@media (max-width: 767px) {
+  .tw-landing-phase80d .experience-section,
+  .tw-landing-phase80d .landing-gallery-section,
+  .tw-landing-phase80d .pricing-section {
+    padding-top: 4rem !important;
+    padding-bottom: 4rem !important;
+  }
+
+  .tw-landing-phase80d .section-header h2,
+  .tw-landing-phase80d .flow-copy h2,
+  .tw-landing-phase80d .pricing-copy h2 {
+    font-size: clamp(2rem, 10vw, 3rem);
+    line-height: 1.02;
+  }
+
+  .tw-landing-phase80d .landing-gallery-media {
+    min-height: 220px;
+    aspect-ratio: 4 / 3;
+  }
+
+  .tw-landing-phase80d .pricing-shell {
+    border-radius: 1.5rem !important;
+    padding: 1rem !important;
+  }
+
+  .tw-landing-phase80d .price-amount {
+    font-size: 3rem;
+  }
+
+  .tw-landing-phase80d .landing-footer {
+    padding-bottom: calc(7rem + env(safe-area-inset-bottom, 0px));
+  }
+}
