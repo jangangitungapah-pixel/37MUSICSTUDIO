@@ -4733,3 +4733,198 @@ body[data-theme="light"]:has(.landing-container) #root {
     font-size: 0.70rem !important;
   }
 }
+
+/* ──────────────────────────────────────────────────────────────────────────
+   37 LANDING LOGIN INPUT FRAMELESS FIX 8.0E
+   --------------------------------------------------------------------------
+   Makes hero login inputs feel frameless and seamless:
+   - removes heavy input box border
+   - blends fields into login panel
+   - adds soft bottom glow instead of hard border
+   - refines icons and password eye button
+   - improves focus state without native-looking frame
+   ────────────────────────────────────────────────────────────────────────── */
+
+.tw-landing-phase80c .hero-login-form {
+  gap: 0.82rem !important;
+}
+
+.tw-landing-phase80c .hero-login-field {
+  gap: 0.34rem !important;
+}
+
+.tw-landing-phase80c .hero-login-field label {
+  margin-left: 0.12rem;
+  color: rgba(255, 250, 240, 0.58) !important;
+  font-size: 0.65rem !important;
+  font-weight: 850 !important;
+  letter-spacing: 0.015em;
+}
+
+.tw-landing-phase80c .hero-radix-field {
+  position: relative;
+  min-height: 47px !important;
+  padding: 0 0.28rem 0 0.1rem !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.028)),
+    transparent !important;
+  box-shadow: none !important;
+  outline: 0 !important;
+  overflow: visible !important;
+}
+
+.tw-landing-phase80c .hero-radix-field::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(255, 250, 240, 0.09), rgba(255, 250, 240, 0.22), rgba(255, 250, 240, 0.06));
+  opacity: 0.85;
+  pointer-events: none;
+}
+
+.tw-landing-phase80c .hero-radix-field::after {
+  content: "";
+  position: absolute;
+  left: 1.85rem;
+  right: 1.85rem;
+  bottom: -1px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(239, 197, 110, 0.75), transparent);
+  opacity: 0;
+  transform: scaleX(0.78);
+  transition: opacity 170ms ease, transform 170ms ease;
+  pointer-events: none;
+}
+
+.tw-landing-phase80c .hero-radix-field:focus-within {
+  background:
+    linear-gradient(90deg, rgba(239, 197, 110, 0.075), rgba(255, 255, 255, 0.036)),
+    transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+.tw-landing-phase80c .hero-radix-field:focus-within::after {
+  opacity: 1;
+  transform: scaleX(1);
+}
+
+.tw-landing-phase80c .hero-radix-field > svg {
+  width: 17px;
+  height: 17px;
+  margin-left: 0.55rem;
+  margin-right: 0.58rem;
+  color: rgba(255, 250, 240, 0.46) !important;
+  transition: color 170ms ease, transform 170ms ease;
+}
+
+.tw-landing-phase80c .hero-radix-field:focus-within > svg {
+  color: rgba(239, 197, 110, 0.88) !important;
+  transform: translateY(-1px);
+}
+
+.tw-landing-phase80c .hero-radix-field input {
+  height: 47px !important;
+  padding: 0 !important;
+  border: 0 !important;
+  outline: 0 !important;
+  color: rgba(255, 250, 240, 0.94) !important;
+  background: transparent !important;
+  font-size: 0.88rem !important;
+  font-weight: 850 !important;
+  letter-spacing: -0.015em;
+  box-shadow: none !important;
+}
+
+.tw-landing-phase80c .hero-radix-field input::placeholder {
+  color: rgba(255, 250, 240, 0.34) !important;
+  font-weight: 750;
+}
+
+.tw-landing-phase80c .hero-radix-eye {
+  width: 35px !important;
+  height: 35px !important;
+  min-width: 35px !important;
+  margin-right: 0.18rem;
+  border: 1px solid rgba(255, 255, 255, 0.055) !important;
+  border-radius: 999px !important;
+  color: rgba(255, 250, 240, 0.48) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.070), rgba(255, 255, 255, 0.030)),
+    rgba(255, 255, 255, 0.030) !important;
+  box-shadow: none !important;
+  transition:
+    color 170ms ease,
+    background 170ms ease,
+    border-color 170ms ease,
+    transform 170ms ease;
+}
+
+.tw-landing-phase80c .hero-radix-eye:hover {
+  color: rgba(255, 250, 240, 0.88) !important;
+  background: rgba(255, 255, 255, 0.085) !important;
+  border-color: rgba(239, 197, 110, 0.18) !important;
+  transform: translateY(-1px);
+}
+
+.tw-landing-phase80c .hero-radix-eye svg {
+  width: 15px;
+  height: 15px;
+}
+
+.tw-landing-phase80c .hero-login-security-note {
+  margin-top: 0.18rem !important;
+  border-color: rgba(130, 216, 160, 0.10) !important;
+  background:
+    linear-gradient(90deg, rgba(130, 216, 160, 0.105), rgba(130, 216, 160, 0.045)),
+    transparent !important;
+}
+
+[data-theme="light"] .tw-landing-phase80c .hero-radix-field {
+  background:
+    linear-gradient(90deg, rgba(33, 28, 22, 0.040), rgba(33, 28, 22, 0.018)),
+    transparent !important;
+}
+
+[data-theme="light"] .tw-landing-phase80c .hero-radix-field::before {
+  background: linear-gradient(90deg, rgba(33, 28, 22, 0.07), rgba(33, 28, 22, 0.18), rgba(33, 28, 22, 0.05));
+}
+
+[data-theme="light"] .tw-landing-phase80c .hero-radix-field input {
+  color: rgba(33, 28, 22, 0.92) !important;
+}
+
+[data-theme="light"] .tw-landing-phase80c .hero-radix-field input::placeholder {
+  color: rgba(33, 28, 22, 0.34) !important;
+}
+
+[data-theme="light"] .tw-landing-phase80c .hero-radix-field > svg,
+[data-theme="light"] .tw-landing-phase80c .hero-radix-eye {
+  color: rgba(33, 28, 22, 0.46) !important;
+}
+
+[data-theme="light"] .tw-landing-phase80c .hero-radix-field:focus-within > svg {
+  color: rgba(173, 112, 27, 0.88) !important;
+}
+
+@media (max-width: 767px) {
+  .tw-landing-phase80c .hero-radix-field {
+    min-height: 45px !important;
+  }
+
+  .tw-landing-phase80c .hero-radix-field input {
+    height: 45px !important;
+    font-size: 0.86rem !important;
+  }
+
+  .tw-landing-phase80c .hero-radix-eye {
+    width: 33px !important;
+    height: 33px !important;
+    min-width: 33px !important;
+  }
+}
