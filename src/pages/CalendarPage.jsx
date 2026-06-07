@@ -316,6 +316,7 @@ const CalendarPage = () => {
       hour: Number(request.hour),
       duration: Number(request.duration || 1),
     };
+
     if (hasBookingOverlap(bookings, candidate)) {
       useNotificationStore.getState().addNotification({
         title: 'Request bentrok',
@@ -325,22 +326,66 @@ const CalendarPage = () => {
       return;
     }
 
+    const requestName =
+      request.band ||
+      request.bandName ||
+      request.clientName ||
+      request.customerName ||
+      'Pelanggan';
+
+    const requestPhone =
+      request.phone ||
+      request.clientPhone ||
+      request.customerPhone ||
+      '';
+
+    const estimatedPrice = Number(request.estimatedPrice || request.totalPrice || request.price || 0);
+
     try {
-      await addBooking({
+      const createdBooking = await addBooking({
         type: 'booking',
-        band: request.band,
-        phone: request.phone || '',
+        band: requestName,
+        phone: requestPhone,
         date: request.date,
         hour: Number(request.hour),
         duration: Number(request.duration || 1),
         status: 'pending',
         dpAmount: 0,
-        note: 'Dibuat dari request kalender publik.',
+        estimatedPrice,
+        totalPrice: estimatedPrice,
+        note: request.note || 'Dibuat dari request kalender publik.',
+        source: 'booking-request',
+        sourceRequestId: request.id,
+
+        clientUid: request.clientUid || '',
+        clientEmail: request.clientEmail || '',
+        clientName: request.clientName || requestName,
+        clientPhone: request.clientPhone || requestPhone,
+        linkedCustomerId: request.linkedCustomerId || '',
+        createdBy: request.createdBy || request.clientUid || '',
       });
-      await updateRequestStatus(request.id, 'approved', { approvedAt: new Date().toISOString() });
-      useNotificationStore.getState().addNotification({ title: 'Request disetujui', message: `${request.band} masuk ke kalender.`, type: 'success' });
+
+      await updateRequestStatus(request.id, 'approved', {
+        approvedAt: new Date().toISOString(),
+        approvedBookingId: createdBooking?.id || '',
+        clientUid: request.clientUid || '',
+        clientEmail: request.clientEmail || '',
+        clientName: request.clientName || requestName,
+        clientPhone: request.clientPhone || requestPhone,
+        linkedCustomerId: request.linkedCustomerId || '',
+      });
+
+      useNotificationStore.getState().addNotification({
+        title: 'Request disetujui',
+        message: `${requestName} masuk ke kalender dan metadata client ikut tersimpan.`,
+        type: 'success',
+      });
     } catch (error) {
-      useNotificationStore.getState().addNotification({ title: 'Gagal approve request', message: error.message || 'Coba lagi beberapa saat lagi.', type: 'error' });
+      useNotificationStore.getState().addNotification({
+        title: 'Gagal approve request',
+        message: error.message || 'Coba lagi beberapa saat lagi.',
+        type: 'error',
+      });
     }
   };
 
