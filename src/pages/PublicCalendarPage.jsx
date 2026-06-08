@@ -477,7 +477,7 @@ const PublicCalendarPage = () => {
             <div className="pc-hero-actions flex items-center gap-2">
               <button
                 type="button"
-                className="grid size-11 place-items-center rounded-2xl border border-white/10 bg-white/[0.07] text-stone-100/75 shadow-xl shadow-black/10 backdrop-blur-xl transition hover:-translate-y-0.5 hover:border-white/20 hover:bg-white/[0.11] hover:text-white"
+                className="pc-hero-action-btn pc-hero-theme-btn grid size-11 place-items-center rounded-2xl border border-white/10 bg-white/[0.07] text-stone-100/75 shadow-xl shadow-black/10 backdrop-blur-xl transition hover:-translate-y-0.5 hover:border-white/20 hover:bg-white/[0.11] hover:text-white"
                 onClick={toggleTheme}
                 aria-label={theme === 'dark' ? 'Aktifkan Light Mode' : 'Aktifkan Dark Mode'}
                 title={theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
@@ -489,7 +489,7 @@ const PublicCalendarPage = () => {
                 <button
                   type="button"
                   onClick={() => navigate('/client/dashboard')}
-                  className="hidden min-h-11 items-center gap-2 rounded-2xl border border-cyan-200/15 bg-cyan-200/[0.075] px-3 text-[0.78rem] font-black text-cyan-50/85 shadow-xl shadow-black/10 backdrop-blur-xl transition hover:-translate-y-0.5 hover:border-cyan-200/30 hover:bg-cyan-200/[0.12] sm:inline-flex"
+                  className="pc-hero-action-btn pc-hero-client-btn hidden min-h-11 items-center gap-2 rounded-2xl border border-cyan-200/15 bg-cyan-200/[0.075] px-3 text-[0.78rem] font-black text-cyan-50/85 shadow-xl shadow-black/10 backdrop-blur-xl transition hover:-translate-y-0.5 hover:border-cyan-200/30 hover:bg-cyan-200/[0.12] sm:inline-flex"
                 >
                   <ShieldCheck size={16} />
                   <span>Client Portal</span>
@@ -499,7 +499,7 @@ const PublicCalendarPage = () => {
               <button
                 type="button"
                 onClick={handleExitPublic}
-                className="inline-flex min-h-11 items-center gap-2 rounded-2xl border border-white/10 bg-white/[0.07] px-3 text-[0.78rem] font-black text-stone-100/80 shadow-xl shadow-black/10 backdrop-blur-xl transition hover:-translate-y-0.5 hover:border-white/20 hover:bg-white/[0.11] hover:text-white"
+                className="pc-hero-action-btn pc-hero-back-btn inline-flex min-h-11 items-center gap-2 rounded-2xl border border-white/10 bg-white/[0.07] px-3 text-[0.78rem] font-black text-stone-100/80 shadow-xl shadow-black/10 backdrop-blur-xl transition hover:-translate-y-0.5 hover:border-white/20 hover:bg-white/[0.11] hover:text-white"
               >
                 <LogOut size={16} />
                 <span className="hidden sm:inline">Kembali</span>
