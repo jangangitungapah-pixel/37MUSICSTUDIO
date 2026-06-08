@@ -3191,3 +3191,256 @@
   box-shadow: 0 0 0 1000px rgba(255, 250, 241, 0.01) inset !important;
   -webkit-box-shadow: 0 0 0 1000px rgba(255, 250, 241, 0.01) inset !important;
 }
+
+/* ──────────────────────────────────────────────────────────────────────────
+   37 PUBLIC CALENDAR LIGHT MODE MICRO POLISH 8.1I
+   --------------------------------------------------------------------------
+   Final light-mode micro polish only.
+   Scoped under [data-theme="light"] .pc-modern so dark mode stays untouched.
+   Focus:
+   - less washed hero image
+   - softer champagne scrollbars
+   - clearer but still subtle calendar grid
+   - better hover affordance for empty slots
+   - brighter gallery photos and cleaner captions
+   ────────────────────────────────────────────────────────────────────────── */
+
+/* Page shell balance */
+[data-theme="light"] .pc-modern {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(239, 197, 110, 0.135), transparent 31rem),
+    radial-gradient(circle at 8% 18%, rgba(255, 56, 113, 0.052), transparent 29rem),
+    radial-gradient(circle at 90% 20%, rgba(35, 176, 191, 0.060), transparent 31rem),
+    linear-gradient(180deg, #f6efe5 0%, #eee4d6 46%, #e9dfd1 100%) !important;
+}
+
+/* Hero should keep studio mood, not become pure beige blur */
+[data-theme="light"] .pc-modern .pc-hero-bg img {
+  opacity: 0.285 !important;
+  filter: blur(2px) saturate(0.82) brightness(1.07) contrast(0.98) !important;
+  transform: scale(1.055) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-hero-overlay {
+  background:
+    radial-gradient(circle at 50% 7%, rgba(255, 255, 255, 0.52), transparent 27rem),
+    radial-gradient(circle at 18% 24%, rgba(255, 56, 113, 0.052), transparent 30rem),
+    radial-gradient(circle at 82% 24%, rgba(35, 176, 191, 0.052), transparent 30rem),
+    linear-gradient(180deg, rgba(247, 239, 227, 0.64) 0%, rgba(247, 239, 227, 0.78) 58%, #f6efe5 100%) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-hero-title {
+  color: rgba(34, 27, 18, 0.96) !important;
+  text-shadow:
+    0 24px 58px rgba(96, 73, 41, 0.14),
+    0 1px 0 rgba(255, 255, 255, 0.28) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-hero-copy {
+  color: rgba(45, 38, 28, 0.68) !important;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.20);
+}
+
+/* Softer champagne scrollbar */
+[data-theme="light"] .pc-modern .pc-scrollbar {
+  scrollbar-color: rgba(181, 141, 70, 0.50) rgba(120, 91, 48, 0.075) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-scrollbar::-webkit-scrollbar-track {
+  background: rgba(120, 91, 48, 0.065) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-scrollbar::-webkit-scrollbar-thumb {
+  background:
+    linear-gradient(180deg, rgba(199, 160, 85, 0.62), rgba(170, 125, 48, 0.48)) !important;
+  border-color: rgba(255, 250, 241, 0.56) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-scrollbar::-webkit-scrollbar-thumb:hover {
+  background:
+    linear-gradient(180deg, rgba(190, 145, 58, 0.72), rgba(150, 105, 34, 0.58)) !important;
+}
+
+/* Calendar: still thin-line, but not too empty/flat */
+[data-theme="light"] .pc-modern .pc-period-toolbar,
+[data-theme="light"] .pc-modern .pc-calendar-panel {
+  border-color: rgba(96, 73, 41, 0.105) !important;
+  box-shadow:
+    0 24px 70px rgba(96, 73, 41, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.76) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-calendar-grid {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.08)),
+    rgba(96, 73, 41, 0.050) !important;
+  border-top-color: rgba(96, 73, 41, 0.115) !important;
+  border-left-color: rgba(96, 73, 41, 0.115) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-time-head,
+[data-theme="light"] .pc-modern .pc-day-head,
+[data-theme="light"] .pc-modern .pc-time-cell,
+[data-theme="light"] .pc-modern .pc-slot-cell {
+  border-right-color: rgba(96, 73, 41, 0.105) !important;
+  border-bottom-color: rgba(96, 73, 41, 0.100) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-time-head,
+[data-theme="light"] .pc-modern .pc-day-head {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.32)),
+    rgba(247, 239, 227, 0.88) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-time-cell {
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.54), rgba(255, 255, 255, 0.25)),
+    rgba(247, 239, 227, 0.80) !important;
+  color: rgba(45, 38, 28, 0.50) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-slot-cell {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.20), rgba(255, 255, 255, 0.10)),
+    rgba(255, 255, 255, 0.16) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-slot-muted {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.065)),
+    rgba(255, 255, 255, 0.08) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-slot-available {
+  background:
+    radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.040), transparent 48%),
+    rgba(16, 185, 129, 0.030) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-slot-available::before {
+  background:
+    radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.16), transparent 46%),
+    rgba(16, 185, 129, 0.050) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-slot-available:hover {
+  background:
+    radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.115), transparent 50%),
+    rgba(16, 185, 129, 0.085) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-slot-plus-wrap {
+  opacity: 0 !important;
+}
+
+[data-theme="light"] .pc-modern .pc-slot-available:hover .pc-slot-plus-wrap,
+[data-theme="light"] .pc-modern .pc-slot-available:focus-visible .pc-slot-plus-wrap {
+  opacity: 1 !important;
+}
+
+[data-theme="light"] .pc-modern .pc-slot-plus {
+  border-color: rgba(22, 133, 87, 0.28) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.58), rgba(16, 185, 129, 0.14)),
+    rgba(16, 185, 129, 0.12) !important;
+  color: rgba(20, 104, 73, 0.92) !important;
+  box-shadow:
+    0 10px 24px rgba(16, 185, 129, 0.13),
+    inset 0 1px 0 rgba(255, 255, 255, 0.58) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-slot-booked {
+  color: rgba(129, 30, 55, 0.96) !important;
+  background:
+    linear-gradient(90deg, rgba(244, 63, 94, 0.205), rgba(244, 63, 94, 0.108) 42%, rgba(244, 63, 94, 0.060)),
+    rgba(244, 63, 94, 0.068) !important;
+  box-shadow:
+    inset 3px 0 0 rgba(225, 70, 101, 0.64),
+    inset 0 1px 0 rgba(255, 255, 255, 0.22),
+    0 0 0 1px rgba(225, 70, 101, 0.060) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-slot-booked .pc-slot-badge {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.42), rgba(244, 63, 94, 0.16)),
+    rgba(244, 63, 94, 0.12) !important;
+  color: rgba(126, 27, 52, 0.96) !important;
+  box-shadow:
+    0 10px 24px rgba(244, 63, 94, 0.10),
+    inset 0 1px 0 rgba(255, 255, 255, 0.46) !important;
+}
+
+/* Booking board: slightly more grounded */
+[data-theme="light"] .pc-modern .pc-board-panel {
+  background:
+    radial-gradient(circle at 0% 0%, rgba(255, 56, 113, 0.030), transparent 34%),
+    radial-gradient(circle at 100% 0%, rgba(35, 176, 191, 0.035), transparent 34%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.76), rgba(255, 255, 255, 0.42)),
+    rgba(255, 250, 241, 0.62) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-board-title {
+  color: rgba(34, 27, 18, 0.96) !important;
+}
+
+/* Gallery: photos should not feel dim against light shell */
+[data-theme="light"] .pc-modern .pc-public-gallery-image {
+  filter: saturate(1.02) contrast(1.01) brightness(1.035) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-public-gallery-card:hover .pc-public-gallery-image {
+  filter: saturate(1.08) contrast(1.02) brightness(1.055) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-public-gallery-card {
+  border-color: rgba(96, 73, 41, 0.12) !important;
+  box-shadow:
+    0 24px 70px rgba(96, 73, 41, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.72) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-public-gallery-card:hover {
+  border-color: rgba(177, 130, 43, 0.25) !important;
+  box-shadow:
+    0 30px 84px rgba(96, 73, 41, 0.16),
+    0 0 0 1px rgba(177, 130, 43, 0.055),
+    inset 0 1px 0 rgba(255, 255, 255, 0.78) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-public-gallery-caption {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.82), rgba(255, 255, 255, 0.50)),
+    rgba(255, 250, 241, 0.66) !important;
+  color: rgba(35, 28, 20, 0.90) !important;
+}
+
+/* Modal tiny light-mode refinements */
+[data-theme="light"] .pc-modern .pc-booking-modal-overlay {
+  background:
+    radial-gradient(circle at 50% 18%, rgba(239, 197, 110, 0.12), transparent 25%),
+    radial-gradient(circle at 34% 44%, rgba(35, 176, 191, 0.095), transparent 31%),
+    rgba(42, 34, 24, 0.30) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-booking-submit-btn {
+  box-shadow:
+    0 22px 52px rgba(34, 211, 103, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.38) !important;
+}
+
+@media (max-width: 640px) {
+  [data-theme="light"] .pc-modern .pc-hero-bg img {
+    opacity: 0.255 !important;
+    filter: blur(2.2px) saturate(0.78) brightness(1.08) contrast(0.94) !important;
+  }
+
+  [data-theme="light"] .pc-modern .pc-slot-plus-wrap {
+    opacity: 0.28 !important;
+  }
+
+  [data-theme="light"] .pc-modern .pc-slot-available:hover .pc-slot-plus-wrap,
+  [data-theme="light"] .pc-modern .pc-slot-available:focus-visible .pc-slot-plus-wrap {
+    opacity: 1 !important;
+  }
+}
