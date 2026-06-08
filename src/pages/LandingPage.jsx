@@ -639,7 +639,6 @@ const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
             <span className="gallery-pro-kicker">Lihat ruang</span>
             <h2 id="gallery-pro-title">Cek dulu ruangnya sebelum datang.</h2>
             <p>Preview singkat biar kamu tahu suasana studio. Foto di section ini otomatis mengikuti pengaturan galeri admin.</p>
-            <span className="gallery-pro-source">{galleryPreviewSourceLabel}</span>
           </div>
 
           <div className="gallery-pro-visual">
@@ -660,21 +659,22 @@ const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
                       alt={caption}
                       loading={index === 0 ? 'eager' : 'lazy'}
                     />
-                    <span className="gallery-pro-photo-shade" aria-hidden="true" />
-                    <span className="gallery-pro-photo-label">
-                      <Camera size={index === 0 ? 16 : 13} />
-                      <span>{caption}</span>
-                    </span>
+                    <span className="gallery-pro-photo-shade gallery-pro-photo-shade-clean" aria-hidden="true" />
                   </button>
                 );
               })}
             </div>
 
             <div className="gallery-pro-bottom">
-              <span>{galleryPreviewPhotos.length} / 6 foto tampil</span>
-              <Link to="/galeri" className="gallery-pro-cta">
-                <span>Lihat Galeri Studio</span>
-                <ArrowUpRight size={17} />
+              <Link
+                to="/galeri"
+                className="gallery-pro-cta-modern group relative inline-flex min-h-11 items-center justify-center gap-2 overflow-hidden rounded-2xl border border-white/10 bg-white/[0.055] px-4 py-3 text-[0.82rem] font-black text-stone-100/90 shadow-2xl shadow-black/20 backdrop-blur-xl transition duration-200 hover:-translate-y-0.5 hover:border-amber-300/25 hover:bg-white/[0.09] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-amber-300/70"
+              >
+                <span className="pointer-events-none absolute inset-0 bg-gradient-to-r from-amber-300/0 via-amber-300/10 to-cyan-200/0 opacity-0 transition duration-200 group-hover:opacity-100" />
+                <span className="relative z-10">Lihat Galeri Studio</span>
+                <span className="relative z-10 grid size-7 place-items-center rounded-xl border border-white/10 bg-black/15 text-amber-100 transition duration-200 group-hover:translate-x-0.5 group-hover:border-amber-300/25 group-hover:bg-amber-300/10">
+                  <ArrowUpRight size={16} />
+                </span>
               </Link>
             </div>
           </div>

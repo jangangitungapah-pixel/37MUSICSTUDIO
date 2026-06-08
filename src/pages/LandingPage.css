@@ -6269,3 +6269,82 @@ body[data-theme="light"]:has(.landing-container) #root {
     flex-direction: column;
   }
 }
+
+/* ──────────────────────────────────────────────────────────────────────────
+   37 LANDING GALLERY CLEAN LABELS + MODERN CTA 8.0F
+   --------------------------------------------------------------------------
+   Cleans visual noise from landing gallery:
+   - removes source/count badges
+   - removes photo caption overlays
+   - keeps subtle image depth shade
+   - uses Tailwind-powered CTA from JSX with small CSS alignment support
+   ────────────────────────────────────────────────────────────────────────── */
+
+.tw-landing-phase80d .gallery-pro-source,
+.tw-landing-phase80d .gallery-pro-photo-label,
+.tw-landing-phase80d .gallery-pro-bottom > span {
+  display: none !important;
+}
+
+.tw-landing-phase80d .gallery-pro-photo-shade-clean {
+  height: 42% !important;
+  opacity: 0.46;
+  background:
+    linear-gradient(180deg, transparent, rgba(0, 0, 0, 0.42)) !important;
+}
+
+.tw-landing-phase80d .gallery-pro-photo-featured .gallery-pro-photo-shade-clean {
+  height: 48% !important;
+  opacity: 0.52;
+}
+
+.tw-landing-phase80d .gallery-pro-bottom {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  gap: 0.75rem !important;
+  flex-wrap: wrap !important;
+  margin-top: 0.15rem !important;
+}
+
+.tw-landing-phase80d .gallery-pro-cta-modern {
+  text-decoration: none !important;
+  will-change: transform;
+}
+
+.tw-landing-phase80d .gallery-pro-cta-modern svg {
+  display: block;
+}
+
+.tw-landing-phase80d .gallery-pro-photo {
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.tw-landing-phase80d .gallery-pro-photo:hover {
+  transform: translateY(-2px);
+  border-color: rgba(239, 197, 110, 0.24) !important;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.24) !important;
+}
+
+.tw-landing-phase80d .gallery-pro-photo-featured:hover {
+  box-shadow: 0 30px 78px rgba(0, 0, 0, 0.32) !important;
+}
+
+@media (max-width: 1023px) {
+  .tw-landing-phase80d .gallery-pro-bottom {
+    justify-content: flex-start !important;
+  }
+}
+
+@media (max-width: 767px) {
+  .tw-landing-phase80d .gallery-pro-cta-modern {
+    width: 100% !important;
+  }
+
+  .tw-landing-phase80d .gallery-pro-bottom {
+    width: 100% !important;
+  }
+}
