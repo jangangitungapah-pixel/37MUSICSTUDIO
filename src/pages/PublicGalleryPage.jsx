@@ -16,8 +16,7 @@ import {
   Link2,
   Moon,
   Search,
-  Sparkles,
-  Sun,
+Sun,
   X,
 } from 'lucide-react';
 import { toast } from 'sonner';
@@ -410,12 +409,7 @@ const PublicGalleryPage = () => {
               )}
             </div>
           )}
-
-          <div className="pg-controls-meta">
-            <Sparkles size={15} />
-            <span>{viewMode === 'photos' ? filteredPhotos.length : albumItems.length} item tampil</span>
-          </div>
-        </section>
+</section>
 
         <section className="pg-shell pg-gallery-section">
           <AnimatePresence mode="wait">

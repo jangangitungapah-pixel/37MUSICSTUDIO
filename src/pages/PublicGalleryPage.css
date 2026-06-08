@@ -1652,3 +1652,99 @@ html[data-theme-switching="true"] .pg-modern-gallery .pg-lightbox-overlay {
     padding-bottom: 0;
   }
 }
+
+/* ──────────────────────────────────────────────────────────────────────────
+   37 PUBLIC GALLERY TOOLBAR SIMPLIFY 8.2C
+   --------------------------------------------------------------------------
+   Removes customer-facing item count from toolbar and makes the controls
+   more compact, centered, and closer to Public Calendar visual rhythm.
+   ────────────────────────────────────────────────────────────────────────── */
+
+.pg-modern-gallery .pg-controls-panel {
+  width: min(760px, 100%) !important;
+  max-width: 760px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  display: grid !important;
+  grid-template-columns: auto minmax(260px, 1fr) !important;
+  align-items: center !important;
+  gap: 0.58rem !important;
+  padding: 0.54rem !important;
+  border-radius: 1.14rem !important;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(255, 56, 113, 0.042), transparent 34%),
+    radial-gradient(circle at 100% 0%, rgba(88, 224, 233, 0.040), transparent 34%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.050), rgba(255, 255, 255, 0.018)),
+    rgba(14, 18, 26, 0.56) !important;
+  box-shadow:
+    0 18px 52px rgba(0, 0, 0, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.065) !important;
+}
+
+.pg-modern-gallery .pg-view-toggle {
+  min-height: 46px !important;
+  padding: 0.26rem !important;
+  border-radius: 0.92rem !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.042), rgba(255, 255, 255, 0.014)),
+    rgba(255, 255, 255, 0.024) !important;
+}
+
+.pg-modern-gallery .pg-view-btn {
+  min-height: 38px !important;
+  padding: 0 0.82rem !important;
+  border-radius: 0.72rem !important;
+  font-size: 0.74rem !important;
+}
+
+.pg-modern-gallery .pg-search-wrap {
+  width: 100% !important;
+  max-width: none !important;
+}
+
+.pg-modern-gallery .pg-search-input {
+  min-height: 46px !important;
+  border-radius: 0.92rem !important;
+  font-size: 0.82rem !important;
+}
+
+.pg-modern-gallery .pg-controls-meta {
+  display: none !important;
+}
+
+[data-theme="light"] .pg-modern-gallery .pg-controls-panel {
+  border-color: rgba(96, 73, 41, 0.12) !important;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(255, 56, 113, 0.026), transparent 34%),
+    radial-gradient(circle at 100% 0%, rgba(35, 176, 191, 0.030), transparent 34%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.36)),
+    rgba(255, 250, 241, 0.58) !important;
+  box-shadow:
+    0 18px 52px rgba(96, 73, 41, 0.105),
+    inset 0 1px 0 rgba(255, 255, 255, 0.74) !important;
+}
+
+[data-theme="light"] .pg-modern-gallery .pg-view-toggle {
+  border-color: rgba(96, 73, 41, 0.10) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.62), rgba(255, 255, 255, 0.30)),
+    rgba(255, 250, 241, 0.42) !important;
+}
+
+@media (max-width: 720px) {
+  .pg-modern-gallery .pg-controls-panel {
+    width: min(100%, 520px) !important;
+    grid-template-columns: 1fr !important;
+    gap: 0.55rem !important;
+    padding: 0.62rem !important;
+    border-radius: 1.12rem !important;
+  }
+
+  .pg-modern-gallery .pg-view-toggle {
+    width: 100% !important;
+  }
+
+  .pg-modern-gallery .pg-view-btn {
+    min-height: 42px !important;
+  }
+}
