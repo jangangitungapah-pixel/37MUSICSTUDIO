@@ -668,12 +668,12 @@ const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
             <div className="gallery-pro-bottom">
               <Link
                 to="/galeri"
-                className="gallery-pro-cta-modern group relative inline-flex min-h-11 items-center justify-center gap-2 overflow-hidden rounded-2xl border border-white/10 bg-white/[0.055] px-4 py-3 text-[0.82rem] font-black text-stone-100/90 shadow-2xl shadow-black/20 backdrop-blur-xl transition duration-200 hover:-translate-y-0.5 hover:border-amber-300/25 hover:bg-white/[0.09] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-amber-300/70"
+                className="gallery-pro-cta-modern group relative inline-grid min-h-12 min-w-[158px] grid-cols-[1fr_2rem] items-center justify-items-center gap-2 overflow-hidden rounded-[1.15rem] border border-white/10 bg-white/[0.06] py-2.5 pl-5 pr-2.5 text-[0.84rem] font-black tracking-[-0.01em] text-stone-100/92 shadow-2xl shadow-black/20 backdrop-blur-xl transition duration-200 hover:-translate-y-0.5 hover:border-amber-300/30 hover:bg-white/[0.095] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-amber-300/70"
               >
                 <span className="pointer-events-none absolute inset-0 bg-gradient-to-r from-amber-300/0 via-amber-300/10 to-cyan-200/0 opacity-0 transition duration-200 group-hover:opacity-100" />
-                <span className="relative z-10">Lihat Galeri Studio</span>
-                <span className="relative z-10 grid size-7 place-items-center rounded-xl border border-white/10 bg-black/15 text-amber-100 transition duration-200 group-hover:translate-x-0.5 group-hover:border-amber-300/25 group-hover:bg-amber-300/10">
-                  <ArrowUpRight size={16} />
+                <span className="relative z-10 justify-self-center whitespace-nowrap text-center">Buka Galeri</span>
+                <span className="relative z-10 grid size-8 place-items-center rounded-[0.9rem] border border-white/10 bg-black/18 text-amber-100 transition duration-200 group-hover:translate-x-0.5 group-hover:border-amber-300/30 group-hover:bg-amber-300/12">
+                  <ArrowUpRight size={17} />
                 </span>
               </Link>
             </div>

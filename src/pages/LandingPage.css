@@ -6348,3 +6348,78 @@ body[data-theme="light"]:has(.landing-container) #root {
     width: 100% !important;
   }
 }
+
+/* ──────────────────────────────────────────────────────────────────────────
+   37 LANDING GALLERY CTA COPY REFINEMENT 8.0F
+   --------------------------------------------------------------------------
+   Makes gallery CTA copy and size feel cleaner:
+   - shorter public-facing copy
+   - better capsule width
+   - icon gets more breathing room
+   - no cramped text/icon collision
+   ────────────────────────────────────────────────────────────────────────── */
+
+.tw-landing-phase80d .gallery-pro-cta-modern {
+  letter-spacing: -0.01em;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.tw-landing-phase80d .gallery-pro-cta-modern > span:nth-child(2) {
+  transform: translateY(0.5px);
+}
+
+.tw-landing-phase80d .gallery-pro-cta-modern:hover > span:nth-child(3) {
+  box-shadow: 0 0 22px rgba(239, 197, 110, 0.13);
+}
+
+@media (max-width: 767px) {
+  .tw-landing-phase80d .gallery-pro-cta-modern {
+    width: 100%;
+    justify-content: space-between;
+    padding-inline: 1rem !important;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   37 LANDING GALLERY CTA CENTER FIX 8.0F
+   --------------------------------------------------------------------------
+   Gives the gallery CTA more breathing room:
+   - wider capsule
+   - centered text column
+   - icon gets a separate column
+   - avoids text feeling stuck to the left border
+   ────────────────────────────────────────────────────────────────────────── */
+
+.tw-landing-phase80d .gallery-pro-cta-modern {
+  min-width: 158px !important;
+  display: inline-grid !important;
+  grid-template-columns: minmax(0, 1fr) 2rem !important;
+  align-items: center !important;
+  justify-items: center !important;
+  column-gap: 0.5rem !important;
+  padding-left: 1.25rem !important;
+  padding-right: 0.625rem !important;
+  line-height: 1 !important;
+  text-decoration: none !important;
+}
+
+.tw-landing-phase80d .gallery-pro-cta-modern > span:nth-child(2) {
+  width: 100%;
+  text-align: center;
+  transform: translateY(0.5px);
+}
+
+.tw-landing-phase80d .gallery-pro-cta-modern > span:nth-child(3) {
+  justify-self: end;
+  flex: 0 0 auto;
+}
+
+@media (max-width: 767px) {
+  .tw-landing-phase80d .gallery-pro-cta-modern {
+    width: 100% !important;
+    min-width: 0 !important;
+    padding-left: 1rem !important;
+    padding-right: 0.75rem !important;
+  }
+}
