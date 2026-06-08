@@ -1895,3 +1895,56 @@
     font-size: 0.70rem;
   }
 }
+
+/* ──────────────────────────────────────────────────────────────────────────
+   37 PUBLIC CALENDAR GALLERY BACKGROUND BLEND 8.1E
+   --------------------------------------------------------------------------
+   Removes the separate-looking ambient rectangle behind the gallery so the
+   gallery section blends into the same page shell/background.
+   ────────────────────────────────────────────────────────────────────────── */
+
+.pc-modern .pc-public-gallery-section {
+  background: transparent !important;
+  isolation: auto !important;
+}
+
+.pc-modern .pc-public-gallery-shell {
+  background: transparent !important;
+  isolation: auto !important;
+}
+
+.pc-modern .pc-public-gallery-shell::before {
+  display: none !important;
+  opacity: 0 !important;
+  background: transparent !important;
+}
+
+.pc-modern .pc-public-gallery-grid {
+  background: transparent !important;
+}
+
+.pc-modern .pc-public-gallery-header {
+  background: transparent !important;
+}
+
+.pc-modern .pc-public-gallery-title {
+  text-shadow:
+    0 20px 52px rgba(0, 0, 0, 0.36),
+    0 0 34px rgba(239, 197, 110, 0.055) !important;
+}
+
+.pc-modern .pc-public-gallery-card {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.016)),
+    rgba(15, 18, 26, 0.58) !important;
+}
+
+@media (max-width: 640px) {
+  .pc-modern .pc-public-gallery-section {
+    background: transparent !important;
+  }
+
+  .pc-modern .pc-public-gallery-shell::before {
+    display: none !important;
+  }
+}
