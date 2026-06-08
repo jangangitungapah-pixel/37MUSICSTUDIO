@@ -9,8 +9,7 @@ import {
   AlertCircle,
   ArrowUpRight,
   Calendar,
-  Camera,
-  CheckCircle2,
+CheckCircle2,
   ChevronRight,
   Disc3,
   Eye,
@@ -116,10 +115,6 @@ const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   }, [adminGalleryPhotos]);
 
   const galleryPreviewPhotos = landingGalleryPhotos.length > 0 ? landingGalleryPhotos : [FALLBACK_HERO_PHOTO];
-  const galleryPreviewSourceLabel =
-    landingGalleryPhotos.length > 0
-      ? `${landingGalleryPhotos.length} foto pilihan admin tampil di landing`
-      : 'Foto fallback studio tampil sementara';
   const formattedPrice = formatCurrency(pricePerHour || 120000);
   const whatsappNumber = normalizeWhatsAppNumber(studioPhone);
   const whatsappUrl = `https://wa.me/${whatsappNumber}`;
@@ -183,7 +178,6 @@ const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
       if (unsubscribe) unsubscribe();
     };
   }, [navigate]);
-
 
   const handleGoogleLogin = async () => {
     setLoginLoading(true);
@@ -251,7 +245,6 @@ const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
           >
             {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
           </button>
-
 
           <Link to="/jadwal-publik" className="nav-book-btn hidden rounded-2xl bg-amber-300 px-4 font-black text-neutral-950 shadow-lg shadow-amber-500/15 transition hover:-translate-y-0.5 hover:bg-amber-200 sm:inline-flex" aria-label="Cek slot booking studio">
             <Calendar size={16} />
@@ -456,7 +449,6 @@ const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
               </div>
             </div>
 
-
             <div className="hero-login-perks mb-4 grid grid-cols-3 gap-2">
               <span className="rounded-2xl border border-white/10 bg-white/[0.04] px-3 py-2 text-center text-[0.68rem] font-black text-stone-100/70">Fast</span>
               <span className="rounded-2xl border border-white/10 bg-white/[0.04] px-3 py-2 text-center text-[0.68rem] font-black text-stone-100/70">Secure</span>
@@ -537,7 +529,6 @@ const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
                   </button>
                 </div>
               </div>
-
 
               <div className="hero-login-security-note rounded-2xl border border-emerald-300/15 bg-emerald-300/10 px-3 py-2 text-xs font-semibold leading-5 text-emerald-50/75">
                 Data akun dipakai untuk menyambungkan booking, billing, dan histori client studio.
