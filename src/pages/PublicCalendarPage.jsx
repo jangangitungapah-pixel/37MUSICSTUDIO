@@ -446,153 +446,158 @@ const PublicCalendarPage = () => {
 
   return (
     <div className="pc-modern min-h-screen overflow-x-clip bg-[#090b10] text-stone-50 selection:bg-amber-300/25 selection:text-amber-50">
-      <section className="relative isolate min-h-[78svh] overflow-hidden">
-        <div className="absolute inset-0 -z-20 bg-[#090b10]">
+      <section className="relative isolate overflow-hidden bg-[#090b10]">
+        <div className="absolute inset-0 -z-30 bg-[#090b10]">
           <img
             src={heroPhoto.url}
             alt=""
-            className="size-full object-cover opacity-75 blur-[0.2px] scale-[1.02]"
+            className="size-full scale-[1.03] object-cover opacity-55 blur-[1px]"
           />
         </div>
-        <div className="absolute inset-0 -z-10 bg-[linear-gradient(90deg,rgba(5,7,10,0.94)_0%,rgba(5,7,10,0.76)_43%,rgba(5,7,10,0.50)_100%),linear-gradient(180deg,rgba(5,7,10,0.12)_0%,rgba(5,7,10,0.30)_48%,#090b10_100%)]" />
-        <div className="absolute left-1/2 top-0 -z-10 h-px w-[min(740px,72vw)] -translate-x-1/2 bg-gradient-to-r from-transparent via-amber-300/40 to-transparent" />
+        <div className="absolute inset-0 -z-20 bg-[radial-gradient(circle_at_28%_12%,rgba(239,197,110,0.14),transparent_32%),radial-gradient(circle_at_78%_18%,rgba(88,224,233,0.10),transparent_34%),linear-gradient(90deg,rgba(5,7,10,0.96)_0%,rgba(5,7,10,0.86)_44%,rgba(5,7,10,0.58)_100%),linear-gradient(180deg,rgba(5,7,10,0.16)_0%,rgba(5,7,10,0.60)_72%,#090b10_100%)]" />
+        <div className="absolute inset-x-0 top-0 -z-10 h-px bg-gradient-to-r from-transparent via-amber-300/35 to-transparent" />
 
-        <header className="mx-auto flex w-full max-w-7xl items-center justify-between gap-3 px-4 pt-[calc(1rem+env(safe-area-inset-top,0px))] sm:px-6 lg:px-8">
-          <button
-            type="button"
-            onClick={handleExitPublic}
-            className="group inline-flex min-h-12 max-w-[62vw] items-center gap-2 rounded-2xl border border-white/10 bg-white/[0.055] py-1.5 pl-1.5 pr-3 text-left shadow-2xl shadow-black/20 backdrop-blur-2xl transition hover:-translate-y-0.5 hover:border-amber-300/25 hover:bg-white/[0.085]"
-            aria-label="Kembali ke beranda"
-          >
-            <span className="grid size-9 shrink-0 place-items-center overflow-hidden rounded-xl border border-amber-300/25 bg-white/[0.055]">
-              <img src="/logo.svg" alt="" className="size-7 object-contain" />
-            </span>
-            <span className="truncate text-[0.74rem] font-black uppercase tracking-[-0.02em] text-stone-100/95">
-              {studioName || '37 MUSIC STUDIO'}
-            </span>
-          </button>
-
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              className="grid size-11 place-items-center rounded-2xl border border-white/10 bg-white/[0.055] text-stone-100/75 shadow-xl shadow-black/10 backdrop-blur-xl transition hover:-translate-y-0.5 hover:border-white/20 hover:bg-white/[0.09] hover:text-white"
-              onClick={toggleTheme}
-              aria-label={theme === 'dark' ? 'Aktifkan Light Mode' : 'Aktifkan Dark Mode'}
-              title={theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
-            >
-              {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
-            </button>
-
-            {user && !user.isAnonymous && (
-              <button
-                type="button"
-                onClick={() => navigate('/client/dashboard')}
-                className="hidden min-h-11 items-center gap-2 rounded-2xl border border-cyan-200/15 bg-cyan-200/[0.07] px-3 text-[0.78rem] font-black text-cyan-50/85 shadow-xl shadow-black/10 backdrop-blur-xl transition hover:-translate-y-0.5 hover:border-cyan-200/30 hover:bg-cyan-200/[0.11] sm:inline-flex"
-              >
-                <ShieldCheck size={16} />
-                <span>Client Portal</span>
-              </button>
-            )}
-
+        <div className="mx-auto flex w-[min(1180px,calc(100vw-2rem))] flex-col">
+          <header className="flex items-center justify-between gap-3 pt-[calc(1rem+env(safe-area-inset-top,0px))]">
             <button
               type="button"
               onClick={handleExitPublic}
-              className="inline-flex min-h-11 items-center gap-2 rounded-2xl border border-white/10 bg-white/[0.055] px-3 text-[0.78rem] font-black text-stone-100/80 shadow-xl shadow-black/10 backdrop-blur-xl transition hover:-translate-y-0.5 hover:border-white/20 hover:bg-white/[0.09] hover:text-white"
+              className="group inline-flex min-h-12 max-w-[68vw] items-center gap-2 rounded-2xl border border-white/10 bg-white/[0.065] py-1.5 pl-1.5 pr-3 text-left shadow-2xl shadow-black/20 backdrop-blur-2xl transition hover:-translate-y-0.5 hover:border-amber-300/25 hover:bg-white/[0.095]"
+              aria-label="Kembali ke beranda"
             >
-              <LogOut size={16} />
-              <span className="hidden sm:inline">Kembali</span>
-            </button>
-          </div>
-        </header>
-
-        <main className="mx-auto grid w-full max-w-7xl gap-8 px-4 pb-20 pt-16 sm:px-6 sm:pt-20 lg:grid-cols-[minmax(0,1fr)_minmax(360px,0.58fr)] lg:px-8 lg:pt-24">
-          <div className="max-w-3xl">
-            <div className="mb-4 inline-flex min-h-8 items-center gap-2 rounded-full border border-amber-300/25 bg-black/25 px-3 text-[0.72rem] font-black uppercase tracking-[0.12em] text-amber-100 backdrop-blur-xl">
-              <CalendarDays size={16} />
-              <span>Live public booking calendar</span>
-            </div>
-
-            <h1 className="max-w-4xl font-['Bebas_Neue',Impact,sans-serif] text-[clamp(3.4rem,8vw,7rem)] font-normal uppercase leading-[0.9] tracking-[-0.035em] text-stone-50 drop-shadow-2xl">
-              Booking studio tanpa ribet.
-            </h1>
-
-            <p className="mt-5 max-w-2xl text-base font-bold leading-8 text-stone-100/74 sm:text-lg">
-              Pilih slot kosong, isi detail sesi, lalu request kamu masuk ke admin studio untuk dikonfirmasi.
-              Enak dipakai dari HP, tetap detail di desktop.
-            </p>
-
-            <div className="mt-7 flex flex-wrap items-center gap-3">
-              <a
-                href="#pc-booking-calendar"
-                className="group inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl border border-amber-200/20 bg-gradient-to-r from-amber-300 to-yellow-200 px-5 text-[0.9rem] font-black text-neutral-950 shadow-2xl shadow-amber-500/20 transition hover:-translate-y-0.5 hover:brightness-105"
-              >
-                <span>Cek Slot</span>
-                <ArrowRight size={18} className="transition group-hover:translate-x-0.5" />
-              </a>
-
-              {cleanStudioPhone && (
-                <a
-                  href={'https://wa.me/' + cleanStudioPhone}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/[0.055] px-5 text-[0.9rem] font-black text-stone-100/88 shadow-2xl shadow-black/15 backdrop-blur-xl transition hover:-translate-y-0.5 hover:border-green-300/25 hover:bg-white/[0.09]"
-                >
-                  <Phone size={17} className="text-green-300" />
-                  <span>Chat Admin</span>
-                </a>
-              )}
-            </div>
-
-            <div className="mt-8 grid max-w-4xl gap-3 sm:grid-cols-2 xl:grid-cols-4">
-              <div className="rounded-2xl border border-white/10 bg-white/[0.055] p-4 shadow-xl shadow-black/10 backdrop-blur-xl">
-                <div className="mb-2 flex items-center gap-2 text-[0.76rem] font-black uppercase tracking-[0.08em] text-stone-300/70">
-                  <span className={cx('size-2 rounded-full', availableToday > 0 ? 'bg-green-300 shadow-[0_0_0_7px_rgba(134,239,172,0.12)]' : 'bg-rose-400 shadow-[0_0_0_7px_rgba(251,113,133,0.12)]')} />
-                  Hari ini
-                </div>
-                <strong className="text-xl font-black text-stone-50">{availableToday}</strong>
-                <span className="ml-1 text-sm font-bold text-stone-300/65">slot tersedia</span>
-              </div>
-
-              <div className="rounded-2xl border border-white/10 bg-white/[0.055] p-4 shadow-xl shadow-black/10 backdrop-blur-xl">
-                <div className="mb-2 flex items-center gap-2 text-[0.76rem] font-black uppercase tracking-[0.08em] text-stone-300/70">
-                  <Clock size={15} className="text-amber-200" />
-                  Operasional
-                </div>
-                <strong className="text-lg font-black text-stone-50">{operatingLabel}</strong>
-              </div>
-
-              <div className="rounded-2xl border border-white/10 bg-white/[0.055] p-4 shadow-xl shadow-black/10 backdrop-blur-xl">
-                <div className="mb-2 flex items-center gap-2 text-[0.76rem] font-black uppercase tracking-[0.08em] text-stone-300/70">
-                  <WalletCards size={15} className="text-amber-200" />
-                  Rate
-                </div>
-                <strong className="text-lg font-black text-stone-50">Rp {formattedRate}</strong>
-                <span className="text-sm font-bold text-stone-300/65"> / jam</span>
-              </div>
-
-              <div className="rounded-2xl border border-white/10 bg-white/[0.055] p-4 shadow-xl shadow-black/10 backdrop-blur-xl">
-                <div className="mb-2 flex items-center gap-2 text-[0.76rem] font-black uppercase tracking-[0.08em] text-stone-300/70">
-                  <Headphones size={15} className="text-amber-200" />
-                  Setup
-                </div>
-                <strong className="text-lg font-black text-stone-50">Operator ready</strong>
-              </div>
-            </div>
-          </div>
-
-          <aside className="hidden self-end rounded-[2rem] border border-white/10 bg-white/[0.055] p-3 shadow-2xl shadow-black/25 backdrop-blur-2xl lg:block">
-            <button
-              type="button"
-              onClick={() => setLightboxPhoto({ ...heroPhoto, displayCaption: getPublicPhotoCaption(heroPhoto) })}
-              className="group relative aspect-[4/5] w-full overflow-hidden rounded-[1.5rem] border border-white/10 bg-white/[0.04]"
-            >
-              <img src={heroPhoto.url} alt="" className="size-full object-cover transition duration-500 group-hover:scale-105" />
-              <span className="absolute inset-x-3 bottom-3 rounded-2xl border border-white/10 bg-black/45 px-4 py-3 text-left text-xs font-black text-white/85 shadow-xl shadow-black/20 backdrop-blur-xl">
-                {getPublicPhotoCaption(heroPhoto)}
+              <span className="grid size-9 shrink-0 place-items-center overflow-hidden rounded-xl border border-amber-300/25 bg-black/20">
+                <img src="/logo.svg" alt="" className="size-7 object-contain" />
+              </span>
+              <span className="truncate text-[0.76rem] font-black uppercase tracking-[-0.02em] text-stone-100/95">
+                {studioName || '37 MUSIC STUDIO'}
               </span>
             </button>
-          </aside>
-        </main>
+
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                className="grid size-11 place-items-center rounded-2xl border border-white/10 bg-white/[0.065] text-stone-100/75 shadow-xl shadow-black/10 backdrop-blur-xl transition hover:-translate-y-0.5 hover:border-white/20 hover:bg-white/[0.10] hover:text-white"
+                onClick={toggleTheme}
+                aria-label={theme === 'dark' ? 'Aktifkan Light Mode' : 'Aktifkan Dark Mode'}
+                title={theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
+              >
+                {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
+              </button>
+
+              {user && !user.isAnonymous && (
+                <button
+                  type="button"
+                  onClick={() => navigate('/client/dashboard')}
+                  className="hidden min-h-11 items-center gap-2 rounded-2xl border border-cyan-200/15 bg-cyan-200/[0.075] px-3 text-[0.78rem] font-black text-cyan-50/85 shadow-xl shadow-black/10 backdrop-blur-xl transition hover:-translate-y-0.5 hover:border-cyan-200/30 hover:bg-cyan-200/[0.12] sm:inline-flex"
+                >
+                  <ShieldCheck size={16} />
+                  <span>Client Portal</span>
+                </button>
+              )}
+
+              <button
+                type="button"
+                onClick={handleExitPublic}
+                className="inline-flex min-h-11 items-center gap-2 rounded-2xl border border-white/10 bg-white/[0.065] px-3 text-[0.78rem] font-black text-stone-100/80 shadow-xl shadow-black/10 backdrop-blur-xl transition hover:-translate-y-0.5 hover:border-white/20 hover:bg-white/[0.10] hover:text-white"
+              >
+                <LogOut size={16} />
+                <span className="hidden sm:inline">Kembali</span>
+              </button>
+            </div>
+          </header>
+
+          <main className="grid min-h-[calc(78svh-5rem)] items-center gap-8 py-14 sm:py-16 lg:grid-cols-[minmax(0,1fr)_minmax(340px,430px)] lg:py-20">
+            <div className="mx-auto w-full max-w-[680px] text-center lg:mx-0 lg:text-left">
+              <div className="mb-4 inline-flex min-h-8 items-center gap-2 rounded-full border border-amber-300/25 bg-black/28 px-3 text-[0.7rem] font-black uppercase tracking-[0.12em] text-amber-100 shadow-xl shadow-black/15 backdrop-blur-xl">
+                <CalendarDays size={15} />
+                <span>Live public booking calendar</span>
+              </div>
+
+              <h1 className="mx-auto max-w-[760px] font-['Bebas_Neue',Impact,sans-serif] text-[clamp(3.35rem,7.1vw,6.6rem)] font-normal uppercase leading-[0.9] tracking-[-0.032em] text-stone-50 drop-shadow-2xl lg:mx-0">
+                Booking studio tanpa ribet.
+              </h1>
+
+              <p className="mx-auto mt-5 max-w-[620px] text-[0.98rem] font-bold leading-7 text-stone-100/74 sm:text-lg sm:leading-8 lg:mx-0">
+                Pilih slot kosong, isi detail sesi, lalu request kamu masuk ke admin studio untuk dikonfirmasi.
+                Enak dipakai dari HP, tetap detail di desktop.
+              </p>
+
+              <div className="mt-7 flex flex-wrap items-center justify-center gap-3 lg:justify-start">
+                <a
+                  href="#pc-booking-calendar"
+                  className="group inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl border border-amber-200/20 bg-gradient-to-r from-amber-300 to-yellow-200 px-5 text-[0.9rem] font-black text-neutral-950 shadow-2xl shadow-amber-500/20 transition hover:-translate-y-0.5 hover:brightness-105"
+                >
+                  <span>Cek Slot</span>
+                  <ArrowRight size={18} className="transition group-hover:translate-x-0.5" />
+                </a>
+
+                {cleanStudioPhone && (
+                  <a
+                    href={'https://wa.me/' + cleanStudioPhone}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/[0.065] px-5 text-[0.9rem] font-black text-stone-100/88 shadow-2xl shadow-black/15 backdrop-blur-xl transition hover:-translate-y-0.5 hover:border-green-300/25 hover:bg-white/[0.10]"
+                  >
+                    <Phone size={17} className="text-green-300" />
+                    <span>Chat Admin</span>
+                  </a>
+                )}
+              </div>
+
+              <div className="mt-8 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+                <div className="rounded-2xl border border-white/10 bg-white/[0.065] p-4 text-left shadow-xl shadow-black/10 backdrop-blur-xl">
+                  <div className="mb-2 flex items-center gap-2 text-[0.72rem] font-black uppercase tracking-[0.08em] text-stone-300/70">
+                    <span className={cx('size-2 rounded-full', availableToday > 0 ? 'bg-green-300 shadow-[0_0_0_7px_rgba(134,239,172,0.12)]' : 'bg-rose-400 shadow-[0_0_0_7px_rgba(251,113,133,0.12)]')} />
+                    Hari ini
+                  </div>
+                  <strong className="text-xl font-black text-stone-50">{availableToday}</strong>
+                  <span className="ml-1 text-sm font-bold text-stone-300/65">slot tersedia</span>
+                </div>
+
+                <div className="rounded-2xl border border-white/10 bg-white/[0.065] p-4 text-left shadow-xl shadow-black/10 backdrop-blur-xl">
+                  <div className="mb-2 flex items-center gap-2 text-[0.72rem] font-black uppercase tracking-[0.08em] text-stone-300/70">
+                    <Clock size={15} className="text-amber-200" />
+                    Operasional
+                  </div>
+                  <strong className="text-lg font-black text-stone-50">{operatingLabel}</strong>
+                </div>
+
+                <div className="rounded-2xl border border-white/10 bg-white/[0.065] p-4 text-left shadow-xl shadow-black/10 backdrop-blur-xl">
+                  <div className="mb-2 flex items-center gap-2 text-[0.72rem] font-black uppercase tracking-[0.08em] text-stone-300/70">
+                    <WalletCards size={15} className="text-amber-200" />
+                    Rate
+                  </div>
+                  <strong className="text-lg font-black text-stone-50">Rp {formattedRate}</strong>
+                  <span className="text-sm font-bold text-stone-300/65"> / jam</span>
+                </div>
+
+                <div className="rounded-2xl border border-white/10 bg-white/[0.065] p-4 text-left shadow-xl shadow-black/10 backdrop-blur-xl">
+                  <div className="mb-2 flex items-center gap-2 text-[0.72rem] font-black uppercase tracking-[0.08em] text-stone-300/70">
+                    <Headphones size={15} className="text-amber-200" />
+                    Setup
+                  </div>
+                  <strong className="text-lg font-black text-stone-50">Operator ready</strong>
+                </div>
+              </div>
+            </div>
+
+            <aside className="mx-auto hidden w-full max-w-[410px] self-center lg:block">
+              <button
+                type="button"
+                onClick={() => setLightboxPhoto({ ...heroPhoto, displayCaption: getPublicPhotoCaption(heroPhoto) })}
+                className="group relative aspect-[4/5] w-full overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.055] p-2 shadow-2xl shadow-black/30 backdrop-blur-2xl transition hover:-translate-y-1 hover:border-amber-300/24"
+              >
+                <span className="absolute inset-0 rounded-[2rem] bg-[radial-gradient(circle_at_25%_0%,rgba(239,197,110,0.14),transparent_38%),linear-gradient(180deg,rgba(255,255,255,0.06),rgba(255,255,255,0.02))]" />
+                <span className="relative block size-full overflow-hidden rounded-[1.55rem] border border-white/10 bg-black/20">
+                  <img src={heroPhoto.url} alt="" className="size-full object-cover transition duration-500 group-hover:scale-105" />
+                  <span className="absolute inset-x-3 bottom-3 rounded-2xl border border-white/10 bg-black/48 px-4 py-3 text-left text-xs font-black text-white/86 shadow-xl shadow-black/20 backdrop-blur-xl">
+                    {getPublicPhotoCaption(heroPhoto)}
+                  </span>
+                </span>
+              </button>
+            </aside>
+          </main>
+        </div>
       </section>
 
       <section className="relative z-10 mx-auto -mt-12 flex w-[min(1220px,calc(100%-2rem))] flex-col gap-4 pb-10">
