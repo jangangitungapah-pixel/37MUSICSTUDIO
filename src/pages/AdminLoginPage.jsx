@@ -136,7 +136,11 @@ const AdminLoginPage = () => {
               Studio operations
             </span>
 
-            <h1>Masuk ke studio dashboard.</h1>
+            <h1 className="admin-login-title">
+              <span>Masuk ke</span>
+              <span>Dashboard</span>
+              <span>Studio.</span>
+            </h1>
 
             <p>
               Kelola booking, galeri, rate, billing, dan operasional 37 Music Studio dari satu ruang kerja yang aman.

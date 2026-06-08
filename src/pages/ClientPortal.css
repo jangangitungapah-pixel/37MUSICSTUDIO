@@ -6424,3 +6424,290 @@ html[data-theme-switching="true"] .admin-login-modern .admin-login-card {
     text-align: center;
   }
 }
+
+/* ──────────────────────────────────────────────────────────────────────────
+   37 ADMIN LOGIN FINAL POLISH 8.4B
+   --------------------------------------------------------------------------
+   Final admin login polish:
+   - controlled heading line breaks
+   - slightly raised composition
+   - stronger premium card presence
+   - cleaner cyan glass focus state
+   - better proof pills rhythm
+   ────────────────────────────────────────────────────────────────────────── */
+
+.admin-login-modern .admin-login-layout {
+  transform: translateY(-1.35rem) !important;
+}
+
+.admin-login-modern .admin-login-title {
+  max-width: 620px !important;
+  margin: 1.05rem 0 0 !important;
+  font-family: "Bebas Neue", Impact, "Arial Narrow", sans-serif !important;
+  font-size: clamp(4rem, 7vw, 6.95rem) !important;
+  line-height: 0.88 !important;
+  letter-spacing: -0.014em !important;
+  word-spacing: 0.04em !important;
+  text-transform: uppercase !important;
+  color: var(--admin-text) !important;
+  text-wrap: balance !important;
+  text-shadow:
+    0 28px 76px rgba(0, 0, 0, 0.44),
+    0 0 1px rgba(255, 250, 240, 0.20) !important;
+}
+
+.admin-login-modern .admin-login-title span {
+  display: block !important;
+  white-space: nowrap !important;
+}
+
+.admin-login-modern .admin-login-copy p {
+  max-width: 560px !important;
+  margin-top: 1.15rem !important;
+  color: rgba(255, 250, 240, 0.72) !important;
+  font-weight: 760 !important;
+  letter-spacing: -0.01em !important;
+}
+
+.admin-login-modern .admin-login-proof {
+  gap: 0.72rem !important;
+  margin-top: 1.45rem !important;
+}
+
+.admin-login-modern .admin-login-proof span {
+  min-height: 46px !important;
+  padding: 0 0.95rem !important;
+  border-radius: 999px !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.024)),
+    rgba(255, 255, 255, 0.036) !important;
+  color: rgba(255, 250, 240, 0.78) !important;
+  font-size: 0.76rem !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.07),
+    0 14px 34px rgba(0, 0, 0, 0.16) !important;
+}
+
+.admin-login-modern .admin-login-proof svg {
+  color: var(--admin-gold) !important;
+  filter: drop-shadow(0 0 12px rgba(239, 197, 110, 0.18));
+}
+
+.admin-login-modern .admin-login-card {
+  width: min(100%, 430px) !important;
+  padding: 1.08rem !important;
+  border-radius: 1.82rem !important;
+  border-color: rgba(255, 255, 255, 0.135) !important;
+  background:
+    radial-gradient(circle at 10% 0%, rgba(239, 197, 110, 0.14), transparent 34%),
+    radial-gradient(circle at 104% 8%, rgba(88, 224, 233, 0.12), transparent 36%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.086), rgba(255, 255, 255, 0.028)),
+    rgba(16, 19, 28, 0.78) !important;
+  box-shadow:
+    0 38px 110px rgba(0, 0, 0, 0.38),
+    0 0 0 1px rgba(255, 255, 255, 0.026),
+    inset 0 1px 0 rgba(255, 255, 255, 0.085) !important;
+}
+
+.admin-login-modern .admin-login-card::before {
+  background:
+    linear-gradient(135deg, rgba(255, 61, 112, 0.082), transparent 38%),
+    linear-gradient(315deg, rgba(88, 224, 233, 0.080), transparent 44%) !important;
+}
+
+.admin-login-modern .admin-login-card-header {
+  gap: 0.78rem !important;
+  margin-bottom: 0.08rem !important;
+}
+
+.admin-login-modern .admin-login-card-icon {
+  width: 48px !important;
+  height: 48px !important;
+  border-radius: 1.08rem !important;
+}
+
+.admin-login-modern .admin-login-card-header h2 {
+  font-size: 1.52rem !important;
+  letter-spacing: -0.052em !important;
+}
+
+.admin-login-modern .admin-google-btn,
+.admin-login-modern .admin-submit-btn,
+.admin-login-modern .admin-input-wrap {
+  min-height: 54px !important;
+}
+
+.admin-login-modern .admin-google-btn {
+  border-radius: 1.04rem !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.082), rgba(255, 255, 255, 0.024)),
+    rgba(255, 255, 255, 0.035) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.070),
+    0 12px 26px rgba(0, 0, 0, 0.14) !important;
+}
+
+.admin-login-modern .admin-input-wrap {
+  border-radius: 1.08rem !important;
+  border-color: rgba(255, 255, 255, 0.105) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.060), rgba(255, 255, 255, 0.018)),
+    rgba(8, 11, 18, 0.62) !important;
+  overflow: hidden !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.052),
+    0 10px 24px rgba(0, 0, 0, 0.115) !important;
+}
+
+.admin-login-modern .admin-input-wrap::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  background:
+    linear-gradient(90deg, rgba(88, 224, 233, 0.090), transparent 30%, transparent 70%, rgba(239, 197, 110, 0.055));
+  opacity: 0;
+  transition: opacity 160ms ease;
+}
+
+.admin-login-modern .admin-input-wrap:focus-within::before {
+  opacity: 1;
+}
+
+.admin-login-modern .admin-input-wrap:focus-within {
+  border-color: rgba(88, 224, 233, 0.58) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.072), rgba(255, 255, 255, 0.022)),
+    rgba(8, 11, 18, 0.68) !important;
+  box-shadow:
+    0 0 0 3px rgba(88, 224, 233, 0.105),
+    0 14px 34px rgba(88, 224, 233, 0.055),
+    inset 0 1px 0 rgba(255, 255, 255, 0.070) !important;
+}
+
+.admin-login-modern .admin-input-wrap input {
+  position: relative;
+  z-index: 1;
+  min-width: 0;
+  font-size: 0.88rem !important;
+  font-weight: 850 !important;
+  letter-spacing: -0.01em !important;
+}
+
+.admin-login-modern .admin-input-wrap > svg,
+.admin-login-modern .admin-input-wrap > button {
+  position: relative;
+  z-index: 1;
+}
+
+.admin-login-modern .admin-input-wrap:focus-within > svg {
+  color: rgba(88, 224, 233, 0.92) !important;
+}
+
+.admin-login-modern .admin-submit-btn {
+  border-radius: 1.08rem !important;
+  font-size: 0.9rem !important;
+  font-weight: 950 !important;
+  letter-spacing: -0.012em !important;
+  box-shadow:
+    0 20px 44px rgba(239, 197, 110, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.42) !important;
+}
+
+.admin-login-modern .admin-login-footer {
+  min-height: 50px !important;
+  border-radius: 1.08rem !important;
+  padding-inline: 0.92rem !important;
+}
+
+/* Light polish remains aligned with Public Calendar shell */
+[data-theme="light"] .admin-login-modern .admin-login-layout {
+  transform: translateY(-1.35rem) !important;
+}
+
+[data-theme="light"] .admin-login-modern .admin-login-title {
+  color: rgba(34, 27, 18, 0.96) !important;
+  text-shadow:
+    0 24px 58px rgba(96, 73, 41, 0.13),
+    0 1px 0 rgba(255, 255, 255, 0.34) !important;
+}
+
+[data-theme="light"] .admin-login-modern .admin-login-copy p {
+  color: rgba(45, 38, 28, 0.70) !important;
+}
+
+[data-theme="light"] .admin-login-modern .admin-login-proof span {
+  border-color: rgba(96, 73, 41, 0.13) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.78), rgba(255, 255, 255, 0.42)),
+    rgba(255, 250, 241, 0.60) !important;
+  color: rgba(45, 38, 28, 0.70) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.80),
+    0 12px 28px rgba(96, 73, 41, 0.080) !important;
+}
+
+[data-theme="light"] .admin-login-modern .admin-login-card {
+  border-color: rgba(96, 73, 41, 0.145) !important;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(239, 197, 110, 0.085), transparent 34%),
+    radial-gradient(circle at 100% 0%, rgba(35, 176, 191, 0.050), transparent 34%),
+    linear-gradient(180deg, rgba(255, 252, 246, 0.86), rgba(255, 250, 241, 0.58)),
+    rgba(255, 250, 241, 0.74) !important;
+  box-shadow:
+    0 28px 80px rgba(96, 73, 41, 0.155),
+    inset 0 1px 0 rgba(255, 255, 255, 0.82) !important;
+}
+
+[data-theme="light"] .admin-login-modern .admin-input-wrap {
+  border-color: rgba(96, 73, 41, 0.13) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.82), rgba(255, 255, 255, 0.48)),
+    rgba(255, 250, 241, 0.64) !important;
+}
+
+[data-theme="light"] .admin-login-modern .admin-input-wrap:focus-within {
+  border-color: rgba(35, 176, 191, 0.58) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(255, 255, 255, 0.64)),
+    rgba(255, 250, 241, 0.76) !important;
+  box-shadow:
+    0 0 0 3px rgba(35, 176, 191, 0.13),
+    0 12px 28px rgba(35, 176, 191, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.86) !important;
+}
+
+@media (max-width: 900px) {
+  .admin-login-modern .admin-login-layout,
+  [data-theme="light"] .admin-login-modern .admin-login-layout {
+    transform: none !important;
+  }
+
+  .admin-login-modern .admin-login-title {
+    max-width: 560px !important;
+    margin-inline: auto !important;
+    font-size: clamp(3.5rem, 11vw, 5.6rem) !important;
+  }
+
+  .admin-login-modern .admin-login-title span {
+    white-space: normal !important;
+  }
+}
+
+@media (max-width: 560px) {
+  .admin-login-modern .admin-login-title {
+    font-size: clamp(3.05rem, 15vw, 4.45rem) !important;
+    line-height: 0.92 !important;
+  }
+
+  .admin-login-modern .admin-login-proof span {
+    min-height: 44px !important;
+  }
+
+  .admin-login-modern .admin-login-card {
+    width: 100% !important;
+  }
+}
