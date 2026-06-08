@@ -610,9 +610,6 @@ const PublicCalendarPage = () => {
 
         <div className="pc-board-panel grid gap-4 rounded-[2rem] border border-white/10 bg-white/[0.045] p-4 shadow-2xl shadow-black/20 backdrop-blur-2xl lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end lg:p-5">
           <div className="pc-board-copy">
-            <span className="pc-board-kicker mb-2 inline-flex rounded-full border border-rose-300/20 bg-rose-300/10 px-3 py-1 text-[0.68rem] font-black uppercase tracking-[0.14em] text-rose-200">
-              Booking board
-            </span>
             <h2 className="pc-board-title font-['Bebas_Neue',Impact,sans-serif] text-[clamp(2.1rem,4vw,3.35rem)] uppercase leading-none tracking-[-0.025em] text-stone-50">
               Pilih jam kosong yang paling pas.
             </h2>

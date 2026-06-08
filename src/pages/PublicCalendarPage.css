@@ -1145,3 +1145,114 @@
     font-size: 0.76rem !important;
   }
 }
+
+/* ──────────────────────────────────────────────────────────────────────────
+   37 PUBLIC CALENDAR BOARD HEADER TIGHTEN 8.1C
+   --------------------------------------------------------------------------
+   Tightens the booking board header after removing the Booking Board capsule:
+   - smaller panel height
+   - better title letter/word spacing
+   - subtitle with safer rhythm
+   - controls remain compact and aligned
+   ────────────────────────────────────────────────────────────────────────── */
+
+.pc-modern .pc-board-panel {
+  min-height: 142px !important;
+  align-items: center !important;
+  padding: clamp(0.95rem, 1.45vw, 1.22rem) clamp(1.05rem, 1.75vw, 1.45rem) !important;
+  border-radius: 1.45rem !important;
+}
+
+.pc-modern .pc-board-copy {
+  display: grid !important;
+  align-content: center !important;
+  gap: 0.48rem !important;
+}
+
+.pc-modern .pc-board-kicker {
+  display: none !important;
+}
+
+.pc-modern .pc-board-title {
+  max-width: 780px !important;
+  margin: 0 !important;
+  font-size: clamp(2.35rem, 3.45vw, 3.52rem) !important;
+  line-height: 1.055 !important;
+  letter-spacing: -0.006em !important;
+  word-spacing: 0.085em !important;
+  text-wrap: balance;
+  transform: translateY(0.02em);
+}
+
+.pc-modern .pc-board-subtitle {
+  max-width: 750px !important;
+  margin-top: 0 !important;
+  color: rgba(255, 250, 240, 0.60) !important;
+  font-size: 0.86rem !important;
+  line-height: 1.62 !important;
+  font-weight: 760 !important;
+}
+
+.pc-modern .pc-board-controls {
+  justify-content: center !important;
+  gap: 0.68rem !important;
+}
+
+.pc-modern .pc-board-legend {
+  align-items: center !important;
+  gap: 0.5rem !important;
+}
+
+.pc-modern .pc-board-legend-chip {
+  min-height: 30px !important;
+  padding: 0.44rem 0.7rem !important;
+  font-size: 0.68rem !important;
+}
+
+.pc-modern .pc-view-switcher {
+  min-height: 42px !important;
+  padding: 0.26rem !important;
+}
+
+.pc-modern .pc-view-btn {
+  min-width: 74px !important;
+  min-height: 34px !important;
+  padding-inline: 0.72rem !important;
+}
+
+@media (max-width: 1023px) {
+  .pc-modern .pc-board-panel {
+    min-height: auto !important;
+  }
+
+  .pc-modern .pc-board-title {
+    max-width: 100% !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .pc-modern .pc-board-panel {
+    padding: 0.92rem !important;
+    border-radius: 1.22rem !important;
+  }
+
+  .pc-modern .pc-board-copy {
+    gap: 0.38rem !important;
+  }
+
+  .pc-modern .pc-board-title {
+    font-size: clamp(2.05rem, 9.2vw, 2.85rem) !important;
+    line-height: 1.05 !important;
+    letter-spacing: -0.004em !important;
+    word-spacing: 0.07em !important;
+  }
+
+  .pc-modern .pc-board-subtitle {
+    font-size: 0.76rem !important;
+    line-height: 1.5 !important;
+  }
+
+  .pc-modern .pc-board-controls {
+    margin-top: 0.22rem !important;
+  }
+}
