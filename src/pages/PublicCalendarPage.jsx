@@ -1,68 +1,118 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuthStore } from '../store/useAuthStore';
-import { useBookingStore } from '../store/useBookingStore';
-import { useBookingRequestStore } from '../store/useBookingRequestStore';
-import { useSettingsStore } from '../store/useSettingsStore';
 import {
-  ChevronLeft, ChevronRight, LogOut, Phone, MessageCircle,
-  Plus, CalendarDays, Clock, Info, X, Moon, Sun, Headphones, ShieldCheck
-} from 'lucide-react';
-import {
-  format, addMonths, subMonths, startOfMonth, endOfMonth,
-  eachDayOfInterval, getDay, addDays, subDays,
-  startOfWeek, endOfWeek, addWeeks, subWeeks
+  addDays,
+  addMonths,
+  addWeeks,
+  eachDayOfInterval,
+  endOfMonth,
+  endOfWeek,
+  format,
+  getDay,
+  startOfMonth,
+  startOfWeek,
+  subDays,
+  subMonths,
+  subWeeks
 } from 'date-fns';
 import { id as localeId } from 'date-fns/locale';
-import { useNotificationStore } from '../store/useNotificationStore';
-import { useThemeStore } from '../store/useThemeStore';
 import { AnimatePresence, motion } from 'framer-motion';
-import { modalPreset, overlayVariants } from '../animations';
-import MotionSection from '../components/animation/MotionSection';
+import {
+  ArrowRight,
+  CalendarCheck2,
+  CalendarDays,
+
+  ChevronLeft,
+  ChevronRight,
+  Clock,
+  Headphones,
+  Info,
+  LogOut,
+  MessageCircle,
+  Moon,
+
+  Phone,
+  Plus,
+  ShieldCheck,
+
+  Sun,
+
+  WalletCards,
+  X
+} from 'lucide-react';
+import { useAuthStore } from '../store/useAuthStore';
+import { useBookingRequestStore } from '../store/useBookingRequestStore';
+import { useBookingStore } from '../store/useBookingStore';
 import { useGalleryStore } from '../store/useGalleryStore';
+import { useNotificationStore } from '../store/useNotificationStore';
+import { useSettingsStore } from '../store/useSettingsStore';
+import { useThemeStore } from '../store/useThemeStore';
 import './PublicCalendarPage.css';
+
+const cx = (...classes) => classes.filter(Boolean).join(' ');
+
+const formatRupiah = (value) =>
+  new Intl.NumberFormat('id-ID', {
+    style: 'currency',
+    currency: 'IDR',
+    maximumFractionDigits: 0
+}).format(Number(value || 0));
 
 const getPublicPhotoCaption = (photo, index = 0) => {
   const rawCaption = String(photo?.caption || '').trim();
-  const looksLikeFileName = /\d{6,}/.test(rawCaption) || rawCaption.split(/\s+/).length > 5;
+  const looksLikeFileName =
+    /\d{6
+}/.test(rawCaption) ||
+    /\.(jpg|jpeg|png|webp|gif)$/i.test(rawCaption) ||
+    rawCaption.split(/\s+/).length > 6;
 
-  if (!rawCaption || rawCaption.length > 48 || looksLikeFileName) {
-    return `Studio angle ${String(index + 1).padStart(2, '0')}`;
+  if (!rawCaption || rawCaption.length > 52 || looksLikeFileName) {
+    return 'Studio angle ' + String(index + 1).padStart(2, '0');
   }
 
   return rawCaption;
 };
 
+const getInitial = (value = 'C') => String(value || 'C').trim().charAt(0).toUpperCase();
+
+const viewLabels = {
+  day: 'Hari',
+  week: 'Minggu',
+  month: 'Bulan'
+};
+
 const PublicCalendarPage = () => {
   const navigate = useNavigate();
   const { user, userProfile, logout, loginGuest, isAuthLoaded, loading: authLoading } = useAuthStore();
-  const { theme, toggleTheme } = useThemeStore();
   const { bookings } = useBookingStore();
   const { addRequest } = useBookingRequestStore();
-  const { studioName, studioPhone, pricePerHour, durationDiscounts = [], operationalHours = { start: 10, end: 23 }, blockedDates = [] } = useSettingsStore();
+  const {
+    studioName,
+    studioPhone,
+    pricePerHour,
+    durationDiscounts = [],
+    operationalHours = { start: 10, end: 23 },
+    blockedDates = []
+} = useSettingsStore();
+  const { theme, toggleTheme } = useThemeStore();
+  const { gallery } = useGalleryStore();
 
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const [viewMode, setViewMode] = useState('week');
+  const [isMobile, setIsMobile] = useState(() => window.innerWidth <= 768);
   const [publicAccessError, setPublicAccessError] = useState('');
-  const { gallery } = useGalleryStore();
   const [lightboxPhoto, setLightboxPhoto] = useState(null);
-  
-  const customerPhotos = useMemo(() => {
-    return gallery.filter(photo => photo.showToCustomer);
-  }, [gallery]);
 
-  const heroPhoto = useMemo(() => {
-    return customerPhotos.find(photo => photo.url) ||
-      gallery.find(photo => photo.showOnLandingPage && photo.url) || {
-        url: '/studio-hero.webp',
-        caption: '37 Music Studio private room',
-      };
-  }, [customerPhotos, gallery]);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedSlot, setSelectedSlot] = useState({ dateStr: '', hour: 0 });
+  const [bandName, setBandName] = useState('');
+  const [customerPhone, setCustomerPhone] = useState('');
+  const [duration, setDuration] = useState(2);
+  const [isSubmittingRequest, setIsSubmittingRequest] = useState(false);
+  const [formErrors, setFormErrors] = useState({});
 
-  const featuredPhotos = useMemo(() => {
-    const photos = customerPhotos.filter(photo => photo.url);
-    return photos.length > 0 ? photos.slice(0, 8) : [heroPhoto];
-  }, [customerPhotos, heroPhoto]);
+  const gridWrapperRef = useRef(null);
+  const lastSlotButtonRef = useRef(null);
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth <= 768);
@@ -70,23 +120,11 @@ const PublicCalendarPage = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const [viewMode, setViewMode]       = useState('week');
-  const gridWrapperRef = useRef(null);
-
-  // Booking modal state
-  const [modalOpen, setModalOpen]     = useState(false);
-  const [selectedSlot, setSelectedSlot] = useState({ dateStr: '', hour: 0 });
-  const [bandName, setBandName]       = useState('');
-  const [customerPhone, setCustomerPhone] = useState('');
-  const [duration, setDuration]       = useState(2);
-  const [isSubmittingRequest, setIsSubmittingRequest] = useState(false);
-  const [formErrors, setFormErrors] = useState({});
-  const lastSlotButtonRef = useRef(null);
-
   useEffect(() => {
     if (!isAuthLoaded || user) return;
 
     let isActive = true;
+
     loginGuest().catch(() => {
       if (isActive) {
         setPublicAccessError('Jadwal publik belum bisa dimuat. Aktifkan Anonymous Auth di Firebase atau hubungi admin studio.');
@@ -98,6 +136,128 @@ const PublicCalendarPage = () => {
     };
   }, [isAuthLoaded, user, loginGuest]);
 
+  const closeModal = useCallback(() => {
+    setModalOpen(false);
+    setIsSubmittingRequest(false);
+    setTimeout(() => lastSlotButtonRef.current?.focus(), 0);
+  }, []);
+
+  useEffect(() => {
+    if (!modalOpen) return undefined;
+
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') {
+        closeModal();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [modalOpen, closeModal]);
+
+  const startHour = Number(operationalHours?.start || 10);
+  const endHour = Number(operationalHours?.end || 23);
+  const hoursArray = useMemo(() => {
+    const length = Math.max(0, endHour - startHour);
+    return Array.from({ length }, (_, index) => startHour + index);
+  }, [startHour, endHour]);
+
+  const todayStr = format(new Date(), 'yyyy-MM-dd');
+  const nowHour = new Date().getHours();
+
+  const activeBookings = useMemo(
+    () => bookings.filter((booking) => booking.status !== 'cancelled'),
+    [bookings]
+  );
+
+  const daysArray = useMemo(() => {
+    if (viewMode === 'day') return [currentDate];
+
+    if (viewMode === 'week') {
+      const start = startOfWeek(currentDate, { weekStartsOn: 0 });
+      const end = endOfWeek(currentDate, { weekStartsOn: 0 });
+      return eachDayOfInterval({ start, end });
+    }
+
+    return eachDayOfInterval({
+      start: startOfMonth(currentDate),
+      end: endOfMonth(currentDate)
+});
+  }, [currentDate, viewMode]);
+
+  const availableToday = useMemo(() => {
+    if (blockedDates.includes(todayStr)) return 0;
+
+    return hoursArray.filter((hour) => {
+      const isBooked = activeBookings.some(
+        (booking) =>
+          booking.date === todayStr &&
+          hour >= Number(booking.hour) &&
+          hour < Number(booking.hour) + Number(booking.duration)
+      );
+
+      return !isBooked && hour >= nowHour;
+    }).length;
+  }, [activeBookings, blockedDates, hoursArray, nowHour, todayStr]);
+
+  const customerPhotos = useMemo(
+    () => gallery.filter((photo) => photo?.url && (photo.showToCustomer || photo.showOnLandingPage)),
+    [gallery]
+  );
+
+  const heroPhoto = useMemo(() => {
+    return (
+      customerPhotos.find((photo) => photo.url) ||
+      gallery.find((photo) => photo.showOnLandingPage && photo.url) || {
+        url: '/studio-hero.webp',
+        caption: '37 Music Studio private room'
+}
+    );
+  }, [customerPhotos, gallery]);
+
+  const featuredPhotos = useMemo(() => {
+    const photos = customerPhotos.filter((photo) => photo.url);
+    return photos.length > 0 ? photos.slice(0, 6) : [heroPhoto];
+  }, [customerPhotos, heroPhoto]);
+
+  const currentLabel = useMemo(() => {
+    if (viewMode === 'day') {
+      return format(currentDate, 'EEEE, dd MMMM yyyy', { locale: localeId });
+    }
+
+    if (viewMode === 'week') {
+      const start = startOfWeek(currentDate, { weekStartsOn: 0 });
+      const end = endOfWeek(currentDate, { weekStartsOn: 0 });
+      return format(start, 'dd MMM', { locale: localeId }) + ' - ' + format(end, 'dd MMM yyyy', { locale: localeId });
+    }
+
+    return format(currentDate, 'MMMM yyyy', { locale: localeId });
+  }, [currentDate, viewMode]);
+
+  const formattedRate = new Intl.NumberFormat('id-ID').format(pricePerHour || 120000);
+  const operatingLabel =
+    String(startHour).padStart(2, '0') + '.00-' + String(endHour).padStart(2, '0') + '.00';
+
+  const basePriceEst = (pricePerHour || 120000) * duration;
+  const applicableDiscount = durationDiscounts
+    .filter((discount) => duration >= Number(discount.hours || 0))
+    .sort((a, b) => Number(b.discountAmount || 0) - Number(a.discountAmount || 0))[0];
+
+  const durationDiscountEst = applicableDiscount ? Number(applicableDiscount.discountAmount || 0) : 0;
+  const priceEst = Math.max(0, basePriceEst - durationDiscountEst);
+
+  const dayNames = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
+  const colWidth = viewMode === 'day' ? '260px' : viewMode === 'week' ? '132px' : '76px';
+  const timeColWidth = isMobile ? '66px' : '116px';
+
+  const cleanStudioPhone = String(studioPhone || '').replace(/\D/g, '').replace(/^0/, '62');
+  const clientDisplayName =
+    userProfile?.displayName ||
+    userProfile?.username ||
+    user?.displayName ||
+    user?.email?.split('@')[0] ||
+    'Client';
+
   const handleExitPublic = async () => {
     if (user?.isAnonymous) {
       try {
@@ -106,92 +266,34 @@ const PublicCalendarPage = () => {
         // Keep navigation responsive even if sign-out fails.
       }
     }
+
     navigate('/');
   };
 
-  const handleGoToday = () => {
-    setCurrentDate(new Date());
-    setTimeout(() => {
-      if (gridWrapperRef.current) {
-        const todayCell = gridWrapperRef.current.querySelector('.pc-header-cell.today');
-        if (todayCell) {
-          const scrollPos = todayCell.offsetLeft - window.innerWidth / 2 + 45;
-          gridWrapperRef.current.scrollTo({ left: scrollPos, behavior: 'smooth' });
-        }
-      }
-    }, 100);
-  };
-
   const handlePrev = () => {
-    if (viewMode === 'day')   setCurrentDate(subDays(currentDate, 1));
+    if (viewMode === 'day') setCurrentDate(subDays(currentDate, 1));
     else if (viewMode === 'week') setCurrentDate(subWeeks(currentDate, 1));
     else setCurrentDate(subMonths(currentDate, 1));
   };
+
   const handleNext = () => {
-    if (viewMode === 'day')   setCurrentDate(addDays(currentDate, 1));
+    if (viewMode === 'day') setCurrentDate(addDays(currentDate, 1));
     else if (viewMode === 'week') setCurrentDate(addWeeks(currentDate, 1));
     else setCurrentDate(addMonths(currentDate, 1));
   };
 
-  // Days array based on view mode
-  const daysArray = useMemo(() => {
-    if (viewMode === 'day') return [currentDate];
-    if (viewMode === 'week') {
-      const start = startOfWeek(currentDate, { weekStartsOn: 0 });
-      return eachDayOfInterval({ start, end: endOfWeek(currentDate, { weekStartsOn: 0 }) });
-    }
-    return eachDayOfInterval({ start: startOfMonth(currentDate), end: endOfMonth(currentDate) });
-  }, [currentDate, viewMode]);
+  const handleGoToday = () => {
+    setCurrentDate(new Date());
 
-  const startHour = operationalHours.start;
-  const endHour   = operationalHours.end;
-  const hoursArray = Array.from({ length: endHour - startHour }, (_, i) => startHour + i);
-  const todayStr   = format(new Date(), 'yyyy-MM-dd');
-  const nowHour    = new Date().getHours();
+    setTimeout(() => {
+      const todayHeader = gridWrapperRef.current?.querySelector('[data-today-header="true"]');
 
-  const activeBookings = useMemo(() =>
-    bookings.filter(b => b.status !== 'cancelled'), [bookings]);
-
-  // Count available slots today
-  const availableToday = useMemo(() => {
-    return hoursArray.filter(h => {
-      const isBooked = activeBookings.some(b => b.date === todayStr && h >= b.hour && h < b.hour + b.duration);
-      return !isBooked && h >= nowHour;
-    }).length;
-  }, [activeBookings, todayStr, nowHour, hoursArray]);
-
-  // Price estimate
-  const basePriceEst = (pricePerHour || 120000) * duration;
-  const applicableDiscount = durationDiscounts
-    .filter(d => duration >= d.hours)
-    .sort((a, b) => b.discountAmount - a.discountAmount)[0];
-  const durationDiscountEst = applicableDiscount ? applicableDiscount.discountAmount : 0;
-  const priceEst = basePriceEst - durationDiscountEst;
-  const formattedRate = new Intl.NumberFormat('id-ID').format(pricePerHour || 120000);
-  const operatingLabel = `${String(startHour).padStart(2, '0')}.00-${String(endHour).padStart(2, '0')}.00`;
-
-  const closeModal = () => {
-    setModalOpen(false);
-    setIsSubmittingRequest(false);
-    setTimeout(() => lastSlotButtonRef.current?.focus(), 0);
-  };
-
-  useEffect(() => {
-    if (!modalOpen) return undefined;
-
-    const handleKeyDown = (event) => {
-      if (event.key === 'Escape') {
-        setModalOpen(false);
-        setIsSubmittingRequest(false);
-        setTimeout(() => lastSlotButtonRef.current?.focus(), 0);
+      if (todayHeader && gridWrapperRef.current) {
+        const scrollPos = todayHeader.offsetLeft - window.innerWidth / 2 + todayHeader.clientWidth;
+        gridWrapperRef.current.scrollTo({ left: Math.max(0, scrollPos), behavior: 'smooth' });
       }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [modalOpen]);
-
-  // Open booking modal
+    }, 100);
+  };
   const openModal = (dateStr, hour, triggerElement) => {
     lastSlotButtonRef.current = triggerElement || null;
 
@@ -207,38 +309,59 @@ const PublicCalendarPage = () => {
     setSelectedSlot({ dateStr, hour });
     setBandName(savedClientName);
     setCustomerPhone(savedClientPhone);
-    setDuration(2);
+    setDuration(Number(userProfile?.preferredDuration || 2) || 2);
     setFormErrors({});
     setModalOpen(true);
   };
 
-  // Send WA
   const sendWA = async () => {
     const nextErrors = {};
 
     if (!bandName.trim()) {
       nextErrors.bandName = 'Nama band atau artis wajib diisi.';
-      useNotificationStore.getState().addNotification({ title: 'Nama Band kosong', message: 'Harap isi nama band Anda.', type: 'error' });
+      useNotificationStore.getState().addNotification({
+        title: 'Nama Band kosong',
+        message: 'Harap isi nama band Anda.',
+        type: 'error'
+});
     }
+
     if (!customerPhone.trim()) {
       nextErrors.customerPhone = 'Nomor WhatsApp wajib diisi.';
-      useNotificationStore.getState().addNotification({ title: 'Nomor WhatsApp kosong', message: 'Harap isi nomor yang bisa dihubungi admin.', type: 'error' });
+      useNotificationStore.getState().addNotification({
+        title: 'Nomor WhatsApp kosong',
+        message: 'Harap isi nomor yang bisa dihubungi admin.',
+        type: 'error'
+});
     }
+
     if (Object.keys(nextErrors).length > 0) {
       setFormErrors(nextErrors);
       return;
     }
 
     setFormErrors({});
-    const isOverlap = activeBookings.some(b => {
-      if (b.date !== selectedSlot.dateStr) return false;
-      return Number(b.hour) < selectedSlot.hour + duration && selectedSlot.hour < Number(b.hour) + Number(b.duration);
+
+    const isOverlap = activeBookings.some((booking) => {
+      if (booking.date !== selectedSlot.dateStr) return false;
+
+      return (
+        Number(booking.hour) < selectedSlot.hour + duration &&
+        selectedSlot.hour < Number(booking.hour) + Number(booking.duration)
+      );
     });
+
     if (isOverlap) {
-      useNotificationStore.getState().addNotification({ title: 'Jadwal Bentrok', message: 'Durasi yang Anda pilih menabrak jadwal lain. Silakan kurangi durasi.', type: 'error' });
+      useNotificationStore.getState().addNotification({
+        title: 'Jadwal Bentrok',
+        message: 'Durasi yang Anda pilih menabrak jadwal lain. Silakan kurangi durasi.',
+        type: 'error'
+});
       return;
     }
+
     setIsSubmittingRequest(true);
+
     try {
       await addRequest({
         band: bandName.trim(),
@@ -249,7 +372,7 @@ const PublicCalendarPage = () => {
         estimatedPrice: priceEst,
         source: 'public-calendar',
         clientUid: user && !user.isAnonymous ? user.uid : '',
-        clientEmail: user && !user.isAnonymous ? (user.email || userProfile?.email || '') : '',
+        clientEmail: user && !user.isAnonymous ? user.email || userProfile?.email || '' : '',
         clientName:
           userProfile?.displayName ||
           userProfile?.username ||
@@ -270,301 +393,437 @@ const PublicCalendarPage = () => {
         invoiceName: userProfile?.invoiceName || '',
         paymentPreference: userProfile?.paymentPreference || '',
         clientLevel: userProfile?.clientLevel || 'New',
-        createdBy: user && !user.isAnonymous ? user.uid : 'public-guest',
-      });
+        createdBy: user && !user.isAnonymous ? user.uid : 'public-guest'
+});
+
       useNotificationStore.getState().addNotification({
         title: 'Permintaan terkirim',
         message: 'Admin akan meninjau dan mengonfirmasi jadwal Anda.',
-        type: 'success',
-      });
+        type: 'success'
+});
     } catch (error) {
       useNotificationStore.getState().addNotification({
         title: 'Gagal mengirim request',
         message: error.message || 'Coba lagi beberapa saat lagi.',
-        type: 'error',
-      });
+        type: 'error'
+});
       setIsSubmittingRequest(false);
       return;
     }
+
     const dateLabel = format(new Date(selectedSlot.dateStr + 'T00:00:00'), 'dd MMMM yyyy', { locale: localeId });
     const endHourLabel = selectedSlot.hour + duration;
-    const cleanMessage = `Halo Admin ${studioName}\n\nSaya dari band *${bandName.trim()}* ingin booking studio:\n\nTanggal : ${dateLabel}\nJam     : ${selectedSlot.hour}:00 - ${endHourLabel}:00\nDurasi  : ${duration} jam\nKontak  : ${customerPhone.trim()}\n\nSaya juga sudah mengirim request dari kalender publik.`;
-    let phone = (studioPhone || '').replace(/\D/g, '');
+    const cleanMessage =
+      'Halo Admin ' +
+      (studioName || '37 Music Studio') +
+      '\n\nSaya dari band *' +
+      bandName.trim() +
+      '* ingin booking studio:\n\nTanggal : ' +
+      dateLabel +
+      '\nJam     : ' +
+      selectedSlot.hour +
+      ':00 - ' +
+      endHourLabel +
+      ':00\nDurasi  : ' +
+      duration +
+      ' jam\nKontak  : ' +
+      customerPhone.trim() +
+      '\n\nSaya juga sudah mengirim request dari kalender publik.';
+
+    let phone = String(studioPhone || '').replace(/\D/g, '');
+
     if (!phone) {
-      useNotificationStore.getState().addNotification({ title: 'Request tersimpan', message: 'Nomor admin belum tersedia untuk WhatsApp otomatis.', type: 'warning' });
+      useNotificationStore.getState().addNotification({
+        title: 'Request tersimpan',
+        message: 'Nomor admin belum tersedia untuk WhatsApp otomatis.',
+        type: 'warning'
+});
       closeModal();
       return;
     }
+
     if (phone.startsWith('0')) phone = '62' + phone.substring(1);
-    window.open(`https://wa.me/${phone}?text=${encodeURIComponent(cleanMessage)}`, '_blank');
+    window.open('https://wa.me/' + phone + '?text=' + encodeURIComponent(cleanMessage), '_blank');
     closeModal();
   };
 
-  const currentLabel = useMemo(() => {
-    if (viewMode === 'day') return format(currentDate, 'EEEE, dd MMMM yyyy', { locale: localeId });
-    if (viewMode === 'week') {
-      const s = startOfWeek(currentDate, { weekStartsOn: 0 });
-      const e = endOfWeek(currentDate, { weekStartsOn: 0 });
-      return `${format(s, 'dd MMM', { locale: localeId })} - ${format(e, 'dd MMM yyyy', { locale: localeId })}`;
-    }
-    return format(currentDate, 'MMMM yyyy', { locale: localeId });
-  }, [currentDate, viewMode]);
-
-  const dayNames = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
-  const colWidth = viewMode === 'day' ? '240px' : viewMode === 'week' ? '120px' : '70px';
-  const timeColWidth = isMobile ? '60px' : '110px';
-
   return (
-    <div className="pc-page">
-      {/* ── Dynamic Hero Header ── */}
-      <MotionSection direction="down" className="pc-hero" as="header">
-        <div className="pc-hero-media" aria-hidden="true">
-          <img src={heroPhoto.url} alt="" />
-          <div className="pc-hero-scrim" />
+    <div className="pc-modern min-h-screen overflow-x-clip bg-[#090b10] text-stone-50 selection:bg-amber-300/25 selection:text-amber-50">
+      <section className="relative isolate min-h-[78svh] overflow-hidden">
+        <div className="absolute inset-0 -z-20 bg-[#090b10]">
+          <img
+            src={heroPhoto.url}
+            alt=""
+            className="size-full object-cover opacity-75 blur-[0.2px] scale-[1.02]"
+          />
         </div>
-        <div className="pc-topbar">
-          <button className="pc-brand-btn" type="button" onClick={handleExitPublic} aria-label="Kembali ke beranda">
-            <span className="pc-brand-mark" aria-hidden="true">
-              <img src="/logo.svg" alt="" />
+        <div className="absolute inset-0 -z-10 bg-[linear-gradient(90deg,rgba(5,7,10,0.94)_0%,rgba(5,7,10,0.76)_43%,rgba(5,7,10,0.50)_100%),linear-gradient(180deg,rgba(5,7,10,0.12)_0%,rgba(5,7,10,0.30)_48%,#090b10_100%)]" />
+        <div className="absolute left-1/2 top-0 -z-10 h-px w-[min(740px,72vw)] -translate-x-1/2 bg-gradient-to-r from-transparent via-amber-300/40 to-transparent" />
+
+        <header className="mx-auto flex w-full max-w-7xl items-center justify-between gap-3 px-4 pt-[calc(1rem+env(safe-area-inset-top,0px))] sm:px-6 lg:px-8">
+          <button
+            type="button"
+            onClick={handleExitPublic}
+            className="group inline-flex min-h-12 max-w-[62vw] items-center gap-2 rounded-2xl border border-white/10 bg-white/[0.055] py-1.5 pl-1.5 pr-3 text-left shadow-2xl shadow-black/20 backdrop-blur-2xl transition hover:-translate-y-0.5 hover:border-amber-300/25 hover:bg-white/[0.085]"
+            aria-label="Kembali ke beranda"
+          >
+            <span className="grid size-9 shrink-0 place-items-center overflow-hidden rounded-xl border border-amber-300/25 bg-white/[0.055]">
+              <img src="/logo.svg" alt="" className="size-7 object-contain" />
             </span>
-            <span>{studioName || '37 MUSIC STUDIO'}</span>
+            <span className="truncate text-[0.74rem] font-black uppercase tracking-[-0.02em] text-stone-100/95">
+              {studioName || '37 MUSIC STUDIO'}
+            </span>
           </button>
 
-          <div className="pc-topbar-actions">
+          <div className="flex items-center gap-2">
             <button
               type="button"
-              className="pc-theme-btn"
+              className="grid size-11 place-items-center rounded-2xl border border-white/10 bg-white/[0.055] text-stone-100/75 shadow-xl shadow-black/10 backdrop-blur-xl transition hover:-translate-y-0.5 hover:border-white/20 hover:bg-white/[0.09] hover:text-white"
               onClick={toggleTheme}
-              title={theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
               aria-label={theme === 'dark' ? 'Aktifkan Light Mode' : 'Aktifkan Dark Mode'}
+              title={theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
             >
               {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
             </button>
 
             {user && !user.isAnonymous && (
               <button
-                className="pc-client-portal-btn"
                 type="button"
-                onClick={() => navigate("/client/dashboard")}
+                onClick={() => navigate('/client/dashboard')}
+                className="hidden min-h-11 items-center gap-2 rounded-2xl border border-cyan-200/15 bg-cyan-200/[0.07] px-3 text-[0.78rem] font-black text-cyan-50/85 shadow-xl shadow-black/10 backdrop-blur-xl transition hover:-translate-y-0.5 hover:border-cyan-200/30 hover:bg-cyan-200/[0.11] sm:inline-flex"
               >
                 <ShieldCheck size={16} />
                 <span>Client Portal</span>
               </button>
             )}
 
-            <button className="pc-exit-btn" type="button" onClick={handleExitPublic}>
+            <button
+              type="button"
+              onClick={handleExitPublic}
+              className="inline-flex min-h-11 items-center gap-2 rounded-2xl border border-white/10 bg-white/[0.055] px-3 text-[0.78rem] font-black text-stone-100/80 shadow-xl shadow-black/10 backdrop-blur-xl transition hover:-translate-y-0.5 hover:border-white/20 hover:bg-white/[0.09] hover:text-white"
+            >
               <LogOut size={16} />
-              <span>Kembali</span>
+              <span className="hidden sm:inline">Kembali</span>
             </button>
           </div>
-        </div>
+        </header>
 
-        <div className="pc-hero-inner">
-          <div className="pc-hero-kicker">
-            <CalendarDays size={17} />
-            <span>Live public booking calendar</span>
-          </div>
-          <h1 className="pc-hero-title">{studioName || '37 MUSIC STUDIO'}</h1>
-          <p className="pc-hero-sub">Pilih slot kosong, ajukan sesi, lalu admin akan review request kamu. Ringkas, cepat, dan enak dipakai dari HP.</p>
+        <main className="mx-auto grid w-full max-w-7xl gap-8 px-4 pb-20 pt-16 sm:px-6 sm:pt-20 lg:grid-cols-[minmax(0,1fr)_minmax(360px,0.58fr)] lg:px-8 lg:pt-24">
+          <div className="max-w-3xl">
+            <div className="mb-4 inline-flex min-h-8 items-center gap-2 rounded-full border border-amber-300/25 bg-black/25 px-3 text-[0.72rem] font-black uppercase tracking-[0.12em] text-amber-100 backdrop-blur-xl">
+              <CalendarDays size={16} />
+              <span>Live public booking calendar</span>
+            </div>
 
-          <div className="pc-hero-actions">
-            <a className="pc-primary-link" href="#pc-booking-calendar">
-              <span>Cek Slot</span>
-              <ChevronRight size={18} />
-            </a>
+            <h1 className="max-w-4xl font-['Bebas_Neue',Impact,sans-serif] text-[clamp(3.4rem,8vw,7rem)] font-normal uppercase leading-[0.9] tracking-[-0.035em] text-stone-50 drop-shadow-2xl">
+              Booking studio tanpa ribet.
+            </h1>
 
-            {studioPhone && (
+            <p className="mt-5 max-w-2xl text-base font-bold leading-8 text-stone-100/74 sm:text-lg">
+              Pilih slot kosong, isi detail sesi, lalu request kamu masuk ke admin studio untuk dikonfirmasi.
+              Enak dipakai dari HP, tetap detail di desktop.
+            </p>
+
+            <div className="mt-7 flex flex-wrap items-center gap-3">
               <a
-                href={`https://wa.me/${studioPhone.replace(/\D/g,'').replace(/^0/,'62')}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="pc-wa-quick-btn"
+                href="#pc-booking-calendar"
+                className="group inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl border border-amber-200/20 bg-gradient-to-r from-amber-300 to-yellow-200 px-5 text-[0.9rem] font-black text-neutral-950 shadow-2xl shadow-amber-500/20 transition hover:-translate-y-0.5 hover:brightness-105"
               >
-                <Phone size={16} />
-                <span>Chat Admin</span>
+                <span>Cek Slot</span>
+                <ArrowRight size={18} className="transition group-hover:translate-x-0.5" />
               </a>
-            )}
+
+              {cleanStudioPhone && (
+                <a
+                  href={'https://wa.me/' + cleanStudioPhone}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/[0.055] px-5 text-[0.9rem] font-black text-stone-100/88 shadow-2xl shadow-black/15 backdrop-blur-xl transition hover:-translate-y-0.5 hover:border-green-300/25 hover:bg-white/[0.09]"
+                >
+                  <Phone size={17} className="text-green-300" />
+                  <span>Chat Admin</span>
+                </a>
+              )}
+            </div>
+
+            <div className="mt-8 grid max-w-4xl gap-3 sm:grid-cols-2 xl:grid-cols-4">
+              <div className="rounded-2xl border border-white/10 bg-white/[0.055] p-4 shadow-xl shadow-black/10 backdrop-blur-xl">
+                <div className="mb-2 flex items-center gap-2 text-[0.76rem] font-black uppercase tracking-[0.08em] text-stone-300/70">
+                  <span className={cx('size-2 rounded-full', availableToday > 0 ? 'bg-green-300 shadow-[0_0_0_7px_rgba(134,239,172,0.12)]' : 'bg-rose-400 shadow-[0_0_0_7px_rgba(251,113,133,0.12)]')} />
+                  Hari ini
+                </div>
+                <strong className="text-xl font-black text-stone-50">{availableToday}</strong>
+                <span className="ml-1 text-sm font-bold text-stone-300/65">slot tersedia</span>
+              </div>
+
+              <div className="rounded-2xl border border-white/10 bg-white/[0.055] p-4 shadow-xl shadow-black/10 backdrop-blur-xl">
+                <div className="mb-2 flex items-center gap-2 text-[0.76rem] font-black uppercase tracking-[0.08em] text-stone-300/70">
+                  <Clock size={15} className="text-amber-200" />
+                  Operasional
+                </div>
+                <strong className="text-lg font-black text-stone-50">{operatingLabel}</strong>
+              </div>
+
+              <div className="rounded-2xl border border-white/10 bg-white/[0.055] p-4 shadow-xl shadow-black/10 backdrop-blur-xl">
+                <div className="mb-2 flex items-center gap-2 text-[0.76rem] font-black uppercase tracking-[0.08em] text-stone-300/70">
+                  <WalletCards size={15} className="text-amber-200" />
+                  Rate
+                </div>
+                <strong className="text-lg font-black text-stone-50">Rp {formattedRate}</strong>
+                <span className="text-sm font-bold text-stone-300/65"> / jam</span>
+              </div>
+
+              <div className="rounded-2xl border border-white/10 bg-white/[0.055] p-4 shadow-xl shadow-black/10 backdrop-blur-xl">
+                <div className="mb-2 flex items-center gap-2 text-[0.76rem] font-black uppercase tracking-[0.08em] text-stone-300/70">
+                  <Headphones size={15} className="text-amber-200" />
+                  Setup
+                </div>
+                <strong className="text-lg font-black text-stone-50">Operator ready</strong>
+              </div>
+            </div>
           </div>
 
-          <div className="pc-hero-stats" aria-label="Ringkasan studio">
-            <div className="pc-avail-chip">
-              <span className={`pc-avail-dot ${availableToday > 0 ? 'green' : 'red'}`} />
-              <span>
-                {availableToday > 0
-                  ? `${availableToday} slot tersedia hari ini`
-                  : 'Penuh untuk hari ini'}
+          <aside className="hidden self-end rounded-[2rem] border border-white/10 bg-white/[0.055] p-3 shadow-2xl shadow-black/25 backdrop-blur-2xl lg:block">
+            <button
+              type="button"
+              onClick={() => setLightboxPhoto({ ...heroPhoto, displayCaption: getPublicPhotoCaption(heroPhoto) })}
+              className="group relative aspect-[4/5] w-full overflow-hidden rounded-[1.5rem] border border-white/10 bg-white/[0.04]"
+            >
+              <img src={heroPhoto.url} alt="" className="size-full object-cover transition duration-500 group-hover:scale-105" />
+              <span className="absolute inset-x-3 bottom-3 rounded-2xl border border-white/10 bg-black/45 px-4 py-3 text-left text-xs font-black text-white/85 shadow-xl shadow-black/20 backdrop-blur-xl">
+                {getPublicPhotoCaption(heroPhoto)}
               </span>
-            </div>
-            <div>
-              <Clock size={16} />
-              <span>{operatingLabel}</span>
-            </div>
-            <div>
-              <Headphones size={16} />
-              <span>Operator ready</span>
-            </div>
-            <div>
-              <ShieldCheck size={16} />
-              <span>Rp {formattedRate}/jam</span>
-            </div>
-          </div>
-        </div>
+            </button>
+          </aside>
+        </main>
+      </section>
 
-        <div className="pc-hero-caption">
-          <span>{getPublicPhotoCaption(heroPhoto)}</span>
-        </div>
-      </MotionSection>
-
-      {/* ── Calendar Container ── */}
-      <div className="pc-body">
+      <section className="relative z-10 mx-auto -mt-12 flex w-[min(1220px,calc(100%-2rem))] flex-col gap-4 pb-10">
         {(authLoading || publicAccessError) && (
-          <div className={`pc-public-status ${publicAccessError ? 'error' : ''}`}>
+          <div
+            className={cx(
+              'rounded-2xl border px-4 py-3 text-sm font-black shadow-xl shadow-black/10 backdrop-blur-xl',
+              publicAccessError
+                ? 'border-rose-300/25 bg-rose-300/10 text-rose-100'
+                : 'border-cyan-200/25 bg-cyan-200/10 text-cyan-100'
+            )}
+          >
             {publicAccessError || 'Menyiapkan akses jadwal publik...'}
           </div>
         )}
 
-        <MotionSection delay={0.05} className="pc-calendar-intro">
+        <div className="grid gap-4 rounded-[2rem] border border-white/10 bg-white/[0.045] p-4 shadow-2xl shadow-black/20 backdrop-blur-2xl lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end lg:p-5">
           <div>
-            <span>Booking board</span>
-            <h2>Pilih jam kosong yang paling pas.</h2>
-          </div>
-          <p>Slot hijau bisa dipilih. Slot merah atau redup berarti sudah terisi, tutup, atau sudah lewat.</p>
-        </MotionSection>
-
-        {user && !user.isAnonymous && (
-          <MotionSection delay={0.08} className="pc-client-booking-strip">
-            <div className="pc-client-booking-avatar">
-              {(userProfile?.displayName || userProfile?.username || user?.displayName || user?.email || "C").trim().charAt(0).toUpperCase()}
-            </div>
-            <div className="pc-client-booking-copy">
-              <span>Booking sebagai akun client</span>
-              <strong>{userProfile?.displayName || userProfile?.username || user?.displayName || user?.email?.split("@")[0] || "Client"}</strong>
-              <p>Nama dan nomor WhatsApp dari profil akan otomatis dipakai saat kamu memilih slot.</p>
-            </div>
-            <button type="button" className="pc-client-booking-link" onClick={() => navigate("/client/profile")}>
-              Lengkapi Profil
-              <ChevronRight size={15} />
-            </button>
-          </MotionSection>
-        )}
-
-        <MotionSection delay={0.1} className="pc-toolbar">
-          {/* Navigation */}
-          <div className="pc-nav">
-            <button className="icon-btn" type="button" onClick={handlePrev} aria-label="Lihat periode sebelumnya" title="Sebelumnya"><ChevronLeft size={22} /></button>
-            <span className="pc-date-label">{currentLabel}</span>
-            <button className="icon-btn" type="button" onClick={handleNext} aria-label="Lihat periode berikutnya" title="Berikutnya"><ChevronRight size={22} /></button>
-            <button className="btn-secondary" type="button" onClick={handleGoToday}>Hari Ini</button>
+            <span className="mb-2 inline-flex rounded-full border border-rose-300/20 bg-rose-300/10 px-3 py-1 text-[0.68rem] font-black uppercase tracking-[0.14em] text-rose-200">
+              Booking board
+            </span>
+            <h2 className="font-['Bebas_Neue',Impact,sans-serif] text-[clamp(2.1rem,4vw,3.35rem)] uppercase leading-none tracking-[-0.025em] text-stone-50">
+              Pilih jam kosong yang paling pas.
+            </h2>
+            <p className="mt-2 max-w-2xl text-sm font-bold leading-6 text-stone-300/68">
+              Slot hijau bisa dipilih. Slot merah atau redup berarti sudah terisi, tutup, atau sudah lewat.
+            </p>
           </div>
 
-          <div className="pc-toolbar-right">
-            {/* Legend */}
-            <div className="pc-legend">
-              <div className="pc-legend-item"><span className="pc-dot booked" /> Terisi / Tutup</div>
-              <div className="pc-legend-item"><span className="pc-dot available" /> Tersedia</div>
+          <div className="flex flex-col gap-3 lg:items-end">
+            <div className="flex flex-wrap items-center gap-2 text-xs font-black text-stone-300/70">
+              <span className="inline-flex items-center gap-2 rounded-full border border-green-300/20 bg-green-300/10 px-3 py-2 text-green-100">
+                <span className="size-2 rounded-full bg-green-300" />
+                Tersedia
+              </span>
+              <span className="inline-flex items-center gap-2 rounded-full border border-rose-300/20 bg-rose-300/10 px-3 py-2 text-rose-100">
+                <span className="size-2 rounded-full bg-rose-300" />
+                Terisi / tutup
+              </span>
             </div>
-            
-            {/* View switcher */}
-            <div className="pc-view-switch">
-              {['day', 'week', 'month'].map(v => (
+
+            <div className="inline-grid grid-cols-3 rounded-2xl border border-white/10 bg-black/25 p-1 shadow-inner shadow-black/20">
+              {['day', 'week', 'month'].map((mode) => (
                 <button
-                  key={v}
-                  className={`pc-view-btn ${viewMode === v ? 'active' : ''}`}
+                  key={mode}
                   type="button"
-                  aria-pressed={viewMode === v}
-                  onClick={() => setViewMode(v)}
+                  aria-pressed={viewMode === mode}
+                  onClick={() => setViewMode(mode)}
+                  className={cx(
+                    'min-h-9 rounded-xl px-3 text-xs font-black transition',
+                    viewMode === mode
+                      ? 'bg-amber-300 text-neutral-950 shadow-lg shadow-amber-500/15'
+                      : 'text-stone-200/62 hover:bg-white/[0.07] hover:text-stone-50'
+                  )}
                 >
-                  {v === 'day' ? 'Hari' : v === 'week' ? 'Minggu' : 'Bulan'}
+                  {viewLabels[mode]}
                 </button>
               ))}
             </div>
           </div>
-        </MotionSection>
+        </div>
 
-        {/* Grid Panel */}
-        <div className="pc-grid-panel" id="pc-booking-calendar">
-          <div className="pc-scroll-hint" aria-hidden="true">Geser kalender untuk melihat tanggal lainnya</div>
-          <div className="pc-grid-wrapper" ref={gridWrapperRef}>
+        {user && !user.isAnonymous && (
+          <div className="grid gap-3 rounded-[1.5rem] border border-cyan-200/14 bg-cyan-200/[0.06] p-4 shadow-xl shadow-black/10 backdrop-blur-xl sm:grid-cols-[auto_minmax(0,1fr)_auto] sm:items-center">
+            <div className="grid size-12 place-items-center rounded-2xl border border-cyan-100/20 bg-cyan-100/10 text-lg font-black text-cyan-100">
+              {getInitial(clientDisplayName)}
+            </div>
+            <div>
+              <span className="text-xs font-black uppercase tracking-[0.12em] text-cyan-100/70">Booking sebagai akun client</span>
+              <strong className="block text-sm font-black text-stone-50">{clientDisplayName}</strong>
+              <p className="mt-1 text-xs font-bold text-stone-300/62">Nama dan nomor WhatsApp dari profil akan otomatis dipakai saat memilih slot.</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => navigate('/client/profile')}
+              className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.065] px-3 text-xs font-black text-stone-100/85 transition hover:-translate-y-0.5 hover:bg-white/[0.10]"
+            >
+              Lengkapi Profil
+              <ChevronRight size={15} />
+            </button>
+          </div>
+        )}
+
+        <div className="sticky top-3 z-40 rounded-[1.6rem] border border-white/10 bg-[#121720]/86 p-3 shadow-2xl shadow-black/25 backdrop-blur-2xl">
+          <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+            <div className="flex items-center gap-2">
+              <button
+                className="grid size-10 place-items-center rounded-xl border border-white/10 bg-white/[0.055] text-stone-100/75 transition hover:bg-white/[0.09] hover:text-white"
+                type="button"
+                onClick={handlePrev}
+                aria-label="Lihat periode sebelumnya"
+              >
+                <ChevronLeft size={20} />
+              </button>
+
+              <div className="min-w-0 flex-1 rounded-xl border border-white/10 bg-black/18 px-4 py-2 text-center text-sm font-black capitalize text-stone-50 lg:min-w-64">
+                {currentLabel}
+              </div>
+
+              <button
+                className="grid size-10 place-items-center rounded-xl border border-white/10 bg-white/[0.055] text-stone-100/75 transition hover:bg-white/[0.09] hover:text-white"
+                type="button"
+                onClick={handleNext}
+                aria-label="Lihat periode berikutnya"
+              >
+                <ChevronRight size={20} />
+              </button>
+            </div>
+
+            <button
+              type="button"
+              onClick={handleGoToday}
+              className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-amber-300/18 bg-amber-300/10 px-4 text-sm font-black text-amber-100 transition hover:-translate-y-0.5 hover:border-amber-300/30 hover:bg-amber-300/14"
+            >
+              <CalendarCheck2 size={16} />
+              Hari Ini
+            </button>
+          </div>
+        </div>
+
+        <div id="pc-booking-calendar" className="overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.045] shadow-2xl shadow-black/25 backdrop-blur-2xl">
+          <div className="border-b border-white/10 px-4 py-3 text-xs font-black uppercase tracking-[0.11em] text-stone-300/52 sm:hidden">
+            Geser kalender untuk melihat tanggal lainnya
+          </div>
+
+          <div ref={gridWrapperRef} className="pc-scrollbar max-h-[min(68svh,720px)] min-h-[430px] overflow-auto p-3">
             <div
-              className="pc-grid"
+              className="grid min-w-max gap-2"
               role="grid"
               aria-label="Kalender ketersediaan studio"
-              style={{ gridTemplateColumns: `${timeColWidth} repeat(${daysArray.length}, minmax(${colWidth}, 1fr))` }}
+              style={{ gridTemplateColumns: timeColWidth + ' repeat(' + daysArray.length + ', minmax(' + colWidth + ', 1fr))' }}
             >
-              {/* Corner */}
-              <div className="pc-corner" role="columnheader"><span>WAKTU</span></div>
+              <div className="sticky left-0 top-0 z-30 grid min-h-20 place-items-center rounded-2xl border border-white/10 bg-[#111722]/95 text-[0.66rem] font-black uppercase tracking-[0.1em] text-stone-400 shadow-lg shadow-black/15 backdrop-blur-xl">
+                Waktu
+              </div>
 
-              {/* Day Headers */}
-              {daysArray.map((day, idx) => {
-                const isToday = format(day, 'yyyy-MM-dd') === todayStr;
+              {daysArray.map((day) => {
+                const dateStr = format(day, 'yyyy-MM-dd');
+                const isToday = dateStr === todayStr;
                 const dow = getDay(day);
-                const isWknd = dow === 0 || dow === 6;
+                const isWeekend = dow === 0 || dow === 6;
+
                 return (
-                  <div key={idx} className={`pc-header-cell ${isToday ? 'today' : ''} ${isWknd ? 'weekend' : ''}`} role="columnheader">
-                    <span className="pc-day-name">{dayNames[dow]}</span>
-                    <span className="pc-day-num">{format(day, 'd')}</span>
-                    {isToday && <span className="pc-today-dot" />}
+                  <div
+                    key={dateStr}
+                    data-today-header={isToday ? 'true' : undefined}
+                    className={cx(
+                      'sticky top-0 z-20 grid min-h-20 place-items-center rounded-2xl border px-2 text-center shadow-lg shadow-black/15 backdrop-blur-xl',
+                      isToday
+                        ? 'border-amber-300/45 bg-amber-300/[0.12]'
+                        : isWeekend
+                          ? 'border-rose-300/16 bg-rose-300/[0.055]'
+                          : 'border-white/10 bg-[#111722]/95'
+                    )}
+                    role="columnheader"
+                  >
+                    <span className="text-[0.67rem] font-black uppercase tracking-[0.08em] text-stone-300/70">
+                      {dayNames[dow]}
+                    </span>
+                    <span className="text-2xl font-black leading-none text-stone-50">{format(day, 'd')}</span>
+                    {isToday && <span className="mt-1 size-1.5 rounded-full bg-amber-300 shadow-[0_0_0_6px_rgba(252,211,77,0.12)]" />}
                   </div>
                 );
               })}
 
-              {/* Hour rows */}
               {hoursArray.map((hour) => (
                 <React.Fragment key={hour}>
-                  {/* Time label */}
-                  <div className="pc-time-label" role="rowheader">
-                    <span>
-                      {isMobile 
-                        ? `${String(hour).padStart(2, '0')}:00` 
-                        : `${String(hour).padStart(2, '0')}:00 - ${String(hour + 1).padStart(2, '0')}:00`}
-                    </span>
+                  <div className="sticky left-0 z-10 grid min-h-16 place-items-center rounded-2xl border border-white/10 bg-[#111722]/95 px-2 text-center text-[0.72rem] font-black tabular-nums text-stone-300/55 shadow-lg shadow-black/10 backdrop-blur-xl">
+                    {isMobile
+                      ? String(hour).padStart(2, '0') + ':00'
+                      : String(hour).padStart(2, '0') + ':00 - ' + String(hour + 1).padStart(2, '0') + ':00'}
                   </div>
 
-                  {/* Day cells */}
                   {daysArray.map((day) => {
                     const dateStr = format(day, 'yyyy-MM-dd');
                     const isToday = dateStr === todayStr;
                     const dow = getDay(day);
-                    const isWknd = dow === 0 || dow === 6;
+                    const isWeekend = dow === 0 || dow === 6;
                     const isBlocked = blockedDates.includes(dateStr);
 
-                    const booking = activeBookings.find(b => {
-                      if (b.date !== dateStr) return false;
-                      return hour >= b.hour && hour < b.hour + b.duration;
+                    const booking = activeBookings.find((item) => {
+                      if (item.date !== dateStr) return false;
+                      return hour >= Number(item.hour) && hour < Number(item.hour) + Number(item.duration);
                     });
 
                     const isPast = dateStr < todayStr || (isToday && hour < nowHour);
                     const canBook = !booking && !isPast && !isBlocked;
-                    const isBlockStart = booking && hour === booking.hour;
+                    const isBlockStart = booking && hour === Number(booking.hour);
                     const dayLabel = format(day, 'EEEE, dd MMMM yyyy', { locale: localeId });
-                    const timeLabel = `${String(hour).padStart(2, '0')}:00 - ${String(hour + 1).padStart(2, '0')}:00`;
+                    const timeLabel = String(hour).padStart(2, '0') + ':00 - ' + String(hour + 1).padStart(2, '0') + ':00';
 
-                    const classes = [
-                      'pc-cell',
-                      isToday ? 'today-col' : '',
-                      isWknd ? 'weekend-col' : '',
-                      booking ? 'booked' : '',
-                      booking && isBlockStart ? 'block-start' : '',
-                      booking && hour === booking.hour + booking.duration - 1 ? 'block-end' : '',
-                      canBook ? 'available' : '',
-                      (isPast || isBlocked) && !booking ? 'past' : '',
-                    ].filter(Boolean).join(' ');
+                    const cellClassName = cx(
+                      'group relative min-h-16 overflow-hidden rounded-2xl border p-0 text-sm transition',
+                      canBook
+                        ? 'border-green-300/24 bg-green-300/[0.055] text-green-100 hover:-translate-y-0.5 hover:border-green-300/58 hover:bg-green-300/[0.11] hover:shadow-xl hover:shadow-green-500/10 focus-visible:border-green-300/70'
+                        : booking
+                          ? 'border-rose-300/26 bg-rose-300/[0.10] text-rose-100'
+                          : isBlocked
+                            ? 'border-rose-300/18 bg-rose-300/[0.045] text-rose-100/70'
+                            : 'border-white/7 bg-white/[0.022] text-stone-500/50',
+                      isWeekend && !booking && !canBook ? 'bg-rose-300/[0.035]' : '',
+                      isToday ? 'ring-1 ring-amber-300/10' : ''
+                    );
 
                     const cellContent = (
                       <>
-                        {isBlocked && hour === startHour + 2 && !booking && (
-                          <div className="pc-booked-tag">TUTUP</div>
-                        )}
-                        {booking && isBlockStart && (
-                          <div className="pc-booked-tag">TERISI</div>
-                        )}
                         {canBook && (
-                          <>
-                            <div className="pc-plus-icon" aria-hidden="true">
+                          <span className="absolute inset-0 grid place-items-center">
+                            <span className="grid size-9 place-items-center rounded-full border border-green-300/18 bg-green-300/10 text-green-200 opacity-100 transition group-hover:scale-105 group-hover:bg-green-300/16">
                               <Plus size={18} strokeWidth={2.5} />
-                            </div>
-                            <span className="pc-available-label">Pilih</span>
-                          </>
+                            </span>
+                          </span>
+                        )}
+
+                        {booking && isBlockStart && (
+                          <span className="absolute inset-0 grid place-items-center px-2">
+                            <span className="rounded-full border border-rose-200/16 bg-rose-300/12 px-2.5 py-1 text-[0.63rem] font-black uppercase tracking-[0.08em] text-rose-100">
+                              Terisi
+                            </span>
+                          </span>
+                        )}
+
+                        {isBlocked && !booking && hour === startHour + 2 && (
+                          <span className="absolute inset-0 grid place-items-center px-2">
+                            <span className="rounded-full border border-rose-200/16 bg-rose-300/12 px-2.5 py-1 text-[0.63rem] font-black uppercase tracking-[0.08em] text-rose-100">
+                              Tutup
+                            </span>
+                          </span>
                         )}
                       </>
                     );
@@ -572,11 +831,11 @@ const PublicCalendarPage = () => {
                     if (canBook) {
                       return (
                         <button
-                          key={`${dateStr}-${hour}`}
+                          key={dateStr + '-' + hour}
                           type="button"
-                          className={classes}
+                          className={cellClassName}
                           onClick={(event) => openModal(dateStr, hour, event.currentTarget)}
-                          aria-label={`Booking ${dayLabel}, jam ${timeLabel}`}
+                          aria-label={'Booking ' + dayLabel + ', jam ' + timeLabel}
                         >
                           {cellContent}
                         </button>
@@ -585,10 +844,10 @@ const PublicCalendarPage = () => {
 
                     return (
                       <div
-                        key={`${dateStr}-${hour}`}
-                        className={classes}
+                        key={dateStr + '-' + hour}
+                        className={cellClassName}
                         role="gridcell"
-                        aria-label={`${dayLabel}, jam ${timeLabel}, ${booking ? 'terisi' : isBlocked ? 'tutup' : 'tidak tersedia'}`}
+                        aria-label={dayLabel + ', jam ' + timeLabel + ', ' + (booking ? 'terisi' : isBlocked ? 'tutup' : 'tidak tersedia')}
                       >
                         {cellContent}
                       </div>
@@ -599,241 +858,278 @@ const PublicCalendarPage = () => {
             </div>
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* Gallery Section for Customer View */}
       {featuredPhotos.length > 0 && (
-        <div className="pc-gallery-section">
-          <MotionSection direction="up" className="pc-gallery-header">
-            <span>Vibe studio</span>
-            <h2>Lihat ruangnya sebelum booking.</h2>
-            <p>Foto studio membantu kamu memilih sesi dengan konteks yang lebih jelas.</p>
-          </MotionSection>
+        <section className="mx-auto w-[min(1220px,calc(100%-2rem))] pb-20">
+          <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <span className="mb-2 inline-flex rounded-full border border-rose-300/20 bg-rose-300/10 px-3 py-1 text-[0.68rem] font-black uppercase tracking-[0.14em] text-rose-200">
+                Vibe studio
+              </span>
+              <h2 className="font-['Bebas_Neue',Impact,sans-serif] text-[clamp(2.2rem,4.2vw,3.6rem)] uppercase leading-none tracking-[-0.025em] text-stone-50">
+                Lihat ruangnya sebelum booking.
+              </h2>
+            </div>
+            <p className="max-w-md text-sm font-bold leading-6 text-stone-300/64">
+              Foto studio membantu kamu memilih sesi dengan konteks yang lebih jelas.
+            </p>
+          </div>
 
-          <div className="pc-gallery-scroll">
+          <div className="pc-scrollbar grid auto-cols-[minmax(250px,31%)] grid-flow-col gap-4 overflow-x-auto pb-4 [scroll-snap-type:x_mandatory] max-lg:auto-cols-[78%]">
             {featuredPhotos.map((photo, index) => {
               const displayCaption = getPublicPhotoCaption(photo, index);
 
               return (
-              <div key={photo.id || photo.url || index} className="pc-gallery-item" onClick={() => setLightboxPhoto({ ...photo, displayCaption })}>
-                <img src={photo.url} alt={displayCaption} loading="lazy" />
-                <div className="pc-gallery-item-caption">
-                  <span>{displayCaption}</span>
-                </div>
-              </div>
+                <button
+                  key={photo.id || photo.url || index}
+                  type="button"
+                  onClick={() => setLightboxPhoto({ ...photo, displayCaption })}
+                  className="group relative aspect-[4/5] overflow-hidden rounded-[1.5rem] border border-white/10 bg-white/[0.045] shadow-2xl shadow-black/15 [scroll-snap-align:start]"
+                >
+                  <img
+                    src={photo.url}
+                    alt={displayCaption}
+                    loading="lazy"
+                    className="size-full object-cover transition duration-500 group-hover:scale-105"
+                  />
+                  <span className="absolute inset-x-3 bottom-3 rounded-2xl border border-white/10 bg-black/45 px-3 py-2 text-left text-xs font-black text-white/85 shadow-xl shadow-black/20 backdrop-blur-xl">
+                    {displayCaption}
+                  </span>
+                </button>
               );
             })}
           </div>
-        </div>
+        </section>
       )}
 
-      {/* Lightbox for Public Calendar Page */}
       <AnimatePresence>
         {lightboxPhoto && (
-          <motion.div 
+          <motion.div
+            className="fixed inset-0 z-[10000] grid place-items-center bg-black/78 p-4 backdrop-blur-xl"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="gallery-lightbox-overlay"
-            style={{ zIndex: 10000 }}
             onClick={() => setLightboxPhoto(null)}
           >
-            <button 
-              className="lightbox-close" 
+            <button
+              type="button"
+              className="absolute right-4 top-4 grid size-11 place-items-center rounded-2xl border border-white/10 bg-white/[0.08] text-white shadow-xl shadow-black/20 backdrop-blur-xl transition hover:bg-white/[0.13]"
               onClick={() => setLightboxPhoto(null)}
               aria-label="Tutup penampil gambar"
             >
-              <X size={24} />
+              <X size={22} />
             </button>
-            <motion.div 
-              initial={{ scale: 0.95 }}
+            <motion.div
+              className="w-[min(960px,100%)] overflow-hidden rounded-[2rem] border border-white/10 bg-[#111722] shadow-2xl shadow-black/40"
+              initial={{ scale: 0.96 }}
               animate={{ scale: 1 }}
-              exit={{ scale: 0.95 }}
-              className="lightbox-content"
-              onClick={(e) => e.stopPropagation()}
+              exit={{ scale: 0.96 }}
+              onClick={(event) => event.stopPropagation()}
             >
-              <img src={lightboxPhoto.url} alt={lightboxPhoto.displayCaption || 'Foto studio'} />
-              <div className="lightbox-footer">
-                <h3 className="pc-lightbox-title">{lightboxPhoto.displayCaption || 'Foto studio'}</h3>
+              <img src={lightboxPhoto.url} alt={lightboxPhoto.displayCaption || 'Foto studio'} className="max-h-[78svh] w-full object-contain bg-black" />
+              <div className="border-t border-white/10 px-5 py-4">
+                <h3 className="text-sm font-black text-stone-100">{lightboxPhoto.displayCaption || getPublicPhotoCaption(lightboxPhoto)}</h3>
               </div>
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* ── Premium Booking Modal ── */}
       <AnimatePresence>
         {modalOpen && (
           <motion.div
-            className="pc-modal-overlay"
+            className="fixed inset-0 z-[1000] grid place-items-center bg-black/72 p-4 backdrop-blur-xl"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
             onClick={closeModal}
-            variants={overlayVariants}
-            initial="hidden"
-            animate="visible"
-            exit="exit"
           >
             <motion.div
-              className="pc-modal"
-              onClick={e => e.stopPropagation()}
+              className="pc-scrollbar max-h-[min(90svh,820px)] w-[min(540px,100%)] overflow-auto rounded-[2rem] border border-white/10 bg-[#141923]/96 shadow-2xl shadow-black/40 backdrop-blur-2xl"
+              initial={{ opacity: 0, y: 18, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 18, scale: 0.98 }}
+              transition={{ duration: 0.18, ease: 'easeOut' }}
+              onClick={(event) => event.stopPropagation()}
               role="dialog"
               aria-modal="true"
               aria-labelledby="pc-booking-title"
-              {...modalPreset}
             >
-              <div className="pc-modal-content">
-                {/* Header */}
-                <div className="pc-modal-header">
-                  <div className="pc-modal-header-info">
-                    <div className="pc-modal-header-icon">
-                      <CalendarDays size={24} />
-                    </div>
-                    <div>
-                      <h3 id="pc-booking-title">Ajukan Booking Studio</h3>
-                      <p>
-                        {selectedSlot.dateStr
-                          ? format(new Date(selectedSlot.dateStr + 'T00:00:00'), 'EEEE, dd MMMM yyyy', { locale: localeId })
-                          : ''}
-                      </p>
-                    </div>
+              <div className="flex items-start justify-between gap-4 border-b border-white/10 p-5">
+                <div className="flex gap-3">
+                  <div className="grid size-12 shrink-0 place-items-center rounded-2xl border border-amber-300/18 bg-amber-300/10 text-amber-100">
+                    <CalendarDays size={23} />
                   </div>
-                  <button className="pc-modal-close" type="button" onClick={closeModal} aria-label="Tutup modal booking">
-                    <X size={20} />
-                  </button>
+                  <div>
+                    <h3 id="pc-booking-title" className="text-xl font-black tracking-[-0.04em] text-stone-50">
+                      Ajukan Booking Studio
+                    </h3>
+                    <p className="mt-1 text-sm font-bold capitalize text-stone-300/62">
+                      {selectedSlot.dateStr
+                        ? format(new Date(selectedSlot.dateStr + 'T00:00:00'), 'EEEE, dd MMMM yyyy', { locale: localeId })
+                        : ''}
+                    </p>
+                  </div>
                 </div>
+                <button
+                  type="button"
+                  className="grid size-10 shrink-0 place-items-center rounded-2xl border border-white/10 bg-white/[0.055] text-stone-100/75 transition hover:bg-white/[0.10] hover:text-white"
+                  onClick={closeModal}
+                  aria-label="Tutup modal booking"
+                >
+                  <X size={20} />
+                </button>
+              </div>
 
-                {/* Time chip */}
-                <div className="pc-time-chip">
+              <div className="space-y-4 p-5">
+                <div className="flex items-center gap-2 rounded-2xl border border-amber-300/16 bg-amber-300/10 px-4 py-3 text-sm font-black text-amber-100">
                   <Clock size={16} />
                   <span>
-                    {String(selectedSlot.hour).padStart(2,'0')}:00 -{' '}
-                    {String(selectedSlot.hour + duration).padStart(2,'0')}:00
-                    &nbsp;({duration} jam)
+                    {String(selectedSlot.hour).padStart(2, '0')}:00 - {String(selectedSlot.hour + duration).padStart(2, '0')}:00 ({duration} jam)
                   </span>
                 </div>
 
                 {user && !user.isAnonymous && (
-                  <div className="pc-modal-client-strip">
-                    <div className="pc-modal-client-avatar">
-                      {(userProfile?.displayName || userProfile?.username || user?.displayName || user?.email || "C").trim().charAt(0).toUpperCase()}
+                  <div className="grid gap-3 rounded-2xl border border-cyan-200/14 bg-cyan-200/[0.06] p-4 sm:grid-cols-[auto_minmax(0,1fr)]">
+                    <div className="grid size-11 place-items-center rounded-2xl border border-cyan-100/20 bg-cyan-100/10 text-base font-black text-cyan-100">
+                      {getInitial(clientDisplayName)}
                     </div>
                     <div>
-                      <span>Booking sebagai akun client</span>
-                      <strong>{userProfile?.displayName || userProfile?.username || user?.displayName || user?.email?.split("@")[0] || "Client"}</strong>
-                      <p>Data client akan ikut tersimpan supaya booking, billing, dan histori lebih gampang tersambung.</p>
+                      <span className="text-xs font-black uppercase tracking-[0.12em] text-cyan-100/70">Booking sebagai akun client</span>
+                      <strong className="block text-sm font-black text-stone-50">{clientDisplayName}</strong>
+                      <p className="mt-1 text-xs font-bold leading-5 text-stone-300/62">
+                        Data client ikut tersimpan supaya booking, billing, dan histori lebih gampang tersambung.
+                      </p>
                     </div>
                   </div>
                 )}
 
-                {/* Form */}
-                <div className="pc-modal-body">
-                  <div className="pc-form-group">
-                    <label htmlFor="pc-band-name">Nama Band / Artis</label>
-                    <input
-                      id="pc-band-name"
-                      type="text"
-                      className="pc-form-input"
-                      value={bandName}
-                      onChange={e => {
-                        setBandName(e.target.value);
-                        setFormErrors(prev => ({ ...prev, bandName: '' }));
-                      }}
-                      placeholder="Contoh: The Beatles"
-                      autoFocus
-                      aria-invalid={Boolean(formErrors.bandName)}
-                      aria-describedby={formErrors.bandName ? 'pc-band-error' : undefined}
-                    />
-                    {formErrors.bandName && <span id="pc-band-error" className="pc-field-error">{formErrors.bandName}</span>}
-                    <span className="pc-field-helper" id="pc-field-helper-name">Boleh isi nama band, nama artis, atau nama project.</span>
-                  </div>
-
-                  <div className="pc-form-group">
-                    <label htmlFor="pc-customer-phone">No. WhatsApp</label>
-                    <input
-                      id="pc-customer-phone"
-                      type="tel"
-                      className="pc-form-input"
-                      value={customerPhone}
-                      onChange={e => {
-                        setCustomerPhone(e.target.value);
-                        setFormErrors(prev => ({ ...prev, customerPhone: '' }));
-                      }}
-                      placeholder="08xxxxxxxxxx"
-                      aria-invalid={Boolean(formErrors.customerPhone)}
-                      aria-describedby={formErrors.customerPhone ? 'pc-phone-error' : undefined}
-                    />
-                    {formErrors.customerPhone && <span id="pc-phone-error" className="pc-field-error">{formErrors.customerPhone}</span>}
-                    <span className="pc-field-helper" id="pc-field-helper-phone">Pakai nomor aktif supaya admin bisa follow up konfirmasi jadwal.</span>
-                  </div>
-
-                  <div className="pc-form-group">
-                    <label id="pc-duration-label">Pilih Durasi</label>
-                    <div className="pc-duration-grid">
-                      {[1,2,3,4,5].map(h => (
-                        <button
-                          key={h}
-                          type="button"
-                          className={`pc-dur-btn ${duration === h ? 'active' : ''}`}
-                          aria-pressed={duration === h}
-                          aria-label={`Pilih durasi ${h} jam`}
-                          onClick={() => setDuration(h)}
-                        >
-                          {h} Jam
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="pc-duration-helper">
-                    <span>Durasi dipilih</span>
-                    <strong>{duration} jam</strong>
-                  </div>
-
-                  {/* Price estimate */}
-                  <div className="pc-price-estimate">
-                    <span className="pc-price-label">Estimasi Harga</span>
-                    <div className="pc-price-value-container">
-                      {durationDiscountEst > 0 && (
-                        <div className="pc-price-discount-label">
-                          Diskon: -{new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(durationDiscountEst)}
-                        </div>
-                      )}
-                      <span className="pc-price-value">
-                        {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(priceEst)}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="pc-price-breakdown">
-                    <div>
-                      <span>Rate / jam</span>
-                      <strong>Rp {formattedRate}</strong>
-                    </div>
-                    <div>
-                      <span>Durasi</span>
-                      <strong>{duration} jam</strong>
-                    </div>
-                    <div>
-                      <span>Diskon</span>
-                      <strong>{durationDiscountEst > 0 ? "-" + new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(durationDiscountEst) : "Rp0"}</strong>
-                    </div>
-                  </div>
-
-                  {/* Info note */}
-                  <div className="pc-modal-note">
-                    <Info size={16} />
-                    <span>Request akan masuk ke admin studio untuk direview. Setelah dikonfirmasi, jadwal dan billing akan muncul di Client Portal.</span>
-                  </div>
-
-                  <div className="pc-submit-helper">
-                    <ShieldCheck size={15} />
-                    <span>Pastikan tanggal, jam, durasi, dan nomor WhatsApp sudah benar sebelum kirim.</span>
-                  </div>
-
-                  <button className="btn-success" type="button" onClick={sendWA} disabled={isSubmittingRequest} aria-busy={isSubmittingRequest}>
-                    <MessageCircle size={22} />
-                    <span>{isSubmittingRequest ? 'Mengirim Request...' : 'Kirim Request Booking'}</span>
-                  </button>
+                <div className="space-y-2">
+                  <label htmlFor="pc-band-name" className="text-sm font-black text-stone-200/76">
+                    Nama Band / Artis
+                  </label>
+                  <input
+                    id="pc-band-name"
+                    type="text"
+                    className="pc-autofill min-h-12 w-full rounded-2xl border border-white/10 bg-black/22 px-4 text-sm font-bold text-stone-50 outline-none transition placeholder:text-stone-400/45 focus:border-amber-300/48 focus:ring-4 focus:ring-amber-300/10"
+                    value={bandName}
+                    onChange={(event) => {
+                      setBandName(event.target.value);
+                      setFormErrors((prev) => ({ ...prev, bandName: '' }));
+                    }}
+                    placeholder="Contoh: The Beatles"
+                    autoFocus
+                    aria-invalid={Boolean(formErrors.bandName)}
+                    aria-describedby={formErrors.bandName ? 'pc-band-error' : undefined}
+                  />
+                  {formErrors.bandName ? (
+                    <span id="pc-band-error" className="text-xs font-black text-rose-200">
+                      {formErrors.bandName}
+                    </span>
+                  ) : (
+                    <span className="text-xs font-bold text-stone-400/60">Boleh isi nama band, nama artis, atau nama project.</span>
+                  )}
                 </div>
+
+                <div className="space-y-2">
+                  <label htmlFor="pc-customer-phone" className="text-sm font-black text-stone-200/76">
+                    No. WhatsApp
+                  </label>
+                  <input
+                    id="pc-customer-phone"
+                    type="tel"
+                    className="pc-autofill min-h-12 w-full rounded-2xl border border-white/10 bg-black/22 px-4 text-sm font-bold text-stone-50 outline-none transition placeholder:text-stone-400/45 focus:border-amber-300/48 focus:ring-4 focus:ring-amber-300/10"
+                    value={customerPhone}
+                    onChange={(event) => {
+                      setCustomerPhone(event.target.value);
+                      setFormErrors((prev) => ({ ...prev, customerPhone: '' }));
+                    }}
+                    placeholder="08xxxxxxxxxx"
+                    aria-invalid={Boolean(formErrors.customerPhone)}
+                    aria-describedby={formErrors.customerPhone ? 'pc-phone-error' : undefined}
+                  />
+                  {formErrors.customerPhone ? (
+                    <span id="pc-phone-error" className="text-xs font-black text-rose-200">
+                      {formErrors.customerPhone}
+                    </span>
+                  ) : (
+                    <span className="text-xs font-bold text-stone-400/60">Pakai nomor aktif supaya admin bisa follow up konfirmasi jadwal.</span>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-black text-stone-200/76">Pilih Durasi</label>
+                  <div className="grid grid-cols-5 gap-2">
+                    {[1, 2, 3, 4, 5].map((hour) => (
+                      <button
+                        key={hour}
+                        type="button"
+                        aria-pressed={duration === hour}
+                        onClick={() => setDuration(hour)}
+                        className={cx(
+                          'min-h-11 rounded-2xl border text-sm font-black transition',
+                          duration === hour
+                            ? 'border-transparent bg-amber-300 text-neutral-950 shadow-lg shadow-amber-500/15'
+                            : 'border-white/10 bg-white/[0.045] text-stone-200/68 hover:bg-white/[0.08] hover:text-white'
+                        )}
+                      >
+                        {hour} Jam
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="rounded-2xl border border-green-300/18 bg-green-300/[0.08] p-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <span className="text-sm font-black text-stone-200/70">Estimasi Harga</span>
+                    <strong className="text-xl font-black tracking-[-0.04em] text-green-200">{formatRupiah(priceEst)}</strong>
+                  </div>
+                  {durationDiscountEst > 0 && (
+                    <p className="mt-1 text-right text-xs font-black text-amber-100">
+                      Diskon: -{formatRupiah(durationDiscountEst)}
+                    </p>
+                  )}
+                </div>
+
+                <div className="grid grid-cols-3 gap-2">
+                  <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-3">
+                    <span className="block text-[0.68rem] font-black uppercase tracking-[0.08em] text-stone-400/60">Rate</span>
+                    <strong className="mt-1 block text-xs font-black text-stone-100">Rp {formattedRate}</strong>
+                  </div>
+                  <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-3">
+                    <span className="block text-[0.68rem] font-black uppercase tracking-[0.08em] text-stone-400/60">Durasi</span>
+                    <strong className="mt-1 block text-xs font-black text-stone-100">{duration} jam</strong>
+                  </div>
+                  <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-3">
+                    <span className="block text-[0.68rem] font-black uppercase tracking-[0.08em] text-stone-400/60">Diskon</span>
+                    <strong className="mt-1 block text-xs font-black text-stone-100">
+                      {durationDiscountEst > 0 ? '-' + formatRupiah(durationDiscountEst) : 'Rp0'}
+                    </strong>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/[0.045] p-4 text-xs font-bold leading-5 text-stone-300/68">
+                  <Info size={16} className="mt-0.5 shrink-0 text-amber-200" />
+                  <span>Request akan masuk ke admin studio untuk direview. Setelah dikonfirmasi, jadwal dan billing akan muncul di Client Portal.</span>
+                </div>
+
+                <div className="flex items-start gap-3 rounded-2xl border border-cyan-200/14 bg-cyan-200/[0.06] p-4 text-xs font-bold leading-5 text-stone-300/68">
+                  <ShieldCheck size={16} className="mt-0.5 shrink-0 text-cyan-100" />
+                  <span>Pastikan tanggal, jam, durasi, dan nomor WhatsApp sudah benar sebelum kirim.</span>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={sendWA}
+                  disabled={isSubmittingRequest}
+                  aria-busy={isSubmittingRequest}
+                  className="group inline-flex min-h-13 w-full items-center justify-center gap-2 rounded-2xl border border-white/10 bg-[#25d366] px-5 text-sm font-black text-[#052415] shadow-2xl shadow-green-500/15 transition hover:-translate-y-0.5 hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-70"
+                >
+                  <MessageCircle size={21} />
+                  <span>{isSubmittingRequest ? 'Mengirim Request...' : 'Kirim Request Booking'}</span>
+                  <ArrowRight size={18} className="transition group-hover:translate-x-0.5" />
+                </button>
               </div>
             </motion.div>
           </motion.div>
