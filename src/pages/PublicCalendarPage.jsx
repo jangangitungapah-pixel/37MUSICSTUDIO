@@ -608,7 +608,7 @@ const PublicCalendarPage = () => {
           </div>
         )}
 
-        <div className="pc-board-panel grid gap-4 rounded-[2rem] border border-white/10 bg-white/[0.045] p-4 shadow-2xl shadow-black/20 backdrop-blur-2xl lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end lg:p-5">
+        <div className="pc-board-panel grid gap-4 rounded-[2rem] border border-white/10 bg-white/[0.045] p-4 shadow-2xl shadow-black/20 backdrop-blur-2xl lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center lg:p-5">
           <div className="pc-board-copy">
             <h2 className="pc-board-title font-['Bebas_Neue',Impact,sans-serif] text-[clamp(2.1rem,4vw,3.35rem)] uppercase leading-none tracking-[-0.025em] text-stone-50">
               Pilih jam kosong yang paling pas.
@@ -628,25 +628,6 @@ const PublicCalendarPage = () => {
                 <span className="size-2 rounded-full bg-rose-300" />
                 Terisi / tutup
               </span>
-            </div>
-
-            <div className="pc-view-switcher inline-grid grid-cols-3 rounded-2xl border border-white/10 bg-black/25 p-1 shadow-inner shadow-black/20">
-              {['day', 'week', 'month'].map((mode) => (
-                <button
-                  key={mode}
-                  type="button"
-                  aria-pressed={viewMode === mode}
-                  onClick={() => setViewMode(mode)}
-                  className={cx(
-                    'pc-view-btn min-h-9 rounded-xl px-3 text-xs font-black transition',
-                    viewMode === mode
-                      ? 'pc-view-btn-active bg-amber-300 text-neutral-950 shadow-lg shadow-amber-500/15'
-                      : 'pc-view-btn-idle text-stone-200/62 hover:bg-white/[0.07] hover:text-stone-50'
-                  )}
-                >
-                  {viewLabels[mode]}
-                </button>
-              ))}
             </div>
           </div>
         </div>
@@ -698,30 +679,51 @@ const PublicCalendarPage = () => {
               </button>
             </div>
 
-            <button
-              type="button"
-              onClick={handleGoToday}
-              className="pc-today-btn inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-amber-300/18 bg-amber-300/10 px-4 text-sm font-black text-amber-100 transition hover:-translate-y-0.5 hover:border-amber-300/30 hover:bg-amber-300/14"
-            >
-              <CalendarCheck2 size={16} />
-              Hari Ini
-            </button>
+            <div className="pc-period-actions">
+              <div className="pc-view-switcher inline-grid grid-cols-3 rounded-2xl border border-white/10 bg-black/25 p-1 shadow-inner shadow-black/20">
+                {['day', 'week', 'month'].map((mode) => (
+                  <button
+                    key={mode}
+                    type="button"
+                    aria-pressed={viewMode === mode}
+                    onClick={() => setViewMode(mode)}
+                    className={cx(
+                      'pc-view-btn min-h-9 rounded-xl px-3 text-xs font-black transition',
+                      viewMode === mode
+                        ? 'pc-view-btn-active bg-amber-300 text-neutral-950 shadow-lg shadow-amber-500/15'
+                        : 'pc-view-btn-idle text-stone-200/62 hover:bg-white/[0.07] hover:text-stone-50'
+                    )}
+                  >
+                    {viewLabels[mode]}
+                  </button>
+                ))}
+              </div>
+
+              <button
+                type="button"
+                onClick={handleGoToday}
+                className="pc-today-btn inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-amber-300/18 bg-amber-300/10 px-4 text-sm font-black text-amber-100 transition hover:-translate-y-0.5 hover:border-amber-300/30 hover:bg-amber-300/14"
+              >
+                <CalendarCheck2 size={16} />
+                Hari Ini
+              </button>
+            </div>
           </div>
         </div>
 
-        <div id="pc-booking-calendar" className="overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.045] shadow-2xl shadow-black/25 backdrop-blur-2xl">
-          <div className="border-b border-white/10 px-4 py-3 text-xs font-black uppercase tracking-[0.11em] text-stone-300/52 sm:hidden">
+        <div id="pc-booking-calendar" className="pc-calendar-panel overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.045] shadow-2xl shadow-black/25 backdrop-blur-2xl">
+          <div className="pc-calendar-mobile-hint border-b border-white/10 px-4 py-3 text-xs font-black uppercase tracking-[0.11em] text-stone-300/52 sm:hidden">
             Geser kalender untuk melihat tanggal lainnya
           </div>
 
-          <div ref={gridWrapperRef} className="pc-scrollbar max-h-[min(68svh,720px)] min-h-[430px] overflow-auto p-3">
+          <div ref={gridWrapperRef} className="pc-calendar-scroll pc-scrollbar max-h-[min(68svh,720px)] min-h-[430px] overflow-auto p-3">
             <div
-              className="grid min-w-max gap-2"
+              className="pc-calendar-grid grid min-w-max gap-0"
               role="grid"
               aria-label="Kalender ketersediaan studio"
               style={{ gridTemplateColumns: timeColWidth + ' repeat(' + daysArray.length + ', minmax(' + colWidth + ', 1fr))' }}
             >
-              <div className="sticky left-0 top-0 z-30 grid min-h-20 place-items-center rounded-2xl border border-white/10 bg-[#111722]/95 text-[0.66rem] font-black uppercase tracking-[0.1em] text-stone-400 shadow-lg shadow-black/15 backdrop-blur-xl">
+              <div className="pc-time-head sticky left-0 top-0 z-30 grid min-h-20 place-items-center rounded-2xl border border-white/10 bg-[#111722]/95 text-[0.66rem] font-black uppercase tracking-[0.1em] text-stone-400 shadow-lg shadow-black/15 backdrop-blur-xl">
                 Waktu
               </div>
 
@@ -736,12 +738,12 @@ const PublicCalendarPage = () => {
                     key={dateStr}
                     data-today-header={isToday ? 'true' : undefined}
                     className={cx(
-                      'sticky top-0 z-20 grid min-h-20 place-items-center rounded-2xl border px-2 text-center shadow-lg shadow-black/15 backdrop-blur-xl',
+                      'pc-day-head sticky top-0 z-20 grid min-h-20 place-items-center rounded-2xl border px-2 text-center shadow-lg shadow-black/15 backdrop-blur-xl',
                       isToday
-                        ? 'border-amber-300/45 bg-amber-300/[0.12]'
+                        ? 'pc-day-today border-amber-300/45 bg-amber-300/[0.12]'
                         : isWeekend
-                          ? 'border-rose-300/16 bg-rose-300/[0.055]'
-                          : 'border-white/10 bg-[#111722]/95'
+                          ? 'pc-day-weekend border-rose-300/16 bg-rose-300/[0.055]'
+                          : 'pc-day-normal border-white/10 bg-[#111722]/95'
                     )}
                     role="columnheader"
                   >
@@ -756,7 +758,7 @@ const PublicCalendarPage = () => {
 
               {hoursArray.map((hour) => (
                 <React.Fragment key={hour}>
-                  <div className="sticky left-0 z-10 grid min-h-16 place-items-center rounded-2xl border border-white/10 bg-[#111722]/95 px-2 text-center text-[0.72rem] font-black tabular-nums text-stone-300/55 shadow-lg shadow-black/10 backdrop-blur-xl">
+                  <div className="pc-time-cell sticky left-0 z-10 grid min-h-16 place-items-center rounded-2xl border border-white/10 bg-[#111722]/95 px-2 text-center text-[0.72rem] font-black tabular-nums text-stone-300/55 shadow-lg shadow-black/10 backdrop-blur-xl">
                     {isMobile
                       ? String(hour).padStart(2, '0') + ':00'
                       : String(hour).padStart(2, '0') + ':00 - ' + String(hour + 1).padStart(2, '0') + ':00'}
@@ -781,23 +783,23 @@ const PublicCalendarPage = () => {
                     const timeLabel = String(hour).padStart(2, '0') + ':00 - ' + String(hour + 1).padStart(2, '0') + ':00';
 
                     const cellClassName = cx(
-                      'group relative min-h-16 overflow-hidden rounded-2xl border p-0 text-sm transition',
+                      'pc-slot-cell group relative min-h-16 overflow-hidden border p-0 text-sm transition',
                       canBook
-                        ? 'border-green-300/24 bg-green-300/[0.055] text-green-100 hover:-translate-y-0.5 hover:border-green-300/58 hover:bg-green-300/[0.11] hover:shadow-xl hover:shadow-green-500/10 focus-visible:border-green-300/70'
+                        ? 'pc-slot-available border-green-300/24 bg-green-300/[0.055] text-green-100 hover:border-green-300/58 hover:bg-green-300/[0.11] focus-visible:border-green-300/70'
                         : booking
-                          ? 'border-rose-300/26 bg-rose-300/[0.10] text-rose-100'
+                          ? 'pc-slot-booked border-rose-300/26 bg-rose-300/[0.10] text-rose-100'
                           : isBlocked
-                            ? 'border-rose-300/18 bg-rose-300/[0.045] text-rose-100/70'
-                            : 'border-white/7 bg-white/[0.022] text-stone-500/50',
-                      isWeekend && !booking && !canBook ? 'bg-rose-300/[0.035]' : '',
-                      isToday ? 'ring-1 ring-amber-300/10' : ''
+                            ? 'pc-slot-blocked border-rose-300/18 bg-rose-300/[0.045] text-rose-100/70'
+                            : 'pc-slot-muted border-white/7 bg-white/[0.022] text-stone-500/50',
+                      isWeekend && !booking && !canBook ? 'pc-slot-weekend-muted bg-rose-300/[0.035]' : '',
+                      isToday ? 'pc-slot-today ring-1 ring-amber-300/10' : ''
                     );
 
                     const cellContent = (
                       <>
                         {canBook && (
-                          <span className="absolute inset-0 grid place-items-center">
-                            <span className="grid size-9 place-items-center rounded-full border border-green-300/18 bg-green-300/10 text-green-200 opacity-100 transition group-hover:scale-105 group-hover:bg-green-300/16">
+                          <span className="pc-slot-plus-wrap absolute inset-0 grid place-items-center">
+                            <span className="pc-slot-plus grid size-9 place-items-center rounded-full border border-green-300/18 bg-green-300/10 text-green-200 opacity-100 transition group-hover:scale-105 group-hover:bg-green-300/16">
                               <Plus size={18} strokeWidth={2.5} />
                             </span>
                           </span>
@@ -805,7 +807,7 @@ const PublicCalendarPage = () => {
 
                         {booking && isBlockStart && (
                           <span className="absolute inset-0 grid place-items-center px-2">
-                            <span className="rounded-full border border-rose-200/16 bg-rose-300/12 px-2.5 py-1 text-[0.63rem] font-black uppercase tracking-[0.08em] text-rose-100">
+                            <span className="pc-slot-badge rounded-full border border-rose-200/16 bg-rose-300/12 px-2.5 py-1 text-[0.63rem] font-black uppercase tracking-[0.08em] text-rose-100">
                               Terisi
                             </span>
                           </span>
@@ -813,7 +815,7 @@ const PublicCalendarPage = () => {
 
                         {isBlocked && !booking && hour === startHour + 2 && (
                           <span className="absolute inset-0 grid place-items-center px-2">
-                            <span className="rounded-full border border-rose-200/16 bg-rose-300/12 px-2.5 py-1 text-[0.63rem] font-black uppercase tracking-[0.08em] text-rose-100">
+                            <span className="pc-slot-badge rounded-full border border-rose-200/16 bg-rose-300/12 px-2.5 py-1 text-[0.63rem] font-black uppercase tracking-[0.08em] text-rose-100">
                               Tutup
                             </span>
                           </span>

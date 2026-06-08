@@ -1256,3 +1256,252 @@
     margin-top: 0.22rem !important;
   }
 }
+
+/* ──────────────────────────────────────────────────────────────────────────
+   37 PUBLIC CALENDAR GRID LINE REBUILD 8.1D
+   --------------------------------------------------------------------------
+   Calendar grid rebuild:
+   - one unified period/action toolbar
+   - line-based grid instead of carded cells
+   - subtle hover-only plus action
+   - thin separators and cleaner sticky headers
+   ────────────────────────────────────────────────────────────────────────── */
+
+.pc-modern .pc-period-toolbar {
+  margin-bottom: -0.9rem !important;
+  padding: 0.72rem !important;
+  border-radius: 1.35rem 1.35rem 0 0 !important;
+  border-bottom-color: rgba(255, 255, 255, 0.045) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.066), rgba(255, 255, 255, 0.028)),
+    rgba(13, 17, 25, 0.90) !important;
+  box-shadow:
+    0 20px 58px rgba(0, 0, 0, 0.24),
+    inset 0 1px 0 rgba(255, 255, 255, 0.065) !important;
+}
+
+.pc-modern .pc-period-toolbar-inner {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto !important;
+  align-items: center !important;
+  gap: 0.75rem !important;
+}
+
+.pc-modern .pc-period-actions {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0.55rem !important;
+}
+
+.pc-modern .pc-period-actions .pc-view-switcher {
+  min-height: 42px !important;
+  box-shadow: none !important;
+}
+
+.pc-modern .pc-period-actions .pc-today-btn {
+  min-height: 42px !important;
+  min-width: 108px !important;
+  white-space: nowrap !important;
+}
+
+.pc-modern .pc-calendar-panel {
+  margin-top: 0 !important;
+  overflow: hidden !important;
+  border-radius: 0 0 1.35rem 1.35rem !important;
+  border-color: rgba(255, 255, 255, 0.080) !important;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(239, 197, 110, 0.035), transparent 28%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.040), rgba(255, 255, 255, 0.016)),
+    rgba(10, 13, 20, 0.82) !important;
+  box-shadow:
+    0 24px 72px rgba(0, 0, 0, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.040) !important;
+  backdrop-filter: blur(22px) saturate(1.04) !important;
+  -webkit-backdrop-filter: blur(22px) saturate(1.04) !important;
+}
+
+.pc-modern .pc-calendar-scroll {
+  padding: 0 !important;
+  min-height: 430px !important;
+  max-height: min(68svh, 720px) !important;
+}
+
+.pc-modern .pc-calendar-grid {
+  gap: 0 !important;
+  min-width: max-content !important;
+  background: rgba(255, 255, 255, 0.026) !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.055) !important;
+  border-left: 1px solid rgba(255, 255, 255, 0.055) !important;
+}
+
+.pc-modern .pc-time-head,
+.pc-modern .pc-day-head,
+.pc-modern .pc-time-cell,
+.pc-modern .pc-slot-cell {
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.055) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.055) !important;
+}
+
+.pc-modern .pc-time-head,
+.pc-modern .pc-day-head {
+  min-height: 76px !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.018)),
+    rgba(15, 20, 30, 0.92) !important;
+}
+
+.pc-modern .pc-day-today {
+  background:
+    radial-gradient(circle at 50% 100%, rgba(239, 197, 110, 0.22), transparent 36%),
+    linear-gradient(180deg, rgba(239, 197, 110, 0.105), rgba(255, 255, 255, 0.018)),
+    rgba(19, 22, 28, 0.92) !important;
+}
+
+.pc-modern .pc-day-head span:first-child {
+  font-size: 0.62rem !important;
+  letter-spacing: 0.09em !important;
+  color: rgba(255, 250, 240, 0.46) !important;
+}
+
+.pc-modern .pc-day-head span:nth-child(2) {
+  font-size: 1.55rem !important;
+  font-weight: 950 !important;
+}
+
+.pc-modern .pc-time-cell {
+  min-height: 58px !important;
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.018)),
+    rgba(13, 18, 28, 0.94) !important;
+  color: rgba(255, 250, 240, 0.42) !important;
+  font-size: 0.66rem !important;
+}
+
+.pc-modern .pc-slot-cell {
+  min-height: 58px !important;
+  background: rgba(255, 255, 255, 0.014) !important;
+  transform: none !important;
+}
+
+.pc-modern .pc-slot-cell::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(110, 231, 183, 0.12), transparent 45%),
+    rgba(110, 231, 183, 0.030);
+  transition: opacity 180ms ease;
+  pointer-events: none;
+}
+
+.pc-modern .pc-slot-available {
+  background: rgba(110, 231, 183, 0.020) !important;
+}
+
+.pc-modern .pc-slot-available:hover {
+  background: rgba(110, 231, 183, 0.052) !important;
+}
+
+.pc-modern .pc-slot-available:hover::before,
+.pc-modern .pc-slot-available:focus-visible::before {
+  opacity: 1;
+}
+
+.pc-modern .pc-slot-booked {
+  background:
+    linear-gradient(90deg, rgba(251, 113, 133, 0.090), rgba(251, 113, 133, 0.026)),
+    rgba(255, 255, 255, 0.012) !important;
+}
+
+.pc-modern .pc-slot-plus-wrap {
+  opacity: 0 !important;
+  transition: opacity 170ms ease;
+}
+
+.pc-modern .pc-slot-available:hover .pc-slot-plus-wrap,
+.pc-modern .pc-slot-available:focus-visible .pc-slot-plus-wrap {
+  opacity: 1 !important;
+}
+
+.pc-modern .pc-slot-plus {
+  width: 2.15rem !important;
+  height: 2.15rem !important;
+  border-radius: 999px !important;
+  border-color: rgba(110, 231, 183, 0.22) !important;
+  background: rgba(110, 231, 183, 0.105) !important;
+  color: rgba(200, 255, 229, 0.78) !important;
+  box-shadow: 0 0 28px rgba(110, 231, 183, 0.10) !important;
+}
+
+.pc-modern .pc-slot-badge {
+  border-color: rgba(251, 113, 133, 0.22) !important;
+  background: rgba(251, 113, 133, 0.105) !important;
+  color: rgba(255, 224, 231, 0.82) !important;
+  font-size: 0.58rem !important;
+}
+
+@media (max-width: 1023px) {
+  .pc-modern .pc-period-toolbar-inner {
+    grid-template-columns: 1fr !important;
+  }
+
+  .pc-modern .pc-period-actions {
+    width: 100% !important;
+    justify-content: space-between !important;
+  }
+
+  .pc-modern .pc-period-actions .pc-view-switcher {
+    flex: 1 1 auto !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .pc-modern .pc-period-toolbar {
+    margin-bottom: -0.55rem !important;
+    border-radius: 1.15rem 1.15rem 0 0 !important;
+    padding: 0.55rem !important;
+  }
+
+  .pc-modern .pc-period-actions {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    gap: 0.48rem !important;
+  }
+
+  .pc-modern .pc-period-actions .pc-today-btn {
+    min-width: 92px !important;
+    padding-inline: 0.65rem !important;
+  }
+
+  .pc-modern .pc-calendar-panel {
+    border-radius: 0 0 1.15rem 1.15rem !important;
+  }
+
+  .pc-modern .pc-calendar-scroll {
+    min-height: 390px !important;
+    max-height: 64svh !important;
+  }
+
+  .pc-modern .pc-time-head,
+  .pc-modern .pc-day-head {
+    min-height: 66px !important;
+  }
+
+  .pc-modern .pc-time-cell,
+  .pc-modern .pc-slot-cell {
+    min-height: 54px !important;
+  }
+
+  .pc-modern .pc-slot-plus-wrap {
+    opacity: 0.32 !important;
+  }
+
+  .pc-modern .pc-slot-plus {
+    width: 1.8rem !important;
+    height: 1.8rem !important;
+  }
+}
