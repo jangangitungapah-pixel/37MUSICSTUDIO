@@ -1,5 +1,6 @@
 import {
   useEffect,
+  useMemo,
   useState } from 'react';
 import { Link,
   useNavigate } from 'react-router-dom';
@@ -33,6 +34,7 @@ import {
   Loader2
 } from 'lucide-react';
 import { usePublicStudioSettings } from '../hooks/usePublicStudioSettings';
+import { useGalleryStore } from '../store/useGalleryStore';
 import { useThemeStore } from '../store/useThemeStore';
 import { getPortalPathForProfile } from '../lib/roles';
 import './LandingPage.css';
@@ -40,6 +42,20 @@ import './LandingPage.css';
 const FALLBACK_HERO_PHOTO = {
   url: '/studio-hero.webp',
   caption: '37 Music Studio — private rehearsal & recording room',
+};
+
+const getLandingGalleryCaption = (photo, index = 0) => {
+  const rawCaption = String(photo?.caption || '').trim();
+  const looksLikeFileName =
+    /\d{6,}/.test(rawCaption) ||
+    /\.(jpg|jpeg|png|webp|gif)$/i.test(rawCaption) ||
+    rawCaption.split(/\s+/).length > 7;
+
+  if (!rawCaption || rawCaption.length > 58 || looksLikeFileName) {
+    return `37 Music Studio angle ${String(index + 1).padStart(2, '0')}`;
+  }
+
+  return rawCaption;
 };
 
 const YOUTUBE_URL = 'https://youtube.com/@37musicstudio74?si=dq57yhCuJcph0pIf';
@@ -55,6 +71,7 @@ const normalizeWhatsAppNumber = (phone) => {
 
 const LandingPage = () => {
   const { studioName, studioAddress, studioPhone, pricePerHour } = usePublicStudioSettings();
+  const { gallery: adminGalleryPhotos = [] } = useGalleryStore();
   const { theme, toggleTheme } = useThemeStore();
   const navigate = useNavigate();
 
@@ -69,6 +86,40 @@ const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [loginLoading, setLoginLoading] = useState(false);
 
   const currentHeroPhoto = FALLBACK_HERO_PHOTO;
+  const landingGalleryPhotos = useMemo(() => {
+    const photos = Array.isArray(adminGalleryPhotos) ? adminGalleryPhotos : [];
+
+    return photos
+      .filter((photo) => {
+        if (!photo || !photo.url) return false;
+
+        return (
+          photo.showOnLandingPage === true ||
+          photo.showOnLanding === true ||
+          photo.showInLandingPage === true
+        );
+      })
+      .sort((a, b) => {
+        const orderA = Number.isFinite(Number(a.order)) ? Number(a.order) : 999999;
+        const orderB = Number.isFinite(Number(b.order)) ? Number(b.order) : 999999;
+
+        if (orderA !== orderB) return orderA - orderB;
+
+        const dateA = String(a.createdAt || '');
+        const dateB = String(b.createdAt || '');
+        const idA = String(a.id || '');
+        const idB = String(b.id || '');
+
+        return dateB.localeCompare(dateA) || idB.localeCompare(idA);
+      })
+      .slice(0, 6);
+  }, [adminGalleryPhotos]);
+
+  const galleryPreviewPhotos = landingGalleryPhotos.length > 0 ? landingGalleryPhotos : [FALLBACK_HERO_PHOTO];
+  const galleryPreviewSourceLabel =
+    landingGalleryPhotos.length > 0
+      ? `${landingGalleryPhotos.length} foto pilihan admin tampil di landing`
+      : 'Foto fallback studio tampil sementara';
   const formattedPrice = formatCurrency(pricePerHour || 120000);
   const whatsappNumber = normalizeWhatsAppNumber(studioPhone);
   const whatsappUrl = `https://wa.me/${whatsappNumber}`;
@@ -587,27 +638,45 @@ const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
           <div className="gallery-pro-copy">
             <span className="gallery-pro-kicker">Lihat ruang</span>
             <h2 id="gallery-pro-title">Cek dulu ruangnya sebelum datang.</h2>
-            <p>Preview singkat biar kamu tahu suasana studio. Untuk foto lengkap, buka halaman galeri.</p>
+            <p>Preview singkat biar kamu tahu suasana studio. Foto di section ini otomatis mengikuti pengaturan galeri admin.</p>
+            <span className="gallery-pro-source">{galleryPreviewSourceLabel}</span>
           </div>
 
           <div className="gallery-pro-visual">
-            <button
-              type="button"
-              className="gallery-pro-card"
-              onClick={() => setLightboxPhoto(FALLBACK_HERO_PHOTO)}
-              aria-label="Lihat foto preview studio"
-            >
-              <img src={FALLBACK_HERO_PHOTO.url} alt={FALLBACK_HERO_PHOTO.caption} loading="lazy" />
-              <span className="gallery-pro-caption">
-                <Camera size={16} />
-                <span>{FALLBACK_HERO_PHOTO.caption}</span>
-              </span>
-            </button>
+            <div className={`gallery-pro-board gallery-pro-count-${galleryPreviewPhotos.length}`}>
+              {galleryPreviewPhotos.map((photo, index) => {
+                const caption = getLandingGalleryCaption(photo, index);
 
-            <Link to="/galeri" className="gallery-pro-cta">
-              <span>Lihat Galeri Studio</span>
-              <ArrowUpRight size={17} />
-            </Link>
+                return (
+                  <button
+                    type="button"
+                    key={photo.id || photo.url || index}
+                    className={`gallery-pro-photo ${index === 0 ? 'gallery-pro-photo-featured' : ''}`}
+                    onClick={() => setLightboxPhoto(photo)}
+                    aria-label={`Lihat foto preview: ${caption}`}
+                  >
+                    <img
+                      src={photo.url}
+                      alt={caption}
+                      loading={index === 0 ? 'eager' : 'lazy'}
+                    />
+                    <span className="gallery-pro-photo-shade" aria-hidden="true" />
+                    <span className="gallery-pro-photo-label">
+                      <Camera size={index === 0 ? 16 : 13} />
+                      <span>{caption}</span>
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="gallery-pro-bottom">
+              <span>{galleryPreviewPhotos.length} / 6 foto tampil</span>
+              <Link to="/galeri" className="gallery-pro-cta">
+                <span>Lihat Galeri Studio</span>
+                <ArrowUpRight size={17} />
+              </Link>
+            </div>
           </div>
         </div>
 
@@ -622,8 +691,8 @@ const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
               <X size={24} />
             </button>
             <div className="lightbox-content" onClick={(event) => event.stopPropagation()}>
-              <img src={lightboxPhoto.url} alt={lightboxPhoto.caption || 'Foto studio'} />
-              {lightboxPhoto.caption && <p>{lightboxPhoto.caption}</p>}
+              <img src={lightboxPhoto.url} alt={getLandingGalleryCaption(lightboxPhoto)} />
+              <p>{getLandingGalleryCaption(lightboxPhoto)}</p>
             </div>
           </div>
         )}
