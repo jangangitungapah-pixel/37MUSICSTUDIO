@@ -2777,3 +2777,417 @@
     min-height: 40px !important;
   }
 }
+
+/* ──────────────────────────────────────────────────────────────────────────
+   37 PUBLIC CALENDAR FULL LIGHT MODE POLISH 8.1H
+   --------------------------------------------------------------------------
+   Full-page light mode polish for PublicCalendarPage only.
+   Scoped under [data-theme="light"] so dark mode remains untouched.
+   Covers: shell, hero, header, board, calendar grid, gallery, and booking modal.
+   ────────────────────────────────────────────────────────────────────────── */
+
+[data-theme="light"] .pc-modern {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(239, 197, 110, 0.16), transparent 30rem),
+    radial-gradient(circle at 8% 18%, rgba(255, 56, 113, 0.070), transparent 28rem),
+    radial-gradient(circle at 90% 20%, rgba(35, 176, 191, 0.085), transparent 30rem),
+    linear-gradient(180deg, #f7efe3 0%, #efe5d7 46%, #e9dfd1 100%) !important;
+  color: #241f18 !important;
+}
+
+[data-theme="light"] .pc-modern .pc-scrollbar {
+  scrollbar-color: rgba(177, 130, 43, 0.72) rgba(70, 52, 28, 0.10);
+}
+
+[data-theme="light"] .pc-modern .pc-scrollbar::-webkit-scrollbar-track {
+  background: rgba(70, 52, 28, 0.10) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(177, 130, 43, 0.72) !important;
+}
+
+[data-theme="light"] .pc-modern button:focus-visible,
+[data-theme="light"] .pc-modern a:focus-visible,
+[data-theme="light"] .pc-modern input:focus-visible {
+  outline-color: rgba(177, 130, 43, 0.86) !important;
+}
+
+/* HERO + HEADER */
+[data-theme="light"] .pc-modern .pc-hero-section {
+  background: transparent !important;
+}
+
+[data-theme="light"] .pc-modern .pc-hero-bg img {
+  opacity: 0.22 !important;
+  filter: blur(2.4px) saturate(0.70) brightness(1.18) contrast(0.90) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-hero-overlay {
+  background:
+    radial-gradient(circle at 50% 6%, rgba(255, 255, 255, 0.64), transparent 28rem),
+    radial-gradient(circle at 18% 22%, rgba(255, 56, 113, 0.070), transparent 30rem),
+    radial-gradient(circle at 82% 22%, rgba(35, 176, 191, 0.075), transparent 30rem),
+    linear-gradient(180deg, rgba(247, 239, 227, 0.74) 0%, rgba(247, 239, 227, 0.84) 56%, #f7efe3 100%) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-hero-brand,
+[data-theme="light"] .pc-modern .pc-hero-action-btn {
+  border-color: rgba(96, 73, 41, 0.14) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.42)),
+    rgba(255, 250, 241, 0.62) !important;
+  color: rgba(48, 40, 30, 0.76) !important;
+  box-shadow:
+    0 18px 50px rgba(96, 73, 41, 0.13),
+    inset 0 1px 0 rgba(255, 255, 255, 0.82) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-hero-brand:hover,
+[data-theme="light"] .pc-modern .pc-hero-action-btn:hover {
+  border-color: rgba(177, 130, 43, 0.26) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.86), rgba(255, 255, 255, 0.54)),
+    rgba(255, 250, 241, 0.74) !important;
+  color: rgba(35, 28, 20, 0.94) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-hero-brand > span:first-child {
+  border-color: rgba(177, 130, 43, 0.30) !important;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(239, 197, 110, 0.20), transparent 56%),
+    rgba(255, 255, 255, 0.42) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-hero-brand > span:last-child {
+  color: rgba(34, 28, 20, 0.92) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-hero-kicker,
+[data-theme="light"] .pc-modern .pc-public-gallery-kicker {
+  border-color: rgba(255, 56, 113, 0.20) !important;
+  background:
+    linear-gradient(90deg, rgba(255, 56, 113, 0.075), rgba(239, 197, 110, 0.10)),
+    rgba(255, 255, 255, 0.44) !important;
+  color: rgba(179, 45, 81, 0.88) !important;
+  box-shadow:
+    0 14px 34px rgba(96, 73, 41, 0.10),
+    inset 0 1px 0 rgba(255, 255, 255, 0.70) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-hero-title,
+[data-theme="light"] .pc-modern .pc-board-title,
+[data-theme="light"] .pc-modern .pc-public-gallery-title {
+  color: #272118 !important;
+  text-shadow: 0 22px 54px rgba(96, 73, 41, 0.12) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-hero-copy,
+[data-theme="light"] .pc-modern .pc-board-subtitle,
+[data-theme="light"] .pc-modern .pc-public-gallery-subtitle {
+  color: rgba(45, 38, 28, 0.66) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-hero-cta-row a:nth-child(2) {
+  border-color: rgba(96, 73, 41, 0.14) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.68), rgba(255, 255, 255, 0.36)),
+    rgba(255, 250, 241, 0.58) !important;
+  color: rgba(35, 28, 20, 0.78) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-hero-stat {
+  border-color: rgba(96, 73, 41, 0.12) !important;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(239, 197, 110, 0.10), transparent 34%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.70), rgba(255, 255, 255, 0.34)),
+    rgba(255, 250, 241, 0.50) !important;
+  box-shadow:
+    0 20px 52px rgba(96, 73, 41, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.72) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-hero-stat-label {
+  color: rgba(45, 38, 28, 0.52) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-hero-stat-value strong,
+[data-theme="light"] .pc-modern .pc-hero-stat-text {
+  color: rgba(35, 28, 20, 0.92) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-hero-stat-value span {
+  color: rgba(45, 38, 28, 0.52) !important;
+}
+
+/* BOARD + TOOLBAR */
+[data-theme="light"] .pc-modern .pc-board-panel,
+[data-theme="light"] .pc-modern .pc-period-toolbar,
+[data-theme="light"] .pc-modern .pc-calendar-panel {
+  border-color: rgba(96, 73, 41, 0.12) !important;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(255, 56, 113, 0.035), transparent 34%),
+    radial-gradient(circle at 100% 0%, rgba(35, 176, 191, 0.040), transparent 34%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.68), rgba(255, 255, 255, 0.34)),
+    rgba(255, 250, 241, 0.55) !important;
+  box-shadow:
+    0 22px 64px rgba(96, 73, 41, 0.13),
+    inset 0 1px 0 rgba(255, 255, 255, 0.72) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-board-legend-chip-available {
+  border-color: rgba(22, 133, 87, 0.18) !important;
+  background: rgba(16, 185, 129, 0.105) !important;
+  color: rgba(20, 104, 73, 0.90) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-board-legend-chip-busy {
+  border-color: rgba(196, 63, 91, 0.18) !important;
+  background: rgba(244, 63, 94, 0.090) !important;
+  color: rgba(150, 42, 66, 0.92) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-period-label,
+[data-theme="light"] .pc-modern .pc-period-arrow,
+[data-theme="light"] .pc-modern .pc-view-switcher,
+[data-theme="light"] .pc-modern .pc-today-btn {
+  border-color: rgba(96, 73, 41, 0.12) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.70), rgba(255, 255, 255, 0.36)),
+    rgba(255, 250, 241, 0.50) !important;
+  color: rgba(35, 28, 20, 0.78) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-view-btn-idle {
+  color: rgba(45, 38, 28, 0.52) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-view-btn-idle:hover {
+  background: rgba(96, 73, 41, 0.065) !important;
+  color: rgba(35, 28, 20, 0.86) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-view-btn-active {
+  color: #241a0b !important;
+}
+
+[data-theme="light"] .pc-modern .pc-calendar-grid {
+  background: rgba(96, 73, 41, 0.052) !important;
+  border-top-color: rgba(96, 73, 41, 0.105) !important;
+  border-left-color: rgba(96, 73, 41, 0.105) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-time-head,
+[data-theme="light"] .pc-modern .pc-day-head,
+[data-theme="light"] .pc-modern .pc-time-cell,
+[data-theme="light"] .pc-modern .pc-slot-cell {
+  border-right-color: rgba(96, 73, 41, 0.095) !important;
+  border-bottom-color: rgba(96, 73, 41, 0.095) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-time-head,
+[data-theme="light"] .pc-modern .pc-day-head {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.60), rgba(255, 255, 255, 0.26)),
+    rgba(247, 239, 227, 0.84) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-time-cell {
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.48), rgba(255, 255, 255, 0.22)),
+    rgba(247, 239, 227, 0.74) !important;
+  color: rgba(45, 38, 28, 0.46) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-day-head span:first-child {
+  color: rgba(45, 38, 28, 0.48) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-day-head span:nth-child(2) {
+  color: rgba(35, 28, 20, 0.88) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-day-today {
+  background:
+    radial-gradient(circle at 50% 100%, rgba(239, 197, 110, 0.26), transparent 38%),
+    linear-gradient(180deg, rgba(239, 197, 110, 0.18), rgba(255, 255, 255, 0.24)),
+    rgba(255, 250, 241, 0.86) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-slot-cell {
+  background: rgba(255, 255, 255, 0.22) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-slot-available {
+  background: rgba(16, 185, 129, 0.045) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-slot-available:hover {
+  background: rgba(16, 185, 129, 0.11) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-slot-plus {
+  border-color: rgba(22, 133, 87, 0.24) !important;
+  background: rgba(16, 185, 129, 0.12) !important;
+  color: rgba(20, 104, 73, 0.86) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-slot-booked {
+  color: rgba(130, 34, 58, 0.95) !important;
+  background:
+    linear-gradient(90deg, rgba(244, 63, 94, 0.18), rgba(244, 63, 94, 0.095) 42%, rgba(244, 63, 94, 0.050)),
+    rgba(244, 63, 94, 0.055) !important;
+  box-shadow:
+    inset 3px 0 0 rgba(225, 70, 101, 0.60),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    0 0 0 1px rgba(225, 70, 101, 0.045) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-slot-booked .pc-slot-badge,
+[data-theme="light"] .pc-modern .pc-slot-badge {
+  border-color: rgba(196, 63, 91, 0.22) !important;
+  background: rgba(244, 63, 94, 0.12) !important;
+  color: rgba(130, 34, 58, 0.94) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-slot-muted {
+  background: rgba(255, 255, 255, 0.12) !important;
+  color: rgba(45, 38, 28, 0.34) !important;
+}
+
+/* GALLERY */
+[data-theme="light"] .pc-modern .pc-public-gallery-card {
+  border-color: rgba(96, 73, 41, 0.13) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.62), rgba(255, 255, 255, 0.26)),
+    rgba(255, 250, 241, 0.44) !important;
+  box-shadow:
+    0 24px 70px rgba(96, 73, 41, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.72) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-public-gallery-caption {
+  border-color: rgba(96, 73, 41, 0.14) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.78), rgba(255, 255, 255, 0.44)),
+    rgba(255, 250, 241, 0.58) !important;
+  color: rgba(35, 28, 20, 0.88) !important;
+  box-shadow:
+    0 14px 38px rgba(96, 73, 41, 0.13),
+    inset 0 1px 0 rgba(255, 255, 255, 0.72) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-public-gallery-image {
+  filter: saturate(0.94) contrast(0.98) brightness(0.98) !important;
+}
+
+/* MODAL */
+[data-theme="light"] .pc-modern .pc-booking-modal-overlay {
+  background:
+    radial-gradient(circle at 50% 18%, rgba(239, 197, 110, 0.12), transparent 26%),
+    radial-gradient(circle at 34% 44%, rgba(35, 176, 191, 0.10), transparent 32%),
+    rgba(42, 34, 24, 0.34) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-booking-modal-panel {
+  border-color: rgba(96, 73, 41, 0.14) !important;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(239, 197, 110, 0.12), transparent 32%),
+    radial-gradient(circle at 100% 0%, rgba(35, 176, 191, 0.10), transparent 32%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.80), rgba(255, 255, 255, 0.52)),
+    rgba(255, 250, 241, 0.82) !important;
+  color: rgba(35, 28, 20, 0.88) !important;
+  box-shadow:
+    0 34px 120px rgba(96, 73, 41, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.82) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-booking-modal-header {
+  border-bottom-color: rgba(96, 73, 41, 0.10) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 250, 241, 0.94), rgba(255, 250, 241, 0.82)) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-booking-modal-title,
+[data-theme="light"] .pc-modern .pc-booking-price-meta strong {
+  color: rgba(35, 28, 20, 0.92) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-booking-modal-date,
+[data-theme="light"] .pc-modern .pc-booking-help,
+[data-theme="light"] .pc-modern .pc-booking-note,
+[data-theme="light"] .pc-modern .pc-booking-section-head small {
+  color: rgba(45, 38, 28, 0.54) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-booking-input,
+[data-theme="light"] .pc-modern .pc-booking-duration-btn,
+[data-theme="light"] .pc-modern .pc-booking-note,
+[data-theme="light"] .pc-modern .pc-booking-price-meta span {
+  border-color: rgba(96, 73, 41, 0.13) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.66), rgba(255, 255, 255, 0.32)),
+    rgba(255, 250, 241, 0.46) !important;
+  color: rgba(35, 28, 20, 0.82) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-booking-input::placeholder {
+  color: rgba(45, 38, 28, 0.36) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-booking-input:focus {
+  border-color: rgba(35, 176, 191, 0.58) !important;
+  box-shadow:
+    0 0 0 3px rgba(35, 176, 191, 0.13),
+    inset 0 1px 0 rgba(255, 255, 255, 0.70) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-booking-duration-btn-active {
+  border-color: rgba(177, 130, 43, 0.34) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 224, 137, 0.98), rgba(239, 197, 110, 0.94)) !important;
+  color: rgba(35, 28, 20, 0.94) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-booking-price-card {
+  border-color: rgba(22, 133, 87, 0.18) !important;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(16, 185, 129, 0.12), transparent 34%),
+    linear-gradient(180deg, rgba(16, 185, 129, 0.080), rgba(16, 185, 129, 0.032)),
+    rgba(16, 185, 129, 0.035) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-booking-price-card > div:first-child strong {
+  color: rgba(20, 104, 73, 0.96) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-booking-price-card > div:first-child span,
+[data-theme="light"] .pc-modern .pc-booking-price-meta small {
+  color: rgba(45, 38, 28, 0.52) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-booking-note-cyan {
+  border-color: rgba(35, 176, 191, 0.15) !important;
+  background: rgba(35, 176, 191, 0.065) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-booking-modal-close {
+  border-color: rgba(96, 73, 41, 0.13) !important;
+  background: rgba(255, 255, 255, 0.46) !important;
+  color: rgba(45, 38, 28, 0.58) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-booking-modal-close:hover {
+  color: rgba(35, 28, 20, 0.92) !important;
+  background: rgba(255, 255, 255, 0.72) !important;
+}
+
+[data-theme="light"] .pc-autofill:-webkit-autofill,
+[data-theme="light"] .pc-autofill:-webkit-autofill:hover,
+[data-theme="light"] .pc-autofill:-webkit-autofill:focus,
+[data-theme="light"] .pc-autofill:-webkit-autofill:active {
+  -webkit-text-fill-color: #241f18 !important;
+  caret-color: #b1822b !important;
+  box-shadow: 0 0 0 1000px rgba(255, 250, 241, 0.01) inset !important;
+  -webkit-box-shadow: 0 0 0 1000px rgba(255, 250, 241, 0.01) inset !important;
+}
