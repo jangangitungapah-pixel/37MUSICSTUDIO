@@ -7616,3 +7616,235 @@ body[data-theme="light"]:has(.landing-container) #root {
       0 0 1px rgba(0,0,0,0.60) !important;
   }
 }
+
+/* ──────────────────────────────────────────────────────────────────────────
+   37 LANDING HERO LIGHT MODE REFINEMENT 8.3B
+   --------------------------------------------------------------------------
+   Refines only the landing hero light mode:
+   - brighter but controlled studio photo
+   - less milky bottom fog
+   - warmer glass login panel
+   - cleaner light input fields
+   - trust cards blend better with hero surface
+   ────────────────────────────────────────────────────────────────────────── */
+
+[data-theme="light"] .hero-section {
+  background:
+    radial-gradient(circle at 18% 10%, rgba(239, 197, 110, 0.18), transparent 30rem),
+    radial-gradient(circle at 85% 16%, rgba(35, 176, 191, 0.09), transparent 28rem),
+    linear-gradient(180deg, #efe4d5 0%, #f5ede2 72%, var(--landing-bg-solid) 100%) !important;
+}
+
+[data-theme="light"] .hero-background img {
+  opacity: 0.96 !important;
+  filter:
+    saturate(1.04)
+    contrast(1.03)
+    brightness(0.94) !important;
+}
+
+[data-theme="light"] .hero-scrim {
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 248, 235, 0.20) 0%,
+      rgba(255, 248, 235, 0.10) 24%,
+      rgba(35, 24, 15, 0.32) 58%,
+      rgba(245, 237, 226, 0.78) 92%,
+      var(--landing-bg-solid) 100%
+    ),
+    linear-gradient(
+      90deg,
+      rgba(24, 17, 10, 0.58) 0%,
+      rgba(24, 17, 10, 0.26) 46%,
+      rgba(24, 17, 10, 0.50) 100%
+    ) !important;
+}
+
+[data-theme="light"] .hero-section::after {
+  height: clamp(70px, 10vh, 132px) !important;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(245, 237, 226, 0) 0%,
+      rgba(245, 237, 226, 0.12) 45%,
+      var(--landing-bg-solid) 100%
+    ) !important;
+}
+
+[data-theme="light"] .hero-title {
+  color: #fffaf0 !important;
+  text-shadow:
+    0 2px 0 rgba(37, 25, 13, 0.18),
+    0 18px 48px rgba(22, 14, 8, 0.58),
+    0 0 1px rgba(22, 14, 8, 0.72) !important;
+}
+
+[data-theme="light"] .hero-subtitle {
+  color: rgba(255, 250, 240, 0.94) !important;
+  text-shadow:
+    0 10px 30px rgba(22, 14, 8, 0.58),
+    0 0 1px rgba(22, 14, 8, 0.64) !important;
+}
+
+[data-theme="light"] .hero-kicker {
+  color: rgba(255, 231, 181, 0.96) !important;
+  border-color: rgba(255, 231, 181, 0.38) !important;
+  background:
+    linear-gradient(90deg, rgba(255, 56, 113, 0.12), rgba(239, 197, 110, 0.12)),
+    rgba(23, 17, 12, 0.62) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.13),
+    0 12px 26px rgba(18, 12, 7, 0.22) !important;
+}
+
+[data-theme="light"] .hero-login-panel {
+  border-color: rgba(255, 255, 255, 0.18) !important;
+  background:
+    radial-gradient(circle at 14% 0%, rgba(239, 197, 110, 0.16), transparent 32%),
+    radial-gradient(circle at 90% 18%, rgba(88, 224, 233, 0.11), transparent 34%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.055)),
+    rgba(28, 30, 36, 0.48) !important;
+  box-shadow:
+    0 28px 70px rgba(18, 12, 7, 0.24),
+    inset 0 1px 0 rgba(255, 255, 255, 0.13) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(1.08) !important;
+  backdrop-filter: blur(24px) saturate(1.08) !important;
+}
+
+[data-theme="light"] .hero-login-panel::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  border-radius: inherit;
+  background:
+    linear-gradient(135deg, rgba(255, 61, 112, 0.08), transparent 38%),
+    linear-gradient(315deg, rgba(88, 224, 233, 0.08), transparent 42%);
+}
+
+[data-theme="light"] .hero-login-badge {
+  border-color: rgba(239, 197, 110, 0.22) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.07)),
+    rgba(239, 197, 110, 0.12) !important;
+  color: rgba(255, 224, 163, 0.96) !important;
+}
+
+[data-theme="light"] .hero-login-top span {
+  color: rgba(255, 224, 163, 0.76) !important;
+}
+
+[data-theme="light"] .hero-login-panel strong,
+[data-theme="light"] .hero-login-panel label {
+  color: rgba(255, 250, 240, 0.95) !important;
+}
+
+[data-theme="light"] .hero-login-divider {
+  color: rgba(255, 250, 240, 0.48) !important;
+}
+
+[data-theme="light"] .hero-login-divider::before,
+[data-theme="light"] .hero-login-divider::after {
+  background: rgba(255, 255, 255, 0.10) !important;
+}
+
+[data-theme="light"] .hero-login-perks span {
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  background: rgba(255, 255, 255, 0.055) !important;
+  color: rgba(255, 250, 240, 0.62) !important;
+}
+
+[data-theme="light"] .hero-google-login {
+  border-color: rgba(255, 255, 255, 0.58) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(244, 239, 231, 0.92)) !important;
+  color: rgba(24, 20, 15, 0.92) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.78),
+    0 12px 28px rgba(18, 12, 7, 0.14) !important;
+}
+
+[data-theme="light"] .hero-native-field {
+  border-color: rgba(255, 255, 255, 0.17) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.065)),
+    rgba(16, 18, 23, 0.42) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 8px 18px rgba(0, 0, 0, 0.08) !important;
+}
+
+[data-theme="light"] .hero-native-field input {
+  color: rgba(255, 250, 240, 0.96) !important;
+}
+
+[data-theme="light"] .hero-native-field input::placeholder {
+  color: rgba(255, 250, 240, 0.45) !important;
+}
+
+[data-theme="light"] .hero-native-field svg {
+  color: rgba(255, 250, 240, 0.50) !important;
+}
+
+[data-theme="light"] .hero-native-field:focus-within {
+  border-color: rgba(88, 224, 233, 0.54) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.075)),
+    rgba(16, 18, 23, 0.46) !important;
+  box-shadow:
+    0 0 0 3px rgba(88, 224, 233, 0.11),
+    inset 0 1px 0 rgba(255, 255, 255, 0.10) !important;
+}
+
+[data-theme="light"] .hero-login-footnote {
+  border-color: rgba(130, 216, 160, 0.16) !important;
+  background: rgba(22, 133, 90, 0.10) !important;
+  color: rgba(186, 246, 210, 0.72) !important;
+}
+
+[data-theme="light"] .hero-trust-strip > div {
+  border-color: rgba(255, 255, 255, 0.16) !important;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(239, 197, 110, 0.12), transparent 34%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.055)),
+    rgba(24, 25, 29, 0.48) !important;
+  box-shadow:
+    0 20px 52px rgba(18, 12, 7, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.10) !important;
+}
+
+[data-theme="light"] .hero-trust-strip strong {
+  color: rgba(255, 250, 240, 0.96) !important;
+}
+
+[data-theme="light"] .hero-trust-strip span {
+  color: rgba(255, 250, 240, 0.64) !important;
+}
+
+[data-theme="light"] .hero-trust-strip svg {
+  opacity: 0.95 !important;
+}
+
+@media (max-width: 720px) {
+  [data-theme="light"] .hero-scrim {
+    background:
+      linear-gradient(180deg, rgba(255,248,235,0.16) 0%, rgba(24,17,10,0.24) 34%, rgba(24,17,10,0.48) 72%, rgba(245,237,226,0.88) 100%),
+      linear-gradient(90deg, rgba(24,17,10,0.52), rgba(24,17,10,0.38)) !important;
+  }
+
+  [data-theme="light"] .hero-background img {
+    filter:
+      saturate(1.02)
+      contrast(1.03)
+      brightness(0.88) !important;
+  }
+
+  [data-theme="light"] .hero-login-panel {
+    background:
+      radial-gradient(circle at 14% 0%, rgba(239, 197, 110, 0.14), transparent 32%),
+      linear-gradient(180deg, rgba(255,255,255,0.16), rgba(255,255,255,0.055)),
+      rgba(28, 30, 36, 0.54) !important;
+  }
+}
