@@ -6711,3 +6711,304 @@ html[data-theme-switching="true"] .admin-login-modern .admin-login-card {
     width: 100% !important;
   }
 }
+
+/* ──────────────────────────────────────────────────────────────────────────
+   37 ADMIN LOGIN MOBILE SCROLL POLISH 8.4C
+   --------------------------------------------------------------------------
+   Fixes mobile admin login:
+   - restores vertical scroll on phones
+   - compacts heading/proof pills/form spacing
+   - keeps the Public Calendar premium ambient direction
+   - CSS-only patch; auth logic untouched
+   ────────────────────────────────────────────────────────────────────────── */
+
+@media (max-width: 760px) {
+  html:has(.admin-login-modern),
+  body:has(.admin-login-modern),
+  #root:has(.admin-login-modern) {
+    min-height: 100%;
+    height: auto !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    overscroll-behavior-y: contain;
+  }
+
+  .admin-login-modern {
+    min-height: 100dvh !important;
+    height: auto !important;
+    display: block !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    overscroll-behavior-y: contain;
+    padding:
+      calc(0.72rem + env(safe-area-inset-top, 0px))
+      0.82rem
+      calc(1.6rem + env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  .admin-login-modern .admin-login-bg {
+    position: fixed !important;
+  }
+
+  .admin-login-modern .admin-login-shell {
+    width: min(100%, 430px) !important;
+    min-height: auto !important;
+    height: auto !important;
+    display: grid !important;
+    grid-template-rows: auto auto !important;
+    align-content: start !important;
+    gap: 0.88rem !important;
+    margin: 0 auto !important;
+    padding-bottom: 1.4rem !important;
+  }
+
+  .admin-login-modern .admin-login-nav {
+    position: sticky !important;
+    top: calc(0.55rem + env(safe-area-inset-top, 0px)) !important;
+    z-index: 30 !important;
+    min-height: 44px !important;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    gap: 0.55rem !important;
+    margin: 0 !important;
+  }
+
+  .admin-login-modern .admin-login-brand {
+    min-height: 42px !important;
+    max-width: 100% !important;
+    gap: 0.5rem !important;
+    padding: 0.28rem 0.62rem 0.28rem 0.28rem !important;
+    border-radius: 1rem !important;
+  }
+
+  .admin-login-modern .admin-login-brand-mark {
+    width: 2.02rem !important;
+    height: 2.02rem !important;
+    flex: 0 0 2.02rem !important;
+    border-radius: 0.78rem !important;
+    font-size: 0.78rem !important;
+  }
+
+  .admin-login-modern .admin-login-brand strong {
+    max-width: 118px !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    font-size: 0.69rem !important;
+  }
+
+  .admin-login-modern .admin-login-brand small {
+    display: none !important;
+  }
+
+  .admin-login-modern .admin-login-nav-actions {
+    gap: 0.42rem !important;
+  }
+
+  .admin-login-modern .admin-login-icon-btn,
+  .admin-login-modern .admin-login-back-btn {
+    width: 42px !important;
+    height: 42px !important;
+    min-width: 42px !important;
+    min-height: 42px !important;
+    padding: 0 !important;
+    border-radius: 0.92rem !important;
+  }
+
+  .admin-login-modern .admin-login-back-btn span {
+    display: none !important;
+  }
+
+  .admin-login-modern .admin-login-layout,
+  [data-theme="light"] .admin-login-modern .admin-login-layout {
+    width: 100% !important;
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    align-items: start !important;
+    align-content: start !important;
+    gap: 0.9rem !important;
+    margin: 0 auto !important;
+    transform: none !important;
+  }
+
+  .admin-login-modern .admin-login-copy {
+    display: grid !important;
+    justify-items: center !important;
+    gap: 0 !important;
+    text-align: center !important;
+    padding-top: 0.55rem !important;
+  }
+
+  .admin-login-modern .admin-login-kicker {
+    min-height: 28px !important;
+    padding: 0 0.68rem !important;
+    font-size: 0.58rem !important;
+    letter-spacing: 0.11em !important;
+  }
+
+  .admin-login-modern .admin-login-title {
+    width: 100% !important;
+    max-width: 360px !important;
+    margin: 0.72rem auto 0 !important;
+    font-size: clamp(3rem, 14vw, 4rem) !important;
+    line-height: 0.88 !important;
+    letter-spacing: -0.01em !important;
+    text-align: center !important;
+  }
+
+  .admin-login-modern .admin-login-title span {
+    display: block !important;
+    white-space: nowrap !important;
+  }
+
+  .admin-login-modern .admin-login-copy p {
+    max-width: 350px !important;
+    margin: 0.78rem auto 0 !important;
+    font-size: 0.82rem !important;
+    line-height: 1.52 !important;
+    font-weight: 760 !important;
+  }
+
+  .admin-login-modern .admin-login-proof {
+    width: 100% !important;
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 0.42rem !important;
+    margin: 0.88rem 0 0 !important;
+  }
+
+  .admin-login-modern .admin-login-proof span {
+    min-height: 38px !important;
+    width: 100% !important;
+    justify-content: center !important;
+    gap: 0.28rem !important;
+    padding: 0 0.34rem !important;
+    border-radius: 999px !important;
+    font-size: 0.58rem !important;
+    line-height: 1 !important;
+    letter-spacing: -0.01em !important;
+    white-space: nowrap !important;
+  }
+
+  .admin-login-modern .admin-login-proof svg {
+    width: 13px !important;
+    height: 13px !important;
+    flex: 0 0 auto !important;
+  }
+
+  .admin-login-modern .admin-login-card {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 auto !important;
+    padding: 0.82rem !important;
+    border-radius: 1.32rem !important;
+    gap: 0.78rem !important;
+  }
+
+  .admin-login-modern .admin-login-card-header {
+    gap: 0.65rem !important;
+  }
+
+  .admin-login-modern .admin-login-card-icon {
+    width: 42px !important;
+    height: 42px !important;
+    border-radius: 0.96rem !important;
+  }
+
+  .admin-login-modern .admin-login-card-header span {
+    font-size: 0.58rem !important;
+    letter-spacing: 0.10em !important;
+  }
+
+  .admin-login-modern .admin-login-card-header h2 {
+    font-size: 1.28rem !important;
+    line-height: 1 !important;
+  }
+
+  .admin-login-modern .admin-google-btn,
+  .admin-login-modern .admin-submit-btn,
+  .admin-login-modern .admin-input-wrap {
+    min-height: 48px !important;
+    border-radius: 0.92rem !important;
+  }
+
+  .admin-login-modern .admin-google-btn {
+    font-size: 0.78rem !important;
+  }
+
+  .admin-login-modern .admin-login-or {
+    margin: 0.05rem 0 !important;
+    font-size: 0.62rem !important;
+  }
+
+  .admin-login-modern .admin-login-form {
+    gap: 0.7rem !important;
+  }
+
+  .admin-login-modern .admin-login-form label {
+    gap: 0.38rem !important;
+  }
+
+  .admin-login-modern .admin-login-form label > span {
+    font-size: 0.68rem !important;
+  }
+
+  .admin-login-modern .admin-input-wrap {
+    padding-inline: 0.78rem !important;
+  }
+
+  .admin-login-modern .admin-input-wrap input {
+    font-size: 0.82rem !important;
+  }
+
+  .admin-login-modern .admin-input-wrap > svg {
+    width: 15px !important;
+    height: 15px !important;
+  }
+
+  .admin-login-modern .admin-input-wrap > button {
+    width: 34px !important;
+    height: 34px !important;
+    min-width: 34px !important;
+  }
+
+  .admin-login-modern .admin-submit-btn {
+    font-size: 0.84rem !important;
+  }
+
+  .admin-login-modern .admin-login-footer {
+    min-height: 44px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 0.75rem !important;
+    padding: 0.58rem 0.7rem !important;
+    border-radius: 0.94rem !important;
+    font-size: 0.76rem !important;
+  }
+}
+
+@media (max-width: 390px) {
+  .admin-login-modern {
+    padding-left: 0.65rem !important;
+    padding-right: 0.65rem !important;
+  }
+
+  .admin-login-modern .admin-login-title {
+    font-size: clamp(2.65rem, 13.4vw, 3.45rem) !important;
+  }
+
+  .admin-login-modern .admin-login-copy p {
+    font-size: 0.78rem !important;
+  }
+
+  .admin-login-modern .admin-login-proof span {
+    font-size: 0.54rem !important;
+    gap: 0.22rem !important;
+  }
+
+  .admin-login-modern .admin-login-card {
+    padding: 0.72rem !important;
+  }
+}
