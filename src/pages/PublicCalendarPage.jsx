@@ -446,25 +446,24 @@ const PublicCalendarPage = () => {
 
   return (
     <div className="pc-modern min-h-screen overflow-x-clip bg-[#090b10] text-stone-50 selection:bg-amber-300/25 selection:text-amber-50">
-      <section className="relative isolate overflow-hidden bg-[#090b10]">
-        <div className="absolute inset-0 -z-30 bg-[#090b10]">
+      <section className="pc-hero-section relative isolate overflow-hidden bg-[#090b10]">
+        <div className="pc-hero-bg absolute inset-0 -z-30 bg-[#090b10]">
           <img
             src={heroPhoto.url}
             alt=""
-            className="size-full scale-[1.06] object-cover opacity-40 blur-[2px]"
+            className="size-full object-cover"
           />
         </div>
 
-        <div className="absolute inset-0 -z-20 bg-[radial-gradient(circle_at_50%_0%,rgba(239,197,110,0.16),transparent_34%),radial-gradient(circle_at_18%_18%,rgba(255,56,113,0.10),transparent_32%),radial-gradient(circle_at_82%_18%,rgba(88,224,233,0.12),transparent_34%),linear-gradient(180deg,rgba(5,7,10,0.88)_0%,rgba(5,7,10,0.76)_46%,#090b10_100%)]" />
-
+        <div className="pc-hero-overlay absolute inset-0 -z-20" />
         <div className="absolute inset-x-0 top-0 -z-10 h-px bg-gradient-to-r from-transparent via-amber-300/35 to-transparent" />
 
-        <div className="mx-auto flex w-full max-w-6xl flex-col px-4 sm:px-6 lg:px-8">
-          <header className="flex items-center justify-between gap-3 pt-[calc(1rem+env(safe-area-inset-top,0px))]">
+        <div className="pc-hero-shell mx-auto flex flex-col px-4 sm:px-6 lg:px-8">
+          <header className="pc-hero-nav flex items-center justify-between gap-3 pt-[calc(1rem+env(safe-area-inset-top,0px))]">
             <button
               type="button"
               onClick={handleExitPublic}
-              className="group inline-flex min-h-12 max-w-[72vw] items-center gap-2 rounded-2xl border border-white/10 bg-white/[0.07] py-1.5 pl-1.5 pr-3 text-left shadow-2xl shadow-black/20 backdrop-blur-2xl transition hover:-translate-y-0.5 hover:border-amber-300/25 hover:bg-white/[0.11]"
+              className="pc-hero-brand group inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/[0.07] py-1.5 pl-1.5 pr-3 text-left shadow-2xl shadow-black/20 backdrop-blur-2xl transition hover:-translate-y-0.5 hover:border-amber-300/25 hover:bg-white/[0.11]"
               aria-label="Kembali ke beranda"
             >
               <span className="grid size-9 shrink-0 place-items-center overflow-hidden rounded-xl border border-amber-300/25 bg-black/20">
@@ -475,7 +474,7 @@ const PublicCalendarPage = () => {
               </span>
             </button>
 
-            <div className="flex items-center gap-2">
+            <div className="pc-hero-actions flex items-center gap-2">
               <button
                 type="button"
                 className="grid size-11 place-items-center rounded-2xl border border-white/10 bg-white/[0.07] text-stone-100/75 shadow-xl shadow-black/10 backdrop-blur-xl transition hover:-translate-y-0.5 hover:border-white/20 hover:bg-white/[0.11] hover:text-white"
@@ -508,27 +507,27 @@ const PublicCalendarPage = () => {
             </div>
           </header>
 
-          <main className="grid min-h-[74svh] place-items-center py-12 sm:py-16 lg:py-20">
-            <div className="relative w-full max-w-5xl overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.06] p-4 text-center shadow-2xl shadow-black/30 backdrop-blur-2xl sm:p-6 lg:p-8">
-              <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(239,197,110,0.12),transparent_38%),radial-gradient(circle_at_0%_100%,rgba(255,56,113,0.08),transparent_34%),radial-gradient(circle_at_100%_100%,rgba(88,224,233,0.08),transparent_34%),linear-gradient(180deg,rgba(255,255,255,0.07),rgba(255,255,255,0.025))]" />
+          <main className="pc-hero-main grid place-items-center">
+            <div className="pc-hero-card relative overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.06] text-center shadow-2xl shadow-black/30 backdrop-blur-2xl">
+              <div className="pc-hero-card-glow pointer-events-none absolute inset-0" />
               <div className="pointer-events-none absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-amber-200/35 to-transparent" />
 
-              <div className="relative z-10 mx-auto flex max-w-4xl flex-col items-center">
-                <div className="mb-4 inline-flex min-h-8 max-w-full items-center justify-center gap-2 rounded-full border border-amber-300/25 bg-black/25 px-3 text-[0.66rem] font-black uppercase tracking-[0.12em] text-amber-100 shadow-xl shadow-black/15 backdrop-blur-xl sm:text-[0.7rem]">
+              <div className="pc-hero-inner relative z-10 mx-auto flex flex-col items-center">
+                <div className="pc-hero-kicker inline-flex items-center justify-center gap-2 rounded-full border border-amber-300/25 bg-black/25 text-amber-100 shadow-xl shadow-black/15 backdrop-blur-xl">
                   <CalendarDays size={15} className="shrink-0" />
                   <span className="truncate">Live public booking calendar</span>
                 </div>
 
-                <h1 className="max-w-4xl font-['Bebas_Neue',Impact,'Arial_Narrow',sans-serif] text-[clamp(3.05rem,8vw,6.8rem)] font-normal uppercase leading-[0.9] tracking-[-0.028em] text-stone-50 drop-shadow-2xl">
+                <h1 className="pc-hero-title font-['Bebas_Neue',Impact,'Arial_Narrow',sans-serif] font-normal uppercase text-stone-50 drop-shadow-2xl">
                   Booking studio tanpa ribet.
                 </h1>
 
-                <p className="mt-5 max-w-2xl text-[0.96rem] font-bold leading-7 text-stone-100/74 sm:text-lg sm:leading-8">
+                <p className="pc-hero-copy">
                   Pilih slot kosong, isi detail sesi, lalu request kamu masuk ke admin studio untuk dikonfirmasi.
                   Enak dipakai dari HP, tetap detail di desktop.
                 </p>
 
-                <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
+                <div className="pc-hero-cta-row flex flex-wrap items-center justify-center gap-3">
                   <a
                     href="#pc-booking-calendar"
                     className="group inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl border border-amber-200/20 bg-gradient-to-r from-amber-300 to-yellow-200 px-5 text-[0.9rem] font-black text-neutral-950 shadow-2xl shadow-amber-500/20 transition hover:-translate-y-0.5 hover:brightness-105"
@@ -550,43 +549,43 @@ const PublicCalendarPage = () => {
                   )}
                 </div>
 
-                <div className="mt-8 grid w-full max-w-4xl gap-3 sm:grid-cols-2 xl:grid-cols-4">
-                  <div className="min-h-[92px] rounded-2xl border border-white/10 bg-white/[0.075] p-4 text-left shadow-xl shadow-black/10 backdrop-blur-xl">
-                    <div className="mb-2 flex min-w-0 items-center gap-2 text-[0.68rem] font-black uppercase tracking-[0.08em] text-stone-300/70">
+                <div className="pc-hero-stats grid">
+                  <div className="pc-hero-stat rounded-2xl border border-white/10 bg-white/[0.075] text-left shadow-xl shadow-black/10 backdrop-blur-xl">
+                    <div className="pc-hero-stat-label flex min-w-0 items-center gap-2 font-black uppercase text-stone-300/70">
                       <span className={cx('size-2 shrink-0 rounded-full', availableToday > 0 ? 'bg-green-300 shadow-[0_0_0_7px_rgba(134,239,172,0.12)]' : 'bg-rose-400 shadow-[0_0_0_7px_rgba(251,113,133,0.12)]')} />
                       <span className="truncate">Hari ini</span>
                     </div>
-                    <div className="flex min-w-0 items-baseline gap-1">
-                      <strong className="text-2xl font-black leading-none text-stone-50">{availableToday}</strong>
-                      <span className="truncate text-sm font-bold text-stone-300/65">slot tersedia</span>
+                    <div className="pc-hero-stat-value flex min-w-0 items-baseline gap-1">
+                      <strong>{availableToday}</strong>
+                      <span>slot tersedia</span>
                     </div>
                   </div>
 
-                  <div className="min-h-[92px] rounded-2xl border border-white/10 bg-white/[0.075] p-4 text-left shadow-xl shadow-black/10 backdrop-blur-xl">
-                    <div className="mb-2 flex min-w-0 items-center gap-2 text-[0.68rem] font-black uppercase tracking-[0.08em] text-stone-300/70">
+                  <div className="pc-hero-stat rounded-2xl border border-white/10 bg-white/[0.075] text-left shadow-xl shadow-black/10 backdrop-blur-xl">
+                    <div className="pc-hero-stat-label flex min-w-0 items-center gap-2 font-black uppercase text-stone-300/70">
                       <Clock size={15} className="shrink-0 text-amber-200" />
                       <span className="truncate">Operasional</span>
                     </div>
-                    <strong className="block truncate text-[1.05rem] font-black leading-tight text-stone-50">{operatingLabel}</strong>
+                    <strong className="pc-hero-stat-text block truncate text-stone-50">{operatingLabel}</strong>
                   </div>
 
-                  <div className="min-h-[92px] rounded-2xl border border-white/10 bg-white/[0.075] p-4 text-left shadow-xl shadow-black/10 backdrop-blur-xl">
-                    <div className="mb-2 flex min-w-0 items-center gap-2 text-[0.68rem] font-black uppercase tracking-[0.08em] text-stone-300/70">
+                  <div className="pc-hero-stat rounded-2xl border border-white/10 bg-white/[0.075] text-left shadow-xl shadow-black/10 backdrop-blur-xl">
+                    <div className="pc-hero-stat-label flex min-w-0 items-center gap-2 font-black uppercase text-stone-300/70">
                       <WalletCards size={15} className="shrink-0 text-amber-200" />
                       <span className="truncate">Rate</span>
                     </div>
-                    <div className="flex min-w-0 items-baseline gap-1">
-                      <strong className="truncate text-[1.05rem] font-black leading-tight text-stone-50">Rp {formattedRate}</strong>
-                      <span className="shrink-0 text-xs font-bold text-stone-300/65">/ jam</span>
+                    <div className="pc-hero-stat-value flex min-w-0 items-baseline gap-1">
+                      <strong className="truncate">Rp {formattedRate}</strong>
+                      <span>/ jam</span>
                     </div>
                   </div>
 
-                  <div className="min-h-[92px] rounded-2xl border border-white/10 bg-white/[0.075] p-4 text-left shadow-xl shadow-black/10 backdrop-blur-xl">
-                    <div className="mb-2 flex min-w-0 items-center gap-2 text-[0.68rem] font-black uppercase tracking-[0.08em] text-stone-300/70">
+                  <div className="pc-hero-stat rounded-2xl border border-white/10 bg-white/[0.075] text-left shadow-xl shadow-black/10 backdrop-blur-xl">
+                    <div className="pc-hero-stat-label flex min-w-0 items-center gap-2 font-black uppercase text-stone-300/70">
                       <Headphones size={15} className="shrink-0 text-amber-200" />
                       <span className="truncate">Setup</span>
                     </div>
-                    <strong className="block truncate text-[1.05rem] font-black leading-tight text-stone-50">Operator ready</strong>
+                    <strong className="pc-hero-stat-text block truncate text-stone-50">Operator ready</strong>
                   </div>
                 </div>
               </div>
