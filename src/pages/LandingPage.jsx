@@ -582,37 +582,31 @@ const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
         </div>
       </section>
 
-      <section id="gallery" className="landing-gallery-section mx-auto w-full max-w-7xl px-4 py-20 sm:px-6 lg:px-8 relative isolate">
-        <div className="landing-gallery-layout">
-          <div className="landing-gallery-copy section-header align-left mx-auto mb-10 max-w-3xl text-center relative">
-            <span className="section-eyebrow mb-3 inline-flex w-fit rounded-full border border-amber-300/20 bg-amber-300/10 px-3 py-1.5 text-xs font-black uppercase tracking-[0.18em] text-amber-200">Lihat ruang</span>
+      <section id="gallery" className="landing-gallery-section gallery-nuke-section">
+        <div className="gallery-nuke-shell">
+          <div className="gallery-nuke-copy">
+            <span className="gallery-nuke-kicker">Lihat ruang</span>
             <h2>Cek dulu ruangnya sebelum datang.</h2>
             <p>Preview singkat biar kamu tahu suasana studio. Untuk foto lengkap, buka halaman galeri.</p>
           </div>
 
-          <div className="landing-gallery-visual">
-            <div className="landing-gallery-grid grid gap-4">
-              <button
-                type="button"
-                className="landing-gallery-card gallery-card-1 group relative overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.045] shadow-2xl shadow-black/20 transition hover:-translate-y-1 hover:border-amber-300/25"
-                onClick={() => setLightboxPhoto(FALLBACK_HERO_PHOTO)}
-              >
-                <div className="landing-gallery-media relative aspect-[16/8.2] overflow-hidden rounded-[2rem]">
-                  <img className="tw-gallery-image h-full w-full object-cover transition duration-700 group-hover:scale-105" src={FALLBACK_HERO_PHOTO.url} alt={FALLBACK_HERO_PHOTO.caption} loading="lazy" />
-                  <div className="landing-gallery-overlay absolute inset-x-4 bottom-4 flex items-center gap-2 rounded-2xl border border-white/10 bg-black/45 px-4 py-3 text-sm font-black text-white/90 shadow-xl shadow-black/20 backdrop-blur-xl">
-                    <Camera size={18} />
-                    <span>{FALLBACK_HERO_PHOTO.caption}</span>
-                  </div>
-                </div>
-              </button>
-            </div>
+          <div className="gallery-nuke-visual">
+            <button
+              type="button"
+              className="gallery-nuke-card"
+              onClick={() => setLightboxPhoto(FALLBACK_HERO_PHOTO)}
+            >
+              <img src={FALLBACK_HERO_PHOTO.url} alt={FALLBACK_HERO_PHOTO.caption} loading="lazy" />
+              <span className="gallery-nuke-caption">
+                <Camera size={16} />
+                <span>{FALLBACK_HERO_PHOTO.caption}</span>
+              </span>
+            </button>
 
-            <div className="gallery-actions mt-6 flex justify-center">
-              <Link to="/galeri" className="btn-secondary btn-large inline-flex items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-5 py-3 font-black text-white/85 shadow-xl shadow-black/10 backdrop-blur-xl transition hover:-translate-y-0.5 hover:border-white/20 hover:bg-white/10 hover:text-white">
-                <span>Lihat Galeri Studio</span>
-                <ArrowUpRight size={18} />
-              </Link>
-            </div>
+            <Link to="/galeri" className="gallery-nuke-cta">
+              <span>Lihat Galeri Studio</span>
+              <ArrowUpRight size={17} />
+            </Link>
           </div>
         </div>
 

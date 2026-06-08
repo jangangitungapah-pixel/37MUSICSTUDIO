@@ -5871,176 +5871,219 @@ body[data-theme="light"]:has(.landing-container) #root {
 }
 
 /* ──────────────────────────────────────────────────────────────────────────
-   37 LANDING GALLERY RESET LAYOUT 8.0E
+   37 LANDING GALLERY NUKE REBUILD 8.0E
    --------------------------------------------------------------------------
-   Hard reset for gallery after over-correction:
-   - text, media, and CTA now share one stable layout wrapper
-   - media returns to medium-large editorial size
-   - CTA stays attached to the visual column
-   - no floating button and no tiny image card
+   Clean gallery rebuild with unique classes only.
+   This avoids legacy gallery-grid / gallery-actions / btn-secondary collisions.
    ────────────────────────────────────────────────────────────────────────── */
 
-.tw-landing-phase80d .landing-gallery-section {
-  padding-top: clamp(4rem, 7vh, 5.5rem) !important;
-  padding-bottom: clamp(4rem, 7vh, 5.5rem) !important;
-}
-
-.tw-landing-phase80d .landing-gallery-layout {
-  width: min(100%, 1080px);
-  max-width: 1080px;
-  margin-inline: auto;
-  display: grid;
-  grid-template-columns: minmax(280px, 0.72fr) minmax(560px, 1.1fr);
-  align-items: center;
-  gap: clamp(2rem, 4vw, 3.5rem);
-}
-
-.tw-landing-phase80d .landing-gallery-copy {
+.tw-landing-phase80d .gallery-nuke-section {
   width: 100% !important;
-  max-width: 410px !important;
+  max-width: none !important;
   margin: 0 !important;
+  padding: clamp(4rem, 7vh, 5.25rem) clamp(1rem, 3vw, 2rem) !important;
+  background: transparent !important;
+}
+
+.tw-landing-phase80d .gallery-nuke-shell {
+  width: min(100%, 1120px) !important;
+  margin-inline: auto !important;
+  display: grid !important;
+  grid-template-columns: minmax(300px, 380px) minmax(560px, 680px) !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: clamp(2.25rem, 4vw, 4rem) !important;
+}
+
+.tw-landing-phase80d .gallery-nuke-copy {
+  width: 100% !important;
+  max-width: 380px !important;
+  margin: 0 !important;
+  padding: 0 !important;
   text-align: left !important;
-  justify-self: start;
 }
 
-.tw-landing-phase80d .landing-gallery-copy .section-eyebrow {
-  margin-left: 0 !important;
-  margin-right: auto !important;
+.tw-landing-phase80d .gallery-nuke-kicker {
+  width: fit-content !important;
+  min-height: 24px;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0.42rem !important;
+  margin: 0 0 1rem !important;
+  padding: 0.28rem 0.62rem !important;
+  border: 1px solid rgba(255, 56, 113, 0.24) !important;
+  border-radius: 999px !important;
+  color: #ff4778 !important;
+  background: linear-gradient(90deg, rgba(255, 56, 113, 0.13), rgba(239, 197, 110, 0.06)) !important;
+  font-size: 0.61rem !important;
+  line-height: 1 !important;
+  font-weight: 950 !important;
+  letter-spacing: 0.13em !important;
+  text-transform: uppercase !important;
 }
 
-.tw-landing-phase80d .landing-gallery-copy h2 {
-  max-width: 410px !important;
-  font-size: clamp(2.7rem, 3.9vw, 4.25rem) !important;
-  line-height: 1.03 !important;
-  letter-spacing: -0.032em !important;
-  word-spacing: 0.03em;
+.tw-landing-phase80d .gallery-nuke-kicker::before {
+  content: "";
+  width: 0.32rem;
+  height: 0.32rem;
+  border-radius: 999px;
+  background: currentColor;
+  box-shadow: 0 0 12px currentColor;
 }
 
-.tw-landing-phase80d .landing-gallery-copy p {
-  max-width: 390px !important;
-  margin: 1.1rem 0 0 !important;
+.tw-landing-phase80d .gallery-nuke-copy h2 {
+  margin: 0 !important;
+  max-width: 380px !important;
+  color: var(--landing-text) !important;
+  font-family: "Bebas Neue", Impact, "Arial Narrow", sans-serif !important;
+  font-size: clamp(3rem, 4.15vw, 4.7rem) !important;
+  font-weight: 400 !important;
+  line-height: 1.02 !important;
+  letter-spacing: -0.026em !important;
+  word-spacing: 0.035em !important;
+  text-transform: uppercase !important;
+}
+
+.tw-landing-phase80d .gallery-nuke-copy p {
+  margin: 1.15rem 0 0 !important;
+  max-width: 360px !important;
   color: rgba(255, 250, 240, 0.68) !important;
   font-size: 0.92rem !important;
   line-height: 1.72 !important;
-  font-weight: 680 !important;
+  font-weight: 700 !important;
 }
 
-.tw-landing-phase80d .landing-gallery-visual {
-  width: 100%;
-  max-width: 680px;
-  justify-self: end;
-  display: grid;
-  gap: 1rem;
+.tw-landing-phase80d .gallery-nuke-visual {
+  width: min(100%, 680px) !important;
+  max-width: 680px !important;
+  display: grid !important;
+  gap: 1rem !important;
+  justify-self: end !important;
 }
 
-.tw-landing-phase80d .landing-gallery-grid {
+.tw-landing-phase80d .gallery-nuke-card {
   width: 100% !important;
-  max-width: none !important;
-  display: block !important;
-  margin: 0 !important;
-}
-
-.tw-landing-phase80d .landing-gallery-card {
-  width: 100% !important;
-  max-width: none !important;
-  min-width: 0 !important;
-  display: block !important;
-  justify-self: stretch !important;
-  border-radius: 1.55rem !important;
-  transform: none !important;
-}
-
-.tw-landing-phase80d .landing-gallery-media {
-  width: 100% !important;
-  min-height: 0 !important;
   aspect-ratio: 16 / 9 !important;
-  border-radius: 1.45rem !important;
+  position: relative !important;
+  display: block !important;
+  overflow: hidden !important;
+  padding: 0 !important;
+  border: 1px solid rgba(255, 255, 255, 0.11) !important;
+  border-radius: 1.55rem !important;
+  color: inherit !important;
+  background: rgba(255, 255, 255, 0.045) !important;
+  box-shadow: 0 26px 70px rgba(0, 0, 0, 0.28) !important;
+  cursor: pointer !important;
 }
 
-.tw-landing-phase80d .landing-gallery-media img,
-.tw-landing-phase80d .tw-gallery-image {
+.tw-landing-phase80d .gallery-nuke-card img {
   width: 100% !important;
   height: 100% !important;
+  display: block !important;
   object-fit: cover !important;
   object-position: center !important;
+  transform: scale(1.01);
+  transition: transform 260ms ease, filter 260ms ease;
 }
 
-.tw-landing-phase80d .landing-gallery-overlay {
+.tw-landing-phase80d .gallery-nuke-card:hover img {
+  transform: scale(1.045);
+  filter: saturate(1.06) contrast(1.04);
+}
+
+.tw-landing-phase80d .gallery-nuke-caption {
+  position: absolute !important;
   left: 0.9rem !important;
   right: 0.9rem !important;
   bottom: 0.9rem !important;
   min-height: 42px !important;
-  padding: 0.65rem 0.9rem !important;
-  border-radius: 0.95rem !important;
-  font-size: 0.78rem !important;
+  display: inline-flex !important;
+  align-items: center !important;
   justify-content: center !important;
-  text-align: center;
+  gap: 0.55rem !important;
+  padding: 0.62rem 0.9rem !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-radius: 0.95rem !important;
+  color: #fffaf0 !important;
+  background: rgba(0, 0, 0, 0.54) !important;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.24) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  font-size: 0.78rem !important;
+  font-weight: 950 !important;
+  text-align: center !important;
 }
 
-.tw-landing-phase80d .landing-gallery-visual .gallery-actions {
-  width: 100% !important;
-  max-width: none !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  display: flex !important;
-  justify-content: flex-start !important;
-}
-
-.tw-landing-phase80d .landing-gallery-visual .gallery-actions .btn-secondary {
+.tw-landing-phase80d .gallery-nuke-cta {
+  width: fit-content !important;
   min-height: 44px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0.55rem !important;
   padding: 0 1rem !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
   border-radius: 1rem !important;
+  color: rgba(255, 250, 240, 0.88) !important;
+  background: rgba(255, 255, 255, 0.055) !important;
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.14) !important;
+  text-decoration: none !important;
   font-size: 0.82rem !important;
+  font-weight: 950 !important;
+  justify-self: start !important;
+  transition: transform 170ms ease, background 170ms ease, border-color 170ms ease;
+}
+
+.tw-landing-phase80d .gallery-nuke-cta:hover {
+  transform: translateY(-1px);
+  border-color: rgba(239, 197, 110, 0.24) !important;
+  background: rgba(255, 255, 255, 0.085) !important;
 }
 
 @media (min-width: 1440px) {
-  .tw-landing-phase80d .landing-gallery-layout {
-    max-width: 1140px;
-    grid-template-columns: minmax(300px, 0.72fr) minmax(600px, 1.1fr);
+  .tw-landing-phase80d .gallery-nuke-shell {
+    width: min(100%, 1180px) !important;
+    grid-template-columns: minmax(320px, 400px) minmax(620px, 740px) !important;
   }
 
-  .tw-landing-phase80d .landing-gallery-visual {
-    max-width: 720px;
+  .tw-landing-phase80d .gallery-nuke-visual {
+    max-width: 740px !important;
   }
 }
 
 @media (max-width: 1023px) {
-  .tw-landing-phase80d .landing-gallery-layout {
-    width: min(100%, 760px);
-    grid-template-columns: 1fr;
-    gap: 1.35rem;
+  .tw-landing-phase80d .gallery-nuke-shell {
+    width: min(100%, 760px) !important;
+    grid-template-columns: 1fr !important;
+    gap: 1.4rem !important;
   }
 
-  .tw-landing-phase80d .landing-gallery-copy,
-  .tw-landing-phase80d .landing-gallery-copy h2,
-  .tw-landing-phase80d .landing-gallery-copy p,
-  .tw-landing-phase80d .landing-gallery-visual {
+  .tw-landing-phase80d .gallery-nuke-copy,
+  .tw-landing-phase80d .gallery-nuke-copy h2,
+  .tw-landing-phase80d .gallery-nuke-copy p,
+  .tw-landing-phase80d .gallery-nuke-visual {
     max-width: 100% !important;
-    justify-self: stretch;
+    justify-self: stretch !important;
   }
 }
 
 @media (max-width: 767px) {
-  .tw-landing-phase80d .landing-gallery-section {
+  .tw-landing-phase80d .gallery-nuke-section {
     padding-top: 3.4rem !important;
     padding-bottom: 3.75rem !important;
   }
 
-  .tw-landing-phase80d .landing-gallery-copy h2 {
-    font-size: clamp(2.25rem, 10.4vw, 3.1rem) !important;
+  .tw-landing-phase80d .gallery-nuke-copy h2 {
+    font-size: clamp(2.25rem, 10.5vw, 3.15rem) !important;
     line-height: 1.04 !important;
   }
 
-  .tw-landing-phase80d .landing-gallery-media {
+  .tw-landing-phase80d .gallery-nuke-card {
     aspect-ratio: 4 / 3 !important;
-    border-radius: 1.15rem !important;
-  }
-
-  .tw-landing-phase80d .landing-gallery-card {
     border-radius: 1.2rem !important;
   }
 
-  .tw-landing-phase80d .landing-gallery-overlay {
+  .tw-landing-phase80d .gallery-nuke-caption {
     left: 0.65rem !important;
     right: 0.65rem !important;
     bottom: 0.65rem !important;
