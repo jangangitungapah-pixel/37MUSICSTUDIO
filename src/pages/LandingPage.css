@@ -8427,3 +8427,190 @@ body[data-theme="light"]:has(.landing-container) #root {
     border-radius: 1.35rem !important;
   }
 }
+
+/* ──────────────────────────────────────────────────────────────────────────
+   37 LANDING LIGHT READABILITY LOCK 8.3E
+   --------------------------------------------------------------------------
+   Locks readable contrast for light mode after Tailwind/legacy dark classes.
+   Fixes washed-out text in proof cards, pricing, footer brand, contact card,
+   map card, and social/contact pills.
+   ────────────────────────────────────────────────────────────────────────── */
+
+/* Global text contrast inside light landing shell */
+[data-theme="light"] .landing-container .proof-grid div,
+[data-theme="light"] .landing-container .footer-brand,
+[data-theme="light"] .landing-container .footer-contact,
+[data-theme="light"] .landing-container .footer-map,
+[data-theme="light"] .landing-container .pricing-copy,
+[data-theme="light"] .landing-container .price-card {
+  color: rgba(34, 27, 18, 0.94) !important;
+}
+
+[data-theme="light"] .landing-container .proof-grid div strong,
+[data-theme="light"] .landing-container .footer-brand strong,
+[data-theme="light"] .landing-container .footer-contact h3,
+[data-theme="light"] .landing-container .footer-map h3,
+[data-theme="light"] .landing-container .brand-text,
+[data-theme="light"] .landing-container .pricing-copy h2,
+[data-theme="light"] .landing-container .price-display,
+[data-theme="light"] .landing-container .price-amount {
+  color: rgba(34, 27, 18, 0.97) !important;
+  opacity: 1 !important;
+  text-shadow:
+    0 14px 38px rgba(96, 73, 41, 0.10),
+    0 1px 0 rgba(255, 255, 255, 0.34) !important;
+}
+
+[data-theme="light"] .landing-container .proof-grid div span,
+[data-theme="light"] .landing-container .footer-brand p,
+[data-theme="light"] .landing-container .footer-contact p,
+[data-theme="light"] .landing-container .footer-contact p span,
+[data-theme="light"] .landing-container .pricing-copy p,
+[data-theme="light"] .landing-container .price-currency,
+[data-theme="light"] .landing-container .price-unit {
+  color: rgba(45, 38, 28, 0.70) !important;
+  opacity: 1 !important;
+  text-shadow: none !important;
+}
+
+/* Proof cards: stop white-on-cream ghost text */
+[data-theme="light"] .landing-container .proof-grid div {
+  min-height: 132px !important;
+  border-color: rgba(96, 73, 41, 0.14) !important;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(239, 197, 110, 0.072), transparent 34%),
+    linear-gradient(180deg, rgba(255, 252, 246, 0.84), rgba(255, 250, 241, 0.58)),
+    rgba(255, 250, 241, 0.70) !important;
+  box-shadow:
+    0 20px 52px rgba(96, 73, 41, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.82) !important;
+}
+
+[data-theme="light"] .landing-container .proof-grid div svg {
+  color: rgba(185, 133, 47, 0.96) !important;
+  opacity: 1 !important;
+}
+
+[data-theme="light"] .landing-container .proof-grid div strong {
+  display: block !important;
+  font-weight: 950 !important;
+  letter-spacing: -0.035em !important;
+}
+
+[data-theme="light"] .landing-container .proof-grid div span {
+  font-weight: 720 !important;
+  line-height: 1.55 !important;
+}
+
+/* Pricing feature pills */
+[data-theme="light"] .landing-container .pricing-includes div {
+  border-color: rgba(96, 73, 41, 0.13) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.76), rgba(255, 255, 255, 0.42)),
+    rgba(255, 250, 241, 0.58) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.80),
+    0 10px 24px rgba(96, 73, 41, 0.070) !important;
+}
+
+[data-theme="light"] .landing-container .pricing-includes div span {
+  color: rgba(45, 38, 28, 0.74) !important;
+  opacity: 1 !important;
+  font-weight: 820 !important;
+}
+
+[data-theme="light"] .landing-container .pricing-includes div svg {
+  color: rgba(22, 133, 90, 0.92) !important;
+  opacity: 1 !important;
+}
+
+/* Price amount was fighting text-white/text-amber classes */
+[data-theme="light"] .landing-container .price-card {
+  border-color: rgba(177, 130, 43, 0.24) !important;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(239, 197, 110, 0.135), transparent 38%),
+    linear-gradient(180deg, rgba(255, 252, 246, 0.88), rgba(255, 250, 241, 0.64)),
+    rgba(255, 250, 241, 0.76) !important;
+}
+
+[data-theme="light"] .landing-container .price-card-top {
+  color: rgba(155, 106, 24, 0.94) !important;
+  border-color: rgba(177, 130, 43, 0.20) !important;
+  background:
+    linear-gradient(90deg, rgba(239, 197, 110, 0.13), rgba(255, 255, 255, 0.44)),
+    rgba(255, 250, 241, 0.58) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.76),
+    0 10px 24px rgba(96, 73, 41, 0.075) !important;
+}
+
+[data-theme="light"] .landing-container .price-card-top span,
+[data-theme="light"] .landing-container .price-card-top svg {
+  color: rgba(155, 106, 24, 0.96) !important;
+  opacity: 1 !important;
+}
+
+/* Footer cards */
+[data-theme="light"] .landing-container .footer-brand,
+[data-theme="light"] .landing-container .footer-contact,
+[data-theme="light"] .landing-container .footer-map {
+  border: 1px solid rgba(96, 73, 41, 0.13) !important;
+  border-radius: 1.6rem !important;
+  padding: 1.18rem !important;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(239, 197, 110, 0.064), transparent 34%),
+    linear-gradient(180deg, rgba(255, 252, 246, 0.84), rgba(255, 250, 241, 0.58)),
+    rgba(255, 250, 241, 0.70) !important;
+  box-shadow:
+    0 22px 58px rgba(96, 73, 41, 0.115),
+    inset 0 1px 0 rgba(255, 255, 255, 0.82) !important;
+}
+
+[data-theme="light"] .landing-container .footer-brand .nav-brand {
+  color: rgba(34, 27, 18, 0.96) !important;
+}
+
+[data-theme="light"] .landing-container .footer-brand .nav-brand-mark {
+  border-color: rgba(177, 130, 43, 0.22) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.78), rgba(255, 255, 255, 0.42)),
+    rgba(239, 197, 110, 0.09) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.80),
+    0 10px 24px rgba(96, 73, 41, 0.080) !important;
+}
+
+[data-theme="light"] .landing-container .footer-social a,
+[data-theme="light"] .landing-container .footer-contact-link {
+  border-color: rgba(96, 73, 41, 0.14) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.82), rgba(255, 255, 255, 0.46)),
+    rgba(255, 250, 241, 0.64) !important;
+  color: rgba(34, 27, 18, 0.92) !important;
+  opacity: 1 !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.82),
+    0 10px 24px rgba(96, 73, 41, 0.075) !important;
+}
+
+[data-theme="light"] .landing-container .footer-social a svg,
+[data-theme="light"] .landing-container .footer-contact-link svg,
+[data-theme="light"] .landing-container .footer-contact svg {
+  color: rgba(185, 133, 47, 0.96) !important;
+  opacity: 1 !important;
+}
+
+[data-theme="light"] .landing-container .footer-bottom {
+  color: rgba(45, 38, 28, 0.52) !important;
+  opacity: 1 !important;
+}
+
+@media (max-width: 720px) {
+  [data-theme="light"] .landing-container .proof-grid div,
+  [data-theme="light"] .landing-container .footer-brand,
+  [data-theme="light"] .landing-container .footer-contact,
+  [data-theme="light"] .landing-container .footer-map {
+    border-radius: 1.35rem !important;
+    padding: 1rem !important;
+  }
+}
