@@ -3444,3 +3444,254 @@
     opacity: 1 !important;
   }
 }
+
+/* ──────────────────────────────────────────────────────────────────────────
+   37 PUBLIC CALENDAR LIGHT BOOKING MODAL REFINE 8.1J
+   --------------------------------------------------------------------------
+   Final light-mode booking modal polish only.
+   Scoped under [data-theme="light"] .pc-modern.
+   Focus:
+   - less washed modal panel
+   - clearer slot strip
+   - stronger labels/helpers
+   - better input depth
+   - calmer price card and notes
+   ────────────────────────────────────────────────────────────────────────── */
+
+[data-theme="light"] .pc-modern .pc-booking-modal-overlay {
+  background:
+    radial-gradient(circle at 50% 18%, rgba(239, 197, 110, 0.16), transparent 24%),
+    radial-gradient(circle at 35% 48%, rgba(35, 176, 191, 0.12), transparent 32%),
+    rgba(43, 35, 25, 0.42) !important;
+  backdrop-filter: blur(24px) saturate(0.98) brightness(0.98) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(0.98) brightness(0.98) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-booking-modal-panel {
+  border-color: rgba(86, 66, 37, 0.17) !important;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(239, 197, 110, 0.12), transparent 30%),
+    radial-gradient(circle at 100% 0%, rgba(35, 176, 191, 0.085), transparent 30%),
+    linear-gradient(180deg, rgba(255, 252, 246, 0.92), rgba(249, 242, 231, 0.86)),
+    rgba(255, 250, 241, 0.92) !important;
+  color: rgba(35, 28, 20, 0.90) !important;
+  box-shadow:
+    0 38px 120px rgba(72, 54, 30, 0.26),
+    0 0 0 1px rgba(255, 255, 255, 0.38),
+    inset 0 1px 0 rgba(255, 255, 255, 0.86) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-booking-modal-header {
+  border-bottom-color: rgba(86, 66, 37, 0.115) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 252, 246, 0.96), rgba(249, 242, 231, 0.90)) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-booking-modal-icon {
+  border-color: rgba(177, 130, 43, 0.25) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 232, 177, 0.48), rgba(239, 197, 110, 0.18)),
+    rgba(255, 255, 255, 0.46) !important;
+  color: rgba(155, 106, 24, 0.92) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-booking-modal-kicker {
+  color: rgba(207, 52, 92, 0.86) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-booking-modal-title {
+  color: rgba(31, 25, 18, 0.96) !important;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.42);
+}
+
+[data-theme="light"] .pc-modern .pc-booking-modal-date {
+  color: rgba(45, 38, 28, 0.60) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-booking-slot-strip {
+  border-color: rgba(177, 130, 43, 0.22) !important;
+  background:
+    linear-gradient(90deg, rgba(239, 197, 110, 0.20), rgba(255, 255, 255, 0.38) 52%, rgba(239, 197, 110, 0.11)),
+    rgba(255, 243, 210, 0.58) !important;
+  color: rgba(79, 55, 17, 0.92) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.62),
+    0 10px 28px rgba(177, 130, 43, 0.09) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-booking-slot-copy {
+  color: rgba(75, 52, 18, 0.94) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-booking-slot-strip strong {
+  color: rgba(75, 52, 18, 0.76) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-booking-field label,
+[data-theme="light"] .pc-modern .pc-booking-section-head span {
+  color: rgba(45, 38, 28, 0.70) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-booking-help,
+[data-theme="light"] .pc-modern .pc-booking-section-head small {
+  color: rgba(45, 38, 28, 0.49) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-booking-input {
+  border-color: rgba(86, 66, 37, 0.18) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.82), rgba(255, 255, 255, 0.50)),
+    rgba(255, 250, 241, 0.68) !important;
+  color: rgba(31, 25, 18, 0.92) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.78),
+    0 10px 24px rgba(72, 54, 30, 0.045) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-booking-input::placeholder {
+  color: rgba(45, 38, 28, 0.40) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-booking-input:focus {
+  border-color: rgba(20, 139, 153, 0.62) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.58)),
+    rgba(255, 250, 241, 0.78) !important;
+  box-shadow:
+    0 0 0 3px rgba(20, 139, 153, 0.12),
+    0 12px 28px rgba(20, 139, 153, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.86) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-booking-duration-grid {
+  gap: 0.55rem !important;
+}
+
+[data-theme="light"] .pc-modern .pc-booking-duration-btn {
+  border-color: rgba(86, 66, 37, 0.14) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.74), rgba(255, 255, 255, 0.40)),
+    rgba(255, 250, 241, 0.54) !important;
+  color: rgba(45, 38, 28, 0.68) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.76),
+    0 10px 24px rgba(72, 54, 30, 0.045) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-booking-duration-btn:hover {
+  border-color: rgba(177, 130, 43, 0.25) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.86), rgba(255, 255, 255, 0.52)),
+    rgba(255, 250, 241, 0.66) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-booking-duration-btn-active {
+  border-color: rgba(177, 130, 43, 0.36) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 228, 150, 1), rgba(239, 197, 110, 0.96)) !important;
+  color: rgba(35, 25, 10, 0.96) !important;
+  box-shadow:
+    0 16px 34px rgba(177, 130, 43, 0.17),
+    inset 0 1px 0 rgba(255, 255, 255, 0.48) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-booking-price-card {
+  border-color: rgba(20, 126, 86, 0.20) !important;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(16, 185, 129, 0.13), transparent 34%),
+    linear-gradient(180deg, rgba(16, 185, 129, 0.095), rgba(16, 185, 129, 0.040)),
+    rgba(231, 255, 243, 0.58) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.68),
+    0 12px 34px rgba(20, 126, 86, 0.08) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-booking-price-card > div:first-child span {
+  color: rgba(45, 38, 28, 0.56) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-booking-price-card > div:first-child strong {
+  color: rgba(18, 104, 72, 0.98) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-booking-price-card > div:first-child small {
+  color: rgba(98, 67, 18, 0.90) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-booking-price-meta span {
+  border-color: rgba(20, 126, 86, 0.12) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.70), rgba(255, 255, 255, 0.38)),
+    rgba(255, 255, 255, 0.42) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-booking-price-meta small {
+  color: rgba(45, 38, 28, 0.48) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-booking-price-meta strong {
+  color: rgba(31, 25, 18, 0.88) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-booking-note {
+  border-color: rgba(86, 66, 37, 0.12) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.62), rgba(255, 255, 255, 0.32)),
+    rgba(255, 250, 241, 0.50) !important;
+  color: rgba(45, 38, 28, 0.60) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-booking-note svg {
+  color: rgba(177, 130, 43, 0.88) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-booking-note-cyan {
+  border-color: rgba(20, 139, 153, 0.15) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.58), rgba(35, 176, 191, 0.070)),
+    rgba(232, 252, 255, 0.44) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-booking-note-cyan svg {
+  color: rgba(20, 139, 153, 0.88) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-booking-submit-btn {
+  border-color: rgba(10, 109, 60, 0.12) !important;
+  background:
+    linear-gradient(180deg, rgba(54, 222, 123, 1), rgba(27, 199, 94, 0.98)) !important;
+  color: rgba(3, 31, 15, 0.96) !important;
+  box-shadow:
+    0 22px 52px rgba(27, 199, 94, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.42) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-booking-modal-close {
+  border-color: rgba(86, 66, 37, 0.14) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.76), rgba(255, 255, 255, 0.42)),
+    rgba(255, 250, 241, 0.58) !important;
+  color: rgba(45, 38, 28, 0.58) !important;
+}
+
+[data-theme="light"] .pc-modern .pc-booking-modal-close:hover {
+  border-color: rgba(177, 130, 43, 0.22) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.62)),
+    rgba(255, 250, 241, 0.72) !important;
+  color: rgba(31, 25, 18, 0.90) !important;
+}
+
+@media (max-width: 720px) {
+  [data-theme="light"] .pc-modern .pc-booking-modal-panel {
+    border-color: rgba(86, 66, 37, 0.16) !important;
+  }
+
+  [data-theme="light"] .pc-modern .pc-booking-slot-strip {
+    min-height: 44px !important;
+  }
+
+  [data-theme="light"] .pc-modern .pc-booking-price-meta span {
+    padding: 0.58rem !important;
+  }
+}
