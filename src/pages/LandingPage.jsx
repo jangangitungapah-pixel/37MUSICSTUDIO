@@ -582,28 +582,29 @@ const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
         </div>
       </section>
 
-      <section id="gallery" className="landing-gallery-section gallery-nuke-section">
-        <div className="gallery-nuke-shell">
-          <div className="gallery-nuke-copy">
-            <span className="gallery-nuke-kicker">Lihat ruang</span>
-            <h2>Cek dulu ruangnya sebelum datang.</h2>
+      <section id="gallery" className="gallery-pro-section" aria-labelledby="gallery-pro-title">
+        <div className="gallery-pro-shell">
+          <div className="gallery-pro-copy">
+            <span className="gallery-pro-kicker">Lihat ruang</span>
+            <h2 id="gallery-pro-title">Cek dulu ruangnya sebelum datang.</h2>
             <p>Preview singkat biar kamu tahu suasana studio. Untuk foto lengkap, buka halaman galeri.</p>
           </div>
 
-          <div className="gallery-nuke-visual">
+          <div className="gallery-pro-visual">
             <button
               type="button"
-              className="gallery-nuke-card"
+              className="gallery-pro-card"
               onClick={() => setLightboxPhoto(FALLBACK_HERO_PHOTO)}
+              aria-label="Lihat foto preview studio"
             >
               <img src={FALLBACK_HERO_PHOTO.url} alt={FALLBACK_HERO_PHOTO.caption} loading="lazy" />
-              <span className="gallery-nuke-caption">
+              <span className="gallery-pro-caption">
                 <Camera size={16} />
                 <span>{FALLBACK_HERO_PHOTO.caption}</span>
               </span>
             </button>
 
-            <Link to="/galeri" className="gallery-nuke-cta">
+            <Link to="/galeri" className="gallery-pro-cta">
               <span>Lihat Galeri Studio</span>
               <ArrowUpRight size={17} />
             </Link>
