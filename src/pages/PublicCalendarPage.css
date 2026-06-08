@@ -295,3 +295,247 @@
     min-height: 82px !important;
   }
 }
+
+/* ──────────────────────────────────────────────────────────────────────────
+   37 PUBLIC CALENDAR HERO FRAMELESS POLISH 8.1B
+   --------------------------------------------------------------------------
+   Makes the public calendar hero feel closer to LandingPage:
+   - removes big framed hero panel
+   - keeps content centered and cinematic
+   - polishes CTA capsules
+   - gives stat cards safer padding and better breathing room
+   ────────────────────────────────────────────────────────────────────────── */
+
+.pc-modern .pc-hero-section {
+  min-height: 74svh !important;
+}
+
+.pc-modern .pc-hero-bg img {
+  opacity: 0.43 !important;
+  filter: blur(1.8px) saturate(0.88) brightness(0.66) !important;
+}
+
+.pc-modern .pc-hero-overlay {
+  background:
+    radial-gradient(circle at 50% 8%, rgba(239, 197, 110, 0.16), transparent 32%),
+    radial-gradient(circle at 18% 28%, rgba(255, 56, 113, 0.12), transparent 34%),
+    radial-gradient(circle at 82% 26%, rgba(88, 224, 233, 0.11), transparent 34%),
+    linear-gradient(180deg, rgba(5, 7, 10, 0.78) 0%, rgba(5, 7, 10, 0.70) 50%, #090b10 100%) !important;
+}
+
+.pc-modern .pc-hero-main {
+  min-height: calc(72svh - 76px) !important;
+  padding-top: clamp(2.25rem, 5vh, 4.5rem) !important;
+  padding-bottom: clamp(3.25rem, 6vh, 5.25rem) !important;
+}
+
+.pc-modern .pc-hero-card {
+  width: min(100%, 1020px) !important;
+  max-width: 1020px !important;
+  padding: 0 !important;
+  overflow: visible !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.pc-modern .pc-hero-card-glow,
+.pc-modern .pc-hero-card > .pointer-events-none.absolute.inset-x-8.top-0 {
+  display: none !important;
+}
+
+.pc-modern .pc-hero-inner {
+  width: 100% !important;
+  max-width: 960px !important;
+}
+
+.pc-modern .pc-hero-kicker {
+  min-height: 36px !important;
+  max-width: min(100%, 360px) !important;
+  margin-bottom: 1.05rem !important;
+  padding: 0.58rem 0.92rem !important;
+  border-radius: 999px !important;
+  border-color: rgba(239, 197, 110, 0.30) !important;
+  background:
+    linear-gradient(90deg, rgba(239, 197, 110, 0.11), rgba(255, 56, 113, 0.07)),
+    rgba(5, 7, 10, 0.30) !important;
+  box-shadow:
+    0 16px 38px rgba(0, 0, 0, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.07) !important;
+  font-size: clamp(0.62rem, 0.8vw, 0.70rem) !important;
+  line-height: 1 !important;
+  letter-spacing: 0.12em !important;
+}
+
+.pc-modern .pc-hero-title {
+  max-width: 880px !important;
+  font-size: clamp(3.35rem, 8.1vw, 6.85rem) !important;
+  line-height: 0.9 !important;
+  letter-spacing: -0.024em !important;
+  word-spacing: 0.045em !important;
+  text-shadow:
+    0 18px 52px rgba(0, 0, 0, 0.42),
+    0 0 34px rgba(239, 197, 110, 0.08) !important;
+}
+
+.pc-modern .pc-hero-copy {
+  max-width: 690px !important;
+  margin-top: 1.08rem !important;
+  color: rgba(255, 250, 240, 0.74) !important;
+  font-size: clamp(0.98rem, 1.35vw, 1.08rem) !important;
+  line-height: 1.72 !important;
+  font-weight: 760 !important;
+  text-shadow: 0 14px 34px rgba(0, 0, 0, 0.38);
+}
+
+.pc-modern .pc-hero-cta-row {
+  margin-top: 1.55rem !important;
+  gap: 0.8rem !important;
+}
+
+.pc-modern .pc-hero-cta-row a {
+  min-height: 50px !important;
+  min-width: 128px !important;
+  padding-left: 1.05rem !important;
+  padding-right: 1.05rem !important;
+  border-radius: 1rem !important;
+  white-space: nowrap !important;
+  line-height: 1 !important;
+  box-shadow:
+    0 20px 48px rgba(0, 0, 0, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.10) !important;
+}
+
+.pc-modern .pc-hero-cta-row a:first-child {
+  min-width: 124px !important;
+  padding-left: 1rem !important;
+  padding-right: 0.9rem !important;
+  box-shadow:
+    0 20px 52px rgba(239, 197, 110, 0.20),
+    inset 0 1px 0 rgba(255, 255, 255, 0.40) !important;
+}
+
+.pc-modern .pc-hero-cta-row a:nth-child(2) {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.095), rgba(255, 255, 255, 0.042)),
+    rgba(255, 255, 255, 0.046) !important;
+}
+
+.pc-modern .pc-hero-stats {
+  width: min(100%, 900px) !important;
+  max-width: 900px !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: 0.85rem !important;
+  margin-top: 1.8rem !important;
+}
+
+.pc-modern .pc-hero-stat {
+  position: relative;
+  min-height: 104px !important;
+  padding: 1.08rem 1.02rem !important;
+  border-radius: 1.18rem !important;
+  border-color: rgba(255, 255, 255, 0.105) !important;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(239, 197, 110, 0.085), transparent 36%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.105), rgba(255, 255, 255, 0.040)),
+    rgba(255, 255, 255, 0.050) !important;
+  box-shadow:
+    0 20px 52px rgba(0, 0, 0, 0.20),
+    inset 0 1px 0 rgba(255, 255, 255, 0.085) !important;
+  backdrop-filter: blur(22px) saturate(1.04) !important;
+  -webkit-backdrop-filter: blur(22px) saturate(1.04) !important;
+}
+
+.pc-modern .pc-hero-stat::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(120deg, rgba(255, 255, 255, 0.070), transparent 36%, transparent 68%, rgba(88, 224, 233, 0.035));
+  pointer-events: none;
+}
+
+.pc-modern .pc-hero-stat > * {
+  position: relative;
+  z-index: 2;
+}
+
+.pc-modern .pc-hero-stat-label {
+  margin-bottom: 0.68rem !important;
+  font-size: 0.66rem !important;
+  line-height: 1.12 !important;
+  letter-spacing: 0.09em !important;
+}
+
+.pc-modern .pc-hero-stat-value {
+  width: 100% !important;
+  align-items: baseline !important;
+  gap: 0.36rem !important;
+}
+
+.pc-modern .pc-hero-stat-value strong,
+.pc-modern .pc-hero-stat-text {
+  min-width: 0 !important;
+  color: #fffaf0 !important;
+  font-size: clamp(1.05rem, 1.34vw, 1.24rem) !important;
+  line-height: 1.08 !important;
+  font-weight: 950 !important;
+}
+
+.pc-modern .pc-hero-stat:first-child .pc-hero-stat-value strong {
+  font-size: clamp(1.55rem, 2vw, 1.88rem) !important;
+}
+
+.pc-modern .pc-hero-stat-value span {
+  color: rgba(255, 250, 240, 0.62) !important;
+  font-size: 0.78rem !important;
+  line-height: 1.1 !important;
+  font-weight: 820 !important;
+}
+
+@media (max-width: 1023px) {
+  .pc-modern .pc-hero-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    width: min(100%, 620px) !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .pc-modern .pc-hero-main {
+    padding-top: 2.55rem !important;
+    padding-bottom: 3.15rem !important;
+  }
+
+  .pc-modern .pc-hero-title {
+    font-size: clamp(2.65rem, 14.4vw, 4.1rem) !important;
+    line-height: 0.96 !important;
+  }
+
+  .pc-modern .pc-hero-kicker {
+    max-width: 100% !important;
+    padding-inline: 0.78rem !important;
+  }
+
+  .pc-modern .pc-hero-copy {
+    font-size: 0.92rem !important;
+    line-height: 1.62 !important;
+  }
+
+  .pc-modern .pc-hero-cta-row a {
+    min-width: 0 !important;
+  }
+
+  .pc-modern .pc-hero-stats {
+    grid-template-columns: 1fr !important;
+    width: 100% !important;
+    gap: 0.7rem !important;
+  }
+
+  .pc-modern .pc-hero-stat {
+    min-height: 86px !important;
+    padding: 0.98rem !important;
+  }
+}
