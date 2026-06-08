@@ -7848,3 +7848,309 @@ body[data-theme="light"]:has(.landing-container) #root {
       rgba(28, 30, 36, 0.54) !important;
   }
 }
+
+/* ──────────────────────────────────────────────────────────────────────────
+   37 LANDING HERO PUBLIC CALENDAR LIGHT ALIGNMENT 8.3C
+   --------------------------------------------------------------------------
+   Light mode hero direction now follows Public Calendar:
+   - warm ivory ambient shell
+   - studio photo becomes soft background texture
+   - dark premium typography
+   - light glass login panel
+   - no dark-mode-with-white-navbar feeling
+   ────────────────────────────────────────────────────────────────────────── */
+
+[data-theme="light"] .landing-container {
+  --landing-bg-solid: #f6efe5 !important;
+  --landing-bg-elevated: #fffaf1 !important;
+  --landing-surface: rgba(255, 250, 241, 0.68) !important;
+  --landing-surface-soft: rgba(255, 250, 241, 0.50) !important;
+  --landing-surface-strong: rgba(255, 252, 246, 0.88) !important;
+  --landing-text: rgba(34, 27, 18, 0.96) !important;
+  --landing-muted: rgba(45, 38, 28, 0.66) !important;
+  --landing-soft: rgba(45, 38, 28, 0.52) !important;
+  --landing-faint: rgba(45, 38, 28, 0.38) !important;
+  --landing-line: rgba(96, 73, 41, 0.13) !important;
+  --landing-line-soft: rgba(96, 73, 41, 0.085) !important;
+  --landing-gold: #b9852f !important;
+  --landing-pink: #c73865 !important;
+  --landing-cyan: #188b99 !important;
+  --landing-green: #16855a !important;
+}
+
+[data-theme="light"] .hero-section {
+  min-height: 100svh !important;
+  background:
+    radial-gradient(circle at 48% 4%, rgba(255, 255, 255, 0.48), transparent 28rem),
+    radial-gradient(circle at 12% 18%, rgba(255, 56, 113, 0.055), transparent 30rem),
+    radial-gradient(circle at 88% 20%, rgba(35, 176, 191, 0.062), transparent 32rem),
+    linear-gradient(180deg, #f6efe5 0%, #eee4d6 62%, #e8ddcf 100%) !important;
+}
+
+[data-theme="light"] .hero-background {
+  opacity: 1 !important;
+}
+
+[data-theme="light"] .hero-background img {
+  opacity: 0.34 !important;
+  filter:
+    blur(2.4px)
+    saturate(0.82)
+    contrast(0.94)
+    brightness(1.10) !important;
+  transform: scale(1.035) !important;
+}
+
+[data-theme="light"] .hero-scrim {
+  background:
+    radial-gradient(circle at 49% 8%, rgba(255, 255, 255, 0.54), transparent 28rem),
+    radial-gradient(circle at 18% 24%, rgba(255, 56, 113, 0.052), transparent 30rem),
+    radial-gradient(circle at 84% 24%, rgba(35, 176, 191, 0.052), transparent 30rem),
+    linear-gradient(180deg, rgba(247, 239, 227, 0.66) 0%, rgba(247, 239, 227, 0.80) 58%, #f6efe5 100%) !important;
+}
+
+[data-theme="light"] .hero-section::after {
+  height: clamp(72px, 10vh, 130px) !important;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(246, 239, 229, 0) 0%,
+      rgba(246, 239, 229, 0.18) 42%,
+      #f6efe5 100%
+    ) !important;
+}
+
+[data-theme="light"] .hero-title {
+  color: rgba(34, 27, 18, 0.96) !important;
+  text-shadow:
+    0 26px 68px rgba(96, 73, 41, 0.18),
+    0 1px 0 rgba(255, 255, 255, 0.34) !important;
+}
+
+[data-theme="light"] .hero-subtitle {
+  color: rgba(45, 38, 28, 0.72) !important;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.28) !important;
+}
+
+[data-theme="light"] .hero-kicker {
+  color: rgba(185, 55, 91, 0.88) !important;
+  border-color: rgba(255, 56, 113, 0.20) !important;
+  background:
+    linear-gradient(90deg, rgba(255, 56, 113, 0.075), rgba(239, 197, 110, 0.10)),
+    rgba(255, 255, 255, 0.46) !important;
+  box-shadow:
+    0 14px 34px rgba(96, 73, 41, 0.10),
+    inset 0 1px 0 rgba(255, 255, 255, 0.72) !important;
+}
+
+[data-theme="light"] .hero-kicker svg {
+  color: rgba(185, 55, 91, 0.92) !important;
+}
+
+[data-theme="light"] .landing-container .btn-secondary.btn-large {
+  color: rgba(34, 27, 18, 0.88) !important;
+  border-color: rgba(96, 73, 41, 0.16) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.74), rgba(255, 255, 255, 0.38)),
+    rgba(255, 250, 241, 0.56) !important;
+  box-shadow:
+    0 14px 34px rgba(96, 73, 41, 0.11),
+    inset 0 1px 0 rgba(255, 255, 255, 0.72) !important;
+  -webkit-backdrop-filter: blur(18px) saturate(1.04) !important;
+  backdrop-filter: blur(18px) saturate(1.04) !important;
+}
+
+[data-theme="light"] .landing-container .btn-secondary.btn-large:hover {
+  color: rgba(20, 16, 11, 0.96) !important;
+  border-color: rgba(177, 130, 43, 0.25) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.88), rgba(255, 255, 255, 0.52)),
+    rgba(255, 250, 241, 0.72) !important;
+}
+
+/* Light glass login panel */
+[data-theme="light"] .hero-login-panel {
+  border-color: rgba(96, 73, 41, 0.14) !important;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(239, 197, 110, 0.105), transparent 34%),
+    radial-gradient(circle at 100% 0%, rgba(35, 176, 191, 0.080), transparent 34%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.76), rgba(255, 255, 255, 0.42)),
+    rgba(255, 250, 241, 0.66) !important;
+  color: rgba(34, 27, 18, 0.90) !important;
+  box-shadow:
+    0 28px 74px rgba(96, 73, 41, 0.16),
+    0 0 0 1px rgba(255, 255, 255, 0.38),
+    inset 0 1px 0 rgba(255, 255, 255, 0.78) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(1.06) !important;
+  backdrop-filter: blur(24px) saturate(1.06) !important;
+}
+
+[data-theme="light"] .hero-login-panel::after {
+  background:
+    linear-gradient(135deg, rgba(255, 56, 113, 0.035), transparent 38%),
+    linear-gradient(315deg, rgba(35, 176, 191, 0.040), transparent 42%) !important;
+}
+
+[data-theme="light"] .hero-login-badge {
+  border-color: rgba(177, 130, 43, 0.22) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.70), rgba(255, 255, 255, 0.36)),
+    rgba(239, 197, 110, 0.10) !important;
+  color: rgba(155, 106, 24, 0.92) !important;
+}
+
+[data-theme="light"] .hero-login-top span {
+  color: rgba(185, 55, 91, 0.84) !important;
+}
+
+[data-theme="light"] .hero-login-panel strong,
+[data-theme="light"] .hero-login-panel label {
+  color: rgba(34, 27, 18, 0.92) !important;
+}
+
+[data-theme="light"] .hero-login-divider {
+  color: rgba(45, 38, 28, 0.45) !important;
+}
+
+[data-theme="light"] .hero-login-divider::before,
+[data-theme="light"] .hero-login-divider::after {
+  background: rgba(96, 73, 41, 0.12) !important;
+}
+
+[data-theme="light"] .hero-login-perks span {
+  border-color: rgba(96, 73, 41, 0.105) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.62), rgba(255, 255, 255, 0.30)),
+    rgba(255, 250, 241, 0.42) !important;
+  color: rgba(45, 38, 28, 0.54) !important;
+}
+
+[data-theme="light"] .hero-google-login {
+  border-color: rgba(96, 73, 41, 0.13) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.88), rgba(255, 255, 255, 0.54)),
+    rgba(255, 250, 241, 0.64) !important;
+  color: rgba(24, 20, 15, 0.92) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.78),
+    0 12px 28px rgba(96, 73, 41, 0.09) !important;
+}
+
+[data-theme="light"] .hero-native-field {
+  border-color: rgba(96, 73, 41, 0.14) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.78), rgba(255, 255, 255, 0.44)),
+    rgba(255, 250, 241, 0.58) !important;
+  color: rgba(34, 27, 18, 0.92) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.78),
+    0 10px 22px rgba(96, 73, 41, 0.055) !important;
+}
+
+[data-theme="light"] .hero-native-field input {
+  color: rgba(34, 27, 18, 0.92) !important;
+}
+
+[data-theme="light"] .hero-native-field input::placeholder {
+  color: rgba(45, 38, 28, 0.40) !important;
+}
+
+[data-theme="light"] .hero-native-field svg {
+  color: rgba(45, 38, 28, 0.48) !important;
+}
+
+[data-theme="light"] .hero-native-field:focus-within {
+  border-color: rgba(35, 176, 191, 0.58) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.58)),
+    rgba(255, 250, 241, 0.72) !important;
+  box-shadow:
+    0 0 0 3px rgba(35, 176, 191, 0.13),
+    0 12px 28px rgba(35, 176, 191, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.82) !important;
+}
+
+[data-theme="light"] .hero-login-footnote {
+  border-color: rgba(22, 133, 90, 0.16) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.58), rgba(22, 133, 90, 0.070)),
+    rgba(232, 252, 242, 0.42) !important;
+  color: rgba(20, 104, 73, 0.74) !important;
+}
+
+[data-theme="light"] .hero-login-footnote svg {
+  color: rgba(20, 104, 73, 0.86) !important;
+}
+
+[data-theme="light"] .hero-login-alt {
+  border-color: rgba(96, 73, 41, 0.12) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.58), rgba(255, 255, 255, 0.30)),
+    rgba(255, 250, 241, 0.42) !important;
+  color: rgba(45, 38, 28, 0.52) !important;
+}
+
+[data-theme="light"] .hero-login-alt button,
+[data-theme="light"] .hero-login-alt a {
+  color: rgba(155, 106, 24, 0.96) !important;
+}
+
+/* Hero trust cards become light glass */
+[data-theme="light"] .hero-trust-strip > div {
+  border-color: rgba(96, 73, 41, 0.13) !important;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(239, 197, 110, 0.08), transparent 34%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.70), rgba(255, 255, 255, 0.34)),
+    rgba(255, 250, 241, 0.54) !important;
+  box-shadow:
+    0 20px 52px rgba(96, 73, 41, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.76) !important;
+}
+
+[data-theme="light"] .hero-trust-strip strong {
+  color: rgba(34, 27, 18, 0.92) !important;
+}
+
+[data-theme="light"] .hero-trust-strip span {
+  color: rgba(45, 38, 28, 0.60) !important;
+}
+
+[data-theme="light"] .hero-trust-strip svg {
+  opacity: 0.96 !important;
+}
+
+@media (max-width: 720px) {
+  [data-theme="light"] .hero-section {
+    min-height: auto !important;
+    background:
+      radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.50), transparent 24rem),
+      radial-gradient(circle at 14% 18%, rgba(255, 56, 113, 0.050), transparent 24rem),
+      linear-gradient(180deg, #f6efe5 0%, #eee4d6 100%) !important;
+  }
+
+  [data-theme="light"] .hero-background img {
+    opacity: 0.30 !important;
+    filter:
+      blur(2.6px)
+      saturate(0.78)
+      contrast(0.92)
+      brightness(1.10) !important;
+  }
+
+  [data-theme="light"] .hero-scrim {
+    background:
+      radial-gradient(circle at 50% 4%, rgba(255,255,255,0.56), transparent 24rem),
+      linear-gradient(180deg, rgba(247,239,227,0.70), rgba(247,239,227,0.90) 72%, #f6efe5 100%) !important;
+  }
+
+  [data-theme="light"] .hero-title {
+    color: rgba(34, 27, 18, 0.96) !important;
+    text-shadow:
+      0 18px 46px rgba(96, 73, 41, 0.16),
+      0 1px 0 rgba(255,255,255,0.36) !important;
+  }
+
+  [data-theme="light"] .hero-subtitle {
+    color: rgba(45, 38, 28, 0.70) !important;
+  }
+}
