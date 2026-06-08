@@ -941,42 +941,45 @@ const PublicCalendarPage = () => {
       <AnimatePresence>
         {modalOpen && (
           <motion.div
-            className="fixed inset-0 z-[1000] grid place-items-center bg-black/72 p-4 backdrop-blur-xl"
+            className="pc-booking-modal-overlay fixed inset-0 z-[1000] grid place-items-center bg-black/72 p-4 backdrop-blur-xl"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={closeModal}
           >
             <motion.div
-              className="pc-scrollbar max-h-[min(90svh,820px)] w-[min(540px,100%)] overflow-auto rounded-[2rem] border border-white/10 bg-[#141923]/96 shadow-2xl shadow-black/40 backdrop-blur-2xl"
-              initial={{ opacity: 0, y: 18, scale: 0.98 }}
+              className="pc-booking-modal-panel pc-scrollbar"
+              initial={{ opacity: 0, y: 18, scale: 0.985 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 18, scale: 0.98 }}
+              exit={{ opacity: 0, y: 18, scale: 0.985 }}
               transition={{ duration: 0.18, ease: 'easeOut' }}
               onClick={(event) => event.stopPropagation()}
               role="dialog"
               aria-modal="true"
               aria-labelledby="pc-booking-title"
             >
-              <div className="flex items-start justify-between gap-4 border-b border-white/10 p-5">
-                <div className="flex gap-3">
-                  <div className="grid size-12 shrink-0 place-items-center rounded-2xl border border-amber-300/18 bg-amber-300/10 text-amber-100">
-                    <CalendarDays size={23} />
+              <div className="pc-booking-modal-header">
+                <div className="pc-booking-modal-title-row">
+                  <div className="pc-booking-modal-icon">
+                    <CalendarDays size={22} />
                   </div>
-                  <div>
-                    <h3 id="pc-booking-title" className="text-xl font-black tracking-[-0.04em] text-stone-50">
+
+                  <div className="pc-booking-modal-title-copy">
+                    <span className="pc-booking-modal-kicker">Request booking</span>
+                    <h3 id="pc-booking-title" className="pc-booking-modal-title">
                       Ajukan Booking Studio
                     </h3>
-                    <p className="mt-1 text-sm font-bold capitalize text-stone-300/62">
+                    <p className="pc-booking-modal-date">
                       {selectedSlot.dateStr
                         ? format(new Date(selectedSlot.dateStr + 'T00:00:00'), 'EEEE, dd MMMM yyyy', { locale: localeId })
                         : ''}
                     </p>
                   </div>
                 </div>
+
                 <button
                   type="button"
-                  className="grid size-10 shrink-0 place-items-center rounded-2xl border border-white/10 bg-white/[0.055] text-stone-100/75 transition hover:bg-white/[0.10] hover:text-white"
+                  className="pc-booking-modal-close"
                   onClick={closeModal}
                   aria-label="Tutup modal booking"
                 >
@@ -984,85 +987,88 @@ const PublicCalendarPage = () => {
                 </button>
               </div>
 
-              <div className="space-y-4 p-5">
-                <div className="flex items-center gap-2 rounded-2xl border border-amber-300/16 bg-amber-300/10 px-4 py-3 text-sm font-black text-amber-100">
-                  <Clock size={16} />
-                  <span>
-                    {String(selectedSlot.hour).padStart(2, '0')}:00 - {String(selectedSlot.hour + duration).padStart(2, '0')}:00 ({duration} jam)
-                  </span>
+              <div className="pc-booking-modal-body">
+                <div className="pc-booking-slot-strip">
+                  <div className="pc-booking-slot-copy">
+                    <Clock size={16} />
+                    <span>
+                      {String(selectedSlot.hour).padStart(2, '0')}:00 - {String(selectedSlot.hour + duration).padStart(2, '0')}:00
+                    </span>
+                  </div>
+                  <strong>{duration} jam</strong>
                 </div>
 
                 {user && !user.isAnonymous && (
-                  <div className="grid gap-3 rounded-2xl border border-cyan-200/14 bg-cyan-200/[0.06] p-4 sm:grid-cols-[auto_minmax(0,1fr)]">
-                    <div className="grid size-11 place-items-center rounded-2xl border border-cyan-100/20 bg-cyan-100/10 text-base font-black text-cyan-100">
+                  <div className="pc-booking-client-strip">
+                    <div className="pc-booking-client-avatar">
                       {getInitial(clientDisplayName)}
                     </div>
-                    <div>
-                      <span className="text-xs font-black uppercase tracking-[0.12em] text-cyan-100/70">Booking sebagai akun client</span>
-                      <strong className="block text-sm font-black text-stone-50">{clientDisplayName}</strong>
-                      <p className="mt-1 text-xs font-bold leading-5 text-stone-300/62">
-                        Data client ikut tersimpan supaya booking, billing, dan histori lebih gampang tersambung.
-                      </p>
+                    <div className="pc-booking-client-copy">
+                      <span>Booking sebagai akun client</span>
+                      <strong>{clientDisplayName}</strong>
+                      <p>Data client akan tersambung ke booking, billing, dan histori portal.</p>
                     </div>
                   </div>
                 )}
 
-                <div className="space-y-2">
-                  <label htmlFor="pc-band-name" className="text-sm font-black text-stone-200/76">
-                    Nama Band / Artis
-                  </label>
-                  <input
-                    id="pc-band-name"
-                    type="text"
-                    className="pc-autofill min-h-12 w-full rounded-2xl border border-white/10 bg-black/22 px-4 text-sm font-bold text-stone-50 outline-none transition placeholder:text-stone-400/45 focus:border-amber-300/48 focus:ring-4 focus:ring-amber-300/10"
-                    value={bandName}
-                    onChange={(event) => {
-                      setBandName(event.target.value);
-                      setFormErrors((prev) => ({ ...prev, bandName: '' }));
-                    }}
-                    placeholder="Contoh: The Beatles"
-                    autoFocus
-                    aria-invalid={Boolean(formErrors.bandName)}
-                    aria-describedby={formErrors.bandName ? 'pc-band-error' : undefined}
-                  />
-                  {formErrors.bandName ? (
-                    <span id="pc-band-error" className="text-xs font-black text-rose-200">
-                      {formErrors.bandName}
-                    </span>
-                  ) : (
-                    <span className="text-xs font-bold text-stone-400/60">Boleh isi nama band, nama artis, atau nama project.</span>
-                  )}
+                <div className="pc-booking-form-grid">
+                  <div className="pc-booking-field">
+                    <label htmlFor="pc-band-name">Nama Band / Artis</label>
+                    <input
+                      id="pc-band-name"
+                      type="text"
+                      className="pc-booking-input pc-autofill"
+                      value={bandName}
+                      onChange={(event) => {
+                        setBandName(event.target.value);
+                        setFormErrors((prev) => ({ ...prev, bandName: '' }));
+                      }}
+                      placeholder="Contoh: The Beatles"
+                      autoFocus
+                      aria-invalid={Boolean(formErrors.bandName)}
+                      aria-describedby={formErrors.bandName ? 'pc-band-error' : undefined}
+                    />
+                    {formErrors.bandName ? (
+                      <span id="pc-band-error" className="pc-booking-error">
+                        {formErrors.bandName}
+                      </span>
+                    ) : (
+                      <span className="pc-booking-help">Boleh isi nama band, nama artis, atau nama project.</span>
+                    )}
+                  </div>
+
+                  <div className="pc-booking-field">
+                    <label htmlFor="pc-customer-phone">No. WhatsApp</label>
+                    <input
+                      id="pc-customer-phone"
+                      type="tel"
+                      className="pc-booking-input pc-autofill"
+                      value={customerPhone}
+                      onChange={(event) => {
+                        setCustomerPhone(event.target.value);
+                        setFormErrors((prev) => ({ ...prev, customerPhone: '' }));
+                      }}
+                      placeholder="08xxxxxxxxxx"
+                      aria-invalid={Boolean(formErrors.customerPhone)}
+                      aria-describedby={formErrors.customerPhone ? 'pc-phone-error' : undefined}
+                    />
+                    {formErrors.customerPhone ? (
+                      <span id="pc-phone-error" className="pc-booking-error">
+                        {formErrors.customerPhone}
+                      </span>
+                    ) : (
+                      <span className="pc-booking-help">Nomor aktif untuk follow up konfirmasi jadwal.</span>
+                    )}
+                  </div>
                 </div>
 
-                <div className="space-y-2">
-                  <label htmlFor="pc-customer-phone" className="text-sm font-black text-stone-200/76">
-                    No. WhatsApp
-                  </label>
-                  <input
-                    id="pc-customer-phone"
-                    type="tel"
-                    className="pc-autofill min-h-12 w-full rounded-2xl border border-white/10 bg-black/22 px-4 text-sm font-bold text-stone-50 outline-none transition placeholder:text-stone-400/45 focus:border-amber-300/48 focus:ring-4 focus:ring-amber-300/10"
-                    value={customerPhone}
-                    onChange={(event) => {
-                      setCustomerPhone(event.target.value);
-                      setFormErrors((prev) => ({ ...prev, customerPhone: '' }));
-                    }}
-                    placeholder="08xxxxxxxxxx"
-                    aria-invalid={Boolean(formErrors.customerPhone)}
-                    aria-describedby={formErrors.customerPhone ? 'pc-phone-error' : undefined}
-                  />
-                  {formErrors.customerPhone ? (
-                    <span id="pc-phone-error" className="text-xs font-black text-rose-200">
-                      {formErrors.customerPhone}
-                    </span>
-                  ) : (
-                    <span className="text-xs font-bold text-stone-400/60">Pakai nomor aktif supaya admin bisa follow up konfirmasi jadwal.</span>
-                  )}
-                </div>
+                <div className="pc-booking-duration-block">
+                  <div className="pc-booking-section-head">
+                    <span>Pilih Durasi</span>
+                    <small>Estimasi otomatis mengikuti rate studio.</small>
+                  </div>
 
-                <div className="space-y-2">
-                  <label className="text-sm font-black text-stone-200/76">Pilih Durasi</label>
-                  <div className="grid grid-cols-5 gap-2">
+                  <div className="pc-booking-duration-grid">
                     {[1, 2, 3, 4, 5].map((hour) => (
                       <button
                         key={hour}
@@ -1070,55 +1076,52 @@ const PublicCalendarPage = () => {
                         aria-pressed={duration === hour}
                         onClick={() => setDuration(hour)}
                         className={cx(
-                          'min-h-11 rounded-2xl border text-sm font-black transition',
-                          duration === hour
-                            ? 'border-transparent bg-amber-300 text-neutral-950 shadow-lg shadow-amber-500/15'
-                            : 'border-white/10 bg-white/[0.045] text-stone-200/68 hover:bg-white/[0.08] hover:text-white'
+                          'pc-booking-duration-btn',
+                          duration === hour ? 'pc-booking-duration-btn-active' : 'pc-booking-duration-btn-idle'
                         )}
                       >
-                        {hour} Jam
+                        <strong>{hour}</strong>
+                        <span>Jam</span>
                       </button>
                     ))}
                   </div>
                 </div>
 
-                <div className="rounded-2xl border border-green-300/18 bg-green-300/[0.08] p-4">
-                  <div className="flex items-start justify-between gap-3">
-                    <span className="text-sm font-black text-stone-200/70">Estimasi Harga</span>
-                    <strong className="text-xl font-black tracking-[-0.04em] text-green-200">{formatRupiah(priceEst)}</strong>
+                <div className="pc-booking-price-card">
+                  <div>
+                    <span>Estimasi Harga</span>
+                    <strong>{formatRupiah(priceEst)}</strong>
+                    {durationDiscountEst > 0 && (
+                      <small>Diskon durasi: -{formatRupiah(durationDiscountEst)}</small>
+                    )}
                   </div>
-                  {durationDiscountEst > 0 && (
-                    <p className="mt-1 text-right text-xs font-black text-amber-100">
-                      Diskon: -{formatRupiah(durationDiscountEst)}
-                    </p>
-                  )}
-                </div>
 
-                <div className="grid grid-cols-3 gap-2">
-                  <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-3">
-                    <span className="block text-[0.68rem] font-black uppercase tracking-[0.08em] text-stone-400/60">Rate</span>
-                    <strong className="mt-1 block text-xs font-black text-stone-100">Rp {formattedRate}</strong>
-                  </div>
-                  <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-3">
-                    <span className="block text-[0.68rem] font-black uppercase tracking-[0.08em] text-stone-400/60">Durasi</span>
-                    <strong className="mt-1 block text-xs font-black text-stone-100">{duration} jam</strong>
-                  </div>
-                  <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-3">
-                    <span className="block text-[0.68rem] font-black uppercase tracking-[0.08em] text-stone-400/60">Diskon</span>
-                    <strong className="mt-1 block text-xs font-black text-stone-100">
-                      {durationDiscountEst > 0 ? '-' + formatRupiah(durationDiscountEst) : 'Rp0'}
-                    </strong>
+                  <div className="pc-booking-price-meta">
+                    <span>
+                      <small>Rate</small>
+                      <strong>Rp {formattedRate}</strong>
+                    </span>
+                    <span>
+                      <small>Durasi</small>
+                      <strong>{duration} jam</strong>
+                    </span>
+                    <span>
+                      <small>Diskon</small>
+                      <strong>{durationDiscountEst > 0 ? '-' + formatRupiah(durationDiscountEst) : 'Rp0'}</strong>
+                    </span>
                   </div>
                 </div>
 
-                <div className="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/[0.045] p-4 text-xs font-bold leading-5 text-stone-300/68">
-                  <Info size={16} className="mt-0.5 shrink-0 text-amber-200" />
-                  <span>Request akan masuk ke admin studio untuk direview. Setelah dikonfirmasi, jadwal dan billing akan muncul di Client Portal.</span>
-                </div>
+                <div className="pc-booking-note-grid">
+                  <div className="pc-booking-note">
+                    <Info size={16} />
+                    <span>Request masuk ke admin studio untuk direview sebelum jadwal dikunci.</span>
+                  </div>
 
-                <div className="flex items-start gap-3 rounded-2xl border border-cyan-200/14 bg-cyan-200/[0.06] p-4 text-xs font-bold leading-5 text-stone-300/68">
-                  <ShieldCheck size={16} className="mt-0.5 shrink-0 text-cyan-100" />
-                  <span>Pastikan tanggal, jam, durasi, dan nomor WhatsApp sudah benar sebelum kirim.</span>
+                  <div className="pc-booking-note pc-booking-note-cyan">
+                    <ShieldCheck size={16} />
+                    <span>Pastikan tanggal, jam, durasi, dan nomor WhatsApp sudah benar.</span>
+                  </div>
                 </div>
 
                 <button
@@ -1126,9 +1129,9 @@ const PublicCalendarPage = () => {
                   onClick={sendWA}
                   disabled={isSubmittingRequest}
                   aria-busy={isSubmittingRequest}
-                  className="group inline-flex min-h-13 w-full items-center justify-center gap-2 rounded-2xl border border-white/10 bg-[#25d366] px-5 text-sm font-black text-[#052415] shadow-2xl shadow-green-500/15 transition hover:-translate-y-0.5 hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-70"
+                  className="pc-booking-submit-btn group"
                 >
-                  <MessageCircle size={21} />
+                  <MessageCircle size={20} />
                   <span>{isSubmittingRequest ? 'Mengirim Request...' : 'Kirim Request Booking'}</span>
                   <ArrowRight size={18} className="transition group-hover:translate-x-0.5" />
                 </button>

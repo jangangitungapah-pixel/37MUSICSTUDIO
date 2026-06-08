@@ -1948,3 +1948,565 @@
     display: none !important;
   }
 }
+
+/* ──────────────────────────────────────────────────────────────────────────
+   37 PUBLIC CALENDAR BOOKING MODAL POLISH 8.1F
+   --------------------------------------------------------------------------
+   Public booking modal polish:
+   - larger premium glass panel
+   - cleaner header and close button
+   - frameless inputs
+   - compact duration selector
+   - clearer price summary
+   - mobile-friendly spacing
+   ────────────────────────────────────────────────────────────────────────── */
+
+.pc-modern .pc-booking-modal-overlay {
+  background:
+    radial-gradient(circle at 50% 18%, rgba(239, 197, 110, 0.090), transparent 26%),
+    radial-gradient(circle at 34% 44%, rgba(88, 224, 233, 0.070), transparent 32%),
+    rgba(0, 0, 0, 0.76) !important;
+  backdrop-filter: blur(22px) saturate(0.96) !important;
+  -webkit-backdrop-filter: blur(22px) saturate(0.96) !important;
+}
+
+.pc-modern .pc-booking-modal-panel {
+  width: min(680px, calc(100vw - 2rem)) !important;
+  max-height: min(88svh, 820px) !important;
+  overflow: auto !important;
+  border: 1px solid rgba(255, 255, 255, 0.105) !important;
+  border-radius: 1.75rem !important;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(239, 197, 110, 0.075), transparent 32%),
+    radial-gradient(circle at 100% 0%, rgba(88, 224, 233, 0.075), transparent 32%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.070), rgba(255, 255, 255, 0.030)),
+    rgba(15, 19, 28, 0.94) !important;
+  box-shadow:
+    0 34px 120px rgba(0, 0, 0, 0.42),
+    inset 0 1px 0 rgba(255, 255, 255, 0.075) !important;
+  backdrop-filter: blur(28px) saturate(1.08) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(1.08) !important;
+}
+
+.pc-modern .pc-booking-modal-header {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.1rem 1.15rem 0.95rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.075);
+  background:
+    linear-gradient(180deg, rgba(20, 25, 36, 0.96), rgba(20, 25, 36, 0.88));
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.pc-modern .pc-booking-modal-title-row {
+  display: flex;
+  min-width: 0;
+  gap: 0.85rem;
+}
+
+.pc-modern .pc-booking-modal-icon {
+  width: 3rem;
+  height: 3rem;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(239, 197, 110, 0.24);
+  border-radius: 1rem;
+  background: rgba(239, 197, 110, 0.095);
+  color: rgba(255, 226, 164, 0.96);
+}
+
+.pc-modern .pc-booking-modal-title-copy {
+  min-width: 0;
+}
+
+.pc-modern .pc-booking-modal-kicker {
+  display: inline-flex;
+  margin-bottom: 0.2rem;
+  color: rgba(255, 93, 132, 0.92);
+  font-size: 0.62rem;
+  font-weight: 950;
+  letter-spacing: 0.14em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.pc-modern .pc-booking-modal-title {
+  margin: 0;
+  color: #fffaf0;
+  font-size: clamp(1.35rem, 2.2vw, 1.72rem);
+  line-height: 1.05;
+  font-weight: 950;
+  letter-spacing: -0.045em;
+}
+
+.pc-modern .pc-booking-modal-date {
+  margin: 0.28rem 0 0;
+  color: rgba(255, 250, 240, 0.58);
+  font-size: 0.82rem;
+  line-height: 1.35;
+  font-weight: 820;
+}
+
+.pc-modern .pc-booking-modal-close {
+  width: 2.55rem;
+  height: 2.55rem;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: 0.95rem;
+  background: rgba(255, 255, 255, 0.052);
+  color: rgba(255, 250, 240, 0.66);
+  transition: background 180ms ease, color 180ms ease, transform 180ms ease;
+}
+
+.pc-modern .pc-booking-modal-close:hover {
+  transform: translateY(-1px);
+  background: rgba(255, 255, 255, 0.095);
+  color: #fffaf0;
+}
+
+.pc-modern .pc-booking-modal-body {
+  display: grid;
+  gap: 0.9rem;
+  padding: 1.05rem;
+}
+
+.pc-modern .pc-booking-slot-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+  min-height: 46px;
+  padding: 0.72rem 0.9rem;
+  border: 1px solid rgba(239, 197, 110, 0.18);
+  border-radius: 1rem;
+  background:
+    linear-gradient(90deg, rgba(239, 197, 110, 0.12), rgba(239, 197, 110, 0.040)),
+    rgba(239, 197, 110, 0.035);
+  color: rgba(255, 232, 177, 0.96);
+}
+
+.pc-modern .pc-booking-slot-copy {
+  display: inline-flex;
+  min-width: 0;
+  align-items: center;
+  gap: 0.55rem;
+  font-size: 0.88rem;
+  font-weight: 950;
+}
+
+.pc-modern .pc-booking-slot-strip strong {
+  flex: 0 0 auto;
+  font-size: 0.78rem;
+  font-weight: 950;
+  color: rgba(255, 250, 240, 0.78);
+}
+
+.pc-modern .pc-booking-client-strip {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.8rem;
+  padding: 0.85rem;
+  border: 1px solid rgba(88, 224, 233, 0.14);
+  border-radius: 1.1rem;
+  background: rgba(88, 224, 233, 0.055);
+}
+
+.pc-modern .pc-booking-client-avatar {
+  width: 2.7rem;
+  height: 2.7rem;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(88, 224, 233, 0.22);
+  border-radius: 0.95rem;
+  background: rgba(88, 224, 233, 0.10);
+  color: rgba(204, 251, 255, 0.96);
+  font-weight: 950;
+}
+
+.pc-modern .pc-booking-client-copy span {
+  color: rgba(173, 244, 255, 0.72);
+  font-size: 0.62rem;
+  font-weight: 950;
+  letter-spacing: 0.12em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.pc-modern .pc-booking-client-copy strong {
+  display: block;
+  margin-top: 0.25rem;
+  color: #fffaf0;
+  font-size: 0.88rem;
+  font-weight: 950;
+}
+
+.pc-modern .pc-booking-client-copy p {
+  margin: 0.25rem 0 0;
+  color: rgba(255, 250, 240, 0.56);
+  font-size: 0.74rem;
+  line-height: 1.45;
+  font-weight: 760;
+}
+
+.pc-modern .pc-booking-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.8rem;
+}
+
+.pc-modern .pc-booking-field {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.pc-modern .pc-booking-field label,
+.pc-modern .pc-booking-section-head span {
+  color: rgba(255, 250, 240, 0.70);
+  font-size: 0.74rem;
+  font-weight: 950;
+  letter-spacing: -0.01em;
+}
+
+.pc-modern .pc-booking-input {
+  width: 100%;
+  min-height: 48px;
+  padding: 0 0.95rem;
+  border: 1px solid rgba(255, 255, 255, 0.095);
+  border-radius: 1rem;
+  outline: 0;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.050), rgba(255, 255, 255, 0.018)),
+    rgba(0, 0, 0, 0.20);
+  color: #fffaf0;
+  font-size: 0.88rem;
+  font-weight: 820;
+  transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
+}
+
+.pc-modern .pc-booking-input::placeholder {
+  color: rgba(255, 250, 240, 0.34);
+}
+
+.pc-modern .pc-booking-input:focus {
+  border-color: rgba(88, 224, 233, 0.52);
+  background: rgba(0, 0, 0, 0.22);
+  box-shadow:
+    0 0 0 3px rgba(88, 224, 233, 0.10),
+    inset 0 1px 0 rgba(255, 255, 255, 0.045);
+}
+
+.pc-modern .pc-booking-error {
+  color: rgba(255, 181, 194, 0.96);
+  font-size: 0.70rem;
+  font-weight: 900;
+}
+
+.pc-modern .pc-booking-help {
+  color: rgba(255, 250, 240, 0.40);
+  font-size: 0.69rem;
+  line-height: 1.35;
+  font-weight: 760;
+}
+
+.pc-modern .pc-booking-duration-block {
+  display: grid;
+  gap: 0.68rem;
+}
+
+.pc-modern .pc-booking-section-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.pc-modern .pc-booking-section-head small {
+  color: rgba(255, 250, 240, 0.40);
+  font-size: 0.68rem;
+  font-weight: 780;
+}
+
+.pc-modern .pc-booking-duration-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0.55rem;
+}
+
+.pc-modern .pc-booking-duration-btn {
+  min-height: 56px;
+  display: grid;
+  place-items: center;
+  gap: 0.12rem;
+  border: 1px solid rgba(255, 255, 255, 0.095);
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.042);
+  color: rgba(255, 250, 240, 0.68);
+  transition: transform 160ms ease, background 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.pc-modern .pc-booking-duration-btn strong {
+  font-size: 1rem;
+  line-height: 1;
+  font-weight: 950;
+}
+
+.pc-modern .pc-booking-duration-btn span {
+  font-size: 0.64rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.pc-modern .pc-booking-duration-btn:hover {
+  transform: translateY(-1px);
+  border-color: rgba(239, 197, 110, 0.24);
+  background: rgba(255, 255, 255, 0.060);
+}
+
+.pc-modern .pc-booking-duration-btn-active {
+  border-color: rgba(239, 197, 110, 0.34) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 224, 137, 0.96), rgba(239, 197, 110, 0.92)) !important;
+  color: rgba(20, 15, 8, 0.96) !important;
+  box-shadow:
+    0 14px 34px rgba(239, 197, 110, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35) !important;
+}
+
+.pc-modern .pc-booking-price-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(250px, 0.96fr);
+  gap: 0.9rem;
+  align-items: stretch;
+  padding: 0.95rem;
+  border: 1px solid rgba(110, 231, 183, 0.18);
+  border-radius: 1.2rem;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(110, 231, 183, 0.12), transparent 34%),
+    linear-gradient(180deg, rgba(110, 231, 183, 0.080), rgba(110, 231, 183, 0.028)),
+    rgba(110, 231, 183, 0.020);
+}
+
+.pc-modern .pc-booking-price-card > div:first-child span {
+  display: block;
+  color: rgba(255, 250, 240, 0.58);
+  font-size: 0.74rem;
+  font-weight: 950;
+}
+
+.pc-modern .pc-booking-price-card > div:first-child strong {
+  display: block;
+  margin-top: 0.3rem;
+  color: rgba(167, 255, 207, 0.98);
+  font-size: clamp(1.65rem, 4vw, 2.15rem);
+  line-height: 1;
+  font-weight: 950;
+  letter-spacing: -0.055em;
+}
+
+.pc-modern .pc-booking-price-card > div:first-child small {
+  display: block;
+  margin-top: 0.32rem;
+  color: rgba(255, 232, 177, 0.92);
+  font-size: 0.72rem;
+  font-weight: 900;
+}
+
+.pc-modern .pc-booking-price-meta {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+
+.pc-modern .pc-booking-price-meta span {
+  min-width: 0;
+  padding: 0.65rem;
+  border: 1px solid rgba(255, 255, 255, 0.075);
+  border-radius: 0.95rem;
+  background: rgba(0, 0, 0, 0.14);
+}
+
+.pc-modern .pc-booking-price-meta small {
+  display: block;
+  color: rgba(255, 250, 240, 0.42);
+  font-size: 0.60rem;
+  line-height: 1;
+  font-weight: 950;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+}
+
+.pc-modern .pc-booking-price-meta strong {
+  display: block;
+  margin-top: 0.32rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: rgba(255, 250, 240, 0.86);
+  font-size: 0.78rem;
+  line-height: 1;
+  font-weight: 950;
+}
+
+.pc-modern .pc-booking-note-grid {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.pc-modern .pc-booking-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  padding: 0.72rem 0.82rem;
+  border: 1px solid rgba(255, 255, 255, 0.080);
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.035);
+  color: rgba(255, 250, 240, 0.55);
+  font-size: 0.72rem;
+  line-height: 1.45;
+  font-weight: 780;
+}
+
+.pc-modern .pc-booking-note svg {
+  flex: 0 0 auto;
+  margin-top: 0.05rem;
+  color: rgba(255, 226, 164, 0.90);
+}
+
+.pc-modern .pc-booking-note-cyan {
+  border-color: rgba(88, 224, 233, 0.12);
+  background: rgba(88, 224, 233, 0.045);
+}
+
+.pc-modern .pc-booking-note-cyan svg {
+  color: rgba(188, 250, 255, 0.88);
+}
+
+.pc-modern .pc-booking-submit-btn {
+  min-height: 54px;
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: 1.15rem;
+  background:
+    linear-gradient(180deg, rgba(63, 231, 129, 1), rgba(34, 211, 103, 0.96));
+  color: rgba(4, 31, 15, 0.96);
+  box-shadow:
+    0 22px 52px rgba(34, 211, 103, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.32);
+  font-size: 0.90rem;
+  line-height: 1;
+  font-weight: 950;
+  transition: transform 170ms ease, filter 170ms ease, opacity 170ms ease;
+}
+
+.pc-modern .pc-booking-submit-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  filter: brightness(1.04);
+}
+
+.pc-modern .pc-booking-submit-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.70;
+}
+
+@media (max-width: 720px) {
+  .pc-modern .pc-booking-modal-overlay {
+    align-items: end !important;
+    padding: 0.75rem !important;
+  }
+
+  .pc-modern .pc-booking-modal-panel {
+    width: 100% !important;
+    max-height: min(92svh, 820px) !important;
+    border-radius: 1.35rem !important;
+  }
+
+  .pc-modern .pc-booking-modal-header {
+    padding: 0.95rem 0.95rem 0.82rem;
+  }
+
+  .pc-modern .pc-booking-modal-icon {
+    width: 2.55rem;
+    height: 2.55rem;
+    border-radius: 0.9rem;
+  }
+
+  .pc-modern .pc-booking-modal-title {
+    font-size: 1.28rem;
+  }
+
+  .pc-modern .pc-booking-modal-date {
+    font-size: 0.76rem;
+  }
+
+  .pc-modern .pc-booking-modal-close {
+    width: 2.35rem;
+    height: 2.35rem;
+    border-radius: 0.85rem;
+  }
+
+  .pc-modern .pc-booking-modal-body {
+    gap: 0.78rem;
+    padding: 0.85rem;
+  }
+
+  .pc-modern .pc-booking-form-grid,
+  .pc-modern .pc-booking-price-card {
+    grid-template-columns: 1fr;
+  }
+
+  .pc-modern .pc-booking-duration-grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 0.42rem;
+  }
+
+  .pc-modern .pc-booking-duration-btn {
+    min-height: 48px;
+    border-radius: 0.85rem;
+  }
+
+  .pc-modern .pc-booking-duration-btn strong {
+    font-size: 0.92rem;
+  }
+
+  .pc-modern .pc-booking-duration-btn span {
+    font-size: 0.56rem;
+  }
+
+  .pc-modern .pc-booking-section-head {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.18rem;
+  }
+
+  .pc-modern .pc-booking-price-meta {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .pc-modern .pc-booking-note {
+    padding: 0.68rem 0.72rem;
+  }
+}
+
+@media (max-width: 390px) {
+  .pc-modern .pc-booking-duration-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .pc-modern .pc-booking-price-meta {
+    grid-template-columns: 1fr;
+  }
+}
