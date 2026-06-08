@@ -1505,3 +1505,103 @@
     height: 1.8rem !important;
   }
 }
+
+/* ──────────────────────────────────────────────────────────────────────────
+   37 PUBLIC CALENDAR BOOKED SLOT CONTRAST 8.1D
+   --------------------------------------------------------------------------
+   Makes booked blocks clearer while keeping the line-based calendar look:
+   - stronger red glass fill
+   - subtle left accent rail
+   - clearer Terisi badge
+   - readable hover state without becoming carded again
+   ────────────────────────────────────────────────────────────────────────── */
+
+.pc-modern .pc-slot-booked {
+  position: relative !important;
+  overflow: hidden !important;
+  color: rgba(255, 230, 235, 0.95) !important;
+  background:
+    linear-gradient(90deg, rgba(255, 82, 121, 0.245), rgba(255, 82, 121, 0.145) 42%, rgba(255, 82, 121, 0.075)),
+    radial-gradient(circle at 50% 18%, rgba(255, 156, 178, 0.15), transparent 44%),
+    rgba(80, 24, 39, 0.36) !important;
+  box-shadow:
+    inset 3px 0 0 rgba(255, 107, 139, 0.70),
+    inset 0 1px 0 rgba(255, 255, 255, 0.075),
+    inset 0 -1px 0 rgba(255, 107, 139, 0.12),
+    0 0 0 1px rgba(255, 107, 139, 0.08) !important;
+}
+
+.pc-modern .pc-slot-booked::before {
+  opacity: 1 !important;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.060), transparent 28%, transparent 72%, rgba(255, 107, 139, 0.060)),
+    radial-gradient(circle at 50% 50%, rgba(255, 107, 139, 0.16), transparent 52%) !important;
+}
+
+.pc-modern .pc-slot-booked::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.030) 0,
+      rgba(255, 255, 255, 0.030) 1px,
+      transparent 1px,
+      transparent 9px
+    );
+  opacity: 0.34;
+  pointer-events: none;
+}
+
+.pc-modern .pc-slot-booked .pc-slot-badge {
+  position: relative;
+  z-index: 4;
+  min-height: 24px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0.35rem 0.58rem !important;
+  border-radius: 999px !important;
+  border-color: rgba(255, 202, 212, 0.36) !important;
+  color: rgba(255, 242, 245, 0.96) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 126, 154, 0.32), rgba(255, 76, 116, 0.18)),
+    rgba(96, 24, 43, 0.72) !important;
+  box-shadow:
+    0 10px 24px rgba(255, 76, 116, 0.13),
+    inset 0 1px 0 rgba(255, 255, 255, 0.13) !important;
+  font-size: 0.62rem !important;
+  line-height: 1 !important;
+  letter-spacing: 0.075em !important;
+  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.30);
+}
+
+.pc-modern .pc-slot-booked:hover {
+  background:
+    linear-gradient(90deg, rgba(255, 82, 121, 0.30), rgba(255, 82, 121, 0.18) 42%, rgba(255, 82, 121, 0.10)),
+    radial-gradient(circle at 50% 18%, rgba(255, 156, 178, 0.18), transparent 44%),
+    rgba(92, 26, 45, 0.44) !important;
+}
+
+.pc-modern .pc-slot-blocked {
+  background:
+    linear-gradient(90deg, rgba(255, 82, 121, 0.12), rgba(255, 82, 121, 0.04)),
+    rgba(70, 20, 35, 0.18) !important;
+  box-shadow: inset 2px 0 0 rgba(255, 107, 139, 0.24) !important;
+}
+
+@media (max-width: 640px) {
+  .pc-modern .pc-slot-booked {
+    box-shadow:
+      inset 2px 0 0 rgba(255, 107, 139, 0.68),
+      inset 0 1px 0 rgba(255, 255, 255, 0.060),
+      0 0 0 1px rgba(255, 107, 139, 0.07) !important;
+  }
+
+  .pc-modern .pc-slot-booked .pc-slot-badge {
+    min-height: 22px !important;
+    padding: 0.32rem 0.48rem !important;
+    font-size: 0.56rem !important;
+  }
+}
