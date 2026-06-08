@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import {
+  useNavigate } from 'react-router-dom';
 import {
   addDays,
   addMonths,
@@ -16,12 +17,12 @@ import {
   subWeeks
 } from 'date-fns';
 import { id as localeId } from 'date-fns/locale';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence,
+  motion } from 'framer-motion';
 import {
   ArrowRight,
   CalendarCheck2,
   CalendarDays,
-
   ChevronLeft,
   ChevronRight,
   Clock,
@@ -30,15 +31,12 @@ import {
   LogOut,
   MessageCircle,
   Moon,
-
   Phone,
   Plus,
   ShieldCheck,
-
   Sun,
-
   WalletCards,
-  X
+  X,
 } from 'lucide-react';
 import { useAuthStore } from '../store/useAuthStore';
 import { useBookingRequestStore } from '../store/useBookingRequestStore';
@@ -61,8 +59,7 @@ const formatRupiah = (value) =>
 const getPublicPhotoCaption = (photo, index = 0) => {
   const rawCaption = String(photo?.caption || '').trim();
   const looksLikeFileName =
-    /\d{6
-}/.test(rawCaption) ||
+    /\d{6,}/.test(rawCaption) ||
     /\.(jpg|jpeg|png|webp|gif)$/i.test(rawCaption) ||
     rawCaption.split(/\s+/).length > 6;
 
