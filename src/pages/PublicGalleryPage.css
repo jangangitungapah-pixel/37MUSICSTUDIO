@@ -1625,3 +1625,30 @@ html[data-theme-switching="true"] .pg-modern-gallery .pg-lightbox-overlay {
     grid-auto-columns: minmax(84vw, 1fr);
   }
 }
+
+/* ──────────────────────────────────────────────────────────────────────────
+   37 PUBLIC GALLERY REMOVE CUSTOMER STATS 8.2B
+   --------------------------------------------------------------------------
+   Removes customer-facing hero stats from the public gallery flow.
+   Keeps hero spacing intentional after the stats cards are removed.
+   ────────────────────────────────────────────────────────────────────────── */
+
+.pg-modern-gallery .pg-hero-copy p {
+  margin-bottom: 0 !important;
+}
+
+.pg-modern-gallery .pg-hero-copy {
+  padding-bottom: clamp(0.4rem, 1.6vw, 1.1rem);
+}
+
+@media (min-width: 1025px) {
+  .pg-modern-gallery .pg-hero-copy {
+    transform: translateY(-0.35rem);
+  }
+}
+
+@media (max-width: 720px) {
+  .pg-modern-gallery .pg-hero-copy {
+    padding-bottom: 0;
+  }
+}

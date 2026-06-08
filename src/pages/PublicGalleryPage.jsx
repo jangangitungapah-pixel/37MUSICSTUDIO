@@ -345,21 +345,6 @@ const PublicGalleryPage = () => {
               Lihat suasana ruangan, setup gear, dan detail studio sebelum kamu datang.
               Foto di halaman ini otomatis mengikuti pengaturan galeri admin.
             </p>
-
-            <div className="pg-hero-stats">
-              <span>
-                <strong>{customerPhotos.length}</strong>
-                Foto publik
-              </span>
-              <span>
-                <strong>{albumItems.length}</strong>
-                Album aktif
-              </span>
-              <span>
-                <strong>HD</strong>
-                Preview studio
-              </span>
-            </div>
           </motion.div>
 
           <motion.div className="pg-hero-preview" variants={pageVariants} initial="hidden" animate="visible">
