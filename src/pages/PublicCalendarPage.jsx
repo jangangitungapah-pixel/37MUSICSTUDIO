@@ -594,7 +594,7 @@ const PublicCalendarPage = () => {
         </div>
       </section>
 
-      <section className="relative z-10 mx-auto -mt-12 flex w-[min(1220px,calc(100%-2rem))] flex-col gap-4 pb-10">
+      <section className="pc-board-section relative z-10 mx-auto -mt-8 flex w-[min(1180px,calc(100%-2rem))] flex-col gap-4 pb-10">
         {(authLoading || publicAccessError) && (
           <div
             className={cx(
@@ -608,32 +608,32 @@ const PublicCalendarPage = () => {
           </div>
         )}
 
-        <div className="grid gap-4 rounded-[2rem] border border-white/10 bg-white/[0.045] p-4 shadow-2xl shadow-black/20 backdrop-blur-2xl lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end lg:p-5">
-          <div>
-            <span className="mb-2 inline-flex rounded-full border border-rose-300/20 bg-rose-300/10 px-3 py-1 text-[0.68rem] font-black uppercase tracking-[0.14em] text-rose-200">
+        <div className="pc-board-panel grid gap-4 rounded-[2rem] border border-white/10 bg-white/[0.045] p-4 shadow-2xl shadow-black/20 backdrop-blur-2xl lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end lg:p-5">
+          <div className="pc-board-copy">
+            <span className="pc-board-kicker mb-2 inline-flex rounded-full border border-rose-300/20 bg-rose-300/10 px-3 py-1 text-[0.68rem] font-black uppercase tracking-[0.14em] text-rose-200">
               Booking board
             </span>
-            <h2 className="font-['Bebas_Neue',Impact,sans-serif] text-[clamp(2.1rem,4vw,3.35rem)] uppercase leading-none tracking-[-0.025em] text-stone-50">
+            <h2 className="pc-board-title font-['Bebas_Neue',Impact,sans-serif] text-[clamp(2.1rem,4vw,3.35rem)] uppercase leading-none tracking-[-0.025em] text-stone-50">
               Pilih jam kosong yang paling pas.
             </h2>
-            <p className="mt-2 max-w-2xl text-sm font-bold leading-6 text-stone-300/68">
+            <p className="pc-board-subtitle mt-2 max-w-2xl text-sm font-bold leading-6 text-stone-300/68">
               Slot hijau bisa dipilih. Slot merah atau redup berarti sudah terisi, tutup, atau sudah lewat.
             </p>
           </div>
 
-          <div className="flex flex-col gap-3 lg:items-end">
-            <div className="flex flex-wrap items-center gap-2 text-xs font-black text-stone-300/70">
-              <span className="inline-flex items-center gap-2 rounded-full border border-green-300/20 bg-green-300/10 px-3 py-2 text-green-100">
+          <div className="pc-board-controls flex flex-col gap-3 lg:items-end">
+            <div className="pc-board-legend flex flex-wrap items-center gap-2 text-xs font-black text-stone-300/70">
+              <span className="pc-board-legend-chip pc-board-legend-chip-available inline-flex items-center gap-2 rounded-full border border-green-300/20 bg-green-300/10 px-3 py-2 text-green-100">
                 <span className="size-2 rounded-full bg-green-300" />
                 Tersedia
               </span>
-              <span className="inline-flex items-center gap-2 rounded-full border border-rose-300/20 bg-rose-300/10 px-3 py-2 text-rose-100">
+              <span className="pc-board-legend-chip pc-board-legend-chip-busy inline-flex items-center gap-2 rounded-full border border-rose-300/20 bg-rose-300/10 px-3 py-2 text-rose-100">
                 <span className="size-2 rounded-full bg-rose-300" />
                 Terisi / tutup
               </span>
             </div>
 
-            <div className="inline-grid grid-cols-3 rounded-2xl border border-white/10 bg-black/25 p-1 shadow-inner shadow-black/20">
+            <div className="pc-view-switcher inline-grid grid-cols-3 rounded-2xl border border-white/10 bg-black/25 p-1 shadow-inner shadow-black/20">
               {['day', 'week', 'month'].map((mode) => (
                 <button
                   key={mode}
@@ -641,10 +641,10 @@ const PublicCalendarPage = () => {
                   aria-pressed={viewMode === mode}
                   onClick={() => setViewMode(mode)}
                   className={cx(
-                    'min-h-9 rounded-xl px-3 text-xs font-black transition',
+                    'pc-view-btn min-h-9 rounded-xl px-3 text-xs font-black transition',
                     viewMode === mode
-                      ? 'bg-amber-300 text-neutral-950 shadow-lg shadow-amber-500/15'
-                      : 'text-stone-200/62 hover:bg-white/[0.07] hover:text-stone-50'
+                      ? 'pc-view-btn-active bg-amber-300 text-neutral-950 shadow-lg shadow-amber-500/15'
+                      : 'pc-view-btn-idle text-stone-200/62 hover:bg-white/[0.07] hover:text-stone-50'
                   )}
                 >
                   {viewLabels[mode]}
@@ -675,11 +675,11 @@ const PublicCalendarPage = () => {
           </div>
         )}
 
-        <div className="sticky top-3 z-40 rounded-[1.6rem] border border-white/10 bg-[#121720]/86 p-3 shadow-2xl shadow-black/25 backdrop-blur-2xl">
-          <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-            <div className="flex items-center gap-2">
+        <div className="pc-period-toolbar sticky top-3 z-40 rounded-[1.6rem] border border-white/10 bg-[#121720]/86 p-3 shadow-2xl shadow-black/25 backdrop-blur-2xl">
+          <div className="pc-period-toolbar-inner flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+            <div className="pc-period-nav flex items-center gap-2">
               <button
-                className="grid size-10 place-items-center rounded-xl border border-white/10 bg-white/[0.055] text-stone-100/75 transition hover:bg-white/[0.09] hover:text-white"
+                className="pc-period-arrow grid size-10 place-items-center rounded-xl border border-white/10 bg-white/[0.055] text-stone-100/75 transition hover:bg-white/[0.09] hover:text-white"
                 type="button"
                 onClick={handlePrev}
                 aria-label="Lihat periode sebelumnya"
@@ -687,12 +687,12 @@ const PublicCalendarPage = () => {
                 <ChevronLeft size={20} />
               </button>
 
-              <div className="min-w-0 flex-1 rounded-xl border border-white/10 bg-black/18 px-4 py-2 text-center text-sm font-black capitalize text-stone-50 lg:min-w-64">
+              <div className="pc-period-label min-w-0 flex-1 rounded-xl border border-white/10 bg-black/18 px-4 py-2 text-center text-sm font-black capitalize text-stone-50 lg:min-w-64">
                 {currentLabel}
               </div>
 
               <button
-                className="grid size-10 place-items-center rounded-xl border border-white/10 bg-white/[0.055] text-stone-100/75 transition hover:bg-white/[0.09] hover:text-white"
+                className="pc-period-arrow grid size-10 place-items-center rounded-xl border border-white/10 bg-white/[0.055] text-stone-100/75 transition hover:bg-white/[0.09] hover:text-white"
                 type="button"
                 onClick={handleNext}
                 aria-label="Lihat periode berikutnya"
@@ -704,7 +704,7 @@ const PublicCalendarPage = () => {
             <button
               type="button"
               onClick={handleGoToday}
-              className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-amber-300/18 bg-amber-300/10 px-4 text-sm font-black text-amber-100 transition hover:-translate-y-0.5 hover:border-amber-300/30 hover:bg-amber-300/14"
+              className="pc-today-btn inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-amber-300/18 bg-amber-300/10 px-4 text-sm font-black text-amber-100 transition hover:-translate-y-0.5 hover:border-amber-300/30 hover:bg-amber-300/14"
             >
               <CalendarCheck2 size={16} />
               Hari Ini

@@ -800,3 +800,348 @@
     max-width: 19rem !important;
   }
 }
+
+/* ──────────────────────────────────────────────────────────────────────────
+   37 PUBLIC CALENDAR BOOKING BOARD CONTROLS POLISH 8.1C
+   --------------------------------------------------------------------------
+   Polishes the booking board header and period controls only:
+   - cleaner board panel
+   - safer text padding
+   - compact legend chips
+   - modern view switcher
+   - premium sticky period toolbar
+   ────────────────────────────────────────────────────────────────────────── */
+
+.pc-modern .pc-board-section {
+  width: min(1180px, calc(100% - 2rem)) !important;
+  max-width: 1180px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  gap: 0.9rem !important;
+}
+
+.pc-modern .pc-board-panel {
+  position: relative;
+  overflow: hidden;
+  padding: clamp(1rem, 1.7vw, 1.35rem) !important;
+  border-radius: 1.55rem !important;
+  border-color: rgba(255, 255, 255, 0.085) !important;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(255, 56, 113, 0.065), transparent 34%),
+    radial-gradient(circle at 100% 10%, rgba(88, 224, 233, 0.055), transparent 34%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.052), rgba(255, 255, 255, 0.022)),
+    rgba(15, 18, 26, 0.78) !important;
+  box-shadow:
+    0 22px 64px rgba(0, 0, 0, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.055) !important;
+  backdrop-filter: blur(22px) saturate(1.06) !important;
+  -webkit-backdrop-filter: blur(22px) saturate(1.06) !important;
+}
+
+.pc-modern .pc-board-panel::before {
+  content: "";
+  position: absolute;
+  inset-inline: 1.15rem;
+  top: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(239, 197, 110, 0.26), rgba(88, 224, 233, 0.12), transparent);
+  pointer-events: none;
+}
+
+.pc-modern .pc-board-copy,
+.pc-modern .pc-board-controls {
+  position: relative;
+  z-index: 2;
+}
+
+.pc-modern .pc-board-kicker {
+  width: fit-content !important;
+  min-height: 26px !important;
+  align-items: center !important;
+  padding: 0.36rem 0.72rem !important;
+  border-radius: 999px !important;
+  border-color: rgba(255, 93, 132, 0.25) !important;
+  background:
+    linear-gradient(90deg, rgba(255, 56, 113, 0.12), rgba(239, 197, 110, 0.06)),
+    rgba(255, 255, 255, 0.025) !important;
+  color: rgba(255, 121, 152, 0.94) !important;
+  font-size: 0.62rem !important;
+  line-height: 1 !important;
+  letter-spacing: 0.125em !important;
+  white-space: nowrap !important;
+}
+
+.pc-modern .pc-board-title {
+  max-width: 720px !important;
+  margin: 0 !important;
+  font-family: "Bebas Neue", Impact, "Arial Narrow", sans-serif !important;
+  font-size: clamp(2.25rem, 3.7vw, 3.65rem) !important;
+  line-height: 0.98 !important;
+  letter-spacing: -0.025em !important;
+  word-spacing: 0.035em !important;
+  text-shadow: 0 16px 42px rgba(0, 0, 0, 0.26);
+}
+
+.pc-modern .pc-board-subtitle {
+  max-width: 680px !important;
+  margin-top: 0.55rem !important;
+  color: rgba(255, 250, 240, 0.62) !important;
+  font-size: 0.86rem !important;
+  line-height: 1.55 !important;
+  font-weight: 760 !important;
+}
+
+.pc-modern .pc-board-controls {
+  gap: 0.75rem !important;
+}
+
+.pc-modern .pc-board-legend {
+  justify-content: flex-end !important;
+  gap: 0.46rem !important;
+}
+
+.pc-modern .pc-board-legend-chip {
+  min-height: 28px !important;
+  padding: 0.42rem 0.62rem !important;
+  border-radius: 999px !important;
+  font-size: 0.68rem !important;
+  line-height: 1 !important;
+  font-weight: 950 !important;
+  letter-spacing: -0.01em !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.065);
+}
+
+.pc-modern .pc-board-legend-chip span {
+  width: 0.45rem !important;
+  height: 0.45rem !important;
+  flex: 0 0 auto !important;
+}
+
+.pc-modern .pc-board-legend-chip-available {
+  border-color: rgba(110, 231, 183, 0.22) !important;
+  background: rgba(110, 231, 183, 0.09) !important;
+  color: rgba(210, 255, 236, 0.92) !important;
+}
+
+.pc-modern .pc-board-legend-chip-busy {
+  border-color: rgba(251, 113, 133, 0.22) !important;
+  background: rgba(251, 113, 133, 0.085) !important;
+  color: rgba(255, 220, 228, 0.92) !important;
+}
+
+.pc-modern .pc-view-switcher {
+  min-height: 40px !important;
+  padding: 0.24rem !important;
+  border-radius: 1rem !important;
+  border-color: rgba(255, 255, 255, 0.10) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.018)),
+    rgba(0, 0, 0, 0.22) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.045),
+    0 14px 34px rgba(0, 0, 0, 0.14) !important;
+}
+
+.pc-modern .pc-view-btn {
+  min-width: 66px !important;
+  min-height: 32px !important;
+  padding-inline: 0.64rem !important;
+  border-radius: 0.78rem !important;
+  font-size: 0.70rem !important;
+  line-height: 1 !important;
+  font-weight: 950 !important;
+}
+
+.pc-modern .pc-view-btn-active {
+  box-shadow:
+    0 12px 26px rgba(239, 197, 110, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.36) !important;
+}
+
+.pc-modern .pc-period-toolbar {
+  top: 0.75rem !important;
+  padding: 0.72rem !important;
+  border-radius: 1.35rem !important;
+  border-color: rgba(255, 255, 255, 0.085) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.060), rgba(255, 255, 255, 0.022)),
+    rgba(14, 18, 27, 0.88) !important;
+  box-shadow:
+    0 22px 58px rgba(0, 0, 0, 0.26),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
+  backdrop-filter: blur(22px) saturate(1.06) !important;
+  -webkit-backdrop-filter: blur(22px) saturate(1.06) !important;
+}
+
+.pc-modern .pc-period-toolbar-inner {
+  gap: 0.7rem !important;
+}
+
+.pc-modern .pc-period-nav {
+  min-width: 0 !important;
+  flex: 1 1 auto !important;
+}
+
+.pc-modern .pc-period-arrow {
+  width: 42px !important;
+  height: 42px !important;
+  min-width: 42px !important;
+  min-height: 42px !important;
+  border-radius: 1rem !important;
+  background: rgba(255, 255, 255, 0.058) !important;
+}
+
+.pc-modern .pc-period-label {
+  min-height: 42px !important;
+  min-width: 260px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 1rem !important;
+  border-radius: 1rem !important;
+  color: rgba(255, 250, 240, 0.92) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.070), rgba(255, 255, 255, 0.026)),
+    rgba(0, 0, 0, 0.20) !important;
+  font-size: 0.86rem !important;
+  line-height: 1 !important;
+  letter-spacing: -0.01em !important;
+}
+
+.pc-modern .pc-today-btn {
+  min-height: 42px !important;
+  min-width: 116px !important;
+  padding-inline: 0.9rem !important;
+  border-radius: 1rem !important;
+  border-color: rgba(239, 197, 110, 0.22) !important;
+  color: rgba(255, 236, 190, 0.94) !important;
+  background:
+    linear-gradient(180deg, rgba(239, 197, 110, 0.14), rgba(239, 197, 110, 0.055)),
+    rgba(239, 197, 110, 0.045) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+@media (max-width: 1023px) {
+  .pc-modern .pc-board-panel {
+    grid-template-columns: 1fr !important;
+  }
+
+  .pc-modern .pc-board-controls {
+    align-items: flex-start !important;
+  }
+
+  .pc-modern .pc-board-legend {
+    justify-content: flex-start !important;
+  }
+
+  .pc-modern .pc-period-toolbar-inner {
+    align-items: stretch !important;
+  }
+
+  .pc-modern .pc-period-label {
+    min-width: 0 !important;
+    width: 100% !important;
+  }
+
+  .pc-modern .pc-today-btn {
+    align-self: flex-start;
+  }
+}
+
+@media (max-width: 640px) {
+  .pc-modern .pc-board-section {
+    width: calc(100% - 1rem) !important;
+    margin-top: -1.2rem !important;
+    gap: 0.75rem !important;
+    padding-bottom: 0.75rem !important;
+  }
+
+  .pc-modern .pc-board-panel {
+    padding: 0.9rem !important;
+    border-radius: 1.25rem !important;
+  }
+
+  .pc-modern .pc-board-kicker {
+    min-height: 24px !important;
+    padding: 0.34rem 0.58rem !important;
+    font-size: 0.58rem !important;
+    letter-spacing: 0.12em !important;
+  }
+
+  .pc-modern .pc-board-title {
+    font-size: clamp(2rem, 9vw, 2.7rem) !important;
+    line-height: 1 !important;
+  }
+
+  .pc-modern .pc-board-subtitle {
+    max-width: 100% !important;
+    font-size: 0.76rem !important;
+    line-height: 1.48 !important;
+    margin-top: 0.42rem !important;
+  }
+
+  .pc-modern .pc-board-controls {
+    gap: 0.65rem !important;
+  }
+
+  .pc-modern .pc-board-legend {
+    width: 100% !important;
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 0.45rem !important;
+  }
+
+  .pc-modern .pc-board-legend-chip {
+    width: 100% !important;
+    justify-content: center !important;
+    min-height: 30px !important;
+    padding: 0.42rem 0.5rem !important;
+    font-size: 0.64rem !important;
+  }
+
+  .pc-modern .pc-view-switcher {
+    width: 100% !important;
+  }
+
+  .pc-modern .pc-view-btn {
+    min-width: 0 !important;
+    width: 100% !important;
+    min-height: 34px !important;
+    font-size: 0.68rem !important;
+  }
+
+  .pc-modern .pc-period-toolbar {
+    top: 0.5rem !important;
+    padding: 0.58rem !important;
+    border-radius: 1.15rem !important;
+  }
+
+  .pc-modern .pc-period-toolbar-inner {
+    gap: 0.55rem !important;
+  }
+
+  .pc-modern .pc-period-nav {
+    gap: 0.45rem !important;
+  }
+
+  .pc-modern .pc-period-arrow {
+    width: 38px !important;
+    height: 38px !important;
+    min-width: 38px !important;
+    min-height: 38px !important;
+    border-radius: 0.9rem !important;
+  }
+
+  .pc-modern .pc-period-label {
+    min-height: 38px !important;
+    padding-inline: 0.7rem !important;
+    font-size: 0.75rem !important;
+  }
+
+  .pc-modern .pc-today-btn {
+    width: 100% !important;
+    min-width: 0 !important;
+    min-height: 38px !important;
+    font-size: 0.76rem !important;
+  }
+}
