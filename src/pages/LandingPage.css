@@ -5871,227 +5871,81 @@ body[data-theme="light"]:has(.landing-container) #root {
 }
 
 /* ──────────────────────────────────────────────────────────────────────────
-   37 LANDING GALLERY WIDTH REFINEMENT 8.0E
+   37 LANDING GALLERY RESET LAYOUT 8.0E
    --------------------------------------------------------------------------
-   Refines gallery section width:
-   - prevents the gallery media from becoming too wide on desktop
-   - makes the section feel more editorial and centered
-   - balances text column and image card
-   - keeps mobile layout full-width and comfortable
+   Hard reset for gallery after over-correction:
+   - text, media, and CTA now share one stable layout wrapper
+   - media returns to medium-large editorial size
+   - CTA stays attached to the visual column
+   - no floating button and no tiny image card
    ────────────────────────────────────────────────────────────────────────── */
 
 .tw-landing-phase80d .landing-gallery-section {
   padding-top: clamp(4rem, 7vh, 5.5rem) !important;
-  padding-bottom: clamp(4rem, 7vh, 5.75rem) !important;
+  padding-bottom: clamp(4rem, 7vh, 5.5rem) !important;
 }
 
-.tw-landing-phase80d .landing-gallery-grid {
-  width: min(100%, 1180px) !important;
-  max-width: 1180px !important;
-  margin-inline: auto !important;
-  display: grid !important;
-  grid-template-columns: minmax(280px, 0.72fr) minmax(520px, 1fr) !important;
-  align-items: center !important;
-  gap: clamp(2rem, 4vw, 4rem) !important;
+.tw-landing-phase80d .landing-gallery-layout {
+  width: min(100%, 1080px);
+  max-width: 1080px;
+  margin-inline: auto;
+  display: grid;
+  grid-template-columns: minmax(280px, 0.72fr) minmax(560px, 1.1fr);
+  align-items: center;
+  gap: clamp(2rem, 4vw, 3.5rem);
 }
 
-.tw-landing-phase80d .landing-gallery-section .section-header.align-left {
-  max-width: 430px !important;
-  margin: 0 !important;
-}
-
-.tw-landing-phase80d .landing-gallery-section .section-header.align-left h2 {
-  max-width: 430px;
-  font-size: clamp(2.7rem, 4.2vw, 4.55rem) !important;
-  line-height: 1.02 !important;
-  letter-spacing: -0.038em !important;
-  word-spacing: 0.035em;
-}
-
-.tw-landing-phase80d .landing-gallery-section .section-header.align-left p {
+.tw-landing-phase80d .landing-gallery-copy {
+  width: 100% !important;
   max-width: 410px !important;
-  margin-top: 1.15rem !important;
-  font-size: 0.94rem !important;
-  line-height: 1.68 !important;
+  margin: 0 !important;
+  text-align: left !important;
+  justify-self: start;
 }
 
-.tw-landing-phase80d .landing-gallery-card {
-  width: min(100%, 760px) !important;
-  max-width: 760px !important;
-  justify-self: end !important;
-  border-radius: 1.7rem !important;
+.tw-landing-phase80d .landing-gallery-copy .section-eyebrow {
+  margin-left: 0 !important;
+  margin-right: auto !important;
 }
 
-.tw-landing-phase80d .landing-gallery-media {
-  min-height: 0 !important;
-  aspect-ratio: 16 / 8.8 !important;
-  border-radius: 1.65rem !important;
+.tw-landing-phase80d .landing-gallery-copy h2 {
+  max-width: 410px !important;
+  font-size: clamp(2.7rem, 3.9vw, 4.25rem) !important;
+  line-height: 1.03 !important;
+  letter-spacing: -0.032em !important;
+  word-spacing: 0.03em;
 }
 
-.tw-landing-phase80d .landing-gallery-media img,
-.tw-landing-phase80d .tw-gallery-image {
-  object-fit: cover !important;
-  object-position: center !important;
+.tw-landing-phase80d .landing-gallery-copy p {
+  max-width: 390px !important;
+  margin: 1.1rem 0 0 !important;
+  color: rgba(255, 250, 240, 0.68) !important;
+  font-size: 0.92rem !important;
+  line-height: 1.72 !important;
+  font-weight: 680 !important;
 }
 
-.tw-landing-phase80d .landing-gallery-overlay {
-  left: 1rem !important;
-  right: 1rem !important;
-  bottom: 1rem !important;
-  min-height: 44px;
-  padding: 0.72rem 0.92rem !important;
-  border-radius: 1rem !important;
-  font-size: 0.82rem !important;
-}
-
-.tw-landing-phase80d .gallery-actions {
-  width: min(100%, 1180px) !important;
-  max-width: 1180px !important;
-  margin-inline: auto !important;
-  justify-content: flex-end !important;
-  padding-right: min(0px, 0vw);
-}
-
-.tw-landing-phase80d .gallery-actions .btn-secondary {
-  min-height: 46px;
-  border-radius: 1rem !important;
-  padding-inline: 1.05rem !important;
-}
-
-@media (min-width: 1440px) {
-  .tw-landing-phase80d .landing-gallery-grid,
-  .tw-landing-phase80d .gallery-actions {
-    width: min(100%, 1220px) !important;
-    max-width: 1220px !important;
-  }
-
-  .tw-landing-phase80d .landing-gallery-card {
-    width: min(100%, 800px) !important;
-    max-width: 800px !important;
-  }
-}
-
-@media (max-width: 1180px) {
-  .tw-landing-phase80d .landing-gallery-grid {
-    grid-template-columns: minmax(260px, 0.72fr) minmax(480px, 1fr) !important;
-    gap: clamp(1.5rem, 3vw, 2.5rem) !important;
-  }
-
-  .tw-landing-phase80d .landing-gallery-card {
-    width: 100% !important;
-    max-width: 720px !important;
-  }
-}
-
-@media (max-width: 1023px) {
-  .tw-landing-phase80d .landing-gallery-grid {
-    width: min(100%, 760px) !important;
-    max-width: 760px !important;
-    grid-template-columns: 1fr !important;
-    gap: 1.35rem !important;
-  }
-
-  .tw-landing-phase80d .landing-gallery-section .section-header.align-left {
-    max-width: 100% !important;
-    text-align: left;
-  }
-
-  .tw-landing-phase80d .landing-gallery-section .section-header.align-left h2,
-  .tw-landing-phase80d .landing-gallery-section .section-header.align-left p {
-    max-width: 100% !important;
-  }
-
-  .tw-landing-phase80d .landing-gallery-card {
-    justify-self: stretch !important;
-    max-width: 100% !important;
-  }
-
-  .tw-landing-phase80d .gallery-actions {
-    width: min(100%, 760px) !important;
-    max-width: 760px !important;
-    justify-content: flex-start !important;
-  }
-}
-
-@media (max-width: 767px) {
-  .tw-landing-phase80d .landing-gallery-section {
-    padding-top: 3.75rem !important;
-    padding-bottom: 3.75rem !important;
-  }
-
-  .tw-landing-phase80d .landing-gallery-section .section-header.align-left h2 {
-    font-size: clamp(2.35rem, 11vw, 3.25rem) !important;
-    line-height: 1.04 !important;
-    letter-spacing: -0.025em !important;
-  }
-
-  .tw-landing-phase80d .landing-gallery-media {
-    aspect-ratio: 4 / 3 !important;
-    border-radius: 1.2rem !important;
-  }
-
-  .tw-landing-phase80d .landing-gallery-card {
-    border-radius: 1.25rem !important;
-  }
-
-  .tw-landing-phase80d .landing-gallery-overlay {
-    left: 0.7rem !important;
-    right: 0.7rem !important;
-    bottom: 0.7rem !important;
-    font-size: 0.76rem !important;
-  }
-}
-
-/* ──────────────────────────────────────────────────────────────────────────
-   37 LANDING GALLERY BALANCE FIX 8.0E
-   --------------------------------------------------------------------------
-   Rebalances gallery after width refinement:
-   - image is medium-large again, not tiny
-   - CTA no longer floats too far right
-   - section spacing is tighter and more editorial
-   - columns are centered in one cohesive composition
-   ────────────────────────────────────────────────────────────────────────── */
-
-.tw-landing-phase80d .landing-gallery-section {
-  padding-top: clamp(3.5rem, 6vh, 4.8rem) !important;
-  padding-bottom: clamp(4rem, 7vh, 5.25rem) !important;
+.tw-landing-phase80d .landing-gallery-visual {
+  width: 100%;
+  max-width: 680px;
+  justify-self: end;
+  display: grid;
+  gap: 1rem;
 }
 
 .tw-landing-phase80d .landing-gallery-grid {
-  width: min(100%, 1120px) !important;
-  max-width: 1120px !important;
-  margin-inline: auto !important;
-  display: grid !important;
-  grid-template-columns: minmax(320px, 0.72fr) minmax(620px, 1.18fr) !important;
-  align-items: center !important;
-  gap: clamp(2.25rem, 4vw, 3.5rem) !important;
-}
-
-.tw-landing-phase80d .landing-gallery-section .section-header.align-left {
-  max-width: 420px !important;
+  width: 100% !important;
+  max-width: none !important;
+  display: block !important;
   margin: 0 !important;
-  align-self: center !important;
-}
-
-.tw-landing-phase80d .landing-gallery-section .section-header.align-left h2 {
-  max-width: 420px !important;
-  font-size: clamp(2.85rem, 4vw, 4.45rem) !important;
-  line-height: 1.02 !important;
-  letter-spacing: -0.035em !important;
-}
-
-.tw-landing-phase80d .landing-gallery-section .section-header.align-left p {
-  max-width: 390px !important;
-  margin-top: 1.1rem !important;
-  font-size: 0.94rem !important;
-  line-height: 1.68 !important;
 }
 
 .tw-landing-phase80d .landing-gallery-card {
-  width: min(100%, 700px) !important;
-  max-width: 700px !important;
+  width: 100% !important;
+  max-width: none !important;
   min-width: 0 !important;
-  justify-self: end !important;
+  display: block !important;
+  justify-self: stretch !important;
   border-radius: 1.55rem !important;
   transform: none !important;
 }
@@ -6099,8 +5953,8 @@ body[data-theme="light"]:has(.landing-container) #root {
 .tw-landing-phase80d .landing-gallery-media {
   width: 100% !important;
   min-height: 0 !important;
-  aspect-ratio: 16 / 9.15 !important;
-  border-radius: 1.5rem !important;
+  aspect-ratio: 16 / 9 !important;
+  border-radius: 1.45rem !important;
 }
 
 .tw-landing-phase80d .landing-gallery-media img,
@@ -6116,24 +5970,23 @@ body[data-theme="light"]:has(.landing-container) #root {
   right: 0.9rem !important;
   bottom: 0.9rem !important;
   min-height: 42px !important;
-  padding: 0.68rem 0.9rem !important;
+  padding: 0.65rem 0.9rem !important;
   border-radius: 0.95rem !important;
-  font-size: 0.8rem !important;
+  font-size: 0.78rem !important;
   justify-content: center !important;
   text-align: center;
 }
 
-.tw-landing-phase80d .gallery-actions {
-  width: min(100%, 1120px) !important;
-  max-width: 1120px !important;
-  margin-inline: auto !important;
-  margin-top: 1.25rem !important;
+.tw-landing-phase80d .landing-gallery-visual .gallery-actions {
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
   display: flex !important;
-  justify-content: flex-end !important;
-  padding-right: 0 !important;
+  justify-content: flex-start !important;
 }
 
-.tw-landing-phase80d .gallery-actions .btn-secondary {
+.tw-landing-phase80d .landing-gallery-visual .gallery-actions .btn-secondary {
   min-height: 44px !important;
   padding: 0 1rem !important;
   border-radius: 1rem !important;
@@ -6141,70 +5994,39 @@ body[data-theme="light"]:has(.landing-container) #root {
 }
 
 @media (min-width: 1440px) {
-  .tw-landing-phase80d .landing-gallery-grid,
-  .tw-landing-phase80d .gallery-actions {
-    width: min(100%, 1180px) !important;
-    max-width: 1180px !important;
+  .tw-landing-phase80d .landing-gallery-layout {
+    max-width: 1140px;
+    grid-template-columns: minmax(300px, 0.72fr) minmax(600px, 1.1fr);
   }
 
-  .tw-landing-phase80d .landing-gallery-card {
-    width: min(100%, 740px) !important;
-    max-width: 740px !important;
-  }
-}
-
-@media (max-width: 1180px) {
-  .tw-landing-phase80d .landing-gallery-grid {
-    width: min(100%, 960px) !important;
-    max-width: 960px !important;
-    grid-template-columns: minmax(280px, 0.75fr) minmax(520px, 1fr) !important;
-    gap: 2rem !important;
-  }
-
-  .tw-landing-phase80d .landing-gallery-card {
-    width: 100% !important;
-    max-width: 660px !important;
-  }
-
-  .tw-landing-phase80d .gallery-actions {
-    width: min(100%, 960px) !important;
-    max-width: 960px !important;
+  .tw-landing-phase80d .landing-gallery-visual {
+    max-width: 720px;
   }
 }
 
 @media (max-width: 1023px) {
-  .tw-landing-phase80d .landing-gallery-grid {
-    width: min(100%, 760px) !important;
-    max-width: 760px !important;
-    grid-template-columns: 1fr !important;
-    gap: 1.35rem !important;
+  .tw-landing-phase80d .landing-gallery-layout {
+    width: min(100%, 760px);
+    grid-template-columns: 1fr;
+    gap: 1.35rem;
   }
 
-  .tw-landing-phase80d .landing-gallery-section .section-header.align-left,
-  .tw-landing-phase80d .landing-gallery-section .section-header.align-left h2,
-  .tw-landing-phase80d .landing-gallery-section .section-header.align-left p {
+  .tw-landing-phase80d .landing-gallery-copy,
+  .tw-landing-phase80d .landing-gallery-copy h2,
+  .tw-landing-phase80d .landing-gallery-copy p,
+  .tw-landing-phase80d .landing-gallery-visual {
     max-width: 100% !important;
-  }
-
-  .tw-landing-phase80d .landing-gallery-card {
-    justify-self: stretch !important;
-    max-width: 100% !important;
-  }
-
-  .tw-landing-phase80d .gallery-actions {
-    width: min(100%, 760px) !important;
-    max-width: 760px !important;
-    justify-content: flex-start !important;
+    justify-self: stretch;
   }
 }
 
 @media (max-width: 767px) {
   .tw-landing-phase80d .landing-gallery-section {
-    padding-top: 3.35rem !important;
+    padding-top: 3.4rem !important;
     padding-bottom: 3.75rem !important;
   }
 
-  .tw-landing-phase80d .landing-gallery-section .section-header.align-left h2 {
+  .tw-landing-phase80d .landing-gallery-copy h2 {
     font-size: clamp(2.25rem, 10.4vw, 3.1rem) !important;
     line-height: 1.04 !important;
   }
@@ -6222,6 +6044,6 @@ body[data-theme="light"]:has(.landing-container) #root {
     left: 0.65rem !important;
     right: 0.65rem !important;
     bottom: 0.65rem !important;
-    font-size: 0.74rem !important;
+    font-size: 0.72rem !important;
   }
 }
