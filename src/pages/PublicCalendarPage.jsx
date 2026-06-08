@@ -856,44 +856,51 @@ const PublicCalendarPage = () => {
       </section>
 
       {featuredPhotos.length > 0 && (
-        <section className="mx-auto w-[min(1220px,calc(100%-2rem))] pb-20">
-          <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <span className="mb-2 inline-flex rounded-full border border-rose-300/20 bg-rose-300/10 px-3 py-1 text-[0.68rem] font-black uppercase tracking-[0.14em] text-rose-200">
-                Vibe studio
-              </span>
-              <h2 className="font-['Bebas_Neue',Impact,sans-serif] text-[clamp(2.2rem,4.2vw,3.6rem)] uppercase leading-none tracking-[-0.025em] text-stone-50">
-                Lihat ruangnya sebelum booking.
-              </h2>
+        <section className="pc-public-gallery-section mx-auto w-[min(1180px,calc(100%-2rem))] pb-20">
+          <div className="pc-public-gallery-shell">
+            <div className="pc-public-gallery-header">
+              <div className="pc-public-gallery-copy">
+                <span className="pc-public-gallery-kicker">
+                  Galeri studio
+                </span>
+                <h2 className="pc-public-gallery-title">
+                  Lihat ruangnya sebelum booking.
+                </h2>
+              </div>
+
+              <p className="pc-public-gallery-subtitle">
+                Preview singkat suasana studio, setup ruangan, dan gear yang tersedia sebelum kamu pilih jadwal.
+              </p>
             </div>
-            <p className="max-w-md text-sm font-bold leading-6 text-stone-300/64">
-              Foto studio membantu kamu memilih sesi dengan konteks yang lebih jelas.
-            </p>
-          </div>
 
-          <div className="pc-scrollbar grid auto-cols-[minmax(250px,31%)] grid-flow-col gap-4 overflow-x-auto pb-4 [scroll-snap-type:x_mandatory] max-lg:auto-cols-[78%]">
-            {featuredPhotos.map((photo, index) => {
-              const displayCaption = getPublicPhotoCaption(photo, index);
+            <div className="pc-public-gallery-grid pc-scrollbar">
+              {featuredPhotos.map((photo, index) => {
+                const displayCaption = getPublicPhotoCaption(photo, index);
 
-              return (
-                <button
-                  key={photo.id || photo.url || index}
-                  type="button"
-                  onClick={() => setLightboxPhoto({ ...photo, displayCaption })}
-                  className="group relative aspect-[4/5] overflow-hidden rounded-[1.5rem] border border-white/10 bg-white/[0.045] shadow-2xl shadow-black/15 [scroll-snap-align:start]"
-                >
-                  <img
-                    src={photo.url}
-                    alt={displayCaption}
-                    loading="lazy"
-                    className="size-full object-cover transition duration-500 group-hover:scale-105"
-                  />
-                  <span className="absolute inset-x-3 bottom-3 rounded-2xl border border-white/10 bg-black/45 px-3 py-2 text-left text-xs font-black text-white/85 shadow-xl shadow-black/20 backdrop-blur-xl">
-                    {displayCaption}
-                  </span>
-                </button>
-              );
-            })}
+                return (
+                  <button
+                    key={photo.id || photo.url || index}
+                    type="button"
+                    onClick={() => setLightboxPhoto({ ...photo, displayCaption })}
+                    className="pc-public-gallery-card group"
+                    aria-label={'Lihat foto studio: ' + displayCaption}
+                  >
+                    <img
+                      src={photo.url}
+                      alt={displayCaption}
+                      loading="lazy"
+                      className="pc-public-gallery-image"
+                    />
+
+                    <span className="pc-public-gallery-sheen" />
+
+                    <span className="pc-public-gallery-caption">
+                      <span>{displayCaption}</span>
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </section>
       )}
