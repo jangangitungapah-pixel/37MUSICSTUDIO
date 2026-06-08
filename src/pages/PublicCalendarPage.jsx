@@ -110,6 +110,33 @@ const PublicCalendarPage = () => {
 
   const gridWrapperRef = useRef(null);
   const lastSlotButtonRef = useRef(null);
+  const themeSwitchTimeoutRef = useRef(null);
+
+  const handleThemeToggle = useCallback(() => {
+    const rootElement = document.documentElement;
+    rootElement.setAttribute('data-theme-switching', 'true');
+
+    if (themeSwitchTimeoutRef.current) {
+      window.clearTimeout(themeSwitchTimeoutRef.current);
+    }
+
+    themeSwitchTimeoutRef.current = window.setTimeout(() => {
+      rootElement.removeAttribute('data-theme-switching');
+      themeSwitchTimeoutRef.current = null;
+    }, 180);
+
+    toggleTheme();
+  }, [toggleTheme]);
+
+  useEffect(() => {
+    return () => {
+      if (themeSwitchTimeoutRef.current) {
+        window.clearTimeout(themeSwitchTimeoutRef.current);
+      }
+
+      document.documentElement.removeAttribute('data-theme-switching');
+    };
+  }, []);
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth <= 768);
@@ -478,7 +505,7 @@ const PublicCalendarPage = () => {
               <button
                 type="button"
                 className="pc-hero-action-btn pc-hero-theme-btn grid size-11 place-items-center rounded-2xl border border-white/10 bg-white/[0.07] text-stone-100/75 shadow-xl shadow-black/10 backdrop-blur-xl transition hover:-translate-y-0.5 hover:border-white/20 hover:bg-white/[0.11] hover:text-white"
-                onClick={toggleTheme}
+                onClick={handleThemeToggle}
                 aria-label={theme === 'dark' ? 'Aktifkan Light Mode' : 'Aktifkan Dark Mode'}
                 title={theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
               >

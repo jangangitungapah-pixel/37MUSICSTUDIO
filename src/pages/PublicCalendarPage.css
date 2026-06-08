@@ -3695,3 +3695,62 @@
     padding: 0.58rem !important;
   }
 }
+
+/* ──────────────────────────────────────────────────────────────────────────
+   37 PUBLIC CALENDAR FAST THEME SWITCH 8.1K
+   --------------------------------------------------------------------------
+   Prevents dark/light mode toggle from feeling heavy.
+   During the 180ms theme flip window, expensive transitions are disabled.
+   Hover/micro animations return normally right after the switch.
+   ────────────────────────────────────────────────────────────────────────── */
+
+html[data-theme-switching="true"] .pc-modern,
+html[data-theme-switching="true"] .pc-modern *,
+html[data-theme-switching="true"] .pc-modern *::before,
+html[data-theme-switching="true"] .pc-modern *::after {
+  transition: none !important;
+  animation: none !important;
+  scroll-behavior: auto !important;
+}
+
+html[data-theme-switching="true"] .pc-modern .pc-hero-bg img,
+html[data-theme-switching="true"] .pc-modern .pc-hero-overlay,
+html[data-theme-switching="true"] .pc-modern .pc-hero-card,
+html[data-theme-switching="true"] .pc-modern .pc-board-panel,
+html[data-theme-switching="true"] .pc-modern .pc-period-toolbar,
+html[data-theme-switching="true"] .pc-modern .pc-calendar-panel,
+html[data-theme-switching="true"] .pc-modern .pc-public-gallery-card,
+html[data-theme-switching="true"] .pc-modern .pc-booking-modal-overlay,
+html[data-theme-switching="true"] .pc-modern .pc-booking-modal-panel {
+  transition: none !important;
+  will-change: auto !important;
+}
+
+html[data-theme-switching="true"] .pc-modern .pc-hero-brand,
+html[data-theme-switching="true"] .pc-modern .pc-hero-action-btn,
+html[data-theme-switching="true"] .pc-modern .pc-hero-card,
+html[data-theme-switching="true"] .pc-modern .pc-hero-kicker,
+html[data-theme-switching="true"] .pc-modern .pc-hero-stat,
+html[data-theme-switching="true"] .pc-modern .pc-board-panel,
+html[data-theme-switching="true"] .pc-modern .pc-period-toolbar,
+html[data-theme-switching="true"] .pc-modern .pc-calendar-panel,
+html[data-theme-switching="true"] .pc-modern .pc-public-gallery-caption,
+html[data-theme-switching="true"] .pc-modern .pc-booking-modal-panel,
+html[data-theme-switching="true"] .pc-modern .pc-booking-modal-header {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+html[data-theme-switching="true"] .pc-modern .pc-hero-bg img {
+  transition: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-theme-switching="true"] .pc-modern,
+  html[data-theme-switching="true"] .pc-modern *,
+  html[data-theme-switching="true"] .pc-modern *::before,
+  html[data-theme-switching="true"] .pc-modern *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+}
