@@ -2510,3 +2510,80 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ──────────────────────────────────────────────────────────────────────────
+   37 PUBLIC CALENDAR BOOKING DURATION TIGHTEN 8.1F
+   --------------------------------------------------------------------------
+   Tightens the number + JAM spacing inside booking duration buttons.
+   Keeps the premium capsule look but removes the vertical gap feel.
+   ────────────────────────────────────────────────────────────────────────── */
+
+.pc-modern .pc-booking-duration-grid {
+  gap: 0.5rem !important;
+}
+
+.pc-modern .pc-booking-duration-btn {
+  min-height: 52px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0.08rem !important;
+  padding: 0.58rem 0.45rem !important;
+  line-height: 1 !important;
+}
+
+.pc-modern .pc-booking-duration-btn strong {
+  display: block !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  font-size: 1.02rem !important;
+  line-height: 0.95 !important;
+  font-weight: 950 !important;
+}
+
+.pc-modern .pc-booking-duration-btn span {
+  display: block !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  font-size: 0.58rem !important;
+  line-height: 1 !important;
+  font-weight: 950 !important;
+  letter-spacing: 0.105em !important;
+}
+
+.pc-modern .pc-booking-duration-btn-active strong {
+  transform: translateY(0.03rem);
+}
+
+.pc-modern .pc-booking-duration-btn-active span {
+  transform: translateY(-0.01rem);
+}
+
+@media (max-width: 720px) {
+  .pc-modern .pc-booking-duration-grid {
+    gap: 0.38rem !important;
+  }
+
+  .pc-modern .pc-booking-duration-btn {
+    min-height: 46px !important;
+    gap: 0.06rem !important;
+    padding: 0.5rem 0.35rem !important;
+  }
+
+  .pc-modern .pc-booking-duration-btn strong {
+    font-size: 0.95rem !important;
+    line-height: 0.95 !important;
+  }
+
+  .pc-modern .pc-booking-duration-btn span {
+    font-size: 0.52rem !important;
+    line-height: 1 !important;
+  }
+}
+
+@media (max-width: 390px) {
+  .pc-modern .pc-booking-duration-btn {
+    min-height: 44px !important;
+  }
+}
