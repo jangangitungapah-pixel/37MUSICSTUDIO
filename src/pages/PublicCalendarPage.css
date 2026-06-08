@@ -539,3 +539,264 @@
     padding: 0.98rem !important;
   }
 }
+
+/* ──────────────────────────────────────────────────────────────────────────
+   37 PUBLIC CALENDAR HERO MOBILE POLISH 8.1B
+   --------------------------------------------------------------------------
+   Mobile-only hero polish:
+   - tighter but safer topbar spacing
+   - more balanced headline scale
+   - cleaner CTA capsule spacing
+   - compact premium stat cards
+   - keeps text away from card/capsule borders
+   ────────────────────────────────────────────────────────────────────────── */
+
+@media (max-width: 640px) {
+  .pc-modern .pc-hero-section {
+    min-height: auto !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.055);
+  }
+
+  .pc-modern .pc-hero-bg img {
+    opacity: 0.40 !important;
+    filter: blur(2.2px) saturate(0.9) brightness(0.64) !important;
+    transform: scale(1.08) !important;
+  }
+
+  .pc-modern .pc-hero-overlay {
+    background:
+      radial-gradient(circle at 50% 12%, rgba(239, 197, 110, 0.16), transparent 34%),
+      radial-gradient(circle at 10% 28%, rgba(255, 56, 113, 0.12), transparent 38%),
+      radial-gradient(circle at 96% 34%, rgba(88, 224, 233, 0.11), transparent 36%),
+      linear-gradient(180deg, rgba(5, 7, 10, 0.72) 0%, rgba(5, 7, 10, 0.74) 54%, #090b10 100%) !important;
+  }
+
+  .pc-modern .pc-hero-shell {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+
+  .pc-modern .pc-hero-nav {
+    align-items: center !important;
+    gap: 0.55rem !important;
+    padding-top: calc(0.75rem + env(safe-area-inset-top, 0px)) !important;
+  }
+
+  .pc-modern .pc-hero-brand {
+    min-height: 42px !important;
+    max-width: calc(100vw - 8rem) !important;
+    border-radius: 1rem !important;
+    padding-top: 0.28rem !important;
+    padding-bottom: 0.28rem !important;
+    padding-left: 0.28rem !important;
+    padding-right: 0.7rem !important;
+  }
+
+  .pc-modern .pc-hero-brand > span:first-child {
+    width: 2.05rem !important;
+    height: 2.05rem !important;
+    border-radius: 0.8rem !important;
+  }
+
+  .pc-modern .pc-hero-brand > span:first-child img {
+    width: 1.5rem !important;
+    height: 1.5rem !important;
+  }
+
+  .pc-modern .pc-hero-brand > span:last-child {
+    font-size: 0.66rem !important;
+    letter-spacing: -0.025em !important;
+  }
+
+  .pc-modern .pc-hero-actions {
+    gap: 0.45rem !important;
+    flex-shrink: 0 !important;
+  }
+
+  .pc-modern .pc-hero-actions > button,
+  .pc-modern .pc-hero-actions > a {
+    width: 2.45rem !important;
+    height: 2.45rem !important;
+    min-height: 2.45rem !important;
+    border-radius: 1rem !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    justify-content: center !important;
+  }
+
+  .pc-modern .pc-hero-main {
+    min-height: auto !important;
+    padding-top: clamp(2.25rem, 7vh, 3rem) !important;
+    padding-bottom: 3rem !important;
+  }
+
+  .pc-modern .pc-hero-card {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 !important;
+    border: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  .pc-modern .pc-hero-inner {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .pc-modern .pc-hero-kicker {
+    min-height: 32px !important;
+    max-width: min(100%, 320px) !important;
+    margin-bottom: 1rem !important;
+    padding: 0.55rem 0.78rem !important;
+    border-radius: 999px !important;
+    font-size: 0.58rem !important;
+    line-height: 1 !important;
+    letter-spacing: 0.115em !important;
+    color: rgba(255, 93, 132, 0.92) !important;
+    background:
+      linear-gradient(90deg, rgba(239, 197, 110, 0.10), rgba(255, 56, 113, 0.075)),
+      rgba(5, 7, 10, 0.34) !important;
+    box-shadow:
+      0 14px 34px rgba(0, 0, 0, 0.22),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+  }
+
+  .pc-modern .pc-hero-kicker svg {
+    width: 0.85rem !important;
+    height: 0.85rem !important;
+  }
+
+  .pc-modern .pc-hero-title {
+    max-width: 22rem !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    font-size: clamp(3.15rem, 15.5vw, 4.45rem) !important;
+    line-height: 0.92 !important;
+    letter-spacing: -0.02em !important;
+    word-spacing: 0.04em !important;
+    text-shadow:
+      0 18px 46px rgba(0, 0, 0, 0.44),
+      0 0 26px rgba(239, 197, 110, 0.08) !important;
+  }
+
+  .pc-modern .pc-hero-copy {
+    max-width: 21.5rem !important;
+    margin-top: 1rem !important;
+    color: rgba(255, 250, 240, 0.74) !important;
+    font-size: 0.91rem !important;
+    line-height: 1.58 !important;
+    font-weight: 760 !important;
+  }
+
+  .pc-modern .pc-hero-cta-row {
+    width: 100% !important;
+    max-width: 21rem !important;
+    margin-top: 1.45rem !important;
+    gap: 0.7rem !important;
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+  }
+
+  .pc-modern .pc-hero-cta-row a {
+    width: 100% !important;
+    min-width: 0 !important;
+    min-height: 48px !important;
+    padding-left: 0.9rem !important;
+    padding-right: 0.9rem !important;
+    border-radius: 1rem !important;
+    font-size: 0.82rem !important;
+    line-height: 1 !important;
+    white-space: nowrap !important;
+  }
+
+  .pc-modern .pc-hero-cta-row a svg {
+    width: 1rem !important;
+    height: 1rem !important;
+    flex-shrink: 0 !important;
+  }
+
+  .pc-modern .pc-hero-stats {
+    width: 100% !important;
+    max-width: 21.5rem !important;
+    margin-top: 1.65rem !important;
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 0.7rem !important;
+  }
+
+  .pc-modern .pc-hero-stat {
+    min-height: 78px !important;
+    padding: 0.9rem 1rem !important;
+    border-radius: 1.1rem !important;
+    border-color: rgba(255, 255, 255, 0.105) !important;
+    background:
+      radial-gradient(circle at 0% 0%, rgba(239, 197, 110, 0.075), transparent 34%),
+      linear-gradient(180deg, rgba(255, 255, 255, 0.095), rgba(255, 255, 255, 0.042)),
+      rgba(255, 255, 255, 0.050) !important;
+    box-shadow:
+      0 16px 38px rgba(0, 0, 0, 0.19),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+    backdrop-filter: blur(20px) saturate(1.04) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(1.04) !important;
+  }
+
+  .pc-modern .pc-hero-stat-label {
+    margin-bottom: 0.48rem !important;
+    font-size: 0.64rem !important;
+    line-height: 1.1 !important;
+    letter-spacing: 0.085em !important;
+  }
+
+  .pc-modern .pc-hero-stat-label svg {
+    width: 0.92rem !important;
+    height: 0.92rem !important;
+  }
+
+  .pc-modern .pc-hero-stat-value {
+    width: 100% !important;
+    align-items: baseline !important;
+    gap: 0.35rem !important;
+  }
+
+  .pc-modern .pc-hero-stat-value strong,
+  .pc-modern .pc-hero-stat-text {
+    font-size: 1.02rem !important;
+    line-height: 1.1 !important;
+    font-weight: 950 !important;
+  }
+
+  .pc-modern .pc-hero-stat:first-child .pc-hero-stat-value strong {
+    font-size: 1.55rem !important;
+  }
+
+  .pc-modern .pc-hero-stat-value span {
+    font-size: 0.74rem !important;
+    line-height: 1.1 !important;
+    font-weight: 820 !important;
+  }
+}
+
+@media (max-width: 374px) {
+  .pc-modern .pc-hero-shell {
+    padding-left: 0.8rem !important;
+    padding-right: 0.8rem !important;
+  }
+
+  .pc-modern .pc-hero-title {
+    font-size: clamp(2.82rem, 15vw, 3.7rem) !important;
+  }
+
+  .pc-modern .pc-hero-cta-row {
+    grid-template-columns: 1fr !important;
+    max-width: 17rem !important;
+  }
+
+  .pc-modern .pc-hero-stats {
+    max-width: 19rem !important;
+  }
+}
