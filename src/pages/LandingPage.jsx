@@ -1,7 +1,9 @@
 import {
   useEffect,
   useMemo,
-  useState } from 'react';
+  useRef,
+  useState
+} from 'react';
 import { Link,
   useNavigate } from 'react-router-dom';
 import {
@@ -72,6 +74,7 @@ const LandingPage = () => {
   const { studioName, studioAddress, studioPhone, pricePerHour } = usePublicStudioSettings();
   const { gallery: adminGalleryPhotos = [] } = useGalleryStore();
   const { theme, toggleTheme } = useThemeStore();
+  const themeSwitchTimeoutRef = useRef(null);
   const navigate = useNavigate();
 
   const [lightboxPhoto, setLightboxPhoto] = useState(null);
@@ -179,6 +182,31 @@ const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     };
   }, [navigate]);
 
+  useEffect(() => {
+    return () => {
+      if (themeSwitchTimeoutRef.current) {
+        window.clearTimeout(themeSwitchTimeoutRef.current);
+      }
+
+      document.documentElement.removeAttribute('data-theme-switching');
+    };
+  }, []);
+
+  const handleThemeToggle = () => {
+    const rootElement = document.documentElement;
+    rootElement.setAttribute('data-theme-switching', 'true');
+
+    if (themeSwitchTimeoutRef.current) {
+      window.clearTimeout(themeSwitchTimeoutRef.current);
+    }
+
+    themeSwitchTimeoutRef.current = window.setTimeout(() => {
+      rootElement.removeAttribute('data-theme-switching');
+      themeSwitchTimeoutRef.current = null;
+    }, 180);
+
+    toggleTheme();
+  };
   const handleGoogleLogin = async () => {
     setLoginLoading(true);
     setLoginError('');
@@ -239,7 +267,7 @@ const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
           <button
             type="button"
             className="nav-theme-btn grid place-items-center rounded-2xl border border-white/10 bg-white/5 text-stone-100/75 transition hover:-translate-y-0.5 hover:border-amber-300/35 hover:bg-white/10 hover:text-white"
-            onClick={toggleTheme}
+            onClick={handleThemeToggle}
             title={theme === 'dark' ? 'Ganti ke Light Mode' : 'Ganti ke Dark Mode'}
             aria-label={theme === 'dark' ? 'Aktifkan Light Mode' : 'Aktifkan Dark Mode'}
           >

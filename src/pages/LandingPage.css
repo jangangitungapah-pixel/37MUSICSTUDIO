@@ -8614,3 +8614,65 @@ body[data-theme="light"]:has(.landing-container) #root {
     padding: 1rem !important;
   }
 }
+
+/* ──────────────────────────────────────────────────────────────────────────
+   37 LANDING FAST THEME SWITCH 8.3F
+   --------------------------------------------------------------------------
+   Makes Landing Page theme switching feel instant like Public Calendar:
+   - disables heavy transitions during theme flip
+   - temporarily removes expensive backdrop filters
+   - prevents hero image/filter repaint from feeling sluggish
+   ────────────────────────────────────────────────────────────────────────── */
+
+html[data-theme-switching="true"] .landing-container,
+html[data-theme-switching="true"] .landing-container *,
+html[data-theme-switching="true"] .landing-container *::before,
+html[data-theme-switching="true"] .landing-container *::after {
+  transition: none !important;
+  animation: none !important;
+  scroll-behavior: auto !important;
+}
+
+html[data-theme-switching="true"] .landing-container .landing-nav,
+html[data-theme-switching="true"] .landing-container .nav-links,
+html[data-theme-switching="true"] .landing-container .mobile-nav-menu,
+html[data-theme-switching="true"] .landing-container .nav-login-dropdown,
+html[data-theme-switching="true"] .landing-container .hero-login-panel,
+html[data-theme-switching="true"] .landing-container .hero-native-field,
+html[data-theme-switching="true"] .landing-container .hero-trust-strip > div,
+html[data-theme-switching="true"] .landing-container .experience-card,
+html[data-theme-switching="true"] .landing-container .flow-step,
+html[data-theme-switching="true"] .landing-container .landing-gallery-card,
+html[data-theme-switching="true"] .landing-container .pricing-copy,
+html[data-theme-switching="true"] .landing-container .price-card,
+html[data-theme-switching="true"] .landing-container .proof-grid div,
+html[data-theme-switching="true"] .landing-container .footer-brand,
+html[data-theme-switching="true"] .landing-container .footer-contact,
+html[data-theme-switching="true"] .landing-container .footer-map {
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+
+html[data-theme-switching="true"] .landing-container .hero-background img,
+html[data-theme-switching="true"] .landing-container .landing-gallery-media img,
+html[data-theme-switching="true"] .landing-container .map-container iframe,
+html[data-theme-switching="true"] .landing-container .footer-map iframe {
+  transition: none !important;
+  animation: none !important;
+}
+
+html[data-theme-switching="true"] .landing-container .hero-background img {
+  will-change: auto !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing-container,
+  .landing-container *,
+  .landing-container *::before,
+  .landing-container *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+  }
+}
