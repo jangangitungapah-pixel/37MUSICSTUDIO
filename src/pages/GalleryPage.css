@@ -5890,3 +5890,94 @@
 }
 
 /* === END GALLERY LIGHTBOX CONTROLS FORCE PHASE 8.5.2 === */
+
+/* === START GALLERY MOBILE SHELL LIGHTBOX HOTFIX PHASE 8.5.3 === */
+
+/*
+  Phase 8.5.3 scope:
+  - Hide AdminShell mobile header and bottom nav while Gallery lightbox is open.
+  - Uses body.gallery-lightbox-open added by GalleryPage useEffect.
+  - Also includes :has fallback/support for modern browsers.
+*/
+
+body.gallery-lightbox-open {
+  overflow: hidden !important;
+  touch-action: none;
+}
+
+body.gallery-lightbox-open .mobile-command-header,
+body.gallery-lightbox-open .bottom-nav-bar {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+body.gallery-lightbox-open .mobile-command-header {
+  transform: translate3d(0, -140%, 0) !important;
+  z-index: 0 !important;
+}
+
+body.gallery-lightbox-open .bottom-nav-bar {
+  transform: translate3d(-50%, 140%, 0) !important;
+  z-index: 0 !important;
+}
+
+body.gallery-lightbox-open .gallery-lightbox-modern,
+body.gallery-lightbox-open .gallery-lightbox-overlay {
+  z-index: 2147483600 !important;
+}
+
+body.gallery-lightbox-open .lightbox-control-btn,
+body.gallery-lightbox-open .lightbox-close-modern,
+body.gallery-lightbox-open .lightbox-gear-modern,
+body.gallery-lightbox-open .lightbox-settings-panel-modern {
+  z-index: 2147483647 !important;
+}
+
+@supports selector(body:has(.gallery-lightbox-modern)) {
+  body:has(.gallery-lightbox-modern) .mobile-command-header,
+  body:has(.gallery-lightbox-modern) .bottom-nav-bar {
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+  }
+
+  body:has(.gallery-lightbox-modern) .mobile-command-header {
+    transform: translate3d(0, -140%, 0) !important;
+    z-index: 0 !important;
+  }
+
+  body:has(.gallery-lightbox-modern) .bottom-nav-bar {
+    transform: translate3d(-50%, 140%, 0) !important;
+    z-index: 0 !important;
+  }
+}
+
+@media (max-width: 768px) {
+  body.gallery-lightbox-open .gallery-lightbox-modern {
+    padding-top: max(54px, calc(env(safe-area-inset-top, 0px) + 48px)) !important;
+  }
+
+  body.gallery-lightbox-open .gallery-lightbox-modern .lightbox-close,
+  body.gallery-lightbox-open .gallery-lightbox-modern .lightbox-gear-btn,
+  body.gallery-lightbox-open .gallery-lightbox-modern .lightbox-control-btn,
+  body.gallery-lightbox-open .gallery-lightbox-modern .lightbox-close-modern,
+  body.gallery-lightbox-open .gallery-lightbox-modern .lightbox-gear-modern {
+    top: max(14px, calc(env(safe-area-inset-top, 0px) + 14px)) !important;
+    z-index: 2147483647 !important;
+  }
+
+  body.gallery-lightbox-open .gallery-lightbox-modern .lightbox-body-modern {
+    max-height: calc(100dvh - 72px) !important;
+  }
+
+  body.gallery-lightbox-open .gallery-lightbox-modern .lightbox-image-stage {
+    max-height: 60dvh !important;
+  }
+
+  body.gallery-lightbox-open .gallery-lightbox-modern .lightbox-image-stage img {
+    max-height: calc(60dvh - 14px) !important;
+  }
+}
+
+/* === END GALLERY MOBILE SHELL LIGHTBOX HOTFIX PHASE 8.5.3 === */

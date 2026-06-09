@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef } from 'react';
+import { useState, useMemo, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useGalleryStore } from '../store/useGalleryStore';
 import { 
@@ -34,6 +34,17 @@ const GalleryPage = () => {
   // Lightbox state
   const [lightboxPhoto, setLightboxPhoto] = useState(null);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+
+  // Keep global mobile shell below Gallery lightbox.
+  useEffect(() => {
+    if (typeof document === 'undefined') return undefined;
+
+    document.body.classList.toggle('gallery-lightbox-open', Boolean(lightboxPhoto));
+
+    return () => {
+      document.body.classList.remove('gallery-lightbox-open');
+    };
+  }, [lightboxPhoto]);
   
   // Album Form State
   const [newAlbumName, setNewAlbumName] = useState('');
