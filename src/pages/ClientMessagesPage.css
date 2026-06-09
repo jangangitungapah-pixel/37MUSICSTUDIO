@@ -3266,3 +3266,448 @@
   }
 }
 /* === END 37 ADMIN MESSAGES PHASE 3 OPERATIONAL MESSAGE CARD === */
+
+/* === START 37 ADMIN MESSAGES PHASE 4 CONTROL DECK STATES === */
+.messages-page {
+  --messages-control-ink: #fffaf0;
+  --messages-control-soft: rgba(255, 250, 240, 0.70);
+  --messages-control-muted: rgba(255, 250, 240, 0.50);
+  --messages-control-line: rgba(255, 255, 255, 0.105);
+}
+
+.messages-page .messages-toolbar.messages-control-deck {
+  position: sticky;
+  top: max(10px, env(safe-area-inset-top, 0px));
+  z-index: 8;
+  display: grid;
+  grid-template-columns: minmax(220px, 0.52fr) minmax(0, 1fr);
+  align-items: stretch;
+  gap: clamp(10px, 1.5vw, 14px);
+  padding: clamp(10px, 1.5vw, 14px);
+  overflow: hidden;
+  border: 1px solid var(--messages-control-line);
+  border-radius: clamp(22px, 2.4vw, 30px);
+  background:
+    radial-gradient(circle at 8% 0%, rgba(var(--accent-cyan-rgb), 0.12), transparent 34%),
+    radial-gradient(circle at 90% 12%, rgba(239, 197, 110, 0.105), transparent 34%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.072), rgba(255, 255, 255, 0.022)),
+    rgba(9, 13, 20, 0.78);
+  box-shadow:
+    0 20px 58px rgba(0, 0, 0, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.080);
+  -webkit-backdrop-filter: blur(24px) saturate(1.07);
+  backdrop-filter: blur(24px) saturate(1.07);
+}
+
+.messages-page .messages-toolbar.messages-control-deck::after {
+  content: "";
+  position: absolute;
+  inset-inline: clamp(18px, 6vw, 82px);
+  top: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(var(--accent-cyan-rgb), 0.32), rgba(239, 197, 110, 0.30), transparent);
+  pointer-events: none;
+}
+
+.messages-page .messages-toolbar-copy {
+  position: relative;
+  display: grid;
+  align-content: center;
+  gap: 5px;
+  min-width: 0;
+  padding: 13px 15px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.082);
+  border-radius: 20px;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(var(--accent-pink-rgb), 0.075), transparent 38%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.052), rgba(255, 255, 255, 0.014)),
+    rgba(255, 255, 255, 0.030);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.052);
+}
+
+.messages-page .messages-toolbar-copy span {
+  color: rgba(var(--accent-cyan-rgb), 0.94);
+  font-size: 0.68rem;
+  font-weight: 950;
+  line-height: 1;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+.messages-page .messages-toolbar-copy strong {
+  color: var(--messages-control-ink);
+  font-size: clamp(1rem, 1.2vw, 1.15rem);
+  line-height: 1.1;
+  font-weight: 950;
+  letter-spacing: -0.015em;
+}
+
+.messages-page .messages-toolbar-copy small {
+  max-width: 36rem;
+  color: var(--messages-control-muted);
+  font-size: 0.78rem;
+  line-height: 1.35;
+  font-weight: 720;
+}
+
+.messages-page .messages-toolbar-controls {
+  display: grid;
+  grid-template-columns: minmax(260px, auto) minmax(260px, 1fr);
+  align-items: stretch;
+  justify-content: end;
+  gap: clamp(9px, 1.3vw, 12px);
+  min-width: 0;
+}
+
+.messages-page .messages-control-deck .messages-filter-tabs {
+  width: 100%;
+  min-height: 54px;
+  justify-content: flex-start;
+  padding: 6px;
+  border-radius: 19px;
+  border-color: rgba(255, 255, 255, 0.088);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.058), rgba(255, 255, 255, 0.016)),
+    rgba(0, 0, 0, 0.18);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.055),
+    0 12px 28px rgba(0, 0, 0, 0.14);
+}
+
+.messages-page .messages-control-deck .messages-filter-tabs button {
+  min-height: 42px;
+  min-width: max-content;
+  padding-inline: 16px;
+  border-radius: 15px;
+  color: rgba(255, 250, 240, 0.66);
+  font-weight: 900;
+}
+
+.messages-page .messages-control-deck .messages-filter-tabs button.active {
+  color: #140f08;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.42), transparent 58%),
+    linear-gradient(135deg, #ffe4a6 0%, #efc56e 52%, #d49a3e 100%);
+  box-shadow:
+    0 16px 34px rgba(239, 197, 110, 0.20),
+    inset 0 1px 0 rgba(255, 255, 255, 0.42);
+}
+
+.messages-page .messages-control-deck .messages-search {
+  min-height: 54px;
+  border-radius: 19px;
+  padding-inline: 16px;
+  border-color: rgba(255, 255, 255, 0.090);
+  background:
+    radial-gradient(circle at 0% 50%, rgba(var(--accent-cyan-rgb), 0.070), transparent 38%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.058), rgba(255, 255, 255, 0.016)),
+    rgba(255, 255, 255, 0.028);
+}
+
+.messages-page .messages-control-deck .messages-search input {
+  font-size: 0.9rem;
+  font-weight: 780;
+}
+
+.messages-page .messages-control-deck .messages-search:focus-within {
+  border-color: rgba(var(--accent-cyan-rgb), 0.38);
+  box-shadow:
+    0 0 0 3px rgba(var(--accent-cyan-rgb), 0.095),
+    0 18px 36px rgba(0, 0, 0, 0.17),
+    inset 0 1px 0 rgba(255, 255, 255, 0.075);
+}
+
+.messages-page .messages-state-card {
+  position: relative;
+}
+
+.messages-page .messages-alert.messages-state-card {
+  min-height: 58px;
+  border-radius: 20px;
+  border-color: rgba(var(--accent-pink-rgb), 0.22);
+  background:
+    radial-gradient(circle at 0% 0%, rgba(var(--accent-pink-rgb), 0.16), transparent 36%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.064), rgba(255, 255, 255, 0.018)),
+    rgba(28, 12, 20, 0.68);
+}
+
+.messages-page .messages-empty.messages-state-card {
+  min-height: clamp(310px, 42vh, 470px);
+  border-radius: clamp(22px, 2.6vw, 30px);
+  border-color: rgba(255, 255, 255, 0.108);
+  background:
+    radial-gradient(circle at 50% 0%, rgba(239, 197, 110, 0.12), transparent 34%),
+    radial-gradient(circle at 9% 88%, rgba(var(--accent-cyan-rgb), 0.10), transparent 32%),
+    radial-gradient(circle at 92% 82%, rgba(var(--accent-pink-rgb), 0.070), transparent 32%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.066), rgba(255, 255, 255, 0.018)),
+    rgba(255, 255, 255, 0.030);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.075),
+    0 20px 56px rgba(0, 0, 0, 0.18);
+}
+
+.messages-page .messages-empty.messages-state-card::after {
+  content: "";
+  position: absolute;
+  inset-inline: clamp(24px, 8vw, 110px);
+  top: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(239, 197, 110, 0.35), rgba(var(--accent-cyan-rgb), 0.25), transparent);
+  pointer-events: none;
+}
+
+.messages-page .messages-empty-orbit {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.messages-page .messages-empty-orbit span {
+  position: absolute;
+  display: block;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.065);
+  opacity: 0.65;
+}
+
+.messages-page .messages-empty-orbit span:first-child {
+  width: clamp(150px, 22vw, 270px);
+  aspect-ratio: 1;
+  top: 50%;
+  left: 50%;
+  background: radial-gradient(circle, rgba(239, 197, 110, 0.12), transparent 62%);
+  transform: translate(-50%, -50%);
+}
+
+.messages-page .messages-empty-orbit span:last-child {
+  width: clamp(88px, 12vw, 150px);
+  aspect-ratio: 1;
+  right: 12%;
+  bottom: 14%;
+  background: radial-gradient(circle, rgba(var(--accent-cyan-rgb), 0.11), transparent 62%);
+}
+
+.messages-page .messages-empty.messages-state-card > svg {
+  width: 58px;
+  height: 58px;
+  padding: 16px;
+  border-radius: 21px;
+}
+
+.messages-page .messages-empty.messages-state-card strong {
+  font-size: clamp(1.12rem, 1.55vw, 1.38rem);
+}
+
+.messages-page .messages-empty.messages-state-card p {
+  max-width: 560px;
+}
+
+.messages-page .messages-empty.is-loading > svg {
+  color: rgba(var(--accent-cyan-rgb), 0.94);
+  border-color: rgba(var(--accent-cyan-rgb), 0.20);
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.16), transparent 58%),
+    rgba(var(--accent-cyan-rgb), 0.10);
+}
+
+.messages-page .messages-empty.is-search-empty > svg {
+  color: rgba(var(--accent-pink-rgb), 0.92);
+  border-color: rgba(var(--accent-pink-rgb), 0.20);
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.16), transparent 58%),
+    rgba(var(--accent-pink-rgb), 0.095);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .messages-page .messages-control-deck .messages-filter-tabs button:hover {
+    transform: translateY(-1px);
+  }
+}
+
+[data-theme="light"] .messages-page {
+  --messages-control-ink: rgba(31, 25, 18, 0.95);
+  --messages-control-soft: rgba(45, 38, 28, 0.68);
+  --messages-control-muted: rgba(45, 38, 28, 0.52);
+  --messages-control-line: rgba(86, 66, 37, 0.125);
+}
+
+[data-theme="light"] .messages-page .messages-toolbar.messages-control-deck {
+  border-color: rgba(86, 66, 37, 0.13);
+  background:
+    radial-gradient(circle at 8% 0%, rgba(35, 176, 191, 0.13), transparent 34%),
+    radial-gradient(circle at 90% 12%, rgba(239, 197, 110, 0.15), transparent 34%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.76), rgba(255, 255, 255, 0.40)),
+    rgba(255, 250, 241, 0.76);
+  box-shadow:
+    0 18px 50px rgba(72, 54, 30, 0.10),
+    inset 0 1px 0 rgba(255, 255, 255, 0.76);
+}
+
+[data-theme="light"] .messages-page .messages-toolbar-copy,
+[data-theme="light"] .messages-page .messages-control-deck .messages-filter-tabs,
+[data-theme="light"] .messages-page .messages-control-deck .messages-search {
+  border-color: rgba(86, 66, 37, 0.11);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.66), rgba(255, 255, 255, 0.34)),
+    rgba(255, 250, 241, 0.50);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.72),
+    0 10px 24px rgba(72, 54, 30, 0.06);
+}
+
+[data-theme="light"] .messages-page .messages-toolbar-copy span {
+  color: rgba(20, 139, 153, 0.90);
+}
+
+[data-theme="light"] .messages-page .messages-toolbar-copy strong {
+  color: rgba(31, 25, 18, 0.94);
+}
+
+[data-theme="light"] .messages-page .messages-toolbar-copy small {
+  color: rgba(45, 38, 28, 0.52);
+}
+
+[data-theme="light"] .messages-page .messages-control-deck .messages-filter-tabs button {
+  color: rgba(45, 38, 28, 0.60);
+}
+
+[data-theme="light"] .messages-page .messages-control-deck .messages-filter-tabs button:hover {
+  color: rgba(31, 25, 18, 0.92);
+  background: rgba(255, 255, 255, 0.46);
+}
+
+[data-theme="light"] .messages-page .messages-control-deck .messages-filter-tabs button.active {
+  color: rgba(35, 25, 10, 0.96);
+}
+
+[data-theme="light"] .messages-page .messages-control-deck .messages-search input {
+  color: rgba(31, 25, 18, 0.86);
+}
+
+[data-theme="light"] .messages-page .messages-control-deck .messages-search input::placeholder {
+  color: rgba(45, 38, 28, 0.40);
+}
+
+[data-theme="light"] .messages-page .messages-alert.messages-state-card {
+  border-color: rgba(207, 52, 92, 0.19);
+  color: rgba(126, 27, 52, 0.92);
+  background:
+    radial-gradient(circle at 0% 0%, rgba(207, 52, 92, 0.11), transparent 36%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.38)),
+    rgba(255, 239, 244, 0.60);
+}
+
+[data-theme="light"] .messages-page .messages-empty.messages-state-card {
+  border-color: rgba(86, 66, 37, 0.11);
+  background:
+    radial-gradient(circle at 50% 0%, rgba(239, 197, 110, 0.13), transparent 34%),
+    radial-gradient(circle at 9% 88%, rgba(35, 176, 191, 0.095), transparent 32%),
+    radial-gradient(circle at 92% 82%, rgba(207, 52, 92, 0.060), transparent 32%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.70), rgba(255, 255, 255, 0.36)),
+    rgba(255, 250, 241, 0.56);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.74),
+    0 18px 46px rgba(72, 54, 30, 0.08);
+}
+
+@media (max-width: 1180px) {
+  .messages-page .messages-toolbar.messages-control-deck {
+    grid-template-columns: 1fr;
+  }
+
+  .messages-page .messages-toolbar-controls {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 760px) {
+  .messages-page .messages-toolbar.messages-control-deck {
+    position: relative;
+    top: auto;
+    gap: 9px;
+    padding: 10px;
+    border-radius: 20px;
+  }
+
+  .messages-page .messages-toolbar-copy {
+    padding: 12px 13px;
+    border-radius: 17px;
+  }
+
+  .messages-page .messages-toolbar-copy small {
+    display: none;
+  }
+
+  .messages-page .messages-toolbar-controls {
+    gap: 9px;
+  }
+
+  .messages-page .messages-control-deck .messages-filter-tabs {
+    min-height: 49px;
+    overflow-x: auto;
+    border-radius: 17px;
+    scrollbar-width: none;
+  }
+
+  .messages-page .messages-control-deck .messages-filter-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .messages-page .messages-control-deck .messages-filter-tabs button {
+    min-height: 39px;
+    padding-inline: 13px;
+  }
+
+  .messages-page .messages-control-deck .messages-search {
+    min-height: 49px;
+    border-radius: 17px;
+    padding-inline: 13px;
+  }
+
+  .messages-page .messages-empty.messages-state-card {
+    min-height: 270px;
+    padding: 22px 16px;
+    border-radius: 19px;
+  }
+
+  .messages-page .messages-empty.messages-state-card > svg {
+    width: 50px;
+    height: 50px;
+    padding: 14px;
+    border-radius: 18px;
+  }
+}
+
+@media (max-width: 430px) {
+  .messages-page .messages-toolbar-copy strong {
+    font-size: 0.98rem;
+  }
+
+  .messages-page .messages-control-deck .messages-search input {
+    font-size: 0.86rem;
+  }
+
+  .messages-page .messages-empty.messages-state-card strong {
+    font-size: 1.05rem;
+  }
+
+  .messages-page .messages-empty.messages-state-card p {
+    font-size: 0.88rem;
+  }
+}
+
+@media (hover: none), (pointer: coarse) {
+  .messages-page .messages-control-deck .messages-filter-tabs button:hover {
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .messages-page .messages-control-deck *,
+  .messages-page .messages-state-card * {
+    transition-duration: 0.001ms !important;
+  }
+}
+/* === END 37 ADMIN MESSAGES PHASE 4 CONTROL DECK STATES === */

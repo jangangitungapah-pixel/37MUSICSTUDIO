@@ -230,52 +230,74 @@ const ClientMessagesPage = () => {
       </header>
 
       {error && (
-        <div className="messages-alert">
+        <div className="messages-alert messages-state-card is-error" role="alert">
           <RefreshCw size={16} />
           <span>{error}</span>
         </div>
       )}
 
-      <section className="messages-toolbar">
-        <div className="messages-filter-tabs" aria-label="Filter pesan client">
-          {filterOptions.map((option) => (
-            <button
-              key={option.key}
-              type="button"
-              className={activeFilter === option.key ? 'active' : ''}
-              onClick={() => setActiveFilter(option.key)}
-            >
-              {option.label}
-            </button>
-          ))}
+      <section className="messages-toolbar messages-control-deck" aria-label="Client message control deck">
+        {/* === START 37 ADMIN MESSAGES PHASE 4 CONTROL DECK STATES === */}
+        <div className="messages-toolbar-copy">
+          <span>Control deck</span>
+          <strong>Inbox operations</strong>
+          <small>Filter status, cari client, lalu eksekusi follow up dari ticket card.</small>
         </div>
 
-        <label className="messages-search">
-          <Search size={16} />
-          <input
-            type="search"
-            value={searchTerm}
-            onChange={(event) => setSearchTerm(event.target.value)}
-            placeholder="Cari nama, email, nomor, isi pesan..."
-          />
-        </label>
+        <div className="messages-toolbar-controls">
+          <div className="messages-filter-tabs" aria-label="Filter pesan client">
+            {filterOptions.map((option) => (
+              <button
+                key={option.key}
+                type="button"
+                className={activeFilter === option.key ? 'active' : ''}
+                onClick={() => setActiveFilter(option.key)}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+
+          <label className="messages-search">
+            <Search size={16} />
+            <input
+              type="search"
+              value={searchTerm}
+              onChange={(event) => setSearchTerm(event.target.value)}
+              placeholder="Cari nama, email, nomor, isi pesan..."
+            />
+          </label>
+        </div>
+        {/* === END 37 ADMIN MESSAGES PHASE 4 CONTROL DECK STATES === */}
       </section>
 
       <section className="messages-board">
         {!isLoaded ? (
-          <div className="messages-empty">
+          <div className="messages-empty messages-state-card is-loading" role="status">
+            <div className="messages-empty-orbit" aria-hidden="true">
+              <span />
+              <span />
+            </div>
             <Clock3 size={24} />
             <strong>Memuat pesan client...</strong>
             <p>Sebentar ya, inbox sedang disinkronkan dari Firestore.</p>
           </div>
         ) : sortedMessages.length === 0 ? (
-          <div className="messages-empty">
+          <div className="messages-empty messages-state-card is-empty">
+            <div className="messages-empty-orbit" aria-hidden="true">
+              <span />
+              <span />
+            </div>
             <Mail size={24} />
             <strong>Belum ada pesan client.</strong>
             <p>Pesan yang dikirim dari client portal akan muncul di halaman ini.</p>
           </div>
         ) : filteredMessages.length === 0 ? (
-          <div className="messages-empty">
+          <div className="messages-empty messages-state-card is-search-empty">
+            <div className="messages-empty-orbit" aria-hidden="true">
+              <span />
+              <span />
+            </div>
             <Search size={24} />
             <strong>Tidak ada pesan yang cocok.</strong>
             <p>Coba ganti filter atau kata kunci pencarian.</p>
