@@ -5518,3 +5518,541 @@ tr:hover
   }
 }
 /* === END PHASE 9.1E CUSTOMER DETAIL MODAL POLISH === */
+
+/* === START PHASE 9.1E-1 CUSTOMER DETAIL SHEET HOTFIX === */
+/*
+  Customer Detail Sheet Hotfix
+  Screenshot issues:
+  - horizontal scrollbar appears inside customer detail sheet
+  - mobile header is too tall
+  - membership/stat/timeline cards can force overflow
+  - footer actions need cleaner safe zone
+  Scope:
+  - CSS-only
+  - no JSX/store/business workflow changes
+  - safe to rerun by marker
+*/
+
+.customers-page .customer-detail-panel {
+  max-width: 100%;
+  overflow: hidden !important;
+  overscroll-behavior: contain;
+}
+
+.customers-page .customer-detail-panel,
+.customers-page .customer-detail-panel *,
+.customers-page .customer-detail-panel *::before,
+.customers-page .customer-detail-panel *::after {
+  box-sizing: border-box;
+}
+
+.customers-page .detail-panel-header,
+.customers-page .detail-panel-body,
+.customers-page .detail-panel-footer,
+.customers-page .detail-section,
+.customers-page .client-link-action-card,
+.customers-page .client-link-action-head,
+.customers-page .client-link-suggestions,
+.customers-page .client-link-suggestion,
+.customers-page .client-link-empty,
+.customers-page .professional-profile-section,
+.customers-page .customer-pro-card,
+.customers-page .membership-tier-card,
+.customers-page .stat-grid,
+.customers-page .customer-booking-timeline,
+.customers-page .customer-booking-item,
+.customers-page .detail-notes,
+.customers-page .wa-crm-buttons {
+  max-width: 100%;
+  min-width: 0;
+}
+
+.customers-page .detail-panel-body {
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  scrollbar-gutter: auto;
+}
+
+.customers-page .detail-panel-body > * {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.customers-page .detail-panel-header {
+  flex-wrap: wrap;
+  justify-content: center;
+  text-align: center;
+}
+
+.customers-page .detail-panel-header h3 {
+  flex: 0 1 100%;
+  order: 2;
+  margin: 0;
+  text-align: center;
+}
+
+.customers-page .detail-panel-header .status-badge {
+  order: 3;
+  margin-inline: auto;
+}
+
+.customers-page .detail-panel-close {
+  position: absolute;
+  top: 0.8rem;
+  right: 0.8rem;
+  margin-left: 0;
+}
+
+.customers-page .detail-avatar {
+  order: 1;
+  margin-inline: auto;
+}
+
+.customers-page .section-title {
+  width: 100%;
+  overflow: hidden;
+}
+
+.customers-page .section-title::after {
+  min-width: 24px;
+}
+
+.customers-page .detail-item,
+.customers-page .client-link-action-card,
+.customers-page .client-link-empty,
+.customers-page .detail-notes {
+  overflow: hidden;
+}
+
+.customers-page .detail-item span,
+.customers-page .client-link-action-head strong,
+.customers-page .client-link-action-head span,
+.customers-page .client-link-action-card p,
+.customers-page .client-link-action-card small,
+.customers-page .client-link-empty span,
+.customers-page .detail-notes {
+  overflow-wrap: anywhere;
+  word-break: normal;
+}
+
+.customers-page .client-link-action-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.customers-page .client-link-suggestion {
+  grid-template-columns: 26px minmax(0, 1fr) auto;
+  overflow: hidden;
+}
+
+.customers-page .client-link-suggestion strong,
+.customers-page .client-link-suggestion small {
+  max-width: 100%;
+}
+
+.customers-page .professional-profile-section {
+  overflow: hidden;
+}
+
+.customers-page .customer-pro-card {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.customers-page .customer-pro-card > div {
+  min-width: 0;
+}
+
+.customers-page .customer-pro-card strong {
+  max-width: 100%;
+}
+
+.customers-page .membership-tier-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  overflow: hidden;
+}
+
+.customers-page .tier-info {
+  min-width: 0;
+}
+
+.customers-page .tier-info > div {
+  min-width: 0;
+}
+
+.customers-page .tier-name,
+.customers-page .tier-next {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.customers-page .tier-points {
+  min-width: 74px;
+}
+
+.customers-page .points-value {
+  max-width: 100%;
+  font-size: clamp(1.55rem, 4vw, 2.1rem);
+  white-space: nowrap;
+}
+
+.customers-page .stat-grid.stat-grid-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.customers-page .mini-stat {
+  min-width: 0;
+  overflow: hidden;
+  padding-inline: 0.55rem;
+}
+
+.customers-page .mini-stat-value {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.customers-page .mini-stat-label {
+  max-width: 100%;
+  line-height: 1.15;
+}
+
+.customers-page .customer-booking-item {
+  display: grid;
+  grid-template-columns: 9px minmax(0, 1fr) auto;
+  align-items: center;
+  column-gap: 0.7rem;
+  overflow: hidden;
+}
+
+.customers-page .customer-booking-item::before {
+  width: 9px;
+  min-width: 9px;
+  height: 38px;
+}
+
+.customers-page .customer-booking-item > div {
+  min-width: 0;
+}
+
+.customers-page .customer-booking-item strong,
+.customers-page .customer-booking-item span {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.customers-page .customer-booking-item small {
+  min-width: 42px;
+  max-width: 58px;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.customers-page .detail-panel-footer {
+  overflow: hidden;
+}
+
+.customers-page .wa-crm-buttons {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.customers-page .wa-btn,
+.customers-page .btn-edit-full {
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.customers-page .wa-btn {
+  padding-inline: 0.58rem;
+}
+
+.customers-page .wa-btn svg,
+.customers-page .btn-edit-full svg {
+  flex: 0 0 auto;
+}
+
+.customers-page .wa-btn,
+.customers-page .btn-edit-full {
+  white-space: nowrap;
+}
+
+@media (max-width: 920px) {
+  .customers-page .customer-detail-panel {
+    left: 10px !important;
+    right: 10px !important;
+    width: calc(100vw - 20px) !important;
+    max-width: calc(100vw - 20px) !important;
+    max-height: min(76dvh, calc(100dvh - 6.8rem)) !important;
+    bottom: calc(5.15rem + env(safe-area-inset-bottom)) !important;
+    border-radius: 1.25rem !important;
+    display: grid !important;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+  }
+
+  .customers-page .detail-panel-header {
+    min-height: unset !important;
+    padding: 0.8rem 2.8rem 0.72rem !important;
+    gap: 0.34rem !important;
+  }
+
+  .customers-page .detail-avatar {
+    width: 42px !important;
+    height: 42px !important;
+    border-radius: 0.95rem !important;
+    font-size: 1.12rem !important;
+  }
+
+  .customers-page .detail-avatar::after {
+    filter: blur(7px);
+  }
+
+  .customers-page .detail-panel-header h3 {
+    font-size: 0.98rem !important;
+    line-height: 1.1 !important;
+  }
+
+  .customers-page .detail-panel-header .status-badge {
+    min-height: 24px !important;
+    padding: 0 0.65rem !important;
+    font-size: 0.62rem !important;
+  }
+
+  .customers-page .detail-panel-close {
+    top: 0.72rem !important;
+    right: 0.72rem !important;
+    width: 30px !important;
+    height: 30px !important;
+  }
+
+  .customers-page .detail-panel-body {
+    min-height: 0 !important;
+    max-height: none !important;
+    padding: 0.82rem !important;
+    gap: 0.82rem !important;
+  }
+
+  .customers-page .detail-section {
+    gap: 0.48rem !important;
+  }
+
+  .customers-page .section-title {
+    min-height: 24px !important;
+    font-size: 0.62rem !important;
+  }
+
+  .customers-page .client-link-action-card,
+  .customers-page .professional-profile-section,
+  .customers-page .membership-tier-card,
+  .customers-page .detail-notes,
+  .customers-page .customer-booking-item,
+  .customers-page .mini-stat,
+  .customers-page .detail-item {
+    border-radius: 0.92rem !important;
+  }
+
+  .customers-page .client-link-action-card {
+    padding: 0.8rem !important;
+  }
+
+  .customers-page .client-link-empty {
+    padding: 0.7rem !important;
+    border-radius: 0.85rem !important;
+  }
+
+  .customers-page .detail-item {
+    min-height: 40px;
+    padding: 0.58rem 0.7rem !important;
+  }
+
+  .customers-page .membership-tier-card {
+    min-height: 76px !important;
+    padding: 0.78rem !important;
+  }
+
+  .customers-page .tier-icon {
+    font-size: 1.55rem !important;
+  }
+
+  .customers-page .tier-name {
+    font-size: 0.86rem !important;
+  }
+
+  .customers-page .tier-next {
+    font-size: 0.66rem !important;
+  }
+
+  .customers-page .points-value {
+    font-size: clamp(1.45rem, 8vw, 2rem) !important;
+  }
+
+  .customers-page .points-label {
+    font-size: 0.58rem !important;
+  }
+
+  .customers-page .mini-stat {
+    min-height: 66px !important;
+  }
+
+  .customers-page .mini-stat-value {
+    font-size: clamp(1rem, 5vw, 1.28rem) !important;
+  }
+
+  .customers-page .mini-stat-label {
+    font-size: 0.58rem !important;
+    letter-spacing: 0.07em !important;
+  }
+
+  .customers-page .customer-booking-item {
+    min-height: 64px;
+    padding: 0.66rem 0.7rem !important;
+  }
+
+  .customers-page .detail-panel-footer {
+    padding: 0.72rem 0.82rem calc(0.78rem + env(safe-area-inset-bottom)) !important;
+  }
+
+  .customers-page .wa-crm-buttons {
+    gap: 0.42rem !important;
+    margin-bottom: 0.55rem !important;
+  }
+
+  .customers-page .wa-btn {
+    min-height: 36px !important;
+    padding-inline: 0.48rem !important;
+    font-size: 0.72rem !important;
+  }
+
+  .customers-page .btn-edit-full {
+    min-height: 38px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .customers-page .customer-detail-panel {
+    left: 8px !important;
+    right: 8px !important;
+    width: calc(100vw - 16px) !important;
+    max-width: calc(100vw - 16px) !important;
+    max-height: min(78dvh, calc(100dvh - 6.2rem)) !important;
+    bottom: calc(4.9rem + env(safe-area-inset-bottom)) !important;
+  }
+
+  .customers-page .detail-panel-header {
+    padding: 0.72rem 2.55rem 0.66rem !important;
+  }
+
+  .customers-page .detail-panel-body {
+    padding: 0.72rem !important;
+    gap: 0.72rem !important;
+  }
+
+  .customers-page .detail-panel-footer {
+    padding-inline: 0.72rem !important;
+  }
+
+  .customers-page .customer-pro-card {
+    grid-template-columns: 1fr !important;
+  }
+
+  .customers-page .stat-grid.stat-grid-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 0.42rem !important;
+  }
+
+  .customers-page .mini-stat {
+    min-height: 62px !important;
+    padding: 0.54rem 0.36rem !important;
+  }
+
+  .customers-page .mini-stat-value {
+    font-size: clamp(0.88rem, 4.6vw, 1.1rem) !important;
+  }
+
+  .customers-page .mini-stat-label {
+    font-size: 0.52rem !important;
+  }
+
+  .customers-page .membership-tier-card {
+    grid-template-columns: minmax(0, 1fr) minmax(58px, auto);
+    gap: 0.52rem;
+  }
+
+  .customers-page .tier-info {
+    gap: 0.52rem !important;
+  }
+
+  .customers-page .points-value {
+    font-size: clamp(1.25rem, 8vw, 1.75rem) !important;
+  }
+
+  .customers-page .customer-booking-item {
+    grid-template-columns: 8px minmax(0, 1fr) minmax(38px, auto);
+    column-gap: 0.55rem;
+  }
+
+  .customers-page .customer-booking-item::before {
+    width: 8px;
+    min-width: 8px;
+  }
+
+  .customers-page .customer-booking-item small {
+    min-width: 36px;
+    max-width: 48px;
+    font-size: 0.68rem !important;
+  }
+
+  .customers-page .wa-btn {
+    gap: 0.28rem !important;
+    font-size: 0.68rem !important;
+  }
+
+  .customers-page .wa-btn svg {
+    width: 13px;
+    height: 13px;
+  }
+}
+
+@media (max-width: 360px) {
+  .customers-page .stat-grid.stat-grid-3 {
+    grid-template-columns: 1fr !important;
+  }
+
+  .customers-page .mini-stat {
+    min-height: 52px !important;
+  }
+
+  .customers-page .wa-crm-buttons {
+    grid-template-columns: 1fr !important;
+  }
+
+  .customers-page .wa-btn {
+    justify-content: center;
+  }
+}
+
+@media (hover: none), (pointer: coarse) {
+  .customers-page .customer-detail-panel {
+    backdrop-filter: blur(8px) saturate(112%) !important;
+    -webkit-backdrop-filter: blur(8px) saturate(112%) !important;
+  }
+
+  .customers-page .detail-panel-body {
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .customers-page .customer-detail-panel,
+  .customers-page .customer-detail-panel * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+/* === END PHASE 9.1E-1 CUSTOMER DETAIL SHEET HOTFIX === */
