@@ -6794,3 +6794,177 @@ body.calendar-move-lock .main-content {
 }
 
 /* 37 ADMIN CALENDAR READABILITY + GRID DENSITY HOTFIX 8.7I END */
+
+/* 37 ADMIN CALENDAR BOOKING CARD TEXT STACK HOTFIX 8.7I-1 START */
+
+/* Prevent booking title and time from colliding inside short calendar rows */
+.calendar-page .booked-cell,
+.calendar-page .timeline-booking-card {
+  display: grid !important;
+  grid-template-rows: minmax(0, 1fr) auto !important;
+  align-items: stretch !important;
+  overflow: hidden !important;
+}
+
+/* Month view rows are short, so use a compact internal rhythm */
+.calendar-page .timeline-view-month .booked-cell,
+.calendar-page .timeline-view-month .timeline-booking-card {
+  padding: 0.34rem 0.62rem 0.26rem !important;
+}
+
+/* Day/week can breathe slightly more */
+.calendar-page .timeline-view-day .booked-cell,
+.calendar-page .timeline-view-day .timeline-booking-card,
+.calendar-page .timeline-view-week .booked-cell,
+.calendar-page .timeline-view-week .timeline-booking-card {
+  padding: 0.48rem 0.68rem 0.34rem !important;
+}
+
+.calendar-page .booking-info {
+  display: grid !important;
+  grid-template-rows: minmax(0, auto) auto !important;
+  align-content: center !important;
+  justify-content: stretch !important;
+  gap: 0.16rem !important;
+  height: auto !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+}
+
+.calendar-page .booking-band-name {
+  display: block !important;
+  width: 100% !important;
+  min-height: 1.02em !important;
+  max-height: 1.08em !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+  line-height: 1.02 !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+/* Keep the time row below the title, never on top of it */
+.calendar-page .booking-meta-row {
+  display: flex !important;
+  align-items: center !important;
+  min-height: 0.95rem !important;
+  height: 0.95rem !important;
+  max-height: 0.95rem !important;
+  gap: 0.32rem !important;
+  overflow: hidden !important;
+  flex-wrap: nowrap !important;
+}
+
+.calendar-page .booking-time-label {
+  display: block !important;
+  min-width: 0 !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+  line-height: 0.95rem !important;
+  height: 0.95rem !important;
+  max-height: 0.95rem !important;
+}
+
+/* REC badge compact mode */
+.calendar-page .rec-indicator {
+  flex-shrink: 0 !important;
+  min-height: 0.86rem !important;
+  height: 0.86rem !important;
+  max-height: 0.86rem !important;
+  padding: 0 0.28rem !important;
+  gap: 0.2rem !important;
+  line-height: 1 !important;
+}
+
+.calendar-page .rec-text {
+  line-height: 1 !important;
+  font-size: 0.48rem !important;
+}
+
+.calendar-page .rec-dot {
+  width: 0.3rem !important;
+  height: 0.3rem !important;
+  min-width: 0.3rem !important;
+}
+
+/* Font sizing tuned for short month rows */
+.calendar-page .timeline-view-month .booking-band-name {
+  font-size: 0.78rem !important;
+  line-height: 1.02 !important;
+}
+
+.calendar-page .timeline-view-month .booking-time-label {
+  font-size: 0.58rem !important;
+  letter-spacing: 0.01em !important;
+}
+
+/* Day/week may stay more readable */
+.calendar-page .timeline-view-day .booking-band-name,
+.calendar-page .timeline-view-week .booking-band-name {
+  font-size: 0.84rem !important;
+}
+
+.calendar-page .timeline-view-day .booking-time-label,
+.calendar-page .timeline-view-week .booking-time-label {
+  font-size: 0.66rem !important;
+}
+
+/* Keep resize handle from stealing vertical space visually */
+.calendar-page .resize-handle,
+.calendar-page .timeline-resize-handle {
+  height: 0.38rem !important;
+  opacity: 0.58 !important;
+}
+
+.calendar-page .resize-line {
+  height: 0.12rem !important;
+}
+
+/* Extra compact safeguard for very short one-hour cards */
+.calendar-page .timeline-view-month .booked-cell[style*="span 1"],
+.calendar-page .timeline-view-month .timeline-booking-card[style*="span 1"] {
+  padding-top: 0.28rem !important;
+  padding-bottom: 0.22rem !important;
+}
+
+/* Light mode parity */
+[data-theme="light"] .calendar-page .booking-band-name {
+  color: rgba(34,27,18,0.96) !important;
+}
+
+[data-theme="light"] .calendar-page .booking-time-label {
+  color: rgba(45,38,28,0.70) !important;
+}
+
+/* Mobile lock */
+@media (max-width: 768px) {
+  .calendar-page .timeline-view-month .booked-cell,
+  .calendar-page .timeline-view-month .timeline-booking-card {
+    padding: 0.28rem 0.48rem 0.22rem !important;
+  }
+
+  .calendar-page .timeline-view-month .booking-band-name {
+    font-size: 0.70rem !important;
+  }
+
+  .calendar-page .timeline-view-month .booking-time-label {
+    font-size: 0.54rem !important;
+  }
+
+  .calendar-page .booking-meta-row,
+  .calendar-page .booking-time-label {
+    height: 0.88rem !important;
+    max-height: 0.88rem !important;
+    line-height: 0.88rem !important;
+  }
+
+  .calendar-page .rec-indicator {
+    height: 0.78rem !important;
+    min-height: 0.78rem !important;
+    max-height: 0.78rem !important;
+  }
+}
+
+/* 37 ADMIN CALENDAR BOOKING CARD TEXT STACK HOTFIX 8.7I-1 END */
