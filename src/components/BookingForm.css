@@ -2509,3 +2509,144 @@ textarea.bf-input,
 }
 
 /* 37 BOOKING MODAL LAYOUT RESET HOTFIX 8.7F-2 END */
+
+/* 37 BOOKING MODAL BUTTON FOOTER HOTFIX 8.7F-3 START */
+
+/* 
+  Button footer fix:
+  Previous sticky footer created a black overlay and covered the note/payment area.
+  Keep actions as a clean normal footer card inside the form flow.
+*/
+
+.booking-form {
+  padding-bottom: 0.92rem !important;
+  scroll-padding-bottom: 1rem !important;
+}
+
+/* Main action wrappers */
+.bf-actions,
+.bf-form-actions {
+  position: relative !important;
+  bottom: auto !important;
+  left: auto !important;
+  right: auto !important;
+  z-index: 3 !important;
+
+  display: grid !important;
+  grid-template-columns: minmax(0, 0.78fr) minmax(0, 1.22fr) !important;
+  gap: 0.62rem !important;
+
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0.42rem 0 0 !important;
+  padding: 0.72rem !important;
+
+  border-radius: 1.18rem !important;
+  border: 1px solid rgba(255,255,255,0.085) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.054), rgba(255,255,255,0.014)),
+    rgba(16,20,29,0.84) !important;
+  box-shadow:
+    0 14px 30px rgba(0,0,0,0.18),
+    inset 0 1px 0 rgba(255,255,255,0.060) !important;
+
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* Button sizing */
+.bf-actions button,
+.bf-form-actions button {
+  width: 100% !important;
+  min-width: 0 !important;
+  min-height: 2.68rem !important;
+  max-height: none !important;
+
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  border-radius: 0.86rem !important;
+  font-family: "Space Grotesk", Inter, system-ui, sans-serif !important;
+  font-size: 0.82rem !important;
+  font-weight: 950 !important;
+  letter-spacing: -0.015em !important;
+}
+
+/* Cancel button calmer */
+.bf-actions .btn-secondary,
+.bf-form-actions .btn-secondary {
+  border: 1px solid rgba(255,255,255,0.085) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.050), rgba(255,255,255,0.012)),
+    rgba(9,12,18,0.50) !important;
+  color: rgba(255,250,240,0.84) !important;
+}
+
+/* Save button stays primary */
+.bf-actions .btn-primary,
+.bf-form-actions .btn-primary {
+  border: 1px solid rgba(255,61,112,0.32) !important;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255,255,255,0.22), transparent 58%),
+    linear-gradient(180deg, #ff477a, #f52f66) !important;
+  color: #fff !important;
+  box-shadow:
+    0 12px 26px rgba(255,61,112,0.24),
+    inset 0 1px 0 rgba(255,255,255,0.18) !important;
+}
+
+/* Make sure the note card above footer has breathing room */
+.bf-section:has(.bf-textarea),
+.bf-section:has(textarea) {
+  margin-bottom: 0 !important;
+}
+
+/* Remove accidental black strip from older sticky footer patches */
+.bf-actions::before,
+.bf-actions::after,
+.bf-form-actions::before,
+.bf-form-actions::after {
+  display: none !important;
+  content: none !important;
+}
+
+/* Light mode */
+[data-theme="light"] .bf-actions,
+[data-theme="light"] .bf-form-actions {
+  border-color: rgba(96,73,41,0.10) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.78), rgba(255,255,255,0.34)),
+    rgba(255,250,241,0.70) !important;
+  box-shadow:
+    0 12px 26px rgba(96,73,41,0.10),
+    inset 0 1px 0 rgba(255,255,255,0.74) !important;
+}
+
+[data-theme="light"] .bf-actions .btn-secondary,
+[data-theme="light"] .bf-form-actions .btn-secondary {
+  border-color: rgba(96,73,41,0.12) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.86), rgba(255,255,255,0.40)),
+    rgba(255,250,241,0.56) !important;
+  color: rgba(34,27,18,0.86) !important;
+}
+
+/* Small modal/mobile */
+@media (max-width: 768px) {
+  .bf-actions,
+  .bf-form-actions {
+    grid-template-columns: 1fr !important;
+    gap: 0.5rem !important;
+    margin-top: 0.35rem !important;
+    padding: 0.62rem !important;
+    border-radius: 1rem !important;
+  }
+
+  .bf-actions button,
+  .bf-form-actions button {
+    min-height: 2.55rem !important;
+  }
+}
+
+/* 37 BOOKING MODAL BUTTON FOOTER HOTFIX 8.7F-3 END */
