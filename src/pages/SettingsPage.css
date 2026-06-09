@@ -1428,3 +1428,419 @@
   }
 }
 
+
+/* === START SETTINGS COMMAND SHELL PHASE 2 === */
+
+/*
+  Phase 2 scope:
+  - Header command center
+  - Save status pill
+  - Compact shell sizing
+  - Early spatial alignment for layout
+  - No business logic, route, store, data model, FCM, backup, restore, or reset behavior touched
+*/
+
+.settings-page {
+  --settings-shell-max: 1240px;
+  --settings-command-radius: clamp(20px, 2vw, 28px);
+  --settings-command-pad-y: clamp(13px, 1.45vw, 18px);
+  --settings-command-pad-x: clamp(14px, 1.85vw, 22px);
+  --settings-gold: 239, 197, 110;
+  --settings-pink: 255, 56, 113;
+  --settings-cyan-soft: rgba(var(--accent-cyan-rgb), 0.12);
+  --settings-glass-line: rgba(255, 255, 255, 0.12);
+  --settings-command-bg:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.096), rgba(255, 255, 255, 0.035)),
+    radial-gradient(circle at 7% 0%, rgba(var(--settings-gold), 0.15), transparent 34%),
+    radial-gradient(circle at 82% 12%, rgba(var(--accent-cyan-rgb), 0.105), transparent 36%),
+    radial-gradient(circle at 100% 100%, rgba(var(--settings-pink), 0.075), transparent 32%),
+    rgba(13, 16, 24, 0.70);
+
+  width: min(100%, var(--settings-shell-max));
+  margin-inline: auto;
+  gap: clamp(14px, 1.7vw, 22px);
+  padding-bottom: max(24px, env(safe-area-inset-bottom, 0px));
+  overflow-x: clip;
+  font-family: 'Space Grotesk', Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.settings-page,
+.settings-page *,
+.settings-page *::before,
+.settings-page *::after {
+  box-sizing: border-box;
+  min-width: 0;
+}
+
+.settings-page .app-page-header.settings-command-shell {
+  position: sticky;
+  top: max(12px, env(safe-area-inset-top, 0px));
+  z-index: 18;
+  display: block;
+  padding: var(--settings-command-pad-y) var(--settings-command-pad-x);
+  border: 1px solid var(--settings-glass-line);
+  border-radius: var(--settings-command-radius);
+  background: var(--settings-command-bg);
+  box-shadow:
+    0 22px 70px rgba(0, 0, 0, 0.26),
+    inset 0 1px 0 rgba(255, 255, 255, 0.09);
+  backdrop-filter: blur(24px) saturate(1.12);
+  -webkit-backdrop-filter: blur(24px) saturate(1.12);
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.settings-page .app-page-header.settings-command-shell::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  background:
+    linear-gradient(90deg, rgba(var(--settings-gold), 0.20), transparent 28%, transparent 70%, rgba(var(--accent-cyan-rgb), 0.14)),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.085), transparent 48%);
+  opacity: 0.72;
+}
+
+.settings-page .app-page-header.settings-command-shell::after {
+  content: "";
+  position: absolute;
+  inset-inline: clamp(18px, 3vw, 42px);
+  top: 0;
+  height: 1px;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, rgba(var(--settings-gold), 0.62), rgba(var(--accent-cyan-rgb), 0.42), transparent);
+  opacity: 0.9;
+}
+
+.settings-page .settings-command-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: clamp(12px, 2vw, 22px);
+}
+
+.settings-page .settings-command-copy {
+  display: flex;
+  align-items: center;
+  gap: clamp(11px, 1.35vw, 16px);
+  min-width: 0;
+}
+
+.settings-page .settings-command-text {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.settings-page .settings-command-eyebrow {
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  border: 1px solid rgba(var(--settings-gold), 0.22);
+  border-radius: 999px;
+  background: rgba(var(--settings-gold), 0.08);
+  padding: 4px 9px;
+  color: rgba(255, 232, 184, 0.92);
+  font-size: 0.64rem;
+  font-weight: 900;
+  letter-spacing: 0.115em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.settings-page .app-page-title {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: clamp(1.38rem, 2.3vw, 2.15rem);
+  font-weight: 900;
+  letter-spacing: -0.045em;
+  line-height: 0.98;
+}
+
+.settings-page .app-page-subtitle {
+  max-width: min(62ch, 100%);
+  margin: 0;
+  color: var(--text-muted);
+  font-size: clamp(0.78rem, 0.94vw, 0.9rem);
+  font-weight: 650;
+  line-height: 1.42;
+}
+
+.settings-page .settings-header-icon {
+  width: clamp(42px, 4.2vw, 52px);
+  height: clamp(42px, 4.2vw, 52px);
+  border-radius: clamp(14px, 1.4vw, 18px);
+  color: rgb(var(--settings-gold));
+  background:
+    linear-gradient(145deg, rgba(var(--settings-gold), 0.18), rgba(var(--accent-cyan-rgb), 0.07)),
+    rgba(255, 255, 255, 0.055);
+  border: 1px solid rgba(var(--settings-gold), 0.22);
+  box-shadow:
+    0 14px 30px rgba(0, 0, 0, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.settings-page .settings-save-cluster {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  flex: 0 0 auto;
+}
+
+.settings-page .settings-state-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 34px;
+  max-width: 180px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.105);
+  background: rgba(255, 255, 255, 0.052);
+  color: rgba(255, 250, 240, 0.70);
+  font-size: 0.72rem;
+  font-weight: 850;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+
+.settings-page .settings-state-pill.saving {
+  border-color: rgba(var(--accent-cyan-rgb), 0.28);
+  background: rgba(var(--accent-cyan-rgb), 0.105);
+  color: var(--accent-cyan);
+}
+
+.settings-page .settings-state-pill.saved {
+  border-color: rgba(var(--success-rgb), 0.28);
+  background: rgba(var(--success-rgb), 0.11);
+  color: rgb(var(--success-rgb));
+}
+
+.settings-page .settings-state-pill.error {
+  border-color: rgba(255, 68, 68, 0.28);
+  background: rgba(255, 68, 68, 0.105);
+  color: #ff7373;
+}
+
+.settings-page .settings-save-btn {
+  min-height: 42px;
+  border-radius: 999px !important;
+  padding: 0 18px !important;
+  gap: 8px;
+  font-size: 0.84rem;
+  font-weight: 900;
+  letter-spacing: -0.015em;
+  box-shadow:
+    0 14px 28px rgba(0, 0, 0, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.22) !important;
+}
+
+.settings-page .settings-save-btn.idle {
+  border-color: rgba(var(--settings-gold), 0.46) !important;
+  background:
+    linear-gradient(135deg, rgba(var(--settings-gold), 1), rgba(221, 159, 65, 1)) !important;
+  color: #1a1208 !important;
+}
+
+.settings-page .settings-save-btn.idle:hover {
+  border-color: rgba(var(--settings-gold), 0.64) !important;
+  background:
+    linear-gradient(135deg, rgba(255, 219, 145, 1), rgba(var(--settings-gold), 1)) !important;
+  box-shadow:
+    0 16px 34px rgba(var(--settings-gold), 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.34) !important;
+  transform: translateY(-1px) !important;
+}
+
+.settings-page .settings-save-btn.saving {
+  border-color: rgba(var(--accent-cyan-rgb), 0.26) !important;
+  background: rgba(var(--accent-cyan-rgb), 0.105) !important;
+  color: var(--accent-cyan) !important;
+  cursor: wait;
+}
+
+.settings-page .settings-save-btn.saved {
+  border-color: rgba(var(--success-rgb), 0.30) !important;
+  background: rgba(var(--success-rgb), 0.13) !important;
+  color: rgb(var(--success-rgb)) !important;
+}
+
+.settings-page .settings-save-btn.error {
+  border-color: rgba(255, 68, 68, 0.32) !important;
+  background: rgba(255, 68, 68, 0.12) !important;
+  color: #ff7373 !important;
+}
+
+.settings-page .settings-save-btn:disabled {
+  opacity: 0.82;
+  transform: none !important;
+}
+
+.settings-page .settings-layout {
+  grid-template-columns: minmax(190px, 218px) minmax(0, 1fr);
+  gap: clamp(14px, 1.65vw, 20px);
+  align-items: start;
+}
+
+@media (max-width: 980px) {
+  .settings-page .settings-state-pill {
+    display: none;
+  }
+
+  .settings-page .settings-layout {
+    grid-template-columns: minmax(172px, 196px) minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .settings-page {
+    width: 100%;
+    gap: 12px;
+    padding-bottom: max(96px, calc(76px + env(safe-area-inset-bottom, 0px))) !important;
+    overflow-x: clip;
+  }
+
+  .settings-page .app-page-header.settings-command-shell {
+    top: max(0px, env(safe-area-inset-top, 0px));
+    padding: 12px;
+    border-radius: 18px;
+  }
+
+  .settings-page .settings-command-top {
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .settings-page .settings-command-copy {
+    width: 100%;
+    gap: 10px;
+  }
+
+  .settings-page .settings-command-eyebrow {
+    padding: 3px 8px;
+    font-size: 0.58rem;
+    letter-spacing: 0.095em;
+  }
+
+  .settings-page .app-page-title {
+    font-size: clamp(1.24rem, 7vw, 1.62rem);
+    line-height: 1;
+  }
+
+  .settings-page .app-page-subtitle {
+    display: -webkit-box;
+    overflow: hidden;
+    font-size: 0.74rem;
+    line-height: 1.35;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+
+  .settings-page .settings-header-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 14px;
+  }
+
+  .settings-page .settings-save-cluster {
+    width: 100%;
+    justify-content: space-between;
+    gap: 10px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.09);
+  }
+
+  .settings-page .settings-state-pill {
+    display: inline-flex;
+    min-height: 32px;
+    max-width: 52%;
+    padding-inline: 10px;
+    font-size: 0.68rem;
+  }
+
+  .settings-page .settings-save-btn {
+    min-height: 40px;
+    padding: 0 15px !important;
+    flex: 0 0 auto;
+  }
+
+  .settings-page .settings-layout {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}
+
+@media (max-width: 420px) {
+  .settings-page .settings-state-pill {
+    max-width: 46%;
+  }
+
+  .settings-page .settings-save-btn {
+    padding-inline: 13px !important;
+  }
+
+  .settings-page .settings-save-btn span {
+    display: inline;
+  }
+}
+
+@media (hover: none) {
+  .settings-page .settings-save-btn.idle:hover {
+    transform: none !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .settings-page *,
+  .settings-page *::before,
+  .settings-page *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+[data-theme="light"] .settings-page {
+  --settings-glass-line: rgba(58, 43, 22, 0.11);
+  --settings-command-bg:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.82), rgba(255, 249, 238, 0.58)),
+    radial-gradient(circle at 7% 0%, rgba(var(--settings-gold), 0.20), transparent 34%),
+    radial-gradient(circle at 82% 12%, rgba(var(--accent-cyan-rgb), 0.11), transparent 36%),
+    radial-gradient(circle at 100% 100%, rgba(var(--settings-pink), 0.065), transparent 32%),
+    rgba(255, 250, 241, 0.82);
+}
+
+[data-theme="light"] .settings-page .app-page-header.settings-command-shell {
+  box-shadow:
+    0 20px 55px rgba(75, 56, 22, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.82);
+}
+
+[data-theme="light"] .settings-page .settings-command-eyebrow {
+  color: #805719;
+  background: rgba(var(--settings-gold), 0.16);
+  border-color: rgba(142, 98, 31, 0.18);
+}
+
+[data-theme="light"] .settings-page .settings-state-pill {
+  color: rgba(46, 37, 26, 0.68);
+  background: rgba(255, 255, 255, 0.62);
+  border-color: rgba(60, 43, 20, 0.10);
+}
+
+[data-theme="light"] .settings-page .settings-state-pill.error {
+  color: #b42323;
+  background: rgba(255, 68, 68, 0.10);
+}
+
+[data-theme="light"] .settings-page .settings-save-cluster {
+  border-top-color: rgba(50, 36, 18, 0.08);
+}
+
+/* === END SETTINGS COMMAND SHELL PHASE 2 === */
+

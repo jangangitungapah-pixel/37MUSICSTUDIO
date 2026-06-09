@@ -481,32 +481,41 @@ const SettingsPage = () => {
   return (
     <div className="app-page settings-page">
       {/* Page Header */}
-      <header className="app-page-header">
-        <div style={{display: 'flex', alignItems: 'center', gap: '16px'}}>
-          <div className="settings-header-icon">
-            <Settings size={22} />
+      <header className="app-page-header settings-command-shell">
+        <div className="settings-command-top">
+          <div className="settings-command-copy">
+            <div className="settings-header-icon">
+              <Settings size={22} />
+            </div>
+            <div className="settings-command-text">
+              <span className="settings-command-eyebrow">Admin Control Center</span>
+              <h2 className="app-page-title">Pengaturan</h2>
+              <p className="app-page-subtitle">Konfigurasi studio, tarif, operasional, notifikasi, demo, dan data.</p>
+            </div>
           </div>
-          <div>
-            <h2 className="app-page-title">Pengaturan</h2>
-            <p className="app-page-subtitle">Konfigurasi sistem & preferensi aplikasi</p>
-          </div>
-        </div>
-        <div className="app-page-actions">
-          <button
-            className={`settings-save-btn ${saveStatus}`}
-            onClick={handleSubmit}
-            disabled={saveStatus === 'saving'}
-          >
-            {saveStatus === 'saving' && <RefreshCw size={16} className="spin" />}
-            {saveStatus === 'saved' && <CheckCircle2 size={16} />}
-            {saveStatus === 'error' && <XCircle size={16} />}
-            {saveStatus === 'idle' && <Save size={16} />}
-            <span>
-              {saveStatus === 'saving' ? 'Menyimpan...' :
-               saveStatus === 'saved' ? 'Tersimpan!' :
-               saveStatus === 'error' ? 'Gagal Simpan' : 'Simpan'}
+
+          <div className="app-page-actions settings-save-cluster">
+            <span className={`settings-state-pill ${saveStatus}`} aria-live="polite">
+              {saveStatus === 'saving' ? 'Sync berjalan' :
+               saveStatus === 'saved' ? 'Perubahan aman' :
+               saveStatus === 'error' ? 'Butuh cek ulang' : 'Siap disimpan'}
             </span>
-          </button>
+            <button
+              className={`settings-save-btn ${saveStatus}`}
+              onClick={handleSubmit}
+              disabled={saveStatus === 'saving'}
+            >
+              {saveStatus === 'saving' && <RefreshCw size={16} className="spin" />}
+              {saveStatus === 'saved' && <CheckCircle2 size={16} />}
+              {saveStatus === 'error' && <XCircle size={16} />}
+              {saveStatus === 'idle' && <Save size={16} />}
+              <span>
+                {saveStatus === 'saving' ? 'Menyimpan...' :
+                 saveStatus === 'saved' ? 'Tersimpan!' :
+                 saveStatus === 'error' ? 'Gagal Simpan' : 'Simpan'}
+              </span>
+            </button>
+          </div>
         </div>
       </header>
 
