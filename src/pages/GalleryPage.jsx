@@ -1134,16 +1134,16 @@ const GalleryPage = () => {
         {lightboxPhoto && (
           <motion.div
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className={`gallery-lightbox-overlay ${isSettingsOpen ? 'has-settings-open' : ''}`}
+            className={`gallery-lightbox-overlay gallery-lightbox-modern ${isSettingsOpen ? 'has-settings-open' : ''}`}
             onClick={() => { setLightboxPhoto(null); setIsSettingsOpen(false); }}
           >
             {/* Ambient Ambilight Glow */}
-            <div className="lightbox-ambilight" style={{ backgroundImage: `url(${lightboxPhoto.url})` }} />
-            <button className="lightbox-close" onClick={() => { setLightboxPhoto(null); setIsSettingsOpen(false); }} aria-label="Tutup penampil gambar">
+            <div className="lightbox-ambilight lightbox-ambilight-modern" style={{ backgroundImage: `url(${lightboxPhoto.url})` }} />
+            <button className="lightbox-close lightbox-control-btn lightbox-close-modern" onClick={() => { setLightboxPhoto(null); setIsSettingsOpen(false); }} aria-label="Tutup penampil gambar">
               <X size={24} />
             </button>
             <button
-              className={`lightbox-gear-btn ${isSettingsOpen ? 'active' : ''}`}
+              className={`lightbox-gear-btn lightbox-control-btn lightbox-gear-modern ${isSettingsOpen ? 'active' : ''}`}
               onClick={(e) => { e.stopPropagation(); setIsSettingsOpen(v => !v); }}
               aria-label="Buka pengaturan foto" title="Pengaturan Foto"
             >
@@ -1152,15 +1152,15 @@ const GalleryPage = () => {
 
             <motion.div
               initial={{ scale: 0.95, y: 10 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 10 }}
-              className="lightbox-body"
+              className="lightbox-body lightbox-body-modern"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="lightbox-image-area">
+              <div className="lightbox-image-area lightbox-image-stage">
                 <img src={lightboxPhoto.url} alt={lightboxPhoto.caption} />
               </div>
-              <div className="lightbox-footer">
+              <div className="lightbox-footer lightbox-footer-modern">
                 <h3>{lightboxPhoto.caption}</h3>
-                <div className="lightbox-badges">
+                <div className="lightbox-badges lightbox-badges-modern">
                   {lightboxPhoto.showOnLandingPage && <span className="lightbox-badge landing"><Globe size={11} /> Landing Page</span>}
                   {lightboxPhoto.showToCustomer && <span className="lightbox-badge customer"><Users size={11} /> Akses Customer</span>}
                   {lightboxPhoto.albumId && albums.find(a => a.id === lightboxPhoto.albumId) && (
@@ -1175,16 +1175,16 @@ const GalleryPage = () => {
                 <motion.div
                   initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 40 }}
                   transition={{ duration: 0.25, ease: 'easeOut' }}
-                  className="lightbox-settings-panel"
+                  className="lightbox-settings-panel lightbox-settings-panel-modern"
                   onClick={(e) => e.stopPropagation()}
                 >
-                  <div className="lsp-header"><Settings2 size={16} /><span>Pengaturan Foto</span></div>
+                  <div className="lsp-header lsp-header-modern"><Settings2 size={16} /><span>Pengaturan Foto</span></div>
 
-                  <div className="lsp-section">
+                  <div className="lsp-section lsp-section-modern">
                     <span className="lsp-label">Keterangan (Edit langsung)</span>
                     <input
                       type="text"
-                      className="lsp-input lsp-caption-input"
+                      className="lsp-input lsp-caption-input lsp-caption-input-modern"
                       value={lightboxPhoto.caption}
                       onChange={(e) => {
                         const newCaption = e.target.value;
@@ -1213,7 +1213,7 @@ const GalleryPage = () => {
                     />
                   </div>
 
-                  <div className="lsp-section">
+                  <div className="lsp-section lsp-section-modern">
                     <span className="lsp-label"><Folder size={12} /> Album</span>
                     <select 
                       className="lsp-select" 
@@ -1233,7 +1233,7 @@ const GalleryPage = () => {
                   </div>
 
                   {lightboxPhoto.albumId && (
-                    <div className="lsp-section">
+                    <div className="lsp-section lsp-section-modern">
                       <span className="lsp-label">Sampul Album</span>
                       {(() => {
                         const alb = albums.find(a => a.id === lightboxPhoto.albumId);
@@ -1241,22 +1241,7 @@ const GalleryPage = () => {
                         return (
                           <button
                             type="button"
-                            className="btn-secondary"
-                            style={{
-                              width: '100%',
-                              padding: '8px 12px',
-                              borderRadius: '8px',
-                              fontSize: '0.85rem',
-                              marginTop: '6px',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              gap: '6px',
-                              background: isCover ? 'rgba(244, 63, 94, 0.15)' : 'rgba(255,255,255,0.03)',
-                              border: isCover ? '1px solid var(--accent-pink)' : '1px solid rgba(255,255,255,0.08)',
-                              color: isCover ? 'var(--accent-pink)' : 'var(--text-primary)',
-                              fontWeight: isCover ? '600' : 'normal'
-                            }}
+                            className={`btn-secondary lsp-cover-btn ${isCover ? 'is-cover' : ''}`}
                             onClick={() => {
                               if (isCover) {
                                 updateAlbum(lightboxPhoto.albumId, { coverPhotoId: '' });
@@ -1275,30 +1260,30 @@ const GalleryPage = () => {
                     </div>
                   )}
 
-                  <div className="lsp-section">
+                  <div className="lsp-section lsp-section-modern">
                     <span className="lsp-label">Visibilitas</span>
-                    <div className="lsp-toggle-row">
+                    <div className="lsp-toggle-row lsp-toggle-row-modern">
                       <div className="lsp-toggle-info">
                         <Globe size={13} className="icon-landing" />
                         <div><strong>Landing Page</strong><p>Tampil di beranda publik</p></div>
                       </div>
-                      <button className={`gallery-switch ${lightboxPhoto.showOnLandingPage ? 'active' : ''}`} onClick={() => handleToggleLanding(lightboxPhoto.id, lightboxPhoto.showOnLandingPage)} aria-label="Toggle Landing Page">
+                      <button className={`gallery-switch gallery-switch-modern ${lightboxPhoto.showOnLandingPage ? 'active' : ''}`} onClick={() => handleToggleLanding(lightboxPhoto.id, lightboxPhoto.showOnLandingPage)} aria-label="Toggle Landing Page">
                         <span className="switch-dot" />
                       </button>
                     </div>
-                    <div className="lsp-toggle-row">
+                    <div className="lsp-toggle-row lsp-toggle-row-modern">
                       <div className="lsp-toggle-info">
                         <Users size={13} className="icon-customer" />
                         <div><strong>Akses Customer</strong><p>Tampil di galeri publik</p></div>
                       </div>
-                      <button className={`gallery-switch ${lightboxPhoto.showToCustomer ? 'active' : ''}`} onClick={() => handleToggleCustomer(lightboxPhoto.id, lightboxPhoto.showToCustomer)} aria-label="Toggle Akses Customer">
+                      <button className={`gallery-switch gallery-switch-modern ${lightboxPhoto.showToCustomer ? 'active' : ''}`} onClick={() => handleToggleCustomer(lightboxPhoto.id, lightboxPhoto.showToCustomer)} aria-label="Toggle Akses Customer">
                         <span className="switch-dot" />
                       </button>
                     </div>
                   </div>
 
-                  <div className="lsp-section lsp-danger-zone">
-                    <button className="lsp-delete-btn" onClick={() => handleDeletePhoto(lightboxPhoto.id)}>
+                  <div className="lsp-section lsp-section-modern lsp-danger-zone">
+                    <button className="lsp-delete-btn lsp-delete-btn-modern" onClick={() => handleDeletePhoto(lightboxPhoto.id)}>
                       <Trash2 size={15} /><span>Hapus Foto Ini</span>
                     </button>
                   </div>
