@@ -3811,3 +3811,184 @@
   }
 }
 
+/* 37 ADMIN MOBILE COMMAND HEADER + BOTTOM NAV POLISH 8.6C START */
+
+@media (max-width: 768px) {
+  :root {
+    --mobile-command-height: 66px;
+    --mobile-command-gap: 12px;
+    --bn-fixed-inline: 10px;
+    --bn-fixed-bottom: 10px;
+    --bn-fixed-height: 66px;
+    --bn-item-height: 52px;
+    --bn-fixed-radius: 22px;
+    --bn-pill-radius: 17px;
+    --bn-clearance: calc(var(--bn-fixed-height) + var(--bn-fixed-bottom) + env(safe-area-inset-bottom, 0px) + 26px);
+  }
+
+  .admin-shell-modern .mobile-command-header {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    align-items: center !important;
+    gap: 0.55rem !important;
+    top: calc(8px + env(safe-area-inset-top, 0px)) !important;
+    left: max(10px, env(safe-area-inset-left, 0px)) !important;
+    right: max(10px, env(safe-area-inset-right, 0px)) !important;
+    height: var(--mobile-command-height) !important;
+    min-height: var(--mobile-command-height) !important;
+    max-height: var(--mobile-command-height) !important;
+    padding: 0.48rem 0.54rem !important;
+    border-radius: 1.25rem !important;
+    border: 1px solid rgba(255,255,255,0.105) !important;
+    background:
+      radial-gradient(circle at 10% 0%, rgba(239,197,110,0.14), transparent 36%),
+      radial-gradient(circle at 92% 0%, rgba(88,224,233,0.10), transparent 34%),
+      linear-gradient(180deg, rgba(255,255,255,0.082), rgba(255,255,255,0.026)),
+      rgba(14,18,27,0.92) !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.105), 0 18px 42px rgba(0,0,0,0.34) !important;
+    backdrop-filter: blur(22px) saturate(1.1) !important;
+    -webkit-backdrop-filter: blur(22px) saturate(1.1) !important;
+    overflow: hidden !important;
+    z-index: 2147482990 !important;
+  }
+
+  .admin-shell-modern .mobile-brand-lockup {
+    min-width: 0 !important;
+    gap: 0.56rem !important;
+  }
+
+  .admin-shell-modern .mobile-brand-mark {
+    width: 2.45rem !important;
+    height: 2.45rem !important;
+    min-width: 2.45rem !important;
+    border-radius: 0.9rem !important;
+    border: 1px solid rgba(239,197,110,0.28) !important;
+    background:
+      radial-gradient(circle at 50% 0%, rgba(255,255,255,0.36), transparent 58%),
+      linear-gradient(135deg, #efc56e, #d49a3e) !important;
+    color: rgba(20,13,6,0.96) !important;
+  }
+
+  .admin-shell-modern .mobile-brand-copy h1 {
+    max-width: clamp(7.1rem, 38vw, 12.5rem) !important;
+    font-family: "Bebas Neue", Impact, "Arial Narrow", sans-serif !important;
+    font-size: 1.28rem !important;
+    line-height: 0.92 !important;
+    font-weight: 400 !important;
+    color: #fffaf0 !important;
+  }
+
+  .admin-shell-modern .mobile-current-meta {
+    max-width: clamp(7.1rem, 42vw, 13rem) !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    color: rgba(255,250,240,0.58) !important;
+    font-size: 0.56rem !important;
+    font-weight: 850 !important;
+  }
+
+  .admin-shell-modern .mobile-icon-btn,
+  .admin-shell-modern .mobile-avatar-btn {
+    width: 2.08rem !important;
+    height: 2.08rem !important;
+    min-width: 2.08rem !important;
+    border-radius: 0.78rem !important;
+  }
+
+  body > .bottom-nav-bar,
+  .bottom-nav-bar {
+    height: var(--bn-fixed-height) !important;
+    min-height: var(--bn-fixed-height) !important;
+    max-height: var(--bn-fixed-height) !important;
+    left: max(var(--bn-fixed-inline), env(safe-area-inset-left, 0px)) !important;
+    right: max(var(--bn-fixed-inline), env(safe-area-inset-right, 0px)) !important;
+    bottom: calc(var(--bn-fixed-bottom) + env(safe-area-inset-bottom, 0px)) !important;
+    padding: 0.42rem 0.46rem !important;
+    border-radius: var(--bn-fixed-radius) !important;
+    background:
+      radial-gradient(circle at 14% 0%, rgba(239,197,110,0.12), transparent 38%),
+      radial-gradient(circle at 86% 0%, rgba(88,224,233,0.09), transparent 36%),
+      linear-gradient(180deg, rgba(255,255,255,0.074), rgba(255,255,255,0.022)),
+      rgba(14,18,27,0.94) !important;
+  }
+
+  .bn-item {
+    height: var(--bn-item-height) !important;
+    min-height: var(--bn-item-height) !important;
+    max-height: var(--bn-item-height) !important;
+    grid-template-rows: 30px 12px !important;
+    gap: 2px !important;
+    border-radius: var(--bn-pill-radius) !important;
+  }
+
+  .bn-item.active::before {
+    inset: 3px 2px !important;
+    border-radius: calc(var(--bn-pill-radius) - 3px) !important;
+    background:
+      radial-gradient(circle at 50% 0%, rgba(255,255,255,0.24), transparent 56%),
+      linear-gradient(135deg, rgba(239,197,110,0.96), rgba(255,61,112,0.76)) !important;
+  }
+
+  .bn-icon-wrapper {
+    width: 31px !important;
+    height: 28px !important;
+    min-width: 31px !important;
+    min-height: 28px !important;
+    border-radius: 13px !important;
+  }
+
+  .bn-icon-wrapper svg {
+    width: 16px !important;
+    height: 16px !important;
+  }
+
+  .bn-label {
+    max-width: 54px !important;
+    font-size: 0.53rem !important;
+    line-height: 1 !important;
+    font-weight: 900 !important;
+    letter-spacing: -0.025em !important;
+  }
+
+  .main-content {
+    padding-top: calc(var(--mobile-command-height) + var(--mobile-command-gap) + env(safe-area-inset-top, 0px) + 12px) !important;
+    padding-bottom: var(--bn-clearance) !important;
+  }
+}
+
+@media (max-width: 420px) {
+  :root {
+    --mobile-command-height: 64px;
+    --bn-fixed-inline: 8px;
+    --bn-fixed-bottom: 10px;
+    --bn-fixed-height: 64px;
+    --bn-item-height: 50px;
+  }
+
+  .admin-shell-modern .mobile-brand-copy h1 {
+    max-width: 7.8rem !important;
+    font-size: 1.16rem !important;
+  }
+
+  .admin-shell-modern .mobile-current-meta {
+    max-width: 8.2rem !important;
+  }
+
+  .bn-label {
+    max-width: 48px !important;
+    font-size: 0.50rem !important;
+  }
+}
+
+@media (max-width: 370px) {
+  .admin-shell-modern .mobile-eyebrow {
+    display: none !important;
+  }
+
+  .admin-shell-modern .mobile-header-actions .mobile-icon-btn:first-child {
+    display: none !important;
+  }
+}
+
+/* 37 ADMIN MOBILE COMMAND HEADER + BOTTOM NAV POLISH 8.6C END */

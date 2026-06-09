@@ -119,6 +119,13 @@ const Sidebar = () => {
   const secondaryMobileMenus = menuItems.slice(4); // Billing, Finance, Staff, Maintenance, Settings
   const currentMenu = menuItems.find((item) => location.pathname.startsWith(item.path)) || menuItems[0];
   const currentRoleLabel = userProfile?.role === 'admin' ? 'Administrator' : 'Staff';
+  const mobileStatusLabel = unreadCount > 0 ? String(unreadCount > 99 ? '99+' : unreadCount) + ' notifikasi' : 'Command Center';
+  const mobileNavLabels = {
+    '/dashboard': 'Home',
+    '/calendar': 'Jadwal',
+    '/customers': 'Client',
+    '/messages': 'Pesan',
+  };
 
   return (
     <>
@@ -131,7 +138,7 @@ const Sidebar = () => {
           <div className="mobile-brand-copy">
             <span className="mobile-eyebrow">37 Music Studio</span>
             <h1>{currentMenu.label}</h1>
-            <span>{currentRoleLabel}</span>
+            <span className="mobile-current-meta">{currentRoleLabel} • {mobileStatusLabel}</span>
           </div>
         </div>
         <div className="mobile-header-actions">
@@ -189,12 +196,16 @@ const Sidebar = () => {
                   {item.icon}
                   {isActive && <motion.div layoutId="bn-indicator" className="bn-indicator" transition={activeIndicatorTransition} />}
                 </motion.div>
-                <span className="bn-label">{item.label === 'Dashboard' ? 'Home' : item.label}</span>
+                <span className="bn-label">{mobileNavLabels[item.path] || item.label}</span>
               </NavLink>
             );
           })}
-          <button 
-            className="bn-item" 
+          <button
+
+            type="button"
+
+            className="bn-item"
+
             onClick={() => { playClick(); setMobileOpen(true); }}
             aria-label="Menu Lainnya"
             aria-haspopup="dialog"
