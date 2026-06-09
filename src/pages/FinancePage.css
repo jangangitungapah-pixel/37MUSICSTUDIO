@@ -6831,3 +6831,261 @@
 
 /* === END 10.1G-9.4 PEMBUKUAN FIXED RECHARTS DONUT === */
 
+
+/* === START 10.1H PEMBUKUAN LIGHT PERFORMANCE FINAL LOCK === */
+
+/* Phase 10.1H - Light Mode + Performance Final Lock.
+   CSS-only final polish.
+   Tidak menyentuh chart renderer, transaksi, store, kalkulasi, export, print, PDF, modal, routing, atau auth. */
+
+/* === LIGHT MODE SURFACE NORMALIZATION === */
+
+[data-theme="light"] .finance-page {
+  color: #17131f;
+}
+
+[data-theme="light"] .finance-page::before {
+  opacity: 0.22 !important;
+  filter: blur(22px) saturate(0.86) !important;
+}
+
+[data-theme="light"] .finance-page::after {
+  opacity: 0.16 !important;
+  filter: blur(28px) saturate(0.82) !important;
+}
+
+[data-theme="light"] .finance-page :is(.glass-panel, .app-card, .app-panel, .finance-chart-card, .finance-content, .sidebar-widget-card, .sidebar-stats-stack .app-stat-card) {
+  border-color: rgba(23, 19, 31, 0.075) !important;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.94), rgba(250, 247, 239, 0.76)),
+    rgba(255, 255, 255, 0.86) !important;
+  box-shadow:
+    0 14px 34px rgba(23, 19, 31, 0.075),
+    inset 0 1px 0 rgba(255, 255, 255, 0.92) !important;
+}
+
+[data-theme="light"] .finance-page :is(.app-card, .app-panel, .finance-chart-card, .finance-content, .sidebar-widget-card, .sidebar-stats-stack .app-stat-card)::before,
+[data-theme="light"] .finance-page :is(.app-card, .app-panel, .finance-chart-card, .finance-content, .sidebar-widget-card, .sidebar-stats-stack .app-stat-card)::after {
+  opacity: 0.42 !important;
+}
+
+[data-theme="light"] .finance-page :is(.app-page-title, .finance-table-title, .chart-header-title h3, .widget-header h4, .stat-value, .summary-val, .val-block strong) {
+  color: #17131f !important;
+  text-shadow: none !important;
+}
+
+[data-theme="light"] .finance-page :is(.app-page-subtitle, .finance-table-subtitle, .stat-label, .summary-label, .val-block span, .mini-expense-meta, .mobile-ledger-date, .mobile-ledger-operator) {
+  color: rgba(23, 19, 31, 0.56) !important;
+}
+
+[data-theme="light"] .finance-page :is(.finance-eyebrow, .chart-header-month, .finance-header-meta span, .finance-table-meta span, .finance-table-count) {
+  border-color: rgba(7, 127, 139, 0.12) !important;
+  background: rgba(255, 255, 255, 0.66) !important;
+  color: rgba(23, 19, 31, 0.62) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+}
+
+[data-theme="light"] .finance-page .finance-eyebrow,
+[data-theme="light"] .finance-page .chart-header-month {
+  color: #077f8b !important;
+}
+
+[data-theme="light"] .finance-page .widget-header {
+  border-bottom-color: rgba(23, 19, 31, 0.075) !important;
+}
+
+[data-theme="light"] .finance-page .widget-header svg,
+[data-theme="light"] .finance-page .chart-header-title svg {
+  border-color: rgba(23, 19, 31, 0.055) !important;
+  background: rgba(255, 255, 255, 0.72) !important;
+  box-shadow:
+    0 8px 18px rgba(23, 19, 31, 0.055),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
+}
+
+/* === LIGHT MODE TABLE AND LEDGER === */
+
+[data-theme="light"] .finance-page .finance-table th {
+  border-bottom-color: rgba(23, 19, 31, 0.08) !important;
+  background: rgba(250, 247, 239, 0.94) !important;
+  color: rgba(23, 19, 31, 0.52) !important;
+}
+
+[data-theme="light"] .finance-page .finance-table td {
+  border-bottom-color: rgba(23, 19, 31, 0.055) !important;
+  color: rgba(23, 19, 31, 0.78) !important;
+}
+
+[data-theme="light"] .finance-page .finance-table tbody tr:hover td {
+  background: rgba(7, 127, 139, 0.045) !important;
+}
+
+[data-theme="light"] .finance-page :is(.mobile-ledger-card, .cat-badge, .source-badge, .ledger-pagination, .ledger-page-btn, .ledger-page-select, .daily-expense-summary, .mini-expense-item, .val-block, .insight-section-item) {
+  border-color: rgba(23, 19, 31, 0.07) !important;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.84), rgba(250, 247, 239, 0.58)),
+    rgba(255, 255, 255, 0.72) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.82),
+    0 8px 18px rgba(23, 19, 31, 0.045) !important;
+}
+
+[data-theme="light"] .finance-page .mobile-ledger-desc {
+  color: rgba(23, 19, 31, 0.78) !important;
+}
+
+[data-theme="light"] .finance-page .mobile-ledger-amount,
+[data-theme="light"] .finance-page .mini-expense-amount {
+  color: #e8194e !important;
+}
+
+[data-theme="light"] .finance-page .mobile-ledger-balance {
+  color: rgba(23, 19, 31, 0.56) !important;
+}
+
+/* === LIGHT MODE INPUTS AND CONTROLS === */
+
+[data-theme="light"] .finance-page :is(.app-search, .toolbar-group, .chart-period-selector) {
+  border-color: rgba(23, 19, 31, 0.075) !important;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.84), rgba(250, 247, 239, 0.6)) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.82) !important;
+}
+
+[data-theme="light"] .finance-page .app-search-input {
+  color: #17131f !important;
+}
+
+[data-theme="light"] .finance-page .app-search-input::placeholder {
+  color: rgba(23, 19, 31, 0.42) !important;
+}
+
+[data-theme="light"] .finance-page .period-btn {
+  color: rgba(23, 19, 31, 0.54) !important;
+}
+
+[data-theme="light"] .finance-page .period-btn:hover {
+  background: rgba(7, 127, 139, 0.055) !important;
+  color: #077f8b !important;
+}
+
+[data-theme="light"] .finance-page .period-btn.active {
+  background: rgba(7, 127, 139, 0.11) !important;
+  color: #077f8b !important;
+}
+
+/* === LIGHT MODE CHART LEGIBILITY === */
+
+[data-theme="light"] .finance-page .chart-legend .legend-item,
+[data-theme="light"] .finance-page .pie-legend-item {
+  border-color: rgba(23, 19, 31, 0.055) !important;
+  background: rgba(255, 255, 255, 0.58) !important;
+}
+
+[data-theme="light"] .finance-page :is(.legend-item, .pie-legend-name) {
+  color: rgba(23, 19, 31, 0.66) !important;
+}
+
+[data-theme="light"] .finance-page .pie-legend-val {
+  color: rgba(23, 19, 31, 0.52) !important;
+}
+
+/* === PERFORMANCE FINAL LOCK === */
+
+.finance-page :is(.finance-chart-card, .finance-content, .sidebar-widget-card, .sidebar-stats-stack .app-stat-card, .mobile-ledger-card, .mini-expense-item, .ledger-pagination, .app-page-header) {
+  backface-visibility: hidden;
+  transform-style: flat;
+}
+
+.finance-page :is(.finance-content, .finance-chart-card, .sidebar-widget-card, .sidebar-stats-stack, .mobile-ledger-list) {
+  contain: layout paint;
+}
+
+.finance-page :is(.finance-table, .mobile-ledger-list, .pie-legend-list, .mini-expense-list, .table-responsive) {
+  overscroll-behavior: contain;
+}
+
+.finance-page :is(.pie-legend-list, .mini-expense-list, .table-responsive) {
+  scrollbar-width: thin;
+}
+
+/* Hover effects remain premium on desktop, but avoid constant GPU churn. */
+@media (hover: hover) and (pointer: fine) {
+  .finance-page :is(.finance-chart-card, .finance-content, .sidebar-widget-card, .sidebar-stats-stack .app-stat-card, .mobile-ledger-card):hover {
+    will-change: transform, box-shadow;
+  }
+
+  .finance-page :is(.finance-chart-card, .finance-content, .sidebar-widget-card, .sidebar-stats-stack .app-stat-card, .mobile-ledger-card):not(:hover) {
+    will-change: auto;
+  }
+}
+
+/* Mobile performance: disable expensive hover transform and heavy glow. */
+@media (max-width: 768px) {
+  .finance-page {
+    scroll-behavior: auto;
+  }
+
+  .finance-page :is(.finance-chart-card, .finance-content, .sidebar-widget-card, .sidebar-stats-stack .app-stat-card, .mobile-ledger-card, .mini-expense-item, .ledger-pagination, .app-page-header) {
+    transition-duration: 0.16s !important;
+    will-change: auto !important;
+  }
+
+  .finance-page :is(.finance-chart-card, .finance-content, .sidebar-widget-card, .sidebar-stats-stack .app-stat-card, .mobile-ledger-card):hover {
+    transform: none !important;
+  }
+
+  .finance-page :is(.finance-chart-card, .finance-content, .sidebar-widget-card, .sidebar-stats-stack .app-stat-card) {
+    box-shadow:
+      0 8px 18px rgba(0, 0, 0, 0.14),
+      inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
+  }
+
+  [data-theme="light"] .finance-page :is(.finance-chart-card, .finance-content, .sidebar-widget-card, .sidebar-stats-stack .app-stat-card) {
+    box-shadow:
+      0 8px 18px rgba(23, 19, 31, 0.055),
+      inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
+  }
+
+  .finance-page :is(.finance-page::before, .finance-page::after) {
+    filter: none !important;
+  }
+
+  .finance-page :is(.app-page-header, .finance-chart-card, .finance-content, .sidebar-widget-card) {
+    background-attachment: scroll !important;
+  }
+}
+
+/* Respect reduced motion. */
+@media (prefers-reduced-motion: reduce) {
+  .finance-page,
+  .finance-page *,
+  .finance-page *::before,
+  .finance-page *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* Print/export safety: keep financial report readable. */
+@media print {
+  .finance-page {
+    color: #111 !important;
+    background: #fff !important;
+  }
+
+  .finance-page :is(.glass-panel, .app-card, .app-panel, .finance-chart-card, .finance-content, .sidebar-widget-card, .sidebar-stats-stack .app-stat-card) {
+    border-color: #ddd !important;
+    background: #fff !important;
+    box-shadow: none !important;
+  }
+
+  .finance-page :is(.app-page-actions, .ledger-pagination, .mobile-bottom-spacer, .smart-btn-action, .icon-btn) {
+    display: none !important;
+  }
+}
+
+/* === END 10.1H PEMBUKUAN LIGHT PERFORMANCE FINAL LOCK === */
+
