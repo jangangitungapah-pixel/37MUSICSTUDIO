@@ -7104,3 +7104,319 @@ tr:hover
   }
 }
 /* === END PHASE 9.1E-5 CUSTOMER DETAIL FOOTER SEAMLESS HOTFIX === */
+
+/* === START PHASE 9.1E-6 CUSTOMER DETAIL HEADER SEAMLESS HOTFIX === */
+/*
+  Customer Detail Header Seamless Hotfix
+  Screenshot issue:
+  - Header feels like a hard separate rectangular banner.
+  - Too much top block weight compared to the modal body.
+  - Avatar/title/status/close spacing needs cleaner modal ownership.
+  Scope:
+  - CSS-only
+  - no JSX/store/business workflow changes
+  - safe to rerun by marker
+*/
+
+.customers-page .customer-detail-panel.app-panel {
+  --customer-detail-radius: 1.55rem;
+}
+
+/* Softer header surface, integrated with modal glass */
+.customers-page .customer-detail-panel .detail-panel-header {
+  position: relative !important;
+  min-height: 78px !important;
+  height: auto !important;
+
+  display: grid !important;
+  grid-template-columns: auto minmax(0, 1fr) auto auto !important;
+  grid-template-areas: "avatar title status close" !important;
+  align-items: center !important;
+  justify-items: stretch !important;
+
+  gap: 0.82rem !important;
+  padding: 1rem 1.08rem 0.88rem !important;
+  margin: 0 !important;
+
+  overflow: hidden !important;
+  text-align: left !important;
+
+  border-radius: calc(var(--customer-detail-radius) - 1px) calc(var(--customer-detail-radius) - 1px) 0 0 !important;
+  border-bottom: 1px solid rgba(255, 250, 240, 0.065) !important;
+
+  background:
+    radial-gradient(circle at 7% 0%, rgba(88, 224, 233, 0.13), transparent 44%),
+    radial-gradient(circle at 88% 0%, rgba(239, 197, 110, 0.09), transparent 40%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.012)),
+    rgba(255, 255, 255, 0.010) !important;
+
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.055),
+    0 12px 30px rgba(0, 0, 0, 0.045) !important;
+}
+
+/* Thin studio neon line, not a full hard banner */
+.customers-page .customer-detail-panel .detail-panel-header::before {
+  content: "" !important;
+  position: absolute !important;
+  left: 1rem !important;
+  right: 1rem !important;
+  top: 0.72rem !important;
+  width: auto !important;
+  height: 2px !important;
+  border-radius: 999px !important;
+  opacity: 0.95 !important;
+  background: linear-gradient(
+    90deg,
+    var(--customer-cyan, #58e0e9),
+    rgba(239, 197, 110, 0.92),
+    var(--customer-pink, #ff3d70)
+  ) !important;
+  pointer-events: none !important;
+}
+
+/* Soft fade into body so header and content feel like one glass object */
+.customers-page .customer-detail-panel .detail-panel-header::after {
+  content: "" !important;
+  position: absolute !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: -18px !important;
+  height: 18px !important;
+  pointer-events: none !important;
+  background: linear-gradient(180deg, rgba(10, 14, 22, 0.16), transparent) !important;
+}
+
+.customers-page .customer-detail-panel .detail-avatar {
+  grid-area: avatar !important;
+  order: initial !important;
+  margin: 0 !important;
+
+  width: 50px !important;
+  height: 50px !important;
+  border-radius: 1.05rem !important;
+
+  font-size: 1.28rem !important;
+  font-weight: 950 !important;
+
+  box-shadow:
+    0 0 0 1px rgba(255, 250, 240, 0.08),
+    0 12px 30px rgba(0, 0, 0, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.13) !important;
+}
+
+.customers-page .customer-detail-panel .detail-avatar::after {
+  opacity: 0.28 !important;
+  filter: blur(8px) !important;
+}
+
+.customers-page .customer-detail-panel .detail-panel-header h3 {
+  grid-area: title !important;
+  order: initial !important;
+  align-self: center !important;
+
+  width: auto !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  color: var(--customer-cream, #fffaf0) !important;
+  font-size: clamp(1.04rem, 1.8vw, 1.28rem) !important;
+  line-height: 1.05 !important;
+  font-weight: 950 !important;
+  letter-spacing: -0.032em !important;
+  text-align: left !important;
+
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+.customers-page .customer-detail-panel .detail-panel-header .status-badge {
+  grid-area: status !important;
+  order: initial !important;
+  justify-self: end !important;
+  align-self: center !important;
+
+  min-height: 30px !important;
+  margin: 0 !important;
+  padding: 0 0.78rem !important;
+
+  border-radius: 999px !important;
+  font-size: 0.66rem !important;
+  font-weight: 950 !important;
+  letter-spacing: 0.075em !important;
+}
+
+.customers-page .customer-detail-panel .detail-panel-close {
+  grid-area: close !important;
+  position: static !important;
+  order: initial !important;
+
+  justify-self: end !important;
+  align-self: center !important;
+
+  width: 34px !important;
+  height: 34px !important;
+  min-width: 34px !important;
+  margin: 0 !important;
+
+  border-radius: 999px !important;
+  color: rgba(255, 250, 240, 0.64) !important;
+  border: 1px solid rgba(255, 250, 240, 0.085) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.012)),
+    rgba(255, 255, 255, 0.020) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.055) !important;
+}
+
+/* Bring body closer so there is no hard gap under header */
+.customers-page .customer-detail-panel .detail-panel-body {
+  padding-top: 0.9rem !important;
+}
+
+/* Light mode lock */
+[data-theme="light"] .customers-page .customer-detail-panel .detail-panel-header {
+  border-bottom-color: rgba(22, 27, 36, 0.065) !important;
+  background:
+    radial-gradient(circle at 7% 0%, rgba(88, 224, 233, 0.11), transparent 44%),
+    radial-gradient(circle at 88% 0%, rgba(239, 197, 110, 0.11), transparent 40%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.32)),
+    rgba(255, 255, 255, 0.42) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.72),
+    0 12px 30px rgba(20, 24, 32, 0.035) !important;
+}
+
+[data-theme="light"] .customers-page .customer-detail-panel .detail-panel-header::after {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.42), transparent) !important;
+}
+
+[data-theme="light"] .customers-page .customer-detail-panel .detail-panel-header h3 {
+  color: #1d2430 !important;
+}
+
+[data-theme="light"] .customers-page .customer-detail-panel .detail-panel-close {
+  color: rgba(29, 36, 48, 0.62) !important;
+  border-color: rgba(22, 27, 36, 0.085) !important;
+  background: rgba(255, 255, 255, 0.56) !important;
+}
+
+/* Tablet */
+@media (max-width: 860px) {
+  .customers-page .customer-detail-panel.app-panel {
+    --customer-detail-radius: 1.25rem;
+  }
+
+  .customers-page .customer-detail-panel .detail-panel-header {
+    min-height: 74px !important;
+    grid-template-columns: auto minmax(0, 1fr) auto !important;
+    grid-template-areas:
+      "avatar title close"
+      "avatar status close" !important;
+    gap: 0.24rem 0.72rem !important;
+    padding: 0.92rem 0.92rem 0.78rem !important;
+  }
+
+  .customers-page .customer-detail-panel .detail-panel-header::before {
+    left: 0.9rem !important;
+    right: 0.9rem !important;
+    top: 0.58rem !important;
+  }
+
+  .customers-page .customer-detail-panel .detail-avatar {
+    width: 46px !important;
+    height: 46px !important;
+    border-radius: 0.98rem !important;
+    font-size: 1.16rem !important;
+  }
+
+  .customers-page .customer-detail-panel .detail-panel-header h3 {
+    align-self: end !important;
+    font-size: 1rem !important;
+  }
+
+  .customers-page .customer-detail-panel .detail-panel-header .status-badge {
+    justify-self: start !important;
+    align-self: start !important;
+    min-height: 24px !important;
+    padding: 0 0.62rem !important;
+    font-size: 0.6rem !important;
+  }
+
+  .customers-page .customer-detail-panel .detail-panel-close {
+    align-self: start !important;
+    width: 32px !important;
+    height: 32px !important;
+    min-width: 32px !important;
+  }
+}
+
+/* Mobile */
+@media (max-width: 520px) {
+  .customers-page .customer-detail-panel.app-panel {
+    --customer-detail-radius: 1.05rem;
+  }
+
+  .customers-page .customer-detail-panel .detail-panel-header {
+    min-height: 68px !important;
+    padding: 0.82rem 0.78rem 0.66rem !important;
+    gap: 0.22rem 0.62rem !important;
+  }
+
+  .customers-page .customer-detail-panel .detail-panel-header::before {
+    left: 0.78rem !important;
+    right: 0.78rem !important;
+    top: 0.48rem !important;
+    height: 2px !important;
+  }
+
+  .customers-page .customer-detail-panel .detail-avatar {
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 0.86rem !important;
+    font-size: 1.02rem !important;
+  }
+
+  .customers-page .customer-detail-panel .detail-panel-header h3 {
+    font-size: 0.94rem !important;
+  }
+
+  .customers-page .customer-detail-panel .detail-panel-close {
+    width: 30px !important;
+    height: 30px !important;
+    min-width: 30px !important;
+  }
+
+  .customers-page .customer-detail-panel .detail-panel-body {
+    padding-top: 0.72rem !important;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .customers-page .customer-detail-panel .detail-panel-close:hover {
+    color: var(--customer-pink, #ff3d70) !important;
+    border-color: rgba(255, 61, 112, 0.24) !important;
+    background: rgba(255, 61, 112, 0.075) !important;
+    transform: translateY(-1px);
+  }
+}
+
+@media (hover: none), (pointer: coarse) {
+  .customers-page .customer-detail-panel .detail-panel-close:hover {
+    transform: none !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .customers-page .customer-detail-panel .detail-panel-header,
+  .customers-page .customer-detail-panel .detail-panel-header *,
+  .customers-page .customer-detail-panel .detail-panel-header::before,
+  .customers-page .customer-detail-panel .detail-panel-header::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+/* === END PHASE 9.1E-6 CUSTOMER DETAIL HEADER SEAMLESS HOTFIX === */
