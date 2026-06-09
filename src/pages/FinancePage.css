@@ -6722,20 +6722,20 @@
 /* === END 10.1G-9 PEMBUKUAN RESTORE RECHARTS DONUT === */
 
 
-/* === START 10.1G-9.3 PEMBUKUAN RECHARTS DONUT CSS SCOPE === */
+/* === START 10.1G-9.4 PEMBUKUAN FIXED RECHARTS DONUT === */
 
-/* Phase 10.1G-9.3 - Fix restored Recharts donut CSS scope.
-   Audit result:
-   - JSX sudah benar: Recharts PieChart/Pie/Cell aktif.
-   - Data pie hidup karena legend tampil.
-   - Masalah ada di mobile compact override global:
-     .sidebar-chart-wrapper dan .recharts-responsive-container dipaksa 104px.
-   - Patch ini hanya override khusus .expense-breakdown-widget .recharts-donut-wrapper.
-   - Tidak menyentuh transaksi, store, export, PDF, print, kalkulasi, atau data finance. */
+/* Phase 10.1G-9.4 - fixed Recharts donut.
+   Browser audit result:
+   - .recharts-responsive-container width was 0.
+   - Recharts did not create pie sectors.
+   - This phase removes ResponsiveContainer only from the small expense donut.
+   - Main line chart still keeps ResponsiveContainer.
+   - No finance data, transaction, store, PDF, print, export, or calculation logic touched. */
 
 .finance-page .expense-breakdown-widget .recharts-donut-wrapper {
-  display: grid !important;
-  place-items: center !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
   width: 100% !important;
   height: 166px !important;
   min-height: 166px !important;
@@ -6745,23 +6745,17 @@
   overflow: visible !important;
 }
 
-.finance-page .expense-breakdown-widget .recharts-donut-wrapper .recharts-responsive-container {
-  width: min(100%, 280px) !important;
-  height: 150px !important;
-  min-height: 150px !important;
-  max-height: 150px !important;
-  margin-inline: auto !important;
-  overflow: visible !important;
-}
-
 .finance-page .expense-breakdown-widget .recharts-donut-wrapper .recharts-wrapper {
-  margin-inline: auto !important;
+  flex: 0 0 auto !important;
+  width: 154px !important;
+  height: 154px !important;
   overflow: visible !important;
 }
 
 .finance-page .expense-breakdown-widget .recharts-donut-wrapper .recharts-surface {
   display: block !important;
-  margin-inline: auto !important;
+  width: 154px !important;
+  height: 154px !important;
   overflow: visible !important;
 }
 
@@ -6789,16 +6783,10 @@
     border-radius: 13px !important;
   }
 
-  .finance-page .expense-breakdown-widget .recharts-donut-wrapper .recharts-responsive-container {
-    width: min(100%, 230px) !important;
-    height: 132px !important;
-    min-height: 132px !important;
-    max-height: 132px !important;
-  }
-
   .finance-page .expense-breakdown-widget .recharts-donut-wrapper .recharts-wrapper,
   .finance-page .expense-breakdown-widget .recharts-donut-wrapper .recharts-surface {
-    overflow: visible !important;
+    width: 132px !important;
+    height: 132px !important;
   }
 
   .finance-page .expense-breakdown-widget .pie-legend-list {
@@ -6836,23 +6824,10 @@
     max-height: 140px !important;
   }
 
-  .finance-page .expense-breakdown-widget .recharts-donut-wrapper .recharts-responsive-container {
-    width: min(100%, 220px) !important;
-    height: 132px !important;
-    min-height: 132px !important;
-    max-height: 132px !important;
-  }
-
   .finance-page .expense-breakdown-widget .pie-legend-list {
     max-height: 170px !important;
   }
 }
 
-@media (max-width: 360px) {
-  .finance-page .expense-breakdown-widget .recharts-donut-wrapper .recharts-responsive-container {
-    width: min(100%, 204px) !important;
-  }
-}
-
-/* === END 10.1G-9.3 PEMBUKUAN RECHARTS DONUT CSS SCOPE === */
+/* === END 10.1G-9.4 PEMBUKUAN FIXED RECHARTS DONUT === */
 

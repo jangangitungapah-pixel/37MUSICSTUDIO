@@ -1347,36 +1347,39 @@ const FinancePage = () => {
             <div className="widget-content">
               {pieChartData.length > 0 ? (
                 <>
-                  <div className="sidebar-chart-wrapper recharts-donut-wrapper">
-                    <ResponsiveContainer width="100%" height={isFinanceMobile ? 132 : 150}>
-                      <PieChart margin={{ top: 8, right: 8, bottom: 8, left: 8 }}>
-                        <Pie
-                          data={pieChartData}
-                          cx="50%"
-                          cy="50%"
-                          innerRadius={isFinanceMobile ? 34 : 38}
-                          outerRadius={isFinanceMobile ? 52 : 58}
-                          paddingAngle={3}
-                          dataKey="value"
-                          isAnimationActive={!isFinanceMobile}
-                        >
-                          {pieChartData.map((_, i) => (
-                            <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} stroke={isLight ? '#fffaf0' : '#121823'} strokeWidth={2} />
-                          ))}
-                        </Pie>
-                        <RechartsTooltip
-                          formatter={(v) => formatCurrency(v)}
-                          contentStyle={{
-                            backgroundColor: tooltipBg,
-                            border: `1px solid ${tooltipBorder}`,
-                            borderRadius: '10px',
-                            fontSize: '0.8rem',
-                            color: tooltipTextColor,
-                          }}
-                          itemStyle={{ color: tooltipTextColor }}
-                        />
-                      </PieChart>
-                    </ResponsiveContainer>
+                                    <div className="sidebar-chart-wrapper recharts-donut-wrapper">
+                    <PieChart
+                      width={isFinanceMobile ? 132 : 154}
+                      height={isFinanceMobile ? 132 : 154}
+                      margin={{ top: 6, right: 6, bottom: 6, left: 6 }}
+                    >
+                      <Pie
+                        data={pieChartData}
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={isFinanceMobile ? 34 : 40}
+                        outerRadius={isFinanceMobile ? 50 : 58}
+                        paddingAngle={3}
+                        minAngle={2}
+                        dataKey="value"
+                        isAnimationActive={false}
+                      >
+                        {pieChartData.map((_, i) => (
+                          <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} stroke={isLight ? '#fffaf0' : '#121823'} strokeWidth={2} />
+                        ))}
+                      </Pie>
+                      <RechartsTooltip
+                        formatter={(v) => formatCurrency(v)}
+                        contentStyle={{
+                          backgroundColor: tooltipBg,
+                          border: `1px solid ${tooltipBorder}`,
+                          borderRadius: '10px',
+                          fontSize: '0.8rem',
+                          color: tooltipTextColor,
+                        }}
+                        itemStyle={{ color: tooltipTextColor }}
+                      />
+                    </PieChart>
                   </div>
 
                   <div className="pie-legend-list">
