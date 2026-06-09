@@ -6881,3 +6881,226 @@ tr:hover
   }
 }
 /* === END PHASE 9.1E-4 CUSTOMER DETAIL SECTION FLOW HOTFIX === */
+
+/* === START PHASE 9.1E-5 CUSTOMER DETAIL FOOTER SEAMLESS HOTFIX === */
+/*
+  Customer Detail Footer Seamless Hotfix
+  Screenshot issue:
+  - Footer action area looks like a separate dark rectangle pasted under the modal.
+  - Body has too much bottom padding, creating a dead empty zone before footer.
+  Fix:
+  - Make footer part of modal surface.
+  - Normalize detail body padding.
+  - Add soft top fade instead of hard black block.
+  - CSS-only, no JSX/store/business workflow changes.
+*/
+
+.customers-page .customer-detail-panel.app-panel {
+  grid-template-rows: auto minmax(0, 1fr) auto !important;
+  overflow: hidden !important;
+}
+
+.customers-page .customer-detail-panel .detail-panel-body {
+  padding-bottom: 1rem !important;
+  margin-bottom: 0 !important;
+}
+
+.customers-page .customer-detail-panel .detail-panel-footer {
+  position: relative !important;
+  inset: auto !important;
+  bottom: auto !important;
+  z-index: 5 !important;
+
+  margin: 0 !important;
+  padding: 0.92rem 1.1rem calc(1rem + env(safe-area-inset-bottom)) !important;
+
+  overflow: hidden !important;
+  border-top: 1px solid rgba(255, 250, 240, 0.075) !important;
+  border-radius: 0 0 calc(1.55rem - 1px) calc(1.55rem - 1px) !important;
+
+  background:
+    radial-gradient(circle at 8% 0%, rgba(88, 224, 233, 0.070), transparent 42%),
+    radial-gradient(circle at 92% 100%, rgba(239, 197, 110, 0.060), transparent 44%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.034), rgba(255, 255, 255, 0.020)),
+    rgba(10, 14, 22, 0.86) !important;
+
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.045),
+    0 -18px 38px rgba(0, 0, 0, 0.16) !important;
+
+  backdrop-filter: blur(14px) saturate(132%) !important;
+  -webkit-backdrop-filter: blur(14px) saturate(132%) !important;
+}
+
+.customers-page .customer-detail-panel .detail-panel-footer::before {
+  content: "";
+  position: absolute;
+  left: 1rem;
+  right: 1rem;
+  top: 0;
+  height: 1px;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(88, 224, 233, 0.22),
+    rgba(239, 197, 110, 0.18),
+    rgba(255, 61, 112, 0.16),
+    transparent
+  );
+}
+
+.customers-page .customer-detail-panel .detail-panel-footer::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -28px;
+  height: 28px;
+  pointer-events: none;
+  background: linear-gradient(180deg, transparent, rgba(10, 14, 22, 0.56));
+}
+
+.customers-page .customer-detail-panel .wa-crm-buttons {
+  position: relative;
+  z-index: 1;
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 0.58rem !important;
+  margin: 0 0 0.62rem !important;
+}
+
+.customers-page .customer-detail-panel .wa-btn,
+.customers-page .customer-detail-panel .btn-edit-full {
+  position: relative;
+  z-index: 1;
+  min-width: 0 !important;
+  width: 100% !important;
+  min-height: 42px !important;
+  border-radius: 999px !important;
+  font-weight: 950 !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.070),
+    0 10px 24px rgba(0, 0, 0, 0.12) !important;
+}
+
+.customers-page .customer-detail-panel .btn-edit-full {
+  margin: 0 !important;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(239, 197, 110, 0.12), transparent 60%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.016)),
+    rgba(239, 197, 110, 0.055) !important;
+  border-color: rgba(239, 197, 110, 0.20) !important;
+  color: var(--customer-cream, #fffaf0) !important;
+}
+
+/* Remove old large footer reservation from section-flow hotfix */
+.customers-page .customer-detail-panel .detail-panel-body > .detail-section:last-child {
+  margin-bottom: 0 !important;
+}
+
+/* Light mode lock */
+[data-theme="light"] .customers-page .customer-detail-panel .detail-panel-footer {
+  border-top-color: rgba(22, 27, 36, 0.075) !important;
+  background:
+    radial-gradient(circle at 8% 0%, rgba(88, 224, 233, 0.070), transparent 42%),
+    radial-gradient(circle at 92% 100%, rgba(239, 197, 110, 0.075), transparent 44%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.76), rgba(255, 255, 255, 0.90)),
+    rgba(255, 255, 255, 0.90) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.80),
+    0 -18px 38px rgba(20, 24, 32, 0.06) !important;
+}
+
+[data-theme="light"] .customers-page .customer-detail-panel .detail-panel-footer::after {
+  background: linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.72));
+}
+
+[data-theme="light"] .customers-page .customer-detail-panel .btn-edit-full {
+  color: #1d2430 !important;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(239, 197, 110, 0.13), transparent 60%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(255, 255, 255, 0.78)),
+    rgba(239, 197, 110, 0.065) !important;
+}
+
+/* Tablet */
+@media (max-width: 860px) {
+  .customers-page .customer-detail-panel .detail-panel-body {
+    padding-bottom: 0.85rem !important;
+  }
+
+  .customers-page .customer-detail-panel .detail-panel-footer {
+    padding: 0.78rem 0.9rem calc(0.86rem + env(safe-area-inset-bottom)) !important;
+    border-radius: 0 0 calc(1.25rem - 1px) calc(1.25rem - 1px) !important;
+  }
+
+  .customers-page .customer-detail-panel .wa-crm-buttons {
+    gap: 0.48rem !important;
+    margin-bottom: 0.52rem !important;
+  }
+}
+
+/* Mobile */
+@media (max-width: 520px) {
+  .customers-page .customer-detail-panel .detail-panel-body {
+    padding-bottom: 0.74rem !important;
+  }
+
+  .customers-page .customer-detail-panel .detail-panel-footer {
+    padding: 0.68rem 0.75rem calc(0.75rem + env(safe-area-inset-bottom)) !important;
+    border-radius: 0 0 calc(1.05rem - 1px) calc(1.05rem - 1px) !important;
+  }
+
+  .customers-page .customer-detail-panel .detail-panel-footer::after {
+    top: -20px;
+    height: 20px;
+  }
+
+  .customers-page .customer-detail-panel .wa-crm-buttons {
+    gap: 0.42rem !important;
+    margin-bottom: 0.48rem !important;
+  }
+
+  .customers-page .customer-detail-panel .wa-btn,
+  .customers-page .customer-detail-panel .btn-edit-full {
+    min-height: 38px !important;
+    font-size: 0.72rem !important;
+  }
+}
+
+@media (max-width: 360px) {
+  .customers-page .customer-detail-panel .wa-crm-buttons {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .customers-page .customer-detail-panel .wa-btn:hover,
+  .customers-page .customer-detail-panel .btn-edit-full:hover {
+    transform: translateY(-1px);
+  }
+}
+
+@media (hover: none), (pointer: coarse) {
+  .customers-page .customer-detail-panel .detail-panel-footer {
+    backdrop-filter: blur(8px) saturate(112%) !important;
+    -webkit-backdrop-filter: blur(8px) saturate(112%) !important;
+  }
+
+  .customers-page .customer-detail-panel .wa-btn:hover,
+  .customers-page .customer-detail-panel .btn-edit-full:hover {
+    transform: none !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .customers-page .customer-detail-panel .detail-panel-footer,
+  .customers-page .customer-detail-panel .detail-panel-footer *,
+  .customers-page .customer-detail-panel .detail-panel-footer::before,
+  .customers-page .customer-detail-panel .detail-panel-footer::after {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+/* === END PHASE 9.1E-5 CUSTOMER DETAIL FOOTER SEAMLESS HOTFIX === */
