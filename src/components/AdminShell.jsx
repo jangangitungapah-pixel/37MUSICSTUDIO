@@ -220,7 +220,7 @@ const AdminShell = () => {
   }
 
   return (
-    <div className="app-container">
+    <div className="app-container admin-shell-modern">
       <div className="ambient-glow-wrapper">
         <div className="ambient-blob blob-cyan" />
         <div className="ambient-blob blob-pink" />

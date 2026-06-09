@@ -2962,3 +2962,65 @@
     display: flex !important;
   }
 }
+
+/* ──────────────────────────────────────────────────────────────────────────
+   37 ADMIN SHELL SIDEBAR BASE 8.6A
+   --------------------------------------------------------------------------
+   Foundation only for sidebar inside premium admin shell.
+   Detailed sidebar overhaul continues in 8.6B.
+   ────────────────────────────────────────────────────────────────────────── */
+
+@media (min-width: 769px) {
+  .admin-shell-modern .sidebar {
+    display: flex !important;
+    position: relative !important;
+    z-index: 3 !important;
+    margin: 12px !important;
+    height: calc(100vh - 24px) !important;
+    border-radius: 1.35rem !important;
+    border: 1px solid rgba(255, 255, 255, 0.11) !important;
+    background:
+      radial-gradient(circle at 0% 0%, rgba(239, 197, 110, 0.060), transparent 34%),
+      radial-gradient(circle at 100% 0%, rgba(88, 224, 233, 0.045), transparent 34%),
+      linear-gradient(180deg, rgba(255,255,255,0.072), rgba(255,255,255,0.026)),
+      rgba(12, 16, 23, 0.68) !important;
+    box-shadow:
+      0 24px 72px rgba(0, 0, 0, 0.28),
+      inset 0 1px 0 rgba(255,255,255,0.082) !important;
+    -webkit-backdrop-filter: blur(26px) saturate(1.06) !important;
+    backdrop-filter: blur(26px) saturate(1.06) !important;
+    overflow: hidden !important;
+  }
+
+  .admin-shell-modern .bottom-nav-bar,
+  .admin-shell-modern .mobile-command-header,
+  .admin-shell-modern .mobile-overlay {
+    display: none !important;
+  }
+}
+
+[data-theme="light"] .admin-shell-modern .sidebar {
+  border-color: rgba(96, 73, 41, 0.13) !important;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(185, 133, 47, 0.060), transparent 34%),
+    radial-gradient(circle at 100% 0%, rgba(24, 139, 153, 0.035), transparent 34%),
+    linear-gradient(180deg, rgba(255,252,246,0.82), rgba(255,250,241,0.58)),
+    rgba(255, 250, 241, 0.66) !important;
+  box-shadow:
+    0 22px 62px rgba(96, 73, 41, 0.11),
+    inset 0 1px 0 rgba(255,255,255,0.78) !important;
+}
+
+@media (max-width: 768px) {
+  .admin-shell-modern .sidebar {
+    display: none !important;
+  }
+
+  .admin-shell-modern .mobile-command-header {
+    display: flex !important;
+  }
+
+  .bottom-nav-bar {
+    display: flex !important;
+  }
+}

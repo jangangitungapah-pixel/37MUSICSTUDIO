@@ -3478,3 +3478,226 @@ html[data-pwa-mode="admin"] {
     padding-bottom: 1.25rem !important;
   }
 }
+
+/* ──────────────────────────────────────────────────────────────────────────
+   37 ADMIN SHELL FOUNDATION 8.6A
+   --------------------------------------------------------------------------
+   Safe first phase for Admin Shell overhaul.
+   Kiblat: Public Calendar premium ambient shell.
+   Scope:
+   - admin shell root
+   - global admin layout shell
+   - main-content visual foundation
+   - desktop/mobile layout safety
+   Routes, auth, permissions, Sidebar logic, and page logic are untouched.
+   ────────────────────────────────────────────────────────────────────────── */
+
+.admin-shell-modern {
+  --as-bg-deep: #07090e;
+  --as-bg-mid: #0b0f16;
+  --as-text: #fffaf0;
+  --as-muted: rgba(255, 250, 240, 0.66);
+  --as-line: rgba(255, 255, 255, 0.105);
+  --as-line-soft: rgba(255, 255, 255, 0.065);
+  --as-gold: #efc56e;
+  --as-pink: #ff3d70;
+  --as-cyan: #58e0e9;
+
+  position: relative;
+  isolation: isolate;
+  background:
+    radial-gradient(circle at 14% 0%, rgba(239, 197, 110, 0.090), transparent 34rem),
+    radial-gradient(circle at 88% 4%, rgba(88, 224, 233, 0.075), transparent 34rem),
+    radial-gradient(circle at 48% 62%, rgba(255, 61, 112, 0.036), transparent 40rem),
+    linear-gradient(180deg, #07090e 0%, #0a0d12 48%, #05070a 100%) !important;
+  color: var(--as-text);
+  overflow: hidden !important;
+}
+
+.admin-shell-modern::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.014) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.012) 1px, transparent 1px);
+  background-size: 72px 72px;
+  opacity: 0.56;
+  -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,0.70), transparent 82%);
+  mask-image: linear-gradient(to bottom, rgba(0,0,0,0.70), transparent 82%);
+}
+
+.admin-shell-modern .ambient-glow-wrapper {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 0 !important;
+  pointer-events: none !important;
+  overflow: hidden !important;
+}
+
+.admin-shell-modern .ambient-blob {
+  position: absolute !important;
+  width: 34rem !important;
+  height: 34rem !important;
+  border-radius: 999px !important;
+  filter: blur(86px) !important;
+  opacity: 0.13 !important;
+  transform: translateZ(0);
+  will-change: auto !important;
+}
+
+.admin-shell-modern .blob-cyan {
+  top: -13rem !important;
+  right: -12rem !important;
+  background: var(--as-cyan) !important;
+}
+
+.admin-shell-modern .blob-pink {
+  bottom: 8rem !important;
+  left: 28% !important;
+  background: var(--as-pink) !important;
+  opacity: 0.075 !important;
+}
+
+.admin-shell-modern .blob-purple {
+  top: -12rem !important;
+  left: -13rem !important;
+  background: var(--as-gold) !important;
+  opacity: 0.12 !important;
+}
+
+.admin-shell-modern > .sidebar,
+.admin-shell-modern > .main-content {
+  position: relative;
+  z-index: 2;
+}
+
+.admin-shell-modern .main-content {
+  min-width: 0 !important;
+  height: 100vh !important;
+  padding: clamp(1rem, 2vw, 1.6rem) !important;
+  background: transparent !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  scrollbar-gutter: stable;
+  scroll-behavior: smooth;
+}
+
+.admin-shell-modern .main-content::before {
+  content: "";
+  position: sticky;
+  top: 0;
+  display: block;
+  height: 0;
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* Desktop/tablet safety after dashboard overhaul */
+@media (min-width: 769px) {
+  .admin-shell-modern {
+    display: flex !important;
+    flex-direction: row !important;
+    height: 100vh !important;
+    width: 100vw !important;
+  }
+
+  .admin-shell-modern .main-content {
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+    padding-bottom: clamp(1rem, 2vw, 1.6rem) !important;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1180px) {
+  .admin-shell-modern .main-content {
+    padding: 1rem !important;
+  }
+}
+
+/* Mobile shell keeps bottom-nav app behavior */
+@media (max-width: 768px) {
+  .admin-shell-modern {
+    min-height: 100dvh !important;
+    height: 100dvh !important;
+    overflow: hidden !important;
+  }
+
+  .admin-shell-modern::before {
+    background-size: 56px 56px;
+    opacity: 0.38;
+  }
+
+  .admin-shell-modern .ambient-blob {
+    width: 21rem !important;
+    height: 21rem !important;
+    filter: blur(58px) !important;
+    opacity: 0.075 !important;
+  }
+
+  .admin-shell-modern .blob-pink {
+    display: none !important;
+  }
+
+  .admin-shell-modern .main-content {
+    height: 100dvh !important;
+    padding:
+      calc(92px + env(safe-area-inset-top, 0px))
+      12px
+      calc(108px + env(safe-area-inset-bottom, 0px)) !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    scroll-padding-top: calc(92px + env(safe-area-inset-top, 0px)) !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Light mode foundation */
+[data-theme="light"] .admin-shell-modern {
+  --as-bg-deep: #f6efe5;
+  --as-bg-mid: #eee4d6;
+  --as-text: rgba(34, 27, 18, 0.96);
+  --as-muted: rgba(45, 38, 28, 0.66);
+  --as-line: rgba(96, 73, 41, 0.13);
+  --as-line-soft: rgba(96, 73, 41, 0.085);
+  --as-gold: #b9852f;
+  --as-pink: #c73865;
+  --as-cyan: #188b99;
+
+  background:
+    radial-gradient(circle at 50% 0%, rgba(239, 197, 110, 0.135), transparent 31rem),
+    radial-gradient(circle at 8% 18%, rgba(255, 56, 113, 0.052), transparent 29rem),
+    radial-gradient(circle at 90% 20%, rgba(35, 176, 191, 0.060), transparent 31rem),
+    linear-gradient(180deg, #f6efe5 0%, #eee4d6 46%, #e9dfd1 100%) !important;
+  color: var(--as-text) !important;
+}
+
+[data-theme="light"] .admin-shell-modern::before {
+  background:
+    linear-gradient(rgba(70, 52, 28, 0.020) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(70, 52, 28, 0.020) 1px, transparent 1px);
+  background-size: 72px 72px;
+  opacity: 0.44;
+}
+
+[data-theme="light"] .admin-shell-modern .ambient-blob {
+  opacity: 0.09 !important;
+}
+
+/* Fast theme switch guard */
+html[data-theme-switching="true"] .admin-shell-modern,
+html[data-theme-switching="true"] .admin-shell-modern *,
+html[data-theme-switching="true"] .admin-shell-modern *::before,
+html[data-theme-switching="true"] .admin-shell-modern *::after {
+  transition: none !important;
+  animation: none !important;
+}
+
+html[data-theme-switching="true"] .admin-shell-modern .glass-panel,
+html[data-theme-switching="true"] .admin-shell-modern .sidebar,
+html[data-theme-switching="true"] .admin-shell-modern .main-content {
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
