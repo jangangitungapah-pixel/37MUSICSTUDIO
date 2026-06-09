@@ -35,6 +35,7 @@ const CalendarPage = () => {
   const [prefillHour, setPrefillHour] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
+  const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [detailPos, setDetailPos] = useState({ top: 0, left: 0 });
   const gridWrapperRef = useRef(null);
@@ -824,16 +825,40 @@ const CalendarPage = () => {
                 </button>
               ))}
             </div>
-            <div className="calendar-mobile-filter">
-              <label className="mobile-filter-label" htmlFor="calendar-mobile-status-filter">Filter</label>
-              <div className="mobile-filter-select-wrap">
-                <select
-                  id="calendar-mobile-status-filter"
-                  className="mobile-filter-select"
-                  value={filterStatus}
-                  onChange={(event) => setFilterStatus(event.target.value)}
-                  aria-label="Filter status booking"
-                >
+            <div
+              className="calendar-mobile-filter"
+              onBlur={(event) => {
+                if (!event.currentTarget.contains(event.relatedTarget)) {
+                  setIsMobileFilterOpen(false);
+                }
+              }}
+            >
+              <button
+                type="button"
+                className={`mobile-filter-trigger ${isMobileFilterOpen ? 'is-open' : ''}`}
+                onClick={() => setIsMobileFilterOpen((open) => !open)}
+                aria-haspopup="listbox"
+                aria-expanded={isMobileFilterOpen}
+                aria-label="Filter status booking"
+              >
+                <span className="mobile-filter-trigger-copy">
+                  <span className="mobile-filter-kicker">Filter</span>
+                  <strong>
+                    {([
+                      { id: 'all', label: 'Semua' },
+                      { id: 'pending', label: 'Pending' },
+                      { id: 'dp', label: 'DP' },
+                      { id: 'confirmed', label: 'Lunas' },
+                      { id: 'maintenance', label: 'Blokir' },
+                      { id: 'cancelled', label: 'Batal' },
+                    ].find((option) => option.id === filterStatus)?.label) || 'Semua'}
+                  </strong>
+                </span>
+                <ChevronDown size={15} className="mobile-filter-chevron" aria-hidden="true" />
+              </button>
+
+              {isMobileFilterOpen && (
+                <div className="mobile-filter-menu" role="listbox" aria-label="Pilih filter status booking">
                   {[
                     { id: 'all', label: 'Semua' },
                     { id: 'pending', label: 'Pending' },
@@ -842,11 +867,23 @@ const CalendarPage = () => {
                     { id: 'maintenance', label: 'Blokir' },
                     { id: 'cancelled', label: 'Batal' },
                   ].map(({ id, label }) => (
-                    <option key={id} value={id}>{label}</option>
+                    <button
+                      key={id}
+                      type="button"
+                      role="option"
+                      aria-selected={filterStatus === id}
+                      className={`mobile-filter-option ${filterStatus === id ? 'is-active ' + id : ''}`}
+                      onClick={() => {
+                        setFilterStatus(id);
+                        setIsMobileFilterOpen(false);
+                      }}
+                    >
+                      <span className={`mobile-filter-dot ${id}`} aria-hidden="true" />
+                      <span>{label}</span>
+                    </button>
                   ))}
-                </select>
-                <ChevronDown size={15} className="mobile-filter-chevron" aria-hidden="true" />
-              </div>
+                </div>
+              )}
             </div>
 
             <div className="quick-filters">
