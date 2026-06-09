@@ -7,7 +7,7 @@ import { useThemeStore } from '../store/useThemeStore';
 import { useAuthStore } from '../store/useAuthStore';
 import { format } from 'date-fns';
 import { Wallet, TrendingUp, TrendingDown, Plus, Trash2, Search, Download, Printer, X } from 'lucide-react';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer } from 'recharts';
 import { toast } from 'sonner';
 import Modal from '../components/Modal';
 import {
@@ -572,6 +572,34 @@ const FinancePage = () => {
     () => buildExpensePieData(periodFilteredData),
     [periodFilteredData]
   );
+
+  const expenseDonutModel = useMemo(() => {
+    const total = pieChartData.reduce((sum, item) => sum + Number(item.value || 0), 0);
+    let cursor = 0;
+
+    const segments = pieChartData.map((item, index) => {
+      const value = Number(item.value || 0);
+      const start = cursor;
+      const end = total > 0 ? cursor + (value / total) * 360 : cursor;
+      cursor = end;
+
+      return {
+        ...item,
+        value,
+        color: PIE_COLORS[index % PIE_COLORS.length],
+        start,
+        end,
+      };
+    });
+
+    const gradient = total > 0 && segments.length > 0
+      ? segments
+          .map((segment) => segment.color + ' ' + segment.start.toFixed(2) + 'deg ' + segment.end.toFixed(2) + 'deg')
+          .join(', ')
+      : 'rgba(255, 255, 255, 0.08) 0deg 360deg';
+
+    return { total, segments, gradient };
+  }, [PIE_COLORS, pieChartData]);
   const revenueForecast = useMemo(
     () => getRevenueForecast(bookings, transactions, pricePerHour),
     [bookings, transactions, pricePerHour]
@@ -1346,22 +1374,21 @@ const FinancePage = () => {
             <div className="widget-content">
               {pieChartData.length > 0 ? (
                 <>
-                  <div className="sidebar-chart-wrapper">
-                    <ResponsiveContainer width="100%" height={isFinanceMobile ? 112 : 140}>
-                      <PieChart>
-                        <Pie data={pieChartData} cx="50%" cy="50%" innerRadius={isFinanceMobile ? 26 : 36} outerRadius={isFinanceMobile ? 40 : 52} paddingAngle={isFinanceMobile ? 3 : 4} dataKey="value">
-                          {pieChartData.map((_, i) => (
-                            <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} stroke="transparent" />
-                          ))}
-                        </Pie>
-                        <RechartsTooltip
-                          formatter={(v) => formatCurrency(v)}
-                          contentStyle={{ backgroundColor: tooltipBg, border: `1px solid ${tooltipBorder}`, borderRadius: '10px', fontSize: '0.8rem', color: tooltipTextColor }}
-                          itemStyle={{ color: tooltipTextColor }}
+                  <div
+                      className="sidebar-chart-wrapper custom-donut-wrapper"
+                      aria-label={`Breakdown pengeluaran total ${formatCurrency(expenseDonutModel.total)}`}
+                    >
+                      <div className="expense-donut-shell" role="img" aria-label="Grafik donat breakdown pengeluaran">
+                        <div
+                          className="expense-donut-ring"
+                          style={{ '--donut-gradient': expenseDonutModel.gradient }}
                         />
-                      </PieChart>
-                    </ResponsiveContainer>
-                  </div>
+                        <div className="expense-donut-hole">
+                          <span>{pieChartData.length}</span>
+                          <small>kategori</small>
+                        </div>
+                      </div>
+                    </div>
                   <div className="pie-legend-list">
                     {pieChartData.map((item, i) => (
                       <div key={item.name} className="pie-legend-item">
