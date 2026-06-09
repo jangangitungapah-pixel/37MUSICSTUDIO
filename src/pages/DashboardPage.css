@@ -4307,3 +4307,529 @@
     white-space: normal;
   }
 }
+
+/* ──────────────────────────────────────────────────────────────────────────
+   37 ADMIN DASHBOARD LIST ROW FINISHING 8.5F
+   --------------------------------------------------------------------------
+   Safe sixth phase for Admin Dashboard overhaul.
+   Scope:
+   - Top Customers finishing
+   - common list row rhythm
+   - action icon alignment
+   - empty state consistency
+   - mobile row safety
+   Logic, stores, routes, modals, and actions are untouched.
+   ────────────────────────────────────────────────────────────────────────── */
+
+/* Shared list rhythm */
+.admin-dashboard-modern .top-customers-list,
+.admin-dashboard-modern .upcoming-list,
+.admin-dashboard-modern .dash-work-list,
+.admin-dashboard-modern .inv-legend {
+  min-width: 0 !important;
+  display: grid !important;
+  gap: 0.56rem !important;
+}
+
+.admin-dashboard-modern .top-cust-row,
+.admin-dashboard-modern .upcoming-item,
+.admin-dashboard-modern .dash-work-item,
+.admin-dashboard-modern .dash-slot-item,
+.admin-dashboard-modern .inv-legend-item {
+  min-width: 0 !important;
+  isolation: isolate;
+  outline: 0;
+}
+
+.admin-dashboard-modern .top-cust-row::before,
+.admin-dashboard-modern .upcoming-item::before,
+.admin-dashboard-modern .dash-work-item::before,
+.admin-dashboard-modern .dash-slot-item::before,
+.admin-dashboard-modern .inv-legend-item::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  border-radius: inherit;
+  background:
+    radial-gradient(circle at 0% 50%, rgba(88, 224, 233, 0.050), transparent 42%),
+    linear-gradient(180deg, rgba(255,255,255,0.030), transparent 60%);
+  opacity: 0;
+  transition: opacity 160ms ease;
+}
+
+.admin-dashboard-modern .top-cust-row:hover::before,
+.admin-dashboard-modern .upcoming-item:hover::before,
+.admin-dashboard-modern .dash-work-item:hover::before,
+.admin-dashboard-modern .dash-slot-item:hover::before,
+.admin-dashboard-modern .inv-legend-item:hover::before {
+  opacity: 1;
+}
+
+/* Top Customers final polish */
+.admin-dashboard-modern .dash-table-card {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0.88rem !important;
+}
+
+.admin-dashboard-modern .top-customers-list {
+  flex: 1;
+}
+
+.admin-dashboard-modern .top-cust-row {
+  position: relative !important;
+  min-height: 64px !important;
+  display: grid !important;
+  grid-template-columns: 42px 42px minmax(0, 1fr) auto !important;
+  align-items: center !important;
+  gap: 0.64rem !important;
+  padding: 0.62rem 0.72rem !important;
+  border: 1px solid var(--ad-line-soft, rgba(255,255,255,0.07)) !important;
+  border-radius: 1rem !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.050), rgba(255,255,255,0.014)),
+    rgba(255,255,255,0.028) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.045),
+    0 10px 22px rgba(0,0,0,0.08) !important;
+  overflow: hidden !important;
+  transition:
+    border-color 160ms ease,
+    background 160ms ease,
+    box-shadow 160ms ease,
+    transform 160ms ease !important;
+}
+
+.admin-dashboard-modern .top-cust-row:hover {
+  transform: translateY(-1px) !important;
+  border-color: rgba(239, 197, 110, 0.19) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.060),
+    0 16px 32px rgba(0,0,0,0.14) !important;
+}
+
+.admin-dashboard-modern .top-cust-rank,
+.admin-dashboard-modern .top-cust-avatar {
+  display: grid !important;
+  place-items: center !important;
+  flex-shrink: 0 !important;
+  border: 1px solid rgba(239,197,110,0.18) !important;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255,255,255,0.10), transparent 58%),
+    linear-gradient(180deg, rgba(255,255,255,0.070), rgba(255,255,255,0.020)),
+    rgba(239,197,110,0.080) !important;
+  color: rgba(255, 224, 163, 0.94) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.052) !important;
+}
+
+.admin-dashboard-modern .top-cust-rank {
+  width: 42px !important;
+  height: 38px !important;
+  border-radius: 0.86rem !important;
+  font-size: 0.72rem !important;
+  line-height: 1 !important;
+  font-weight: 950 !important;
+  letter-spacing: -0.02em !important;
+}
+
+.admin-dashboard-modern .top-cust-avatar {
+  width: 42px !important;
+  height: 42px !important;
+  border-radius: 999px !important;
+  font-size: 0.9rem !important;
+  line-height: 1 !important;
+  font-weight: 950 !important;
+}
+
+.admin-dashboard-modern .top-cust-info {
+  min-width: 0 !important;
+  display: grid !important;
+  gap: 0.16rem !important;
+  align-content: center !important;
+}
+
+.admin-dashboard-modern .top-cust-name {
+  min-width: 0;
+  display: block;
+  color: var(--ad-text, #fffaf0) !important;
+  font-size: 0.92rem !important;
+  line-height: 1.12 !important;
+  font-weight: 950 !important;
+  letter-spacing: -0.028em !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+.admin-dashboard-modern .top-cust-phone {
+  min-width: 0;
+  display: block;
+  color: var(--ad-muted, rgba(255,250,240,0.66)) !important;
+  font-size: 0.68rem !important;
+  line-height: 1.22 !important;
+  font-weight: 780 !important;
+  letter-spacing: -0.012em !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+.admin-dashboard-modern .top-cust-stats {
+  min-width: max-content;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  gap: 0.56rem !important;
+}
+
+.admin-dashboard-modern .top-cust-stats > div {
+  min-width: 54px;
+  min-height: 38px;
+  display: inline-grid !important;
+  grid-template-columns: auto auto;
+  align-items: baseline !important;
+  justify-content: center !important;
+  gap: 0.18rem !important;
+  padding: 0 0.56rem;
+  border: 1px solid var(--ad-line-soft, rgba(255,255,255,0.07));
+  border-radius: 0.88rem;
+  background: rgba(255,255,255,0.034);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.044);
+}
+
+.admin-dashboard-modern .top-cust-bookings {
+  color: var(--ad-text, #fffaf0) !important;
+  font-family: var(--font-display, "Bebas Neue", Impact, sans-serif) !important;
+  font-size: 1.52rem !important;
+  line-height: 0.9 !important;
+  font-weight: 400 !important;
+  letter-spacing: -0.04em !important;
+  font-variant-numeric: tabular-nums;
+}
+
+.admin-dashboard-modern .top-cust-unit {
+  color: var(--ad-muted, rgba(255,250,240,0.66)) !important;
+  font-size: 0.62rem !important;
+  line-height: 1 !important;
+  font-weight: 920 !important;
+}
+
+/* Rank accents */
+.admin-dashboard-modern .top-cust-rank.rank-1 {
+  color: rgba(255, 229, 166, 0.98) !important;
+  border-color: rgba(239,197,110,0.30) !important;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255,255,255,0.18), transparent 58%),
+    linear-gradient(135deg, rgba(239,197,110,0.24), rgba(239,197,110,0.075)) !important;
+}
+
+.admin-dashboard-modern .top-cust-rank.rank-2 {
+  color: rgba(211, 229, 240, 0.96) !important;
+  border-color: rgba(180,205,220,0.24) !important;
+}
+
+.admin-dashboard-modern .top-cust-rank.rank-3 {
+  color: rgba(238, 180, 130, 0.96) !important;
+  border-color: rgba(238,180,130,0.22) !important;
+}
+
+/* Unified action icons */
+.admin-dashboard-modern .dash-icon-action {
+  position: relative;
+  width: 32px !important;
+  height: 32px !important;
+  min-width: 32px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 0.78rem !important;
+  border: 1px solid var(--ad-line-soft, rgba(255,255,255,0.07)) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.060), rgba(255,255,255,0.018)),
+    rgba(255,255,255,0.036) !important;
+  color: var(--ad-muted, rgba(255,250,240,0.66)) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.045) !important;
+  transform: none !important;
+  transition:
+    color 150ms ease,
+    border-color 150ms ease,
+    background 150ms ease,
+    box-shadow 150ms ease !important;
+}
+
+.admin-dashboard-modern .dash-icon-action svg {
+  width: 14px !important;
+  height: 14px !important;
+}
+
+.admin-dashboard-modern .dash-icon-action:hover {
+  transform: none !important;
+}
+
+.admin-dashboard-modern .dash-icon-action.send:hover {
+  color: var(--ad-cyan, #58e0e9) !important;
+  border-color: rgba(88,224,233,0.30) !important;
+  background: rgba(88,224,233,0.080) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.050),
+    0 0 20px rgba(88,224,233,0.10) !important;
+}
+
+.admin-dashboard-modern .dash-icon-action.approve:hover {
+  color: var(--ad-green, #82d8a0) !important;
+  border-color: rgba(130,216,160,0.30) !important;
+  background: rgba(130,216,160,0.080) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.050),
+    0 0 20px rgba(130,216,160,0.10) !important;
+}
+
+.admin-dashboard-modern .dash-icon-action.reject:hover {
+  color: var(--ad-pink, #ff3d70) !important;
+  border-color: rgba(255,61,112,0.30) !important;
+  background: rgba(255,61,112,0.080) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.050),
+    0 0 20px rgba(255,61,112,0.10) !important;
+}
+
+/* Row content safety */
+.admin-dashboard-modern .upcoming-info,
+.admin-dashboard-modern .dash-work-main,
+.admin-dashboard-modern .top-cust-info,
+.admin-dashboard-modern .inv-legend-item span {
+  min-width: 0 !important;
+}
+
+.admin-dashboard-modern .upcoming-band,
+.admin-dashboard-modern .upcoming-time,
+.admin-dashboard-modern .dash-work-main strong,
+.admin-dashboard-modern .dash-work-main span,
+.admin-dashboard-modern .dash-slot-item strong,
+.admin-dashboard-modern .dash-slot-item span,
+.admin-dashboard-modern .inv-legend-item span {
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+.admin-dashboard-modern .upcoming-band,
+.admin-dashboard-modern .dash-work-main strong,
+.admin-dashboard-modern .dash-slot-item strong,
+.admin-dashboard-modern .inv-legend-item span {
+  white-space: nowrap !important;
+}
+
+.admin-dashboard-modern .upcoming-time,
+.admin-dashboard-modern .dash-work-main span,
+.admin-dashboard-modern .dash-slot-item span {
+  white-space: nowrap !important;
+}
+
+/* Empty states finishing */
+.admin-dashboard-modern .dash-empty-state,
+.admin-dashboard-modern .dash-work-empty {
+  position: relative !important;
+  min-height: 126px !important;
+  display: grid !important;
+  place-items: center !important;
+  align-content: center !important;
+  gap: 0.56rem !important;
+  padding: 1rem !important;
+  border: 1px dashed rgba(255,255,255,0.13) !important;
+  border-radius: 1rem !important;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(88,224,233,0.050), transparent 42%),
+    linear-gradient(180deg, rgba(255,255,255,0.030), rgba(255,255,255,0.010)),
+    rgba(255,255,255,0.018) !important;
+  color: var(--ad-muted, rgba(255,250,240,0.66)) !important;
+  text-align: center !important;
+}
+
+.admin-dashboard-modern .dash-empty-state svg,
+.admin-dashboard-modern .dash-work-empty svg {
+  color: var(--ad-cyan, #58e0e9) !important;
+  opacity: 0.72 !important;
+}
+
+.admin-dashboard-modern .dash-empty-state p,
+.admin-dashboard-modern .dash-work-empty span {
+  margin: 0 !important;
+  max-width: 28ch;
+  color: var(--ad-muted, rgba(255,250,240,0.66)) !important;
+  font-size: 0.78rem !important;
+  line-height: 1.38 !important;
+  font-weight: 820 !important;
+}
+
+/* Light mode */
+[data-theme="light"] .admin-dashboard-modern .top-cust-row,
+[data-theme="light"] .admin-dashboard-modern .top-cust-stats > div,
+[data-theme="light"] .admin-dashboard-modern .dash-icon-action {
+  border-color: rgba(96,73,41,0.11) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.70), rgba(255,255,255,0.34)),
+    rgba(255,250,241,0.52) !important;
+  color: rgba(45,38,28,0.70) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.74),
+    0 10px 22px rgba(96,73,41,0.06) !important;
+}
+
+[data-theme="light"] .admin-dashboard-modern .top-cust-row:hover {
+  border-color: rgba(185,133,47,0.18) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.82),
+    0 16px 34px rgba(96,73,41,0.10) !important;
+}
+
+[data-theme="light"] .admin-dashboard-modern .top-cust-rank,
+[data-theme="light"] .admin-dashboard-modern .top-cust-avatar {
+  border-color: rgba(185,133,47,0.18) !important;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255,255,255,0.30), transparent 58%),
+    linear-gradient(180deg, rgba(255,255,255,0.72), rgba(255,255,255,0.34)),
+    rgba(185,133,47,0.070) !important;
+  color: rgba(139,92,24,0.96) !important;
+}
+
+[data-theme="light"] .admin-dashboard-modern .top-cust-rank.rank-1 {
+  color: rgba(116, 73, 12, 0.98) !important;
+  border-color: rgba(185,133,47,0.28) !important;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255,255,255,0.42), transparent 58%),
+    linear-gradient(135deg, rgba(185,133,47,0.18), rgba(185,133,47,0.060)) !important;
+}
+
+[data-theme="light"] .admin-dashboard-modern .top-cust-name,
+[data-theme="light"] .admin-dashboard-modern .top-cust-bookings {
+  color: rgba(34,27,18,0.96) !important;
+}
+
+[data-theme="light"] .admin-dashboard-modern .top-cust-phone,
+[data-theme="light"] .admin-dashboard-modern .top-cust-unit,
+[data-theme="light"] .admin-dashboard-modern .dash-empty-state p,
+[data-theme="light"] .admin-dashboard-modern .dash-work-empty span {
+  color: rgba(45,38,28,0.64) !important;
+}
+
+[data-theme="light"] .admin-dashboard-modern .dash-empty-state,
+[data-theme="light"] .admin-dashboard-modern .dash-work-empty {
+  border-color: rgba(96,73,41,0.12) !important;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(24,139,153,0.040), transparent 42%),
+    linear-gradient(180deg, rgba(255,255,255,0.54), rgba(255,255,255,0.26)),
+    rgba(255,250,241,0.44) !important;
+}
+
+[data-theme="light"] .admin-dashboard-modern .dash-empty-state svg,
+[data-theme="light"] .admin-dashboard-modern .dash-work-empty svg {
+  color: var(--ad-cyan, #188b99) !important;
+}
+
+/* Responsive row finishing */
+@media (max-width: 768px) {
+  .admin-dashboard-modern .top-customers-list,
+  .admin-dashboard-modern .upcoming-list,
+  .admin-dashboard-modern .dash-work-list,
+  .admin-dashboard-modern .inv-legend {
+    gap: 0.48rem !important;
+  }
+
+  .admin-dashboard-modern .top-cust-row {
+    min-height: 58px !important;
+    grid-template-columns: 36px 36px minmax(0, 1fr) auto !important;
+    gap: 0.48rem !important;
+    padding: 0.56rem !important;
+    border-radius: 0.92rem !important;
+    transform: none !important;
+  }
+
+  .admin-dashboard-modern .top-cust-row:hover {
+    transform: none !important;
+  }
+
+  .admin-dashboard-modern .top-cust-rank {
+    width: 36px !important;
+    height: 34px !important;
+    border-radius: 0.76rem !important;
+    font-size: 0.66rem !important;
+  }
+
+  .admin-dashboard-modern .top-cust-avatar {
+    width: 36px !important;
+    height: 36px !important;
+    font-size: 0.78rem !important;
+  }
+
+  .admin-dashboard-modern .top-cust-name {
+    font-size: 0.84rem !important;
+  }
+
+  .admin-dashboard-modern .top-cust-phone {
+    font-size: 0.62rem !important;
+  }
+
+  .admin-dashboard-modern .top-cust-stats {
+    gap: 0.38rem !important;
+  }
+
+  .admin-dashboard-modern .top-cust-stats > div {
+    min-width: 48px;
+    min-height: 34px;
+    padding: 0 0.42rem;
+  }
+
+  .admin-dashboard-modern .top-cust-bookings {
+    font-size: 1.28rem !important;
+  }
+
+  .admin-dashboard-modern .dash-icon-action {
+    width: 30px !important;
+    height: 30px !important;
+    min-width: 30px !important;
+    border-radius: 0.72rem !important;
+  }
+
+  .admin-dashboard-modern .dash-icon-action svg {
+    width: 13px !important;
+    height: 13px !important;
+  }
+
+  .admin-dashboard-modern .dash-empty-state,
+  .admin-dashboard-modern .dash-work-empty {
+    min-height: 104px !important;
+    border-radius: 0.92rem !important;
+  }
+}
+
+@media (max-width: 430px) {
+  .admin-dashboard-modern .top-cust-row {
+    grid-template-columns: 36px minmax(0, 1fr) auto !important;
+  }
+
+  .admin-dashboard-modern .top-cust-rank {
+    display: none !important;
+  }
+
+  .admin-dashboard-modern .top-cust-stats {
+    grid-column: 2 / -1;
+    justify-content: flex-start !important;
+    margin-top: 0.02rem;
+  }
+
+  .admin-dashboard-modern .top-cust-stats > div {
+    min-width: 58px;
+  }
+
+  .admin-dashboard-modern .top-cust-phone {
+    max-width: 100%;
+  }
+
+  .admin-dashboard-modern .upcoming-time,
+  .admin-dashboard-modern .dash-work-main span,
+  .admin-dashboard-modern .dash-slot-item span {
+    white-space: normal !important;
+  }
+}
