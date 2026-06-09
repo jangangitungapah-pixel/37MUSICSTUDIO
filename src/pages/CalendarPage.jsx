@@ -824,14 +824,39 @@ const CalendarPage = () => {
                 </button>
               ))}
             </div>
+            <div className="calendar-mobile-filter">
+              <label className="mobile-filter-label" htmlFor="calendar-mobile-status-filter">Filter</label>
+              <div className="mobile-filter-select-wrap">
+                <select
+                  id="calendar-mobile-status-filter"
+                  className="mobile-filter-select"
+                  value={filterStatus}
+                  onChange={(event) => setFilterStatus(event.target.value)}
+                  aria-label="Filter status booking"
+                >
+                  {[
+                    { id: 'all', label: 'Semua' },
+                    { id: 'pending', label: 'Pending' },
+                    { id: 'dp', label: 'DP' },
+                    { id: 'confirmed', label: 'Lunas' },
+                    { id: 'maintenance', label: 'Blokir' },
+                    { id: 'cancelled', label: 'Batal' },
+                  ].map(({ id, label }) => (
+                    <option key={id} value={id}>{label}</option>
+                  ))}
+                </select>
+                <ChevronDown size={15} className="mobile-filter-chevron" aria-hidden="true" />
+              </div>
+            </div>
+
             <div className="quick-filters">
               {[
-                { id: 'all', label: 'Semua', shortLabel: 'S' },
-                { id: 'pending', label: 'Pending', shortLabel: 'P' },
-                { id: 'dp', label: 'DP', shortLabel: 'DP' },
-                { id: 'confirmed', label: 'Lunas', shortLabel: 'L' },
-                { id: 'maintenance', label: 'Blokir', shortLabel: 'B' },
-                { id: 'cancelled', label: 'Batal', shortLabel: 'X' },
+                { id: 'all', label: 'Semua' },
+                { id: 'pending', label: 'Pending' },
+                { id: 'dp', label: 'DP' },
+                { id: 'confirmed', label: 'Lunas' },
+                { id: 'maintenance', label: 'Blokir' },
+                { id: 'cancelled', label: 'Batal' },
               ].map(({ id, label }) => (
                 <Tooltip.Root key={id}>
                   <Tooltip.Trigger asChild>

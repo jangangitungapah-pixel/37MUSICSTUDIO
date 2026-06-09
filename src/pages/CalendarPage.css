@@ -8137,3 +8137,162 @@ body.calendar-resize-lock {
 }
 
 /* 37 ADMIN CALENDAR MOBILE LAYOUT LOCK 8.7M END */
+
+/* 37 MOBILE CALENDAR FILTER DROPDOWN 8.7M-1 START */
+
+/* Desktop keeps chip filters */
+.calendar-page .calendar-mobile-filter {
+  display: none !important;
+}
+
+/* Mobile uses dropdown, chip row hidden */
+@media (max-width: 768px) {
+  .calendar-page .calendar-toolbar-right {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 0.5rem !important;
+    width: 100% !important;
+    overflow: visible !important;
+  }
+
+  .calendar-page .quick-filters {
+    display: none !important;
+  }
+
+  .calendar-page .calendar-mobile-filter {
+    display: grid !important;
+    grid-template-columns: auto minmax(0, 1fr) !important;
+    align-items: center !important;
+    gap: 0.52rem !important;
+    width: 100% !important;
+    min-height: 2.42rem !important;
+    padding: 0.26rem 0.3rem 0.26rem 0.68rem !important;
+    border-radius: 999px !important;
+    border: 1px solid rgba(255,255,255,0.085) !important;
+    background:
+      radial-gradient(circle at 0% 0%, rgba(239,197,110,0.08), transparent 38%),
+      linear-gradient(180deg, rgba(255,255,255,0.052), rgba(255,255,255,0.014)),
+      rgba(255,255,255,0.024) !important;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.052),
+      0 10px 22px rgba(0,0,0,0.12) !important;
+  }
+
+  .calendar-page .mobile-filter-label {
+    color: rgba(255,250,240,0.58) !important;
+    font-family: "Space Grotesk", Inter, system-ui, sans-serif !important;
+    font-size: 0.62rem !important;
+    font-weight: 950 !important;
+    letter-spacing: 0.06em !important;
+    text-transform: uppercase !important;
+    white-space: nowrap !important;
+  }
+
+  .calendar-page .mobile-filter-select-wrap {
+    position: relative !important;
+    min-width: 0 !important;
+    width: 100% !important;
+  }
+
+  .calendar-page .mobile-filter-select {
+    width: 100% !important;
+    min-height: 1.9rem !important;
+    padding: 0 2rem 0 0.82rem !important;
+    border: 1px solid rgba(239,197,110,0.20) !important;
+    border-radius: 999px !important;
+    outline: none !important;
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    background:
+      radial-gradient(circle at 50% 0%, rgba(255,255,255,0.18), transparent 58%),
+      linear-gradient(180deg, rgba(239,197,110,0.20), rgba(255,255,255,0.018)),
+      rgba(255,255,255,0.030) !important;
+    color: #fffaf0 !important;
+    font-family: "Space Grotesk", Inter, system-ui, sans-serif !important;
+    font-size: 0.72rem !important;
+    font-weight: 950 !important;
+    letter-spacing: -0.015em !important;
+    cursor: pointer !important;
+  }
+
+  .calendar-page .mobile-filter-select:focus {
+    border-color: rgba(239,197,110,0.42) !important;
+    box-shadow: 0 0 0 3px rgba(239,197,110,0.12) !important;
+  }
+
+  .calendar-page .mobile-filter-select option {
+    background: #151923 !important;
+    color: #fffaf0 !important;
+  }
+
+  .calendar-page .mobile-filter-chevron {
+    position: absolute !important;
+    top: 50% !important;
+    right: 0.72rem !important;
+    transform: translateY(-50%) !important;
+    pointer-events: none !important;
+    color: rgba(239,197,110,0.84) !important;
+  }
+
+  .calendar-page .view-switcher {
+    width: 100% !important;
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    overflow: hidden !important;
+  }
+}
+
+@media (max-width: 420px) {
+  .calendar-page .calendar-mobile-filter {
+    min-height: 2.32rem !important;
+    padding-left: 0.58rem !important;
+    gap: 0.42rem !important;
+  }
+
+  .calendar-page .mobile-filter-label {
+    font-size: 0.58rem !important;
+  }
+
+  .calendar-page .mobile-filter-select {
+    min-height: 1.78rem !important;
+    font-size: 0.68rem !important;
+    padding-left: 0.68rem !important;
+  }
+}
+
+/* Light mode parity */
+@media (max-width: 768px) {
+  [data-theme="light"] .calendar-page .calendar-mobile-filter {
+    border-color: rgba(96,73,41,0.10) !important;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.78), rgba(255,255,255,0.34)),
+      rgba(255,250,241,0.52) !important;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.74),
+      0 10px 22px rgba(96,73,41,0.08) !important;
+  }
+
+  [data-theme="light"] .calendar-page .mobile-filter-label {
+    color: rgba(45,38,28,0.58) !important;
+  }
+
+  [data-theme="light"] .calendar-page .mobile-filter-select {
+    border-color: rgba(185,133,47,0.20) !important;
+    background:
+      radial-gradient(circle at 50% 0%, rgba(255,255,255,0.42), transparent 58%),
+      linear-gradient(180deg, rgba(255,230,168,0.72), rgba(255,255,255,0.36)),
+      rgba(255,250,241,0.64) !important;
+    color: rgba(34,27,18,0.96) !important;
+  }
+
+  [data-theme="light"] .calendar-page .mobile-filter-select option {
+    background: #fffaf1 !important;
+    color: rgba(34,27,18,0.96) !important;
+  }
+
+  [data-theme="light"] .calendar-page .mobile-filter-chevron {
+    color: rgba(185,133,47,0.88) !important;
+  }
+}
+
+/* 37 MOBILE CALENDAR FILTER DROPDOWN 8.7M-1 END */
