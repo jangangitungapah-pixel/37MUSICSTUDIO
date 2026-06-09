@@ -6529,3 +6529,158 @@ tr:hover
   }
 }
 /* === END PHASE 9.1E-2 CUSTOMER DETAIL POPUP MODAL === */
+
+/* === START PHASE 9.1E-3 CUSTOMER DETAIL CONTACT WIDTH HOTFIX === */
+/*
+  Customer Detail Contact Width Hotfix
+  Screenshot issue:
+  - Kontak section is cut because detail popup body uses 2 columns.
+  - Phone/email cards only occupy half modal width.
+  - Empty/short sections can look like clipped pills.
+  Scope:
+  - CSS-only
+  - no JSX/store/business workflow changes
+  - safe to rerun by marker
+*/
+
+/* Make Kontak section full-width inside the 2-column popup grid.
+   Current detail body order:
+   1 client portal
+   2 kontak
+   3 professional profile
+   4 membership
+   5 statistik
+   6 tanggal
+   7 timeline
+*/
+.customers-page .customer-detail-panel .detail-panel-body > .detail-section:nth-child(2) {
+  grid-column: 1 / -1 !important;
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 0.65rem !important;
+  align-items: start !important;
+}
+
+.customers-page .customer-detail-panel .detail-panel-body > .detail-section:nth-child(2) .section-title {
+  grid-column: 1 / -1 !important;
+}
+
+.customers-page .customer-detail-panel .detail-panel-body > .detail-section:nth-child(2) .detail-item {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-height: 44px !important;
+  margin: 0 !important;
+  display: grid !important;
+  grid-template-columns: 18px minmax(0, 1fr) !important;
+  align-items: center !important;
+  gap: 0.65rem !important;
+  padding: 0.68rem 0.78rem !important;
+  overflow: hidden !important;
+}
+
+.customers-page .customer-detail-panel .detail-panel-body > .detail-section:nth-child(2) .detail-item svg {
+  width: 15px !important;
+  height: 15px !important;
+  margin: 0 !important;
+}
+
+.customers-page .customer-detail-panel .detail-panel-body > .detail-section:nth-child(2) .detail-item span {
+  min-width: 0 !important;
+  max-width: 100% !important;
+  display: block !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+  line-height: 1.25 !important;
+}
+
+/* Stop empty-looking professional profile from collapsing into a thin pill */
+.customers-page .customer-detail-panel .professional-profile-section {
+  min-height: auto !important;
+}
+
+.customers-page .customer-detail-panel .professional-profile-section .section-title {
+  margin-bottom: 0.1rem !important;
+}
+
+.customers-page .customer-detail-panel .professional-profile-section .customer-pro-card {
+  width: 100% !important;
+  min-height: 0 !important;
+}
+
+.customers-page .customer-detail-panel .professional-profile-section .customer-pro-card > div {
+  min-height: 68px !important;
+}
+
+/* Give stats and date sections cleaner ownership so they do not squeeze contact */
+.customers-page .customer-detail-panel .detail-panel-body > .detail-section:nth-child(5),
+.customers-page .customer-detail-panel .detail-panel-body > .detail-section:nth-child(6) {
+  align-self: stretch !important;
+}
+
+.customers-page .customer-detail-panel .detail-panel-body > .detail-section:nth-child(6) .detail-item {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+/* Prevent footer from visually eating the last row of content */
+.customers-page .customer-detail-panel .detail-panel-body {
+  padding-bottom: 1.35rem !important;
+}
+
+.customers-page .customer-detail-panel .detail-panel-footer {
+  position: relative !important;
+  z-index: 4 !important;
+}
+
+/* Light mode safety */
+[data-theme="light"] .customers-page .customer-detail-panel .detail-panel-body > .detail-section:nth-child(2) .detail-item {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.92), rgba(255,255,255,0.72)) !important;
+  border-color: rgba(22, 27, 36, 0.09) !important;
+}
+
+/* Tablet and mobile: keep contact as one clean column */
+@media (max-width: 860px) {
+  .customers-page .customer-detail-panel .detail-panel-body > .detail-section:nth-child(2) {
+    grid-template-columns: 1fr !important;
+  }
+
+  .customers-page .customer-detail-panel .detail-panel-body > .detail-section:nth-child(2) .detail-item {
+    min-height: 42px !important;
+  }
+}
+
+@media (max-width: 520px) {
+  .customers-page .customer-detail-panel .detail-panel-body > .detail-section:nth-child(2) {
+    gap: 0.5rem !important;
+  }
+
+  .customers-page .customer-detail-panel .detail-panel-body > .detail-section:nth-child(2) .detail-item {
+    min-height: 40px !important;
+    padding: 0.58rem 0.68rem !important;
+    grid-template-columns: 17px minmax(0, 1fr) !important;
+  }
+
+  .customers-page .customer-detail-panel .detail-panel-body > .detail-section:nth-child(2) .detail-item span {
+    font-size: 0.82rem !important;
+  }
+
+  .customers-page .customer-detail-panel .professional-profile-section .customer-pro-card > div {
+    min-height: 60px !important;
+  }
+}
+
+@media (hover: none), (pointer: coarse) {
+  .customers-page .customer-detail-panel .detail-panel-body > .detail-section:nth-child(2) .detail-item:hover {
+    transform: none !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .customers-page .customer-detail-panel .detail-panel-body > .detail-section:nth-child(2),
+  .customers-page .customer-detail-panel .detail-panel-body > .detail-section:nth-child(2) * {
+    transition: none !important;
+  }
+}
+/* === END PHASE 9.1E-3 CUSTOMER DETAIL CONTACT WIDTH HOTFIX === */
