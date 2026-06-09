@@ -8586,3 +8586,126 @@ body.calendar-resize-lock {
 }
 
 /* 37 MOBILE FILTER CUSTOM DROPDOWN POLISH 8.7M-2 END */
+
+/* 37 GLOBAL MOBILE BOTTOM NAV SAFE ZONE 8.7M-3 START */
+
+:root {
+  --mobile-bottom-nav-safe-zone: calc(92px + env(safe-area-inset-bottom, 0px));
+  --mobile-overlay-top-gap: 10px;
+  --mobile-overlay-side-gap: 10px;
+}
+
+/* Calendar detail sheet and floating overlays must never touch bottom nav */
+@media (max-width: 768px) {
+  .booking-detail-portal-container {
+    inset: 0 !important;
+    pointer-events: none !important;
+    padding:
+      var(--mobile-overlay-top-gap)
+      var(--mobile-overlay-side-gap)
+      var(--mobile-bottom-nav-safe-zone)
+      var(--mobile-overlay-side-gap) !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+  }
+
+  .booking-detail-popup.mobile-sheet {
+    position: fixed !important;
+    left: var(--mobile-overlay-side-gap) !important;
+    right: var(--mobile-overlay-side-gap) !important;
+    bottom: var(--mobile-bottom-nav-safe-zone) !important;
+    width: auto !important;
+
+    max-width: calc(100vw - (var(--mobile-overlay-side-gap) * 2)) !important;
+    max-height: calc(100dvh - var(--mobile-bottom-nav-safe-zone) - var(--mobile-overlay-top-gap)) !important;
+
+    display: flex !important;
+    flex-direction: column !important;
+
+    margin: 0 !important;
+    border-radius: 1.28rem !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+  }
+
+  .booking-detail-popup.mobile-sheet::before {
+    flex-shrink: 0 !important;
+  }
+
+  .booking-detail-popup.mobile-sheet .detail-header,
+  .booking-detail-popup.mobile-sheet .detail-footer {
+    flex-shrink: 0 !important;
+  }
+
+  .booking-detail-popup.mobile-sheet .detail-body {
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    overscroll-behavior: contain !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  .booking-detail-popup.mobile-sheet .detail-footer {
+    padding-bottom: max(0.86rem, env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  /* Other calendar floating panels/dropdowns */
+  .resize-confirm-modal,
+  .booking-detail-popup:not(.mobile-sheet),
+  .mobile-move-hint,
+  .mobile-booking-drag-ghost {
+    max-height: calc(100dvh - var(--mobile-bottom-nav-safe-zone) - var(--mobile-overlay-top-gap)) !important;
+    max-width: calc(100vw - (var(--mobile-overlay-side-gap) * 2)) !important;
+    box-sizing: border-box !important;
+  }
+
+  .mobile-move-hint {
+    bottom: var(--mobile-bottom-nav-safe-zone) !important;
+  }
+
+  /* Page content and grid should leave breathing room above nav */
+  .calendar-page {
+    padding-bottom: calc(var(--mobile-bottom-nav-safe-zone) + 12px) !important;
+  }
+
+  .calendar-page .monthly-grid-wrapper,
+  .calendar-page .calendar-timeline-wrapper {
+    margin-bottom: calc(var(--mobile-bottom-nav-safe-zone) + 10px) !important;
+  }
+
+  /* Dropdown menu must not fall into bottom nav when opened near lower viewport */
+  .calendar-page .mobile-filter-menu {
+    max-height: calc(100dvh - var(--mobile-bottom-nav-safe-zone) - 12rem) !important;
+    overflow-y: auto !important;
+    overscroll-behavior: contain !important;
+  }
+}
+
+@media (max-width: 420px) {
+  :root {
+    --mobile-bottom-nav-safe-zone: calc(96px + env(safe-area-inset-bottom, 0px));
+    --mobile-overlay-top-gap: 8px;
+    --mobile-overlay-side-gap: 8px;
+  }
+
+  .booking-detail-popup.mobile-sheet {
+    border-radius: 1.2rem !important;
+  }
+}
+
+/* Ultra short viewport safety */
+@media (max-width: 768px) and (max-height: 760px) {
+  .booking-detail-popup.mobile-sheet {
+    top: var(--mobile-overlay-top-gap) !important;
+    bottom: var(--mobile-bottom-nav-safe-zone) !important;
+    max-height: none !important;
+  }
+
+  .booking-detail-popup.mobile-sheet .detail-body {
+    max-height: none !important;
+  }
+}
+
+/* 37 GLOBAL MOBILE BOTTOM NAV SAFE ZONE 8.7M-3 END */

@@ -312,3 +312,74 @@
 }
 
 /* 37 RESIZE CONFIRM MODAL + POPUP VIEWPORT LOCK 8.7L END */
+
+/* 37 GLOBAL MOBILE BOTTOM NAV SAFE ZONE 8.7M-3 START */
+
+:root {
+  --mobile-bottom-nav-safe-zone: calc(92px + env(safe-area-inset-bottom, 0px));
+  --mobile-modal-top-gap: 10px;
+  --mobile-modal-side-gap: 10px;
+}
+
+/* Global mobile modal rule:
+   Any app modal must live above the fixed bottom navigation. */
+@media (max-width: 768px) {
+  .modal-overlay {
+    align-items: center !important;
+    justify-content: center !important;
+    padding:
+      var(--mobile-modal-top-gap)
+      var(--mobile-modal-side-gap)
+      var(--mobile-bottom-nav-safe-zone)
+      var(--mobile-modal-side-gap) !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+  }
+
+  .modal-wrapper {
+    width: 100% !important;
+    height: 100% !important;
+    max-width: calc(100vw - (var(--mobile-modal-side-gap) * 2)) !important;
+    max-height: calc(100dvh - var(--mobile-bottom-nav-safe-zone) - var(--mobile-modal-top-gap)) !important;
+    padding: 0 !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+  }
+
+  .modal-content {
+    width: 100% !important;
+    max-width: calc(100vw - (var(--mobile-modal-side-gap) * 2)) !important;
+    max-height: calc(100dvh - var(--mobile-bottom-nav-safe-zone) - var(--mobile-modal-top-gap)) !important;
+    margin: 0 !important;
+    border-radius: 1.35rem !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+  }
+
+  .modal-body {
+    min-height: 0 !important;
+    max-height: calc(100dvh - var(--mobile-bottom-nav-safe-zone) - 7.25rem) !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    overscroll-behavior: contain !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  /* Radix/dialog-like safety */
+  [role="dialog"] {
+    max-height: calc(100dvh - var(--mobile-bottom-nav-safe-zone) - var(--mobile-modal-top-gap)) !important;
+    box-sizing: border-box !important;
+  }
+}
+
+@media (max-width: 420px) {
+  :root {
+    --mobile-bottom-nav-safe-zone: calc(96px + env(safe-area-inset-bottom, 0px));
+    --mobile-modal-top-gap: 8px;
+    --mobile-modal-side-gap: 8px;
+  }
+}
+
+/* 37 GLOBAL MOBILE BOTTOM NAV SAFE ZONE 8.7M-3 END */
