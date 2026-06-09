@@ -1436,7 +1436,9 @@ const FinancePage = () => {
       )}
 
       {/* Add Transaction Modal */}
-      <Modal isOpen={isModalOpen} onClose={() => { playClick(); setIsModalOpen(false); }} title="Catat Transaksi">
+      <Modal isOpen={isModalOpen} onClose={() => { playClick(); setIsModalOpen(false); }} title="Catat Transaksi"
+        className="finance-transaction-modal"
+      >
         <form className="finance-form" onSubmit={handleFormSubmit(onSubmit)}>
           <div className="form-group">
             <label htmlFor="transaction-type">Jenis Transaksi</label>
