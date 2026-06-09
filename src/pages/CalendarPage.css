@@ -6107,3 +6107,174 @@ body.calendar-move-lock .main-content {
 }
 
 /* 37 ADMIN CALENDAR BOOKING + RESCHEDULE MODAL POLISH 8.7F END */
+
+/* 37 ADMIN CALENDAR MOBILE + PERFORMANCE LOCK 8.7G START */
+
+/* Mobile safe area and page lock */
+@media (max-width: 768px) {
+  .calendar-page {
+    min-height: 100dvh !important;
+    padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)) !important;
+    overflow-x: hidden !important;
+    overscroll-behavior: contain !important;
+    -webkit-tap-highlight-color: transparent !important;
+  }
+
+  .calendar-page *,
+  .calendar-page *::before,
+  .calendar-page *::after {
+    min-width: 0 !important;
+  }
+
+  .calendar-page .calendar-shell {
+    gap: 0.72rem !important;
+  }
+
+  .calendar-page .calendar-ambient-bg {
+    contain: paint !important;
+  }
+
+  .calendar-page .ambient-orb {
+    width: 16rem !important;
+    height: 16rem !important;
+    opacity: 0.22 !important;
+    filter: blur(36px) saturate(1.02) !important;
+    will-change: auto !important;
+  }
+
+  .calendar-page .calendar-page-header,
+  .calendar-page .calendar-workspace,
+  .calendar-page .calendar-stat-card,
+  .calendar-page .app-smart-panel,
+  .booking-detail-popup,
+  .detail-overlay {
+    backdrop-filter: blur(12px) saturate(1.03) !important;
+    -webkit-backdrop-filter: blur(12px) saturate(1.03) !important;
+  }
+
+  .calendar-page .calendar-page-header,
+  .calendar-page .calendar-workspace,
+  .calendar-page .calendar-stat-card,
+  .calendar-page .app-smart-panel {
+    box-shadow:
+      0 14px 34px rgba(0,0,0,0.18),
+      inset 0 1px 0 rgba(255,255,255,0.060) !important;
+  }
+
+  .calendar-page .calendar-header-actions,
+  .calendar-page .calendar-toolbar-left,
+  .calendar-page .calendar-toolbar-right {
+    max-width: 100% !important;
+  }
+
+  .calendar-page .monthly-grid-wrapper,
+  .calendar-page .calendar-timeline-wrapper {
+    max-width: 100% !important;
+    overflow: auto !important;
+    overscroll-behavior: contain !important;
+    -webkit-overflow-scrolling: touch !important;
+    touch-action: pan-x pan-y !important;
+  }
+
+  .calendar-page .monthly-grid-wrapper.is-resize-active,
+  .calendar-page .monthly-grid-wrapper.is-move-active {
+    touch-action: none !important;
+  }
+
+  .calendar-page .monthly-grid,
+  .calendar-page .calendar-timeline-grid {
+    transform: translateZ(0) !important;
+    will-change: auto !important;
+  }
+
+  .calendar-page .grid-corner-cell,
+  .calendar-page .timeline-corner,
+  .calendar-page .grid-header-cell,
+  .calendar-page .timeline-hour-header,
+  .calendar-page .time-label,
+  .calendar-page .timeline-date-cell {
+    backdrop-filter: blur(10px) saturate(1.02) !important;
+    -webkit-backdrop-filter: blur(10px) saturate(1.02) !important;
+  }
+
+  .calendar-page .booked-cell,
+  .calendar-page .timeline-booking-card {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    will-change: auto !important;
+    transition:
+      filter 130ms cubic-bezier(0.2, 0, 0, 1),
+      opacity 130ms cubic-bezier(0.2, 0, 0, 1),
+      transform 130ms cubic-bezier(0.2, 0, 0, 1) !important;
+  }
+
+  .calendar-page .current-time-line {
+    animation-duration: 2.8s !important;
+  }
+
+  .mobile-booking-drag-ghost,
+  .mobile-move-hint {
+    backdrop-filter: blur(12px) saturate(1.03) !important;
+    -webkit-backdrop-filter: blur(12px) saturate(1.03) !important;
+  }
+
+  .booking-detail-popup.mobile-sheet {
+    max-height: min(82dvh, 720px) !important;
+    bottom: calc(10px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  .booking-detail-popup.mobile-sheet .detail-body {
+    overscroll-behavior: contain !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+}
+
+/* Touch devices: remove noisy hover paint */
+@media (hover: none), (pointer: coarse) {
+  .calendar-page .calendar-new-btn:hover,
+  .calendar-page .calendar-print-btn:hover,
+  .calendar-page .cal-panel-toggle:hover,
+  .calendar-page .nav-arrow:hover,
+  .calendar-page .today-btn:hover,
+  .calendar-page .view-btn:hover,
+  .calendar-page .filter-chip:hover,
+  .calendar-page .timeline-slot-cell:hover,
+  .calendar-page .booked-cell:hover,
+  .calendar-page .timeline-booking-card:hover,
+  .calendar-page .request-approve:hover,
+  .calendar-page .request-reject:hover,
+  .detail-footer .btn-secondary:hover,
+  .detail-footer .btn-danger:hover,
+  .status-btn:hover,
+  .dur-btn:hover {
+    transform: none !important;
+    filter: none !important;
+    box-shadow: inherit !important;
+  }
+
+  .calendar-page .timeline-slot-cell:hover .hover-plus {
+    opacity: 0 !important;
+    transform: scale(0.86) !important;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .calendar-page *,
+  .calendar-page *::before,
+  .calendar-page *::after,
+  .booking-detail-popup *,
+  .booking-detail-popup *::before,
+  .booking-detail-popup *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.001ms !important;
+  }
+
+  .calendar-page .current-time-line {
+    animation: none !important;
+  }
+}
+
+/* 37 ADMIN CALENDAR MOBILE + PERFORMANCE LOCK 8.7G END */
