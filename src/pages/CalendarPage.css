@@ -5978,3 +5978,132 @@ body.calendar-move-lock .main-content {
 }
 
 /* 37 ADMIN CALENDAR BOOKING DETAIL POPUP + MOBILE SHEET POLISH 8.7E END */
+
+/* 37 ADMIN CALENDAR BOOKING + RESCHEDULE MODAL POLISH 8.7F START */
+
+/* Reschedule modal */
+.modal-content:has(.reschedule-form),
+.modal-container:has(.reschedule-form),
+.fluent-dialog:has(.reschedule-form) {
+  overflow: hidden !important;
+  border-radius: 1.65rem !important;
+  border: 1px solid rgba(255,255,255,0.115) !important;
+  background:
+    radial-gradient(circle at 12% 0%, rgba(239,197,110,0.105), transparent 34%),
+    radial-gradient(circle at 88% 6%, rgba(88,224,233,0.080), transparent 34%),
+    linear-gradient(180deg, rgba(255,255,255,0.074), rgba(255,255,255,0.018)),
+    rgba(13,17,25,0.965) !important;
+  box-shadow:
+    0 30px 78px rgba(0,0,0,0.46),
+    inset 0 1px 0 rgba(255,255,255,0.095) !important;
+  backdrop-filter: blur(22px) saturate(1.06) !important;
+  -webkit-backdrop-filter: blur(22px) saturate(1.06) !important;
+}
+
+.reschedule-form {
+  display: grid !important;
+  gap: 0.86rem !important;
+  padding: 0.12rem !important;
+}
+
+.reschedule-form .form-group {
+  display: grid !important;
+  gap: 0.42rem !important;
+  padding: 0.82rem !important;
+  border-radius: 1.12rem !important;
+  border: 1px solid rgba(255,255,255,0.085) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.052), rgba(255,255,255,0.014)),
+    rgba(255,255,255,0.024) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.052) !important;
+}
+
+.reschedule-form label {
+  color: rgba(255,250,240,0.62) !important;
+  font-family: "Space Grotesk", Inter, system-ui, sans-serif !important;
+  font-size: 0.72rem !important;
+  font-weight: 950 !important;
+  letter-spacing: 0.035em !important;
+}
+
+.reschedule-form .form-input {
+  min-height: 2.72rem !important;
+  border-radius: 0.98rem !important;
+  border: 1px solid rgba(255,255,255,0.088) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.050), rgba(255,255,255,0.012)),
+    rgba(9,12,18,0.66) !important;
+  color: #fffaf0 !important;
+  font-family: "Space Grotesk", Inter, system-ui, sans-serif !important;
+  font-weight: 800 !important;
+}
+
+.reschedule-form .form-input:focus {
+  border-color: rgba(239,197,110,0.42) !important;
+  box-shadow:
+    0 0 0 3px rgba(239,197,110,0.13),
+    inset 0 1px 0 rgba(255,255,255,0.060) !important;
+}
+
+.reschedule-form textarea.form-input {
+  min-height: 6rem !important;
+  resize: vertical !important;
+}
+
+.reschedule-form .form-actions {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 0.54rem !important;
+  margin-top: 0.12rem !important;
+}
+
+.reschedule-form .form-actions button {
+  min-height: 2.55rem !important;
+  border-radius: 999px !important;
+  font-family: "Space Grotesk", Inter, system-ui, sans-serif !important;
+  font-weight: 950 !important;
+}
+
+[data-theme="light"] .modal-content:has(.reschedule-form),
+[data-theme="light"] .modal-container:has(.reschedule-form),
+[data-theme="light"] .fluent-dialog:has(.reschedule-form) {
+  border-color: rgba(96,73,41,0.12) !important;
+  background:
+    radial-gradient(circle at 12% 0%, rgba(185,133,47,0.090), transparent 34%),
+    radial-gradient(circle at 88% 6%, rgba(24,139,153,0.060), transparent 34%),
+    linear-gradient(180deg, rgba(255,252,246,0.98), rgba(255,250,241,0.90)),
+    rgba(255,250,241,0.96) !important;
+  box-shadow:
+    0 28px 72px rgba(96,73,41,0.18),
+    inset 0 1px 0 rgba(255,255,255,0.78) !important;
+}
+
+[data-theme="light"] .reschedule-form .form-group,
+[data-theme="light"] .reschedule-form .form-input {
+  border-color: rgba(96,73,41,0.10) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.78), rgba(255,255,255,0.34)),
+    rgba(255,250,241,0.52) !important;
+}
+
+[data-theme="light"] .reschedule-form .form-input {
+  color: rgba(34,27,18,0.96) !important;
+}
+
+[data-theme="light"] .reschedule-form label {
+  color: rgba(45,38,28,0.62) !important;
+}
+
+@media (max-width: 768px) {
+  .modal-content:has(.reschedule-form),
+  .modal-container:has(.reschedule-form),
+  .fluent-dialog:has(.reschedule-form) {
+    border-radius: 1.35rem !important;
+  }
+
+  .reschedule-form .form-actions {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* 37 ADMIN CALENDAR BOOKING + RESCHEDULE MODAL POLISH 8.7F END */
