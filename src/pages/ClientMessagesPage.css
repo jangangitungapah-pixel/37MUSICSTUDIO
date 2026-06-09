@@ -4301,3 +4301,420 @@
   }
 }
 /* === END 37 ADMIN MESSAGES PHASE 5 MOBILE APP NATIVE LOCK === */
+
+/* === START 37 ADMIN MESSAGES PHASE 6 LIGHT PERFORMANCE FINAL LOCK === */
+.messages-page {
+  --messages-final-focus: rgba(var(--accent-cyan-rgb), 0.72);
+  --messages-final-scroll-thumb: rgba(239, 197, 110, 0.58);
+  --messages-final-scroll-track: rgba(255, 255, 255, 0.055);
+  --messages-final-print-ink: #16110b;
+  color-scheme: dark;
+  scrollbar-gutter: stable both-edges;
+}
+
+.messages-page,
+.messages-page::before,
+.messages-page::after,
+.messages-page *,
+.messages-page *::before,
+.messages-page *::after {
+  box-sizing: border-box;
+}
+
+.messages-page {
+  isolation: isolate;
+}
+
+.messages-page .messages-hero,
+.messages-page .messages-toolbar,
+.messages-page .messages-board,
+.messages-page .messages-alert,
+.messages-page .messages-empty,
+.messages-page .message-card {
+  will-change: auto;
+}
+
+.messages-page .messages-list {
+  content-visibility: auto;
+  contain-intrinsic-size: 900px;
+}
+
+.messages-page .message-card.message-ticket {
+  content-visibility: auto;
+  contain-intrinsic-size: 420px;
+}
+
+.messages-page .messages-filter-tabs,
+.messages-page .messages-control-deck .messages-filter-tabs,
+.messages-page .message-card-compose textarea {
+  scrollbar-width: thin;
+  scrollbar-color: var(--messages-final-scroll-thumb) var(--messages-final-scroll-track);
+}
+
+.messages-page .messages-filter-tabs::-webkit-scrollbar,
+.messages-page .messages-control-deck .messages-filter-tabs::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.messages-page .message-card-compose textarea::-webkit-scrollbar {
+  width: 9px;
+}
+
+.messages-page .messages-filter-tabs::-webkit-scrollbar-track,
+.messages-page .messages-control-deck .messages-filter-tabs::-webkit-scrollbar-track,
+.messages-page .message-card-compose textarea::-webkit-scrollbar-track {
+  border-radius: 999px;
+  background: var(--messages-final-scroll-track);
+}
+
+.messages-page .messages-filter-tabs::-webkit-scrollbar-thumb,
+.messages-page .messages-control-deck .messages-filter-tabs::-webkit-scrollbar-thumb,
+.messages-page .message-card-compose textarea::-webkit-scrollbar-thumb {
+  border: 2px solid transparent;
+  border-radius: 999px;
+  background: var(--messages-final-scroll-thumb);
+  background-clip: content-box;
+}
+
+.messages-page button:focus-visible,
+.messages-page a:focus-visible,
+.messages-page input:focus-visible,
+.messages-page textarea:focus-visible {
+  outline: 2px solid var(--messages-final-focus);
+  outline-offset: 3px;
+}
+
+.messages-page .message-action-btn:disabled,
+.messages-page .message-action-btn.disabled,
+.messages-page .message-card-compose button:disabled,
+.messages-page .messages-filter-tabs button:disabled {
+  cursor: not-allowed;
+}
+
+.messages-page .message-action-btn:disabled svg,
+.messages-page .message-action-btn.disabled svg,
+.messages-page .message-card-compose button:disabled svg {
+  opacity: 0.62;
+}
+
+.messages-page .messages-alert.messages-state-card.is-error {
+  box-shadow:
+    0 18px 44px rgba(var(--accent-pink-rgb), 0.10),
+    inset 0 1px 0 rgba(255, 255, 255, 0.068);
+}
+
+.messages-page .messages-empty.messages-state-card.is-loading strong::after {
+  content: "";
+  display: inline-block;
+  width: 1.65em;
+  text-align: left;
+  animation: messagesFinalLoadingDots 1.25s steps(4, end) infinite;
+}
+
+@keyframes messagesFinalLoadingDots {
+  0% {
+    content: "";
+  }
+
+  25% {
+    content: ".";
+  }
+
+  50% {
+    content: "..";
+  }
+
+  75%,
+  100% {
+    content: "...";
+  }
+}
+
+[data-theme="light"] .messages-page {
+  --messages-final-focus: rgba(20, 139, 153, 0.72);
+  --messages-final-scroll-thumb: rgba(177, 130, 43, 0.58);
+  --messages-final-scroll-track: rgba(86, 66, 37, 0.075);
+  color-scheme: light;
+}
+
+[data-theme="light"] .messages-page .messages-hero,
+[data-theme="light"] .messages-page .messages-toolbar.messages-control-deck,
+[data-theme="light"] .messages-page .messages-board,
+[data-theme="light"] .messages-page .message-card.message-ticket,
+[data-theme="light"] .messages-page .messages-empty.messages-state-card,
+[data-theme="light"] .messages-page .messages-alert.messages-state-card {
+  -webkit-backdrop-filter: blur(22px) saturate(1.02);
+  backdrop-filter: blur(22px) saturate(1.02);
+}
+
+[data-theme="light"] .messages-page .messages-hero::before,
+[data-theme="light"] .messages-page .messages-board::before,
+[data-theme="light"] .messages-page .messages-empty::before {
+  opacity: 0.38;
+}
+
+[data-theme="light"] .messages-page .messages-command-strip > span,
+[data-theme="light"] .messages-page .messages-summary-card,
+[data-theme="light"] .messages-page .messages-toolbar-copy,
+[data-theme="light"] .messages-page .messages-control-deck .messages-filter-tabs,
+[data-theme="light"] .messages-page .messages-control-deck .messages-search,
+[data-theme="light"] .messages-page .message-ticket-id,
+[data-theme="light"] .messages-page .message-subject-line,
+[data-theme="light"] .messages-page .message-card.message-ticket .message-body,
+[data-theme="light"] .messages-page .message-card.message-ticket .message-meta-grid button,
+[data-theme="light"] .messages-page .message-card-actions-zone,
+[data-theme="light"] .messages-page .message-reply-note {
+  box-shadow:
+    0 12px 28px rgba(72, 54, 30, 0.055),
+    inset 0 1px 0 rgba(255, 255, 255, 0.72);
+}
+
+[data-theme="light"] .messages-page .message-card.message-ticket .message-meta-grid button:hover,
+[data-theme="light"] .messages-page .message-card-actions-zone .message-action-btn:hover,
+[data-theme="light"] .messages-page .message-card-compose button:hover {
+  border-color: rgba(20, 139, 153, 0.20);
+}
+
+[data-theme="light"] .messages-page .message-action-btn.whatsapp {
+  color: rgba(18, 105, 70, 0.94);
+  border-color: rgba(44, 138, 98, 0.19);
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.44), transparent 58%),
+    linear-gradient(180deg, rgba(44, 138, 98, 0.13), rgba(44, 138, 98, 0.070)),
+    rgba(255, 255, 255, 0.34);
+}
+
+[data-theme="light"] .messages-page .message-action-btn.primary {
+  color: rgba(35, 25, 10, 0.96);
+  border-color: rgba(177, 130, 43, 0.24);
+}
+
+[data-theme="light"] .messages-page .message-action-btn:disabled,
+[data-theme="light"] .messages-page .message-action-btn.disabled {
+  color: rgba(45, 38, 28, 0.44);
+  border-color: rgba(86, 66, 37, 0.09);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.48), rgba(255, 255, 255, 0.26)),
+    rgba(255, 250, 241, 0.30);
+}
+
+[data-theme="light"] .messages-page .messages-empty.messages-state-card strong {
+  color: rgba(31, 25, 18, 0.92);
+}
+
+[data-theme="light"] .messages-page .messages-empty.messages-state-card p {
+  color: rgba(45, 38, 28, 0.56);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .messages-page .messages-summary-card,
+  .messages-page .message-card.message-ticket,
+  .messages-page .message-meta-grid button,
+  .messages-page .message-action-btn,
+  .messages-page .message-card-compose button,
+  .messages-page .messages-filter-tabs button {
+    transition-duration: 150ms;
+  }
+}
+
+@media (max-width: 900px) {
+  .messages-page {
+    scrollbar-gutter: auto;
+  }
+
+  .messages-page .messages-list {
+    content-visibility: visible;
+    contain-intrinsic-size: auto;
+  }
+
+  .messages-page .message-card.message-ticket {
+    content-visibility: visible;
+    contain-intrinsic-size: auto;
+  }
+
+  .messages-page .messages-filter-tabs,
+  .messages-page .messages-control-deck .messages-filter-tabs {
+    scrollbar-width: none;
+  }
+
+  .messages-page .messages-filter-tabs::-webkit-scrollbar,
+  .messages-page .messages-control-deck .messages-filter-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .messages-page button,
+  .messages-page a,
+  .messages-page input,
+  .messages-page textarea {
+    -webkit-tap-highlight-color: rgba(var(--accent-cyan-rgb), 0.12);
+  }
+
+  .messages-page .messages-hero,
+  .messages-page .messages-toolbar.messages-control-deck,
+  .messages-page .messages-board,
+  .messages-page .message-card.message-ticket,
+  .messages-page .messages-empty.messages-state-card {
+    transform: translateZ(0);
+  }
+
+  .messages-page .message-card.message-ticket::before,
+  .messages-page .messages-hero::before,
+  .messages-page .messages-empty.messages-state-card::before {
+    opacity: 0.30;
+  }
+}
+
+@media (max-width: 430px) {
+  .messages-page .messages-command-strip > span,
+  .messages-page .messages-summary-card,
+  .messages-page .messages-toolbar-copy,
+  .messages-page .messages-control-deck .messages-filter-tabs,
+  .messages-page .messages-control-deck .messages-search,
+  .messages-page .message-ticket-id,
+  .messages-page .message-card.message-ticket .message-body,
+  .messages-page .message-card-actions-zone,
+  .messages-page .messages-empty.messages-state-card {
+    box-shadow:
+      0 10px 22px rgba(0, 0, 0, 0.12),
+      inset 0 1px 0 rgba(255, 255, 255, 0.052);
+  }
+
+  [data-theme="light"] .messages-page .messages-command-strip > span,
+  [data-theme="light"] .messages-page .messages-summary-card,
+  [data-theme="light"] .messages-page .messages-toolbar-copy,
+  [data-theme="light"] .messages-page .messages-control-deck .messages-filter-tabs,
+  [data-theme="light"] .messages-page .messages-control-deck .messages-search,
+  [data-theme="light"] .messages-page .message-ticket-id,
+  [data-theme="light"] .messages-page .message-card.message-ticket .message-body,
+  [data-theme="light"] .messages-page .message-card-actions-zone,
+  [data-theme="light"] .messages-page .messages-empty.messages-state-card {
+    box-shadow:
+      0 10px 22px rgba(72, 54, 30, 0.060),
+      inset 0 1px 0 rgba(255, 255, 255, 0.68);
+  }
+}
+
+@media (prefers-contrast: more) {
+  .messages-page {
+    --messages-final-focus: rgba(255, 255, 255, 0.96);
+  }
+
+  .messages-page .messages-hero,
+  .messages-page .messages-toolbar.messages-control-deck,
+  .messages-page .messages-board,
+  .messages-page .message-card.message-ticket,
+  .messages-page .messages-empty.messages-state-card,
+  .messages-page .messages-alert.messages-state-card {
+    border-width: 2px;
+  }
+
+  .messages-page .message-status-pill,
+  .messages-page .messages-filter-tabs button,
+  .messages-page .message-action-btn {
+    border-width: 2px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .messages-page,
+  .messages-page *,
+  .messages-page *::before,
+  .messages-page *::after {
+    animation: none !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.001ms !important;
+    transition-delay: 0ms !important;
+  }
+
+  .messages-page .messages-empty.messages-state-card.is-loading strong::after {
+    content: "...";
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .messages-page .messages-hero,
+  .messages-page .messages-toolbar.messages-control-deck,
+  .messages-page .messages-board,
+  .messages-page .message-card.message-ticket,
+  .messages-page .messages-empty.messages-state-card,
+  .messages-page .messages-alert.messages-state-card {
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+}
+
+@media print {
+  .messages-page {
+    width: 100%;
+    max-width: none;
+    padding: 0;
+    color: var(--messages-final-print-ink);
+    background: #ffffff !important;
+    box-shadow: none !important;
+    overflow: visible;
+  }
+
+  .messages-page .messages-hero,
+  .messages-page .messages-toolbar.messages-control-deck,
+  .messages-page .messages-board,
+  .messages-page .message-card.message-ticket,
+  .messages-page .messages-empty.messages-state-card,
+  .messages-page .messages-alert.messages-state-card,
+  .messages-page .message-ticket-id,
+  .messages-page .message-subject-line,
+  .messages-page .message-card.message-ticket .message-body,
+  .messages-page .message-card-actions-zone,
+  .messages-page .message-reply-note {
+    color: var(--messages-final-print-ink) !important;
+    border-color: rgba(0, 0, 0, 0.18) !important;
+    background: #ffffff !important;
+    box-shadow: none !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+
+  .messages-page .messages-hero-orbit,
+  .messages-page .messages-empty-orbit,
+  .messages-page .messages-toolbar,
+  .messages-page .messages-command-strip,
+  .messages-page .messages-summary-grid,
+  .messages-page .message-card-actions-zone,
+  .messages-page .message-meta-grid button svg:last-child {
+    display: none !important;
+  }
+
+  .messages-page .message-card.message-ticket {
+    break-inside: avoid;
+    page-break-inside: avoid;
+    margin-bottom: 12px;
+  }
+
+  .messages-page .message-card-shell {
+    padding: 12px;
+  }
+
+  .messages-page .message-card.message-ticket .message-card-top {
+    grid-template-columns: 44px minmax(0, 1fr) auto;
+  }
+
+  .messages-page .message-client-avatar {
+    border: 1px solid rgba(0, 0, 0, 0.20) !important;
+  }
+
+  .messages-page .message-status-pill {
+    color: var(--messages-final-print-ink) !important;
+    border-color: rgba(0, 0, 0, 0.22) !important;
+    background: #ffffff !important;
+  }
+
+  .messages-page .message-card.message-ticket::before,
+  .messages-page .message-card.message-ticket::after,
+  .messages-page .messages-hero::before,
+  .messages-page .messages-hero::after,
+  .messages-page .messages-empty::before,
+  .messages-page .messages-empty::after {
+    display: none !important;
+  }
+}
+/* === END 37 ADMIN MESSAGES PHASE 6 LIGHT PERFORMANCE FINAL LOCK === */
