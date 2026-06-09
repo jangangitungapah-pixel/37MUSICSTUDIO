@@ -6622,81 +6622,45 @@
 /* === END 10.1G-4 PEMBUKUAN AUDIT MOBILE FIX === */
 
 
-/* === START 10.1G-7 PEMBUKUAN CUSTOM EXPENSE DONUT === */
+/* === START 10.1G-8.1 PEMBUKUAN APEX DONUT JSX REPAIR === */
 
-/* Hotfix 10.1G-7 v2 - replace Recharts Pie with custom CSS donut.
-   Reason:
-   - Legend and data are alive, but Recharts Pie SVG disappears in mobile/sidebar constraints.
-   - Custom donut uses the existing pieChartData model through conic-gradient.
-   - No finance data, pie data, transaction, export, print, PDF, or calculation logic touched. */
+/* Phase 10.1G-8.1 - repair broken JSX and stabilize ApexCharts expense donut.
+   Replaces the whole Breakdown Pengeluaran widget section to fix broken closing tags.
+   Data source remains pieChartData, legend remains custom UI. */
 
-.finance-page .expense-breakdown-widget .custom-donut-wrapper {
+.finance-page .expense-breakdown-widget .apex-donut-wrapper {
   display: grid !important;
   place-items: center !important;
-  height: 148px !important;
-  min-height: 148px !important;
-  max-height: 148px !important;
+  height: 158px !important;
+  min-height: 158px !important;
+  max-height: 158px !important;
   padding: 0 !important;
   overflow: hidden !important;
 }
 
-.finance-page .expense-donut-shell {
-  position: relative;
-  display: grid;
-  place-items: center;
-  width: 116px;
-  height: 116px;
-  border-radius: 999px;
+.finance-page .expense-breakdown-widget .apexcharts-canvas,
+.finance-page .expense-breakdown-widget .apexcharts-svg {
+  overflow: visible !important;
 }
 
-.finance-page .expense-donut-ring {
-  position: absolute;
-  inset: 0;
-  border-radius: 999px;
-  background: conic-gradient(var(--donut-gradient));
-  box-shadow:
-    0 0 28px rgba(255, 61, 112, 0.14),
-    0 0 20px rgba(88, 224, 233, 0.08);
+.finance-page .expense-breakdown-widget .apexcharts-canvas {
+  filter:
+    drop-shadow(0 0 18px rgba(255, 61, 112, 0.14))
+    drop-shadow(0 0 14px rgba(88, 224, 233, 0.06));
 }
 
-.finance-page .expense-donut-ring::after {
-  content: '';
-  position: absolute;
-  inset: 31px;
-  border-radius: 999px;
-  background:
-    radial-gradient(circle at 35% 25%, rgba(255, 255, 255, 0.055), transparent 42%),
-    rgba(18, 24, 36, 0.96);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.075),
-    0 0 0 1px rgba(255, 255, 255, 0.045);
+.finance-page .expense-breakdown-widget .apexcharts-pie-series path {
+  transition: filter 0.16s ease, opacity 0.16s ease;
 }
 
-.finance-page .expense-donut-hole {
-  position: relative;
-  z-index: 1;
-  display: grid;
-  place-items: center;
-  gap: 0;
-  color: rgba(255, 250, 240, 0.74);
-  font-family: var(--font-body, 'Space Grotesk', system-ui, sans-serif);
-  text-align: center;
-  pointer-events: none;
+.finance-page .expense-breakdown-widget .apexcharts-pie-series path:hover {
+  filter: brightness(1.08);
 }
 
-.finance-page .expense-donut-hole span {
-  color: var(--finance-cream, #fffaf0);
-  font-size: 0.95rem;
-  font-weight: 900;
-  line-height: 1;
-}
-
-.finance-page .expense-donut-hole small {
-  color: rgba(255, 250, 240, 0.45);
-  font-size: 0.52rem;
-  font-weight: 800;
-  letter-spacing: 0.07em;
+.finance-page .expense-breakdown-widget .apexcharts-datalabel-label,
+.finance-page .expense-breakdown-widget .apexcharts-datalabel-value {
   text-transform: uppercase;
+  letter-spacing: 0.08em;
 }
 
 .finance-page .expense-breakdown-widget .pie-legend-list {
@@ -6706,30 +6670,17 @@
 }
 
 @media (max-width: 768px) {
-  .finance-page .expense-breakdown-widget .custom-donut-wrapper {
-    height: 118px !important;
-    min-height: 118px !important;
-    max-height: 118px !important;
+  .finance-page .expense-breakdown-widget .apex-donut-wrapper {
+    height: 126px !important;
+    min-height: 126px !important;
+    max-height: 126px !important;
     margin-top: 3px !important;
     margin-bottom: 7px !important;
     border-radius: 13px !important;
   }
 
-  .finance-page .expense-donut-shell {
-    width: 94px;
-    height: 94px;
-  }
-
-  .finance-page .expense-donut-ring::after {
-    inset: 25px;
-  }
-
-  .finance-page .expense-donut-hole span {
-    font-size: 0.78rem;
-  }
-
-  .finance-page .expense-donut-hole small {
-    font-size: 0.45rem;
+  .finance-page .expense-breakdown-widget .apexcharts-canvas {
+    filter: none;
   }
 
   .finance-page .expense-breakdown-widget .pie-legend-list {
@@ -6756,19 +6707,10 @@
 }
 
 @media (max-width: 430px) {
-  .finance-page .expense-breakdown-widget .custom-donut-wrapper {
-    height: 112px !important;
-    min-height: 112px !important;
-    max-height: 112px !important;
-  }
-
-  .finance-page .expense-donut-shell {
-    width: 90px;
-    height: 90px;
-  }
-
-  .finance-page .expense-donut-ring::after {
-    inset: 24px;
+  .finance-page .expense-breakdown-widget .apex-donut-wrapper {
+    height: 120px !important;
+    min-height: 120px !important;
+    max-height: 120px !important;
   }
 
   .finance-page .expense-breakdown-widget .pie-legend-list {
@@ -6776,22 +6718,11 @@
   }
 }
 
-[data-theme="light"] .finance-page .expense-donut-ring::after {
-  background:
-    radial-gradient(circle at 35% 25%, rgba(255, 255, 255, 0.82), transparent 42%),
-    rgba(255, 255, 255, 0.94);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.8),
-    0 0 0 1px rgba(23, 19, 31, 0.045);
+@media (hover: none) {
+  .finance-page .expense-breakdown-widget .apexcharts-pie-series path:hover {
+    filter: none;
+  }
 }
 
-[data-theme="light"] .finance-page .expense-donut-hole span {
-  color: #17131f;
-}
-
-[data-theme="light"] .finance-page .expense-donut-hole small {
-  color: rgba(23, 19, 31, 0.48);
-}
-
-/* === END 10.1G-7 PEMBUKUAN CUSTOM EXPENSE DONUT === */
+/* === END 10.1G-8.1 PEMBUKUAN APEX DONUT JSX REPAIR === */
 

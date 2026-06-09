@@ -8,6 +8,7 @@ import { useAuthStore } from '../store/useAuthStore';
 import { format } from 'date-fns';
 import { Wallet, TrendingUp, TrendingDown, Plus, Trash2, Search, Download, Printer, X } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer } from 'recharts';
+import Chart from 'react-apexcharts';
 import { toast } from 'sonner';
 import Modal from '../components/Modal';
 import {
@@ -573,33 +574,94 @@ const FinancePage = () => {
     [periodFilteredData]
   );
 
-  const expenseDonutModel = useMemo(() => {
-    const total = pieChartData.reduce((sum, item) => sum + Number(item.value || 0), 0);
-    let cursor = 0;
+  const expenseDonutChart = useMemo(() => {
+    const labels = pieChartData.map((item) => item.name);
+    const series = pieChartData.map((item) => Number(item.value || 0));
+    const colors = labels.map((_, index) => PIE_COLORS[index % PIE_COLORS.length]);
 
-    const segments = pieChartData.map((item, index) => {
-      const value = Number(item.value || 0);
-      const start = cursor;
-      const end = total > 0 ? cursor + (value / total) * 360 : cursor;
-      cursor = end;
-
-      return {
-        ...item,
-        value,
-        color: PIE_COLORS[index % PIE_COLORS.length],
-        start,
-        end,
-      };
-    });
-
-    const gradient = total > 0 && segments.length > 0
-      ? segments
-          .map((segment) => segment.color + ' ' + segment.start.toFixed(2) + 'deg ' + segment.end.toFixed(2) + 'deg')
-          .join(', ')
-      : 'rgba(255, 255, 255, 0.08) 0deg 360deg';
-
-    return { total, segments, gradient };
-  }, [PIE_COLORS, pieChartData]);
+    return {
+      series,
+      options: {
+        chart: {
+          type: 'donut',
+          background: 'transparent',
+          parentHeightOffset: 0,
+          sparkline: { enabled: true },
+          toolbar: { show: false },
+          animations: {
+            enabled: !isFinanceMobile,
+            speed: 520,
+            animateGradually: { enabled: false },
+            dynamicAnimation: { enabled: false },
+          },
+        },
+        labels,
+        colors,
+        stroke: {
+          show: true,
+          width: isFinanceMobile ? 2 : 3,
+          colors: [isLight ? '#fffaf0' : '#121823'],
+        },
+        dataLabels: { enabled: false },
+        legend: { show: false },
+        tooltip: {
+          enabled: true,
+          theme: isLight ? 'light' : 'dark',
+          fillSeriesColor: false,
+          y: {
+            formatter: (value) => formatCurrency(value),
+          },
+        },
+        plotOptions: {
+          pie: {
+            expandOnClick: false,
+            offsetY: 0,
+            donut: {
+              size: isFinanceMobile ? '72%' : '68%',
+              background: 'transparent',
+              labels: {
+                show: true,
+                name: {
+                  show: true,
+                  offsetY: isFinanceMobile ? 13 : 15,
+                  color: isLight ? '#4b4757' : 'rgba(255, 250, 240, 0.54)',
+                  fontSize: isFinanceMobile ? '8px' : '9px',
+                  fontFamily: 'Space Grotesk, system-ui, sans-serif',
+                  fontWeight: 800,
+                  formatter: () => 'kategori',
+                },
+                value: {
+                  show: true,
+                  offsetY: isFinanceMobile ? -8 : -10,
+                  color: isLight ? '#17131f' : '#fffaf0',
+                  fontSize: isFinanceMobile ? '14px' : '17px',
+                  fontFamily: 'Bebas Neue, Space Grotesk, system-ui, sans-serif',
+                  fontWeight: 700,
+                  formatter: () => String(labels.length),
+                },
+                total: {
+                  show: true,
+                  showAlways: true,
+                  label: 'kategori',
+                  color: isLight ? '#4b4757' : 'rgba(255, 250, 240, 0.54)',
+                  fontSize: isFinanceMobile ? '8px' : '9px',
+                  fontFamily: 'Space Grotesk, system-ui, sans-serif',
+                  fontWeight: 800,
+                  formatter: () => String(labels.length),
+                },
+              },
+            },
+          },
+        },
+        states: {
+          normal: { filter: { type: 'none' } },
+          hover: { filter: { type: 'lighten', value: 0.04 } },
+          active: { filter: { type: 'none' } },
+        },
+        grid: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
+      },
+    };
+  }, [isFinanceMobile, isLight, pieChartData]);
   const revenueForecast = useMemo(
     () => getRevenueForecast(bookings, transactions, pricePerHour),
     [bookings, transactions, pricePerHour]
@@ -1319,7 +1381,7 @@ const FinancePage = () => {
           </div>
 
           {/* Smart Insights Panel */}
-          <div className="sidebar-widget-card glass-panel">
+          <div className="sidebar-widget-card glass-panel expense-breakdown-widget">
             <div className="widget-header">
               <TrendingUp size={16} color="var(--accent-cyan)" />
               <h4>Forecast & Rekonsiliasi</h4>
@@ -1365,7 +1427,7 @@ const FinancePage = () => {
             </div>
           </div>
 
-          {/* Category Breakdown (Pie Chart) */}
+                    {/* Category Breakdown (Apex Donut) */}
           <div className="sidebar-widget-card glass-panel expense-breakdown-widget">
             <div className="widget-header">
               <TrendingDown size={16} color="var(--accent-pink)" />
@@ -1374,21 +1436,15 @@ const FinancePage = () => {
             <div className="widget-content">
               {pieChartData.length > 0 ? (
                 <>
-                  <div
-                      className="sidebar-chart-wrapper custom-donut-wrapper"
-                      aria-label={`Breakdown pengeluaran total ${formatCurrency(expenseDonutModel.total)}`}
-                    >
-                      <div className="expense-donut-shell" role="img" aria-label="Grafik donat breakdown pengeluaran">
-                        <div
-                          className="expense-donut-ring"
-                          style={{ '--donut-gradient': expenseDonutModel.gradient }}
-                        />
-                        <div className="expense-donut-hole">
-                          <span>{pieChartData.length}</span>
-                          <small>kategori</small>
-                        </div>
-                      </div>
-                    </div>
+                  <div className="sidebar-chart-wrapper apex-donut-wrapper">
+                    <Chart
+                      options={expenseDonutChart.options}
+                      series={expenseDonutChart.series}
+                      type="donut"
+                      height={isFinanceMobile ? 118 : 148}
+                    />
+                  </div>
+
                   <div className="pie-legend-list">
                     {pieChartData.map((item, i) => (
                       <div key={item.name} className="pie-legend-item">
@@ -1407,7 +1463,7 @@ const FinancePage = () => {
             </div>
           </div>
 
-          {/* Daily Operations outlays */}
+{/* Daily Operations outlays */}
           <div className="sidebar-widget-card glass-panel">
             <div className="widget-header">
               <TrendingDown size={16} color="var(--accent-pink)" />
