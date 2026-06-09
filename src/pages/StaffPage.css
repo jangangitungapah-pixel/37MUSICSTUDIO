@@ -1419,3 +1419,244 @@
 }
 
 /* === END STAFF MODALS PHASE 5 === */
+
+/* === START STAFF PERMISSIONS PHASE 6 === */
+
+.staff-form-modern .staff-permission-grid-modern,
+.staff-form-modern .permission-grid {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  max-height: min(38vh, 340px);
+  padding: 3px 5px 5px 3px;
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+
+.staff-form-modern .staff-permission-grid-modern::before,
+.staff-form-modern .permission-grid::before {
+  content: "Access matrix";
+  grid-column: 1 / -1;
+  display: inline-flex;
+  width: fit-content;
+  margin-bottom: 2px;
+  padding: 4px 8px;
+  border: 1px solid rgba(var(--accent-cyan-rgb), 0.18);
+  border-radius: 999px;
+  color: var(--accent-cyan);
+  background: rgba(var(--accent-cyan-rgb), 0.07);
+  font-size: 0.64rem;
+  font-weight: 850;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.staff-form-modern .permission-card {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  min-height: 46px;
+  gap: 9px;
+  padding: 9px 10px;
+  border-radius: 14px;
+  cursor: pointer;
+}
+
+.staff-form-modern .permission-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(circle at 18% 16%, rgba(var(--accent-cyan-rgb), 0.12), transparent 36%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.018));
+  opacity: 0.72;
+  transition:
+    opacity var(--fluent-duration-fast) var(--fluent-curve-easy-ease),
+    transform var(--fluent-duration-fast) var(--fluent-curve-easy-ease);
+}
+
+.staff-form-modern .permission-card::after {
+  content: "";
+  position: absolute;
+  inset: 8px 8px auto auto;
+  width: 7px;
+  height: 7px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 0 0 0 rgba(var(--accent-cyan-rgb), 0);
+  transition:
+    background var(--fluent-duration-fast) var(--fluent-curve-easy-ease),
+    border-color var(--fluent-duration-fast) var(--fluent-curve-easy-ease),
+    box-shadow var(--fluent-duration-fast) var(--fluent-curve-easy-ease);
+}
+
+.staff-form-modern .permission-card:hover::before {
+  opacity: 1;
+  transform: scale(1.02);
+}
+
+.staff-form-modern .permission-card.active,
+.staff-form-modern .permission-card[aria-pressed="true"],
+.staff-form-modern .permission-card[data-state="checked"] {
+  border-color: rgba(var(--accent-cyan-rgb), 0.36);
+  box-shadow:
+    0 0 0 1px rgba(var(--accent-cyan-rgb), 0.08),
+    0 12px 26px rgba(var(--accent-cyan-rgb), 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.staff-form-modern .permission-card.active::before,
+.staff-form-modern .permission-card[aria-pressed="true"]::before,
+.staff-form-modern .permission-card[data-state="checked"]::before {
+  background:
+    radial-gradient(circle at 18% 16%, rgba(var(--accent-cyan-rgb), 0.22), transparent 38%),
+    radial-gradient(circle at 96% 0%, rgba(var(--accent-pink-rgb), 0.12), transparent 32%),
+    linear-gradient(135deg, rgba(var(--accent-cyan-rgb), 0.095), rgba(255, 255, 255, 0.024));
+}
+
+.staff-form-modern .permission-card.active::after,
+.staff-form-modern .permission-card[aria-pressed="true"]::after,
+.staff-form-modern .permission-card[data-state="checked"]::after {
+  border-color: rgba(var(--accent-cyan-rgb), 0.75);
+  background: var(--accent-cyan);
+  box-shadow:
+    0 0 0 3px rgba(var(--accent-cyan-rgb), 0.12),
+    0 0 18px rgba(var(--accent-cyan-rgb), 0.34);
+}
+
+.staff-form-modern .permission-card:focus-visible {
+  outline: none;
+  border-color: rgba(var(--accent-pink-rgb), 0.48);
+  box-shadow:
+    0 0 0 3px rgba(var(--accent-pink-rgb), 0.13),
+    0 12px 28px rgba(0, 0, 0, 0.16);
+}
+
+.staff-form-modern .permission-card:disabled,
+.staff-form-modern .permission-card[disabled],
+.staff-form-modern .permission-card.disabled,
+.staff-form-modern .permission-card[aria-disabled="true"] {
+  cursor: not-allowed;
+  opacity: 0.62;
+  filter: grayscale(0.28);
+}
+
+.staff-form-modern .permission-card:disabled::before,
+.staff-form-modern .permission-card[disabled]::before,
+.staff-form-modern .permission-card.disabled::before,
+.staff-form-modern .permission-card[aria-disabled="true"]::before {
+  background:
+    repeating-linear-gradient(
+      -45deg,
+      rgba(255, 255, 255, 0.04) 0 6px,
+      rgba(255, 255, 255, 0.015) 6px 12px
+    ),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.016));
+}
+
+.staff-form-modern .permission-card:disabled::after,
+.staff-form-modern .permission-card[disabled]::after,
+.staff-form-modern .permission-card.disabled::after,
+.staff-form-modern .permission-card[aria-disabled="true"]::after {
+  border-color: rgba(var(--staff-gold), 0.34);
+  background: rgba(var(--staff-gold), 0.18);
+  box-shadow: 0 0 0 3px rgba(var(--staff-gold), 0.08);
+}
+
+.staff-form-modern .permission-icon {
+  flex: 0 0 auto;
+  display: grid;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.075);
+  border-radius: 10px;
+  color: var(--accent-cyan);
+  background:
+    radial-gradient(circle at 28% 22%, rgba(var(--accent-cyan-rgb), 0.18), transparent 42%),
+    rgba(255, 255, 255, 0.045);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07);
+}
+
+.staff-form-modern .permission-card.active .permission-icon,
+.staff-form-modern .permission-card[aria-pressed="true"] .permission-icon,
+.staff-form-modern .permission-card[data-state="checked"] .permission-icon {
+  color: var(--text-primary);
+  border-color: rgba(var(--accent-cyan-rgb), 0.24);
+  background:
+    radial-gradient(circle at 28% 22%, rgba(var(--accent-cyan-rgb), 0.28), transparent 42%),
+    rgba(var(--accent-cyan-rgb), 0.1);
+}
+
+.staff-form-modern .permission-label {
+  min-width: 0;
+  padding-right: 14px;
+  color: var(--text-primary);
+  font-size: 0.8rem;
+  font-weight: 760;
+  line-height: 1.22;
+}
+
+.staff-form-modern .permission-card:disabled .permission-label,
+.staff-form-modern .permission-card[disabled] .permission-label,
+.staff-form-modern .permission-card.disabled .permission-label,
+.staff-form-modern .permission-card[aria-disabled="true"] .permission-label {
+  color: var(--text-secondary);
+}
+
+.staff-form-modern .permission-card:disabled .permission-label::after,
+.staff-form-modern .permission-card[disabled] .permission-label::after,
+.staff-form-modern .permission-card.disabled .permission-label::after,
+.staff-form-modern .permission-card[aria-disabled="true"] .permission-label::after {
+  content: " · locked";
+  color: rgb(var(--staff-gold));
+  font-size: 0.68rem;
+  font-weight: 820;
+  letter-spacing: 0.02em;
+}
+
+@media (min-width: 1120px) {
+  .staff-form-modern .staff-permission-grid-modern,
+  .staff-form-modern .permission-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .staff-form-modern .staff-permission-grid-modern,
+  .staff-form-modern .permission-grid {
+    grid-template-columns: 1fr;
+    max-height: 32vh;
+    gap: 7px;
+    padding-right: 3px;
+  }
+
+  .staff-form-modern .staff-permission-grid-modern::before,
+  .staff-form-modern .permission-grid::before {
+    font-size: 0.6rem;
+  }
+
+  .staff-form-modern .permission-card {
+    min-height: 44px;
+    gap: 8px;
+    padding: 8px 9px;
+    border-radius: 13px;
+  }
+
+  .staff-form-modern .permission-icon {
+    width: 26px;
+    height: 26px;
+    border-radius: 9px;
+  }
+
+  .staff-form-modern .permission-label {
+    font-size: 0.78rem;
+  }
+}
+
+/* === END STAFF PERMISSIONS PHASE 6 === */
