@@ -5602,3 +5602,161 @@
 }
 /* === END BILLING MOBILE SPACE COMPRESSION PHASE 9 === */
 
+
+/* === START BILLING QUICK FILTER DROPDOWN LAYER FIX PHASE 10 === */
+/*
+  Fix: quick filter menu can render behind cards or get clipped by previous
+  contain/overflow optimization layers. This block intentionally lifts
+  the toolbar/dropdown stacking context above the mobile billing deck.
+*/
+.billing-page .billing-content.app-panel,
+.billing-page .billing-control-deck,
+.billing-page .billing-control-actions,
+.billing-page .billing-control-filter {
+  overflow: visible !important;
+}
+
+.billing-page .billing-content.app-panel,
+.billing-page .billing-control-deck,
+.billing-page .billing-control-actions,
+.billing-page .billing-control-filter {
+  contain: none !important;
+}
+
+.billing-page .billing-content.app-panel {
+  position: relative !important;
+  z-index: 80 !important;
+  isolation: isolate !important;
+}
+
+.billing-page .billing-control-deck {
+  position: relative !important;
+  z-index: 12000 !important;
+  isolation: isolate !important;
+}
+
+.billing-page .billing-control-actions {
+  position: relative !important;
+  z-index: 12010 !important;
+}
+
+.billing-page .billing-control-filter {
+  position: relative !important;
+  z-index: 12020 !important;
+  isolation: isolate !important;
+}
+
+.billing-page .billing-control-filter .filter-dropdown-toggle {
+  position: relative !important;
+  z-index: 12022 !important;
+  pointer-events: auto !important;
+}
+
+.billing-page .billing-control-filter .filter-dropdown-overlay {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 12021 !important;
+  background: transparent !important;
+  pointer-events: auto !important;
+}
+
+.billing-page .billing-control-filter .filter-dropdown-menu {
+  position: absolute !important;
+  top: calc(100% + 8px) !important;
+  left: 0 !important;
+  right: auto !important;
+  z-index: 12023 !important;
+  display: flex !important;
+  width: max(100%, 220px) !important;
+  min-width: 100% !important;
+  max-width: min(280px, calc(100vw - 32px)) !important;
+  max-height: min(48dvh, 340px) !important;
+  overflow: auto !important;
+  pointer-events: auto !important;
+  transform: translate3d(0, 0, 0) !important;
+  will-change: transform, opacity !important;
+  box-shadow:
+    0 24px 70px rgba(0, 0, 0, 0.62),
+    0 0 0 1px rgba(255, 255, 255, 0.070),
+    inset 0 1px 0 rgba(255, 255, 255, 0.090) !important;
+}
+
+.billing-page .billing-control-filter .filter-dropdown-item {
+  position: relative !important;
+  z-index: 1 !important;
+  pointer-events: auto !important;
+}
+
+.billing-page .billing-mobile-deck,
+.billing-page .billing-mobile-card,
+.billing-page .mobile-billing-list,
+.billing-page .mobile-billing-card {
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+@media (max-width: 768px) {
+  .billing-page .billing-content.app-panel {
+    z-index: 4000 !important;
+  }
+
+  .billing-page .billing-control-deck {
+    z-index: 14000 !important;
+  }
+
+  .billing-page .billing-control-actions {
+    z-index: 14010 !important;
+  }
+
+  .billing-page .billing-control-filter {
+    z-index: 14020 !important;
+  }
+
+  .billing-page .billing-control-filter .filter-dropdown-toggle {
+    z-index: 14022 !important;
+  }
+
+  .billing-page .billing-control-filter .filter-dropdown-overlay {
+    z-index: 14021 !important;
+  }
+
+  .billing-page .billing-control-filter .filter-dropdown-menu {
+    z-index: 14023 !important;
+    top: calc(100% + 7px) !important;
+    left: 0 !important;
+    right: auto !important;
+    width: 100% !important;
+    min-width: 100% !important;
+    max-width: 100% !important;
+    max-height: min(44dvh, 300px) !important;
+    border-radius: 15px !important;
+  }
+
+  .billing-page .billing-control-filter .filter-dropdown-item {
+    min-height: 40px !important;
+    font-size: 0.74rem !important;
+  }
+
+  .billing-page .billing-mobile-deck {
+    z-index: 1 !important;
+  }
+
+  .billing-page .billing-mobile-card {
+    z-index: 1 !important;
+  }
+}
+
+@media (max-width: 420px) {
+  .billing-page .billing-control-filter .filter-dropdown-menu {
+    max-height: min(42dvh, 270px) !important;
+  }
+}
+
+[data-theme="light"] .billing-page .billing-control-filter .filter-dropdown-menu {
+  box-shadow:
+    0 24px 64px rgba(88, 65, 35, 0.22),
+    0 0 0 1px rgba(35, 28, 18, 0.080),
+    inset 0 1px 0 rgba(255, 255, 255, 0.82) !important;
+}
+/* === END BILLING QUICK FILTER DROPDOWN LAYER FIX PHASE 10 === */
+
