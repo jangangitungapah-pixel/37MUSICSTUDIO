@@ -1623,7 +1623,7 @@
 .messages-filter-tabs button {
   position: relative;
   flex: 0 0 auto;
-  min-height: 38px;
+  min-height: 40px;
   min-width: 78px;
   padding: 0 16px;
   border: 1px solid transparent;
@@ -1988,7 +1988,7 @@
 
   .messages-filter-tabs button {
     min-width: max-content;
-    min-height: 38px;
+    min-height: 40px;
     padding: 0 13px;
   }
 
@@ -2036,6 +2036,7 @@
    -------------------------------------------------------------------------- */
 
 .messages-page {
+  box-sizing: border-box;
   contain: layout paint;
   max-width: min(1440px, 100%);
   overflow-x: hidden;
