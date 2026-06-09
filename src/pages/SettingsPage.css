@@ -4038,3 +4038,692 @@
 
 /* === END SETTINGS NOTIFICATIONS DEMO PHASE 6 === */
 
+
+/* === START SETTINGS DATA DANGER ZONE PHASE 7 === */
+
+/*
+  Phase 7 scope:
+  - Backup and restore card polish
+  - Reset option cards and select-all safety hierarchy
+  - Multi-step danger confirmation visual escalation
+  - Mobile compact layout
+  - No JSX, handler, store, route, auth, FCM, backup, restore, reset logic, or data model touched
+*/
+
+.settings-page {
+  --settings-danger-red: 255, 68, 68;
+  --settings-danger-red-strong: 255, 43, 43;
+  --settings-danger-amber: 255, 193, 7;
+  --settings-danger-radius: clamp(17px, 1.55vw, 22px);
+  --settings-danger-inner-radius: clamp(13px, 1.15vw, 16px);
+  --settings-danger-border: rgba(var(--settings-danger-red), 0.18);
+  --settings-danger-bg:
+    linear-gradient(180deg, rgba(var(--settings-danger-red), 0.058), rgba(255, 255, 255, 0.020)),
+    radial-gradient(circle at 0% 0%, rgba(var(--settings-danger-red), 0.105), transparent 34%),
+    rgba(255, 255, 255, 0.024);
+  --settings-safe-bg:
+    linear-gradient(135deg, rgba(var(--accent-cyan-rgb), 0.090), rgba(var(--settings-gold, 239, 197, 110), 0.036)),
+    rgba(255, 255, 255, 0.026);
+}
+
+/* Danger panel shell */
+.settings-page .danger-zone {
+  border-color: rgba(var(--settings-danger-red), 0.24) !important;
+  background:
+    linear-gradient(180deg, rgba(var(--settings-danger-red), 0.045), rgba(255, 255, 255, 0.020)),
+    radial-gradient(circle at 100% 0%, rgba(var(--settings-danger-red), 0.080), transparent 34%),
+    rgba(13, 16, 24, 0.62) !important;
+}
+
+.settings-page .danger-zone::before {
+  background:
+    linear-gradient(90deg, rgba(var(--settings-danger-red), 0.12), transparent 32%, transparent 72%, rgba(var(--settings-danger-amber), 0.08)),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.035), transparent 44%) !important;
+}
+
+.settings-page .danger-zone::after {
+  background: linear-gradient(90deg, transparent, rgba(var(--settings-danger-red), 0.48), rgba(var(--settings-danger-amber), 0.28), transparent) !important;
+}
+
+.settings-page .danger-zone .panel-title {
+  color: #ff5b5b;
+}
+
+.settings-page .danger-zone .panel-desc strong {
+  color: #ff7a7a;
+}
+
+/* Backup / Restore */
+.settings-page .backup-restore-card {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: clamp(12px, 1.45vw, 18px);
+  margin: 0;
+  padding: clamp(13px, 1.45vw, 18px);
+  border-radius: var(--settings-danger-radius);
+  border: 1px solid rgba(var(--accent-cyan-rgb), 0.16);
+  background: var(--settings-safe-bg);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.065),
+    0 14px 34px rgba(0, 0, 0, 0.11);
+  isolation: isolate;
+}
+
+.settings-page .backup-restore-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(var(--accent-cyan-rgb), 0.105), transparent 34%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.045), transparent 44%);
+  opacity: 0.76;
+}
+
+.settings-page .backup-restore-copy {
+  min-width: 0;
+}
+
+.settings-page .backup-restore-copy h4 {
+  margin: 0 0 4px;
+  color: var(--text-primary);
+  font-size: clamp(0.94rem, 1vw, 1.05rem);
+  font-weight: 950;
+  letter-spacing: -0.035em;
+  line-height: 1.08;
+}
+
+.settings-page .backup-restore-copy p {
+  max-width: 62ch;
+  margin: 0;
+  color: rgba(255, 250, 240, 0.56);
+  font-size: 0.74rem;
+  font-weight: 650;
+  line-height: 1.38;
+}
+
+.settings-page .backup-restore-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 9px;
+  flex: 0 0 auto;
+}
+
+.settings-page .backup-restore-actions .btn-secondary,
+.settings-page .restore-upload-btn {
+  min-height: 40px;
+  border-radius: 999px;
+  padding: 0 14px;
+  white-space: nowrap;
+}
+
+.settings-page .restore-upload-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid rgba(var(--accent-cyan-rgb), 0.18);
+  background:
+    linear-gradient(135deg, rgba(var(--accent-cyan-rgb), 0.095), rgba(255, 255, 255, 0.028)),
+    rgba(255, 255, 255, 0.035);
+  color: var(--accent-cyan);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 900;
+  letter-spacing: -0.012em;
+  transition:
+    border-color 170ms ease,
+    background-color 170ms ease,
+    box-shadow 170ms ease,
+    transform 170ms ease;
+}
+
+.settings-page .restore-upload-btn:hover {
+  border-color: rgba(var(--accent-cyan-rgb), 0.32);
+  background:
+    linear-gradient(135deg, rgba(var(--accent-cyan-rgb), 0.125), rgba(255, 255, 255, 0.035)),
+    rgba(255, 255, 255, 0.045);
+  transform: translateY(-1px);
+}
+
+.settings-page .restore-upload-btn.disabled,
+.settings-page .backup-restore-actions .btn-secondary:disabled {
+  opacity: 0.62;
+  cursor: wait;
+  pointer-events: none;
+  transform: none;
+}
+
+/* Reset cards */
+.settings-page .reset-options-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(9px, 1vw, 12px);
+}
+
+.settings-page .reset-option-card {
+  position: relative;
+  overflow: hidden;
+  min-height: 76px;
+  padding: 12px;
+  border-radius: var(--settings-danger-inner-radius);
+  border: 1px solid rgba(255, 255, 255, 0.090);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.046), rgba(255, 255, 255, 0.020)),
+    rgba(255, 255, 255, 0.018);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.052),
+    0 10px 22px rgba(0, 0, 0, 0.08);
+  isolation: isolate;
+}
+
+.settings-page .reset-option-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(var(--settings-danger-red), 0.080), transparent 36%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.035), transparent 44%);
+  opacity: 0;
+  transition: opacity 170ms ease;
+}
+
+.settings-page .reset-option-card:hover,
+.settings-page .reset-option-card:focus-within {
+  border-color: rgba(var(--settings-danger-red), 0.26);
+  background:
+    linear-gradient(180deg, rgba(var(--settings-danger-red), 0.044), rgba(255, 255, 255, 0.020)),
+    rgba(255, 255, 255, 0.024);
+  transform: translateY(-1px);
+}
+
+.settings-page .reset-option-card:hover::before,
+.settings-page .reset-option-card:focus-within::before {
+  opacity: 0.72;
+}
+
+.settings-page .reset-option-card.selected {
+  border-color: rgba(var(--settings-danger-red), 0.42);
+  background:
+    linear-gradient(135deg, rgba(var(--settings-danger-red), 0.115), rgba(255, 255, 255, 0.028)),
+    rgba(var(--settings-danger-red), 0.040);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.066),
+    0 14px 30px rgba(var(--settings-danger-red), 0.08);
+}
+
+.settings-page .reset-option-info {
+  gap: 3px;
+  min-width: 0;
+}
+
+.settings-page .reset-option-label {
+  color: var(--text-primary);
+  font-size: 0.82rem;
+  font-weight: 950;
+  letter-spacing: -0.024em;
+  line-height: 1.1;
+}
+
+.settings-page .reset-option-desc {
+  color: rgba(255, 250, 240, 0.47);
+  font-size: 0.69rem;
+  font-weight: 650;
+  line-height: 1.28;
+}
+
+.settings-page .reset-option-check {
+  width: 26px;
+  height: 26px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: transparent;
+  background: rgba(255, 255, 255, 0.030);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.050);
+}
+
+.settings-page .reset-option-check.checked {
+  border-color: rgba(var(--settings-danger-red), 0.46);
+  background:
+    linear-gradient(135deg, rgba(var(--settings-danger-red), 0.22), rgba(var(--settings-danger-amber), 0.075)),
+    rgba(var(--settings-danger-red), 0.065);
+  color: #ff6666;
+  box-shadow:
+    0 0 0 1px rgba(var(--settings-danger-red), 0.06),
+    0 10px 22px rgba(var(--settings-danger-red), 0.10),
+    inset 0 1px 0 rgba(255, 255, 255, 0.085);
+}
+
+.settings-page .reset-option-checkbox:focus-visible + .reset-option-info {
+  outline: 2px solid rgba(var(--settings-danger-red), 0.50);
+  outline-offset: 5px;
+  border-radius: 8px;
+}
+
+/* Select all */
+.settings-page .reset-select-all {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 42px;
+  padding: 10px 12px;
+  border-radius: var(--settings-danger-inner-radius);
+  border: 1px dashed rgba(var(--settings-danger-amber), 0.24);
+  background:
+    linear-gradient(135deg, rgba(var(--settings-danger-amber), 0.075), rgba(255, 255, 255, 0.020)),
+    rgba(255, 255, 255, 0.020);
+  color: rgba(255, 246, 220, 0.72);
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: -0.012em;
+}
+
+.settings-page .reset-select-all:hover,
+.settings-page .reset-select-all:focus-within {
+  border-color: rgba(var(--settings-danger-red), 0.32);
+  color: var(--text-primary);
+  background:
+    linear-gradient(135deg, rgba(var(--settings-danger-red), 0.075), rgba(var(--settings-danger-amber), 0.040)),
+    rgba(255, 255, 255, 0.026);
+}
+
+.settings-page .reset-select-all input[type="checkbox"] {
+  width: 17px;
+  height: 17px;
+  accent-color: #ff4444;
+}
+
+/* Confirmation area */
+.settings-page .reset-confirm-area {
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  border-radius: var(--settings-danger-radius);
+  border: 1px solid rgba(var(--settings-danger-red), 0.22);
+  background: var(--settings-danger-bg);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.060),
+    0 16px 34px rgba(var(--settings-danger-red), 0.08);
+  animation: confirmIn 180ms ease-out;
+  isolation: isolate;
+}
+
+.settings-page .reset-confirm-area::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(var(--settings-danger-red), 0.12), transparent 36%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.045), transparent 44%);
+  opacity: 0.74;
+}
+
+.settings-page .reset-confirm-area.step-0 {
+  border-color: rgba(var(--settings-danger-amber), 0.24);
+  background:
+    linear-gradient(135deg, rgba(var(--settings-danger-amber), 0.085), rgba(255, 255, 255, 0.020)),
+    rgba(255, 255, 255, 0.022);
+}
+
+.settings-page .reset-confirm-area.step-1 {
+  border-color: rgba(var(--settings-danger-red), 0.28);
+  background:
+    linear-gradient(135deg, rgba(var(--settings-danger-red), 0.075), rgba(var(--settings-danger-amber), 0.034)),
+    rgba(var(--settings-danger-red), 0.026);
+}
+
+.settings-page .reset-confirm-area.step-2 {
+  border-color: rgba(var(--settings-danger-red), 0.48);
+  background:
+    linear-gradient(135deg, rgba(var(--settings-danger-red), 0.145), rgba(255, 255, 255, 0.020)),
+    radial-gradient(circle at 100% 0%, rgba(var(--settings-danger-red), 0.12), transparent 36%),
+    rgba(var(--settings-danger-red), 0.050);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.070),
+    0 18px 44px rgba(var(--settings-danger-red), 0.15);
+}
+
+.settings-page .reset-confirm-msg {
+  min-width: 0;
+  gap: 9px;
+  color: rgba(255, 250, 240, 0.70);
+  font-size: 0.77rem;
+  font-weight: 700;
+  line-height: 1.36;
+}
+
+.settings-page .reset-confirm-msg strong {
+  color: var(--text-primary);
+  font-weight: 950;
+}
+
+.settings-page .reset-confirm-msg svg {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+}
+
+.settings-page .reset-confirm-msg.step0 svg {
+  color: #FFC107;
+}
+
+.settings-page .reset-confirm-msg.step1 svg {
+  color: #ff9b4a;
+}
+
+.settings-page .reset-confirm-msg.step2 svg {
+  color: #ff5b5b;
+}
+
+.settings-page .reset-confirm-area .btn-danger,
+.settings-page .reset-confirm-area .btn-secondary {
+  min-height: 40px;
+  border-radius: 999px;
+  padding-inline: 14px;
+  white-space: nowrap;
+  font-size: 0.78rem;
+  font-weight: 950;
+  letter-spacing: -0.012em;
+}
+
+.settings-page .reset-confirm-area .btn-danger {
+  border: 1px solid rgba(var(--settings-danger-red), 0.32);
+  background:
+    linear-gradient(135deg, rgba(var(--settings-danger-red), 0.16), rgba(var(--settings-danger-amber), 0.045)),
+    rgba(var(--settings-danger-red), 0.070);
+  color: #ff7a7a;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.080),
+    0 12px 26px rgba(var(--settings-danger-red), 0.08);
+}
+
+.settings-page .reset-confirm-area .btn-danger:hover {
+  border-color: rgba(var(--settings-danger-red), 0.48);
+  background:
+    linear-gradient(135deg, rgba(var(--settings-danger-red), 0.22), rgba(var(--settings-danger-amber), 0.055)),
+    rgba(var(--settings-danger-red), 0.085);
+  transform: translateY(-1px);
+}
+
+.settings-page .reset-confirm-area .btn-danger.step-1 {
+  color: #ff9b4a;
+  border-color: rgba(255, 155, 74, 0.34);
+  background:
+    linear-gradient(135deg, rgba(255, 155, 74, 0.18), rgba(var(--settings-danger-red), 0.060)),
+    rgba(255, 155, 74, 0.045);
+}
+
+.settings-page .reset-confirm-area .btn-danger.step-2 {
+  color: #fff4f4;
+  border-color: rgba(var(--settings-danger-red), 0.64);
+  background:
+    linear-gradient(135deg, rgba(var(--settings-danger-red), 1), rgba(190, 27, 27, 1));
+  box-shadow:
+    0 0 0 1px rgba(var(--settings-danger-red), 0.16),
+    0 14px 32px rgba(var(--settings-danger-red), 0.26),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+
+.settings-page .reset-confirm-area .btn-danger.step-2:hover {
+  background:
+    linear-gradient(135deg, rgba(255, 70, 70, 1), rgba(210, 24, 24, 1));
+  box-shadow:
+    0 0 0 1px rgba(var(--settings-danger-red), 0.20),
+    0 16px 36px rgba(var(--settings-danger-red), 0.32),
+    inset 0 1px 0 rgba(255, 255, 255, 0.22);
+}
+
+.settings-page .reset-confirm-area .btn-danger:disabled {
+  opacity: 0.62;
+  cursor: wait;
+  transform: none;
+}
+
+.settings-page .reset-confirm-area .btn-secondary {
+  grid-column: 2;
+  justify-self: end;
+}
+
+.settings-page .reset-confirm-area.step-1,
+.settings-page .reset-confirm-area.step-2 {
+  grid-template-columns: minmax(0, 1fr) auto auto;
+}
+
+@media (max-width: 900px) {
+  .settings-page .backup-restore-card {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .settings-page .backup-restore-actions {
+    width: 100%;
+    justify-content: stretch;
+  }
+
+  .settings-page .backup-restore-actions .btn-secondary,
+  .settings-page .restore-upload-btn {
+    flex: 1 1 180px;
+  }
+}
+
+@media (max-width: 768px) {
+  .settings-page .danger-zone {
+    border-radius: 18px !important;
+  }
+
+  .settings-page .backup-restore-card {
+    padding: 12px;
+    border-radius: 17px;
+  }
+
+  .settings-page .backup-restore-copy h4 {
+    font-size: 0.96rem;
+  }
+
+  .settings-page .backup-restore-copy p {
+    font-size: 0.70rem;
+  }
+
+  .settings-page .backup-restore-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .settings-page .backup-restore-actions .btn-secondary,
+  .settings-page .restore-upload-btn {
+    width: 100%;
+    min-height: 40px;
+  }
+
+  .settings-page .reset-options-grid {
+    grid-template-columns: 1fr !important;
+    gap: 8px;
+  }
+
+  .settings-page .reset-option-card {
+    min-height: 68px;
+    padding: 10px;
+    border-radius: 14px;
+  }
+
+  .settings-page .reset-option-label {
+    font-size: 0.78rem;
+  }
+
+  .settings-page .reset-option-desc {
+    font-size: 0.66rem;
+  }
+
+  .settings-page .reset-select-all {
+    min-height: 40px;
+    padding: 9px 10px;
+    font-size: 0.74rem;
+  }
+
+  .settings-page .reset-confirm-area,
+  .settings-page .reset-confirm-area.step-1,
+  .settings-page .reset-confirm-area.step-2 {
+    grid-template-columns: 1fr;
+    gap: 9px;
+    padding: 11px;
+    border-radius: 16px;
+  }
+
+  .settings-page .reset-confirm-msg {
+    align-items: flex-start;
+    font-size: 0.72rem;
+  }
+
+  .settings-page .reset-confirm-area .btn-danger,
+  .settings-page .reset-confirm-area .btn-secondary {
+    width: 100%;
+    min-height: 40px;
+    justify-content: center;
+  }
+
+  .settings-page .reset-confirm-area .btn-secondary {
+    grid-column: auto;
+    justify-self: stretch;
+  }
+}
+
+@media (max-width: 420px) {
+  .settings-page .reset-option-card {
+    align-items: flex-start;
+  }
+
+  .settings-page .reset-option-check {
+    width: 24px;
+    height: 24px;
+    border-radius: 9px;
+  }
+
+  .settings-page .reset-confirm-msg {
+    line-height: 1.32;
+  }
+}
+
+@media (hover: none) {
+  .settings-page .restore-upload-btn:hover,
+  .settings-page .reset-option-card:hover,
+  .settings-page .reset-confirm-area .btn-danger:hover {
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .settings-page .backup-restore-card,
+  .settings-page .restore-upload-btn,
+  .settings-page .reset-option-card,
+  .settings-page .reset-option-card::before,
+  .settings-page .reset-option-check,
+  .settings-page .reset-select-all,
+  .settings-page .reset-confirm-area,
+  .settings-page .reset-confirm-area .btn-danger,
+  .settings-page .reset-confirm-area .btn-secondary {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+[data-theme="light"] .settings-page {
+  --settings-danger-border: rgba(var(--settings-danger-red), 0.18);
+  --settings-danger-bg:
+    linear-gradient(180deg, rgba(var(--settings-danger-red), 0.070), rgba(255, 248, 238, 0.40)),
+    radial-gradient(circle at 0% 0%, rgba(var(--settings-danger-red), 0.105), transparent 34%),
+    rgba(255, 255, 255, 0.56);
+  --settings-safe-bg:
+    linear-gradient(135deg, rgba(var(--accent-cyan-rgb), 0.090), rgba(var(--settings-gold, 239, 197, 110), 0.055)),
+    rgba(255, 255, 255, 0.58);
+}
+
+[data-theme="light"] .settings-page .danger-zone {
+  background:
+    linear-gradient(180deg, rgba(var(--settings-danger-red), 0.055), rgba(255, 248, 238, 0.48)),
+    radial-gradient(circle at 100% 0%, rgba(var(--settings-danger-red), 0.080), transparent 34%),
+    rgba(255, 250, 242, 0.78) !important;
+  border-color: rgba(var(--settings-danger-red), 0.20) !important;
+}
+
+[data-theme="light"] .settings-page .danger-zone .panel-desc strong,
+[data-theme="light"] .settings-page .danger-zone .panel-title {
+  color: #c72f2f;
+}
+
+[data-theme="light"] .settings-page .backup-restore-card,
+[data-theme="light"] .settings-page .reset-option-card,
+[data-theme="light"] .settings-page .reset-select-all,
+[data-theme="light"] .settings-page .reset-confirm-area {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.80),
+    0 12px 28px rgba(75, 56, 22, 0.07);
+}
+
+[data-theme="light"] .settings-page .backup-restore-copy p,
+[data-theme="light"] .settings-page .reset-option-desc,
+[data-theme="light"] .settings-page .reset-confirm-msg {
+  color: rgba(40, 33, 26, 0.58);
+}
+
+[data-theme="light"] .settings-page .reset-option-card {
+  border-color: rgba(52, 39, 24, 0.10);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.68), rgba(255, 248, 238, 0.40)),
+    rgba(255, 255, 255, 0.48);
+}
+
+[data-theme="light"] .settings-page .reset-option-card:hover,
+[data-theme="light"] .settings-page .reset-option-card:focus-within {
+  border-color: rgba(var(--settings-danger-red), 0.24);
+  background:
+    linear-gradient(180deg, rgba(var(--settings-danger-red), 0.060), rgba(255, 248, 238, 0.42)),
+    rgba(255, 255, 255, 0.54);
+}
+
+[data-theme="light"] .settings-page .reset-option-card.selected {
+  border-color: rgba(var(--settings-danger-red), 0.34);
+  background:
+    linear-gradient(135deg, rgba(var(--settings-danger-red), 0.105), rgba(255, 255, 255, 0.50)),
+    rgba(255, 255, 255, 0.56);
+}
+
+[data-theme="light"] .settings-page .reset-option-label {
+  color: #251c17;
+}
+
+[data-theme="light"] .settings-page .reset-select-all {
+  color: rgba(90, 61, 16, 0.76);
+  border-color: rgba(var(--settings-danger-amber), 0.24);
+  background:
+    linear-gradient(135deg, rgba(var(--settings-danger-amber), 0.115), rgba(255, 255, 255, 0.44)),
+    rgba(255, 255, 255, 0.48);
+}
+
+[data-theme="light"] .settings-page .restore-upload-btn {
+  background:
+    linear-gradient(135deg, rgba(var(--accent-cyan-rgb), 0.095), rgba(255, 255, 255, 0.42)),
+    rgba(255, 255, 255, 0.52);
+}
+
+[data-theme="light"] .settings-page .reset-confirm-msg strong {
+  color: #1f1a14;
+}
+
+/* === END SETTINGS DATA DANGER ZONE PHASE 7 === */
+
