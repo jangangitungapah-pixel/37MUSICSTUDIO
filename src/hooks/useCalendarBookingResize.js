@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNotificationStore } from '../store/useNotificationStore';
 import { hasBookingOverlap } from '../lib/bookingWorkflows';
 
@@ -25,10 +25,13 @@ export const useCalendarBookingResize = ({
   const [initialResizeAxis, setInitialResizeAxis] = useState(0);
   const [resizeAddedHours, setResizeAddedHours] = useState(0);
   const [resizeConfirmData, setResizeConfirmData] = useState(null);
+  const resizeFrameRef = useRef(null);
+  const latestAddedHoursRef = useRef(0);
 
   const resetResizeState = useCallback(() => {
     setResizingBooking(null);
     setResizeAddedHours(0);
+    latestAddedHoursRef.current = 0;
   }, []);
 
   const handleResizeStart = useCallback((event, booking) => {
@@ -38,6 +41,7 @@ export const useCalendarBookingResize = ({
     if (event.cancelable) event.preventDefault();
 
     touchStartRef.current = null;
+    latestAddedHoursRef.current = 0;
     setResizingBooking(booking);
     setInitialResizeAxis(getPointerAxis(event));
     setResizeAddedHours(0);
@@ -49,19 +53,33 @@ export const useCalendarBookingResize = ({
       return getResizeDeltaHours(diff, getCalendarCellHeight());
     };
 
+    const scheduleResizeAddedHours = (addedHours) => {
+      latestAddedHoursRef.current = addedHours;
+      if (resizeFrameRef.current) return;
+
+      resizeFrameRef.current = window.requestAnimationFrame(() => {
+        resizeFrameRef.current = null;
+        setResizeAddedHours((previous) => previous === latestAddedHoursRef.current ? previous : latestAddedHoursRef.current);
+      });
+    };
+
     const handleResizeMove = (event) => {
       if (!resizingBooking) return;
       if (event.cancelable) event.preventDefault();
       event.stopPropagation();
 
-      const addedHours = calculateAddedHours(event);
-      setResizeAddedHours((previous) => previous === addedHours ? previous : addedHours);
+      scheduleResizeAddedHours(calculateAddedHours(event));
     };
 
     const handleResizeEnd = (event) => {
       if (!resizingBooking) return;
       if (event.cancelable) event.preventDefault();
       event.stopPropagation();
+
+      if (resizeFrameRef.current) {
+        window.cancelAnimationFrame(resizeFrameRef.current);
+        resizeFrameRef.current = null;
+      }
 
       const addedHours = calculateAddedHours(event);
 
@@ -109,7 +127,7 @@ export const useCalendarBookingResize = ({
 
     if (resizingBooking) {
       document.body.classList.add('calendar-resize-lock', 'calendar-interaction-lock');
-      document.addEventListener('mousemove', handleResizeMove);
+      document.addEventListener('mousemove', handleResizeMove, { passive: false });
       document.addEventListener('mouseup', handleResizeEnd);
       document.addEventListener('touchmove', handleResizeMove, { passive: false });
       document.addEventListener('touchend', handleResizeEnd);
@@ -117,6 +135,10 @@ export const useCalendarBookingResize = ({
     }
 
     return () => {
+      if (resizeFrameRef.current) {
+        window.cancelAnimationFrame(resizeFrameRef.current);
+        resizeFrameRef.current = null;
+      }
       document.body.classList.remove('calendar-resize-lock', 'calendar-interaction-lock');
       document.removeEventListener('mousemove', handleResizeMove);
       document.removeEventListener('mouseup', handleResizeEnd);
