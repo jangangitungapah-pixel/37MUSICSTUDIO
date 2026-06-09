@@ -2911,3 +2911,54 @@
   }
 }
 
+/* ──────────────────────────────────────────────────────────────────────────
+   37 DESKTOP SIDEBAR RESTORE 8.5J
+   --------------------------------------------------------------------------
+   Hotfix:
+   - Sidebar was hidden at max-width: 1024px.
+   - Keep real desktop/sidebar layout from 769px upward.
+   - Bottom nav remains mobile-only.
+   ────────────────────────────────────────────────────────────────────────── */
+
+@media (min-width: 769px) {
+  .sidebar {
+    display: flex !important;
+    position: relative !important;
+    z-index: 20 !important;
+    width: 252px;
+    height: calc(100vh - 24px);
+    margin: 12px;
+    flex-shrink: 0 !important;
+  }
+
+  .sidebar.collapsed {
+    width: 88px;
+  }
+
+  .bottom-nav-bar,
+  .mobile-header,
+  .mobile-overlay {
+    display: none !important;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .sidebar {
+    display: flex !important;
+    width: 236px;
+  }
+
+  .sidebar.collapsed {
+    width: 84px;
+  }
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    display: none !important;
+  }
+
+  .bottom-nav-bar {
+    display: flex !important;
+  }
+}

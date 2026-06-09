@@ -3439,3 +3439,42 @@ html[data-pwa-mode="admin"] {
   }
 }
 
+/* ──────────────────────────────────────────────────────────────────────────
+   37 ADMIN DESKTOP LAYOUT RESTORE 8.5J
+   --------------------------------------------------------------------------
+   Hotfix:
+   - Previous global breakpoint treated 769px–1024px as mobile/tablet.
+   - That changed app-container to column and pushed admin layout into bottom-nav mode.
+   - Desktop/tablet landscape should keep sidebar from 769px and above.
+   ────────────────────────────────────────────────────────────────────────── */
+
+@media (min-width: 769px) {
+  .app-container {
+    display: flex !important;
+    flex-direction: row !important;
+    height: 100vh !important;
+    width: 100vw !important;
+    overflow: hidden !important;
+  }
+
+  .main-content {
+    position: relative !important;
+    z-index: 1 !important;
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    height: auto !important;
+    padding: 2rem !important;
+    padding-bottom: 2rem !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    scroll-padding-top: 0 !important;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .main-content {
+    padding: 1.25rem !important;
+    padding-bottom: 1.25rem !important;
+  }
+}
