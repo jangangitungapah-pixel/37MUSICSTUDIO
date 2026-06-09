@@ -5,11 +5,10 @@ import { useSettingsStore } from '../store/useSettingsStore';
 import { Printer, CheckCircle, AlertCircle, FileText, Search, X, Share2, MessageCircle, Copy, Download, Check, Bell, ChevronDown } from 'lucide-react';
 import { format } from 'date-fns';
 import html2canvas from 'html2canvas';
+import { jsPDF } from 'jspdf';
 import { toast } from 'sonner';
 import confetti from 'canvas-confetti';
 import Modal from '../components/Modal';
-import { PDFDownloadLink } from '@react-pdf/renderer';
-import { InvoicePDF } from '../components/InvoicePDF';
 import { getBillingInsights } from '../lib/smartInsights';
 import { getDepositDeadlineStatus } from '../lib/bookingWorkflows';
 import { motion } from 'framer-motion';
@@ -38,6 +37,7 @@ const BillingPage = () => {
   const [isInvoiceModalOpen, setIsInvoiceModalOpen] = useState(false);
   const [isThermalMode, setIsThermalMode] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [isPdfBusy, setIsPdfBusy] = useState(false);
   const invoiceRef = useRef(null);
   const billableBookings = bookings.filter((booking) => !['maintenance', 'cancelled'].includes(booking.status));
 
@@ -212,39 +212,146 @@ const BillingPage = () => {
     }
   };
 
-  const handleNativeShare = async (inv) => {
-    if (!navigator.share || !invoiceRef.current) return;
+  // === START EXACT DIGITAL INVOICE PDF EXPORT PHASE 14 ===
+  const waitForInvoicePaint = () => new Promise((resolve) => {
+    window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(resolve);
+    });
+  });
+
+  const getInvoiceFileName = (inv, extension = 'pdf') => {
+    const id = inv?.id ? inv.id.toString().padStart(5, '0') : 'draft';
+    return `invoice-${id}.${extension}`;
+  };
+
+  const captureInvoiceCanvas = async ({ forceA4 = false } = {}) => {
+    if (!invoiceRef.current) {
+      throw new Error('Preview invoice belum siap.');
+    }
+
+    const wasThermalMode = isThermalMode;
+
+    if (forceA4 && wasThermalMode) {
+      setIsThermalMode(false);
+      await waitForInvoicePaint();
+    }
+
     try {
-      // Tampilkan indikator loading atau tangani sementara jika perlu
-      const canvas = await html2canvas(invoiceRef.current, {
-        backgroundColor: '#ffffff',
-        scale: 2,
+      const element = invoiceRef.current;
+      const rect = element.getBoundingClientRect();
+      const width = Math.ceil(element.scrollWidth || rect.width);
+      const height = Math.ceil(element.scrollHeight || rect.height);
+
+      return await html2canvas(element, {
+        backgroundColor: '#fffaf0',
+        scale: Math.min(3, Math.max(2, window.devicePixelRatio || 2)),
         useCORS: true,
+        logging: false,
+        removeContainer: true,
+        width,
+        height,
+        windowWidth: Math.max(document.documentElement.clientWidth, width),
+        windowHeight: Math.max(document.documentElement.clientHeight, height),
       });
-      
-      canvas.toBlob(async (blob) => {
-        if (!blob) return;
-        const file = new File([blob], `invoice-${inv.id.toString().padStart(5, '0')}.png`, { type: 'image/png' });
-        
-        if (navigator.canShare && navigator.canShare({ files: [file] })) {
-          await navigator.share({
-            title: `Invoice ${studioName}`,
-            text: `Berikut adalah lampiran invoice dari ${studioName}.`,
-            files: [file]
-          });
-        } else {
-          // Fallback ke text jika device tidak support share file
-          const text = buildInvoiceText(inv);
-          await navigator.share({
-            title: `Invoice ${studioName}`,
-            text: text,
-          });
-        }
-      }, 'image/png');
-    } catch (error) {
-      console.error('Share failed:', error);
+    } finally {
+      if (forceA4 && wasThermalMode) {
+        setIsThermalMode(true);
+      }
     }
   };
+
+  const createInvoicePdfBlob = async () => {
+    const canvas = await captureInvoiceCanvas({ forceA4: true });
+    const imgData = canvas.toDataURL('image/png', 1);
+
+    const pdf = new jsPDF({
+      orientation: 'portrait',
+      unit: 'pt',
+      format: 'a4',
+      compress: true,
+    });
+
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
+    const imgHeight = (canvas.height * pageWidth) / canvas.width;
+
+    let heightLeft = imgHeight;
+    let position = 0;
+
+    pdf.addImage(imgData, 'PNG', 0, position, pageWidth, imgHeight, undefined, 'MEDIUM');
+    heightLeft -= pageHeight;
+
+    while (heightLeft > 1) {
+      position = heightLeft - imgHeight;
+      pdf.addPage();
+      pdf.addImage(imgData, 'PNG', 0, position, pageWidth, imgHeight, undefined, 'MEDIUM');
+      heightLeft -= pageHeight;
+    }
+
+    return pdf.output('blob');
+  };
+
+  const downloadPdfBlob = (blob, filename) => {
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    window.setTimeout(() => URL.revokeObjectURL(url), 1200);
+  };
+
+  const handleDownloadPdf = async (inv = selectedInvoice) => {
+    if (!inv) return;
+
+    setIsPdfBusy(true);
+
+    try {
+      const blob = await createInvoicePdfBlob();
+      downloadPdfBlob(blob, getInvoiceFileName(inv, 'pdf'));
+      toast.success('PDF invoice digital berhasil dibuat.');
+    } catch (error) {
+      console.error('PDF export failed:', error);
+      toast.error('Gagal membuat PDF invoice digital.');
+    } finally {
+      setIsPdfBusy(false);
+    }
+  };
+
+  const handleNativeShare = async (inv) => {
+    if (!navigator.share || !inv) return;
+
+    setIsPdfBusy(true);
+
+    try {
+      const blob = await createInvoicePdfBlob();
+      const file = new File([blob], getInvoiceFileName(inv, 'pdf'), { type: 'application/pdf' });
+
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({
+          title: `Invoice ${studioName}`,
+          text: `Berikut adalah PDF invoice digital dari ${studioName}.`,
+          files: [file],
+        });
+      } else {
+        downloadPdfBlob(blob, getInvoiceFileName(inv, 'pdf'));
+
+        await navigator.share({
+          title: `Invoice ${studioName}`,
+          text: buildInvoiceText(inv),
+        });
+      }
+    } catch (error) {
+      console.error('Share PDF failed:', error);
+      toast.error('Gagal membagikan PDF invoice digital.');
+    } finally {
+      setIsPdfBusy(false);
+    }
+  };
+  // === END EXACT DIGITAL INVOICE PDF EXPORT PHASE 14 ===
 
   return (
     <motion.div className="app-page billing-page" {...pagePreset}>
@@ -816,8 +923,8 @@ const BillingPage = () => {
                     aria-label="Bagikan invoice via aplikasi lainnya"
                   >
                     <Share2 size={20} />
-                    <span>Lainnya</span>
-                    <small>Share via aplikasi lain</small>
+                    <span>Share PDF</span>
+                    <small>File PDF digital</small>
                   </button>
                 )}
               </div>
@@ -840,23 +947,17 @@ const BillingPage = () => {
                 <button type="button" className="inv2-btn-close" onClick={handleCloseInvoiceModal} aria-label="Tutup detail modal">
                   <X size={16} /> Tutup
                 </button>
-                <PDFDownloadLink
-                  document={<InvoicePDF invoice={selectedInvoice} settings={{ studioName, studioAddress, studioPhone, pricePerHour }} />}
-                  fileName={`invoice-${selectedInvoice.id.toString().padStart(5, '0')}.pdf`}
-                  className="inv2-pdf-link"
+                <button
+                  type="button"
+                  className="inv2-btn-print"
+                  onClick={() => handleDownloadPdf(selectedInvoice)}
+                  disabled={isPdfBusy}
+                  aria-label="Unduh invoice PDF sesuai desain digital"
+                  title="Unduh PDF sesuai desain digital"
                 >
-                  {({ loading }) => (
-                    <button
-                      type="button"
-                      className="inv2-btn-print"
-                      disabled={loading}
-                      aria-label="Unduh invoice PDF"
-                    >
-                      <Download size={16} />
-                      <span>{loading ? 'PDF...' : 'Unduh PDF'}</span>
-                    </button>
-                  )}
-                </PDFDownloadLink>
+                  <Download size={16} />
+                  <span>{isPdfBusy ? 'PDF...' : 'Unduh PDF'}</span>
+                </button>
                 <button
                   type="button"
                   className="inv2-btn-print"
