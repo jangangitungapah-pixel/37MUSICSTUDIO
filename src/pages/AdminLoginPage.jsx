@@ -35,6 +35,16 @@ const AdminLoginPage = () => {
   const themeSwitchTimeoutRef = useRef(null);
 
   useEffect(() => {
+    document.documentElement.classList.add('admin-login-scroll-unlocked');
+    document.body.classList.add('admin-login-scroll-unlocked');
+
+    return () => {
+      document.documentElement.classList.remove('admin-login-scroll-unlocked');
+      document.body.classList.remove('admin-login-scroll-unlocked');
+    };
+  }, []);
+
+  useEffect(() => {
     if (!isAuthLoaded || !user || user.isAnonymous) return;
     navigate(getPortalPathForProfile(userProfile, '/admin/dashboard'), { replace: true });
   }, [isAuthLoaded, navigate, user, userProfile]);
