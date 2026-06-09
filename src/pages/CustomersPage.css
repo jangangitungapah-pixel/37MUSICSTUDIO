@@ -6684,3 +6684,200 @@ tr:hover
   }
 }
 /* === END PHASE 9.1E-3 CUSTOMER DETAIL CONTACT WIDTH HOTFIX === */
+
+/* === START PHASE 9.1E-4 CUSTOMER DETAIL SECTION FLOW HOTFIX === */
+/*
+  Customer Detail Section Flow Hotfix
+  Screenshot issue:
+  - Professional Profile section appears as a clipped thin pill.
+  - Previous 2-column ownership makes sections fight for height/width.
+  Fix:
+  - Make popup detail body use stable single-column section flow.
+  - Inner content remains grid where useful.
+  - CSS-only, no JSX/store/business workflow changes.
+*/
+
+.customers-page .customer-detail-panel .detail-panel-body {
+  display: flex !important;
+  flex-direction: column !important;
+  align-content: initial !important;
+  grid-template-columns: none !important;
+  gap: 1rem !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  padding-bottom: calc(1.4rem + 112px) !important;
+}
+
+.customers-page .customer-detail-panel .detail-panel-body > .detail-section,
+.customers-page .customer-detail-panel .detail-panel-body > .professional-profile-section {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  min-height: auto !important;
+  grid-column: auto !important;
+  overflow: visible !important;
+}
+
+.customers-page .customer-detail-panel .section-title {
+  width: 100% !important;
+  min-height: 28px !important;
+  height: auto !important;
+  display: flex !important;
+  align-items: center !important;
+  overflow: visible !important;
+  line-height: 1.2 !important;
+  padding: 0 !important;
+  margin: 0 0 0.35rem !important;
+}
+
+.customers-page .customer-detail-panel .section-title::after {
+  flex: 1 1 auto !important;
+  min-width: 32px !important;
+}
+
+/* Kontak tetap full-width, tapi item di dalamnya rapi 2 kolom desktop */
+.customers-page .customer-detail-panel .detail-panel-body > .detail-section:nth-child(2) {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 0.65rem !important;
+}
+
+.customers-page .customer-detail-panel .detail-panel-body > .detail-section:nth-child(2) .section-title {
+  grid-column: 1 / -1 !important;
+}
+
+.customers-page .customer-detail-panel .detail-panel-body > .detail-section:nth-child(2) .detail-item {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+/* Professional Profile jangan diperlakukan sebagai pill. Jadikan section card beneran. */
+.customers-page .customer-detail-panel .professional-profile-section {
+  display: block !important;
+  padding: 0.95rem !important;
+  border-radius: 1.1rem !important;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(88, 224, 233, 0.08), transparent 42%),
+    linear-gradient(180deg, rgba(255,255,255,0.048), rgba(255,255,255,0.014)),
+    rgba(255,255,255,0.016) !important;
+  border: 1px solid rgba(255,250,240,0.085) !important;
+}
+
+.customers-page .customer-detail-panel .professional-profile-section .customer-pro-card {
+  display: grid !important;
+  width: 100% !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: 0.65rem !important;
+  margin-top: 0.1rem !important;
+}
+
+.customers-page .customer-detail-panel .professional-profile-section .customer-pro-card > div {
+  min-height: 72px !important;
+  height: auto !important;
+  overflow: hidden !important;
+}
+
+.customers-page .customer-detail-panel .professional-profile-section .customer-pro-card span,
+.customers-page .customer-detail-panel .professional-profile-section .customer-pro-card strong {
+  max-width: 100% !important;
+  min-width: 0 !important;
+}
+
+/* Membership, statistik, tanggal, timeline diberi jarak normal supaya tidak nabrak footer */
+.customers-page .customer-detail-panel .membership-tier-card,
+.customers-page .customer-detail-panel .stat-grid,
+.customers-page .customer-detail-panel .customer-booking-timeline {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+.customers-page .customer-detail-panel .stat-grid.stat-grid-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+}
+
+.customers-page .customer-detail-panel .customer-booking-timeline {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+}
+
+.customers-page .customer-detail-panel .detail-panel-footer {
+  position: sticky !important;
+  bottom: 0 !important;
+  z-index: 8 !important;
+  margin-top: 0 !important;
+}
+
+/* Light mode lock */
+[data-theme="light"] .customers-page .customer-detail-panel .professional-profile-section {
+  background:
+    radial-gradient(circle at 0% 0%, rgba(88, 224, 233, 0.09), transparent 42%),
+    linear-gradient(180deg, rgba(255,255,255,0.90), rgba(255,255,255,0.70)) !important;
+  border-color: rgba(22, 27, 36, 0.085) !important;
+}
+
+/* Tablet */
+@media (max-width: 860px) {
+  .customers-page .customer-detail-panel .detail-panel-body {
+    gap: 0.82rem !important;
+    padding-bottom: calc(1rem + 112px) !important;
+  }
+
+  .customers-page .customer-detail-panel .detail-panel-body > .detail-section:nth-child(2) {
+    grid-template-columns: 1fr !important;
+  }
+
+  .customers-page .customer-detail-panel .professional-profile-section .customer-pro-card {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .customers-page .customer-detail-panel .customer-booking-timeline {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* Mobile */
+@media (max-width: 520px) {
+  .customers-page .customer-detail-panel .detail-panel-body {
+    gap: 0.72rem !important;
+    padding-bottom: calc(0.9rem + 142px) !important;
+  }
+
+  .customers-page .customer-detail-panel .section-title {
+    min-height: 24px !important;
+    margin-bottom: 0.28rem !important;
+    font-size: 0.6rem !important;
+  }
+
+  .customers-page .customer-detail-panel .professional-profile-section {
+    padding: 0.75rem !important;
+    border-radius: 0.95rem !important;
+  }
+
+  .customers-page .customer-detail-panel .professional-profile-section .customer-pro-card {
+    grid-template-columns: 1fr !important;
+    gap: 0.5rem !important;
+  }
+
+  .customers-page .customer-detail-panel .professional-profile-section .customer-pro-card > div {
+    min-height: 58px !important;
+  }
+
+  .customers-page .customer-detail-panel .stat-grid.stat-grid-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (max-width: 360px) {
+  .customers-page .customer-detail-panel .stat-grid.stat-grid-3 {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .customers-page .customer-detail-panel .detail-panel-body,
+  .customers-page .customer-detail-panel .professional-profile-section,
+  .customers-page .customer-detail-panel .customer-pro-card {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+/* === END PHASE 9.1E-4 CUSTOMER DETAIL SECTION FLOW HOTFIX === */
