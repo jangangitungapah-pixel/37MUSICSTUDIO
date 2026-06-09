@@ -3977,3 +3977,171 @@
 
 /* === END 10.1D-1 PEMBUKUAN LEDGER PAGINATION === */
 
+
+/* === START 10.1D-2 PEMBUKUAN LEDGER FOOTER POLISH === */
+
+/* Hotfix 10.1D-2 - polish ledger footer and horizontal scrollbar.
+   CSS-only. Pagination logic, row data, sorting, print, PDF, dan delete action tidak disentuh. */
+
+.finance-page .finance-content {
+  overflow: hidden;
+}
+
+.finance-page .app-table-wrapper.hide-on-mobile {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(88, 224, 233, 0.28) rgba(255, 255, 255, 0.035);
+}
+
+.finance-page .app-table-wrapper.hide-on-mobile::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.finance-page .app-table-wrapper.hide-on-mobile::-webkit-scrollbar-track {
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.finance-page .app-table-wrapper.hide-on-mobile::-webkit-scrollbar-thumb {
+  min-width: 48px;
+  border: 2px solid rgba(15, 20, 30, 0.92);
+  border-radius: 999px;
+  background:
+    linear-gradient(90deg, rgba(88, 224, 233, 0.48), rgba(239, 197, 110, 0.34));
+}
+
+.finance-page .app-table-wrapper.hide-on-mobile::-webkit-scrollbar-thumb:hover {
+  background:
+    linear-gradient(90deg, rgba(88, 224, 233, 0.62), rgba(239, 197, 110, 0.46));
+}
+
+.finance-page .ledger-pagination {
+  min-height: 52px;
+  margin-top: 0;
+  padding: 8px 14px 10px;
+  border-top: 1px solid rgba(88, 224, 233, 0.09);
+  border-radius: 0 0 var(--finance-radius-lg, 1.25rem) var(--finance-radius-lg, 1.25rem);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.018)),
+    rgba(9, 13, 21, 0.44);
+}
+
+.finance-page .ledger-pagination-info {
+  gap: 6px;
+  font-size: 0.7rem;
+}
+
+.finance-page .ledger-pagination-info span:first-child {
+  min-width: 72px;
+  color: var(--finance-cyan, #58e0e9);
+  font-weight: 900;
+}
+
+.finance-page .ledger-pagination-info span:last-child {
+  color: rgba(255, 250, 240, 0.44);
+}
+
+.finance-page .ledger-pagination-controls {
+  gap: 7px;
+}
+
+.finance-page .ledger-page-btn,
+.finance-page .ledger-page-select {
+  min-height: 32px;
+  border-color: rgba(255, 255, 255, 0.085);
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02));
+  font-size: 0.7rem;
+}
+
+.finance-page .ledger-page-btn {
+  min-width: 92px;
+  padding-inline: 11px;
+}
+
+.finance-page .ledger-page-btn:disabled {
+  opacity: 0.34;
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.finance-page .ledger-page-select-wrap {
+  gap: 8px;
+}
+
+.finance-page .ledger-page-select-wrap > span {
+  color: rgba(255, 250, 240, 0.5);
+  font-size: 0.65rem;
+}
+
+.finance-page .ledger-page-select {
+  min-width: 88px;
+  padding-left: 13px;
+  color: var(--finance-cream, #fffaf0);
+  font-weight: 900;
+}
+
+.finance-page .ledger-page-select:focus-visible,
+.finance-page .ledger-page-btn:focus-visible {
+  border-color: rgba(88, 224, 233, 0.44);
+  box-shadow:
+    0 0 0 3px rgba(88, 224, 233, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.09);
+}
+
+[data-theme="light"] .finance-page .app-table-wrapper.hide-on-mobile {
+  scrollbar-color: rgba(7, 127, 139, 0.32) rgba(23, 19, 31, 0.045);
+}
+
+[data-theme="light"] .finance-page .app-table-wrapper.hide-on-mobile::-webkit-scrollbar-track {
+  background: rgba(23, 19, 31, 0.045);
+}
+
+[data-theme="light"] .finance-page .app-table-wrapper.hide-on-mobile::-webkit-scrollbar-thumb {
+  border-color: rgba(255, 255, 255, 0.9);
+  background:
+    linear-gradient(90deg, rgba(7, 127, 139, 0.38), rgba(239, 197, 110, 0.38));
+}
+
+[data-theme="light"] .finance-page .ledger-pagination {
+  border-top-color: rgba(7, 127, 139, 0.1);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.88), rgba(250, 247, 239, 0.7));
+}
+
+[data-theme="light"] .finance-page .ledger-pagination-info span:last-child,
+[data-theme="light"] .finance-page .ledger-page-select-wrap > span {
+  color: rgba(23, 19, 31, 0.5);
+}
+
+[data-theme="light"] .finance-page .ledger-page-btn,
+[data-theme="light"] .finance-page .ledger-page-select {
+  border-color: rgba(23, 19, 31, 0.075);
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.9), rgba(250, 247, 239, 0.72));
+}
+
+@media (max-width: 768px) {
+  .finance-page .ledger-pagination {
+    gap: 8px;
+    padding: 9px 10px calc(12px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .finance-page .ledger-pagination-info {
+    font-size: 0.67rem;
+  }
+
+  .finance-page .ledger-page-btn,
+  .finance-page .ledger-page-select {
+    min-height: 34px;
+  }
+}
+
+@media (hover: none) {
+  .finance-page .app-table-wrapper.hide-on-mobile::-webkit-scrollbar-thumb:hover {
+    background:
+      linear-gradient(90deg, rgba(88, 224, 233, 0.48), rgba(239, 197, 110, 0.34));
+  }
+}
+
+/* === END 10.1D-2 PEMBUKUAN LEDGER FOOTER POLISH === */
+
