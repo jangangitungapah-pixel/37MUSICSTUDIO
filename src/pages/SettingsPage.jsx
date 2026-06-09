@@ -536,6 +536,7 @@ const SettingsPage = () => {
             <button
               key={id}
               className={`settings-nav-item ${activeSection === id ? 'active' : ''}`}
+              aria-current={activeSection === id ? 'page' : undefined}
               onClick={() => setActiveSection(id)}
             >
               {activeSection === id && (
