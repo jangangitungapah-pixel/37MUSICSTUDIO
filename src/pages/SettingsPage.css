@@ -2854,3 +2854,612 @@
 
 /* === END SETTINGS PANEL FORM DENSITY PHASE 4 === */
 
+
+/* === START SETTINGS BUSINESS SECTIONS PHASE 5 === */
+
+/*
+  Phase 5 scope:
+  - Profile invoice preview polish
+  - Pricing preview cards
+  - Duration discount and recording package sections
+  - Operational hours and blocked date visual density
+  - No JSX, handler, store, field name, data model, route, FCM, backup, restore, or reset behavior touched
+*/
+
+.settings-page {
+  --settings-business-radius: clamp(16px, 1.45vw, 22px);
+  --settings-business-inner-radius: clamp(12px, 1.1vw, 16px);
+  --settings-business-border: rgba(255, 255, 255, 0.10);
+  --settings-business-bg:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.058), rgba(255, 255, 255, 0.024)),
+    rgba(255, 255, 255, 0.026);
+  --settings-business-soft:
+    radial-gradient(circle at 0% 0%, rgba(var(--settings-gold, 239, 197, 110), 0.105), transparent 34%),
+    radial-gradient(circle at 100% 0%, rgba(var(--accent-cyan-rgb), 0.075), transparent 34%),
+    rgba(255, 255, 255, 0.026);
+}
+
+/* Profile preview */
+.settings-page .studio-preview-card {
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  gap: 10px;
+  padding: clamp(13px, 1.4vw, 18px);
+  border-radius: var(--settings-business-radius);
+  border: 1px solid rgba(var(--settings-gold, 239, 197, 110), 0.16);
+  background:
+    linear-gradient(135deg, rgba(var(--settings-gold, 239, 197, 110), 0.095), rgba(var(--accent-cyan-rgb), 0.040)),
+    radial-gradient(circle at 100% 0%, rgba(var(--settings-pink, 255, 56, 113), 0.070), transparent 36%),
+    rgba(255, 255, 255, 0.030);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 14px 34px rgba(0, 0, 0, 0.12);
+}
+
+.settings-page .studio-preview-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(var(--settings-gold, 239, 197, 110), 0.13), transparent 30%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.045), transparent 42%);
+  opacity: 0.78;
+}
+
+.settings-page .preview-label,
+.settings-page .preview-content {
+  position: relative;
+  z-index: 1;
+}
+
+.settings-page .preview-label {
+  width: fit-content;
+  margin: 0;
+  padding: 5px 9px;
+  border: 1px solid rgba(var(--settings-gold, 239, 197, 110), 0.18);
+  border-radius: 999px;
+  background: rgba(var(--settings-gold, 239, 197, 110), 0.075);
+  color: rgba(255, 232, 184, 0.90);
+  font-size: 0.62rem;
+  font-weight: 950;
+  letter-spacing: 0.105em;
+  line-height: 1;
+}
+
+.settings-page .preview-content {
+  display: grid;
+  gap: 3px;
+}
+
+.settings-page .preview-name {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: clamp(1rem, 1.25vw, 1.22rem);
+  font-weight: 950;
+  letter-spacing: -0.035em;
+  line-height: 1.06;
+}
+
+.settings-page .preview-detail {
+  margin: 0;
+  color: rgba(255, 250, 240, 0.58);
+  font-size: 0.76rem;
+  font-weight: 650;
+  line-height: 1.35;
+}
+
+/* Pricing cards */
+.settings-page .pricing-info-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(8px, 1vw, 11px);
+}
+
+.settings-page .pricing-info-card {
+  position: relative;
+  overflow: hidden;
+  min-height: 76px;
+  padding: 12px;
+  border-radius: var(--settings-business-inner-radius);
+  border: 1px solid var(--settings-business-border);
+  background: var(--settings-business-soft);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.065),
+    0 10px 24px rgba(0, 0, 0, 0.10);
+  transition:
+    transform 170ms ease,
+    border-color 170ms ease,
+    background-color 170ms ease,
+    box-shadow 170ms ease;
+}
+
+.settings-page .pricing-info-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.052), transparent 48%);
+  opacity: 0.80;
+}
+
+.settings-page .pricing-info-card:hover {
+  transform: translateY(-1px);
+  border-color: rgba(var(--settings-gold, 239, 197, 110), 0.20);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.075),
+    0 14px 30px rgba(0, 0, 0, 0.13);
+}
+
+.settings-page .pricing-info-card.highlight {
+  border-color: rgba(var(--success-rgb), 0.26);
+  background:
+    radial-gradient(circle at 0% 0%, rgba(var(--success-rgb), 0.13), transparent 38%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.052), rgba(255, 255, 255, 0.024)),
+    rgba(var(--success-rgb), 0.050);
+}
+
+.settings-page .pricing-info-label,
+.settings-page .pricing-info-value {
+  position: relative;
+  z-index: 1;
+}
+
+.settings-page .pricing-info-label {
+  color: rgba(255, 250, 240, 0.52);
+  font-size: 0.68rem;
+  font-weight: 850;
+  letter-spacing: 0.025em;
+  text-transform: uppercase;
+}
+
+.settings-page .pricing-info-value {
+  margin-top: 5px;
+  color: var(--text-primary);
+  font-size: clamp(0.82rem, 1vw, 0.98rem);
+  font-weight: 950;
+  letter-spacing: -0.035em;
+  line-height: 1.08;
+  font-variant-numeric: tabular-nums;
+}
+
+.settings-page .pricing-info-card.highlight .pricing-info-value {
+  color: rgb(var(--success-rgb));
+}
+
+/* Discount, recording, operational, blocked dates */
+.settings-page .duration-discount-section {
+  position: relative;
+  display: grid;
+  gap: 10px;
+  margin-top: clamp(12px, 1.5vw, 18px);
+  padding: clamp(13px, 1.45vw, 18px);
+  border: 1px solid rgba(255, 255, 255, 0.085);
+  border-radius: var(--settings-business-radius);
+  background: var(--settings-business-bg);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.055),
+    0 12px 26px rgba(0, 0, 0, 0.085);
+}
+
+.settings-page .duration-discount-section.mt-4 {
+  margin-top: clamp(10px, 1.15vw, 14px) !important;
+}
+
+.settings-page .duration-discount-section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(var(--accent-cyan-rgb), 0.055), transparent 34%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.040), transparent 44%);
+  opacity: 0.72;
+}
+
+.settings-page .duration-discount-title,
+.settings-page .duration-discount-desc,
+.settings-page .duration-discount-form,
+.settings-page .duration-discount-list,
+.settings-page .duration-discount-empty,
+.settings-page .settings-info-box {
+  position: relative;
+  z-index: 1;
+}
+
+.settings-page .duration-discount-title {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: clamp(0.88rem, 1vw, 1rem);
+  font-weight: 950;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+
+.settings-page .duration-discount-desc {
+  max-width: 72ch;
+  margin: -4px 0 2px;
+  color: rgba(255, 250, 240, 0.54);
+  font-size: 0.73rem;
+  font-weight: 650;
+  line-height: 1.42;
+}
+
+.settings-page .duration-discount-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) auto;
+  align-items: end;
+  gap: 10px;
+  margin: 0;
+  padding: 10px;
+  border-radius: var(--settings-business-inner-radius);
+  border: 1px solid rgba(255, 255, 255, 0.078);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.048), rgba(255, 255, 255, 0.022)),
+    rgba(0, 0, 0, 0.14);
+}
+
+.settings-page .duration-discount-section .duration-discount-form:has(.dd-input-group:nth-child(3)) {
+  grid-template-columns: minmax(180px, 1.45fr) minmax(100px, 0.7fr) minmax(140px, 1fr) auto;
+}
+
+.settings-page .duration-discount-form .btn-secondary {
+  align-self: end !important;
+  min-width: 94px;
+  height: 40px !important;
+  padding-inline: 14px;
+  white-space: nowrap;
+}
+
+.settings-page .duration-discount-list {
+  display: grid;
+  gap: 8px;
+  max-height: min(42vh, 340px);
+  padding-right: 2px;
+  overflow: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(var(--settings-gold, 239, 197, 110), 0.46) rgba(255, 255, 255, 0.055);
+}
+
+.settings-page .duration-discount-list::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.settings-page .duration-discount-list::-webkit-scrollbar-track {
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.045);
+}
+
+.settings-page .duration-discount-list::-webkit-scrollbar-thumb {
+  border: 2px solid transparent;
+  border-radius: 999px;
+  background: rgba(var(--settings-gold, 239, 197, 110), 0.54);
+  background-clip: content-box;
+}
+
+.settings-page .duration-discount-item {
+  gap: 10px;
+  min-height: 46px;
+  padding: 9px 10px;
+  border-radius: 14px;
+  border: 1px solid rgba(var(--accent-cyan-rgb), 0.14);
+  background:
+    linear-gradient(135deg, rgba(var(--accent-cyan-rgb), 0.075), rgba(255, 255, 255, 0.020)),
+    rgba(255, 255, 255, 0.024);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.052);
+}
+
+.settings-page .duration-discount-item:hover {
+  border-color: rgba(var(--accent-cyan-rgb), 0.23);
+  background:
+    linear-gradient(135deg, rgba(var(--accent-cyan-rgb), 0.100), rgba(255, 255, 255, 0.026)),
+    rgba(255, 255, 255, 0.032);
+}
+
+.settings-page .dd-item-info {
+  min-width: 0;
+  gap: 9px;
+  flex: 1 1 auto;
+}
+
+.settings-page .dd-item-hours {
+  min-width: 0;
+  max-width: 100%;
+  padding: 5px 9px;
+  border-radius: 999px;
+  background: rgba(var(--accent-cyan-rgb), 0.105);
+  color: rgba(235, 254, 255, 0.92);
+  font-size: 0.78rem;
+  font-weight: 950;
+  letter-spacing: -0.022em;
+  line-height: 1.1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.settings-page .dd-item-amount {
+  flex: 0 0 auto;
+  color: var(--accent-cyan);
+  font-size: 0.86rem;
+  font-weight: 950;
+  letter-spacing: -0.035em;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+
+.settings-page .duration-discount-empty {
+  display: grid;
+  place-items: center;
+  min-height: 72px;
+  padding: 14px;
+  border-radius: var(--settings-business-inner-radius);
+  border: 1px dashed rgba(255, 255, 255, 0.125);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.016)),
+    rgba(255, 255, 255, 0.018);
+  color: rgba(255, 250, 240, 0.46);
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-align: center;
+}
+
+.settings-page .duration-discount-section .settings-info-box,
+.settings-page .settings-form-body > .settings-info-box {
+  margin-top: 0 !important;
+}
+
+/* Blocked date date labels can be long, so keep them compact */
+.settings-page .duration-discount-item .dd-item-info svg {
+  flex: 0 0 auto;
+}
+
+.settings-page .duration-discount-item .icon-btn.delete {
+  flex: 0 0 auto;
+}
+
+@media (max-width: 1100px) {
+  .settings-page .pricing-info-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .settings-page .duration-discount-form,
+  .settings-page .duration-discount-section .duration-discount-form:has(.dd-input-group:nth-child(3)) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .settings-page .duration-discount-form .btn-secondary {
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .settings-page .studio-preview-card {
+    padding: 12px;
+    border-radius: 16px;
+  }
+
+  .settings-page .preview-label {
+    padding: 4px 8px;
+    font-size: 0.57rem;
+  }
+
+  .settings-page .preview-name {
+    font-size: 0.98rem;
+  }
+
+  .settings-page .preview-detail {
+    font-size: 0.71rem;
+  }
+
+  .settings-page .pricing-info-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 8px;
+  }
+
+  .settings-page .pricing-info-card {
+    min-height: 68px;
+    padding: 10px;
+    border-radius: 14px;
+  }
+
+  .settings-page .pricing-info-label {
+    font-size: 0.62rem;
+  }
+
+  .settings-page .pricing-info-value {
+    font-size: 0.78rem;
+  }
+
+  .settings-page .duration-discount-section {
+    gap: 9px;
+    margin-top: 10px;
+    padding: 11px;
+    border-radius: 16px;
+  }
+
+  .settings-page .duration-discount-title {
+    font-size: 0.9rem;
+  }
+
+  .settings-page .duration-discount-desc {
+    margin-top: -3px;
+    font-size: 0.70rem;
+    line-height: 1.36;
+  }
+
+  .settings-page .duration-discount-form,
+  .settings-page .duration-discount-section .duration-discount-form:has(.dd-input-group:nth-child(3)) {
+    grid-template-columns: 1fr !important;
+    gap: 9px;
+    padding: 9px;
+  }
+
+  .settings-page .duration-discount-form .btn-secondary {
+    width: 100%;
+    min-height: 40px;
+    height: 40px !important;
+  }
+
+  .settings-page .duration-discount-list {
+    max-height: 280px;
+    gap: 7px;
+  }
+
+  .settings-page .duration-discount-item {
+    min-height: 44px;
+    padding: 8px;
+    border-radius: 13px;
+  }
+
+  .settings-page .dd-item-info {
+    gap: 7px;
+  }
+
+  .settings-page .dd-item-hours {
+    font-size: 0.72rem;
+    padding: 5px 8px;
+  }
+
+  .settings-page .dd-item-amount {
+    font-size: 0.76rem;
+  }
+
+  .settings-page .duration-discount-empty {
+    min-height: 64px;
+    padding: 12px;
+    font-size: 0.73rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .settings-page .pricing-info-grid {
+    grid-template-columns: 1fr 1fr !important;
+  }
+
+  .settings-page .pricing-info-card {
+    min-height: 64px;
+    padding: 9px;
+  }
+
+  .settings-page .pricing-info-value {
+    font-size: 0.73rem;
+  }
+
+  .settings-page .duration-discount-item {
+    align-items: flex-start;
+  }
+
+  .settings-page .dd-item-info {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+  }
+
+  .settings-page .duration-discount-item .dd-item-info:has(svg) {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .settings-page .dd-item-hours {
+    max-width: min(100%, 230px);
+  }
+}
+
+@media (hover: none) {
+  .settings-page .pricing-info-card:hover,
+  .settings-page .duration-discount-item:hover {
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .settings-page .studio-preview-card,
+  .settings-page .pricing-info-card,
+  .settings-page .duration-discount-section,
+  .settings-page .duration-discount-item,
+  .settings-page .duration-discount-list {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+[data-theme="light"] .settings-page {
+  --settings-business-border: rgba(52, 39, 24, 0.10);
+  --settings-business-bg:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(255, 248, 238, 0.44)),
+    rgba(255, 255, 255, 0.54);
+  --settings-business-soft:
+    radial-gradient(circle at 0% 0%, rgba(var(--settings-gold, 239, 197, 110), 0.14), transparent 34%),
+    radial-gradient(circle at 100% 0%, rgba(var(--accent-cyan-rgb), 0.08), transparent 34%),
+    rgba(255, 255, 255, 0.58);
+}
+
+[data-theme="light"] .settings-page .studio-preview-card {
+  border-color: rgba(138, 91, 19, 0.15);
+  background:
+    linear-gradient(135deg, rgba(var(--settings-gold, 239, 197, 110), 0.16), rgba(var(--accent-cyan-rgb), 0.048)),
+    radial-gradient(circle at 100% 0%, rgba(var(--settings-pink, 255, 56, 113), 0.055), transparent 36%),
+    rgba(255, 255, 255, 0.64);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.82),
+    0 12px 28px rgba(75, 56, 22, 0.08);
+}
+
+[data-theme="light"] .settings-page .preview-label {
+  color: #805719;
+  border-color: rgba(138, 91, 19, 0.15);
+  background: rgba(var(--settings-gold, 239, 197, 110), 0.15);
+}
+
+[data-theme="light"] .settings-page .preview-detail,
+[data-theme="light"] .settings-page .duration-discount-desc {
+  color: rgba(40, 33, 26, 0.56);
+}
+
+[data-theme="light"] .settings-page .pricing-info-card,
+[data-theme="light"] .settings-page .duration-discount-section,
+[data-theme="light"] .settings-page .duration-discount-form,
+[data-theme="light"] .settings-page .duration-discount-empty {
+  border-color: rgba(52, 39, 24, 0.10);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.75),
+    0 10px 22px rgba(75, 56, 22, 0.055);
+}
+
+[data-theme="light"] .settings-page .pricing-info-label {
+  color: rgba(40, 33, 26, 0.52);
+}
+
+[data-theme="light"] .settings-page .duration-discount-form {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.62), rgba(255, 248, 238, 0.40)),
+    rgba(255, 255, 255, 0.46);
+}
+
+[data-theme="light"] .settings-page .duration-discount-item {
+  border-color: rgba(var(--accent-cyan-rgb), 0.16);
+  background:
+    linear-gradient(135deg, rgba(var(--accent-cyan-rgb), 0.075), rgba(255, 255, 255, 0.42)),
+    rgba(255, 255, 255, 0.48);
+}
+
+[data-theme="light"] .settings-page .dd-item-hours {
+  color: #185b66;
+  background: rgba(var(--accent-cyan-rgb), 0.12);
+}
+
+[data-theme="light"] .settings-page .duration-discount-empty {
+  color: rgba(40, 33, 26, 0.45);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.56), rgba(255, 248, 238, 0.36)),
+    rgba(255, 255, 255, 0.40);
+}
+
+/* === END SETTINGS BUSINESS SECTIONS PHASE 5 === */
+
