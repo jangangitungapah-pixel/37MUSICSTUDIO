@@ -4217,3 +4217,155 @@
 }
 
 /* 37 ADMIN MOBILE MORE SHEET PROFILE + TOGGLE POLISH 8.6D END */
+
+/* 37 ADMIN SHELL LIGHT MODE + PERFORMANCE FINAL LOCK 8.6E START */
+
+/* Light mode final lock */
+[data-theme="light"] .admin-shell-modern {
+  background:
+    radial-gradient(circle at 12% 0%, rgba(185, 133, 47, 0.105), transparent 34%),
+    radial-gradient(circle at 88% 8%, rgba(24, 139, 153, 0.075), transparent 36%),
+    linear-gradient(180deg, #fffaf1 0%, #f7efe2 100%) !important;
+  color: rgba(34, 27, 18, 0.96) !important;
+}
+
+[data-theme="light"] .admin-shell-modern .ambient-blob {
+  opacity: 0.34 !important;
+  filter: blur(54px) saturate(1.02) !important;
+}
+
+[data-theme="light"] .admin-shell-modern .main-content {
+  background:
+    radial-gradient(circle at 70% 0%, rgba(24, 139, 153, 0.060), transparent 36%),
+    radial-gradient(circle at 0% 22%, rgba(185, 133, 47, 0.070), transparent 34%) !important;
+}
+
+/* Mobile light lock */
+@media (max-width: 768px) {
+  [data-theme="light"] .admin-shell-modern .mobile-command-header {
+    border-color: rgba(96, 73, 41, 0.12) !important;
+    background:
+      radial-gradient(circle at 10% 0%, rgba(185,133,47,0.09), transparent 36%),
+      radial-gradient(circle at 92% 0%, rgba(24,139,153,0.06), transparent 34%),
+      linear-gradient(180deg, rgba(255,252,246,0.96), rgba(255,250,241,0.82)),
+      rgba(255,250,241,0.94) !important;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.78),
+      0 16px 34px rgba(96,73,41,0.12) !important;
+  }
+
+  [data-theme="light"] .admin-shell-modern .mobile-brand-copy h1,
+  [data-theme="light"] .admin-shell-modern .mobile-sheet-name {
+    color: rgba(34, 27, 18, 0.96) !important;
+  }
+
+  [data-theme="light"] .admin-shell-modern .mobile-current-meta,
+  [data-theme="light"] .admin-shell-modern .mobile-sheet-role {
+    color: rgba(45, 38, 28, 0.58) !important;
+  }
+
+  [data-theme="light"] body > .bottom-nav-bar,
+  [data-theme="light"] .bottom-nav-bar {
+    border-color: rgba(96, 73, 41, 0.11) !important;
+    background:
+      radial-gradient(circle at 14% 0%, rgba(185,133,47,0.085), transparent 38%),
+      radial-gradient(circle at 86% 0%, rgba(24,139,153,0.060), transparent 36%),
+      linear-gradient(180deg, rgba(255,252,246,0.96), rgba(255,250,241,0.82)),
+      rgba(255,250,241,0.94) !important;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.76),
+      0 14px 32px rgba(96,73,41,0.13) !important;
+  }
+
+  [data-theme="light"] .bn-item {
+    color: rgba(45, 38, 28, 0.66) !important;
+  }
+
+  [data-theme="light"] .bn-item.active {
+    color: #fffaf0 !important;
+  }
+
+  [data-theme="light"] .bn-item.active::before {
+    background:
+      radial-gradient(circle at 50% 0%, rgba(255,255,255,0.24), transparent 56%),
+      linear-gradient(135deg, rgba(185,133,47,0.96), rgba(199,56,101,0.74)) !important;
+  }
+
+  [data-theme="light"] .mobile-bottom-sheet {
+    border-color: rgba(96, 73, 41, 0.11) !important;
+    background:
+      radial-gradient(circle at 18% 0%, rgba(185,133,47,0.080), transparent 36%),
+      radial-gradient(circle at 84% 8%, rgba(24,139,153,0.060), transparent 34%),
+      linear-gradient(180deg, rgba(255,252,246,0.98), rgba(255,250,241,0.90)),
+      rgba(255,250,241,0.96) !important;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.80),
+      0 -22px 54px rgba(96,73,41,0.14) !important;
+  }
+}
+
+/* Performance final lock */
+@media (max-width: 768px) {
+  .admin-shell-modern .ambient-blob {
+    filter: blur(42px) saturate(1.02) !important;
+    transform: translateZ(0) !important;
+    will-change: auto !important;
+  }
+
+  .admin-shell-modern .mobile-command-header,
+  body > .bottom-nav-bar,
+  .bottom-nav-bar,
+  .mobile-bottom-sheet {
+    -webkit-backdrop-filter: blur(14px) saturate(1.04) !important;
+    backdrop-filter: blur(14px) saturate(1.04) !important;
+  }
+
+  .admin-shell-modern .mobile-icon-btn:hover,
+  .admin-shell-modern .mobile-avatar-btn:hover,
+  .mobile-sheet-action:hover,
+  .sheet-nav-item:hover,
+  .bn-item:hover {
+    transform: none !important;
+  }
+
+  .admin-shell-modern .mobile-icon-btn,
+  .admin-shell-modern .mobile-avatar-btn,
+  .mobile-sheet-action,
+  .sheet-nav-item,
+  .bn-item {
+    transition:
+      color 140ms cubic-bezier(0.2, 0, 0, 1),
+      background-color 140ms cubic-bezier(0.2, 0, 0, 1),
+      border-color 140ms cubic-bezier(0.2, 0, 0, 1),
+      transform 140ms cubic-bezier(0.2, 0, 0, 1) !important;
+  }
+}
+
+/* Touch devices: reduce hover paint noise */
+@media (hover: none), (pointer: coarse) {
+  .admin-shell-modern .nav-item:hover,
+  .admin-shell-modern .sidebar-toggle-row:hover,
+  .admin-shell-modern .theme-toggle-btn:hover,
+  .admin-shell-modern .mobile-icon-btn:hover,
+  .admin-shell-modern .mobile-avatar-btn:hover,
+  .mobile-sheet-action:hover,
+  .sheet-nav-item:hover,
+  .bn-item:hover {
+    box-shadow: inherit !important;
+    filter: none !important;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .admin-shell-modern *,
+  .bottom-nav-bar *,
+  .mobile-bottom-sheet * {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* 37 ADMIN SHELL LIGHT MODE + PERFORMANCE FINAL LOCK 8.6E END */
