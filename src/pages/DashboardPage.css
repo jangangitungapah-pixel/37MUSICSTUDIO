@@ -5710,3 +5710,141 @@ html[data-theme-switching="true"] .dashboard-quick-modal .quick-dash-form .form-
     padding-bottom: calc(1rem + env(safe-area-inset-bottom, 0px)) !important;
   }
 }
+
+/* ──────────────────────────────────────────────────────────────────────────
+   37 ADMIN QUICK MODAL FLOAT ABOVE NAV 8.5H-2
+   --------------------------------------------------------------------------
+   Hotfix:
+   - Quick admin modal must not touch or overlap the mobile bottom nav.
+   - The modal wrapper now gets scoped classes from Modal.jsx.
+   - This creates true spatial clearance above the bottom navigation.
+   ────────────────────────────────────────────────────────────────────────── */
+
+@media (max-width: 768px) {
+  .dashboard-quick-modal-wrapper {
+    --admin-bottom-nav-clearance: calc(92px + env(safe-area-inset-bottom, 0px));
+    width: 100vw !important;
+    height: 100dvh !important;
+    max-height: 100dvh !important;
+    align-items: flex-end !important;
+    justify-content: center !important;
+    padding:
+      calc(10px + env(safe-area-inset-top, 0px))
+      8px
+      var(--admin-bottom-nav-clearance)
+      8px !important;
+    box-sizing: border-box !important;
+    z-index: 9001 !important;
+    pointer-events: none !important;
+  }
+
+  .dashboard-quick-modal.modal-content {
+    width: min(100%, 430px) !important;
+    max-width: 430px !important;
+    height: auto !important;
+    max-height: calc(
+      100dvh
+      - var(--admin-bottom-nav-clearance)
+      - calc(14px + env(safe-area-inset-top, 0px))
+    ) !important;
+    margin: 0 auto !important;
+    border-radius: 1.28rem !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12) !important;
+    pointer-events: auto !important;
+    overflow: hidden !important;
+    transform: none !important;
+  }
+
+  .dashboard-quick-modal .modal-header {
+    flex-shrink: 0 !important;
+    padding: 0.82rem 0.92rem !important;
+  }
+
+  .dashboard-quick-modal .modal-body {
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+    max-height: calc(
+      100dvh
+      - var(--admin-bottom-nav-clearance)
+      - env(safe-area-inset-top, 0px)
+      - 92px
+    ) !important;
+    overflow-y: auto !important;
+    overscroll-behavior: contain !important;
+    padding: 0.82rem !important;
+    padding-bottom: 0 !important;
+  }
+
+  .dashboard-quick-modal .quick-dash-form {
+    min-height: 0 !important;
+    padding-bottom: 0 !important;
+  }
+
+  .dashboard-quick-modal .quick-dash-form .form-actions {
+    position: sticky !important;
+    bottom: 0 !important;
+    z-index: 5 !important;
+    margin: 0.2rem -0.82rem 0 !important;
+    padding:
+      0.72rem
+      0.82rem
+      calc(0.82rem + env(safe-area-inset-bottom, 0px))
+      0.82rem !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.082) !important;
+  }
+
+  .dashboard-quick-modal .quick-dash-form .btn-primary,
+  .dashboard-quick-modal .quick-dash-form .btn-secondary {
+    min-height: 42px !important;
+  }
+
+  .bottom-nav-bar {
+    z-index: 1000 !important;
+  }
+}
+
+@media (max-width: 430px) {
+  .dashboard-quick-modal-wrapper {
+    --admin-bottom-nav-clearance: calc(94px + env(safe-area-inset-bottom, 0px));
+    padding-left: 6px !important;
+    padding-right: 6px !important;
+  }
+
+  .dashboard-quick-modal.modal-content {
+    width: 100% !important;
+    max-width: 100% !important;
+    border-radius: 1.12rem !important;
+  }
+
+  .dashboard-quick-modal .modal-title {
+    font-size: 1.34rem !important;
+  }
+}
+
+@media (max-height: 740px) and (max-width: 768px) {
+  .dashboard-quick-modal-wrapper {
+    --admin-bottom-nav-clearance: calc(88px + env(safe-area-inset-bottom, 0px));
+    padding-top: calc(8px + env(safe-area-inset-top, 0px)) !important;
+  }
+
+  .dashboard-quick-modal .modal-header {
+    padding-block: 0.68rem !important;
+  }
+
+  .dashboard-quick-modal .modal-body {
+    padding-top: 0.68rem !important;
+  }
+
+  .dashboard-quick-modal .quick-dash-form {
+    gap: 0.62rem !important;
+  }
+
+  .dashboard-quick-modal .quick-dash-form .form-row {
+    gap: 0.62rem !important;
+  }
+
+  .dashboard-quick-modal .quick-dash-form textarea.form-input {
+    min-height: 68px !important;
+  }
+}

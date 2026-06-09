@@ -9,6 +9,13 @@ const Modal = ({ isOpen, onClose, title, children, className = '', preset = moda
   const { getMotionProps } = useAppMotion();
   const overlayProps = getMotionProps({ variants: overlayVariants, initial: 'hidden', animate: 'visible', exit: 'exit' });
   const contentProps = getMotionProps(preset);
+  const wrapperClassName = className
+    ? className
+      .split(/\s+/)
+      .filter(Boolean)
+      .map((name) => `${name}-wrapper`)
+      .join(' ')
+    : '';
 
   return (
     <Dialog.Root open={isOpen} onOpenChange={(open) => !open && onClose()}>
@@ -22,7 +29,7 @@ const Modal = ({ isOpen, onClose, title, children, className = '', preset = moda
               />
             </Dialog.Overlay>
             
-            <div className="modal-wrapper" style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none', zIndex: 1001 }}>
+            <div className={`modal-wrapper ${wrapperClassName}`.trim()} style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none', zIndex: 1001 }}>
               <Dialog.Content asChild>
                 <motion.div
                   className={`modal-content glass-panel ${className}`}
