@@ -27,11 +27,13 @@ export const useCalendarBookingResize = ({
   const [resizeConfirmData, setResizeConfirmData] = useState(null);
   const resizeFrameRef = useRef(null);
   const latestAddedHoursRef = useRef(0);
+  const resizeCellSizeRef = useRef(1);
 
   const resetResizeState = useCallback(() => {
     setResizingBooking(null);
     setResizeAddedHours(0);
     latestAddedHoursRef.current = 0;
+    resizeCellSizeRef.current = 1;
   }, []);
 
   const handleResizeStart = useCallback((event, booking) => {
@@ -42,15 +44,16 @@ export const useCalendarBookingResize = ({
 
     touchStartRef.current = null;
     latestAddedHoursRef.current = 0;
+    resizeCellSizeRef.current = getCalendarCellHeight();
     setResizingBooking(booking);
     setInitialResizeAxis(getPointerAxis(event));
     setResizeAddedHours(0);
-  }, [touchStartRef]);
+  }, [getCalendarCellHeight, touchStartRef]);
 
   useEffect(() => {
     const calculateAddedHours = (event) => {
       const diff = getPointerAxis(event) - initialResizeAxis;
-      return getResizeDeltaHours(diff, getCalendarCellHeight());
+      return getResizeDeltaHours(diff, resizeCellSizeRef.current);
     };
 
     const scheduleResizeAddedHours = (addedHours) => {
@@ -93,7 +96,8 @@ export const useCalendarBookingResize = ({
             duration: newDuration,
           };
 
-          if (hasBookingOverlap(bookings, candidate, resizingBooking.id)) {
+          const sameDayBookings = bookings.filter((booking) => booking.date === candidate.date);
+          if (hasBookingOverlap(sameDayBookings, candidate, resizingBooking.id)) {
             useNotificationStore.getState().addNotification({
               title: 'Jadwal Bentrok!',
               message: 'Perubahan durasi bertabrakan dengan booking lain.',
@@ -146,7 +150,7 @@ export const useCalendarBookingResize = ({
       document.removeEventListener('touchend', handleResizeEnd);
       document.removeEventListener('touchcancel', handleResizeEnd);
     };
-  }, [bookings, calculatePrice, getCalendarCellHeight, initialResizeAxis, resetResizeState, resizingBooking, updateBooking]);
+  }, [bookings, calculatePrice, initialResizeAxis, resetResizeState, resizingBooking, updateBooking]);
 
   const confirmResize = useCallback(() => {
     if (!resizeConfirmData) return;
