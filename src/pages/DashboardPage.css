@@ -1970,3 +1970,475 @@
     transform: none !important;
   }
 }
+
+/* ──────────────────────────────────────────────────────────────────────────
+   37 ADMIN DASHBOARD COCKPIT HEADER 8.5B
+   --------------------------------------------------------------------------
+   Safe second phase for Admin Dashboard overhaul.
+   Scope:
+   - greeting cockpit header
+   - live clock widget
+   - alert chips
+   - quick action toolbar
+   Logic, stores, charts, forms, actions, and routes are untouched.
+   ────────────────────────────────────────────────────────────────────────── */
+
+.admin-dashboard-modern .dash-greeting {
+  position: relative;
+  min-height: 128px;
+  display: grid !important;
+  grid-template-columns: minmax(260px, 1fr) auto minmax(280px, auto);
+  align-items: center !important;
+  justify-content: stretch !important;
+  gap: clamp(0.9rem, 2vw, 1.45rem) !important;
+  padding: clamp(1rem, 2vw, 1.38rem) !important;
+  border-radius: clamp(1.35rem, 2vw, 1.72rem) !important;
+  overflow: hidden !important;
+}
+
+.admin-dashboard-modern .dash-greeting::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  width: auto;
+  height: auto;
+  border-radius: inherit;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(255, 61, 112, 0.12), transparent 38%),
+    radial-gradient(circle at 100% 0%, rgba(88, 224, 233, 0.11), transparent 40%),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.025), transparent 48%, rgba(239, 197, 110, 0.028));
+  opacity: 1;
+  filter: none;
+  transform: none;
+}
+
+.admin-dashboard-modern .dash-greeting::after {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  width: auto;
+  height: auto;
+  border-radius: inherit;
+  pointer-events: none;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.040) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.030) 1px, transparent 1px);
+  background-size: 44px 44px;
+  opacity: 0.20;
+  filter: none;
+  transform: none;
+  -webkit-mask-image: linear-gradient(90deg, rgba(0,0,0,0.8), transparent 76%);
+  mask-image: linear-gradient(90deg, rgba(0,0,0,0.8), transparent 76%);
+}
+
+.admin-dashboard-modern .dash-greeting-left,
+.admin-dashboard-modern .dash-live-clock-widget,
+.admin-dashboard-modern .dash-greeting-right {
+  position: relative;
+  z-index: 1;
+}
+
+.admin-dashboard-modern .dash-greeting-left {
+  display: flex !important;
+  align-items: center !important;
+  min-width: 0;
+  gap: 0.9rem !important;
+}
+
+.admin-dashboard-modern .dash-greeting-icon {
+  width: 3.28rem !important;
+  height: 3.28rem !important;
+  min-width: 3.28rem !important;
+  border-radius: 1.06rem !important;
+  display: grid !important;
+  place-items: center !important;
+  border: 1px solid rgba(239, 197, 110, 0.26) !important;
+  color: rgba(20, 14, 7, 0.96) !important;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.42), transparent 58%),
+    linear-gradient(135deg, var(--ad-gold, #efc56e), #d49a3e) !important;
+  box-shadow:
+    0 16px 34px rgba(239, 197, 110, 0.20),
+    inset 0 1px 0 rgba(255, 255, 255, 0.36) !important;
+}
+
+.admin-dashboard-modern .dash-greeting-title {
+  margin: 0 !important;
+  color: var(--ad-text, #fffaf0) !important;
+  font-size: clamp(1.32rem, 2.35vw, 2.08rem) !important;
+  line-height: 1.04 !important;
+  font-weight: 950 !important;
+  letter-spacing: -0.055em !important;
+  text-wrap: balance;
+}
+
+.admin-dashboard-modern .dash-greeting-sub {
+  margin: 0.28rem 0 0 !important;
+  max-width: 42ch;
+  color: var(--ad-muted, rgba(255,250,240,0.66)) !important;
+  font-size: 0.82rem !important;
+  line-height: 1.35 !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.015em !important;
+}
+
+.admin-dashboard-modern .dash-live-clock-widget {
+  min-width: 174px;
+  display: grid !important;
+  justify-items: center;
+  gap: 0.22rem;
+  padding: 0.78rem 0.92rem !important;
+  border: 1px solid rgba(255, 255, 255, 0.095) !important;
+  border-radius: 1.16rem !important;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(88, 224, 233, 0.075), transparent 64%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.070), rgba(255, 255, 255, 0.022)),
+    rgba(0, 0, 0, 0.22) !important;
+  box-shadow:
+    0 14px 34px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.060) !important;
+}
+
+.admin-dashboard-modern .clock-time {
+  color: var(--ad-text, #fffaf0) !important;
+  font-family: var(--font-display, "Bebas Neue", Impact, sans-serif) !important;
+  font-size: 2.32rem !important;
+  line-height: 0.9 !important;
+  font-weight: 400 !important;
+  letter-spacing: -0.035em !important;
+  font-variant-numeric: tabular-nums;
+}
+
+.admin-dashboard-modern .clock-details {
+  display: grid !important;
+  justify-items: center;
+  gap: 0.2rem;
+  color: var(--ad-muted, rgba(255,250,240,0.66)) !important;
+}
+
+.admin-dashboard-modern .clock-date {
+  color: var(--ad-muted, rgba(255,250,240,0.66)) !important;
+  font-size: 0.68rem !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.01em !important;
+}
+
+.admin-dashboard-modern .clock-status-live {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: 0.34rem;
+  min-height: 22px;
+  padding: 0 0.52rem;
+  border-radius: 999px;
+  border: 1px solid rgba(130, 216, 160, 0.18);
+  color: rgba(130, 216, 160, 0.92) !important;
+  background: rgba(130, 216, 160, 0.070);
+  font-size: 0.58rem !important;
+  font-weight: 950 !important;
+  letter-spacing: 0.08em !important;
+  text-transform: uppercase;
+}
+
+.admin-dashboard-modern .status-live-pulse {
+  width: 0.42rem;
+  height: 0.42rem;
+  border-radius: 999px;
+  background: currentColor;
+  box-shadow: 0 0 0 4px rgba(130, 216, 160, 0.11), 0 0 18px rgba(130, 216, 160, 0.28);
+}
+
+.admin-dashboard-modern .dash-greeting-right {
+  display: grid !important;
+  justify-items: end;
+  align-content: center;
+  gap: 0.62rem !important;
+  min-width: 0;
+}
+
+.admin-dashboard-modern .dash-alerts-strip {
+  display: flex !important;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 0.42rem !important;
+}
+
+.admin-dashboard-modern .dash-alert-chip {
+  min-height: 32px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0.34rem !important;
+  padding: 0 0.66rem !important;
+  border-radius: 999px !important;
+  border: 1px solid var(--ad-line-soft, rgba(255,255,255,0.07)) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.060), rgba(255,255,255,0.018)),
+    rgba(255,255,255,0.038) !important;
+  color: var(--ad-muted, rgba(255,250,240,0.66)) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.052);
+  font-size: 0.68rem !important;
+  line-height: 1 !important;
+  font-weight: 950 !important;
+  letter-spacing: -0.01em !important;
+  transform: none !important;
+}
+
+.admin-dashboard-modern .dash-alert-chip.warning {
+  color: rgba(255, 213, 128, 0.95) !important;
+  border-color: rgba(255, 193, 7, 0.22) !important;
+  background: rgba(255, 193, 7, 0.085) !important;
+}
+
+.admin-dashboard-modern .dash-alert-chip.danger {
+  color: rgba(255, 139, 168, 0.96) !important;
+  border-color: rgba(255, 61, 112, 0.22) !important;
+  background: rgba(255, 61, 112, 0.085) !important;
+}
+
+.admin-dashboard-modern .dash-alert-chip.info {
+  color: rgba(88, 224, 233, 0.94) !important;
+  border-color: rgba(88, 224, 233, 0.22) !important;
+  background: rgba(88, 224, 233, 0.075) !important;
+}
+
+.admin-dashboard-modern .dash-alert-chip.success {
+  color: rgba(130, 216, 160, 0.94) !important;
+  border-color: rgba(130, 216, 160, 0.20) !important;
+  background: rgba(130, 216, 160, 0.075) !important;
+}
+
+.admin-dashboard-modern .dash-action-toolbar {
+  display: flex !important;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 0.48rem !important;
+}
+
+.admin-dashboard-modern .dash-action-toolbar .btn-primary,
+.admin-dashboard-modern .dash-action-toolbar .btn-secondary,
+.admin-dashboard-modern .qb-btn,
+.admin-dashboard-modern .qe-btn,
+.admin-dashboard-modern .export-dashboard-btn {
+  min-height: 40px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0.42rem !important;
+  padding: 0 0.82rem !important;
+  border-radius: 0.88rem !important;
+  border: 1px solid rgba(239, 197, 110, 0.20) !important;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255,255,255,0.34), transparent 58%),
+    linear-gradient(180deg, rgba(255, 224, 137, 1), rgba(239, 197, 110, 0.92)) !important;
+  color: rgba(22, 15, 7, 0.96) !important;
+  box-shadow:
+    0 14px 30px rgba(239, 197, 110, 0.16),
+    inset 0 1px 0 rgba(255,255,255,0.38) !important;
+  font-size: 0.74rem !important;
+  line-height: 1 !important;
+  font-weight: 950 !important;
+  letter-spacing: -0.01em !important;
+  text-decoration: none !important;
+  transform: none !important;
+}
+
+.admin-dashboard-modern .qe-btn {
+  border-color: rgba(255, 61, 112, 0.22) !important;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255,255,255,0.26), transparent 58%),
+    linear-gradient(180deg, rgba(255, 111, 159, 0.96), rgba(255, 61, 112, 0.86)) !important;
+  color: #fffaf0 !important;
+  box-shadow:
+    0 14px 30px rgba(255, 61, 112, 0.15),
+    inset 0 1px 0 rgba(255,255,255,0.24) !important;
+}
+
+.admin-dashboard-modern .export-dashboard-btn,
+.admin-dashboard-modern .dash-action-toolbar .btn-secondary {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.075), rgba(255,255,255,0.022)),
+    rgba(255,255,255,0.040) !important;
+  color: var(--ad-text, #fffaf0) !important;
+  border-color: var(--ad-line, rgba(255,255,255,0.105)) !important;
+  box-shadow:
+    0 12px 26px rgba(0,0,0,0.12),
+    inset 0 1px 0 rgba(255,255,255,0.060) !important;
+}
+
+.admin-dashboard-modern .dash-action-toolbar button:hover {
+  transform: translateY(-1px) !important;
+}
+
+/* Light mode cockpit */
+[data-theme="light"] .admin-dashboard-modern .dash-greeting::before {
+  background:
+    radial-gradient(circle at 0% 0%, rgba(199, 56, 101, 0.082), transparent 38%),
+    radial-gradient(circle at 100% 0%, rgba(24, 139, 153, 0.080), transparent 40%),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.40), transparent 48%, rgba(185, 133, 47, 0.035));
+}
+
+[data-theme="light"] .admin-dashboard-modern .dash-greeting::after {
+  background:
+    linear-gradient(rgba(70, 52, 28, 0.026) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(70, 52, 28, 0.024) 1px, transparent 1px);
+  opacity: 0.30;
+}
+
+[data-theme="light"] .admin-dashboard-modern .dash-greeting-icon {
+  color: rgba(32, 24, 13, 0.96) !important;
+  border-color: rgba(185, 133, 47, 0.24) !important;
+  box-shadow:
+    0 14px 28px rgba(185, 133, 47, 0.13),
+    inset 0 1px 0 rgba(255,255,255,0.56) !important;
+}
+
+[data-theme="light"] .admin-dashboard-modern .dash-live-clock-widget {
+  border-color: rgba(96, 73, 41, 0.13) !important;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(24, 139, 153, 0.055), transparent 64%),
+    linear-gradient(180deg, rgba(255,255,255,0.72), rgba(255,255,255,0.36)),
+    rgba(255, 250, 241, 0.56) !important;
+  box-shadow:
+    0 12px 26px rgba(96, 73, 41, 0.08),
+    inset 0 1px 0 rgba(255,255,255,0.78) !important;
+}
+
+[data-theme="light"] .admin-dashboard-modern .clock-status-live {
+  color: rgba(22, 133, 90, 0.92) !important;
+  border-color: rgba(22, 133, 90, 0.16) !important;
+  background: rgba(22, 133, 90, 0.072) !important;
+}
+
+[data-theme="light"] .admin-dashboard-modern .dash-alert-chip {
+  border-color: rgba(96, 73, 41, 0.12) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.66), rgba(255,255,255,0.32)),
+    rgba(255, 250, 241, 0.48) !important;
+  color: rgba(45, 38, 28, 0.70) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.72);
+}
+
+[data-theme="light"] .admin-dashboard-modern .export-dashboard-btn,
+[data-theme="light"] .admin-dashboard-modern .dash-action-toolbar .btn-secondary {
+  color: rgba(34, 27, 18, 0.88) !important;
+  border-color: rgba(96, 73, 41, 0.13) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.76), rgba(255,255,255,0.38)),
+    rgba(255, 250, 241, 0.50) !important;
+  box-shadow:
+    0 12px 24px rgba(96, 73, 41, 0.08),
+    inset 0 1px 0 rgba(255,255,255,0.76) !important;
+}
+
+@media (max-width: 1180px) {
+  .admin-dashboard-modern .dash-greeting {
+    grid-template-columns: minmax(0, 1fr) auto !important;
+  }
+
+  .admin-dashboard-modern .dash-greeting-right {
+    grid-column: 1 / -1;
+    width: 100%;
+    justify-items: stretch;
+  }
+
+  .admin-dashboard-modern .dash-alerts-strip,
+  .admin-dashboard-modern .dash-action-toolbar {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 768px) {
+  .admin-dashboard-modern .dash-greeting {
+    min-height: 0;
+    grid-template-columns: 1fr !important;
+    padding: 0.88rem !important;
+    border-radius: 1.22rem !important;
+    gap: 0.75rem !important;
+  }
+
+  .admin-dashboard-modern .dash-greeting-left {
+    align-items: flex-start !important;
+    gap: 0.72rem !important;
+  }
+
+  .admin-dashboard-modern .dash-greeting-icon {
+    width: 2.72rem !important;
+    height: 2.72rem !important;
+    min-width: 2.72rem !important;
+    border-radius: 0.92rem !important;
+  }
+
+  .admin-dashboard-modern .dash-greeting-title {
+    font-size: 1.24rem !important;
+    letter-spacing: -0.04em !important;
+  }
+
+  .admin-dashboard-modern .dash-greeting-sub {
+    font-size: 0.76rem !important;
+  }
+
+  .admin-dashboard-modern .dash-live-clock-widget {
+    width: 100%;
+    min-width: 0;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    justify-items: start;
+    padding: 0.62rem 0.72rem !important;
+    border-radius: 1rem !important;
+  }
+
+  .admin-dashboard-modern .clock-time {
+    font-size: 1.92rem !important;
+  }
+
+  .admin-dashboard-modern .clock-details {
+    justify-items: start;
+  }
+
+  .admin-dashboard-modern .dash-alerts-strip {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .admin-dashboard-modern .dash-alert-chip {
+    width: 100%;
+    min-height: 34px !important;
+  }
+
+  .admin-dashboard-modern .dash-action-toolbar {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
+  }
+
+  .admin-dashboard-modern .dash-action-toolbar .btn-primary,
+  .admin-dashboard-modern .dash-action-toolbar .btn-secondary,
+  .admin-dashboard-modern .qb-btn,
+  .admin-dashboard-modern .qe-btn,
+  .admin-dashboard-modern .export-dashboard-btn {
+    width: 100%;
+    min-height: 42px !important;
+  }
+
+  .admin-dashboard-modern .dash-action-toolbar button:hover {
+    transform: none !important;
+  }
+}
+
+@media (max-width: 430px) {
+  .admin-dashboard-modern .dash-alerts-strip,
+  .admin-dashboard-modern .dash-action-toolbar {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-dashboard-modern .clock-date {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
