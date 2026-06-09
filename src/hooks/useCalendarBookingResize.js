@@ -2,9 +2,16 @@ import { useCallback, useEffect, useState } from 'react';
 import { useNotificationStore } from '../store/useNotificationStore';
 import { hasBookingOverlap } from '../lib/bookingWorkflows';
 
-const getPointerY = (event) => {
+const getPointerAxis = (event) => {
   const source = event.touches?.[0] || event.changedTouches?.[0] || event;
   return source.clientX ?? 0;
+};
+
+const getResizeDeltaHours = (diff, cellSize) => {
+  const safeCellSize = Math.max(1, Number(cellSize || 1));
+  const deadZone = Math.max(10, safeCellSize * 0.18);
+  if (Math.abs(diff) < deadZone) return 0;
+  return Math.round(diff / safeCellSize);
 };
 
 export const useCalendarBookingResize = ({
@@ -15,7 +22,7 @@ export const useCalendarBookingResize = ({
   touchStartRef,
 }) => {
   const [resizingBooking, setResizingBooking] = useState(null);
-  const [initialResizeY, setInitialResizeY] = useState(0);
+  const [initialResizeAxis, setInitialResizeAxis] = useState(0);
   const [resizeAddedHours, setResizeAddedHours] = useState(0);
   const [resizeConfirmData, setResizeConfirmData] = useState(null);
 
@@ -25,23 +32,30 @@ export const useCalendarBookingResize = ({
   }, []);
 
   const handleResizeStart = useCallback((event, booking) => {
+    if (event.button !== undefined && event.button !== 0) return;
+
     event.stopPropagation();
-    event.preventDefault();
+    if (event.cancelable) event.preventDefault();
+
     touchStartRef.current = null;
     setResizingBooking(booking);
-    setInitialResizeY(getPointerY(event));
+    setInitialResizeAxis(getPointerAxis(event));
     setResizeAddedHours(0);
   }, [touchStartRef]);
 
   useEffect(() => {
+    const calculateAddedHours = (event) => {
+      const diff = getPointerAxis(event) - initialResizeAxis;
+      return getResizeDeltaHours(diff, getCalendarCellHeight());
+    };
+
     const handleResizeMove = (event) => {
       if (!resizingBooking) return;
       if (event.cancelable) event.preventDefault();
       event.stopPropagation();
 
-      const diffY = getPointerY(event) - initialResizeY;
-      const addedHours = Math.round(diffY / getCalendarCellHeight());
-      setResizeAddedHours(addedHours);
+      const addedHours = calculateAddedHours(event);
+      setResizeAddedHours((previous) => previous === addedHours ? previous : addedHours);
     };
 
     const handleResizeEnd = (event) => {
@@ -49,11 +63,11 @@ export const useCalendarBookingResize = ({
       if (event.cancelable) event.preventDefault();
       event.stopPropagation();
 
-      const diffY = getPointerY(event) - initialResizeY;
-      const addedHours = Math.round(diffY / getCalendarCellHeight());
+      const addedHours = calculateAddedHours(event);
 
       if (addedHours !== 0) {
-        const newDuration = Math.max(1, Math.min(13, resizingBooking.duration + addedHours));
+        const newDuration = Math.max(1, Math.min(13, Number(resizingBooking.duration || 1) + addedHours));
+
         if (newDuration !== resizingBooking.duration) {
           const candidate = {
             date: resizingBooking.date,
@@ -64,7 +78,7 @@ export const useCalendarBookingResize = ({
           if (hasBookingOverlap(bookings, candidate, resizingBooking.id)) {
             useNotificationStore.getState().addNotification({
               title: 'Jadwal Bentrok!',
-              message: 'Perpanjangan waktu bertabrakan dengan jadwal lain.',
+              message: 'Perubahan durasi bertabrakan dengan booking lain.',
               type: 'error',
             });
             resetResizeState();
@@ -76,6 +90,7 @@ export const useCalendarBookingResize = ({
           } else {
             const oldCalc = calculatePrice(resizingBooking, resizingBooking.duration);
             const newCalc = calculatePrice(resizingBooking, newDuration);
+
             setResizeConfirmData({
               booking: resizingBooking,
               oldDuration: resizingBooking.duration,
@@ -93,7 +108,7 @@ export const useCalendarBookingResize = ({
     };
 
     if (resizingBooking) {
-      document.body.classList.add('calendar-resize-lock');
+      document.body.classList.add('calendar-resize-lock', 'calendar-interaction-lock');
       document.addEventListener('mousemove', handleResizeMove);
       document.addEventListener('mouseup', handleResizeEnd);
       document.addEventListener('touchmove', handleResizeMove, { passive: false });
@@ -102,17 +117,18 @@ export const useCalendarBookingResize = ({
     }
 
     return () => {
-      document.body.classList.remove('calendar-resize-lock');
+      document.body.classList.remove('calendar-resize-lock', 'calendar-interaction-lock');
       document.removeEventListener('mousemove', handleResizeMove);
       document.removeEventListener('mouseup', handleResizeEnd);
       document.removeEventListener('touchmove', handleResizeMove);
       document.removeEventListener('touchend', handleResizeEnd);
       document.removeEventListener('touchcancel', handleResizeEnd);
     };
-  }, [bookings, calculatePrice, getCalendarCellHeight, initialResizeY, resetResizeState, resizingBooking, updateBooking]);
+  }, [bookings, calculatePrice, getCalendarCellHeight, initialResizeAxis, resetResizeState, resizingBooking, updateBooking]);
 
   const confirmResize = useCallback(() => {
     if (!resizeConfirmData) return;
+
     const { booking, newDuration, newPrice, newDiscountAmount } = resizeConfirmData;
     let newStatus = booking.status;
 
@@ -125,6 +141,7 @@ export const useCalendarBookingResize = ({
       status: newStatus,
       discountAmount: newDiscountAmount,
     });
+
     setResizeConfirmData(null);
   }, [calculatePrice, resizeConfirmData, updateBooking]);
 

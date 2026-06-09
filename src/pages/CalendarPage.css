@@ -7186,3 +7186,256 @@ body.calendar-move-lock .calendar-page .calendar-timeline-wrapper {
 }
 
 /* 37 CALENDAR GRID AUTO SCROLL HOTFIX 8.7J-1 END */
+
+/* 37 ADMIN CALENDAR DRAG + RESIZE INTERACTION POLISH 8.7K START */
+
+body.calendar-interaction-lock {
+  -webkit-user-select: none !important;
+  user-select: none !important;
+}
+
+body.calendar-drag-lock,
+body.calendar-resize-lock,
+body.calendar-move-lock {
+  cursor: grabbing !important;
+}
+
+body.calendar-resize-lock {
+  cursor: ew-resize !important;
+}
+
+.calendar-drag-preview {
+  pointer-events: none !important;
+  opacity: 0.92 !important;
+  transform: rotate(-1deg) scale(1.02) !important;
+  border-radius: 0.95rem !important;
+  box-shadow:
+    0 20px 52px rgba(0,0,0,0.42),
+    0 0 0 1px rgba(239,197,110,0.24) !important;
+}
+
+.calendar-page .booked-cell.is-dragging-source,
+.calendar-page .timeline-booking-card.is-dragging-source {
+  opacity: 0.42 !important;
+  filter: saturate(0.82) brightness(0.82) !important;
+  transform: scale(0.985) !important;
+}
+
+/* Horizontal resize rail */
+.calendar-page .resize-handle,
+.calendar-page .timeline-resize-handle {
+  position: absolute !important;
+  top: 0.36rem !important;
+  right: 0.18rem !important;
+  bottom: 0.36rem !important;
+  left: auto !important;
+
+  width: 1rem !important;
+  height: auto !important;
+  min-height: 0 !important;
+
+  display: grid !important;
+  place-items: center !important;
+
+  cursor: ew-resize !important;
+  touch-action: none !important;
+  z-index: 18 !important;
+
+  border-radius: 999px !important;
+  background:
+    linear-gradient(90deg, transparent, rgba(255,255,255,0.060)),
+    rgba(255,255,255,0.020) !important;
+  opacity: 0.82 !important;
+}
+
+.calendar-page .resize-handle:hover,
+.calendar-page .timeline-resize-handle:hover {
+  opacity: 1 !important;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(239,197,110,0.20), transparent 62%),
+    rgba(239,197,110,0.080) !important;
+}
+
+.calendar-page .resize-line {
+  width: 0.18rem !important;
+  height: 1.55rem !important;
+  border-radius: 999px !important;
+  background: rgba(239,197,110,0.72) !important;
+  box-shadow: 0 0 12px rgba(239,197,110,0.36) !important;
+}
+
+.calendar-page .booked-cell,
+.calendar-page .timeline-booking-card {
+  padding-right: 1.55rem !important;
+}
+
+.calendar-page .booked-cell.resize-source,
+.calendar-page .timeline-booking-card.resize-source {
+  z-index: 70 !important;
+  opacity: 0.96 !important;
+  transform: scale(1.01) !important;
+  box-shadow:
+    0 18px 42px rgba(0,0,0,0.34),
+    0 0 0 1px rgba(239,197,110,0.24),
+    inset 0 1px 0 rgba(255,255,255,0.12) !important;
+}
+
+.calendar-page .booked-cell.resize-growing {
+  border-color: rgba(88,224,233,0.30) !important;
+  border-left-color: #58e0e9 !important;
+}
+
+.calendar-page .booked-cell.resize-shrinking {
+  border-color: rgba(255,61,112,0.30) !important;
+  border-left-color: #ff3d70 !important;
+}
+
+.calendar-page .resize-live-chip {
+  position: absolute !important;
+  top: 0.28rem !important;
+  right: 1.34rem !important;
+  z-index: 22 !important;
+  min-height: 1.12rem !important;
+  max-width: 5.6rem !important;
+  padding: 0 0.42rem !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 999px !important;
+  border: 1px solid rgba(239,197,110,0.28) !important;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255,255,255,0.22), transparent 58%),
+    linear-gradient(180deg, rgba(239,197,110,0.96), rgba(212,154,62,0.92)) !important;
+  color: rgba(20,13,6,0.96) !important;
+  font-size: 0.56rem !important;
+  line-height: 1 !important;
+  font-weight: 950 !important;
+  white-space: nowrap !important;
+  box-shadow: 0 10px 22px rgba(239,197,110,0.18) !important;
+}
+
+.calendar-page .monthly-grid-wrapper.is-resize-active,
+.calendar-page .calendar-timeline-wrapper.is-resize-active,
+.calendar-page .monthly-grid-wrapper.is-move-active,
+.calendar-page .calendar-timeline-wrapper.is-move-active {
+  overflow: hidden !important;
+  cursor: grabbing !important;
+  box-shadow:
+    0 0 0 1px rgba(239,197,110,0.18),
+    0 20px 58px rgba(0,0,0,0.30),
+    inset 0 1px 0 rgba(255,255,255,0.070) !important;
+}
+
+.calendar-page .monthly-grid-wrapper.is-resize-active,
+.calendar-page .calendar-timeline-wrapper.is-resize-active {
+  cursor: ew-resize !important;
+}
+
+.calendar-page .grid-cell.move-target-valid {
+  outline: 2px solid rgba(var(--success-rgb),0.92) !important;
+  outline-offset: -2px !important;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(var(--success-rgb),0.16), transparent 58%),
+    rgba(var(--success-rgb),0.10) !important;
+  box-shadow:
+    inset 0 0 0 1px rgba(var(--success-rgb),0.30),
+    0 0 24px rgba(var(--success-rgb),0.16) !important;
+}
+
+.calendar-page .grid-cell.move-target-invalid {
+  outline: 2px solid rgba(255,61,112,0.94) !important;
+  outline-offset: -2px !important;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(255,61,112,0.16), transparent 58%),
+    rgba(255,61,112,0.10) !important;
+  box-shadow:
+    inset 0 0 0 1px rgba(255,61,112,0.30),
+    0 0 24px rgba(255,61,112,0.16) !important;
+}
+
+.mobile-booking-drag-ghost {
+  border-radius: 1rem !important;
+  border: 1px solid rgba(239,197,110,0.22) !important;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(239,197,110,0.12), transparent 38%),
+    linear-gradient(180deg, rgba(255,255,255,0.080), rgba(255,255,255,0.024)),
+    rgba(14,18,27,0.92) !important;
+  box-shadow:
+    0 22px 58px rgba(0,0,0,0.44),
+    inset 0 1px 0 rgba(255,255,255,0.090) !important;
+}
+
+.mobile-booking-drag-ghost strong {
+  color: #fffaf0 !important;
+  font-weight: 950 !important;
+}
+
+.mobile-booking-drag-ghost span {
+  color: rgba(255,250,240,0.68) !important;
+  font-weight: 850 !important;
+}
+
+.mobile-move-hint {
+  border-radius: 1rem !important;
+  border: 1px solid rgba(239,197,110,0.16) !important;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(239,197,110,0.10), transparent 38%),
+    linear-gradient(180deg, rgba(255,255,255,0.070), rgba(255,255,255,0.020)),
+    rgba(14,18,27,0.94) !important;
+  box-shadow:
+    0 16px 38px rgba(0,0,0,0.36),
+    inset 0 1px 0 rgba(255,255,255,0.080) !important;
+}
+
+.mobile-move-hint.valid {
+  border-color: rgba(var(--success-rgb),0.34) !important;
+}
+
+.mobile-move-hint.invalid {
+  border-color: rgba(255,61,112,0.36) !important;
+}
+
+[data-theme="light"] .calendar-page .resize-handle,
+[data-theme="light"] .calendar-page .timeline-resize-handle {
+  background:
+    linear-gradient(90deg, transparent, rgba(96,73,41,0.060)),
+    rgba(255,250,241,0.44) !important;
+}
+
+[data-theme="light"] .calendar-page .resize-line {
+  background: rgba(185,133,47,0.70) !important;
+}
+
+[data-theme="light"] .calendar-page .resize-live-chip {
+  color: rgba(34,27,18,0.96) !important;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255,255,255,0.44), transparent 58%),
+    linear-gradient(180deg, #ffe6a8, #d9a651) !important;
+}
+
+@media (max-width: 768px) {
+  .calendar-page .resize-handle,
+  .calendar-page .timeline-resize-handle {
+    right: 0.12rem !important;
+    width: 0.86rem !important;
+  }
+
+  .calendar-page .resize-line {
+    height: 1.25rem !important;
+  }
+
+  .calendar-page .booked-cell,
+  .calendar-page .timeline-booking-card {
+    padding-right: 1.32rem !important;
+  }
+
+  .calendar-page .resize-live-chip {
+    top: 0.18rem !important;
+    right: 1.08rem !important;
+    min-height: 1rem !important;
+    max-width: 4.7rem !important;
+    font-size: 0.50rem !important;
+  }
+}
+
+/* 37 ADMIN CALENDAR DRAG + RESIZE INTERACTION POLISH 8.7K END */

@@ -123,7 +123,7 @@ export const useCalendarBookingMove = ({
 
     const cleanup = () => {
       clearTimer();
-      document.body.classList.remove('calendar-move-lock');
+      document.body.classList.remove('calendar-move-lock', 'calendar-interaction-lock');
       document.removeEventListener('pointermove', handlePointerMove);
       document.removeEventListener('pointerup', handlePointerUp);
       document.removeEventListener('pointercancel', handlePointerCancel);
@@ -145,7 +145,7 @@ export const useCalendarBookingMove = ({
       suppressNextBookingClickRef.current = true;
       touchStartRef.current = null;
       moveTargetRef.current = null;
-      document.body.classList.add('calendar-move-lock');
+      document.body.classList.add('calendar-move-lock', 'calendar-interaction-lock');
       setSelectedBooking(null);
       setMovingBooking(booking);
       setGhostAtPoint(startPoint);
@@ -179,7 +179,7 @@ export const useCalendarBookingMove = ({
 
       // Throttle hit-testing (document.elementFromPoint) to at most once every 32ms (approx 30fps)
       const nowTime = performance.now();
-      if (nowTime - lastTargetUpdateRef.current > 32) {
+      if (nowTime - lastTargetUpdateRef.current > 24) {
         applyMoveTarget(point, booking);
         lastTargetUpdateRef.current = nowTime;
       }
@@ -202,7 +202,7 @@ export const useCalendarBookingMove = ({
       cleanup();
     };
 
-    longPressTimerRef.current = window.setTimeout(activateMove, 500);
+    longPressTimerRef.current = window.setTimeout(activateMove, 360);
     document.addEventListener('pointermove', handlePointerMove, { passive: false });
     document.addEventListener('pointerup', handlePointerUp);
     document.addEventListener('pointercancel', handlePointerCancel);
@@ -210,7 +210,7 @@ export const useCalendarBookingMove = ({
 
   useEffect(() => () => {
     if (longPressTimerRef.current) window.clearTimeout(longPressTimerRef.current);
-    document.body.classList.remove('calendar-move-lock');
+    document.body.classList.remove('calendar-move-lock', 'calendar-interaction-lock');
   }, []);
 
   return {

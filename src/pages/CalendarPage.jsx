@@ -286,29 +286,58 @@ const CalendarPage = () => {
   // Drag & Drop handlers
   const handleDragStart = (e, booking) => {
     if (isMobile) return;
+
     setDraggedBooking(booking);
-    e.dataTransfer.effectAllowed = 'move';
-    e.dataTransfer.setData('text/plain', booking.id);
-    setTimeout(() => { if (e.target) e.target.style.opacity = '0.5'; }, 0);
+    document.body.classList.add('calendar-drag-lock', 'calendar-interaction-lock');
+
+    if (e.dataTransfer) {
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', booking.id);
+
+      try {
+        const preview = e.currentTarget.cloneNode(true);
+        preview.classList.add('calendar-drag-preview');
+        preview.style.position = 'fixed';
+        preview.style.top = '-1000px';
+        preview.style.left = '-1000px';
+        preview.style.width = e.currentTarget.getBoundingClientRect().width + 'px';
+        document.body.appendChild(preview);
+        e.dataTransfer.setDragImage(preview, 24, 24);
+        window.setTimeout(() => preview.remove(), 0);
+      } catch {
+        // Native drag still works when custom drag image is unavailable.
+      }
+    }
   };
-  const handleDragEnd = (e) => {
+
+  const handleDragEnd = () => {
     setDraggedBooking(null);
-    if (e.target) e.target.style.opacity = '1';
+    document.body.classList.remove('calendar-drag-lock', 'calendar-interaction-lock');
   };
-  const handleDragOver = (e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; };
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    if (e.dataTransfer) e.dataTransfer.dropEffect = 'move';
+  };
+
   const handleDrop = (e, dateStr, hour) => {
     e.preventDefault();
+    document.body.classList.remove('calendar-drag-lock', 'calendar-interaction-lock');
+
     if (draggedBooking) {
       const candidate = { date: dateStr, hour, duration: draggedBooking.duration };
+
       if (hasBookingOverlap(bookings, candidate, draggedBooking.id)) {
         useNotificationStore.getState().addNotification({
           title: 'Jadwal Bentrok!',
           message: 'Slot tujuan bertabrakan dengan booking lain.',
           type: 'error',
         });
+        setDraggedBooking(null);
         return;
       }
+
       updateBooking(draggedBooking.id, { date: dateStr, hour: hour });
+      setDraggedBooking(null);
     }
   };
 
@@ -909,6 +938,15 @@ const CalendarPage = () => {
               const timeLineLeft = hasCurrentTime
                 ? String(((now.getHours() - bookingHour + (now.getMinutes() / 60)) / bookingDuration) * 100) + '%'
                 : null;
+              const isResizeSource = resizingBooking && resizingBooking.id === booking.id;
+              const resizeToneClass = isResizeSource
+                ? resizeAddedHours > 0
+                  ? 'resize-growing'
+                  : resizeAddedHours < 0
+                    ? 'resize-shrinking'
+                    : 'resize-ready'
+                : '';
+              const isDragSource = draggedBooking && draggedBooking.id === booking.id;
 
               const cardClasses = [
                 'grid-cell',
@@ -919,6 +957,9 @@ const CalendarPage = () => {
                 isMovingSource ? 'is-moving-source' : '',
                 booking.isVIP ? 'booking-vip' : '',
                 booking.type === 'recording' ? 'booking-recording' : '',
+                isResizeSource ? 'is-resizing resize-source' : '',
+                resizeToneClass,
+                isDragSource ? 'is-dragging-source' : '',
               ].filter(Boolean).join(' ');
 
               return (
@@ -943,6 +984,11 @@ const CalendarPage = () => {
                   onKeyDown={(event) => handleBookingKeyDown(event, booking)}
                 >
                   {hasCurrentTime && <div className="current-time-line vertical-time-line booking-now-line" style={{ left: timeLineLeft }} />}
+                  {isResizeSource && (
+                    <span className="resize-live-chip">
+                      {resizeAddedHours === 0 ? 'Resize' : `${resizeAddedHours > 0 ? '+' : ''}${resizeAddedHours} jam`}
+                    </span>
+                  )}
 
                   <div className="booking-info">
                     <span className="booking-band-name">
