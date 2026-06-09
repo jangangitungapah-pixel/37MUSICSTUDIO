@@ -4727,3 +4727,516 @@
 
 /* === END SETTINGS DATA DANGER ZONE PHASE 7 === */
 
+
+/* === START SETTINGS MOBILE FINAL PASS PHASE 8 === */
+
+/*
+  Phase 8 scope:
+  - Final mobile safe-area and responsive pass
+  - Sticky command header + horizontal nav stacking
+  - Horizontal overflow hardening
+  - Touch target and card density normalization
+  - No JSX, route, store, activeSection, FCM, backup, restore, reset logic, field name, or data model touched
+*/
+
+.settings-page {
+  --settings-safe-top: max(0px, env(safe-area-inset-top, 0px));
+  --settings-safe-bottom: max(0px, env(safe-area-inset-bottom, 0px));
+  --settings-mobile-edge: clamp(10px, 3vw, 14px);
+  --settings-mobile-header-top: var(--settings-safe-top);
+  --settings-mobile-nav-top: calc(var(--settings-safe-top) + 118px);
+  --settings-mobile-bottom-pad: max(110px, calc(88px + var(--settings-safe-bottom)));
+  max-width: 100%;
+  overflow-x: clip;
+}
+
+.settings-page,
+.settings-page .settings-layout,
+.settings-page .settings-content-area,
+.settings-page .settings-panel-wrapper,
+.settings-page .settings-panel,
+.settings-page .settings-form-body {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.settings-page img,
+.settings-page svg,
+.settings-page video,
+.settings-page canvas {
+  max-width: 100%;
+}
+
+.settings-page input,
+.settings-page textarea,
+.settings-page select,
+.settings-page button {
+  max-width: 100%;
+}
+
+.settings-page .settings-nav {
+  overscroll-behavior-x: contain;
+}
+
+@media (max-width: 1024px) {
+  .settings-page {
+    width: 100%;
+    padding-inline: 0;
+  }
+
+  .settings-page .settings-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .settings-page .settings-content-area {
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .settings-page {
+    width: 100%;
+    gap: 12px !important;
+    padding-inline: var(--settings-mobile-edge) !important;
+    padding-top: 0 !important;
+    padding-bottom: var(--settings-mobile-bottom-pad) !important;
+    overflow-x: clip !important;
+    contain: layout paint;
+  }
+
+  .settings-page .app-page-header.settings-command-shell {
+    position: sticky !important;
+    top: var(--settings-mobile-header-top) !important;
+    z-index: 40 !important;
+    width: 100%;
+    margin-inline: 0;
+    padding: 10px 11px !important;
+    border-radius: 18px !important;
+    transform: translateZ(0);
+  }
+
+  .settings-page .settings-command-top {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center !important;
+    gap: 9px !important;
+  }
+
+  .settings-page .settings-command-copy {
+    min-width: 0;
+    width: 100%;
+    gap: 9px !important;
+  }
+
+  .settings-page .settings-header-icon {
+    width: 38px !important;
+    height: 38px !important;
+    border-radius: 13px !important;
+  }
+
+  .settings-page .settings-command-eyebrow {
+    display: none !important;
+  }
+
+  .settings-page .app-page-title {
+    font-size: clamp(1.05rem, 5vw, 1.36rem) !important;
+    line-height: 1 !important;
+  }
+
+  .settings-page .app-page-subtitle {
+    display: -webkit-box;
+    max-width: 100%;
+    overflow: hidden;
+    color: rgba(255, 250, 240, 0.54);
+    font-size: 0.68rem !important;
+    line-height: 1.25 !important;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+  }
+
+  .settings-page .settings-save-cluster {
+    align-self: center;
+    gap: 0;
+  }
+
+  .settings-page .settings-state-pill {
+    display: none !important;
+  }
+
+  .settings-page .settings-save-btn {
+    min-width: 42px !important;
+    width: 42px !important;
+    min-height: 42px !important;
+    height: 42px !important;
+    padding: 0 !important;
+    border-radius: 999px !important;
+    justify-content: center !important;
+  }
+
+  .settings-page .settings-save-btn span {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    overflow: hidden !important;
+    white-space: nowrap !important;
+    clip-path: inset(50%) !important;
+  }
+
+  .settings-page .settings-layout {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 11px !important;
+    width: 100%;
+  }
+
+  .settings-page .settings-nav.app-panel {
+    position: sticky !important;
+    top: var(--settings-mobile-nav-top) !important;
+    z-index: 35 !important;
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 7px !important;
+    width: calc(100% + (var(--settings-mobile-edge) * 2)) !important;
+    max-width: none !important;
+    min-height: 54px !important;
+    max-height: none !important;
+    margin-inline: calc(var(--settings-mobile-edge) * -1) !important;
+    padding: 7px var(--settings-mobile-edge) 8px !important;
+    border-inline: 0 !important;
+    border-radius: 0 !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    scrollbar-width: none !important;
+    -webkit-overflow-scrolling: touch !important;
+    transform: translateZ(0);
+  }
+
+  .settings-page .settings-nav.app-panel::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  .settings-page .settings-nav.app-panel::after {
+    content: "";
+    flex: 0 0 max(10px, env(safe-area-inset-right, 0px));
+    width: max(10px, env(safe-area-inset-right, 0px));
+    height: 1px;
+  }
+
+  .settings-page .settings-nav-brand,
+  .settings-page .settings-nav-divider {
+    display: none !important;
+  }
+
+  .settings-page .settings-nav-item {
+    flex: 0 0 auto !important;
+    width: auto !important;
+    min-width: max-content !important;
+    min-height: 40px !important;
+    padding: 7px 11px !important;
+    border-radius: 999px !important;
+    gap: 7px !important;
+    flex-direction: row !important;
+    transform: none !important;
+    touch-action: manipulation;
+    scroll-snap-align: start;
+  }
+
+  .settings-page .settings-nav-icon {
+    width: 26px !important;
+    height: 26px !important;
+    border-radius: 999px !important;
+  }
+
+  .settings-page .settings-nav-label {
+    max-width: none !important;
+    font-size: 0.69rem !important;
+    line-height: 1 !important;
+  }
+
+  .settings-page .settings-nav-chevron {
+    display: none !important;
+  }
+
+  .settings-page .settings-content-area {
+    width: 100%;
+  }
+
+  .settings-page .settings-panel-wrapper {
+    width: 100%;
+  }
+
+  .settings-page .settings-panel.app-panel {
+    width: 100%;
+    padding: 12px !important;
+    border-radius: 17px !important;
+    gap: 12px !important;
+    overflow: hidden;
+  }
+
+  .settings-page .settings-panel-header {
+    gap: 9px !important;
+    align-items: flex-start !important;
+    padding-bottom: 10px !important;
+  }
+
+  .settings-page .panel-header-icon {
+    width: 34px !important;
+    height: 34px !important;
+    border-radius: 12px !important;
+  }
+
+  .settings-page .panel-title {
+    font-size: 0.96rem !important;
+    line-height: 1.05 !important;
+  }
+
+  .settings-page .panel-desc {
+    display: -webkit-box;
+    max-width: 100%;
+    overflow: hidden;
+    font-size: 0.69rem !important;
+    line-height: 1.32 !important;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  .settings-page .settings-form-body {
+    width: 100% !important;
+    max-width: 100% !important;
+    gap: 12px !important;
+  }
+
+  .settings-page .settings-form-row,
+  .settings-page .bf-row,
+  .settings-page .duration-discount-form {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 10px !important;
+  }
+
+  .settings-page .settings-field,
+  .settings-page .dd-input-group {
+    width: 100%;
+  }
+
+  .settings-page .bf-input,
+  .settings-page select.bf-input,
+  .settings-page textarea.bf-input {
+    font-size: 16px !important;
+  }
+
+  .settings-page input.bf-input,
+  .settings-page select.bf-input,
+  .settings-page .settings-input-group,
+  .settings-page .btn-primary,
+  .settings-page .btn-secondary,
+  .settings-page .btn-danger,
+  .settings-page .restore-upload-btn {
+    min-height: 42px !important;
+  }
+
+  .settings-page .settings-input-prefix {
+    min-height: 40px !important;
+  }
+
+  .settings-page .bf-input.with-prefix {
+    min-height: 40px !important;
+    height: 40px !important;
+  }
+
+  .settings-page .settings-info-box {
+    width: 100%;
+    padding: 9px 10px !important;
+    border-radius: 13px !important;
+    font-size: 0.70rem !important;
+    line-height: 1.32 !important;
+  }
+
+  .settings-page .pricing-info-grid,
+  .settings-page .demo-stats-preview {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+  }
+
+  .settings-page .pricing-info-card,
+  .settings-page .demo-stat-chip,
+  .settings-page .reset-option-card,
+  .settings-page .duration-discount-item {
+    min-width: 0;
+  }
+
+  .settings-page .duration-discount-list,
+  .settings-page .reset-options-grid,
+  .settings-page .demo-info-list {
+    max-width: 100%;
+  }
+
+  .settings-page .backup-restore-actions,
+  .settings-page .reset-confirm-area,
+  .settings-page .reset-confirm-area.step-1,
+  .settings-page .reset-confirm-area.step-2 {
+    width: 100%;
+  }
+
+  .settings-page .duration-discount-list {
+    overscroll-behavior: contain;
+  }
+}
+
+@media (max-width: 560px) {
+  .settings-page {
+    --settings-mobile-nav-top: calc(var(--settings-safe-top) + 112px);
+    --settings-mobile-bottom-pad: max(112px, calc(90px + var(--settings-safe-bottom)));
+  }
+
+  .settings-page .settings-command-top {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .settings-page .settings-command-copy {
+    gap: 8px !important;
+  }
+
+  .settings-page .settings-header-icon {
+    width: 36px !important;
+    height: 36px !important;
+  }
+
+  .settings-page .app-page-title {
+    font-size: 1.08rem !important;
+  }
+
+  .settings-page .app-page-subtitle {
+    font-size: 0.65rem !important;
+  }
+
+  .settings-page .settings-nav-item {
+    min-height: 38px !important;
+    padding: 6px 10px !important;
+  }
+
+  .settings-page .settings-nav-icon {
+    width: 24px !important;
+    height: 24px !important;
+  }
+
+  .settings-page .settings-nav-label {
+    font-size: 0.66rem !important;
+  }
+
+  .settings-page .settings-panel.app-panel {
+    padding: 11px !important;
+  }
+}
+
+@media (max-width: 420px) {
+  .settings-page {
+    --settings-mobile-edge: 10px;
+    --settings-mobile-nav-top: calc(var(--settings-safe-top) + 108px);
+  }
+
+  .settings-page .settings-save-btn {
+    width: 40px !important;
+    min-width: 40px !important;
+    height: 40px !important;
+    min-height: 40px !important;
+  }
+
+  .settings-page .settings-header-icon {
+    width: 34px !important;
+    height: 34px !important;
+  }
+
+  .settings-page .app-page-title {
+    font-size: 1rem !important;
+  }
+
+  .settings-page .app-page-subtitle {
+    -webkit-line-clamp: 1;
+  }
+
+  .settings-page .settings-nav.app-panel {
+    min-height: 50px !important;
+  }
+
+  .settings-page .settings-nav-label {
+    font-size: 0.64rem !important;
+  }
+
+  .settings-page .pricing-info-grid,
+  .settings-page .demo-stats-preview {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .settings-page .pricing-info-value,
+  .settings-page .demo-chip-value {
+    font-size: 0.72rem !important;
+  }
+
+  .settings-page .pricing-info-label,
+  .settings-page .demo-chip-label {
+    font-size: 0.58rem !important;
+  }
+
+  .settings-page .duration-discount-item,
+  .settings-page .reset-option-card {
+    border-radius: 12px !important;
+  }
+
+  .settings-page .dd-item-hours {
+    max-width: min(100%, 220px) !important;
+  }
+}
+
+@media (max-width: 360px) {
+  .settings-page {
+    --settings-mobile-edge: 8px;
+    --settings-mobile-nav-top: calc(var(--settings-safe-top) + 104px);
+  }
+
+  .settings-page .settings-command-copy {
+    gap: 7px !important;
+  }
+
+  .settings-page .settings-header-icon {
+    display: none !important;
+  }
+
+  .settings-page .settings-nav-item {
+    padding: 6px 9px !important;
+  }
+
+  .settings-page .settings-nav-label {
+    font-size: 0.62rem !important;
+  }
+
+  .settings-page .settings-panel.app-panel {
+    padding: 10px !important;
+  }
+
+  .settings-page .pricing-info-grid,
+  .settings-page .demo-stats-preview {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@supports not (overflow: clip) {
+  .settings-page {
+    overflow-x: hidden;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .settings-page,
+  .settings-page *,
+  .settings-page *::before,
+  .settings-page *::after {
+    scroll-behavior: auto !important;
+  }
+}
+
+/* === END SETTINGS MOBILE FINAL PASS PHASE 8 === */
+
