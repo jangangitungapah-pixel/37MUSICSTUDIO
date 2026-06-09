@@ -360,23 +360,34 @@ const GalleryPage = () => {
       </div>
 
       {/* ── Page Header ──────────────────────────────────────────────────────── */}
-      <div className="app-page-header">
-        <div>
-          <h2 className="app-page-title">Galeri Foto Studio</h2>
-          <p className="app-page-subtitle">Unggah, kelola, dan atur tampilan foto studio pada media promosi customer</p>
-        </div>
-        <div className="app-page-actions" style={{ display: 'flex', gap: '12px' }}>
-          <button className="btn-secondary" onClick={() => setIsAlbumModalOpen(true)}>
-            <FolderOpen size={16} />
-            <span>Kelola Album</span>
-          </button>
-          <button className="btn-primary" onClick={handleOpenUploadModal}>
-            <Plus size={16} />
-            <span>Tambah Foto</span>
-          </button>
-        </div>
-      </div>
+      <header className="app-page-header gallery-command-shell">
+        <div className="gallery-command-top">
+          <div className="gallery-command-copy">
+            <div className="gallery-command-icon" aria-hidden="true">
+              <BookImage size={22} />
+            </div>
+            <div className="gallery-command-text">
+              <span className="gallery-command-eyebrow">Gallery Control Deck</span>
+              <h2 className="app-page-title">Galeri Foto Studio</h2>
+              <p className="app-page-subtitle">Unggah, kelola, dan atur tampilan foto studio pada media promosi customer</p>
+            </div>
+          </div>
 
+          <div className="app-page-actions gallery-action-cluster">
+            <span className="gallery-command-pill" aria-label={`${gallery.length} dari ${MAX_PHOTOS_LIMIT} slot foto terpakai`}>
+              {gallery.length}/{MAX_PHOTOS_LIMIT} foto
+            </span>
+            <button className="btn-secondary gallery-action-btn gallery-action-muted" onClick={() => setIsAlbumModalOpen(true)}>
+              <FolderOpen size={16} />
+              <span>Kelola Album</span>
+            </button>
+            <button className="btn-primary gallery-action-btn gallery-action-primary" onClick={handleOpenUploadModal}>
+              <Plus size={16} />
+              <span>Tambah Foto</span>
+            </button>
+          </div>
+        </div>
+      </header>
       {/* ── Storage Overview ─────────────────────────────────────────────────── */}
       <div className="app-panel gallery-overview-panel">
         <div className="gallery-overview-content">
