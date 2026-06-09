@@ -1070,7 +1070,7 @@ const DashboardPage = () => {
         </section>
       </MotionSection>
       {/* Quick Booking Modal */}
-      <Modal isOpen={isQuickBookingOpen} onClose={() => setIsQuickBookingOpen(false)} title="Tambah Booking Cepat">
+      <Modal isOpen={isQuickBookingOpen} onClose={() => setIsQuickBookingOpen(false)} title="Tambah Booking Cepat" className="dashboard-quick-modal dashboard-quick-booking-modal">
         <form className="finance-form quick-dash-form" onSubmit={handleQuickBookingSubmit}>
           <div className="form-group">
             <label htmlFor="qb-band">Nama Band <span className="required">*</span></label>
@@ -1188,7 +1188,7 @@ const DashboardPage = () => {
       </Modal>
 
       {/* Quick Expense Modal */}
-      <Modal isOpen={isQuickExpenseOpen} onClose={() => setIsQuickExpenseOpen(false)} title="Catat Pengeluaran Cepat">
+      <Modal isOpen={isQuickExpenseOpen} onClose={() => setIsQuickExpenseOpen(false)} title="Catat Pengeluaran Cepat" className="dashboard-quick-modal dashboard-quick-expense-modal">
         <form className="finance-form quick-dash-form" onSubmit={handleQuickExpenseSubmit}>
           <div className="form-row">
             <div className="form-group">
