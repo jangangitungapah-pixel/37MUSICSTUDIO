@@ -2666,392 +2666,79 @@
 
 /* === END STAFF MOBILE VISUAL STABILIZATION PHASE 8.5 === */
 
-/* === START STAFF MOBILE CARD SLIMDOWN PHASE 8.6 === */
+/* === START STAFF MOBILE CARD RESET PHASE 8.9 === */
 
 @media (max-width: 760px) {
   .staff-grid {
-    gap: 8px;
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
   }
 
-  .staff-card {
-    display: grid;
-    grid-template-columns: 40px minmax(0, 1fr) auto;
-    grid-template-areas:
-      "avatar info actions"
-      "chips chips chips"
-      "status status status";
-    align-items: start;
-    min-height: 0 !important;
-    height: auto !important;
-    gap: 8px 10px;
-    padding: 10px;
-    border-radius: 16px;
-  }
-
-  .staff-card-header {
-    display: contents;
-  }
-
-  .staff-avatar-container {
-    grid-area: avatar;
-    align-self: start;
-    margin: 0;
-  }
-
-  .staff-avatar {
-    width: 38px;
-    height: 38px;
-    font-size: 0.82rem;
-  }
-
-  .staff-status-ring {
-    width: 10px;
-    height: 10px;
-    right: -1px;
-    bottom: -1px;
-  }
-
-  .staff-actions {
-    grid-area: actions;
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    flex-wrap: nowrap;
-    align-self: start;
-    max-width: none;
-    gap: 5px;
-    margin: 0;
-  }
-
-  .staff-actions .icon-btn {
-    width: 26px;
-    height: 26px;
-    border-radius: 9px;
-  }
-
-  .staff-actions .icon-btn svg {
-    width: 13px;
-    height: 13px;
-  }
-
-  .staff-actions .icon-btn:last-child {
-    margin-left: 2px;
-  }
-
-  .staff-info {
-    grid-area: info;
-    display: grid;
-    align-self: start;
-    gap: 5px;
-    min-width: 0;
-    margin: 0 !important;
-    padding: 0;
-  }
-
-  .staff-info h3 {
-    margin: 0;
-    font-size: 0.95rem;
-    line-height: 1.08;
-  }
-
-  .staff-info .f-badge {
-    width: fit-content;
-    min-height: 20px;
-    padding: 3px 7px;
-    font-size: 0.6rem;
-    line-height: 1;
-  }
-
-  .staff-phone {
-    gap: 5px;
-    font-size: 0.72rem;
-    line-height: 1.15;
-  }
-
-  .staff-phone svg {
-    width: 12px;
-    height: 12px;
-  }
-
-  .staff-permission-chips {
-    grid-area: chips;
-    display: flex;
-    flex-wrap: wrap;
-    max-height: 48px;
-    gap: 4px;
-    margin-top: 2px;
-    overflow: hidden;
-  }
-
-  .staff-permission-chips .f-badge,
-  .staff-permission-chips .chip-more {
-    min-height: 20px;
-    padding: 3px 6px;
-    border-radius: 999px;
-    font-size: 0.58rem;
-    line-height: 1;
-  }
-
-  .staff-status-bar {
-    grid-area: status;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    min-height: 28px;
-    gap: 8px;
-    margin-top: 0;
-    padding-top: 8px;
-  }
-
-  .staff-status-bar .f-badge {
-    min-height: 21px;
-    padding: 3px 7px;
-    font-size: 0.6rem;
-    line-height: 1;
-  }
-
-  .staff-status-bar small {
-    max-width: 48%;
-    overflow: hidden;
-    font-size: 0.6rem;
-    line-height: 1.15;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-}
-
-@media (max-width: 430px) {
-  .staff-card {
-    grid-template-columns: 38px minmax(0, 1fr) auto;
-    gap: 7px 9px;
-    padding: 9px;
-    border-radius: 15px;
-  }
-
-  .staff-avatar {
-    width: 36px;
-    height: 36px;
-  }
-
-  .staff-actions {
-    gap: 4px;
-  }
-
-  .staff-actions .icon-btn {
-    width: 25px;
-    height: 25px;
-  }
-
-  .staff-info {
-    gap: 4px;
-  }
-
-  .staff-info h3 {
-    font-size: 0.9rem;
-  }
-
-  .staff-phone {
-    font-size: 0.69rem;
-  }
-
-  .staff-permission-chips {
-    max-height: 44px;
-    gap: 4px;
-  }
-
-  .staff-permission-chips .f-badge,
-  .staff-permission-chips .chip-more {
-    min-height: 19px;
-    padding: 3px 6px;
-    font-size: 0.56rem;
-  }
-
-  .staff-status-bar {
-    min-height: 26px;
-    padding-top: 7px;
-  }
-}
-
-@media (max-width: 360px) {
-  .staff-card {
-    grid-template-columns: 34px minmax(0, 1fr) auto;
-    gap: 7px;
-    padding: 8px;
-  }
-
-  .staff-avatar {
-    width: 33px;
-    height: 33px;
-    font-size: 0.74rem;
-  }
-
-  .staff-actions .icon-btn {
-    width: 24px;
-    height: 24px;
-  }
-
-  .staff-actions .icon-btn svg {
-    width: 12px;
-    height: 12px;
-  }
-
-  .staff-info h3 {
-    font-size: 0.86rem;
-  }
-
-  .staff-info .f-badge {
-    font-size: 0.56rem;
-  }
-}
-
-/* === END STAFF MOBILE CARD SLIMDOWN PHASE 8.6 === */
-
-/* === START STAFF MOBILE CARD LAYOUT STABILIZATION PHASE 8.7 === */
-
-@media (max-width: 760px) {
-  .staff-card {
-    grid-template-columns: 40px minmax(0, 1fr);
-    grid-template-areas:
-      "avatar actions"
-      "info info"
-      "status status";
-    gap: 8px 10px;
-  }
-
-  .staff-card-header {
-    display: contents;
-  }
-
-  .staff-avatar-container {
-    grid-area: avatar;
-  }
-
-  .staff-actions {
-    grid-area: actions;
-    justify-self: end;
-    max-width: none;
-  }
-
-  .staff-info {
-    grid-area: info;
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    gap: 6px;
-    width: 100%;
-    min-width: 0;
-  }
-
-  .staff-info h3 {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 6px;
-    min-width: 0;
-  }
-
-  .staff-info > .f-badge {
-    width: fit-content;
-  }
-
-  .staff-phone {
-    max-width: 100%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .staff-permission-chips {
-    width: 100%;
-    max-height: 46px;
-    overflow: hidden;
-  }
-
-  .staff-permission-chips .f-badge,
-  .staff-permission-chips .chip-more {
-    max-width: 100%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .staff-status-bar {
-    grid-area: status;
-  }
-}
-
-@media (max-width: 430px) {
-  .staff-card {
-    grid-template-columns: 38px minmax(0, 1fr);
-    gap: 7px 9px;
-  }
-
-  .staff-info {
-    gap: 5px;
-  }
-
-  .staff-permission-chips {
-    max-height: 44px;
-  }
-
-  .staff-permission-chips .f-badge:nth-child(n + 5) {
-    display: none;
-  }
-
-  .staff-permission-chips .chip-more {
-    display: inline-flex;
-  }
-}
-
-@media (max-width: 360px) {
-  .staff-card {
-    grid-template-columns: 34px minmax(0, 1fr);
-  }
-
-  .staff-permission-chips .f-badge:nth-child(n + 4) {
-    display: none;
-  }
-}
-
-/* === END STAFF MOBILE CARD LAYOUT STABILIZATION PHASE 8.7 === */
-
-/* === START STAFF MOBILE CARD READABILITY PHASE 8.8 === */
-
-@media (max-width: 760px) {
   .staff-card {
     display: flex !important;
     flex-direction: column !important;
-    gap: 8px !important;
-    min-height: 0 !important;
+    min-height: auto !important;
     height: auto !important;
-    padding: 10px !important;
+    gap: 9px !important;
+    padding: 12px !important;
+    border-radius: 17px !important;
+  }
+
+  .staff-card::before {
+    opacity: 0.38 !important;
+  }
+
+  .staff-card > * {
+    position: relative !important;
+    z-index: 1 !important;
   }
 
   .staff-card-header {
     display: flex !important;
     align-items: flex-start !important;
     justify-content: space-between !important;
-    gap: 10px !important;
     width: 100% !important;
+    gap: 12px !important;
   }
 
   .staff-avatar-container {
+    position: relative !important;
     flex: 0 0 auto !important;
     margin: 0 !important;
   }
 
+  .staff-avatar {
+    width: 38px !important;
+    height: 38px !important;
+    font-size: 0.78rem !important;
+  }
+
+  .staff-status-ring {
+    width: 10px !important;
+    height: 10px !important;
+    right: -1px !important;
+    bottom: -1px !important;
+  }
+
   .staff-actions {
     display: inline-flex !important;
-    flex: 0 0 auto !important;
     align-items: center !important;
     justify-content: flex-end !important;
+    flex: 0 0 auto !important;
     flex-wrap: nowrap !important;
-    gap: 5px !important;
+    gap: 6px !important;
     max-width: none !important;
     margin: 0 !important;
   }
 
   .staff-actions .icon-btn {
-    width: 26px !important;
-    height: 26px !important;
+    display: inline-grid !important;
+    width: 28px !important;
+    height: 28px !important;
+    min-width: 28px !important;
+    min-height: 28px !important;
+    place-items: center !important;
     border-radius: 9px !important;
   }
 
@@ -3061,19 +2748,21 @@
   }
 
   .staff-info {
-    display: grid !important;
-    grid-template-columns: 1fr !important;
-    gap: 5px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
     width: 100% !important;
     min-width: 0 !important;
+    gap: 6px !important;
     margin: 0 !important;
     padding: 0 !important;
   }
 
   .staff-info > * {
-    min-width: 0 !important;
     position: static !important;
     transform: none !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
   }
 
   .staff-info h3 {
@@ -3081,11 +2770,13 @@
     width: 100% !important;
     margin: 0 !important;
     color: var(--text-primary) !important;
-    font-size: 0.94rem !important;
+    font-size: 0.98rem !important;
+    font-weight: 850 !important;
     line-height: 1.12 !important;
-    white-space: normal !important;
-    overflow: visible !important;
-    text-overflow: clip !important;
+    letter-spacing: -0.03em !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
   }
 
   .staff-info > .f-badge {
@@ -3093,34 +2784,31 @@
     align-items: center !important;
     justify-content: center !important;
     width: fit-content !important;
-    max-width: 100% !important;
-    min-height: 19px !important;
+    min-height: 20px !important;
     margin: 0 !important;
-    padding: 3px 7px !important;
+    padding: 3px 8px !important;
     border-radius: 999px !important;
-    font-size: 0.58rem !important;
+    font-size: 0.6rem !important;
+    font-weight: 850 !important;
     line-height: 1 !important;
     white-space: nowrap !important;
   }
 
-  .staff-info > p,
-  .staff-info > div:not(.staff-permission-chips) {
+  .staff-info p,
+  .staff-info span:not(.f-badge):not(.chip-more),
+  .staff-info div:not(.staff-permission-chips) {
     max-width: 100% !important;
-    overflow: hidden !important;
-    color: var(--text-secondary) !important;
-    font-size: 0.7rem !important;
-    line-height: 1.18 !important;
-    text-overflow: ellipsis !important;
   }
 
   .staff-phone {
     display: inline-flex !important;
     align-items: center !important;
-    gap: 5px !important;
-    max-width: 100% !important;
+    width: 100% !important;
+    gap: 6px !important;
+    color: var(--text-secondary) !important;
+    font-size: 0.74rem !important;
+    line-height: 1.2 !important;
     overflow: hidden !important;
-    font-size: 0.7rem !important;
-    line-height: 1.18 !important;
     text-overflow: ellipsis !important;
     white-space: nowrap !important;
   }
@@ -3135,9 +2823,9 @@
     display: flex !important;
     flex-wrap: wrap !important;
     width: 100% !important;
-    max-height: 43px !important;
-    gap: 4px !important;
-    margin: 1px 0 0 !important;
+    max-height: 45px !important;
+    gap: 5px !important;
+    margin: 0 !important;
     overflow: hidden !important;
   }
 
@@ -3145,96 +2833,122 @@
   .staff-permission-chips .chip-more {
     display: inline-flex !important;
     align-items: center !important;
+    min-height: 20px !important;
     max-width: 100% !important;
-    min-height: 19px !important;
-    padding: 3px 6px !important;
+    padding: 3px 7px !important;
     border-radius: 999px !important;
-    font-size: 0.56rem !important;
+    font-size: 0.58rem !important;
+    font-weight: 780 !important;
     line-height: 1 !important;
     overflow: hidden !important;
     text-overflow: ellipsis !important;
     white-space: nowrap !important;
   }
 
+  .staff-permission-chips .f-badge:nth-child(n + 5) {
+    display: none !important;
+  }
+
   .staff-status-bar {
     display: flex !important;
     align-items: center !important;
     justify-content: space-between !important;
-    gap: 8px !important;
     width: 100% !important;
-    min-height: 25px !important;
-    margin-top: 0 !important;
-    padding-top: 7px !important;
+    min-height: 27px !important;
+    gap: 8px !important;
+    margin: 0 !important;
+    padding-top: 8px !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.075) !important;
   }
 
   .staff-status-bar .f-badge {
-    min-height: 20px !important;
-    padding: 3px 7px !important;
-    font-size: 0.58rem !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    min-height: 21px !important;
+    padding: 3px 8px !important;
+    border-radius: 999px !important;
+    font-size: 0.6rem !important;
     line-height: 1 !important;
+  }
+
+  .staff-status-bar small {
+    max-width: 50% !important;
+    overflow: hidden !important;
+    color: var(--text-muted) !important;
+    font-size: 0.62rem !important;
+    line-height: 1.15 !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
   }
 }
 
 @media (max-width: 430px) {
   .staff-card {
-    gap: 7px !important;
-    padding: 9px !important;
+    gap: 8px !important;
+    padding: 10px !important;
+    border-radius: 16px !important;
   }
 
   .staff-avatar {
     width: 36px !important;
     height: 36px !important;
-    font-size: 0.76rem !important;
+  }
+
+  .staff-actions {
+    gap: 5px !important;
+  }
+
+  .staff-actions .icon-btn {
+    width: 26px !important;
+    height: 26px !important;
+    min-width: 26px !important;
+    min-height: 26px !important;
   }
 
   .staff-info {
-    gap: 4px !important;
+    gap: 5px !important;
   }
 
   .staff-info h3 {
-    font-size: 0.9rem !important;
+    font-size: 0.92rem !important;
   }
 
-  .staff-info > .f-badge {
-    font-size: 0.56rem !important;
-  }
-
-  .staff-info > p,
-  .staff-info > div:not(.staff-permission-chips),
   .staff-phone {
-    font-size: 0.68rem !important;
+    font-size: 0.7rem !important;
   }
 
   .staff-permission-chips {
-    max-height: 41px !important;
+    max-height: 42px !important;
+    gap: 4px !important;
   }
 
-  .staff-permission-chips .f-badge:nth-child(n + 5) {
-    display: none !important;
-  }
-
+  .staff-permission-chips .f-badge,
   .staff-permission-chips .chip-more {
-    display: inline-flex !important;
+    min-height: 19px !important;
+    padding: 3px 6px !important;
+    font-size: 0.55rem !important;
   }
 }
 
 @media (max-width: 360px) {
   .staff-card {
-    padding: 8px !important;
+    padding: 9px !important;
   }
 
   .staff-avatar {
-    width: 33px !important;
-    height: 33px !important;
+    width: 34px !important;
+    height: 34px !important;
   }
 
   .staff-actions .icon-btn {
     width: 24px !important;
     height: 24px !important;
+    min-width: 24px !important;
+    min-height: 24px !important;
   }
 
   .staff-info h3 {
-    font-size: 0.86rem !important;
+    font-size: 0.88rem !important;
   }
 
   .staff-permission-chips .f-badge:nth-child(n + 4) {
@@ -3242,4 +2956,4 @@
   }
 }
 
-/* === END STAFF MOBILE CARD READABILITY PHASE 8.8 === */
+/* === END STAFF MOBILE CARD RESET PHASE 8.9 === */
