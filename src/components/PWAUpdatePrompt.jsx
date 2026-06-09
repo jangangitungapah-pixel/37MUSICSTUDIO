@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { RefreshCw, Wifi, X } from 'lucide-react';
 import { registerSW } from 'virtual:pwa-register';
 
@@ -6,30 +6,56 @@ const PWAUpdatePrompt = () => {
   const [needRefresh, setNeedRefresh] = useState(false);
   const [offlineReady, setOfflineReady] = useState(false);
   const [updateSW, setUpdateSW] = useState(null);
+  const offlineTimerRef = useRef(null);
+  const updateIntervalRef = useRef(null);
 
   useEffect(() => {
     if (!('serviceWorker' in navigator)) return undefined;
 
+    let mounted = true;
+
+    const clearOfflineTimer = () => {
+      if (offlineTimerRef.current) {
+        window.clearTimeout(offlineTimerRef.current);
+        offlineTimerRef.current = null;
+      }
+    };
+
     const updateServiceWorker = registerSW({
       immediate: true,
       onNeedRefresh() {
-        setNeedRefresh(true);
+        if (mounted) setNeedRefresh(true);
       },
       onOfflineReady() {
+        if (!mounted) return;
         setOfflineReady(true);
-        window.setTimeout(() => setOfflineReady(false), 5000);
+        clearOfflineTimer();
+        offlineTimerRef.current = window.setTimeout(() => {
+          if (mounted) setOfflineReady(false);
+        }, 5000);
       },
       onRegisteredSW(_swUrl, registration) {
-        if (!registration) return;
+        if (!registration || !mounted) return;
 
-        window.setInterval(() => {
-          registration.update();
+        if (updateIntervalRef.current) window.clearInterval(updateIntervalRef.current);
+        updateIntervalRef.current = window.setInterval(() => {
+          registration.update().catch(() => {
+            // Background update checks are best-effort and must not disturb the UI.
+          });
         }, 60 * 60 * 1000);
       },
     });
 
     setUpdateSW(() => updateServiceWorker);
-    return undefined;
+
+    return () => {
+      mounted = false;
+      clearOfflineTimer();
+      if (updateIntervalRef.current) {
+        window.clearInterval(updateIntervalRef.current);
+        updateIntervalRef.current = null;
+      }
+    };
   }, []);
 
   if (!needRefresh && !offlineReady) return null;
