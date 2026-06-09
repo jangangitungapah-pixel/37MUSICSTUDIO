@@ -8129,3 +8129,160 @@ tr:hover
   }
 }
 /* === END PHASE 9.1F CUSTOMER MOBILE LAYOUT LOCK === */
+
+/* === START PHASE 9.1F-1 CUSTOMER DETAIL SAFE GAP HOTFIX === */
+/*
+  Customer Detail Viewport Safe Gap Hotfix
+  Goal:
+  - Detail modal must not touch top header / browser-safe top area.
+  - Detail modal must not touch mobile bottom nav / bottom bar.
+  - Modal remains centered inside the available safe viewport.
+  Scope:
+  - CSS-only
+  - no JSX/store/router/auth/business workflow changes
+  - safe to rerun by marker
+*/
+
+.customers-page {
+  --customer-detail-safe-top: clamp(1.35rem, 4.2dvh, 3rem);
+  --customer-detail-safe-bottom: clamp(1.35rem, 4.2dvh, 3rem);
+}
+
+/* Center modal inside safe viewport, not full viewport */
+.customers-page .customer-detail-panel.app-panel {
+  --detail-safe-top: var(--customer-detail-safe-top);
+  --detail-safe-bottom: var(--customer-detail-safe-bottom);
+  --detail-safe-height: calc(100dvh - var(--detail-safe-top) - var(--detail-safe-bottom));
+
+  top: calc(var(--detail-safe-top) + (var(--detail-safe-height) / 2)) !important;
+  bottom: auto !important;
+  left: 50% !important;
+  right: auto !important;
+
+  max-height: min(860px, var(--detail-safe-height)) !important;
+  height: auto !important;
+
+  transform: translate(-50%, -50%) !important;
+}
+
+.customers-page .customer-detail-panel.app-panel::before {
+  inset: -100vmax !important;
+}
+
+/* Keep internal scroll owner clear */
+.customers-page .customer-detail-panel .detail-panel-body {
+  min-height: 0 !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  overscroll-behavior: contain !important;
+}
+
+.customers-page .customer-detail-panel .detail-panel-header,
+.customers-page .customer-detail-panel .detail-panel-footer {
+  flex: 0 0 auto !important;
+}
+
+/* Desktop with dense app header */
+@media (min-width: 921px) {
+  .customers-page {
+    --customer-detail-safe-top: clamp(2rem, 5.5dvh, 4.25rem);
+    --customer-detail-safe-bottom: clamp(1.5rem, 4.5dvh, 3.25rem);
+  }
+
+  .customers-page .customer-detail-panel.app-panel {
+    width: min(980px, calc(100vw - 3rem)) !important;
+    max-width: min(980px, calc(100vw - 3rem)) !important;
+  }
+}
+
+/* Tablet / mobile shell: reserve bottom nav zone */
+@media (max-width: 920px) {
+  .customers-page {
+    --customer-detail-safe-top: calc(0.9rem + env(safe-area-inset-top));
+    --customer-detail-safe-bottom: calc(5.75rem + env(safe-area-inset-bottom));
+  }
+
+  .customers-page .customer-detail-panel.app-panel {
+    --detail-safe-top: var(--customer-detail-safe-top);
+    --detail-safe-bottom: var(--customer-detail-safe-bottom);
+    --detail-safe-height: calc(100dvh - var(--detail-safe-top) - var(--detail-safe-bottom));
+
+    top: calc(var(--detail-safe-top) + (var(--detail-safe-height) / 2)) !important;
+    bottom: auto !important;
+
+    width: calc(100vw - 1rem) !important;
+    max-width: calc(100vw - 1rem) !important;
+    max-height: var(--detail-safe-height) !important;
+    border-radius: 1.08rem !important;
+  }
+
+  .customers-page .customer-detail-panel .detail-panel-body {
+    max-height: none !important;
+  }
+
+  .customers-page .customer-detail-panel .detail-panel-footer {
+    padding-bottom: calc(0.78rem + env(safe-area-inset-bottom)) !important;
+  }
+}
+
+/* Small mobile: tighter but still never touching bottom nav */
+@media (max-width: 520px) {
+  .customers-page {
+    --customer-detail-safe-top: calc(0.55rem + env(safe-area-inset-top));
+    --customer-detail-safe-bottom: calc(5.35rem + env(safe-area-inset-bottom));
+  }
+
+  .customers-page .customer-detail-panel.app-panel {
+    width: calc(100vw - 0.6rem) !important;
+    max-width: calc(100vw - 0.6rem) !important;
+    border-radius: 0.95rem !important;
+  }
+
+  .customers-page .customer-detail-panel .detail-panel-header {
+    min-height: 62px !important;
+  }
+
+  .customers-page .customer-detail-panel .detail-panel-footer {
+    padding-bottom: calc(0.68rem + env(safe-area-inset-bottom)) !important;
+  }
+}
+
+/* Very short screens: maximize usable area but keep top/bottom breathing room */
+@media (max-height: 700px) {
+  .customers-page {
+    --customer-detail-safe-top: calc(0.5rem + env(safe-area-inset-top));
+    --customer-detail-safe-bottom: calc(4.85rem + env(safe-area-inset-bottom));
+  }
+
+  .customers-page .customer-detail-panel.app-panel {
+    max-height: calc(100dvh - var(--customer-detail-safe-top) - var(--customer-detail-safe-bottom)) !important;
+  }
+
+  .customers-page .customer-detail-panel .detail-panel-header {
+    min-height: 56px !important;
+  }
+}
+
+/* Desktop short screens should not reserve mobile bottom nav */
+@media (min-width: 921px) and (max-height: 700px) {
+  .customers-page {
+    --customer-detail-safe-top: 1rem;
+    --customer-detail-safe-bottom: 1rem;
+  }
+}
+
+/* Touch performance */
+@media (hover: none), (pointer: coarse) {
+  .customers-page .customer-detail-panel.app-panel {
+    backdrop-filter: blur(8px) saturate(108%) !important;
+    -webkit-backdrop-filter: blur(8px) saturate(108%) !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .customers-page .customer-detail-panel.app-panel {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+/* === END PHASE 9.1F-1 CUSTOMER DETAIL SAFE GAP HOTFIX === */
