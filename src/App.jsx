@@ -1,4 +1,4 @@
-import { Suspense, lazy, useEffect, useState } from 'react';
+import { Suspense, lazy, useEffect, useMemo, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 import { useThemeStore } from './store/useThemeStore';
@@ -19,8 +19,31 @@ const PublicCalendarPage = lazy(() => import('./pages/PublicCalendarPage'));
 const PublicGalleryPage = lazy(() => import('./pages/PublicGalleryPage'));
 const RegisterPage = lazy(() => import('./pages/RegisterPage'));
 
+const routeTitles = {
+  '/': 'Portal',
+  '/client': 'Client Portal',
+  '/client/dashboard': 'Client Dashboard',
+  '/client/profile': 'Profil Client',
+  '/client/billing': 'Billing Client',
+  '/client/messages': 'Pesan Client',
+  '/admin': 'Admin Login',
+  '/admin/dashboard': 'Dashboard',
+  '/admin/calendar': 'Kalender',
+  '/admin/customers': 'Pelanggan',
+  '/admin/inventory': 'Inventaris',
+  '/admin/billing': 'Billing & Kasir',
+  '/admin/finance': 'Keuangan',
+  '/admin/staff': 'Staff',
+  '/admin/maintenance': 'Maintenance Log',
+  '/admin/gallery': 'Galeri',
+  '/admin/messages': 'Pesan Client',
+  '/admin/settings': 'Pengaturan',
+  '/jadwal-publik': 'Jadwal Publik',
+  '/galeri': 'Galeri Publik',
+};
+
 const FullPageLoader = () => (
-  <div style={{ height: '100vh', width: '100vw', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg-dark)' }}>
+  <div style={{ minHeight: '100vh', height: '100dvh', width: '100vw', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg-dark)' }}>
     <Loader2 className="spinner" size={32} color="var(--accent-pink)" />
   </div>
 );
@@ -29,35 +52,12 @@ const PageTitleUpdater = () => {
   const location = useLocation();
 
   useEffect(() => {
-    const routeTitles = {
-      '/': 'Portal',
-      '/client': 'Client Portal',
-      '/client/dashboard': 'Client Dashboard',
-      '/client/profile': 'Profil Client',
-      '/client/billing': 'Billing Client',
-      '/client/messages': 'Pesan Client',
-      '/admin': 'Admin Login',
-      '/admin/dashboard': 'Dashboard',
-      '/admin/calendar': 'Kalender',
-      '/admin/customers': 'Pelanggan',
-      '/admin/inventory': 'Inventaris',
-      '/admin/billing': 'Billing & Kasir',
-      '/admin/finance': 'Keuangan',
-      '/admin/staff': 'Staff',
-      '/admin/maintenance': 'Maintenance Log',
-      '/admin/gallery': 'Galeri',
-      '/admin/messages': 'Pesan Client',
-      '/admin/settings': 'Pengaturan',
-      '/jadwal-publik': 'Jadwal Publik',
-      '/galeri': 'Galeri Publik',
-    };
-
     const title = routeTitles[location.pathname] || (
       location.pathname.startsWith('/admin') ? 'Admin Portal' : 'Client Portal'
     );
 
     document.title = title + ' | 37 Music Studio';
-  }, [location]);
+  }, [location.pathname]);
 
   return null;
 };
@@ -82,12 +82,26 @@ const loadAfterIdle = (callback) => {
 
 const LazyToaster = ({ theme }) => {
   const [ToasterComponent, setToasterComponent] = useState(null);
+  const toastOptions = useMemo(() => ({
+    style: {
+      background: theme === 'light' ? 'rgba(255, 255, 255, 0.96)' : 'rgba(22, 22, 28, 0.95)',
+      backdropFilter: 'blur(16px)',
+      border: theme === 'light' ? '1px solid rgba(0,0,0,0.08)' : '1px solid rgba(255,255,255,0.08)',
+      color: theme === 'light' ? '#111128' : '#ffffff',
+      boxShadow: theme === 'light' ? '0 12px 32px rgba(17,17,40,0.12)' : 'none',
+      fontFamily: "'Plus Jakarta Sans', sans-serif",
+    },
+  }), [theme]);
 
   useEffect(() => {
     let mounted = true;
     const cancel = loadAfterIdle(async () => {
-      const { Toaster } = await import('sonner');
-      if (mounted) setToasterComponent(() => Toaster);
+      try {
+        const { Toaster } = await import('sonner');
+        if (mounted) setToasterComponent(() => Toaster);
+      } catch {
+        // Toast UI is non-critical; keep the app usable if this chunk fails on a weak/mobile network.
+      }
     });
 
     return () => {
@@ -103,16 +117,7 @@ const LazyToaster = ({ theme }) => {
       theme={theme}
       position="bottom-right"
       richColors
-      toastOptions={{
-        style: {
-          background: theme === 'light' ? 'rgba(255, 255, 255, 0.96)' : 'rgba(22, 22, 28, 0.95)',
-          backdropFilter: 'blur(16px)',
-          border: theme === 'light' ? '1px solid rgba(0,0,0,0.08)' : '1px solid rgba(255,255,255,0.08)',
-          color: theme === 'light' ? '#111128' : '#ffffff',
-          boxShadow: theme === 'light' ? '0 12px 32px rgba(17,17,40,0.12)' : 'none',
-          fontFamily: "'Plus Jakarta Sans', sans-serif",
-        },
-      }}
+      toastOptions={toastOptions}
     />
   );
 };
@@ -152,7 +157,7 @@ function App() {
         <Route path="/calendar" element={<Navigate to="/admin/calendar" replace />} />
         <Route path="/customers" element={<Navigate to="/admin/customers" replace />} />
         <Route path="/inventory" element={<Navigate to="/admin/inventory" replace />} />
-        <Route path="/billing" element={<Navigate to="/admin/billing" replace />} />
+        <Route path="/billing" element={<Navigate to="/admin/finance" replace />} />
         <Route path="/finance" element={<Navigate to="/admin/finance" replace />} />
         <Route path="/staff" element={<Navigate to="/admin/staff" replace />} />
         <Route path="/maintenance" element={<Navigate to="/admin/maintenance" replace />} />
