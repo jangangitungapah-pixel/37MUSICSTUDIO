@@ -23,6 +23,8 @@ export const useCalendarBookingMove = ({
   const [moveGhost, setMoveGhost] = useState(null);
   const [moveTarget, setMoveTarget] = useState(null);
   const longPressTimerRef = useRef(null);
+  const suppressClickTimerRef = useRef(null);
+  const activeCleanupRef = useRef(null);
   const moveTargetRef = useRef(null);
   const suppressNextBookingClickRef = useRef(false);
   const lastTargetUpdateRef = useRef(0);
@@ -55,8 +57,8 @@ export const useCalendarBookingMove = ({
   const applyMoveTarget = useCallback((point, booking) => {
     const target = getMoveTargetAtPoint(point, booking);
     const prev = moveTargetRef.current;
-    const hasChanged = (!prev && target) || 
-                       (prev && !target) || 
+    const hasChanged = (!prev && target) ||
+                       (prev && !target) ||
                        (prev && target && (prev.date !== target.date || prev.hour !== target.hour || prev.isValid !== target.isValid));
     if (hasChanged) {
       moveTargetRef.current = target;
@@ -97,6 +99,8 @@ export const useCalendarBookingMove = ({
     if (!isMobile || resizingBooking || event.target.closest('.resize-handle')) return;
     if (event.button !== undefined && event.button !== 0) return;
 
+    activeCleanupRef.current?.();
+
     const startPoint = getPointerPoint(event);
     const sourceRect = event.currentTarget.getBoundingClientRect();
     const cellHeight = getCalendarCellHeight();
@@ -104,11 +108,19 @@ export const useCalendarBookingMove = ({
     const ghostWidth = sourceRect.width;
     let isActivated = false;
     let hasDraggedAfterActivation = false;
+    let isCleanedUp = false;
 
     const clearTimer = () => {
       if (longPressTimerRef.current) {
         window.clearTimeout(longPressTimerRef.current);
         longPressTimerRef.current = null;
+      }
+    };
+
+    const clearSuppressClickTimer = () => {
+      if (suppressClickTimerRef.current) {
+        window.clearTimeout(suppressClickTimerRef.current);
+        suppressClickTimerRef.current = null;
       }
     };
 
@@ -122,6 +134,9 @@ export const useCalendarBookingMove = ({
     };
 
     const cleanup = () => {
+      if (isCleanedUp) return;
+      isCleanedUp = true;
+      activeCleanupRef.current = null;
       clearTimer();
       document.body.classList.remove('calendar-move-lock', 'calendar-interaction-lock');
       document.removeEventListener('pointermove', handlePointerMove);
@@ -134,13 +149,16 @@ export const useCalendarBookingMove = ({
       lastTargetUpdateRef.current = 0;
       translationRef.current = { dx: 0, dy: 0 };
       if (isActivated) {
-        window.setTimeout(() => {
+        clearSuppressClickTimer();
+        suppressClickTimerRef.current = window.setTimeout(() => {
           suppressNextBookingClickRef.current = false;
+          suppressClickTimerRef.current = null;
         }, 500);
       }
     };
 
     const activateMove = () => {
+      if (isCleanedUp) return;
       isActivated = true;
       suppressNextBookingClickRef.current = true;
       touchStartRef.current = null;
@@ -177,7 +195,7 @@ export const useCalendarBookingMove = ({
         ghostEl.style.transform = `translate3d(${dx}px, ${dy}px, 0)`;
       }
 
-      // Throttle hit-testing (document.elementFromPoint) to at most once every 32ms (approx 30fps)
+      // Throttle hit-testing (document.elementFromPoint) to at most once every 24ms.
       const nowTime = performance.now();
       if (nowTime - lastTargetUpdateRef.current > 24) {
         applyMoveTarget(point, booking);
@@ -202,6 +220,7 @@ export const useCalendarBookingMove = ({
       cleanup();
     };
 
+    activeCleanupRef.current = cleanup;
     longPressTimerRef.current = window.setTimeout(activateMove, 360);
     document.addEventListener('pointermove', handlePointerMove, { passive: false });
     document.addEventListener('pointerup', handlePointerUp);
@@ -209,7 +228,9 @@ export const useCalendarBookingMove = ({
   }, [applyMoveTarget, finishMobileMove, getCalendarCellHeight, isMobile, resizingBooking, setSelectedBooking, touchStartRef]);
 
   useEffect(() => () => {
+    activeCleanupRef.current?.();
     if (longPressTimerRef.current) window.clearTimeout(longPressTimerRef.current);
+    if (suppressClickTimerRef.current) window.clearTimeout(suppressClickTimerRef.current);
     document.body.classList.remove('calendar-move-lock', 'calendar-interaction-lock');
   }, []);
 
