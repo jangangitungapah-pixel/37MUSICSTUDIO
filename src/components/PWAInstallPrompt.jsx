@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Download, MonitorSmartphone, ShieldCheck, Sparkles, X } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
 
@@ -53,22 +53,42 @@ const PWAInstallPrompt = () => {
   const location = useLocation();
   const mode = useMemo(() => getModeFromPathname(location.pathname), [location.pathname]);
   const copy = modeCopy[mode];
+  const showTimerRef = useRef(null);
 
   const [installEvent, setInstallEvent] = useState(null);
   const [isVisible, setIsVisible] = useState(false);
   const [isInstalling, setIsInstalling] = useState(false);
 
   useEffect(() => {
+    let mounted = true;
+
+    const clearShowTimer = () => {
+      if (showTimerRef.current) {
+        window.clearTimeout(showTimerRef.current);
+        showTimerRef.current = null;
+      }
+    };
+
+    const scheduleVisible = (delay) => {
+      clearShowTimer();
+      showTimerRef.current = window.setTimeout(() => {
+        if (mounted) setIsVisible(true);
+      }, delay);
+    };
+
     const handleBeforeInstallPrompt = (event) => {
       event.preventDefault();
+      if (!mounted) return;
       setInstallEvent(event);
 
       if (!isStandaloneMode() && !isRecentlyDismissed(copy.storageKey)) {
-        window.setTimeout(() => setIsVisible(true), 1400);
+        scheduleVisible(1400);
       }
     };
 
     const handleAppInstalled = () => {
+      clearShowTimer();
+      if (!mounted) return;
       setIsVisible(false);
       setInstallEvent(null);
       localStorage.removeItem(copy.storageKey);
@@ -78,27 +98,43 @@ const PWAInstallPrompt = () => {
     window.addEventListener('appinstalled', handleAppInstalled);
 
     return () => {
+      mounted = false;
+      clearShowTimer();
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
       window.removeEventListener('appinstalled', handleAppInstalled);
     };
   }, [copy.storageKey]);
 
   useEffect(() => {
+    if (showTimerRef.current) {
+      window.clearTimeout(showTimerRef.current);
+      showTimerRef.current = null;
+    }
+
     if (!installEvent || isStandaloneMode()) {
       setIsVisible(false);
-      return;
+      return undefined;
     }
 
     if (isRecentlyDismissed(copy.storageKey)) {
       setIsVisible(false);
-      return;
+      return undefined;
     }
 
-    const timeoutId = window.setTimeout(() => setIsVisible(true), 800);
-    return () => window.clearTimeout(timeoutId);
+    showTimerRef.current = window.setTimeout(() => setIsVisible(true), 800);
+    return () => {
+      if (showTimerRef.current) {
+        window.clearTimeout(showTimerRef.current);
+        showTimerRef.current = null;
+      }
+    };
   }, [copy.storageKey, installEvent, mode]);
 
   const dismissPrompt = () => {
+    if (showTimerRef.current) {
+      window.clearTimeout(showTimerRef.current);
+      showTimerRef.current = null;
+    }
     localStorage.setItem(copy.storageKey, String(Date.now()));
     setIsVisible(false);
   };
