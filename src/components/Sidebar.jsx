@@ -231,6 +231,49 @@ const Sidebar = () => {
           <div className="sheet-drag-handle" />
           <h3>Menu Lainnya</h3>
         </div>
+
+        <div className="mobile-sheet-profile">
+          <button
+            type="button"
+            className="mobile-sheet-user"
+            onClick={() => { playClick(); setIsProfileOpen(true); setMobileOpen(false); }}
+            aria-label={`Buka Profil ${displayName}`}
+          >
+            <div className="mobile-sheet-avatar">{avatarLetter}</div>
+            <div className="mobile-sheet-user-copy">
+              <span className="mobile-sheet-name">{displayName}</span>
+              <span className="mobile-sheet-role">{currentRoleLabel}</span>
+            </div>
+          </button>
+
+          <div className="mobile-sheet-actions" aria-label="Aksi cepat mobile">
+            <button
+              type="button"
+              className="mobile-sheet-action"
+              onClick={() => { playClick(); setIsNotifOpen(true); setMobileOpen(false); }}
+              aria-label="Buka notifikasi"
+            >
+              <Bell size={17} />
+              {unreadCount > 0 && <span className="mobile-sheet-dot">{unreadCount > 99 ? '99+' : unreadCount}</span>}
+            </button>
+            <button
+              type="button"
+              className="mobile-sheet-action"
+              onClick={() => { toggleSound(); if (!soundEnabled) playClickRaw(); }}
+              aria-label={soundEnabled ? 'Matikan efek suara' : 'Aktifkan efek suara'}
+            >
+              {soundEnabled ? <Volume2 size={17} /> : <VolumeX size={17} />}
+            </button>
+            <button
+              type="button"
+              className="mobile-sheet-action"
+              onClick={() => { playClick(); toggleTheme(); }}
+              aria-label={theme === 'dark' ? 'Aktifkan light mode' : 'Aktifkan dark mode'}
+            >
+              {theme === 'dark' ? <Sun size={17} /> : <Moon size={17} />}
+            </button>
+          </div>
+        </div>
         <div className="bottom-sheet-grid">
           {secondaryMobileMenus.filter((item) => hasPermission(userProfile, ROUTE_PERMISSIONS[item.permissionPath || item.path])).map((item) => (
             <NavLink 
@@ -243,7 +286,7 @@ const Sidebar = () => {
               <span>{item.label}</span>
             </NavLink>
           ))}
-          <button className="sheet-nav-item text-danger" onClick={handleLogout}>
+          <button type="button" className="sheet-nav-item text-danger" onClick={handleLogout}>
             <div className="sheet-icon"><LogOut size={19} /></div>
             <span>Logout</span>
           </button>
