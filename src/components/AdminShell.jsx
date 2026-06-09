@@ -4,6 +4,7 @@ import { AnimatePresence } from 'framer-motion';
 import { Loader2, LockKeyhole, LogOut, ShieldAlert } from 'lucide-react';
 import { useAuthStore } from '../store/useAuthStore';
 import { ROUTE_PERMISSIONS, hasPermission } from '../lib/permissions';
+import { stripAdminPrefix } from '../lib/roles';
 import Sidebar from './Sidebar';
 import NotificationToast from './NotificationToast';
 import PageTransition from './PageTransition';
@@ -23,7 +24,7 @@ const ClientMessagesPage = lazy(() => import('../pages/ClientMessagesPage'));
 const STAFF_ROLES = new Set(['admin', 'staff']);
 
 const FullPageLoader = () => (
-  <div style={{ height: '100vh', width: '100vw', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg-dark)' }}>
+  <div style={{ minHeight: '100vh', height: '100dvh', width: '100vw', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg-dark)' }}>
     <Loader2 className="spinner" size={32} color="var(--accent-pink)" />
   </div>
 );
@@ -166,18 +167,18 @@ const AnimatedRoutes = () => {
     <Suspense fallback={null}>
       <AnimatePresence mode="wait">
         <Routes location={location} key={location.pathname}>
-          <Route path="/dashboard" element={<PageTransition><DashboardPage /></PageTransition>} />
-          <Route path="/calendar" element={<PageTransition><CalendarPage /></PageTransition>} />
-          <Route path="/customers" element={<PageTransition><CustomersPage /></PageTransition>} />
-          <Route path="/inventory" element={<PageTransition><InventoryPage /></PageTransition>} />
-          <Route path="/billing" element={<PageTransition><BillingPage /></PageTransition>} />
-          <Route path="/finance" element={<PageTransition><FinancePage /></PageTransition>} />
-          <Route path="/staff" element={<PageTransition><StaffPage /></PageTransition>} />
-          <Route path="/maintenance" element={<PageTransition><MaintenancePage /></PageTransition>} />
-          <Route path="/gallery" element={<PageTransition><GalleryPage /></PageTransition>} />
-          <Route path="/messages" element={<PageTransition><ClientMessagesPage /></PageTransition>} />
-          <Route path="/settings" element={<PageTransition><SettingsPage /></PageTransition>} />
-          <Route path="*" element={<Navigate to="/dashboard" replace />} />
+          <Route path="dashboard" element={<PageTransition><DashboardPage /></PageTransition>} />
+          <Route path="calendar" element={<PageTransition><CalendarPage /></PageTransition>} />
+          <Route path="customers" element={<PageTransition><CustomersPage /></PageTransition>} />
+          <Route path="inventory" element={<PageTransition><InventoryPage /></PageTransition>} />
+          <Route path="billing" element={<PageTransition><BillingPage /></PageTransition>} />
+          <Route path="finance" element={<PageTransition><FinancePage /></PageTransition>} />
+          <Route path="staff" element={<PageTransition><StaffPage /></PageTransition>} />
+          <Route path="maintenance" element={<PageTransition><MaintenancePage /></PageTransition>} />
+          <Route path="gallery" element={<PageTransition><GalleryPage /></PageTransition>} />
+          <Route path="messages" element={<PageTransition><ClientMessagesPage /></PageTransition>} />
+          <Route path="settings" element={<PageTransition><SettingsPage /></PageTransition>} />
+          <Route path="*" element={<Navigate to="/admin/dashboard" replace />} />
         </Routes>
       </AnimatePresence>
     </Suspense>
@@ -208,7 +209,8 @@ const AdminShell = () => {
     return <AccessDenied />;
   }
 
-  const requiredPerm = ROUTE_PERMISSIONS[location.pathname];
+  const adminPermissionPath = stripAdminPrefix(location.pathname);
+  const requiredPerm = ROUTE_PERMISSIONS[adminPermissionPath];
   const hasPerm = hasPermission(userProfile, requiredPerm);
 
   if (!hasPerm) {
