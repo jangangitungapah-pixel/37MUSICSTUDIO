@@ -6394,3 +6394,303 @@
 
 /* === END 10.1G-1 PEMBUKUAN MOBILE COMPACT HOTFIX === */
 
+
+/* === START 10.1G-2 PEMBUKUAN MOBILE CHART LEDGER HOTFIX === */
+
+/* Hotfix 10.1G-2 - fix mobile chart crop and make ledger cards ultra compact.
+   CSS-only. Tidak menyentuh data chart, transaksi, pagination, print, PDF, export, store, atau calculation. */
+
+@media (max-width: 768px) {
+  /* Chart crop fix: Recharts punya wrapper/SVG/clipPath sendiri, jadi semuanya perlu dikunci. */
+  .finance-page .finance-chart-card {
+    padding: 9px !important;
+    overflow: hidden !important;
+  }
+
+  .finance-page .finance-chart-card .recharts-responsive-container,
+  .finance-page .finance-chart-card .recharts-wrapper {
+    width: 100% !important;
+    height: 228px !important;
+    min-height: 228px !important;
+    max-height: 228px !important;
+  }
+
+  .finance-page .finance-chart-card .recharts-surface {
+    width: 100% !important;
+    height: 228px !important;
+    max-height: 228px !important;
+    overflow: visible !important;
+  }
+
+  .finance-page .finance-chart-card .recharts-wrapper {
+    transform: translateY(-4px);
+    transform-origin: top center;
+  }
+
+  .finance-page .finance-chart-card clipPath rect {
+    y: -32px !important;
+    height: 330px !important;
+  }
+
+  .finance-page .finance-chart-card .recharts-cartesian-grid-horizontal line {
+    stroke-opacity: 0.24 !important;
+  }
+
+  .finance-page .finance-chart-card .recharts-yAxis .recharts-cartesian-axis-tick text {
+    font-size: 9px !important;
+  }
+
+  .finance-page .finance-chart-card .recharts-xAxis {
+    transform: translateY(-4px);
+  }
+
+  .finance-page .chart-legend {
+    position: absolute !important;
+    left: 16px !important;
+    bottom: 12px !important;
+    z-index: 5 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .finance-page .chart-legend .legend-item {
+    min-height: 22px !important;
+    padding: 3px 8px !important;
+    border-radius: 999px !important;
+    background: rgba(17, 22, 32, 0.74) !important;
+    font-size: 0.56rem !important;
+    backdrop-filter: none !important;
+  }
+
+  /* Ledger card ultra compact: amount tetap kanan, saldo disembunyikan di mobile. */
+  .finance-page .mobile-ledger-list {
+    gap: 5px !important;
+    padding: 5px !important;
+  }
+
+  .finance-page .mobile-ledger-card {
+    grid-template-columns: minmax(0, 1fr) minmax(82px, auto) !important;
+    grid-template-areas:
+      "info amount"
+      "actions amount" !important;
+    align-items: center !important;
+    min-height: 58px !important;
+    max-height: 74px !important;
+    padding: 7px 8px 7px 9px !important;
+    gap: 3px 7px !important;
+    border-left-width: 4px !important;
+    border-radius: 10px !important;
+    overflow: hidden !important;
+  }
+
+  .finance-page .mobile-ledger-card::before {
+    opacity: 0.38 !important;
+  }
+
+  .finance-page .mobile-ledger-info {
+    grid-area: info !important;
+    align-self: center !important;
+    gap: 3px !important;
+  }
+
+  .finance-page .mobile-ledger-right {
+    grid-area: amount !important;
+    align-self: center !important;
+    justify-self: end !important;
+    max-width: 32vw !important;
+    gap: 0 !important;
+  }
+
+  .finance-page .mobile-ledger-actions {
+    grid-area: actions !important;
+    align-self: center !important;
+    justify-content: flex-start !important;
+    gap: 5px !important;
+    height: 20px !important;
+    padding-top: 0 !important;
+  }
+
+  .finance-page .mobile-ledger-desc {
+    display: block !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
+    color: rgba(255, 250, 240, 0.84) !important;
+    font-size: 0.64rem !important;
+    font-weight: 850 !important;
+    line-height: 1.14 !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+
+  .finance-page .mobile-ledger-meta {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    gap: 3px !important;
+    overflow: hidden !important;
+  }
+
+  .finance-page .cat-badge,
+  .finance-page .source-badge {
+    flex: 0 1 auto !important;
+    max-width: 82px !important;
+    min-height: 17px !important;
+    padding: 1px 5px !important;
+    font-size: 0.48rem !important;
+    line-height: 1 !important;
+  }
+
+  .finance-page .mobile-ledger-date {
+    flex: 0 0 auto !important;
+    font-size: 0.5rem !important;
+    white-space: nowrap !important;
+  }
+
+  .finance-page .mobile-ledger-operator {
+    display: none !important;
+  }
+
+  .finance-page .mobile-ledger-amount {
+    max-width: 32vw !important;
+    overflow: hidden !important;
+    font-size: 0.62rem !important;
+    font-weight: 900 !important;
+    line-height: 1.12 !important;
+    text-align: right !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+
+  .finance-page .mobile-ledger-balance {
+    display: none !important;
+  }
+
+  .finance-page .mobile-ledger-actions .icon-btn {
+    width: 20px !important;
+    height: 20px !important;
+    min-width: 20px !important;
+    border-radius: 8px !important;
+    opacity: 0.72 !important;
+  }
+
+  .finance-page .mobile-ledger-actions .icon-btn svg {
+    width: 10px !important;
+    height: 10px !important;
+  }
+
+  .finance-page .ledger-pagination {
+    min-height: 38px !important;
+    padding: 6px 8px !important;
+  }
+
+  .finance-page .ledger-pagination-info {
+    font-size: 0.54rem !important;
+  }
+
+  .finance-page .ledger-pagination-controls {
+    grid-template-columns: 28px 62px 28px !important;
+    gap: 4px !important;
+  }
+
+  .finance-page .ledger-page-btn {
+    width: 28px !important;
+    min-width: 28px !important;
+    height: 28px !important;
+    min-height: 28px !important;
+  }
+
+  .finance-page .ledger-page-select-wrap,
+  .finance-page .ledger-page-select {
+    width: 62px !important;
+    min-width: 62px !important;
+  }
+
+  .finance-page .ledger-page-select {
+    height: 28px !important;
+    min-height: 28px !important;
+    padding-left: 8px !important;
+    padding-right: 18px !important;
+    font-size: 0.56rem !important;
+  }
+}
+
+@media (max-width: 430px) {
+  .finance-page .finance-chart-card .recharts-responsive-container,
+  .finance-page .finance-chart-card .recharts-wrapper,
+  .finance-page .finance-chart-card .recharts-surface {
+    height: 214px !important;
+    min-height: 214px !important;
+    max-height: 214px !important;
+  }
+
+  .finance-page .finance-chart-card clipPath rect {
+    y: -34px !important;
+    height: 315px !important;
+  }
+
+  .finance-page .mobile-ledger-card {
+    grid-template-columns: minmax(0, 1fr) minmax(78px, auto) !important;
+    grid-template-areas:
+      "info amount"
+      "actions amount" !important;
+    min-height: 56px !important;
+    max-height: 70px !important;
+  }
+
+  .finance-page .mobile-ledger-right,
+  .finance-page .mobile-ledger-amount {
+    max-width: 30vw !important;
+  }
+
+  .finance-page .cat-badge,
+  .finance-page .source-badge {
+    max-width: 76px !important;
+  }
+}
+
+@media (max-width: 360px) {
+  .finance-page .finance-chart-card .recharts-responsive-container,
+  .finance-page .finance-chart-card .recharts-wrapper,
+  .finance-page .finance-chart-card .recharts-surface {
+    height: 198px !important;
+    min-height: 198px !important;
+    max-height: 198px !important;
+  }
+
+  .finance-page .chart-legend {
+    left: 12px !important;
+    bottom: 9px !important;
+  }
+
+  .finance-page .mobile-ledger-card {
+    grid-template-columns: minmax(0, 1fr) minmax(70px, auto) !important;
+  }
+
+  .finance-page .mobile-ledger-right,
+  .finance-page .mobile-ledger-amount {
+    max-width: 28vw !important;
+  }
+
+  .finance-page .mobile-ledger-desc {
+    font-size: 0.6rem !important;
+  }
+
+  .finance-page .cat-badge,
+  .finance-page .source-badge,
+  .finance-page .mobile-ledger-date {
+    font-size: 0.46rem !important;
+  }
+}
+
+[data-theme="light"] .finance-page .chart-legend .legend-item {
+  background: rgba(255, 255, 255, 0.78) !important;
+}
+
+@media (hover: none) and (max-width: 768px) {
+  .finance-page .mobile-ledger-card:hover,
+  .finance-page .mobile-ledger-actions .icon-btn:hover {
+    transform: none !important;
+  }
+}
+
+/* === END 10.1G-2 PEMBUKUAN MOBILE CHART LEDGER HOTFIX === */
+
