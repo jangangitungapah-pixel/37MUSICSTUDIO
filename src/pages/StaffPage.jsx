@@ -216,16 +216,52 @@ const StaffPage = () => {
 
   return (
     <div className="app-page staff-page">
-      <div className="app-page-header">
-        <div>
-          <h2 className="app-page-title">Manajemen Staff</h2>
-          <p className="app-page-subtitle">Kelola akses dan data anggota tim Anda</p>
-        </div>
-        <div className="app-page-actions">
-          <button className="btn-primary" onClick={() => handleOpenModal()}>
-            <UserPlus size={16} />
-            <span>Tambah Staff</span>
-          </button>
+            <div className="app-page-header staff-command-shell">
+        <div className="staff-command-top">
+          <div className="staff-command-copy">
+            <div className="staff-header-icon" aria-hidden="true">
+              <span>37</span>
+            </div>
+
+            <div className="staff-command-text">
+              <span className="staff-command-eyebrow">Team Access Console</span>
+              <h1 className="app-page-title">Manajemen Staff</h1>
+              <p className="app-page-subtitle">
+                Kelola akses, status, dan data anggota tim 37 Music Studio.
+              </p>
+            </div>
+          </div>
+
+          <div className="staff-action-cluster" aria-label="Ringkasan staff dan aksi utama">
+            <div className="staff-state-pill">
+              <span>Total</span>
+              <strong>{staffMembers.length}</strong>
+            </div>
+
+            <div className="staff-state-pill">
+              <span>Admin</span>
+              <strong>{staffMembers.filter((staff) => staff.role === 'admin').length}</strong>
+            </div>
+
+            <div className="staff-state-pill is-active">
+              <span>Aktif</span>
+              <strong>{staffMembers.filter((staff) => staff.status !== 'inactive').length}</strong>
+            </div>
+
+            <div className="staff-state-pill is-muted">
+              <span>Nonaktif</span>
+              <strong>{staffMembers.filter((staff) => staff.status === 'inactive').length}</strong>
+            </div>
+
+            <button
+              type="button"
+              className="btn-primary staff-primary-action"
+              onClick={() => handleOpenModal()}
+            >
+              <UserPlus size={15} />
+              <span>Tambah Staff</span>
+            </button>
+          </div>
         </div>
       </div>
 
