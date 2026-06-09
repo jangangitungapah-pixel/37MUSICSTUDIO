@@ -2030,3 +2030,267 @@
     transition-duration: 0.001ms !important;
   }
 }
+
+/* --------------------------------------------------------------------------
+   37 ADMIN MESSAGES LIGHT AND MOBILE LOCK
+   -------------------------------------------------------------------------- */
+
+.messages-page {
+  contain: layout paint;
+  max-width: min(1440px, 100%);
+  overflow-x: hidden;
+}
+
+.messages-page img,
+.messages-page svg {
+  max-width: 100%;
+}
+
+.messages-page textarea,
+.messages-page input,
+.messages-page button,
+.messages-page a {
+  max-width: 100%;
+}
+
+.messages-board,
+.messages-list,
+.message-card,
+.message-body,
+.message-reply-note,
+.message-reply-box,
+.message-actions,
+.message-meta-grid {
+  min-width: 0;
+}
+
+.message-body,
+.message-reply-note p,
+.message-reply-box textarea,
+.messages-alert span,
+.messages-empty p {
+  overflow-wrap: anywhere;
+}
+
+[data-theme="light"] .message-status-pill.status-cyan {
+  color: rgba(17, 112, 125, 0.96);
+  border-color: rgba(20, 139, 153, 0.24);
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.46), transparent 58%),
+    rgba(35, 176, 191, 0.12);
+}
+
+[data-theme="light"] .message-status-pill.status-gold {
+  color: rgba(130, 83, 12, 0.96);
+  border-color: rgba(177, 130, 43, 0.25);
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.46), transparent 58%),
+    rgba(239, 197, 110, 0.18);
+}
+
+[data-theme="light"] .message-status-pill.status-green {
+  color: rgba(20, 104, 73, 0.96);
+  border-color: rgba(44, 138, 98, 0.22);
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.42), transparent 58%),
+    rgba(44, 138, 98, 0.12);
+}
+
+[data-theme="light"] .message-client-avatar {
+  border-color: rgba(177, 130, 43, 0.30);
+  box-shadow:
+    0 14px 28px rgba(177, 130, 43, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.52);
+}
+
+[data-theme="light"] .message-meta-grid button svg {
+  color: rgba(20, 139, 153, 0.82);
+}
+
+[data-theme="light"] .message-meta-grid button svg:last-child {
+  color: rgba(177, 130, 43, 0.82);
+}
+
+[data-theme="light"] .message-reply-note > svg {
+  color: rgba(20, 104, 73, 0.94);
+  background: rgba(44, 138, 98, 0.10);
+}
+
+[data-theme="light"] .message-reply-note strong {
+  color: rgba(20, 104, 73, 0.94);
+}
+
+[data-theme="light"] .message-reply-box textarea:focus {
+  border-color: rgba(20, 139, 153, 0.40);
+  box-shadow:
+    0 0 0 3px rgba(20, 139, 153, 0.11),
+    inset 0 1px 0 rgba(255, 255, 255, 0.76);
+}
+
+[data-theme="light"] .message-action-btn:disabled,
+[data-theme="light"] .message-action-btn.disabled {
+  color: rgba(45, 38, 28, 0.48);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.46), rgba(255, 255, 255, 0.24)),
+    rgba(255, 250, 241, 0.32);
+}
+
+[data-theme="light"] .messages-page button:focus-visible,
+[data-theme="light"] .messages-page a:focus-visible,
+[data-theme="light"] .messages-page input:focus-visible,
+[data-theme="light"] .messages-page textarea:focus-visible {
+  outline-color: rgba(20, 139, 153, 0.72);
+}
+
+@media (hover: none), (pointer: coarse) {
+  .message-card,
+  .message-meta-grid button,
+  .message-action-btn,
+  .message-reply-box button,
+  .messages-filter-tabs button {
+    transform: none;
+  }
+
+  .message-card:hover,
+  .message-meta-grid button:hover,
+  .message-action-btn:hover,
+  .message-reply-box button:hover,
+  .messages-filter-tabs button:hover {
+    transform: none;
+  }
+
+  .message-card,
+  .messages-hero,
+  .messages-toolbar,
+  .messages-board,
+  .messages-summary-card,
+  .messages-empty {
+    -webkit-backdrop-filter: blur(14px) saturate(1.02);
+    backdrop-filter: blur(14px) saturate(1.02);
+  }
+}
+
+@media (max-width: 768px) {
+  .messages-page {
+    width: 100%;
+    padding-inline: max(10px, env(safe-area-inset-left, 0px));
+    padding-right: max(10px, env(safe-area-inset-right, 0px));
+    padding-bottom: calc(118px + env(safe-area-inset-bottom, 0px));
+    overflow-x: hidden;
+  }
+
+  .messages-hero,
+  .messages-toolbar,
+  .messages-board,
+  .message-card,
+  .messages-summary-card,
+  .messages-empty,
+  .messages-alert {
+    box-shadow:
+      0 12px 30px rgba(0, 0, 0, 0.15),
+      inset 0 1px 0 rgba(255, 255, 255, 0.060);
+  }
+
+  .messages-hero,
+  .messages-toolbar,
+  .messages-board {
+    width: 100%;
+  }
+
+  .messages-board {
+    padding: 10px;
+  }
+
+  .messages-list {
+    width: 100%;
+  }
+
+  .messages-filter-tabs {
+    overscroll-behavior-inline: contain;
+  }
+
+  .message-meta-grid button span,
+  .message-action-btn,
+  .message-reply-box button {
+    white-space: normal;
+  }
+}
+
+@media (max-width: 430px) {
+  .messages-page {
+    padding-inline: max(8px, env(safe-area-inset-left, 0px));
+    padding-right: max(8px, env(safe-area-inset-right, 0px));
+    padding-bottom: calc(124px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .messages-hero {
+    padding: 16px;
+  }
+
+  .messages-hero h1 {
+    font-size: clamp(2.62rem, 12.4vw, 3.7rem);
+  }
+
+  .messages-summary-card {
+    min-height: 84px;
+  }
+
+  .message-card {
+    padding: 13px;
+  }
+
+  .message-card-top {
+    grid-template-columns: 48px minmax(0, 1fr);
+    gap: 10px;
+  }
+
+  .message-client-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 16px;
+  }
+
+  .message-status-pill {
+    min-height: 32px;
+  }
+
+  .message-body,
+  .message-reply-box textarea {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 380px) {
+  .messages-page {
+    padding-inline: 8px;
+  }
+
+  .messages-kicker {
+    font-size: 0.64rem;
+  }
+
+  .messages-hero p,
+  .messages-empty p,
+  .message-body {
+    font-size: 0.88rem;
+  }
+
+  .messages-filter-tabs button {
+    padding-inline: 11px;
+  }
+
+  .message-meta-grid button {
+    padding-inline: 10px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .messages-page *,
+  .messages-page *::before,
+  .messages-page *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.001ms !important;
+  }
+}
