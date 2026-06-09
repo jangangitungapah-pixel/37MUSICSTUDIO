@@ -9065,3 +9065,357 @@ tr:hover
   }
 }
 /* === END PHASE 9.1F-3 CUSTOMER MOBILE DENSITY COMPACT === */
+
+/* === START PHASE 9.1F-4 CUSTOMER MOBILE LIST COMPACT === */
+/*
+  Customer Mobile List Compact Polish
+  Screenshot issue:
+  - Mobile customer cards are still too tall.
+  - Edit/delete buttons are too far apart.
+  - Status dot and right action rail waste vertical space.
+  - List needs tighter rhythm above bottom nav.
+  Scope:
+  - CSS-only
+  - no JSX/store/router/auth/business workflow changes
+  - safe to rerun by marker
+*/
+
+@media (max-width: 920px) {
+  .customers-page .customers-container {
+    overflow: hidden !important;
+  }
+
+  .customers-page .app-table-toolbar {
+    border-bottom: 1px solid rgba(255, 250, 240, 0.065) !important;
+  }
+
+  .customers-page .mobile-customer-list {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 0.38rem !important;
+    width: 100% !important;
+    padding: 0.44rem !important;
+    padding-bottom: calc(5.35rem + env(safe-area-inset-bottom)) !important;
+    overflow-x: hidden !important;
+  }
+
+  .customers-page .mobile-customer-card {
+    position: relative !important;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    align-items: center !important;
+    min-height: 68px !important;
+    width: 100% !important;
+    padding: 0.48rem 0.5rem !important;
+    gap: 0.48rem !important;
+    border-radius: 0.82rem !important;
+    overflow: hidden !important;
+  }
+
+  .customers-page .mobile-customer-card::before {
+    width: 3px !important;
+    opacity: 0.52 !important;
+  }
+
+  .customers-page .mobile-card-left {
+    display: grid !important;
+    grid-template-columns: 34px minmax(0, 1fr) !important;
+    align-items: center !important;
+    gap: 0.52rem !important;
+    min-width: 0 !important;
+  }
+
+  .customers-page .mobile-card-left .customer-avatar {
+    width: 34px !important;
+    height: 34px !important;
+    min-width: 34px !important;
+    border-radius: 0.75rem !important;
+    font-size: 0.86rem !important;
+  }
+
+  .customers-page .mobile-card-left .customer-avatar::after {
+    inset: -2px !important;
+    filter: blur(5px) !important;
+    opacity: 0.18 !important;
+  }
+
+  .customers-page .mobile-card-info {
+    min-width: 0 !important;
+    display: grid !important;
+    gap: 0.12rem !important;
+    align-content: center !important;
+  }
+
+  .customers-page .mobile-card-info > div:first-child {
+    min-width: 0 !important;
+    max-width: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.35rem !important;
+  }
+
+  .customers-page .mobile-card-info .customer-name {
+    display: block !important;
+    max-width: 100% !important;
+    font-size: 0.78rem !important;
+    line-height: 1.05 !important;
+    font-weight: 950 !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+
+  .customers-page .mobile-card-phone {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 0.25rem !important;
+    max-width: 100% !important;
+    font-size: 0.64rem !important;
+    line-height: 1.05 !important;
+    font-weight: 750 !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+
+  .customers-page .mobile-card-phone svg {
+    width: 10px !important;
+    height: 10px !important;
+    flex: 0 0 auto !important;
+    opacity: 0.72 !important;
+  }
+
+  .customers-page .mobile-card-meta {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    gap: 0.24rem !important;
+    min-width: 0 !important;
+    margin-top: 0.08rem !important;
+  }
+
+  .customers-page .mobile-meta-tag {
+    min-height: 17px !important;
+    height: 17px !important;
+    max-width: 100% !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    padding: 0 0.36rem !important;
+    border-radius: 999px !important;
+    font-size: 0.54rem !important;
+    line-height: 1 !important;
+    font-weight: 950 !important;
+    letter-spacing: -0.01em !important;
+    white-space: nowrap !important;
+  }
+
+  .customers-page .mobile-card-right {
+    width: 32px !important;
+    min-width: 32px !important;
+    align-self: stretch !important;
+    display: grid !important;
+    grid-template-rows: auto 1fr !important;
+    justify-items: center !important;
+    align-items: start !important;
+    gap: 0.22rem !important;
+    padding: 0.1rem 0 !important;
+  }
+
+  .customers-page .status-dot {
+    width: 7px !important;
+    height: 7px !important;
+    margin: 0 !important;
+    align-self: start !important;
+    justify-self: center !important;
+    box-shadow: 0 0 12px currentColor !important;
+  }
+
+  .customers-page .mobile-card-actions {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    align-content: center !important;
+    justify-items: center !important;
+    gap: 0.22rem !important;
+    width: 100% !important;
+  }
+
+  .customers-page .mobile-card-actions .icon-btn {
+    width: 25px !important;
+    height: 25px !important;
+    min-width: 25px !important;
+    border-radius: 999px !important;
+    border-color: transparent !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  .customers-page .mobile-card-actions .icon-btn svg {
+    width: 12px !important;
+    height: 12px !important;
+  }
+
+  .customers-page .mobile-card-actions .icon-btn.delete {
+    opacity: 0.74 !important;
+  }
+
+  .customers-page .client-app-badge.mobile,
+  .customers-page .mobile-card-info .client-app-badge {
+    min-height: 16px !important;
+    padding: 0 0.4rem !important;
+    font-size: 0.48rem !important;
+    margin-top: 0.12rem !important;
+  }
+}
+
+@media (max-width: 520px) {
+  .customers-page .mobile-customer-list {
+    gap: 0.32rem !important;
+    padding: 0.36rem !important;
+    padding-bottom: calc(5.25rem + env(safe-area-inset-bottom)) !important;
+  }
+
+  .customers-page .mobile-customer-card {
+    min-height: 62px !important;
+    padding: 0.42rem 0.44rem !important;
+    gap: 0.4rem !important;
+    border-radius: 0.76rem !important;
+  }
+
+  .customers-page .mobile-card-left {
+    grid-template-columns: 30px minmax(0, 1fr) !important;
+    gap: 0.46rem !important;
+  }
+
+  .customers-page .mobile-card-left .customer-avatar {
+    width: 30px !important;
+    height: 30px !important;
+    min-width: 30px !important;
+    border-radius: 0.68rem !important;
+    font-size: 0.78rem !important;
+  }
+
+  .customers-page .mobile-card-info .customer-name {
+    font-size: 0.74rem !important;
+  }
+
+  .customers-page .mobile-card-phone {
+    font-size: 0.6rem !important;
+  }
+
+  .customers-page .mobile-meta-tag {
+    min-height: 16px !important;
+    height: 16px !important;
+    padding-inline: 0.32rem !important;
+    font-size: 0.5rem !important;
+  }
+
+  .customers-page .mobile-card-right {
+    width: 28px !important;
+    min-width: 28px !important;
+  }
+
+  .customers-page .mobile-card-actions .icon-btn {
+    width: 23px !important;
+    height: 23px !important;
+    min-width: 23px !important;
+  }
+
+  .customers-page .mobile-card-actions .icon-btn svg {
+    width: 11px !important;
+    height: 11px !important;
+  }
+}
+
+@media (max-width: 380px) {
+  .customers-page .mobile-customer-card {
+    min-height: 58px !important;
+  }
+
+  .customers-page .mobile-card-left {
+    grid-template-columns: 28px minmax(0, 1fr) !important;
+    gap: 0.4rem !important;
+  }
+
+  .customers-page .mobile-card-left .customer-avatar {
+    width: 28px !important;
+    height: 28px !important;
+    min-width: 28px !important;
+    border-radius: 0.62rem !important;
+  }
+
+  .customers-page .mobile-card-info .customer-name {
+    font-size: 0.7rem !important;
+  }
+
+  .customers-page .mobile-card-phone {
+    font-size: 0.56rem !important;
+  }
+
+  .customers-page .mobile-card-phone svg {
+    width: 9px !important;
+    height: 9px !important;
+  }
+
+  .customers-page .mobile-card-meta {
+    gap: 0.2rem !important;
+  }
+
+  .customers-page .mobile-meta-tag {
+    font-size: 0.48rem !important;
+    padding-inline: 0.28rem !important;
+  }
+}
+
+/* Short phones: even denser list rhythm */
+@media (max-width: 920px) and (max-height: 760px) {
+  .customers-page .mobile-customer-list {
+    gap: 0.28rem !important;
+  }
+
+  .customers-page .mobile-customer-card {
+    min-height: 56px !important;
+    padding-top: 0.38rem !important;
+    padding-bottom: 0.38rem !important;
+  }
+
+  .customers-page .mobile-card-left .customer-avatar {
+    width: 28px !important;
+    height: 28px !important;
+    min-width: 28px !important;
+  }
+
+  .customers-page .mobile-card-info .customer-name {
+    font-size: 0.7rem !important;
+  }
+
+  .customers-page .mobile-card-phone {
+    font-size: 0.56rem !important;
+  }
+}
+
+/* Touch performance lock */
+@media (hover: none), (pointer: coarse) {
+  .customers-page .mobile-customer-card {
+    backdrop-filter: blur(5px) saturate(104%) !important;
+    -webkit-backdrop-filter: blur(5px) saturate(104%) !important;
+    transition-duration: 70ms !important;
+  }
+
+  .customers-page .mobile-customer-card:hover,
+  .customers-page .mobile-card-actions .icon-btn:hover,
+  .customers-page .mobile-card-left .customer-avatar {
+    transform: none !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .customers-page .mobile-customer-list,
+  .customers-page .mobile-customer-card,
+  .customers-page .mobile-customer-card *,
+  .customers-page .mobile-customer-card::before,
+  .customers-page .mobile-customer-card::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+/* === END PHASE 9.1F-4 CUSTOMER MOBILE LIST COMPACT === */
