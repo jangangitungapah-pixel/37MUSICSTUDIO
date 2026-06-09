@@ -248,6 +248,28 @@ const BillingPage = () => {
 
   return (
     <motion.div className="app-page billing-page" {...pagePreset}>
+      {/* === START BILLING POS COMMAND SHELL PHASE 2 === */}
+      <section className="billing-pos-shell" aria-label="Ringkasan Billing POS">
+        <div className="billing-command-top">
+          <div className="billing-command-main">
+            <span className="billing-command-kicker">Billing / POS Admin</span>
+            <h2>Control Deck Tagihan</h2>
+            <p>Monitor pembayaran, DP, piutang, dan transaksi studio dari satu cockpit ringkas.</p>
+          </div>
+
+          <div className="billing-command-summary" aria-label="Snapshot pembayaran">
+            <span className="billing-command-pill success">
+              <CheckCircle size={14} />
+              {billableBookings.filter(b => b.status === 'confirmed').length} Lunas
+            </span>
+            <span className="billing-command-pill warning">
+              <AlertCircle size={14} />
+              {billableBookings.filter(b => b.status !== 'confirmed').length} Open
+            </span>
+          </div>
+        </div>
+
+        <div className="billing-metric-strip">
       {/* Header Stats */}
       <div className="billing-stats-bar tour-bill-stats">
         <div className="billing-stat-card income">
@@ -272,6 +294,7 @@ const BillingPage = () => {
           </div>
         </div>
       </div>
+        </div>
 
       {/* Smart Billing Summary */}
       <div className="billing-smart-panel">
@@ -306,6 +329,9 @@ const BillingPage = () => {
           )}
         </div>
       </div>
+
+      {/* === END BILLING POS COMMAND SHELL PHASE 2 === */}
+      </section>
 
       <div className="billing-content app-panel">
         <div className="app-table-toolbar">
