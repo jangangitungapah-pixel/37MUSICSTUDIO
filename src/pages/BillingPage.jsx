@@ -422,8 +422,8 @@ const BillingPage = () => {
           </div>
         </div>
 
-        <div className="app-table-wrapper tour-bill-table hide-on-mobile">
-          <table className="app-table billing-table">
+        <div className="app-table-wrapper tour-bill-table hide-on-mobile billing-table-deck">
+          <table className="app-table billing-table billing-table-compact">
             <thead>
               <tr>
                 <th>Invoice ID</th>
@@ -448,9 +448,9 @@ const BillingPage = () => {
                       <td className="inv-id">INV-{b.id.toString().padStart(5, '0')}</td>
                       <td>{format(new Date(b.date), 'dd MMM yyyy')}</td>
                       <td className="inv-band">
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <div className="billing-band-cell">
                           {b.band}
-                          {b.discountAmount > 0 && <span title="VIP Discount" style={{ fontSize: '10px', background: '#FFC107', color: '#000', padding: '1px 4px', borderRadius: '4px' }}>VIP</span>}
+                          {b.discountAmount > 0 && <span title="VIP Discount" className="billing-vip-badge">VIP</span>}
                         </div>
                       </td>
                       <td className="inv-total">{formatCurrency(total)}</td>
@@ -467,13 +467,15 @@ const BillingPage = () => {
                         </select>
                       </td>
                       <td className={`inv-remaining ${remaining > 0 ? 'has-debt' : ''}`}>
-                        {remaining > 0 ? formatCurrency(remaining) : '-'}
-                        {(() => {
-                          const deadline = getDepositDeadlineStatus(b);
-                          return deadline.state !== 'none' ? (
-                            <span className={`deadline-chip ${deadline.state}`}>{deadline.label}</span>
-                          ) : null;
-                        })()}
+                        <span className="inv-remaining-wrap">
+                          <span className="inv-remaining-value">{remaining > 0 ? formatCurrency(remaining) : '-'}</span>
+                          {(() => {
+                            const deadline = getDepositDeadlineStatus(b);
+                            return deadline.state !== 'none' ? (
+                              <span className={`deadline-chip ${deadline.state}`}>{deadline.label}</span>
+                            ) : null;
+                          })()}
+                        </span>
                       </td>
                       <td className="action-col">
                         <div className="row-actions">

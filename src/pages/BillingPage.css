@@ -3127,3 +3127,382 @@
 }
 /* === END BILLING CONTROL DECK PHASE 3 === */
 
+
+/* === START BILLING DESKTOP TABLE DENSITY PHASE 4 === */
+.billing-page .billing-table-deck {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 280px;
+  overflow: auto;
+  border-top: 1px solid rgba(255, 255, 255, 0.055);
+  scrollbar-width: thin;
+  scrollbar-color: rgba(239, 197, 110, 0.48) rgba(255, 255, 255, 0.045);
+}
+
+.billing-page .billing-table-deck::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.billing-page .billing-table-deck::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.040);
+  border-radius: 999px;
+}
+
+.billing-page .billing-table-deck::-webkit-scrollbar-thumb {
+  background: rgba(239, 197, 110, 0.55);
+  border: 3px solid transparent;
+  border-radius: 999px;
+  background-clip: content-box;
+}
+
+.billing-page .billing-table-compact {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.billing-page .billing-table-compact thead {
+  position: sticky;
+  top: 0;
+  z-index: 12;
+}
+
+.billing-page .billing-table-compact thead th {
+  position: sticky;
+  top: 0;
+  z-index: 12;
+  height: 42px;
+  padding: 9px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.080);
+  background:
+    linear-gradient(180deg, rgba(24, 28, 38, 0.98), rgba(13, 16, 24, 0.95));
+  color: var(--text-muted);
+  font-size: 0.66rem;
+  line-height: 1;
+  font-weight: 950;
+  letter-spacing: 0.080em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  backdrop-filter: blur(20px) saturate(1.05);
+  -webkit-backdrop-filter: blur(20px) saturate(1.05);
+}
+
+.billing-page .billing-table-compact tbody tr {
+  position: relative;
+  cursor: pointer;
+  transition:
+    background-color 0.16s ease,
+    box-shadow 0.16s ease,
+    transform 0.16s ease;
+}
+
+.billing-page .billing-table-compact tbody tr::after {
+  content: "";
+  position: absolute;
+  inset: 6px 8px;
+  z-index: -1;
+  border-radius: 14px;
+  opacity: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(var(--accent-cyan-rgb), 0.065), rgba(239, 197, 110, 0.045));
+  transition: opacity 0.16s ease;
+}
+
+.billing-page .billing-table-compact tbody tr:hover {
+  background: rgba(255, 255, 255, 0.030);
+}
+
+.billing-page .billing-table-compact tbody tr:hover::after {
+  opacity: 1;
+}
+
+.billing-page .billing-table-compact td {
+  height: 52px;
+  padding: 8px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.052);
+  color: var(--text-secondary);
+  font-size: 0.80rem;
+  line-height: 1.25;
+  vertical-align: middle;
+}
+
+.billing-page .billing-table-compact th:nth-child(1),
+.billing-page .billing-table-compact td:nth-child(1) {
+  width: 14%;
+}
+
+.billing-page .billing-table-compact th:nth-child(2),
+.billing-page .billing-table-compact td:nth-child(2) {
+  width: 11%;
+}
+
+.billing-page .billing-table-compact th:nth-child(3),
+.billing-page .billing-table-compact td:nth-child(3) {
+  width: 20%;
+}
+
+.billing-page .billing-table-compact th:nth-child(4),
+.billing-page .billing-table-compact td:nth-child(4) {
+  width: 15%;
+}
+
+.billing-page .billing-table-compact th:nth-child(5),
+.billing-page .billing-table-compact td:nth-child(5) {
+  width: 15%;
+}
+
+.billing-page .billing-table-compact th:nth-child(6),
+.billing-page .billing-table-compact td:nth-child(6) {
+  width: 16%;
+}
+
+.billing-page .billing-table-compact th:nth-child(7),
+.billing-page .billing-table-compact td:nth-child(7) {
+  width: 9%;
+}
+
+.billing-page .billing-table-compact .inv-id {
+  color: var(--text-muted) !important;
+  font-size: 0.70rem !important;
+  font-weight: 850;
+  letter-spacing: 0.035em;
+}
+
+.billing-page .billing-table-compact .inv-band {
+  color: var(--text-primary) !important;
+  font-size: 0.82rem;
+  font-weight: 900;
+}
+
+.billing-band-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 100%;
+  min-width: 0;
+  vertical-align: middle;
+}
+
+.billing-band-cell > :first-child,
+.billing-band-cell {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.billing-vip-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 18px;
+  padding: 0 6px;
+  border-radius: 999px;
+  flex-shrink: 0;
+  background:
+    linear-gradient(180deg, rgba(255, 222, 132, 0.98), rgba(239, 197, 110, 0.88));
+  color: #171104;
+  font-size: 0.58rem;
+  font-weight: 950;
+  letter-spacing: 0.055em;
+  box-shadow: 0 6px 16px rgba(239, 197, 110, 0.16);
+}
+
+.billing-page .billing-table-compact .inv-total {
+  color: var(--text-primary) !important;
+  font-size: 0.84rem;
+  font-weight: 950;
+  letter-spacing: -0.030em;
+  white-space: nowrap;
+}
+
+.billing-page .billing-table-compact .inv-remaining {
+  color: var(--text-secondary) !important;
+  font-size: 0.80rem;
+}
+
+.billing-page .billing-table-compact .inv-remaining.has-debt {
+  color: rgb(var(--warning-rgb)) !important;
+  font-weight: 950;
+}
+
+.billing-page .billing-table-compact .inv-remaining-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 100%;
+  min-width: 0;
+  flex-wrap: wrap;
+}
+
+.billing-page .billing-table-compact .inv-remaining-value {
+  display: inline-block;
+  min-width: 0;
+  max-width: 112px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.billing-page .billing-table-compact .deadline-chip {
+  margin-left: 0;
+  min-height: 20px;
+  padding: 0 7px;
+  border-radius: 999px;
+  font-size: 0.60rem;
+  line-height: 1;
+  font-weight: 950;
+}
+
+.billing-page .billing-table-compact .status-select {
+  width: min(100%, 142px);
+  min-height: 32px;
+  padding: 0 27px 0 10px;
+  border-radius: 999px;
+  font-size: 0.70rem;
+  line-height: 1;
+  font-weight: 950;
+  letter-spacing: 0.010em;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.060);
+}
+
+.billing-page .billing-table-compact .status-select:hover {
+  transform: none;
+  filter: brightness(1.06);
+}
+
+.billing-page .billing-table-compact .status-select:focus-visible {
+  outline: 2px solid rgba(239, 197, 110, 0.72);
+  outline-offset: 3px;
+}
+
+.billing-page .billing-table-compact .action-col {
+  text-align: right;
+}
+
+.billing-page .billing-table-compact .row-actions {
+  justify-content: flex-end;
+  gap: 6px;
+  flex-wrap: nowrap;
+}
+
+.billing-page .billing-table-compact .btn-sm-pay {
+  min-height: 30px;
+  padding: 0 10px;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 950;
+  letter-spacing: 0.015em;
+  box-shadow: none;
+}
+
+.billing-page .billing-table-compact .icon-btn {
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  border-radius: 11px;
+  border: 1px solid rgba(var(--accent-cyan-rgb), 0.16);
+  background: rgba(var(--accent-cyan-rgb), 0.060);
+  color: var(--accent-cyan);
+  box-shadow: none;
+}
+
+.billing-page .billing-table-compact .icon-btn:hover {
+  border-color: rgba(var(--accent-cyan-rgb), 0.30);
+  background: rgba(var(--accent-cyan-rgb), 0.12);
+  transform: translateY(-1px);
+}
+
+.billing-page .billing-table-compact .empty-state {
+  height: 220px;
+  padding: 42px !important;
+  color: var(--text-muted);
+  font-size: 0.86rem;
+  font-weight: 750;
+  letter-spacing: 0.015em;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(var(--accent-cyan-rgb), 0.070), transparent 40%),
+    rgba(255, 255, 255, 0.018);
+}
+
+[data-theme="light"] .billing-page .billing-table-deck {
+  border-top-color: rgba(35, 28, 18, 0.070);
+  scrollbar-color: rgba(154, 93, 16, 0.46) rgba(35, 28, 18, 0.050);
+}
+
+[data-theme="light"] .billing-page .billing-table-compact thead th {
+  border-bottom-color: rgba(35, 28, 18, 0.080);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(255, 250, 242, 0.94));
+  color: rgba(60, 45, 25, 0.64);
+  box-shadow: 0 10px 28px rgba(88, 65, 35, 0.060);
+}
+
+[data-theme="light"] .billing-page .billing-table-compact td {
+  border-bottom-color: rgba(35, 28, 18, 0.055);
+}
+
+[data-theme="light"] .billing-page .billing-table-compact tbody tr:hover {
+  background: rgba(217, 151, 35, 0.045);
+}
+
+[data-theme="light"] .billing-page .billing-table-compact tbody tr::after {
+  background:
+    linear-gradient(90deg, rgba(2, 132, 199, 0.055), rgba(217, 151, 35, 0.060));
+}
+
+[data-theme="light"] .billing-vip-badge {
+  box-shadow: 0 6px 16px rgba(154, 93, 16, 0.12);
+}
+
+[data-theme="light"] .billing-page .billing-table-compact .icon-btn {
+  border-color: rgba(2, 132, 199, 0.18);
+  background: rgba(2, 132, 199, 0.060);
+  color: #0284c7;
+}
+
+@media (max-width: 1180px) {
+  .billing-page .billing-table-compact th:nth-child(1),
+  .billing-page .billing-table-compact td:nth-child(1) {
+    width: 15%;
+  }
+
+  .billing-page .billing-table-compact th:nth-child(3),
+  .billing-page .billing-table-compact td:nth-child(3) {
+    width: 18%;
+  }
+
+  .billing-page .billing-table-compact .btn-sm-pay {
+    padding-inline: 8px;
+  }
+
+  .billing-page .billing-table-compact .icon-btn {
+    width: 30px;
+    height: 30px;
+    min-width: 30px;
+  }
+}
+
+@media (hover: none) {
+  .billing-page .billing-table-compact tbody tr:hover,
+  .billing-page .billing-table-compact .icon-btn:hover,
+  .billing-page .billing-table-compact .btn-sm-pay:hover {
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .billing-page .billing-table-compact *,
+  .billing-page .billing-table-compact *::before,
+  .billing-page .billing-table-compact *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+/* === END BILLING DESKTOP TABLE DENSITY PHASE 4 === */
+
