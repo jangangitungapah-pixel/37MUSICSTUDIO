@@ -5162,3 +5162,443 @@
 }
 /* === END BILLING MOBILE SCREENSHOT POLISH PHASE 8 === */
 
+
+/* === START BILLING MOBILE SPACE COMPRESSION PHASE 9 === */
+@media (max-width: 768px) {
+  .billing-page {
+    gap: 7px !important;
+    padding-bottom: calc(14px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  /* Do not let the billing panel stretch into useless empty space */
+  .billing-page .billing-content.app-panel {
+    flex: 0 0 auto !important;
+    min-height: 0 !important;
+    height: auto !important;
+    border-radius: 17px !important;
+  }
+
+  .billing-page .billing-mobile-deck {
+    flex: 0 0 auto !important;
+    min-height: 0 !important;
+    padding: 7px !important;
+    padding-bottom: calc(116px + env(safe-area-inset-bottom, 0px)) !important;
+    gap: 7px !important;
+  }
+
+  .billing-page .mobile-bottom-spacer {
+    height: calc(104px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  /* Hero becomes a compact command strip */
+  .billing-page .billing-pos-shell {
+    flex: 0 0 auto !important;
+    padding: 9px !important;
+    gap: 7px !important;
+    border-radius: 17px !important;
+  }
+
+  .billing-page .billing-command-top {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    align-items: start !important;
+    gap: 8px !important;
+  }
+
+  .billing-page .billing-command-main {
+    gap: 4px !important;
+  }
+
+  .billing-page .billing-command-kicker {
+    min-height: 21px !important;
+    padding: 0 8px !important;
+    font-size: 0.52rem !important;
+    line-height: 1 !important;
+    letter-spacing: 0.095em !important;
+  }
+
+  .billing-page .billing-command-main h2 {
+    max-width: 100% !important;
+    font-size: clamp(1.05rem, 5.1vw, 1.30rem) !important;
+    line-height: 0.95 !important;
+    letter-spacing: -0.072em !important;
+  }
+
+  .billing-page .billing-command-main p {
+    max-width: 25ch !important;
+    font-size: 0.62rem !important;
+    line-height: 1.22 !important;
+    font-weight: 720 !important;
+  }
+
+  .billing-page .billing-command-summary {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 5px !important;
+    align-self: start !important;
+    justify-content: end !important;
+  }
+
+  .billing-page .billing-command-pill {
+    min-height: 24px !important;
+    padding: 0 8px !important;
+    gap: 5px !important;
+    font-size: 0.58rem !important;
+    justify-content: center !important;
+  }
+
+  .billing-page .billing-command-pill svg {
+    width: 12px !important;
+    height: 12px !important;
+  }
+
+  /* Two metrics only on mobile. Total transaksi is duplicated by toolbar count. */
+  .billing-page .billing-pos-shell .billing-stats-bar {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 6px !important;
+  }
+
+  .billing-page .billing-pos-shell .billing-stat-card.total {
+    display: none !important;
+  }
+
+  .billing-page .billing-pos-shell .billing-stat-card {
+    min-height: 54px !important;
+    padding: 7px 8px !important;
+    gap: 7px !important;
+    border-radius: 14px !important;
+  }
+
+  .billing-page .billing-pos-shell .billing-stat-card .stat-icon {
+    width: 28px !important;
+    height: 28px !important;
+    flex: 0 0 28px !important;
+    border-radius: 10px !important;
+  }
+
+  .billing-page .billing-pos-shell .billing-stat-card .stat-icon svg {
+    width: 14px !important;
+    height: 14px !important;
+  }
+
+  .billing-page .billing-pos-shell .billing-stat-card .stat-label {
+    font-size: 0.49rem !important;
+    line-height: 1.08 !important;
+    letter-spacing: 0.055em !important;
+  }
+
+  .billing-page .billing-pos-shell .billing-stat-card .stat-value {
+    font-size: clamp(0.82rem, 4vw, 0.96rem) !important;
+    line-height: 0.96 !important;
+    letter-spacing: -0.060em !important;
+  }
+
+  .billing-page .billing-pos-shell .billing-stat-card .stat-value small {
+    font-size: 0.62em !important;
+  }
+
+  /* Reminder is useful only when it has items. Empty state should not eat the page. */
+  .billing-page .billing-pos-shell .billing-smart-panel {
+    padding: 7px !important;
+    gap: 6px !important;
+    border-radius: 14px !important;
+  }
+
+  .billing-page .billing-pos-shell .billing-smart-main {
+    min-height: 46px !important;
+    padding: 8px !important;
+    gap: 8px !important;
+    border-radius: 12px !important;
+  }
+
+  .billing-page .billing-pos-shell .billing-smart-main svg {
+    width: 17px !important;
+    height: 17px !important;
+  }
+
+  .billing-page .billing-pos-shell .billing-smart-main h3 {
+    font-size: 0.72rem !important;
+    line-height: 1 !important;
+  }
+
+  .billing-page .billing-pos-shell .billing-smart-main p {
+    font-size: 0.63rem !important;
+    line-height: 1.18 !important;
+  }
+
+  .billing-page .billing-pos-shell .billing-smart-empty {
+    min-height: 0 !important;
+    padding: 3px 4px !important;
+    border: 0 !important;
+    background: transparent !important;
+    font-size: 0.62rem !important;
+    line-height: 1.15 !important;
+    opacity: 0.72 !important;
+  }
+
+  @supports selector(.billing-smart-panel:has(.billing-smart-empty)) {
+    .billing-page .billing-pos-shell .billing-smart-panel:has(.billing-smart-empty) {
+      padding: 6px !important;
+    }
+
+    .billing-page .billing-pos-shell .billing-smart-panel:has(.billing-smart-empty) .billing-smart-list {
+      display: none !important;
+    }
+  }
+
+  /* Billing header controls get slimmer */
+  .billing-page .billing-control-deck {
+    padding: 8px !important;
+    gap: 7px !important;
+  }
+
+  .billing-page .billing-toolbar-title-stack {
+    gap: 4px !important;
+  }
+
+  .billing-page .billing-control-deck .app-table-toolbar-title {
+    font-size: 0.94rem !important;
+    line-height: 1 !important;
+  }
+
+  .billing-page .billing-control-deck .app-table-toolbar-subtitle {
+    font-size: 0.64rem !important;
+    line-height: 1 !important;
+  }
+
+  .billing-page .billing-toolbar-signal-row {
+    gap: 4px !important;
+  }
+
+  .billing-page .billing-signal-chip {
+    min-height: 20px !important;
+    padding: 0 6px !important;
+    font-size: 0.55rem !important;
+  }
+
+  .billing-page .billing-control-actions {
+    gap: 7px !important;
+  }
+
+  .billing-page .billing-control-search {
+    min-height: 39px !important;
+    border-radius: 14px !important;
+  }
+
+  .billing-page .billing-control-search .app-search-input {
+    height: 39px !important;
+    font-size: 16px !important;
+    line-height: 1 !important;
+  }
+
+  .billing-page .billing-control-search .app-search-icon {
+    width: 17px !important;
+    height: 17px !important;
+  }
+
+  .billing-page .billing-control-filter .filter-dropdown-toggle {
+    min-height: 39px !important;
+    border-radius: 14px !important;
+    padding-inline: 10px !important;
+    font-size: 0.68rem !important;
+  }
+
+  .billing-page .billing-control-filter .filter-dropdown-icon,
+  .billing-page .billing-control-filter .filter-dropdown-arrow {
+    width: 15px !important;
+    height: 15px !important;
+  }
+
+  /* Cards become denser and stop leaving awkward blank gaps */
+  .billing-page .billing-mobile-card {
+    padding: 8px 9px !important;
+    gap: 6px !important;
+    border-radius: 15px !important;
+  }
+
+  .billing-page .billing-mobile-card::before {
+    width: 3px !important;
+  }
+
+  .billing-page .mobile-bill-header-row {
+    gap: 7px !important;
+  }
+
+  .billing-page .mobile-bill-band {
+    font-size: 0.80rem !important;
+    line-height: 1.05 !important;
+  }
+
+  .billing-page .mobile-vip-badge {
+    min-height: 17px !important;
+    padding-inline: 6px !important;
+    font-size: 0.50rem !important;
+  }
+
+  .billing-page .mobile-bill-id {
+    max-width: min(43vw, 142px) !important;
+    min-height: 22px !important;
+    padding-inline: 7px !important;
+    font-size: 0.52rem !important;
+  }
+
+  .billing-page .mobile-bill-metrics {
+    gap: 5px !important;
+  }
+
+  .billing-page .mobile-bill-tag {
+    min-height: 25px !important;
+    padding-inline: 7px !important;
+    border-radius: 10px !important;
+    font-size: 0.60rem !important;
+  }
+
+  .billing-page .mobile-bill-control-row {
+    gap: 6px !important;
+  }
+
+  .billing-page .mobile-bill-control-row .status-select {
+    height: 36px !important;
+    min-height: 36px !important;
+    padding: 0 29px 0 10px !important;
+    border-radius: 13px !important;
+    font-size: 0.70rem !important;
+  }
+
+  .billing-page .mobile-bill-action-cluster {
+    min-width: 36px !important;
+    gap: 6px !important;
+  }
+
+  .billing-page .mobile-bill-action-cluster .icon-btn {
+    width: 36px !important;
+    height: 36px !important;
+    min-width: 36px !important;
+    border-radius: 13px !important;
+  }
+
+  .billing-page .mobile-bill-action-cluster .icon-btn svg {
+    width: 15px !important;
+    height: 15px !important;
+  }
+
+  .billing-page .mobile-bill-action-cluster .btn-sm-pay {
+    height: 36px !important;
+    min-height: 36px !important;
+    padding-inline: 10px !important;
+    border-radius: 13px !important;
+    font-size: 0.66rem !important;
+  }
+
+  .billing-page .mobile-billing-card.is-paid .mobile-bill-action-cluster {
+    width: 36px !important;
+  }
+}
+
+@media (max-width: 420px) {
+  .billing-page {
+    gap: 6px !important;
+  }
+
+  .billing-page .billing-pos-shell,
+  .billing-page .billing-content.app-panel {
+    border-radius: 16px !important;
+  }
+
+  .billing-page .billing-command-top {
+    grid-template-columns: 1fr !important;
+  }
+
+  .billing-page .billing-command-main h2 {
+    font-size: clamp(1rem, 5vw, 1.18rem) !important;
+    max-width: 100% !important;
+  }
+
+  .billing-page .billing-command-main p {
+    max-width: 100% !important;
+  }
+
+  .billing-page .billing-command-summary {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    justify-content: flex-start !important;
+  }
+
+  .billing-page .billing-command-pill {
+    min-height: 23px !important;
+  }
+
+  .billing-page .billing-pos-shell .billing-stat-card {
+    min-height: 50px !important;
+  }
+
+  .billing-page .billing-pos-shell .billing-stat-card .stat-label {
+    font-size: 0.46rem !important;
+  }
+
+  .billing-page .billing-pos-shell .billing-stat-card .stat-value {
+    font-size: 0.78rem !important;
+  }
+
+  .billing-page .billing-pos-shell .billing-smart-panel {
+    display: none !important;
+  }
+
+  .billing-page .billing-control-deck {
+    padding: 7px !important;
+  }
+
+  .billing-page .billing-mobile-deck {
+    padding: 7px !important;
+    padding-bottom: calc(112px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  .billing-page .mobile-bottom-spacer {
+    height: calc(98px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  .billing-page .billing-mobile-card {
+    padding: 8px !important;
+  }
+
+  .billing-page .mobile-bill-id {
+    max-width: 126px !important;
+  }
+}
+
+@media (max-width: 360px) {
+  .billing-page .billing-pos-shell .billing-stats-bar {
+    grid-template-columns: 1fr !important;
+  }
+
+  .billing-page .billing-pos-shell .billing-stat-card.debt {
+    display: none !important;
+  }
+
+  .billing-page .billing-control-search,
+  .billing-page .billing-control-filter .filter-dropdown-toggle {
+    min-height: 38px !important;
+  }
+
+  .billing-page .billing-control-search .app-search-input {
+    height: 38px !important;
+  }
+
+  .billing-page .mobile-bill-control-row {
+    grid-template-columns: minmax(0, 1fr) 36px !important;
+  }
+
+  .billing-page .mobile-billing-card.has-balance .mobile-bill-control-row {
+    grid-template-columns: minmax(0, 1fr) auto !important;
+  }
+}
+
+[data-theme="light"] .billing-page .billing-pos-shell,
+[data-theme="light"] .billing-page .billing-content.app-panel,
+[data-theme="light"] .billing-page .billing-mobile-card {
+  box-shadow:
+    0 8px 20px rgba(88, 65, 35, 0.065),
+    inset 0 1px 0 rgba(255, 255, 255, 0.72) !important;
+}
+/* === END BILLING MOBILE SPACE COMPRESSION PHASE 9 === */
+
