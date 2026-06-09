@@ -157,7 +157,7 @@ function App() {
         <Route path="/calendar" element={<Navigate to="/admin/calendar" replace />} />
         <Route path="/customers" element={<Navigate to="/admin/customers" replace />} />
         <Route path="/inventory" element={<Navigate to="/admin/inventory" replace />} />
-        <Route path="/billing" element={<Navigate to="/admin/finance" replace />} />
+        <Route path="/billing" element={<Navigate to="/admin/billing" replace />} />
         <Route path="/finance" element={<Navigate to="/admin/finance" replace />} />
         <Route path="/staff" element={<Navigate to="/admin/staff" replace />} />
         <Route path="/maintenance" element={<Navigate to="/admin/maintenance" replace />} />
