@@ -5682,3 +5682,31 @@ html[data-theme-switching="true"] .dashboard-quick-modal .quick-dash-form .form-
     scroll-behavior: auto !important;
   }
 }
+
+/* ──────────────────────────────────────────────────────────────────────────
+   37 ADMIN QUICK MODAL BOTTOM NAV CLEARANCE 8.5H-1
+   --------------------------------------------------------------------------
+   Hotfix for dashboard quick modals:
+   - Keeps sticky action bar visible above device safe area.
+   - Prevents visual collision with mobile bottom navigation.
+   - Works together with Modal.css z-index lock.
+   ────────────────────────────────────────────────────────────────────────── */
+
+@media (max-width: 768px) {
+  .dashboard-quick-modal.modal-content {
+    position: relative !important;
+    z-index: 9002 !important;
+    max-height: min(92dvh, calc(100dvh - env(safe-area-inset-top, 0px))) !important;
+  }
+
+  .dashboard-quick-modal .modal-body {
+    max-height: calc(92dvh - 64px) !important;
+    padding-bottom: calc(0.88rem + env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  .dashboard-quick-modal .quick-dash-form .form-actions {
+    bottom: -0.88rem !important;
+    z-index: 9003 !important;
+    padding-bottom: calc(1rem + env(safe-area-inset-bottom, 0px)) !important;
+  }
+}

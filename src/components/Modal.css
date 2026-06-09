@@ -208,3 +208,40 @@
     padding: 8px 12px 12px;
   }
 }
+
+/* ──────────────────────────────────────────────────────────────────────────
+   37 MODAL STACKING ABOVE MOBILE NAV 8.5H-1
+   --------------------------------------------------------------------------
+   Hotfix:
+   - Bottom mobile nav uses z-index: 1000.
+   - Modal overlay also used z-index: 1000 and wrapper used 1001.
+   - On mobile, the bottom nav could visually sit above quick dashboard modals.
+   This forces all app modals to live in the dialog layer above navigation.
+   ────────────────────────────────────────────────────────────────────────── */
+
+.modal-overlay {
+  z-index: 9000 !important;
+}
+
+.modal-wrapper {
+  z-index: 9001 !important;
+}
+
+.modal-content {
+  position: relative;
+  z-index: 9002 !important;
+}
+
+@media (max-width: 768px) {
+  .modal-overlay {
+    z-index: 9000 !important;
+  }
+
+  .modal-wrapper {
+    z-index: 9001 !important;
+  }
+
+  .modal-content {
+    z-index: 9002 !important;
+  }
+}
