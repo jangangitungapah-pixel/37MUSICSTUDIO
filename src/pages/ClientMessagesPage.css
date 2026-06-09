@@ -2809,3 +2809,460 @@
   }
 }
 /* === END 37 ADMIN MESSAGES PHASE 2 HERO COMMAND CENTER === */
+
+/* === START 37 ADMIN MESSAGES PHASE 3 OPERATIONAL MESSAGE CARD === */
+.messages-page {
+  --message-ticket-ink: #fffaf0;
+  --message-ticket-soft: rgba(255, 250, 240, 0.72);
+  --message-ticket-muted: rgba(255, 250, 240, 0.52);
+  --message-ticket-line: rgba(255, 255, 255, 0.105);
+  --message-ticket-panel: rgba(255, 255, 255, 0.044);
+}
+
+.messages-page .message-card.message-ticket {
+  --message-ticket-tone-rgb: var(--accent-cyan-rgb);
+  position: relative;
+  display: block;
+  padding: 0;
+  overflow: hidden;
+  border-radius: clamp(24px, 2.8vw, 34px);
+  border-color: rgba(var(--message-ticket-tone-rgb), 0.16);
+  background:
+    radial-gradient(circle at 0% 0%, rgba(var(--message-ticket-tone-rgb), 0.095), transparent 34%),
+    radial-gradient(circle at 100% 0%, rgba(239, 197, 110, 0.080), transparent 34%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.078), rgba(255, 255, 255, 0.020)),
+    rgba(10, 14, 21, 0.78);
+  box-shadow:
+    0 24px 68px rgba(0, 0, 0, 0.24),
+    inset 0 1px 0 rgba(255, 255, 255, 0.082);
+}
+
+.messages-page .message-card.message-ticket.tone-gold {
+  --message-ticket-tone-rgb: 239, 197, 110;
+}
+
+.messages-page .message-card.message-ticket.tone-green {
+  --message-ticket-tone-rgb: 130, 216, 160;
+}
+
+.messages-page .message-card.message-ticket::before {
+  background:
+    linear-gradient(126deg, rgba(255, 255, 255, 0.075), transparent 30%, transparent 72%, rgba(var(--message-ticket-tone-rgb), 0.055)),
+    radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.052), transparent 42%);
+}
+
+.messages-page .message-card.message-ticket::after {
+  inset-block: clamp(18px, 2vw, 26px);
+  width: 4px;
+  background: linear-gradient(
+    180deg,
+    rgba(var(--message-ticket-tone-rgb), 0.94),
+    rgba(239, 197, 110, 0.72),
+    rgba(var(--accent-pink-rgb), 0.42)
+  );
+  opacity: 0.82;
+}
+
+.messages-page .message-card-shell {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: clamp(14px, 1.7vw, 20px);
+  padding: clamp(16px, 2.2vw, 26px);
+}
+
+.messages-page .message-card-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(164px, 240px);
+  align-items: start;
+  gap: clamp(12px, 1.8vw, 18px);
+}
+
+.messages-page .message-card.message-ticket .message-card-top {
+  display: grid;
+  grid-template-columns: 58px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: clamp(12px, 1.6vw, 16px);
+}
+
+.messages-page .message-card.message-ticket .message-client-avatar {
+  width: 58px;
+  height: 58px;
+  border-radius: 22px;
+  border: 1px solid rgba(var(--message-ticket-tone-rgb), 0.28);
+  color: #120e08;
+  background:
+    radial-gradient(circle at 38% 18%, rgba(255, 255, 255, 0.50), transparent 38%),
+    linear-gradient(135deg, #ffe7aa 0%, #efc56e 48%, #d39a3f 100%);
+  box-shadow:
+    0 17px 36px rgba(var(--message-ticket-tone-rgb), 0.13),
+    inset 0 1px 0 rgba(255, 255, 255, 0.40);
+  font-size: 1.22rem;
+  font-weight: 950;
+}
+
+.messages-page .message-card.message-ticket .message-client-copy {
+  display: grid;
+  gap: 4px;
+  padding-top: 0;
+}
+
+.messages-page .message-ticket-label,
+.messages-page .message-section-label,
+.messages-page .message-subject-line span,
+.messages-page .message-ticket-id span {
+  color: rgba(var(--message-ticket-tone-rgb), 0.92);
+  font-size: 0.68rem;
+  font-weight: 950;
+  line-height: 1;
+  letter-spacing: 0.095em;
+  text-transform: uppercase;
+}
+
+.messages-page .message-card.message-ticket .message-client-copy strong {
+  color: var(--message-ticket-ink);
+  font-size: clamp(1.06rem, 1.3vw, 1.2rem);
+  line-height: 1.12;
+  letter-spacing: -0.01em;
+}
+
+.messages-page .message-card.message-ticket .message-client-copy > span:last-child {
+  color: var(--message-ticket-muted);
+  font-size: 0.8rem;
+  font-weight: 780;
+}
+
+.messages-page .message-card.message-ticket .message-status-pill {
+  grid-column: auto;
+  justify-self: end;
+  min-height: 36px;
+  padding-inline: 13px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.09),
+    0 12px 28px rgba(var(--message-ticket-tone-rgb), 0.10);
+}
+
+.messages-page .message-ticket-id {
+  min-height: 74px;
+  display: grid;
+  align-content: center;
+  gap: 8px;
+  padding: 14px 15px;
+  overflow: hidden;
+  border: 1px solid var(--message-ticket-line);
+  border-radius: 20px;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(var(--message-ticket-tone-rgb), 0.080), transparent 38%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.060), rgba(255, 255, 255, 0.018)),
+    rgba(255, 255, 255, 0.030);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.055);
+}
+
+.messages-page .message-ticket-id strong {
+  color: var(--message-ticket-soft);
+  font-size: 0.78rem;
+  line-height: 1.25;
+  font-weight: 840;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.messages-page .message-subject-line {
+  display: grid;
+  gap: 8px;
+  padding: 14px 16px;
+  border: 1px solid rgba(239, 197, 110, 0.15);
+  border-radius: 20px;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(239, 197, 110, 0.095), transparent 42%),
+    rgba(239, 197, 110, 0.040);
+}
+
+.messages-page .message-subject-line strong {
+  color: var(--message-ticket-ink);
+  font-size: 0.96rem;
+  line-height: 1.35;
+  font-weight: 900;
+  overflow-wrap: anywhere;
+}
+
+.messages-page .message-content-zone,
+.messages-page .message-card-contact-row,
+.messages-page .message-card-actions-zone {
+  display: grid;
+  min-width: 0;
+  gap: 9px;
+}
+
+.messages-page .message-card.message-ticket .message-body {
+  margin: 0;
+  padding: clamp(15px, 1.8vw, 20px);
+  border: 1px solid rgba(255, 255, 255, 0.090);
+  border-radius: clamp(18px, 2vw, 23px);
+  color: rgba(255, 250, 240, 0.88);
+  background:
+    radial-gradient(circle at 0% 0%, rgba(var(--message-ticket-tone-rgb), 0.050), transparent 36%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.052), rgba(255, 255, 255, 0.016)),
+    rgba(255, 255, 255, 0.026);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.052);
+  font-size: clamp(0.94rem, 1.06vw, 1.02rem);
+  line-height: 1.72;
+  font-weight: 660;
+}
+
+.messages-page .message-card.message-ticket .message-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.messages-page .message-card.message-ticket .message-meta-grid button {
+  min-height: 48px;
+  border-radius: 17px;
+  border-color: rgba(255, 255, 255, 0.085);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.058), rgba(255, 255, 255, 0.016)),
+    rgba(255, 255, 255, 0.030);
+  color: rgba(255, 250, 240, 0.72);
+}
+
+.messages-page .message-card.message-ticket .message-meta-grid button svg:first-child {
+  color: rgba(var(--message-ticket-tone-rgb), 0.92);
+}
+
+.messages-page .message-card.message-ticket .message-meta-grid button span {
+  font-size: 0.8rem;
+  font-weight: 840;
+}
+
+.messages-page .message-card.message-ticket .message-reply-note {
+  border-radius: 21px;
+  border-color: rgba(130, 216, 160, 0.22);
+  background:
+    radial-gradient(circle at 100% 0%, rgba(130, 216, 160, 0.15), transparent 38%),
+    linear-gradient(180deg, rgba(130, 216, 160, 0.084), rgba(130, 216, 160, 0.035)),
+    rgba(130, 216, 160, 0.030);
+}
+
+.messages-page .message-card-actions-zone {
+  grid-template-columns: minmax(0, 1.1fr) minmax(260px, 0.76fr);
+  align-items: stretch;
+  gap: clamp(10px, 1.6vw, 14px);
+  padding: clamp(10px, 1.4vw, 14px);
+  border: 1px solid rgba(255, 255, 255, 0.078);
+  border-radius: clamp(20px, 2vw, 26px);
+  background:
+    radial-gradient(circle at 100% 0%, rgba(var(--message-ticket-tone-rgb), 0.064), transparent 38%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.046), rgba(255, 255, 255, 0.014)),
+    rgba(0, 0, 0, 0.14);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.050);
+}
+
+.messages-page .message-card-compose {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: stretch;
+  gap: 10px;
+}
+
+.messages-page .message-card-compose textarea {
+  min-height: 104px;
+  border-radius: 19px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.046), rgba(255, 255, 255, 0.014)),
+    rgba(5, 8, 13, 0.34);
+}
+
+.messages-page .message-card-compose button {
+  min-width: 154px;
+  min-height: 48px;
+  border-radius: 18px;
+  white-space: normal;
+  text-align: center;
+}
+
+.messages-page .message-card-actions-zone .message-actions {
+  display: grid;
+  grid-template-columns: 1fr;
+  align-content: stretch;
+  gap: 9px;
+}
+
+.messages-page .message-card-actions-zone .message-action-btn {
+  width: 100%;
+  min-height: 48px;
+  justify-content: center;
+  border-radius: 18px;
+  padding-inline: 14px;
+  white-space: normal;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .messages-page .message-card.message-ticket:hover {
+    transform: translateY(-2px);
+    border-color: rgba(var(--message-ticket-tone-rgb), 0.28);
+    box-shadow:
+      0 30px 82px rgba(0, 0, 0, 0.30),
+      inset 0 1px 0 rgba(255, 255, 255, 0.095);
+  }
+}
+
+[data-theme="light"] .messages-page {
+  --message-ticket-ink: rgba(31, 25, 18, 0.95);
+  --message-ticket-soft: rgba(45, 38, 28, 0.68);
+  --message-ticket-muted: rgba(45, 38, 28, 0.52);
+  --message-ticket-line: rgba(86, 66, 37, 0.12);
+  --message-ticket-panel: rgba(255, 255, 255, 0.54);
+}
+
+[data-theme="light"] .messages-page .message-card.message-ticket {
+  border-color: rgba(var(--message-ticket-tone-rgb), 0.18);
+  background:
+    radial-gradient(circle at 0% 0%, rgba(var(--message-ticket-tone-rgb), 0.085), transparent 34%),
+    radial-gradient(circle at 100% 0%, rgba(239, 197, 110, 0.12), transparent 34%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.76), rgba(255, 255, 255, 0.40)),
+    rgba(255, 250, 241, 0.72);
+  box-shadow:
+    0 22px 60px rgba(72, 54, 30, 0.11),
+    inset 0 1px 0 rgba(255, 255, 255, 0.76);
+}
+
+[data-theme="light"] .messages-page .message-card.message-ticket .message-client-copy strong,
+[data-theme="light"] .messages-page .message-subject-line strong,
+[data-theme="light"] .messages-page .message-ticket-id strong {
+  color: rgba(31, 25, 18, 0.92);
+}
+
+[data-theme="light"] .messages-page .message-card.message-ticket .message-client-copy > span:last-child,
+[data-theme="light"] .messages-page .message-ticket-id strong {
+  color: rgba(45, 38, 28, 0.56);
+}
+
+[data-theme="light"] .messages-page .message-ticket-label,
+[data-theme="light"] .messages-page .message-section-label,
+[data-theme="light"] .messages-page .message-subject-line span,
+[data-theme="light"] .messages-page .message-ticket-id span {
+  color: rgba(20, 139, 153, 0.90);
+}
+
+[data-theme="light"] .messages-page .message-ticket-id,
+[data-theme="light"] .messages-page .message-card.message-ticket .message-body,
+[data-theme="light"] .messages-page .message-card.message-ticket .message-meta-grid button,
+[data-theme="light"] .messages-page .message-card-actions-zone {
+  border-color: rgba(86, 66, 37, 0.11);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.66), rgba(255, 255, 255, 0.34)),
+    rgba(255, 250, 241, 0.48);
+}
+
+[data-theme="light"] .messages-page .message-card.message-ticket .message-body {
+  color: rgba(31, 25, 18, 0.78);
+}
+
+[data-theme="light"] .messages-page .message-subject-line {
+  border-color: rgba(177, 130, 43, 0.16);
+  background:
+    radial-gradient(circle at 0% 0%, rgba(239, 197, 110, 0.11), transparent 42%),
+    rgba(255, 247, 224, 0.44);
+}
+
+[data-theme="light"] .messages-page .message-card-compose textarea {
+  color: rgba(31, 25, 18, 0.82);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.70), rgba(255, 255, 255, 0.38)),
+    rgba(255, 250, 241, 0.50);
+}
+
+@media (max-width: 1180px) {
+  .messages-page .message-card-header,
+  .messages-page .message-card-actions-zone {
+    grid-template-columns: 1fr;
+  }
+
+  .messages-page .message-ticket-id {
+    min-height: 62px;
+  }
+}
+
+@media (max-width: 760px) {
+  .messages-page .message-card.message-ticket {
+    border-radius: 21px;
+  }
+
+  .messages-page .message-card-shell {
+    gap: 12px;
+    padding: 14px;
+  }
+
+  .messages-page .message-card.message-ticket .message-card-top {
+    grid-template-columns: 50px minmax(0, 1fr);
+    gap: 10px;
+  }
+
+  .messages-page .message-card.message-ticket .message-client-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 17px;
+  }
+
+  .messages-page .message-card.message-ticket .message-status-pill {
+    grid-column: 2;
+    justify-self: start;
+    min-height: 32px;
+  }
+
+  .messages-page .message-card.message-ticket .message-meta-grid,
+  .messages-page .message-card-compose {
+    grid-template-columns: 1fr;
+  }
+
+  .messages-page .message-card-actions-zone {
+    padding: 10px;
+    border-radius: 18px;
+  }
+
+  .messages-page .message-card-compose textarea {
+    min-height: 92px;
+    border-radius: 16px;
+  }
+
+  .messages-page .message-card-compose button,
+  .messages-page .message-card-actions-zone .message-action-btn,
+  .messages-page .message-card.message-ticket .message-meta-grid button {
+    min-height: 44px;
+    border-radius: 15px;
+  }
+}
+
+@media (max-width: 430px) {
+  .messages-page .message-card-shell {
+    padding: 13px;
+  }
+
+  .messages-page .message-ticket-id,
+  .messages-page .message-subject-line,
+  .messages-page .message-card.message-ticket .message-body {
+    border-radius: 16px;
+  }
+
+  .messages-page .message-ticket-label,
+  .messages-page .message-section-label,
+  .messages-page .message-subject-line span,
+  .messages-page .message-ticket-id span {
+    font-size: 0.62rem;
+  }
+}
+
+@media (hover: none), (pointer: coarse) {
+  .messages-page .message-card.message-ticket:hover {
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .messages-page .message-card.message-ticket,
+  .messages-page .message-card.message-ticket * {
+    transition-duration: 0.001ms !important;
+  }
+}
+/* === END 37 ADMIN MESSAGES PHASE 3 OPERATIONAL MESSAGE CARD === */

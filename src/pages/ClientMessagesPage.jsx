@@ -290,111 +290,138 @@ const ClientMessagesPage = () => {
               const waHref = waNumber ? 'https://wa.me/' + waNumber + '?text=' + waText : '';
 
               return (
-                <article className="message-card" key={message.id}>
-                  <div className="message-card-top">
-                    <div className="message-client-avatar">
-                      {(message.clientName || message.clientEmail || 'C').charAt(0).toUpperCase()}
-                    </div>
+                <article className={'message-card message-ticket tone-' + statusTone(message.status)} key={message.id}>
+                  {/* === START 37 ADMIN MESSAGES PHASE 3 OPERATIONAL MESSAGE CARD === */}
+                  <div className="message-card-shell">
+                    <div className="message-card-header">
+                      <div className="message-card-top">
+                        <div className="message-client-avatar" aria-hidden="true">
+                          {(message.clientName || message.clientEmail || 'C').charAt(0).toUpperCase()}
+                        </div>
 
-                    <div className="message-client-copy">
-                      <strong>{message.clientName || 'Client'}</strong>
-                      <span>{formatDateTime(message.createdAt)}</span>
-                    </div>
+                        <div className="message-client-copy">
+                          <span className="message-ticket-label">Client message</span>
+                          <strong>{message.clientName || 'Client'}</strong>
+                          <span>{formatDateTime(message.createdAt)}</span>
+                        </div>
 
-                    <span className={'message-status-pill status-' + statusTone(message.status)}>
-                      {statusLabel(message.status)}
-                    </span>
-                  </div>
+                        <span className={'message-status-pill status-' + statusTone(message.status)}>
+                          {statusLabel(message.status)}
+                        </span>
+                      </div>
 
-                  <p className="message-body">{message.message}</p>
-
-                  <div className="message-meta-grid">
-                    <button type="button" onClick={() => copyText(message.clientEmail, 'Email client')}>
-                      <Mail size={14} />
-                      <span>{message.clientEmail || 'Email belum ada'}</span>
-                      <Copy size={13} />
-                    </button>
-                    <button type="button" onClick={() => copyText(message.clientPhone, 'Nomor WhatsApp')}>
-                      <Phone size={14} />
-                      <span>{message.clientPhone || 'Nomor belum ada'}</span>
-                      <Copy size={13} />
-                    </button>
-                    <button type="button" onClick={() => copyText(message.clientUid, 'UID client')}>
-                      <UserRound size={14} />
-                      <span>{message.clientUid || 'UID belum ada'}</span>
-                      <Copy size={13} />
-                    </button>
-                  </div>
-
-                  {message.adminReplyNote && (
-                    <div className="message-reply-note">
-                      <Reply size={15} />
-                      <div>
-                        <strong>Catatan admin</strong>
-                        <p>{message.adminReplyNote}</p>
+                      <div className="message-ticket-id">
+                        <span>Client UID</span>
+                        <strong>{message.clientUid || 'Belum tersedia'}</strong>
                       </div>
                     </div>
-                  )}
 
-                  <div className="message-reply-box">
-                    <textarea
-                      value={replyDrafts[message.id] || ''}
-                      onChange={(event) => setReplyDrafts((current) => ({
-                        ...current,
-                        [message.id]: event.target.value,
-                      }))}
-                      placeholder="Tulis catatan follow up internal, misalnya: Sudah dibalas via WA, client minta Sabtu malam."
-                      rows={3}
-                    />
+                    {message.subject && (
+                      <div className="message-subject-line">
+                        <span>Subject</span>
+                        <strong>{message.subject}</strong>
+                      </div>
+                    )}
 
-                    <button type="button" onClick={() => saveReplyNote(message)}>
-                      <Send size={15} />
-                      Simpan Catatan
-                    </button>
+                    <div className="message-content-zone">
+                      <span className="message-section-label">Isi pesan</span>
+                      <p className="message-body">{message.message}</p>
+                    </div>
+
+                    <div className="message-card-contact-row">
+                      <span className="message-section-label">Contact kit</span>
+                      <div className="message-meta-grid">
+                        <button type="button" onClick={() => copyText(message.clientEmail, 'Email client')}>
+                          <Mail size={14} />
+                          <span>{message.clientEmail || 'Email belum ada'}</span>
+                          <Copy size={13} />
+                        </button>
+                        <button type="button" onClick={() => copyText(message.clientPhone, 'Nomor WhatsApp')}>
+                          <Phone size={14} />
+                          <span>{message.clientPhone || 'Nomor belum ada'}</span>
+                          <Copy size={13} />
+                        </button>
+                        <button type="button" onClick={() => copyText(message.clientUid, 'UID client')}>
+                          <UserRound size={14} />
+                          <span>{message.clientUid || 'UID belum ada'}</span>
+                          <Copy size={13} />
+                        </button>
+                      </div>
+                    </div>
+
+                    {message.adminReplyNote && (
+                      <div className="message-reply-note">
+                        <Reply size={15} />
+                        <div>
+                          <strong>Catatan admin</strong>
+                          <p>{message.adminReplyNote}</p>
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="message-card-actions-zone">
+                      <div className="message-reply-box message-card-compose">
+                        <textarea
+                          value={replyDrafts[message.id] || ''}
+                          onChange={(event) => setReplyDrafts((current) => ({
+                            ...current,
+                            [message.id]: event.target.value,
+                          }))}
+                          placeholder="Tulis catatan follow up internal, misalnya: Sudah dibalas via WA, client minta Sabtu malam."
+                          rows={3}
+                        />
+
+                        <button type="button" onClick={() => saveReplyNote(message)}>
+                          <Send size={15} />
+                          Simpan Catatan
+                        </button>
+                      </div>
+
+                      <div className="message-actions">
+                        <a
+                          className={'message-action-btn whatsapp' + (!waHref ? ' disabled' : '')}
+                          href={waHref || undefined}
+                          target="_blank"
+                          rel="noreferrer"
+                          aria-disabled={!waHref}
+                          onClick={(event) => {
+                            if (!waHref) {
+                              event.preventDefault();
+                              addNotification({
+                                type: 'warning',
+                                title: 'Nomor WhatsApp kosong',
+                                message: 'Client belum menyimpan nomor WhatsApp.',
+                              });
+                            }
+                          }}
+                        >
+                          <MessageCircle size={15} />
+                          Balas via WhatsApp
+                        </a>
+
+                        <button
+                          type="button"
+                          className="message-action-btn"
+                          onClick={() => updateMessageStatus(message.id, 'replied', { isReadByAdmin: true, repliedAt: new Date().toISOString() })}
+                          disabled={message.status === 'replied' || message.status === 'done'}
+                        >
+                          <MessageCircle size={15} />
+                          Tandai Dibalas
+                        </button>
+
+                        <button
+                          type="button"
+                          className="message-action-btn primary"
+                          onClick={() => updateMessageStatus(message.id, 'done', { isReadByAdmin: true, doneAt: new Date().toISOString() })}
+                          disabled={message.status === 'done'}
+                        >
+                          <CheckCircle2 size={15} />
+                          Selesai
+                        </button>
+                      </div>
+                    </div>
                   </div>
-
-                  <div className="message-actions">
-                    <a
-                      className={'message-action-btn whatsapp' + (!waHref ? ' disabled' : '')}
-                      href={waHref || undefined}
-                      target="_blank"
-                      rel="noreferrer"
-                      aria-disabled={!waHref}
-                      onClick={(event) => {
-                        if (!waHref) {
-                          event.preventDefault();
-                          addNotification({
-                            type: 'warning',
-                            title: 'Nomor WhatsApp kosong',
-                            message: 'Client belum menyimpan nomor WhatsApp.',
-                          });
-                        }
-                      }}
-                    >
-                      <MessageCircle size={15} />
-                      Balas via WhatsApp
-                    </a>
-
-                    <button
-                      type="button"
-                      className="message-action-btn"
-                      onClick={() => updateMessageStatus(message.id, 'replied', { isReadByAdmin: true, repliedAt: new Date().toISOString() })}
-                      disabled={message.status === 'replied' || message.status === 'done'}
-                    >
-                      <MessageCircle size={15} />
-                      Tandai Dibalas
-                    </button>
-
-                    <button
-                      type="button"
-                      className="message-action-btn primary"
-                      onClick={() => updateMessageStatus(message.id, 'done', { isReadByAdmin: true, doneAt: new Date().toISOString() })}
-                      disabled={message.status === 'done'}
-                    >
-                      <CheckCircle2 size={15} />
-                      Selesai
-                    </button>
-                  </div>
+                  {/* === END 37 ADMIN MESSAGES PHASE 3 OPERATIONAL MESSAGE CARD === */}
                 </article>
               );
             })}
