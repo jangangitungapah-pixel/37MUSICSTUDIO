@@ -454,17 +454,41 @@ const CalendarPage = () => {
     if (e.nativeEvent) {
       e.nativeEvent.stopImmediatePropagation();
     }
-    if (suppressNextBookingClickRef.current || movingBooking) {
+
+    if (
+      suppressNextBookingClickRef.current ||
+      movingBooking ||
+      resizingBooking ||
+      resizeConfirmData ||
+      draggedBooking
+    ) {
       suppressNextBookingClickRef.current = false;
       return;
     }
-    if (isMobile) { setSelectedBooking(booking); return; }
+
+    if (isMobile) {
+      setSelectedBooking(booking);
+      return;
+    }
+
     const rect = e.currentTarget.getBoundingClientRect();
-    const popupHeight = 480;
+    const safeGap = 12;
+    const popupWidth = 340;
+    const popupHeight = Math.min(560, window.innerHeight - safeGap * 2);
     const spaceBelow = window.innerHeight - rect.bottom;
     const spaceAbove = rect.top;
-    let top = spaceBelow >= popupHeight ? rect.bottom + 8 : spaceAbove >= popupHeight ? rect.top - popupHeight - 8 : Math.max(8, window.innerHeight - popupHeight - 8);
-    const left = Math.min(rect.left, window.innerWidth - 320);
+
+    let top = spaceBelow >= popupHeight
+      ? rect.bottom + safeGap
+      : spaceAbove >= popupHeight
+        ? rect.top - popupHeight - safeGap
+        : Math.max(safeGap, window.innerHeight - popupHeight - safeGap);
+
+    let left = rect.left;
+
+    top = Math.max(safeGap, Math.min(top, window.innerHeight - popupHeight - safeGap));
+    left = Math.max(safeGap, Math.min(left, window.innerWidth - popupWidth - safeGap));
+
     setDetailPos({ top, left });
     setSelectedBooking(booking);
   };
@@ -1011,7 +1035,7 @@ const CalendarPage = () => {
                     </div>
                   </div>
 
-                  <div className="resize-handle timeline-resize-handle" onMouseDown={(event) => handleResizeStart(event, booking)} onTouchStart={(event) => handleResizeStart(event, booking)}>
+                  <div className="resize-handle timeline-resize-handle" onMouseDown={(event) => { setSelectedBooking(null); handleResizeStart(event, booking); }} onTouchStart={(event) => { setSelectedBooking(null); handleResizeStart(event, booking); }}>
                     <div className="resize-line" />
                   </div>
                 </div>
@@ -1061,9 +1085,9 @@ const CalendarPage = () => {
 
       {/* Booking Detail — Bottom Sheet on mobile, Popup on desktop */}
       {createPortal(
-        <div className="booking-detail-portal-container" style={{ position: 'fixed', inset: 0, zIndex: 100000, pointerEvents: 'none' }}>
+        <div className="booking-detail-portal-container" style={{ position: 'fixed', inset: 0, zIndex: 8800, pointerEvents: 'none' }}>
           <AnimatePresence>
-            {selectedBooking && isMobile && (
+            {selectedBooking && !resizeConfirmData && !resizingBooking && isMobile && (
               <motion.div
                 key="detail-overlay"
                 className="detail-overlay"
@@ -1075,7 +1099,7 @@ const CalendarPage = () => {
                 style={{ pointerEvents: 'auto' }}
               />
             )}
-            {selectedBooking && (() => {
+            {selectedBooking && !resizeConfirmData && !resizingBooking && (() => {
               const b = bookings.find(x => x.id === selectedBooking.id) || selectedBooking;
               const isRecording = b.type === 'recording';
               const basePrice = isRecording ? (b.sessionPrice || 0) : (b.duration * pricePerHour);
@@ -1289,7 +1313,7 @@ const CalendarPage = () => {
       </Modal>
 
       {/* Resize Confirmation Modal */}
-      <Modal isOpen={!!resizeConfirmData} onClose={() => setResizeConfirmData(null)} title="Konfirmasi Perubahan Jam">
+      <Modal isOpen={!!resizeConfirmData} onClose={() => setResizeConfirmData(null)} title="Konfirmasi Perubahan Jam" className="resize-confirm-modal">
         {resizeConfirmData && (
           <div className="resize-confirm-body">
             <div className="resize-warning-box">
