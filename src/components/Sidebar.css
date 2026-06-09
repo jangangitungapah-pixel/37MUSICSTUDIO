@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Grotesk:wght@400;500;600;700;800;900&display=swap');
+
 /* ===== Desktop Sidebar ===== */
 .sidebar {
   width: 252px;
@@ -3022,5 +3024,663 @@
 
   .bottom-nav-bar {
     display: flex !important;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   37 ADMIN DESKTOP SIDEBAR POLISH 8.6B
+   --------------------------------------------------------------------------
+   Safe second phase for Admin Shell overhaul.
+   Kiblat: Public Calendar premium ambient UI.
+   Scope:
+   - desktop sidebar visual language
+   - brand lockup
+   - nav active and hover states
+   - collapsed mode
+   - footer toggles and profile area
+   Mobile bottom nav logic is untouched.
+   ────────────────────────────────────────────────────────────────────────── */
+
+@media (min-width: 769px) {
+  .admin-shell-modern .sidebar {
+    --sb-text: #fffaf0;
+    --sb-muted: rgba(255, 250, 240, 0.64);
+    --sb-faint: rgba(255, 250, 240, 0.40);
+    --sb-line: rgba(255, 255, 255, 0.105);
+    --sb-line-soft: rgba(255, 255, 255, 0.070);
+    --sb-gold: #efc56e;
+    --sb-pink: #ff3d70;
+    --sb-cyan: #58e0e9;
+
+    width: 264px !important;
+    padding: 0 !important;
+    border-radius: 1.55rem !important;
+    overflow: hidden !important;
+    color: var(--sb-text) !important;
+    font-family: "Space Grotesk", var(--font-body, Inter, system-ui, sans-serif) !important;
+    transition:
+      width 360ms cubic-bezier(0.16, 1, 0.3, 1),
+      border-color 160ms ease,
+      box-shadow 160ms ease,
+      background 160ms ease !important;
+  }
+
+  .admin-shell-modern .sidebar::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(circle at 50% 0%, rgba(239, 197, 110, 0.095), transparent 35%),
+      radial-gradient(circle at 100% 18%, rgba(88, 224, 233, 0.058), transparent 34%),
+      radial-gradient(circle at 0% 72%, rgba(255, 61, 112, 0.048), transparent 40%);
+    opacity: 0.98;
+  }
+
+  .admin-shell-modern .sidebar::after {
+    content: "";
+    position: absolute;
+    inset: 1px;
+    pointer-events: none;
+    border-radius: inherit;
+    background:
+      linear-gradient(rgba(255, 255, 255, 0.018) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.014) 1px, transparent 1px);
+    background-size: 42px 42px;
+    opacity: 0.30;
+    -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,0.75), transparent 88%);
+    mask-image: linear-gradient(to bottom, rgba(0,0,0,0.75), transparent 88%);
+  }
+
+  .admin-shell-modern .sidebar.collapsed {
+    width: 92px !important;
+  }
+
+  .admin-shell-modern .sidebar > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Collapse toggle */
+  .admin-shell-modern .collapse-toggle {
+    top: 1.42rem !important;
+    right: -0.78rem !important;
+    width: 2.05rem !important;
+    height: 2.05rem !important;
+    border-radius: 999px !important;
+    border: 1px solid rgba(239, 197, 110, 0.20) !important;
+    background:
+      radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.22), transparent 58%),
+      linear-gradient(180deg, rgba(255, 255, 255, 0.082), rgba(255, 255, 255, 0.026)),
+      rgba(12, 16, 23, 0.88) !important;
+    color: rgba(255, 250, 240, 0.72) !important;
+    box-shadow:
+      0 16px 34px rgba(0, 0, 0, 0.26),
+      inset 0 1px 0 rgba(255, 255, 255, 0.080) !important;
+    -webkit-backdrop-filter: blur(18px) saturate(1.05) !important;
+    backdrop-filter: blur(18px) saturate(1.05) !important;
+  }
+
+  .admin-shell-modern .collapse-toggle:hover {
+    color: #160f07 !important;
+    border-color: rgba(239, 197, 110, 0.38) !important;
+    background:
+      radial-gradient(circle at 50% 0%, rgba(255,255,255,0.38), transparent 58%),
+      linear-gradient(180deg, rgba(255, 224, 137, 1), rgba(239, 197, 110, 0.92)) !important;
+    box-shadow:
+      0 16px 34px rgba(239, 197, 110, 0.18),
+      inset 0 1px 0 rgba(255, 255, 255, 0.38) !important;
+  }
+
+  /* Brand */
+  .admin-shell-modern .sidebar-header {
+    min-height: 86px !important;
+    padding: 1rem 1rem 0.88rem !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.075) !important;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.052), rgba(255,255,255,0.012)),
+      transparent !important;
+  }
+
+  .admin-shell-modern .sidebar-brand {
+    min-width: 0;
+    gap: 0.72rem !important;
+  }
+
+  .admin-shell-modern .logo-icon {
+    width: 3.05rem !important;
+    height: 3.05rem !important;
+    min-width: 3.05rem !important;
+    padding: 0 !important;
+    border-radius: 1rem !important;
+    border: 1px solid rgba(239, 197, 110, 0.28) !important;
+    background:
+      radial-gradient(circle at 50% 0%, rgba(255,255,255,0.38), transparent 58%),
+      linear-gradient(135deg, var(--sb-gold), #d49a3e) !important;
+    color: rgba(20, 13, 6, 0.96) !important;
+    box-shadow:
+      0 16px 34px rgba(239, 197, 110, 0.18),
+      inset 0 1px 0 rgba(255,255,255,0.34) !important;
+  }
+
+  .admin-shell-modern .brand-monogram {
+    font-family: "Bebas Neue", Impact, "Arial Narrow", sans-serif !important;
+    font-size: 1.72rem !important;
+    line-height: 0.9 !important;
+    letter-spacing: -0.035em !important;
+  }
+
+  .admin-shell-modern .logo-text-group {
+    min-width: 0;
+    gap: 0.06rem !important;
+  }
+
+  .admin-shell-modern .logo-text {
+    margin: 0 !important;
+    color: var(--sb-text) !important;
+    font-family: "Bebas Neue", Impact, "Arial Narrow", sans-serif !important;
+    font-size: 1.7rem !important;
+    line-height: 0.88 !important;
+    font-weight: 400 !important;
+    letter-spacing: -0.026em !important;
+    text-transform: uppercase !important;
+  }
+
+  .admin-shell-modern .logo-subtitle {
+    color: var(--sb-muted) !important;
+    font-family: "Space Grotesk", var(--font-body, Inter, system-ui, sans-serif) !important;
+    font-size: 0.66rem !important;
+    line-height: 1 !important;
+    font-weight: 900 !important;
+    letter-spacing: 0.13em !important;
+    text-transform: uppercase !important;
+  }
+
+  .admin-shell-modern .sidebar-bell {
+    width: 2.35rem !important;
+    height: 2.35rem !important;
+    border-radius: 0.9rem !important;
+    border: 1px solid var(--sb-line-soft) !important;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.060), rgba(255,255,255,0.018)),
+      rgba(255,255,255,0.035) !important;
+    color: var(--sb-muted) !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.052) !important;
+  }
+
+  .admin-shell-modern .sidebar-bell:hover {
+    color: var(--sb-cyan) !important;
+    border-color: rgba(88, 224, 233, 0.24) !important;
+    background: rgba(88, 224, 233, 0.075) !important;
+  }
+
+  .admin-shell-modern .notification-badge {
+    top: -0.15rem !important;
+    right: -0.15rem !important;
+    min-width: 1rem !important;
+    height: 1rem !important;
+    display: inline-grid !important;
+    place-items: center !important;
+    padding: 0 0.22rem !important;
+    border-radius: 999px !important;
+    background: var(--sb-pink) !important;
+    color: #fff !important;
+    border: 1px solid rgba(255,255,255,0.36) !important;
+    font-size: 0.56rem !important;
+    line-height: 1 !important;
+  }
+
+  /* Nav */
+  .admin-shell-modern .sidebar-nav {
+    padding: 0.9rem 0.72rem 0.5rem !important;
+    gap: 0.34rem !important;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(239, 197, 110, 0.36) transparent;
+  }
+
+  .admin-shell-modern .sidebar-nav::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .admin-shell-modern .sidebar-nav::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .admin-shell-modern .sidebar-nav::-webkit-scrollbar-thumb {
+    background: rgba(239, 197, 110, 0.30);
+    border-radius: 999px;
+  }
+
+  .admin-shell-modern .nav-section-label {
+    padding: 0 0.72rem 0.42rem !important;
+    color: var(--sb-faint) !important;
+    font-family: "Space Grotesk", var(--font-body, Inter, system-ui, sans-serif) !important;
+    font-size: 0.58rem !important;
+    line-height: 1 !important;
+    font-weight: 950 !important;
+    letter-spacing: 0.16em !important;
+  }
+
+  .admin-shell-modern .nav-item {
+    min-height: 2.9rem !important;
+    padding: 0.4rem 0.52rem !important;
+    gap: 0.62rem !important;
+    border-radius: 1rem !important;
+    border: 1px solid transparent !important;
+    color: var(--sb-muted) !important;
+    font-family: "Space Grotesk", var(--font-body, Inter, system-ui, sans-serif) !important;
+    font-size: 0.82rem !important;
+    line-height: 1 !important;
+    font-weight: 850 !important;
+    letter-spacing: -0.018em !important;
+    overflow: hidden;
+    isolation: isolate;
+  }
+
+  .admin-shell-modern .nav-item::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+    border-radius: inherit;
+    background:
+      radial-gradient(circle at 0% 50%, rgba(88, 224, 233, 0.055), transparent 40%),
+      linear-gradient(180deg, rgba(255,255,255,0.045), rgba(255,255,255,0.012));
+    opacity: 0;
+    transition: opacity 160ms ease;
+    pointer-events: none;
+  }
+
+  .admin-shell-modern .nav-item:hover {
+    color: var(--sb-text) !important;
+    border-color: var(--sb-line-soft) !important;
+    background: transparent !important;
+  }
+
+  .admin-shell-modern .nav-item:hover::before {
+    opacity: 1;
+  }
+
+  .admin-shell-modern .nav-icon {
+    width: 2.05rem !important;
+    height: 2.05rem !important;
+    min-width: 2.05rem !important;
+    border-radius: 0.82rem !important;
+    border: 1px solid rgba(255, 255, 255, 0.070) !important;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.052), rgba(255,255,255,0.014)),
+      rgba(255,255,255,0.030) !important;
+    color: inherit !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.040) !important;
+  }
+
+  .admin-shell-modern .nav-item:hover .nav-icon {
+    color: var(--sb-cyan) !important;
+    border-color: rgba(88, 224, 233, 0.20) !important;
+    background: rgba(88, 224, 233, 0.070) !important;
+  }
+
+  .admin-shell-modern .nav-label {
+    color: inherit !important;
+  }
+
+  .admin-shell-modern .nav-chevron {
+    color: inherit !important;
+    opacity: 0.36 !important;
+  }
+
+  .admin-shell-modern .nav-item.active {
+    color: var(--sb-text) !important;
+    border-color: rgba(239, 197, 110, 0.22) !important;
+    background: transparent !important;
+  }
+
+  .admin-shell-modern .nav-item.active .nav-icon {
+    color: #171009 !important;
+    border-color: rgba(239, 197, 110, 0.30) !important;
+    background:
+      radial-gradient(circle at 50% 0%, rgba(255,255,255,0.34), transparent 58%),
+      linear-gradient(180deg, rgba(255,224,137,1), rgba(239,197,110,0.92)) !important;
+    box-shadow:
+      0 12px 24px rgba(239,197,110,0.15),
+      inset 0 1px 0 rgba(255,255,255,0.34) !important;
+  }
+
+  .admin-shell-modern .nav-item.active .nav-chevron {
+    opacity: 0.9 !important;
+    color: var(--sb-gold) !important;
+  }
+
+  .admin-shell-modern .nav-active-bg {
+    inset: 0 !important;
+    border-radius: 1rem !important;
+    border: 1px solid rgba(239, 197, 110, 0.20) !important;
+    background:
+      radial-gradient(circle at 0% 50%, rgba(239, 197, 110, 0.092), transparent 42%),
+      radial-gradient(circle at 100% 50%, rgba(88, 224, 233, 0.060), transparent 38%),
+      linear-gradient(180deg, rgba(255,255,255,0.064), rgba(255,255,255,0.018)) !important;
+    box-shadow:
+      0 14px 34px rgba(0,0,0,0.16),
+      inset 0 1px 0 rgba(255,255,255,0.062) !important;
+  }
+
+  .admin-shell-modern .nav-active-bg::before {
+    left: 0 !important;
+    width: 3px !important;
+    height: 54% !important;
+    border-radius: 0 999px 999px 0 !important;
+    background: linear-gradient(180deg, var(--sb-gold), var(--sb-cyan)) !important;
+    box-shadow:
+      0 0 16px rgba(239, 197, 110, 0.38),
+      0 0 18px rgba(88, 224, 233, 0.18) !important;
+  }
+
+  /* Collapsed mode */
+  .admin-shell-modern .sidebar.collapsed .sidebar-header {
+    justify-content: center !important;
+    padding-inline: 0.62rem !important;
+  }
+
+  .admin-shell-modern .sidebar.collapsed .sidebar-brand {
+    justify-content: center !important;
+  }
+
+  .admin-shell-modern .sidebar.collapsed .logo-icon {
+    width: 3rem !important;
+    height: 3rem !important;
+    min-width: 3rem !important;
+  }
+
+  .admin-shell-modern .sidebar.collapsed .sidebar-nav {
+    padding-inline: 0.55rem !important;
+  }
+
+  .admin-shell-modern .sidebar.collapsed .nav-section-label {
+    display: none !important;
+  }
+
+  .admin-shell-modern .sidebar.collapsed .nav-item {
+    justify-content: center !important;
+    padding: 0.43rem !important;
+    gap: 0 !important;
+  }
+
+  .admin-shell-modern .sidebar.collapsed .nav-icon {
+    margin: 0 !important;
+  }
+
+  .admin-shell-modern .sidebar.collapsed .nav-active-bg::before {
+    left: 0 !important;
+  }
+
+  /* Footer / toggles / profile */
+  .admin-shell-modern .sidebar-footer {
+    padding: 0.62rem 0.72rem 0.9rem !important;
+    border-top: 1px solid rgba(255,255,255,0.065) !important;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.018), rgba(255,255,255,0.040)),
+      transparent !important;
+  }
+
+  .admin-shell-modern .sidebar-toggle-row,
+  .admin-shell-modern .theme-toggle-btn,
+  .admin-shell-modern .demo-mode-badge,
+  .admin-shell-modern .user-profile {
+    border-radius: 0.95rem !important;
+    border: 1px solid var(--sb-line-soft) !important;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.050), rgba(255,255,255,0.014)),
+      rgba(255,255,255,0.028) !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.040) !important;
+  }
+
+  .admin-shell-modern .sidebar-toggle-row {
+    min-height: 2.66rem;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center !important;
+    gap: 0.55rem !important;
+    padding: 0.38rem 0.42rem !important;
+    margin-bottom: 0.42rem !important;
+  }
+
+  .admin-shell-modern .sidebar-toggle-info {
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    color: var(--sb-muted);
+    font-size: 0.72rem;
+    font-weight: 900;
+  }
+
+  .admin-shell-modern .theme-toggle-btn {
+    min-height: 2.66rem !important;
+    padding: 0.38rem 0.42rem !important;
+    color: var(--sb-muted) !important;
+    justify-content: center !important;
+  }
+
+  .admin-shell-modern .theme-toggle-btn:hover,
+  .admin-shell-modern .sidebar-toggle-row:hover {
+    border-color: rgba(88, 224, 233, 0.18) !important;
+    background: rgba(88, 224, 233, 0.060) !important;
+    color: var(--sb-text) !important;
+  }
+
+  .admin-shell-modern .sidebar-toggle-row .nav-icon,
+  .admin-shell-modern .theme-toggle-btn .nav-icon {
+    width: 2rem !important;
+    height: 2rem !important;
+    min-width: 2rem !important;
+  }
+
+  .admin-shell-modern .anim-switch {
+    border: 1px solid var(--sb-line-soft) !important;
+    background: rgba(255,255,255,0.045) !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.040) !important;
+  }
+
+  .admin-shell-modern .anim-switch.on {
+    border-color: rgba(239,197,110,0.24) !important;
+    background: rgba(239,197,110,0.105) !important;
+  }
+
+  .admin-shell-modern .sidebar-divider {
+    margin: 0.54rem 0.28rem 0.62rem !important;
+    background: linear-gradient(90deg, transparent, rgba(239,197,110,0.22), rgba(88,224,233,0.16), transparent) !important;
+  }
+
+  .admin-shell-modern .user-profile {
+    min-height: 3.24rem !important;
+    padding: 0.34rem !important;
+    gap: 0.38rem !important;
+  }
+
+  .admin-shell-modern .user-profile-btn {
+    min-width: 0;
+    padding: 0.26rem 0.36rem !important;
+    border-radius: 0.78rem !important;
+  }
+
+  .admin-shell-modern .user-profile-btn:hover {
+    background: rgba(255,255,255,0.038) !important;
+  }
+
+  .admin-shell-modern .avatar {
+    width: 2.32rem !important;
+    height: 2.32rem !important;
+    border-radius: 0.82rem !important;
+    background:
+      radial-gradient(circle at 50% 0%, rgba(255,255,255,0.34), transparent 58%),
+      linear-gradient(135deg, var(--sb-cyan), #21b8c9) !important;
+    color: #061013 !important;
+    font-weight: 950 !important;
+    box-shadow:
+      0 12px 24px rgba(88,224,233,0.12),
+      inset 0 1px 0 rgba(255,255,255,0.32) !important;
+  }
+
+  .admin-shell-modern .user-name {
+    color: var(--sb-text) !important;
+    font-family: "Space Grotesk", var(--font-body, Inter, system-ui, sans-serif) !important;
+    font-size: 0.78rem !important;
+    font-weight: 950 !important;
+    letter-spacing: -0.02em !important;
+  }
+
+  .admin-shell-modern .user-role {
+    color: var(--sb-muted) !important;
+    font-size: 0.64rem !important;
+    font-weight: 800 !important;
+  }
+
+  .admin-shell-modern .sidebar-logout-btn {
+    width: 2rem !important;
+    height: 2rem !important;
+    border-radius: 0.72rem !important;
+    border: 1px solid var(--sb-line-soft) !important;
+    background: rgba(255,255,255,0.035) !important;
+    color: var(--sb-muted) !important;
+  }
+
+  .admin-shell-modern .sidebar-logout-btn:hover {
+    color: var(--sb-pink) !important;
+    border-color: rgba(255,61,112,0.24) !important;
+    background: rgba(255,61,112,0.075) !important;
+  }
+
+  .admin-shell-modern .sidebar.collapsed .sidebar-footer {
+    padding-inline: 0.55rem !important;
+  }
+
+  .admin-shell-modern .sidebar.collapsed .sidebar-toggle-row,
+  .admin-shell-modern .sidebar.collapsed .theme-toggle-btn,
+  .admin-shell-modern .sidebar.collapsed .user-profile {
+    justify-content: center !important;
+  }
+
+  .admin-shell-modern .sidebar.collapsed .user-profile-btn {
+    justify-content: center !important;
+    padding-inline: 0 !important;
+  }
+}
+
+/* Light mode desktop sidebar */
+@media (min-width: 769px) {
+  [data-theme="light"] .admin-shell-modern .sidebar {
+    --sb-text: rgba(34, 27, 18, 0.96);
+    --sb-muted: rgba(45, 38, 28, 0.66);
+    --sb-faint: rgba(45, 38, 28, 0.44);
+    --sb-line: rgba(96, 73, 41, 0.13);
+    --sb-line-soft: rgba(96, 73, 41, 0.095);
+    --sb-gold: #b9852f;
+    --sb-pink: #c73865;
+    --sb-cyan: #188b99;
+  }
+
+  [data-theme="light"] .admin-shell-modern .sidebar::before {
+    background:
+      radial-gradient(circle at 50% 0%, rgba(185, 133, 47, 0.075), transparent 35%),
+      radial-gradient(circle at 100% 18%, rgba(24, 139, 153, 0.045), transparent 34%),
+      radial-gradient(circle at 0% 72%, rgba(199, 56, 101, 0.035), transparent 40%);
+  }
+
+  [data-theme="light"] .admin-shell-modern .sidebar::after {
+    background:
+      linear-gradient(rgba(70, 52, 28, 0.020) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(70, 52, 28, 0.018) 1px, transparent 1px);
+    opacity: 0.32;
+  }
+
+  [data-theme="light"] .admin-shell-modern .sidebar-header,
+  [data-theme="light"] .admin-shell-modern .sidebar-footer {
+    border-color: rgba(96, 73, 41, 0.10) !important;
+  }
+
+  [data-theme="light"] .admin-shell-modern .logo-text,
+  [data-theme="light"] .admin-shell-modern .nav-item.active,
+  [data-theme="light"] .admin-shell-modern .user-name {
+    color: rgba(34, 27, 18, 0.96) !important;
+  }
+
+  [data-theme="light"] .admin-shell-modern .logo-subtitle,
+  [data-theme="light"] .admin-shell-modern .nav-item,
+  [data-theme="light"] .admin-shell-modern .user-role,
+  [data-theme="light"] .admin-shell-modern .sidebar-toggle-info,
+  [data-theme="light"] .admin-shell-modern .theme-toggle-btn {
+    color: rgba(45, 38, 28, 0.66) !important;
+  }
+
+  [data-theme="light"] .admin-shell-modern .nav-icon,
+  [data-theme="light"] .admin-shell-modern .sidebar-toggle-row,
+  [data-theme="light"] .admin-shell-modern .theme-toggle-btn,
+  [data-theme="light"] .admin-shell-modern .demo-mode-badge,
+  [data-theme="light"] .admin-shell-modern .user-profile,
+  [data-theme="light"] .admin-shell-modern .sidebar-bell,
+  [data-theme="light"] .admin-shell-modern .sidebar-logout-btn,
+  [data-theme="light"] .admin-shell-modern .collapse-toggle {
+    border-color: rgba(96, 73, 41, 0.11) !important;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.70), rgba(255,255,255,0.32)),
+      rgba(255,250,241,0.50) !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.74) !important;
+  }
+
+  [data-theme="light"] .admin-shell-modern .nav-active-bg {
+    border-color: rgba(185, 133, 47, 0.18) !important;
+    background:
+      radial-gradient(circle at 0% 50%, rgba(185, 133, 47, 0.080), transparent 42%),
+      radial-gradient(circle at 100% 50%, rgba(24, 139, 153, 0.048), transparent 38%),
+      linear-gradient(180deg, rgba(255,255,255,0.72), rgba(255,255,255,0.34)) !important;
+    box-shadow:
+      0 12px 28px rgba(96, 73, 41, 0.09),
+      inset 0 1px 0 rgba(255,255,255,0.78) !important;
+  }
+
+  [data-theme="light"] .admin-shell-modern .nav-item.active .nav-icon {
+    color: rgba(34, 27, 18, 0.96) !important;
+  }
+
+  [data-theme="light"] .admin-shell-modern .avatar {
+    color: #061013 !important;
+  }
+}
+
+/* Desktop sidebar performance guard */
+@media (min-width: 769px) and (hover: none), (min-width: 769px) and (pointer: coarse) {
+  .admin-shell-modern .nav-item:hover,
+  .admin-shell-modern .dash-icon-action:hover,
+  .admin-shell-modern .theme-toggle-btn:hover,
+  .admin-shell-modern .sidebar-toggle-row:hover {
+    transform: none !important;
+  }
+}
+
+@media (max-height: 760px) and (min-width: 769px) {
+  .admin-shell-modern .sidebar-header {
+    min-height: 76px !important;
+    padding-block: 0.78rem !important;
+  }
+
+  .admin-shell-modern .sidebar-nav {
+    padding-top: 0.66rem !important;
+  }
+
+  .admin-shell-modern .nav-item {
+    min-height: 2.55rem !important;
+  }
+
+  .admin-shell-modern .sidebar-footer {
+    padding-bottom: 0.62rem !important;
+  }
+
+  .admin-shell-modern .sidebar-toggle-row,
+  .admin-shell-modern .theme-toggle-btn {
+    min-height: 2.34rem !important;
+  }
+
+  .admin-shell-modern .user-profile {
+    min-height: 2.86rem !important;
   }
 }
