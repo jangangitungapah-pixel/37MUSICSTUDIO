@@ -389,21 +389,69 @@ const GalleryPage = () => {
         </div>
       </header>
       {/* ── Storage Overview ─────────────────────────────────────────────────── */}
-      <div className="app-panel gallery-overview-panel">
-        <div className="gallery-overview-content">
-          <div className="overview-icon-wrap">
-            <Sparkles size={22} className="sparkles-icon" />
+      <section className="app-panel gallery-overview-panel gallery-storage-panel" aria-label="Ringkasan kapasitas galeri">
+        <div className="gallery-storage-main">
+          <div className="gallery-overview-content">
+            <div className="overview-icon-wrap gallery-storage-icon">
+              <Sparkles size={22} className="sparkles-icon" />
+            </div>
+            <div className="gallery-storage-copy">
+              <span className="gallery-storage-eyebrow">Storage Overview</span>
+              <h3>Kapasitas Penyimpanan Galeri</h3>
+              <p>Terisi {gallery.length} dari maksimal {MAX_PHOTOS_LIMIT} slot foto yang direkomendasikan untuk loading tetap ngebut.</p>
+            </div>
           </div>
-          <div>
-            <h3>Kapasitas Penyimpanan Galeri</h3>
-            <p>Terisi {gallery.length} dari maksimal {MAX_PHOTOS_LIMIT} slot foto yang direkomendasikan untuk kecepatan loading optimal.</p>
+
+          <div className="gallery-storage-meter" aria-hidden="true">
+            <span className="gallery-storage-percent">
+              {Math.round(Math.min((gallery.length / MAX_PHOTOS_LIMIT) * 100, 100))}%
+            </span>
+            <span className="gallery-storage-label">terpakai</span>
           </div>
         </div>
-        <div className="gallery-progressbar-container">
+
+        <div
+          className="gallery-progressbar-container gallery-storage-progress"
+          role="progressbar"
+          aria-valuenow={gallery.length}
+          aria-valuemin={0}
+          aria-valuemax={MAX_PHOTOS_LIMIT}
+          aria-label="Kapasitas foto galeri"
+        >
           <div className="gallery-progressbar" style={{ width: `${Math.min((gallery.length / MAX_PHOTOS_LIMIT) * 100, 100)}%` }} />
         </div>
-      </div>
 
+        <div className="gallery-storage-stats" aria-label="Statistik galeri">
+          <div className="gallery-storage-stat">
+            <span className="gallery-storage-stat-icon"><FileImage size={14} /></span>
+            <span className="gallery-storage-stat-copy">
+              <strong>{gallery.length}</strong>
+              <small>Total Foto</small>
+            </span>
+          </div>
+          <div className="gallery-storage-stat">
+            <span className="gallery-storage-stat-icon landing"><Globe size={14} /></span>
+            <span className="gallery-storage-stat-copy">
+              <strong>{gallery.filter(p => p.showOnLandingPage).length}</strong>
+              <small>Landing</small>
+            </span>
+          </div>
+          <div className="gallery-storage-stat">
+            <span className="gallery-storage-stat-icon customer"><Users size={14} /></span>
+            <span className="gallery-storage-stat-copy">
+              <strong>{gallery.filter(p => p.showToCustomer).length}</strong>
+              <small>Customer</small>
+            </span>
+          </div>
+          <div className="gallery-storage-stat">
+            <span className="gallery-storage-stat-icon album"><FolderOpen size={14} /></span>
+            <span className="gallery-storage-stat-copy">
+              <strong>{albums.length}</strong>
+              <small>Album</small>
+            </span>
+          </div>
+        </div>
+      </section>
       {/* ── View Mode Toggle + Toolbar ────────────────────────────────────────── */}
       <div className="gallery-toolbar-row" style={{ marginTop: '24px', flexWrap: 'wrap', gap: '16px' }}>
         {/* Left side: view toggle + actions */}
