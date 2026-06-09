@@ -7,8 +7,7 @@ import { useThemeStore } from '../store/useThemeStore';
 import { useAuthStore } from '../store/useAuthStore';
 import { format } from 'date-fns';
 import { Wallet, TrendingUp, TrendingDown, Plus, Trash2, Search, Download, Printer, X } from 'lucide-react';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, AreaChart, PieChart, Pie, Cell } from 'recharts';
-
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { toast } from 'sonner';
 import Modal from '../components/Modal';
 import {
@@ -27,7 +26,8 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import useSound from 'use-sound';
 import { CLICK_SOUND } from '../lib/sounds';
-import confetti from 'canvas-confetti';
+import confetti from 'canvas-confetti';
+
 import {
   useReactTable,
   getCoreRowModel,
