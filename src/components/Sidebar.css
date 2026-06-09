@@ -3684,3 +3684,78 @@
     min-height: 2.86rem !important;
   }
 }
+
+/* ──────────────────────────────────────────────────────────────────────────
+   37 SIDEBAR COLLAPSE TOGGLE POSITION FIX 8.6B-1
+   ────────────────────────────────────────────────────────────────────────── */
+
+@media (min-width: 769px) {
+  .admin-shell-modern .sidebar {
+    overflow: visible !important;
+  }
+
+  .admin-shell-modern .collapse-toggle {
+    position: absolute !important;
+    top: 1.45rem !important;
+    right: -1rem !important;
+    left: auto !important;
+    z-index: 50 !important;
+
+    width: 2.15rem !important;
+    height: 2.15rem !important;
+    min-width: 2.15rem !important;
+    padding: 0 !important;
+
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    border-radius: 999px !important;
+    border: 1px solid rgba(239, 197, 110, 0.24) !important;
+    background:
+      radial-gradient(circle at 50% 0%, rgba(255,255,255,0.24), transparent 58%),
+      linear-gradient(180deg, rgba(255,255,255,0.085), rgba(255,255,255,0.025)),
+      rgba(12, 16, 23, 0.92) !important;
+    color: rgba(255, 250, 240, 0.76) !important;
+
+    box-shadow:
+      0 16px 34px rgba(0, 0, 0, 0.28),
+      inset 0 1px 0 rgba(255,255,255,0.08) !important;
+
+    -webkit-backdrop-filter: blur(18px) saturate(1.05) !important;
+    backdrop-filter: blur(18px) saturate(1.05) !important;
+    transform: none !important;
+  }
+
+  .admin-shell-modern .collapse-toggle:hover {
+    border-color: rgba(239, 197, 110, 0.42) !important;
+    background:
+      radial-gradient(circle at 50% 0%, rgba(255,255,255,0.38), transparent 58%),
+      linear-gradient(180deg, rgba(255, 224, 137, 1), rgba(239, 197, 110, 0.92)) !important;
+    color: rgba(22, 15, 7, 0.96) !important;
+  }
+
+  .admin-shell-modern .sidebar.collapsed .collapse-toggle {
+    right: -1rem !important;
+    left: auto !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .admin-shell-modern .collapse-toggle {
+    display: none !important;
+  }
+}
+
+[data-theme="light"] .admin-shell-modern .collapse-toggle {
+  border-color: rgba(185, 133, 47, 0.22) !important;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255,255,255,0.46), transparent 58%),
+    linear-gradient(180deg, rgba(255,255,255,0.78), rgba(255,255,255,0.38)),
+    rgba(255, 250, 241, 0.84) !important;
+  color: rgba(45, 38, 28, 0.72) !important;
+  box-shadow:
+    0 14px 28px rgba(96, 73, 41, 0.14),
+    inset 0 1px 0 rgba(255,255,255,0.78) !important;
+}
+
