@@ -4368,3 +4368,333 @@
 }
 /* === END BILLING INVOICE MODAL SHELL PHASE 6 === */
 
+
+/* === START BILLING LIGHT MODE PERFORMANCE FINAL LOCK PHASE 7 === */
+.billing-page {
+  color-scheme: dark;
+  width: 100%;
+  max-width: min(100%, 1480px);
+  overflow-x: clip;
+  overscroll-behavior-x: none;
+  padding-bottom: calc(34px + env(safe-area-inset-bottom, 0px));
+  text-rendering: geometricPrecision;
+  -webkit-font-smoothing: antialiased;
+}
+
+.billing-page,
+.billing-page *,
+.billing-page *::before,
+.billing-page *::after {
+  box-sizing: border-box;
+}
+
+.billing-page :where(button, a, input, select, textarea) {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.billing-page :where(button, input, select, textarea):focus-visible,
+.modal-content.invoice-modal-wide :where(button, input, select, textarea):focus-visible {
+  outline: 2px solid rgba(239, 197, 110, 0.76);
+  outline-offset: 3px;
+}
+
+.billing-page :where(.billing-pos-shell, .billing-content, .billing-stat-card, .billing-smart-panel, .mobile-billing-card),
+.modal-content.invoice-modal-wide {
+  backface-visibility: hidden;
+}
+
+.billing-page :where(.billing-pos-shell, .billing-content, .billing-table-deck, .billing-mobile-deck, .mobile-billing-list, .inv2-shell) {
+  overscroll-behavior: contain;
+}
+
+.billing-page :where(.billing-table-deck, .mobile-billing-list, .billing-mobile-deck, .billing-command-summary, .billing-toolbar-signal-row),
+.modal-content.invoice-modal-wide :where(.inv2-shell) {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(239, 197, 110, 0.52) rgba(255, 255, 255, 0.045);
+}
+
+.billing-page :where(.billing-table-deck, .mobile-billing-list, .billing-mobile-deck, .billing-command-summary, .billing-toolbar-signal-row)::-webkit-scrollbar,
+.modal-content.invoice-modal-wide .inv2-shell::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.billing-page :where(.billing-table-deck, .mobile-billing-list, .billing-mobile-deck, .billing-command-summary, .billing-toolbar-signal-row)::-webkit-scrollbar-track,
+.modal-content.invoice-modal-wide .inv2-shell::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.042);
+  border-radius: 999px;
+}
+
+.billing-page :where(.billing-table-deck, .mobile-billing-list, .billing-mobile-deck, .billing-command-summary, .billing-toolbar-signal-row)::-webkit-scrollbar-thumb,
+.modal-content.invoice-modal-wide .inv2-shell::-webkit-scrollbar-thumb {
+  background: rgba(239, 197, 110, 0.58);
+  border: 3px solid transparent;
+  border-radius: 999px;
+  background-clip: content-box;
+}
+
+.billing-page .billing-content {
+  contain: layout paint;
+}
+
+.billing-page .billing-table-deck {
+  contain: layout paint;
+}
+
+.billing-page .mobile-bottom-spacer {
+  height: calc(92px + env(safe-area-inset-bottom, 0px)) !important;
+}
+
+.billing-page .billing-smart-item span[style] {
+  text-wrap: nowrap;
+}
+
+.billing-page .billing-table-compact .status-select,
+.billing-page .mobile-bill-control-row .status-select,
+.billing-page .filter-dropdown-toggle,
+.billing-page .app-search-input {
+  min-font-size: 16px;
+}
+
+/* Light mode final coverage */
+[data-theme="light"] .billing-page {
+  color-scheme: light;
+}
+
+[data-theme="light"] .billing-page .billing-pos-shell,
+[data-theme="light"] .billing-page .billing-content.app-panel,
+[data-theme="light"] .billing-page .billing-stat-card,
+[data-theme="light"] .billing-page .billing-smart-panel,
+[data-theme="light"] .billing-page .billing-control-deck,
+[data-theme="light"] .billing-page .billing-mobile-card {
+  border-color: rgba(35, 28, 18, 0.095);
+}
+
+[data-theme="light"] .billing-page .billing-pos-shell,
+[data-theme="light"] .billing-page .billing-content.app-panel {
+  background:
+    radial-gradient(circle at 0% 0%, rgba(2, 132, 199, 0.075), transparent 34%),
+    radial-gradient(circle at 100% 0%, rgba(217, 151, 35, 0.080), transparent 34%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.90), rgba(255, 250, 242, 0.68)),
+    rgba(255, 251, 244, 0.82);
+  box-shadow:
+    0 18px 48px rgba(88, 65, 35, 0.105),
+    inset 0 1px 0 rgba(255, 255, 255, 0.76);
+}
+
+[data-theme="light"] .billing-page .billing-command-main h2,
+[data-theme="light"] .billing-page .app-table-toolbar-title,
+[data-theme="light"] .billing-page .inv-band,
+[data-theme="light"] .billing-page .inv-total,
+[data-theme="light"] .billing-page .mobile-bill-band {
+  color: #201914 !important;
+}
+
+[data-theme="light"] .billing-page .billing-command-main p,
+[data-theme="light"] .billing-page .app-table-toolbar-subtitle,
+[data-theme="light"] .billing-page .mobile-bill-id,
+[data-theme="light"] .billing-page .billing-smart-main p {
+  color: rgba(55, 45, 34, 0.64);
+}
+
+[data-theme="light"] .billing-page .billing-stat-card,
+[data-theme="light"] .billing-page .billing-smart-panel,
+[data-theme="light"] .billing-page .billing-smart-item,
+[data-theme="light"] .billing-page .billing-control-filter .filter-dropdown-toggle,
+[data-theme="light"] .billing-page .billing-control-search,
+[data-theme="light"] .billing-page .billing-mobile-card {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.84), rgba(255, 255, 255, 0.56)),
+    rgba(255, 250, 242, 0.74);
+  box-shadow:
+    0 12px 30px rgba(88, 65, 35, 0.085),
+    inset 0 1px 0 rgba(255, 255, 255, 0.72);
+}
+
+[data-theme="light"] .billing-page .billing-smart-main {
+  background:
+    radial-gradient(circle at 0% 0%, rgba(2, 132, 199, 0.11), transparent 44%),
+    rgba(2, 132, 199, 0.060);
+  border-color: rgba(2, 132, 199, 0.16);
+}
+
+[data-theme="light"] .billing-page .billing-command-pill,
+[data-theme="light"] .billing-page .billing-signal-chip,
+[data-theme="light"] .billing-page .mobile-bill-id,
+[data-theme="light"] .billing-page .mobile-bill-tag.date {
+  border-color: rgba(35, 28, 18, 0.075);
+  background: rgba(255, 255, 255, 0.58);
+}
+
+[data-theme="light"] .billing-page .billing-table-compact thead th {
+  color: rgba(48, 38, 27, 0.62);
+  border-bottom-color: rgba(35, 28, 18, 0.085);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(255, 250, 242, 0.95));
+}
+
+[data-theme="light"] .billing-page .billing-table-compact td {
+  color: rgba(48, 38, 27, 0.70);
+  border-bottom-color: rgba(35, 28, 18, 0.060);
+}
+
+[data-theme="light"] .billing-page .billing-control-filter .filter-dropdown-menu {
+  color: #201914;
+}
+
+[data-theme="light"] .billing-page .filter-dropdown-item {
+  color: rgba(55, 45, 34, 0.72);
+}
+
+[data-theme="light"] .billing-page .filter-dropdown-item:hover {
+  color: #201914;
+  background: rgba(217, 151, 35, 0.070);
+}
+
+[data-theme="light"] .billing-page .status-select option {
+  background: #fffaf2;
+  color: #201914;
+}
+
+[data-theme="light"] .billing-page :where(.billing-table-deck, .mobile-billing-list, .billing-mobile-deck, .billing-command-summary, .billing-toolbar-signal-row),
+[data-theme="light"] .modal-content.invoice-modal-wide :where(.inv2-shell) {
+  scrollbar-color: rgba(154, 93, 16, 0.48) rgba(35, 28, 18, 0.050);
+}
+
+[data-theme="light"] .billing-page :where(.billing-table-deck, .mobile-billing-list, .billing-mobile-deck, .billing-command-summary, .billing-toolbar-signal-row)::-webkit-scrollbar-track,
+[data-theme="light"] .modal-content.invoice-modal-wide .inv2-shell::-webkit-scrollbar-track {
+  background: rgba(35, 28, 18, 0.045);
+}
+
+[data-theme="light"] .billing-page :where(.billing-table-deck, .mobile-billing-list, .billing-mobile-deck, .billing-command-summary, .billing-toolbar-signal-row)::-webkit-scrollbar-thumb,
+[data-theme="light"] .modal-content.invoice-modal-wide .inv2-shell::-webkit-scrollbar-thumb {
+  background: rgba(154, 93, 16, 0.52);
+  border-color: transparent;
+}
+
+/* Mobile final lock */
+@media (max-width: 768px) {
+  .billing-page {
+    max-width: 100%;
+    overflow-x: clip;
+    gap: 10px;
+    padding-bottom: calc(22px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .billing-page .billing-pos-shell,
+  .billing-page .billing-content.app-panel {
+    box-shadow:
+      0 12px 34px rgba(0, 0, 0, 0.18),
+      inset 0 1px 0 rgba(255, 255, 255, 0.060);
+  }
+
+  .billing-page .billing-stat-card,
+  .billing-page .billing-smart-panel,
+  .billing-page .billing-mobile-card {
+    box-shadow:
+      0 10px 26px rgba(0, 0, 0, 0.14),
+      inset 0 1px 0 rgba(255, 255, 255, 0.060);
+  }
+
+  .billing-page .billing-mobile-deck {
+    padding-bottom: calc(116px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  .billing-page .billing-control-deck,
+  .billing-page .billing-mobile-card,
+  .billing-page .billing-stat-card,
+  .billing-page .billing-smart-panel {
+    contain: layout paint;
+  }
+
+  [data-theme="light"] .billing-page .billing-pos-shell,
+  [data-theme="light"] .billing-page .billing-content.app-panel,
+  [data-theme="light"] .billing-page .billing-stat-card,
+  [data-theme="light"] .billing-page .billing-smart-panel,
+  [data-theme="light"] .billing-page .billing-mobile-card {
+    box-shadow:
+      0 10px 26px rgba(88, 65, 35, 0.080),
+      inset 0 1px 0 rgba(255, 255, 255, 0.70);
+  }
+}
+
+@media (max-width: 420px) {
+  .billing-page {
+    gap: 8px;
+  }
+
+  .billing-page .billing-pos-shell,
+  .billing-page .billing-content.app-panel {
+    border-radius: 18px;
+  }
+
+  .billing-page .billing-command-main p {
+    max-width: 34ch;
+  }
+}
+
+/* Touch devices: calm hover states */
+@media (hover: none), (pointer: coarse) {
+  .billing-page :where(
+    .billing-stat-card,
+    .billing-smart-item,
+    .billing-smart-btn,
+    .filter-dropdown-toggle,
+    .filter-dropdown-item,
+    .billing-table-compact tbody tr,
+    .btn-sm-pay,
+    .icon-btn,
+    .mobile-billing-card,
+    .inv2-share-btn,
+    .inv2-btn-print,
+    .inv2-btn-close,
+    .inv2-pay-btn
+  ):hover {
+    transform: none !important;
+    filter: none !important;
+  }
+
+  .billing-page :where(.billing-stat-card, .billing-smart-item, .mobile-billing-card):hover::before {
+    opacity: 1;
+  }
+}
+
+/* Reduced motion final lock */
+@media (prefers-reduced-motion: reduce) {
+  .billing-page,
+  .billing-page *,
+  .billing-page *::before,
+  .billing-page *::after,
+  .modal-content.invoice-modal-wide,
+  .modal-content.invoice-modal-wide *,
+  .modal-content.invoice-modal-wide *::before,
+  .modal-content.invoice-modal-wide *::after {
+    animation-duration: 0.001ms !important;
+    animation-delay: 0s !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.001ms !important;
+    transition-delay: 0s !important;
+  }
+
+  .deadline-chip.today,
+  .deadline-chip.overdue,
+  .mobile-bill-tag.deadline.today,
+  .mobile-bill-tag.deadline.overdue {
+    animation: none !important;
+  }
+}
+
+/* Screen-only modal performance lock, print remains controlled by existing @media print */
+@media screen {
+  .modal-content.invoice-modal-wide {
+    overflow-x: clip !important;
+  }
+
+  .modal-content.invoice-modal-wide .inv2-shell {
+    overflow-x: hidden;
+  }
+}
+/* === END BILLING LIGHT MODE PERFORMANCE FINAL LOCK PHASE 7 === */
+
