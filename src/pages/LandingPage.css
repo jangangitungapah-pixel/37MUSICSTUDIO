@@ -8616,53 +8616,135 @@ body[data-theme="light"]:has(.landing-container) #root {
 }
 
 /* ──────────────────────────────────────────────────────────────────────────
-   37 LANDING FAST THEME SWITCH 8.3F
+   37 LANDING MOBILE SCROLL PERFORMANCE 8.3G
    --------------------------------------------------------------------------
-   Makes Landing Page theme switching feel instant like Public Calendar:
-   - disables heavy transitions during theme flip
-   - temporarily removes expensive backdrop filters
-   - prevents hero image/filter repaint from feeling sluggish
+   Stabilizes mobile landing scroll after fast theme switch:
+   - replaces heavy global transition killer with scoped fast switch
+   - removes live backdrop blur on mobile glass surfaces
+   - reduces mobile hero image blur/filter repaint
+   - avoids disappearing/reappearing sections during fast scroll
    ────────────────────────────────────────────────────────────────────────── */
 
 html[data-theme-switching="true"] .landing-container,
-html[data-theme-switching="true"] .landing-container *,
-html[data-theme-switching="true"] .landing-container *::before,
-html[data-theme-switching="true"] .landing-container *::after {
+html[data-theme-switching="true"] .landing-container .landing-nav,
+html[data-theme-switching="true"] .landing-container .hero-section,
+html[data-theme-switching="true"] .landing-container .hero-scrim,
+html[data-theme-switching="true"] .landing-container .hero-background img,
+html[data-theme-switching="true"] .landing-container .hero-login-panel,
+html[data-theme-switching="true"] .landing-container .hero-native-field,
+html[data-theme-switching="true"] .landing-container .mobile-sticky-cta {
   transition: none !important;
   animation: none !important;
   scroll-behavior: auto !important;
 }
 
 html[data-theme-switching="true"] .landing-container .landing-nav,
-html[data-theme-switching="true"] .landing-container .nav-links,
-html[data-theme-switching="true"] .landing-container .mobile-nav-menu,
-html[data-theme-switching="true"] .landing-container .nav-login-dropdown,
 html[data-theme-switching="true"] .landing-container .hero-login-panel,
-html[data-theme-switching="true"] .landing-container .hero-native-field,
-html[data-theme-switching="true"] .landing-container .hero-trust-strip > div,
-html[data-theme-switching="true"] .landing-container .experience-card,
-html[data-theme-switching="true"] .landing-container .flow-step,
-html[data-theme-switching="true"] .landing-container .landing-gallery-card,
-html[data-theme-switching="true"] .landing-container .pricing-copy,
-html[data-theme-switching="true"] .landing-container .price-card,
-html[data-theme-switching="true"] .landing-container .proof-grid div,
-html[data-theme-switching="true"] .landing-container .footer-brand,
-html[data-theme-switching="true"] .landing-container .footer-contact,
-html[data-theme-switching="true"] .landing-container .footer-map {
+html[data-theme-switching="true"] .landing-container .hero-native-field {
   -webkit-backdrop-filter: none !important;
   backdrop-filter: none !important;
 }
 
-html[data-theme-switching="true"] .landing-container .hero-background img,
-html[data-theme-switching="true"] .landing-container .landing-gallery-media img,
-html[data-theme-switching="true"] .landing-container .map-container iframe,
-html[data-theme-switching="true"] .landing-container .footer-map iframe {
-  transition: none !important;
-  animation: none !important;
+@media (max-width: 767px) {
+  .landing-container {
+    overflow-x: hidden !important;
+    overscroll-behavior-y: auto !important;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .landing-container .landing-nav,
+  .landing-container .mobile-nav-menu,
+  .landing-container .nav-login-dropdown,
+  .landing-container .hero-login-panel,
+  .landing-container .hero-native-field,
+  .landing-container .hero-trust-strip > div,
+  .landing-container .experience-card,
+  .landing-container .flow-panel,
+  .landing-container .flow-step,
+  .landing-container .landing-gallery-card,
+  .landing-container .pricing-copy,
+  .landing-container .price-card,
+  .landing-container .proof-grid div,
+  .landing-container .footer-brand,
+  .landing-container .footer-contact,
+  .landing-container .footer-map,
+  .landing-container .mobile-sticky-cta {
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+
+  .landing-container .landing-nav {
+    will-change: auto !important;
+    transform: translateZ(0);
+  }
+
+  .landing-container .hero-background img {
+    transform: none !important;
+    will-change: auto !important;
+    backface-visibility: hidden;
+  }
+
+  [data-theme="light"] .landing-container .hero-background img {
+    opacity: 0.30 !important;
+    filter:
+      saturate(0.84)
+      contrast(0.96)
+      brightness(1.08) !important;
+  }
+
+  [data-theme="dark"] .landing-container .hero-background img,
+  .landing-container:not([data-theme]) .hero-background img {
+    filter:
+      saturate(1.02)
+      contrast(1.02)
+      brightness(0.86) !important;
+  }
+
+  .landing-container .experience-card,
+  .landing-container .flow-step,
+  .landing-container .landing-gallery-card,
+  .landing-container .price-card,
+  .landing-container .proof-grid > div,
+  .landing-container .footer-brand,
+  .landing-container .footer-contact,
+  .landing-container .footer-map {
+    transform: none !important;
+    will-change: auto !important;
+  }
+
+  .landing-container .experience-card:hover,
+  .landing-container .flow-step:hover,
+  .landing-container .landing-gallery-card:hover,
+  .landing-container .price-card:hover,
+  .landing-container .proof-grid > div:hover,
+  .landing-container .footer-social a:hover {
+    transform: none !important;
+  }
+
+  .landing-container .map-container iframe,
+  .landing-container .footer-map iframe {
+    filter: none !important;
+  }
+
+  .landing-container .hero-native-field input:-webkit-autofill,
+  .landing-container .hero-native-field input:-webkit-autofill:hover,
+  .landing-container .hero-native-field input:-webkit-autofill:focus,
+  .landing-container .hero-native-field input:-webkit-autofill:active {
+    transition: none !important;
+  }
 }
 
-html[data-theme-switching="true"] .landing-container .hero-background img {
-  will-change: auto !important;
+@media (max-width: 767px) and (prefers-reduced-motion: no-preference) {
+  .landing-container .experience-card,
+  .landing-container .flow-step,
+  .landing-container .landing-gallery-card,
+  .landing-container .price-card,
+  .landing-container .proof-grid > div {
+    transition:
+      border-color 120ms ease,
+      background-color 120ms ease,
+      box-shadow 120ms ease !important;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

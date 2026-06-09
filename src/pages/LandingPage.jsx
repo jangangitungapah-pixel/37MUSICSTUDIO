@@ -75,6 +75,8 @@ const LandingPage = () => {
   const { gallery: adminGalleryPhotos = [] } = useGalleryStore();
   const { theme, toggleTheme } = useThemeStore();
   const themeSwitchTimeoutRef = useRef(null);
+  const scrolledRef = useRef(false);
+  const scrollRafRef = useRef(null);
   const navigate = useNavigate();
 
   const [lightboxPhoto, setLightboxPhoto] = useState(null);
@@ -123,13 +125,34 @@ const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const whatsappUrl = `https://wa.me/${whatsappNumber}`;
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 42);
+    const updateScrolledState = () => {
+      scrollRafRef.current = null;
+
+      const nextScrolled = window.scrollY > 42;
+
+      if (scrolledRef.current !== nextScrolled) {
+        scrolledRef.current = nextScrolled;
+        setScrolled(nextScrolled);
+      }
     };
 
-    handleScroll();
+    const handleScroll = () => {
+      if (scrollRafRef.current !== null) return;
+
+      scrollRafRef.current = window.requestAnimationFrame(updateScrolledState);
+    };
+
+    updateScrolledState();
     window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+
+      if (scrollRafRef.current !== null) {
+        window.cancelAnimationFrame(scrollRafRef.current);
+        scrollRafRef.current = null;
+      }
+    };
   }, []);
 
   useEffect(() => {
@@ -203,7 +226,7 @@ const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     themeSwitchTimeoutRef.current = window.setTimeout(() => {
       rootElement.removeAttribute('data-theme-switching');
       themeSwitchTimeoutRef.current = null;
-    }, 180);
+    }, 90);
 
     toggleTheme();
   };
