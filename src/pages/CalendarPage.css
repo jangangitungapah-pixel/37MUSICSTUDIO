@@ -6968,3 +6968,115 @@ body.calendar-move-lock .main-content {
 }
 
 /* 37 ADMIN CALENDAR BOOKING CARD TEXT STACK HOTFIX 8.7I-1 END */
+
+/* 37 ADMIN CALENDAR MOBILE SCROLL RULES HOTFIX 8.7J START */
+
+@media (max-width: 768px) {
+  /* Calendar page should not fight the app shell scroll */
+  .calendar-page {
+    height: auto !important;
+    min-height: 100dvh !important;
+    overflow: visible !important;
+    overflow-x: hidden !important;
+    overscroll-behavior-y: auto !important;
+    overscroll-behavior-x: none !important;
+    touch-action: pan-y !important;
+  }
+
+  .calendar-main-content,
+  .calendar-shell {
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    overflow-x: hidden !important;
+  }
+
+  /* Header, stats, panels are normal content, not scroll containers */
+  .calendar-page .calendar-page-header,
+  .calendar-page .calendar-overview,
+  .calendar-page .calendar-stats-grid,
+  .calendar-page .app-smart-panel,
+  .calendar-page .calendar-workspace {
+    overflow: visible !important;
+    max-height: none !important;
+  }
+
+  /* Only the timeline/grid owns horizontal scrolling */
+  .calendar-page .monthly-grid-wrapper,
+  .calendar-page .calendar-timeline-wrapper {
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    overscroll-behavior-x: contain !important;
+    overscroll-behavior-y: none !important;
+    -webkit-overflow-scrolling: touch !important;
+    touch-action: pan-x !important;
+  }
+
+  .calendar-page .monthly-grid,
+  .calendar-page .calendar-timeline-grid {
+    min-width: max-content !important;
+    overflow: visible !important;
+  }
+
+  /* Drag/resize states may temporarily take full pointer control */
+  .calendar-page .monthly-grid-wrapper.is-resize-active,
+  .calendar-page .monthly-grid-wrapper.is-move-active {
+    overflow: hidden !important;
+    touch-action: none !important;
+    overscroll-behavior: none !important;
+  }
+
+  /* Horizontal chip rows can scroll sideways without causing page jitter */
+  .calendar-page .quick-filters,
+  .calendar-page .view-switcher,
+  .calendar-page .calendar-toolbar-right {
+    max-width: 100% !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    overscroll-behavior-x: contain !important;
+    -webkit-overflow-scrolling: touch !important;
+    scrollbar-width: none !important;
+    touch-action: pan-x !important;
+  }
+
+  .calendar-page .quick-filters::-webkit-scrollbar,
+  .calendar-page .view-switcher::-webkit-scrollbar,
+  .calendar-page .calendar-toolbar-right::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  /* Detail popup: sheet body scrolls, shell does not create a second scroll */
+  .booking-detail-popup.mobile-sheet {
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+    max-height: min(84dvh, 720px) !important;
+    overscroll-behavior: contain !important;
+  }
+
+  .booking-detail-popup.mobile-sheet .detail-header,
+  .booking-detail-popup.mobile-sheet .detail-footer {
+    flex-shrink: 0 !important;
+  }
+
+  .booking-detail-popup.mobile-sheet .detail-body {
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    overscroll-behavior: contain !important;
+    -webkit-overflow-scrolling: touch !important;
+    touch-action: pan-y !important;
+  }
+
+  /* Mobile drag hint should never catch scroll */
+  .mobile-booking-drag-ghost,
+  .mobile-move-hint {
+    pointer-events: none !important;
+    touch-action: none !important;
+  }
+}
+
+/* 37 ADMIN CALENDAR MOBILE SCROLL RULES HOTFIX 8.7J END */

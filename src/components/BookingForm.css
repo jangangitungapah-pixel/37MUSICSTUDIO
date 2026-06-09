@@ -2650,3 +2650,133 @@ textarea.bf-input,
 }
 
 /* 37 BOOKING MODAL BUTTON FOOTER HOTFIX 8.7F-3 END */
+
+/* 37 ADMIN CALENDAR MOBILE SCROLL RULES HOTFIX 8.7J START */
+
+@media (max-width: 768px) {
+  /* Modal frame: no internal scrolling on the shell */
+  .modal-content:has(.booking-form),
+  .modal-container:has(.booking-form),
+  .fluent-dialog:has(.booking-form) {
+    overflow: hidden !important;
+    max-height: min(90dvh, 780px) !important;
+    overscroll-behavior: contain !important;
+  }
+
+  /* Single scroll owner: the form */
+  .booking-form {
+    height: auto !important;
+    max-height: min(76dvh, 680px) !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    overscroll-behavior: contain !important;
+    -webkit-overflow-scrolling: touch !important;
+    touch-action: pan-y !important;
+    padding-bottom: calc(0.95rem + env(safe-area-inset-bottom, 0px)) !important;
+    scroll-padding-bottom: calc(1rem + env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  /* Children must not become accidental scroll containers */
+  .booking-form > *,
+  .bf-ambient-hero,
+  .bf-type-toggle,
+  .bf-section,
+  .bf-row,
+  .bf-field,
+  .bf-time-preview,
+  .bf-recurring-panel,
+  .bf-deadline-field,
+  .bf-dp-section,
+  .bf-price-card,
+  .bf-paid-notice,
+  .bf-status-grid,
+  .bf-actions,
+  .bf-form-actions {
+    overflow: visible !important;
+    max-height: none !important;
+    min-height: auto !important;
+  }
+
+  /* Inputs can hide their own text overflow, but not create page scroll */
+  .bf-input,
+  .bf-duration-picker,
+  .bf-status-card,
+  .bf-remaining {
+    overflow: hidden !important;
+  }
+
+  textarea.bf-input,
+  .bf-textarea {
+    overflow-y: auto !important;
+    overscroll-behavior: contain !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  /* Equipment list: mobile should follow the main form scroll, not nested scroll */
+  .bf-equipment-list {
+    max-height: none !important;
+    overflow: visible !important;
+    padding-right: 0 !important;
+  }
+
+  .bf-equipment-list label {
+    flex-shrink: 0 !important;
+    min-height: 3.85rem !important;
+  }
+
+  /* Type toggle stays normal flow, not sticky */
+  .bf-type-toggle {
+    position: relative !important;
+    top: auto !important;
+    z-index: 2 !important;
+  }
+
+  /* Action footer stays in document flow, no overlay, no sticky black strip */
+  .bf-actions,
+  .bf-form-actions {
+    position: relative !important;
+    bottom: auto !important;
+    z-index: 3 !important;
+    margin-bottom: 0 !important;
+    transform: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  /* Prevent horizontal scroll from long labels/items */
+  .booking-form,
+  .booking-form *,
+  .booking-form *::before,
+  .booking-form *::after {
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .bf-equipment-list label,
+  .bf-status-card,
+  .bf-type-btn,
+  .bf-actions button,
+  .bf-form-actions button {
+    min-width: 0 !important;
+  }
+}
+
+/* Very small phones: remove nested risk further */
+@media (max-width: 420px) {
+  .booking-form {
+    max-height: min(74dvh, 640px) !important;
+  }
+
+  .bf-row,
+  .bf-status-grid,
+  .bf-actions,
+  .bf-form-actions {
+    grid-template-columns: 1fr !important;
+  }
+
+  .bf-hero-meta {
+    display: none !important;
+  }
+}
+
+/* 37 ADMIN CALENDAR MOBILE SCROLL RULES HOTFIX 8.7J END */
