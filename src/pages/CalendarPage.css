@@ -6575,3 +6575,222 @@ body.calendar-move-lock .main-content {
 }
 
 /* 37 ADMIN CALENDAR LIGHT MODE FINAL LOCK 8.7H END */
+
+/* 37 ADMIN CALENDAR READABILITY + GRID DENSITY HOTFIX 8.7I START */
+
+/* 1) Reduce grid visual noise */
+.calendar-page .monthly-grid,
+.calendar-page .calendar-timeline-grid {
+  background:
+    linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px),
+    linear-gradient(180deg, rgba(255,255,255,0.015) 1px, transparent 1px),
+    rgba(7,10,15,0.12) !important;
+}
+
+.calendar-page .grid-cell,
+.calendar-page .timeline-slot-cell {
+  border-color: rgba(255,255,255,0.026) !important;
+}
+
+.calendar-page .timeline-slot-cell,
+.calendar-page .timeline-slot-cell.even-hour {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.012), rgba(255,255,255,0.004)),
+    rgba(255,255,255,0.004) !important;
+}
+
+.calendar-page .timeline-slot-cell:hover {
+  background:
+    radial-gradient(circle at 50% 50%, rgba(239,197,110,0.060), transparent 54%),
+    rgba(239,197,110,0.018) !important;
+  border-color: rgba(239,197,110,0.13) !important;
+}
+
+/* 2) Make booking cards readable at a glance */
+.calendar-page .booked-cell,
+.calendar-page .timeline-booking-card {
+  margin: 0.25rem 0.24rem !important;
+  min-height: calc(100% - 0.5rem) !important;
+  padding: 0.58rem 0.72rem 0.44rem !important;
+  border-radius: 0.78rem !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.085), rgba(255,255,255,0.028)),
+    rgba(18, 24, 33, 0.78) !important;
+  box-shadow:
+    0 10px 22px rgba(0,0,0,0.22),
+    inset 0 1px 0 rgba(255,255,255,0.070) !important;
+}
+
+.calendar-page .booking-info {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  gap: 0.24rem !important;
+  min-width: 0 !important;
+  height: 100% !important;
+}
+
+.calendar-page .booking-band-name {
+  color: #fffaf0 !important;
+  font-size: 0.88rem !important;
+  line-height: 1.05 !important;
+  font-weight: 950 !important;
+  letter-spacing: -0.025em !important;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.38) !important;
+}
+
+.calendar-page .booking-time-label {
+  color: rgba(255,250,240,0.72) !important;
+  font-size: 0.70rem !important;
+  line-height: 1 !important;
+  font-weight: 900 !important;
+  letter-spacing: 0.01em !important;
+  font-variant-numeric: tabular-nums !important;
+}
+
+.calendar-page .booking-meta-row {
+  gap: 0.38rem !important;
+  opacity: 1 !important;
+}
+
+/* 3) REC badge readability */
+.calendar-page .rec-indicator {
+  min-height: 1.05rem !important;
+  padding: 0 0.34rem !important;
+  border-radius: 999px !important;
+  border: 1px solid rgba(255,61,112,0.28) !important;
+  background: rgba(255,61,112,0.16) !important;
+}
+
+.calendar-page .rec-text {
+  color: rgba(255,214,225,0.96) !important;
+  font-size: 0.55rem !important;
+  font-weight: 950 !important;
+  letter-spacing: 0.05em !important;
+}
+
+.calendar-page .rec-dot {
+  width: 0.36rem !important;
+  height: 0.36rem !important;
+  background: #ff3d70 !important;
+  box-shadow: 0 0 8px rgba(255,61,112,0.70) !important;
+}
+
+/* 4) Status color edges stronger, body calmer */
+.calendar-page .booked-cell.status-confirmed {
+  border-left-color: #58e0e9 !important;
+  border-color: rgba(88,224,233,0.24) !important;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(88,224,233,0.105), transparent 38%),
+    linear-gradient(180deg, rgba(255,255,255,0.078), rgba(255,255,255,0.024)),
+    rgba(18,24,33,0.80) !important;
+}
+
+.calendar-page .booked-cell.status-dp {
+  border-left-color: #efc56e !important;
+  border-color: rgba(239,197,110,0.26) !important;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(239,197,110,0.105), transparent 38%),
+    linear-gradient(180deg, rgba(255,255,255,0.078), rgba(255,255,255,0.024)),
+    rgba(18,24,33,0.80) !important;
+}
+
+.calendar-page .booked-cell.status-pending {
+  border-left-color: #ff3d70 !important;
+  border-color: rgba(255,61,112,0.25) !important;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(255,61,112,0.095), transparent 38%),
+    linear-gradient(180deg, rgba(255,255,255,0.078), rgba(255,255,255,0.024)),
+    rgba(18,24,33,0.80) !important;
+}
+
+.calendar-page .booked-cell.booking-vip {
+  border-left-color: #ffd700 !important;
+  box-shadow:
+    0 10px 24px rgba(0,0,0,0.22),
+    0 0 0 1px rgba(255,215,0,0.10),
+    inset 0 1px 0 rgba(255,255,255,0.080) !important;
+}
+
+/* 5) Date/hour headers less aggressive */
+.calendar-page .timeline-hour-header,
+.calendar-page .timeline-date-cell,
+.calendar-page .timeline-corner {
+  border-color: rgba(255,255,255,0.055) !important;
+}
+
+.calendar-page .timeline-hour-label {
+  font-size: 0.98rem !important;
+  color: rgba(255,250,240,0.88) !important;
+}
+
+.calendar-page .timeline-hour-end,
+.calendar-page .timeline-date-day {
+  color: rgba(255,250,240,0.42) !important;
+}
+
+/* 6) Light mode parity */
+[data-theme="light"] .calendar-page .monthly-grid,
+[data-theme="light"] .calendar-page .calendar-timeline-grid {
+  background:
+    linear-gradient(90deg, rgba(96,73,41,0.026) 1px, transparent 1px),
+    linear-gradient(180deg, rgba(96,73,41,0.022) 1px, transparent 1px),
+    rgba(255,250,241,0.18) !important;
+}
+
+[data-theme="light"] .calendar-page .grid-cell,
+[data-theme="light"] .calendar-page .timeline-slot-cell {
+  border-color: rgba(96,73,41,0.034) !important;
+}
+
+[data-theme="light"] .calendar-page .booked-cell,
+[data-theme="light"] .calendar-page .timeline-booking-card {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.80), rgba(255,255,255,0.34)),
+    rgba(255,250,241,0.64) !important;
+  box-shadow:
+    0 10px 20px rgba(96,73,41,0.105),
+    inset 0 1px 0 rgba(255,255,255,0.72) !important;
+}
+
+[data-theme="light"] .calendar-page .booking-band-name {
+  color: rgba(34,27,18,0.96) !important;
+  text-shadow: none !important;
+}
+
+[data-theme="light"] .calendar-page .booking-time-label {
+  color: rgba(45,38,28,0.68) !important;
+}
+
+[data-theme="light"] .calendar-page .timeline-hour-label {
+  color: rgba(34,27,18,0.88) !important;
+}
+
+[data-theme="light"] .calendar-page .timeline-hour-end,
+[data-theme="light"] .calendar-page .timeline-date-day {
+  color: rgba(45,38,28,0.46) !important;
+}
+
+/* 7) Mobile readability */
+@media (max-width: 768px) {
+  .calendar-page .booked-cell,
+  .calendar-page .timeline-booking-card {
+    margin: 0.22rem 0.18rem !important;
+    min-height: calc(100% - 0.44rem) !important;
+    padding: 0.48rem 0.56rem 0.36rem !important;
+  }
+
+  .calendar-page .booking-band-name {
+    font-size: 0.78rem !important;
+  }
+
+  .calendar-page .booking-time-label {
+    font-size: 0.62rem !important;
+  }
+
+  .calendar-page .rec-text {
+    font-size: 0.50rem !important;
+  }
+}
+
+/* 37 ADMIN CALENDAR READABILITY + GRID DENSITY HOTFIX 8.7I END */
