@@ -6395,79 +6395,47 @@
 /* === END 10.1G-1 PEMBUKUAN MOBILE COMPACT HOTFIX === */
 
 
-/* === START 10.1G-3 PEMBUKUAN MOBILE CHART RESTORE === */
+/* === START 10.1G-4 PEMBUKUAN AUDIT MOBILE FIX === */
 
-/* Hotfix 10.1G-3 - restore mobile chart and densify ledger.
-   CSS-only.
-   Catatan:
-   - Block 10.1G-2 dihapus karena terlalu agresif ke internal Recharts SVG.
-   - Patch ini tidak menyentuh data chart, transaksi, pagination, export, print, PDF, store, atau calculation. */
+/* Phase 10.1G-4 - audited mobile chart and ledger fix.
+   Root cause:
+   - Chart height must be controlled from JSX ResponsiveContainer.
+   - Mobile ledger must be dense and avoid action/saldo rows.
+   CSS here only polishes the outer shell and mobile card density. */
 
 @media (max-width: 768px) {
-  /* Restore chart visibility: jangan paksa clipPath atau transform internal Recharts. */
   .finance-page .finance-chart-card {
     min-height: 0 !important;
-    max-height: none !important;
     padding: 9px !important;
     overflow: hidden !important;
   }
 
   .finance-page .finance-chart-card .recharts-responsive-container {
-    width: 100% !important;
     height: 220px !important;
     min-height: 220px !important;
     max-height: 220px !important;
   }
 
   .finance-page .finance-chart-card .recharts-wrapper {
-    width: 100% !important;
-    height: 220px !important;
-    min-height: 220px !important;
-    max-height: 220px !important;
     transform: none !important;
-    overflow: hidden !important;
   }
 
-  .finance-page .finance-chart-card .recharts-surface {
-    width: 100% !important;
-    height: 220px !important;
-    min-height: 220px !important;
-    max-height: 220px !important;
-    overflow: hidden !important;
-  }
-
-  .finance-page .finance-chart-card .recharts-area,
-  .finance-page .finance-chart-card .recharts-line,
-  .finance-page .finance-chart-card .recharts-layer,
-  .finance-page .finance-chart-card .recharts-curve {
+  .finance-page .finance-chart-card :is(.recharts-area, .recharts-layer, .recharts-curve, .recharts-dot) {
     opacity: 1 !important;
     visibility: visible !important;
   }
 
   .finance-page .finance-chart-card .recharts-cartesian-grid-horizontal line {
-    stroke-opacity: 0.28 !important;
-  }
-
-  .finance-page .finance-chart-card .recharts-cartesian-axis-tick text,
-  .finance-page .finance-chart-card .recharts-cartesian-axis-tick-value {
-    font-size: 9px !important;
-  }
-
-  .finance-page .chart-card-header {
-    margin-bottom: 4px !important;
-  }
-
-  .finance-page .chart-period-selector {
-    margin-bottom: 0 !important;
+    stroke-opacity: 0.26 !important;
   }
 
   .finance-page .chart-legend {
     position: static !important;
     display: flex !important;
     justify-content: flex-start !important;
+    gap: 5px !important;
     margin-top: 4px !important;
     padding: 0 !important;
-    gap: 5px !important;
     overflow-x: auto !important;
     scrollbar-width: none;
   }
@@ -6477,19 +6445,13 @@
   }
 
   .finance-page .chart-legend .legend-item {
+    flex: 0 0 auto;
     min-height: 21px !important;
     padding: 3px 7px !important;
     border-radius: 999px !important;
-    background: rgba(255, 255, 255, 0.045) !important;
     font-size: 0.55rem !important;
   }
 
-  .finance-page .chart-legend .legend-dot {
-    width: 7px !important;
-    height: 7px !important;
-  }
-
-  /* Ledger dense mode: satu kartu jadi ringkas, action mobile disembunyikan agar list tidak jangkung. */
   .finance-page .mobile-ledger-list {
     gap: 5px !important;
     padding: 5px !important;
@@ -6498,20 +6460,16 @@
 
   .finance-page .mobile-ledger-card {
     display: grid !important;
-    grid-template-columns: minmax(0, 1fr) minmax(86px, auto) !important;
+    grid-template-columns: minmax(0, 1fr) minmax(82px, auto) !important;
     grid-template-areas: "info amount" !important;
     align-items: center !important;
-    min-height: 52px !important;
-    max-height: 60px !important;
-    padding: 7px 8px 7px 9px !important;
+    min-height: 50px !important;
+    max-height: 58px !important;
+    padding: 7px 8px !important;
     gap: 5px 8px !important;
     border-left-width: 4px !important;
     border-radius: 10px !important;
     overflow: hidden !important;
-  }
-
-  .finance-page .mobile-ledger-card::before {
-    opacity: 0.32 !important;
   }
 
   .finance-page .mobile-ledger-info {
@@ -6520,25 +6478,11 @@
     gap: 3px !important;
   }
 
-  .finance-page .mobile-ledger-right {
-    grid-area: amount !important;
-    align-self: center !important;
-    justify-self: end !important;
-    max-width: 34vw !important;
-    min-width: 0 !important;
-    gap: 1px !important;
-  }
-
-  .finance-page .mobile-ledger-actions {
-    display: none !important;
-  }
-
   .finance-page .mobile-ledger-desc {
     display: block !important;
     max-width: 100% !important;
     overflow: hidden !important;
-    color: rgba(255, 250, 240, 0.84) !important;
-    font-size: 0.63rem !important;
+    font-size: 0.62rem !important;
     font-weight: 850 !important;
     line-height: 1.12 !important;
     text-overflow: ellipsis !important;
@@ -6556,41 +6500,44 @@
   .finance-page .cat-badge,
   .finance-page .source-badge {
     flex: 0 1 auto !important;
-    max-width: 78px !important;
-    min-height: 17px !important;
+    max-width: 76px !important;
+    min-height: 16px !important;
     padding: 1px 5px !important;
-    font-size: 0.47rem !important;
+    font-size: 0.46rem !important;
     line-height: 1 !important;
   }
 
   .finance-page .mobile-ledger-date {
     flex: 0 0 auto !important;
-    color: rgba(255, 250, 240, 0.46) !important;
-    font-size: 0.49rem !important;
+    font-size: 0.48rem !important;
     white-space: nowrap !important;
   }
 
-  .finance-page .mobile-ledger-operator {
+  .finance-page .mobile-ledger-operator,
+  .finance-page .mobile-ledger-balance,
+  .finance-page .mobile-ledger-actions {
     display: none !important;
+  }
+
+  .finance-page .mobile-ledger-right {
+    grid-area: amount !important;
+    justify-self: end !important;
+    max-width: 32vw !important;
+    min-width: 0 !important;
   }
 
   .finance-page .mobile-ledger-amount {
     display: block !important;
-    max-width: 34vw !important;
+    max-width: 32vw !important;
     overflow: hidden !important;
-    font-size: 0.62rem !important;
+    font-size: 0.6rem !important;
     font-weight: 900 !important;
-    line-height: 1.14 !important;
+    line-height: 1.12 !important;
     text-align: right !important;
     text-overflow: ellipsis !important;
     white-space: nowrap !important;
   }
 
-  .finance-page .mobile-ledger-balance {
-    display: none !important;
-  }
-
-  /* Pagination tetap mini dan tidak menambah tinggi list. */
   .finance-page .ledger-pagination {
     min-height: 36px !important;
     padding: 6px 8px !important;
@@ -6628,36 +6575,31 @@
 }
 
 @media (max-width: 430px) {
-  .finance-page .finance-chart-card .recharts-responsive-container,
-  .finance-page .finance-chart-card .recharts-wrapper,
-  .finance-page .finance-chart-card .recharts-surface {
+  .finance-page .finance-chart-card .recharts-responsive-container {
     height: 210px !important;
     min-height: 210px !important;
     max-height: 210px !important;
   }
 
   .finance-page .mobile-ledger-card {
-    grid-template-columns: minmax(0, 1fr) minmax(78px, auto) !important;
-    grid-template-areas: "info amount" !important;
-    min-height: 50px !important;
-    max-height: 58px !important;
+    grid-template-columns: minmax(0, 1fr) minmax(76px, auto) !important;
+    min-height: 48px !important;
+    max-height: 56px !important;
   }
 
   .finance-page .mobile-ledger-right,
   .finance-page .mobile-ledger-amount {
-    max-width: 31vw !important;
+    max-width: 30vw !important;
   }
 
   .finance-page .cat-badge,
   .finance-page .source-badge {
-    max-width: 72px !important;
+    max-width: 70px !important;
   }
 }
 
 @media (max-width: 360px) {
-  .finance-page .finance-chart-card .recharts-responsive-container,
-  .finance-page .finance-chart-card .recharts-wrapper,
-  .finance-page .finance-chart-card .recharts-surface {
+  .finance-page .finance-chart-card .recharts-responsive-container {
     height: 198px !important;
     min-height: 198px !important;
     max-height: 198px !important;
@@ -6671,27 +6613,11 @@
   .finance-page .mobile-ledger-amount {
     max-width: 28vw !important;
   }
-
-  .finance-page .mobile-ledger-desc {
-    font-size: 0.59rem !important;
-  }
-
-  .finance-page .cat-badge,
-  .finance-page .source-badge,
-  .finance-page .mobile-ledger-date {
-    font-size: 0.45rem !important;
-  }
 }
 
 [data-theme="light"] .finance-page .chart-legend .legend-item {
   background: rgba(255, 255, 255, 0.76) !important;
 }
 
-@media (hover: none) and (max-width: 768px) {
-  .finance-page .mobile-ledger-card:hover {
-    transform: none !important;
-  }
-}
-
-/* === END 10.1G-3 PEMBUKUAN MOBILE CHART RESTORE === */
+/* === END 10.1G-4 PEMBUKUAN AUDIT MOBILE FIX === */
 

@@ -56,6 +56,7 @@ const CATEGORIES = {
 };
 
 const LEDGER_PAGE_SIZE = 12;
+const LEDGER_MOBILE_PAGE_SIZE = 8;
 
 const CustomActiveDot = (props) => {
   const { cx, cy, stroke, theme } = props;
@@ -326,6 +327,28 @@ const FinancePage = () => {
   const [isExporting, setIsExporting] = useState(false);
   const [ledgerPage, setLedgerPage] = useState(1);
 
+  const [isFinanceMobile, setIsFinanceMobile] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    return window.matchMedia('(max-width: 768px)').matches;
+  });
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return undefined;
+
+    const mediaQuery = window.matchMedia('(max-width: 768px)');
+    const handleChange = (event) => setIsFinanceMobile(event.matches);
+
+    setIsFinanceMobile(mediaQuery.matches);
+
+    if (mediaQuery.addEventListener) {
+      mediaQuery.addEventListener('change', handleChange);
+      return () => mediaQuery.removeEventListener('change', handleChange);
+    }
+
+    mediaQuery.addListener(handleChange);
+    return () => mediaQuery.removeListener(handleChange);
+  }, []);
+
   // Combine bookings and manual transactions
   const combinedData = useMemo(
     () => buildCombinedLedger({ transactions, bookings, pricePerHour }),
@@ -355,14 +378,16 @@ const FinancePage = () => {
     return periodFilteredData.filter(d => d.type === filterType);
   }, [periodFilteredData, filterType]);
 
+  const ledgerPageSize = isFinanceMobile ? LEDGER_MOBILE_PAGE_SIZE : LEDGER_PAGE_SIZE;
+
   useEffect(() => {
     setLedgerPage(1);
   }, [filterPeriod, filterType, searchQuery]);
 
   useEffect(() => {
-    const nextPageCount = Math.max(1, Math.ceil(filteredData.length / LEDGER_PAGE_SIZE));
+    const nextPageCount = Math.max(1, Math.ceil(filteredData.length / ledgerPageSize));
     setLedgerPage((currentPage) => Math.min(currentPage, nextPageCount));
-  }, [filteredData.length]);
+  }, [filteredData.length, ledgerPageSize]);
 
   // Today's Expense Tracker calculations
   const todayStr = format(new Date(), 'yyyy-MM-dd');
@@ -503,10 +528,10 @@ const FinancePage = () => {
 
   const ledgerRowModel = table.getRowModel();
   const ledgerTotalRows = ledgerRowModel.rows.length;
-  const ledgerPageCount = Math.max(1, Math.ceil(ledgerTotalRows / LEDGER_PAGE_SIZE));
+  const ledgerPageCount = Math.max(1, Math.ceil(ledgerTotalRows / ledgerPageSize));
   const safeLedgerPage = Math.min(ledgerPage, ledgerPageCount);
-  const ledgerStartIndex = (safeLedgerPage - 1) * LEDGER_PAGE_SIZE;
-  const ledgerEndIndex = ledgerStartIndex + LEDGER_PAGE_SIZE;
+  const ledgerStartIndex = (safeLedgerPage - 1) * ledgerPageSize;
+  const ledgerEndIndex = ledgerStartIndex + ledgerPageSize;
   const ledgerRows = ledgerRowModel.rows.slice(ledgerStartIndex, ledgerEndIndex);
   const ledgerStart = ledgerTotalRows === 0 ? 0 : ledgerStartIndex + 1;
   const ledgerEnd = Math.min(ledgerEndIndex, ledgerTotalRows);
@@ -952,8 +977,8 @@ const FinancePage = () => {
               </div>
             </div>
             
-            <ResponsiveContainer width="100%" height={390}>
-              <AreaChart data={lineChartData} margin={{ top: 12, right: 12, left: 0, bottom: 8 }}>
+            <ResponsiveContainer width="100%" height={isFinanceMobile ? 220 : 390}>
+              <AreaChart data={lineChartData} margin={isFinanceMobile ? { top: 18, right: 8, left: -8, bottom: 8 } : { top: 12, right: 12, left: 0, bottom: 8 }}>
                 <defs>
                   <linearGradient id="colorPemasukan" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor={cyanColor} stopOpacity={0.25}/>
@@ -982,33 +1007,33 @@ const FinancePage = () => {
                   }}
                   tick={(props) => <CustomXAxisTick {...props} theme={theme} />} 
                 />
-                <YAxis stroke="var(--text-muted)" fontSize={11} tickFormatter={formatYAxisTick} axisLine={false} tickLine={false} width={40} />
+                <YAxis stroke="var(--text-muted)" fontSize={isFinanceMobile ? 9 : 11} tickFormatter={formatYAxisTick} axisLine={false} tickLine={false} width={isFinanceMobile ? 32 : 40} />
                 <RechartsTooltip
                   formatter={(v) => formatCurrency(v)}
                   contentStyle={{ backgroundColor: tooltipBg, border: `1px solid ${tooltipBorder}`, borderRadius: '10px', color: tooltipTextColor, fontSize: '0.82rem' }}
                   itemStyle={{ color: tooltipTextColor }}
-                  cursor={<CustomCursor />}
+                  cursor={isFinanceMobile ? false : <CustomCursor />}
                 />
                 <Area 
                   type="monotone" 
                   dataKey="Pemasukan" 
                   stroke={cyanColor} 
-                  strokeWidth={2.5} 
+                  strokeWidth={isFinanceMobile ? 2 : 2.5} 
                   fillOpacity={0.15} 
                   fill="url(#colorPemasukan)" 
-                  dot={{ r: 3.5, fill: isLight ? '#fff' : '#0d0d1a', strokeWidth: 2 }} 
-                  activeDot={<CustomActiveDot theme={theme} />} 
+                  dot={{ r: isFinanceMobile ? 2.4 : 3.5, fill: isLight ? '#fff' : '#0d0d1a', strokeWidth: isFinanceMobile ? 1.5 : 2 }} 
+                  activeDot={isFinanceMobile ? { r: 4, strokeWidth: 2 } : <CustomActiveDot theme={theme} />} 
                 />
                 <Area 
                   type="monotone" 
                   dataKey="Pengeluaran" 
                   className="vector-7-group"
                   stroke="#FE6C6C" 
-                  strokeWidth={2.5} 
+                  strokeWidth={isFinanceMobile ? 2 : 2.5} 
                   fillOpacity={0.1} 
                   fill="url(#colorPengeluaran)" 
-                  dot={{ r: 3.5, fill: isLight ? '#fff' : '#0d0d1a', strokeWidth: 2 }} 
-                  activeDot={<CustomActiveDot theme={theme} />} 
+                  dot={{ r: isFinanceMobile ? 2.4 : 3.5, fill: isLight ? '#fff' : '#0d0d1a', strokeWidth: isFinanceMobile ? 1.5 : 2 }} 
+                  activeDot={isFinanceMobile ? { r: 4, strokeWidth: 2 } : <CustomActiveDot theme={theme} />} 
                 />
               </AreaChart>
             </ResponsiveContainer>
@@ -1170,7 +1195,7 @@ const FinancePage = () => {
                 );
               })}
             </div>
-            {filteredData.length > LEDGER_PAGE_SIZE && (
+            {filteredData.length > ledgerPageSize && (
               <div className="ledger-pagination hide-on-print" aria-label="Navigasi halaman transaksi">
                 <div className="ledger-pagination-info">
                   <span>{ledgerStart}-{ledgerEnd}</span>
