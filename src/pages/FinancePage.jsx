@@ -1338,7 +1338,7 @@ const FinancePage = () => {
           </div>
 
           {/* Category Breakdown (Pie Chart) */}
-          <div className="sidebar-widget-card glass-panel">
+          <div className="sidebar-widget-card glass-panel expense-breakdown-widget">
             <div className="widget-header">
               <TrendingDown size={16} color="var(--accent-pink)" />
               <h4>Breakdown Pengeluaran</h4>
@@ -1347,9 +1347,9 @@ const FinancePage = () => {
               {pieChartData.length > 0 ? (
                 <>
                   <div className="sidebar-chart-wrapper">
-                    <ResponsiveContainer width="100%" height={140}>
+                    <ResponsiveContainer width="100%" height={isFinanceMobile ? 112 : 140}>
                       <PieChart>
-                        <Pie data={pieChartData} cx="50%" cy="50%" innerRadius={36} outerRadius={52} paddingAngle={4} dataKey="value">
+                        <Pie data={pieChartData} cx="50%" cy="50%" innerRadius={isFinanceMobile ? 26 : 36} outerRadius={isFinanceMobile ? 40 : 52} paddingAngle={isFinanceMobile ? 3 : 4} dataKey="value">
                           {pieChartData.map((_, i) => (
                             <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} stroke="transparent" />
                           ))}

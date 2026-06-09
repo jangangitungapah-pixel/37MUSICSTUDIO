@@ -6622,133 +6622,118 @@
 /* === END 10.1G-4 PEMBUKUAN AUDIT MOBILE FIX === */
 
 
-/* === START 10.1G-5 PEMBUKUAN DONUT CROP HOTFIX === */
+/* === START 10.1G-6 PEMBUKUAN EXPENSE DONUT STABILIZE === */
 
-/* Hotfix 10.1G-5 - Expense breakdown donut crop fix.
-   Audit result:
-   - JSX Pie outerRadius 52 needs more than 104px vertical safe area.
-   - Existing mobile CSS forced sidebar chart container near 104-118px.
-   - This patch only targets the expense donut wrapper and legend.
-   - No finance data, pie data, transaction, export, print, PDF, or calculation logic touched. */
+/* Hotfix 10.1G-6 v2 - stabilize expense donut.
+   Robust selector:
+   - JSX widget found via h4 Breakdown Pengeluaran.
+   - ResponsiveContainer and Pie radius patched inside that widget only.
+   - CSS scoped to .expense-breakdown-widget only.
+   - No pie data, finance data, transactions, export, print, PDF, or calculation logic touched. */
 
-.finance-page .sidebar-chart-wrapper {
+.finance-page .expense-breakdown-widget .sidebar-chart-wrapper {
   display: grid !important;
   place-items: center !important;
-  height: 156px !important;
-  min-height: 156px !important;
-  max-height: 156px !important;
+  height: 152px !important;
+  min-height: 152px !important;
+  max-height: 152px !important;
   padding: 0 !important;
   overflow: hidden !important;
 }
 
-.finance-page .sidebar-chart-wrapper .recharts-responsive-container,
-.finance-page .sidebar-chart-wrapper .recharts-wrapper,
-.finance-page .sidebar-chart-wrapper .recharts-surface {
+.finance-page .expense-breakdown-widget .sidebar-chart-wrapper .recharts-responsive-container {
   width: 100% !important;
-  height: 156px !important;
-  min-height: 156px !important;
-  max-height: 156px !important;
+  height: 140px !important;
+  min-height: 140px !important;
+  max-height: 140px !important;
 }
 
-.finance-page .sidebar-chart-wrapper .recharts-wrapper,
-.finance-page .sidebar-chart-wrapper .recharts-surface {
+.finance-page .expense-breakdown-widget .sidebar-chart-wrapper .recharts-wrapper,
+.finance-page .expense-breakdown-widget .sidebar-chart-wrapper .recharts-surface {
   overflow: visible !important;
 }
 
-.finance-page .sidebar-chart-wrapper .recharts-pie,
-.finance-page .sidebar-chart-wrapper .recharts-pie-sector {
-  transform-box: fill-box;
-  transform-origin: center;
-}
-
-.finance-page .pie-legend-list {
-  max-height: 220px !important;
+.finance-page .expense-breakdown-widget .pie-legend-list {
+  max-height: 214px !important;
   overflow-y: auto !important;
   padding-right: 2px !important;
 }
 
-.finance-page .pie-legend-item {
-  min-height: 30px !important;
-}
-
 @media (max-width: 768px) {
-  .finance-page .sidebar-chart-wrapper {
-    height: 134px !important;
-    min-height: 134px !important;
-    max-height: 134px !important;
-    margin-top: 4px !important;
+  .finance-page .expense-breakdown-widget {
+    padding-bottom: 10px !important;
+  }
+
+  .finance-page .expense-breakdown-widget .sidebar-chart-wrapper {
+    height: 122px !important;
+    min-height: 122px !important;
+    max-height: 122px !important;
+    margin-top: 3px !important;
     margin-bottom: 7px !important;
     border-radius: 13px !important;
   }
 
-  .finance-page .sidebar-chart-wrapper .recharts-responsive-container,
-  .finance-page .sidebar-chart-wrapper .recharts-wrapper,
-  .finance-page .sidebar-chart-wrapper .recharts-surface {
-    height: 134px !important;
-    min-height: 134px !important;
-    max-height: 134px !important;
+  .finance-page .expense-breakdown-widget .sidebar-chart-wrapper .recharts-responsive-container {
+    height: 112px !important;
+    min-height: 112px !important;
+    max-height: 112px !important;
   }
 
-  .finance-page .sidebar-chart-wrapper .recharts-pie-sector {
+  .finance-page .expense-breakdown-widget .sidebar-chart-wrapper .recharts-wrapper,
+  .finance-page .expense-breakdown-widget .sidebar-chart-wrapper .recharts-surface {
+    height: 112px !important;
+    min-height: 112px !important;
+    max-height: 112px !important;
+    overflow: visible !important;
+  }
+
+  .finance-page .expense-breakdown-widget .sidebar-chart-wrapper .recharts-pie-sector {
     filter: none !important;
   }
 
-  .finance-page .pie-legend-list {
-    max-height: 180px !important;
-    overflow-y: auto !important;
+  .finance-page .expense-breakdown-widget .pie-legend-list {
+    max-height: 176px !important;
     gap: 4px !important;
-    margin-top: 6px !important;
+    margin-top: 5px !important;
+    overflow-y: auto !important;
   }
 
-  .finance-page .pie-legend-item {
-    min-height: 27px !important;
-    padding: 5px 6px !important;
+  .finance-page .expense-breakdown-widget .pie-legend-item {
+    min-height: 25px !important;
+    padding: 4px 6px !important;
+    border-radius: 9px !important;
   }
 
-  .finance-page .pie-legend-name {
-    font-size: 0.6rem !important;
-  }
-
-  .finance-page .pie-legend-val {
+  .finance-page .expense-breakdown-widget .pie-legend-name {
+    max-width: 52vw !important;
     font-size: 0.58rem !important;
+  }
+
+  .finance-page .expense-breakdown-widget .pie-legend-val {
+    max-width: 38% !important;
+    font-size: 0.56rem !important;
   }
 }
 
 @media (max-width: 430px) {
-  .finance-page .sidebar-chart-wrapper {
-    height: 128px !important;
-    min-height: 128px !important;
-    max-height: 128px !important;
+  .finance-page .expense-breakdown-widget .sidebar-chart-wrapper {
+    height: 118px !important;
+    min-height: 118px !important;
+    max-height: 118px !important;
   }
 
-  .finance-page .sidebar-chart-wrapper .recharts-responsive-container,
-  .finance-page .sidebar-chart-wrapper .recharts-wrapper,
-  .finance-page .sidebar-chart-wrapper .recharts-surface {
-    height: 128px !important;
-    min-height: 128px !important;
-    max-height: 128px !important;
+  .finance-page .expense-breakdown-widget .sidebar-chart-wrapper .recharts-responsive-container,
+  .finance-page .expense-breakdown-widget .sidebar-chart-wrapper .recharts-wrapper,
+  .finance-page .expense-breakdown-widget .sidebar-chart-wrapper .recharts-surface {
+    height: 112px !important;
+    min-height: 112px !important;
+    max-height: 112px !important;
   }
 
-  .finance-page .pie-legend-list {
+  .finance-page .expense-breakdown-widget .pie-legend-list {
     max-height: 168px !important;
   }
 }
 
-@media (max-width: 360px) {
-  .finance-page .sidebar-chart-wrapper {
-    height: 124px !important;
-    min-height: 124px !important;
-    max-height: 124px !important;
-  }
-
-  .finance-page .sidebar-chart-wrapper .recharts-responsive-container,
-  .finance-page .sidebar-chart-wrapper .recharts-wrapper,
-  .finance-page .sidebar-chart-wrapper .recharts-surface {
-    height: 124px !important;
-    min-height: 124px !important;
-    max-height: 124px !important;
-  }
-}
-
-/* === END 10.1G-5 PEMBUKUAN DONUT CROP HOTFIX === */
+/* === END 10.1G-6 PEMBUKUAN EXPENSE DONUT STABILIZE === */
 
