@@ -2149,3 +2149,363 @@ select.bf-input {
 }
 
 /* 37 BOOKING MODAL OVERFLOW + HERO CROP HOTFIX 8.7F-1 END */
+
+/* 37 BOOKING MODAL LAYOUT RESET HOTFIX 8.7F-2 START */
+
+/* 
+  Hard reset for booking modal layout.
+  Previous visual layers were too aggressive: sticky toggle + clipped sections + internal scrolls.
+  This lock makes the form breathe again.
+*/
+
+/* 1) Modal owns the frame, form owns the scroll */
+.modal-content:has(.booking-form),
+.modal-container:has(.booking-form),
+.fluent-dialog:has(.booking-form) {
+  overflow: hidden !important;
+  max-height: min(92vh, 860px) !important;
+}
+
+.booking-form {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0.78rem !important;
+  width: 100% !important;
+  max-height: min(78vh, 760px) !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  padding: 0.72rem 0.82rem 0.95rem !important;
+  scroll-padding-bottom: 5.8rem !important;
+}
+
+/* 2) No child may create horizontal scroll */
+.booking-form,
+.booking-form *,
+.booking-form *::before,
+.booking-form *::after {
+  box-sizing: border-box !important;
+  min-width: 0 !important;
+}
+
+.booking-form > * {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+/* 3) Hero must never crop title/meta */
+.bf-ambient-hero {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
+  justify-content: center !important;
+  gap: 0.62rem !important;
+  min-height: auto !important;
+  height: auto !important;
+  max-height: none !important;
+  padding: 0.92rem 1rem !important;
+  overflow: visible !important;
+}
+
+.bf-hero-main {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.72rem !important;
+  min-height: 2.7rem !important;
+  height: auto !important;
+  overflow: visible !important;
+}
+
+.bf-hero-icon {
+  width: 2.55rem !important;
+  height: 2.55rem !important;
+  min-width: 2.55rem !important;
+}
+
+.bf-hero-copy {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  min-width: 0 !important;
+  overflow: visible !important;
+}
+
+.bf-hero-copy strong {
+  display: block !important;
+  max-width: 100% !important;
+  font-size: clamp(1.34rem, 4.4vw, 1.9rem) !important;
+  line-height: 1 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+.bf-hero-eyebrow {
+  line-height: 1.1 !important;
+}
+
+.bf-hero-meta {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 0.42rem !important;
+  overflow: visible !important;
+}
+
+.bf-hero-meta span {
+  max-width: 100% !important;
+  min-height: 1.68rem !important;
+  height: auto !important;
+  white-space: nowrap !important;
+}
+
+/* 4) Toggle must stay in normal document flow */
+.bf-type-toggle {
+  position: relative !important;
+  top: auto !important;
+  z-index: 2 !important;
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  width: 100% !important;
+  min-height: 3.05rem !important;
+  height: auto !important;
+  overflow: visible !important;
+  padding: 0.34rem !important;
+  border-radius: 1.3rem !important;
+}
+
+.bf-type-btn {
+  min-height: 2.28rem !important;
+  height: auto !important;
+  padding: 0.42rem 0.58rem !important;
+  white-space: nowrap !important;
+}
+
+/* 5) Sections must auto-expand, never crop their own fields */
+.bf-section {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0.78rem !important;
+  width: 100% !important;
+  min-height: auto !important;
+  height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
+  padding: 0.95rem !important;
+}
+
+.bf-section::before,
+.bf-section::after {
+  pointer-events: none !important;
+}
+
+.bf-section-title {
+  flex-shrink: 0 !important;
+  min-height: 1.15rem !important;
+  line-height: 1.1 !important;
+  padding-bottom: 0.58rem !important;
+}
+
+/* 6) Rows and fields */
+.bf-row {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 0.72rem !important;
+  width: 100% !important;
+  min-height: auto !important;
+  height: auto !important;
+  overflow: visible !important;
+}
+
+.bf-field {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0.42rem !important;
+  min-height: auto !important;
+  height: auto !important;
+  overflow: visible !important;
+}
+
+.bf-label {
+  min-height: 1.05rem !important;
+  line-height: 1.15 !important;
+}
+
+.bf-input,
+.bf-duration-picker {
+  display: flex !important;
+  align-items: center !important;
+  min-height: 2.72rem !important;
+  height: 2.72rem !important;
+  max-height: none !important;
+  overflow: hidden !important;
+}
+
+textarea.bf-input,
+.bf-textarea {
+  height: auto !important;
+  min-height: 4.75rem !important;
+  overflow-y: auto !important;
+}
+
+/* 7) Schedule preview and recurring area */
+.bf-time-preview,
+.bf-recurring-panel,
+.bf-deadline-field {
+  min-height: auto !important;
+  height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
+}
+
+/* 8) Equipment list should be readable, not tiny cropped window */
+.bf-equipment-list {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0.56rem !important;
+  width: 100% !important;
+  max-height: min(18rem, 34vh) !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  padding-right: 0.24rem !important;
+}
+
+.bf-equipment-list label {
+  min-height: 4rem !important;
+  height: auto !important;
+  max-height: none !important;
+  overflow: hidden !important;
+  flex-shrink: 0 !important;
+}
+
+.bf-equipment-list label > div:first-child {
+  min-width: 0 !important;
+}
+
+.bf-equipment-list label div {
+  min-width: 0 !important;
+}
+
+.bf-equipment-list label div[style*="font-size: 0.9rem"] {
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+/* 9) Payment/status must not be sliced */
+.bf-status-grid {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 0.6rem !important;
+  min-height: auto !important;
+  height: auto !important;
+  overflow: visible !important;
+}
+
+.bf-status-card {
+  min-height: 3rem !important;
+  height: auto !important;
+  max-height: none !important;
+  overflow: hidden !important;
+  align-items: center !important;
+}
+
+.bf-price-card,
+.bf-dp-section,
+.bf-paid-notice,
+.bf-remaining {
+  min-height: auto !important;
+  height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
+}
+
+/* 10) Notes section should not collapse */
+.bf-section:has(.bf-textarea),
+.bf-section:has(textarea) {
+  min-height: auto !important;
+}
+
+/* 11) Actions should be visible but not cover content too aggressively */
+.bf-actions,
+.bf-form-actions {
+  position: sticky !important;
+  bottom: 0 !important;
+  z-index: 30 !important;
+  display: grid !important;
+  grid-template-columns: minmax(0, 0.72fr) minmax(0, 1.28fr) !important;
+  gap: 0.62rem !important;
+  width: calc(100% + 1.64rem) !important;
+  margin: 0 -0.82rem -0.95rem !important;
+  padding: 0.95rem 0.82rem 0.95rem !important;
+  background:
+    linear-gradient(180deg, rgba(13,17,25,0), rgba(13,17,25,0.94) 32%, rgba(13,17,25,0.99)) !important;
+}
+
+.bf-actions button,
+.bf-form-actions button {
+  width: 100% !important;
+  min-height: 2.75rem !important;
+}
+
+/* 12) Light mode footer */
+[data-theme="light"] .bf-actions,
+[data-theme="light"] .bf-form-actions {
+  background:
+    linear-gradient(180deg, rgba(255,250,241,0), rgba(255,250,241,0.94) 32%, rgba(255,250,241,0.99)) !important;
+}
+
+/* 13) Small modal layout */
+@media (max-width: 768px) {
+  .booking-form {
+    max-height: min(76vh, 690px) !important;
+    padding: 0.68rem 0.72rem 0.86rem !important;
+    gap: 0.7rem !important;
+  }
+
+  .bf-ambient-hero {
+    padding: 0.82rem !important;
+  }
+
+  .bf-hero-copy strong {
+    font-size: clamp(1.22rem, 6vw, 1.62rem) !important;
+  }
+
+  .bf-hero-meta {
+    display: none !important;
+  }
+
+  .bf-type-toggle {
+    grid-template-columns: 1fr !important;
+    min-height: auto !important;
+    gap: 0.34rem !important;
+    border-radius: 1.15rem !important;
+  }
+
+  .bf-type-btn {
+    min-height: 2.18rem !important;
+  }
+
+  .bf-section {
+    padding: 0.82rem !important;
+    border-radius: 1.05rem !important;
+  }
+
+  .bf-row,
+  .bf-status-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .bf-equipment-list {
+    max-height: 15rem !important;
+  }
+
+  .bf-actions,
+  .bf-form-actions {
+    grid-template-columns: 1fr !important;
+    width: calc(100% + 1.44rem) !important;
+    margin-inline: -0.72rem !important;
+    margin-bottom: -0.86rem !important;
+    padding-inline: 0.72rem !important;
+  }
+}
+
+/* 37 BOOKING MODAL LAYOUT RESET HOTFIX 8.7F-2 END */
