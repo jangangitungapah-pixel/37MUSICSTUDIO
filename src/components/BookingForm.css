@@ -1896,3 +1896,256 @@ select.bf-input {
 }
 
 /* 37 ADMIN CALENDAR LIGHT MODE FINAL LOCK 8.7H END */
+
+/* 37 BOOKING MODAL OVERFLOW + HERO CROP HOTFIX 8.7F-1 START */
+
+/* 1) Hard stop horizontal overflow inside booking modal */
+.modal-content:has(.booking-form),
+.modal-container:has(.booking-form),
+.fluent-dialog:has(.booking-form) {
+  overflow: hidden !important;
+}
+
+.booking-form,
+.booking-form *,
+.booking-form *::before,
+.booking-form *::after {
+  box-sizing: border-box !important;
+  max-width: 100% !important;
+}
+
+.booking-form {
+  overflow-x: hidden !important;
+  padding-inline: 0.18rem !important;
+}
+
+/* 2) Fix cropped hero */
+.bf-ambient-hero {
+  min-height: 5.95rem !important;
+  padding: 1rem !important;
+  align-items: center !important;
+  overflow: hidden !important;
+}
+
+.bf-hero-main {
+  min-height: 3rem !important;
+  align-items: center !important;
+}
+
+.bf-hero-icon {
+  width: 2.72rem !important;
+  height: 2.72rem !important;
+  min-width: 2.72rem !important;
+  border-radius: 0.95rem !important;
+}
+
+.bf-hero-copy {
+  min-width: 0 !important;
+  overflow: hidden !important;
+}
+
+.bf-hero-copy strong {
+  max-width: 100% !important;
+  font-size: clamp(1.45rem, 4.6vw, 2.15rem) !important;
+  line-height: 0.96 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  transform: none !important;
+}
+
+.bf-hero-eyebrow {
+  font-size: 0.64rem !important;
+  line-height: 1 !important;
+}
+
+.bf-hero-meta {
+  gap: 0.38rem !important;
+}
+
+.bf-hero-meta span {
+  min-height: 1.7rem !important;
+  padding: 0.32rem 0.56rem !important;
+  font-size: 0.68rem !important;
+}
+
+/* 3) Type toggle should never force horizontal scroll */
+.bf-type-toggle {
+  width: 100% !important;
+  min-width: 0 !important;
+  overflow: hidden !important;
+}
+
+.bf-type-btn {
+  min-width: 0 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+/* 4) Restore clear form section rhythm */
+.bf-section {
+  width: 100% !important;
+  min-width: 0 !important;
+  overflow: hidden !important;
+  padding: 0.95rem !important;
+}
+
+.bf-row {
+  width: 100% !important;
+  min-width: 0 !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 0.7rem !important;
+}
+
+.bf-field {
+  min-width: 0 !important;
+}
+
+.bf-label {
+  min-height: 1rem !important;
+  line-height: 1.15 !important;
+}
+
+.bf-input,
+.bf-duration-picker {
+  min-width: 0 !important;
+  width: 100% !important;
+  min-height: 2.8rem !important;
+}
+
+/* 5) Schedule section should not look collapsed */
+.bf-section:has(.tour-input-date),
+.bf-section:has(.tour-input-hour),
+.bf-section:has(.tour-input-duration) {
+  gap: 0.82rem !important;
+}
+
+.bf-time-preview {
+  min-height: 2.25rem !important;
+  width: 100% !important;
+}
+
+/* 6) Equipment list should scroll vertically only */
+.bf-equipment-list {
+  width: 100% !important;
+  overflow-x: hidden !important;
+}
+
+.bf-equipment-list label {
+  width: 100% !important;
+  min-width: 0 !important;
+}
+
+.bf-equipment-list label > div {
+  min-width: 0 !important;
+}
+
+.bf-equipment-list label div {
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+/* 7) Status/payment grid no horizontal push */
+.bf-status-grid {
+  width: 100% !important;
+  min-width: 0 !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+}
+
+.bf-status-card {
+  min-width: 0 !important;
+  overflow: hidden !important;
+}
+
+.bf-status-label {
+  min-width: 0 !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+/* 8) Sticky action footer inside form */
+.bf-actions,
+.bf-form-actions {
+  position: sticky !important;
+  bottom: 0 !important;
+  z-index: 20 !important;
+  display: grid !important;
+  grid-template-columns: minmax(0, 0.72fr) minmax(0, 1.28fr) !important;
+  gap: 0.55rem !important;
+  margin: 0 -0.18rem -0.2rem !important;
+  padding: 0.82rem 0.18rem 0.25rem !important;
+  background:
+    linear-gradient(180deg, rgba(13,17,25,0), rgba(13,17,25,0.94) 28%, rgba(13,17,25,0.98)) !important;
+  backdrop-filter: blur(12px) saturate(1.03) !important;
+  -webkit-backdrop-filter: blur(12px) saturate(1.03) !important;
+}
+
+.bf-actions button,
+.bf-form-actions button {
+  width: 100% !important;
+  min-width: 0 !important;
+  min-height: 2.7rem !important;
+  justify-content: center !important;
+}
+
+/* 9) Light mode parity */
+[data-theme="light"] .bf-actions,
+[data-theme="light"] .bf-form-actions {
+  background:
+    linear-gradient(180deg, rgba(255,250,241,0), rgba(255,250,241,0.94) 28%, rgba(255,250,241,0.98)) !important;
+}
+
+/* 10) Small modal/mobile lock */
+@media (max-width: 768px) {
+  .booking-form {
+    padding-inline: 0.12rem !important;
+  }
+
+  .bf-ambient-hero {
+    min-height: 5.4rem !important;
+    padding: 0.86rem !important;
+  }
+
+  .bf-hero-icon {
+    width: 2.35rem !important;
+    height: 2.35rem !important;
+    min-width: 2.35rem !important;
+  }
+
+  .bf-hero-copy strong {
+    font-size: clamp(1.25rem, 6vw, 1.78rem) !important;
+  }
+
+  .bf-hero-meta {
+    display: none !important;
+  }
+
+  .bf-row {
+    grid-template-columns: 1fr !important;
+  }
+
+  .bf-status-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .bf-actions,
+  .bf-form-actions {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* 11) Very narrow modal lock */
+@media (max-width: 520px) {
+  .bf-type-toggle {
+    grid-template-columns: 1fr !important;
+    border-radius: 1.1rem !important;
+  }
+
+  .bf-type-btn {
+    justify-content: center !important;
+  }
+}
+
+/* 37 BOOKING MODAL OVERFLOW + HERO CROP HOTFIX 8.7F-1 END */
