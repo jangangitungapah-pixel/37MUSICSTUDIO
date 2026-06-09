@@ -3463,3 +3463,578 @@
 
 /* === END SETTINGS BUSINESS SECTIONS PHASE 5 === */
 
+
+/* === START SETTINGS NOTIFICATIONS DEMO PHASE 6 === */
+
+/*
+  Phase 6 scope:
+  - Notification permission state polish
+  - Demo mode toggle and info density polish
+  - M3 switch visual/accessibility states
+  - Mobile compact layout
+  - No JSX, toggle behavior, FCM permission/register flow, store, route, data model, backup, restore, or reset behavior touched
+*/
+
+.settings-page {
+  --settings-demo-purple: 168, 85, 247;
+  --settings-demo-purple-soft: rgba(var(--settings-demo-purple), 0.14);
+  --settings-demo-purple-line: rgba(var(--settings-demo-purple), 0.24);
+  --settings-demo-bg:
+    linear-gradient(135deg, rgba(var(--settings-demo-purple), 0.105), rgba(var(--accent-cyan-rgb), 0.035)),
+    radial-gradient(circle at 0% 0%, rgba(var(--settings-demo-purple), 0.14), transparent 34%),
+    rgba(255, 255, 255, 0.026);
+  --settings-notif-gold: 255, 193, 7;
+  --settings-notif-bg:
+    linear-gradient(135deg, rgba(var(--settings-notif-gold), 0.095), rgba(var(--accent-cyan-rgb), 0.030)),
+    radial-gradient(circle at 0% 0%, rgba(var(--settings-notif-gold), 0.12), transparent 34%),
+    rgba(255, 255, 255, 0.026);
+}
+
+/* Demo panel */
+.settings-page .demo-mode-panel {
+  border-color: rgba(var(--settings-demo-purple), 0.24) !important;
+}
+
+.settings-page .demo-mode-panel .panel-title {
+  color: rgb(var(--settings-demo-purple));
+}
+
+.settings-page .demo-toggle-card {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: clamp(12px, 1.3vw, 16px);
+  padding: clamp(14px, 1.55vw, 18px);
+  border-radius: clamp(17px, 1.55vw, 22px);
+  border: 1px solid var(--settings-demo-purple-line);
+  background: var(--settings-demo-bg);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.070),
+    0 16px 36px rgba(0, 0, 0, 0.12);
+  isolation: isolate;
+}
+
+.settings-page .demo-toggle-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(var(--settings-demo-purple), 0.12), transparent 34%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.045), transparent 44%);
+  opacity: 0.78;
+}
+
+.settings-page .demo-toggle-card.active {
+  border-color: rgba(var(--settings-demo-purple), 0.42);
+  background:
+    linear-gradient(135deg, rgba(var(--settings-demo-purple), 0.18), rgba(var(--accent-cyan-rgb), 0.060)),
+    radial-gradient(circle at 0% 0%, rgba(var(--settings-demo-purple), 0.22), transparent 38%),
+    rgba(var(--settings-demo-purple), 0.060);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.090),
+    0 18px 42px rgba(var(--settings-demo-purple), 0.11);
+}
+
+.settings-page .demo-toggle-left {
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.settings-page .demo-toggle-icon {
+  width: clamp(42px, 4vw, 50px);
+  height: clamp(42px, 4vw, 50px);
+  border-radius: 16px;
+  color: rgb(var(--settings-demo-purple));
+  background:
+    linear-gradient(145deg, rgba(var(--settings-demo-purple), 0.18), rgba(var(--accent-cyan-rgb), 0.065)),
+    rgba(255, 255, 255, 0.040);
+  border: 1px solid rgba(var(--settings-demo-purple), 0.24);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 12px 24px rgba(0, 0, 0, 0.10);
+}
+
+.settings-page .demo-toggle-card.active .demo-toggle-icon {
+  background:
+    linear-gradient(145deg, rgba(var(--settings-demo-purple), 0.24), rgba(var(--accent-cyan-rgb), 0.085)),
+    rgba(var(--settings-demo-purple), 0.075);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.11),
+    0 0 0 1px rgba(var(--settings-demo-purple), 0.12),
+    0 14px 28px rgba(var(--settings-demo-purple), 0.16);
+  animation: demo-icon-pulse 2.8s ease-in-out infinite;
+}
+
+.settings-page .demo-toggle-title {
+  margin: 0 0 3px;
+  color: var(--text-primary);
+  font-size: clamp(0.94rem, 1vw, 1.05rem);
+  font-weight: 950;
+  letter-spacing: -0.035em;
+  line-height: 1.08;
+}
+
+.settings-page .demo-toggle-desc {
+  max-width: 62ch;
+  margin: 0;
+  color: rgba(255, 250, 240, 0.58);
+  font-size: 0.74rem;
+  font-weight: 650;
+  line-height: 1.38;
+}
+
+.settings-page .demo-toggle-card.active .demo-toggle-desc {
+  color: rgba(226, 210, 255, 0.82);
+}
+
+.settings-page .demo-stats-preview {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  animation: fadeSlideIn 240ms ease-out;
+}
+
+.settings-page .demo-stat-chip {
+  position: relative;
+  overflow: hidden;
+  align-items: flex-start;
+  min-height: 68px;
+  gap: 5px;
+  padding: 10px;
+  border-radius: 15px;
+  border: 1px solid rgba(var(--settings-demo-purple), 0.18);
+  background:
+    linear-gradient(180deg, rgba(var(--settings-demo-purple), 0.105), rgba(255, 255, 255, 0.024)),
+    rgba(255, 255, 255, 0.026);
+  text-align: left;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.060);
+}
+
+.settings-page .demo-stat-chip::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.050), transparent 46%);
+  opacity: 0.72;
+}
+
+.settings-page .demo-chip-value,
+.settings-page .demo-chip-label {
+  position: relative;
+  z-index: 1;
+}
+
+.settings-page .demo-chip-value {
+  color: rgb(var(--settings-demo-purple));
+  font-size: clamp(1rem, 1.25vw, 1.16rem);
+  font-weight: 950;
+  letter-spacing: -0.045em;
+  line-height: 1;
+}
+
+.settings-page .demo-chip-label {
+  color: rgba(255, 250, 240, 0.52);
+  font-size: 0.66rem;
+  font-weight: 800;
+  line-height: 1.15;
+}
+
+.settings-page .demo-info-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.settings-page .demo-info-item {
+  min-height: 48px;
+  gap: 9px;
+  padding: 10px;
+  border-radius: 14px;
+  font-size: 0.74rem;
+  font-weight: 650;
+  line-height: 1.36;
+}
+
+.settings-page .demo-info-item.safe {
+  color: rgba(234, 255, 244, 0.72);
+  background:
+    linear-gradient(135deg, rgba(var(--success-rgb), 0.085), rgba(255, 255, 255, 0.018)),
+    rgba(var(--success-rgb), 0.028);
+  border-color: rgba(var(--success-rgb), 0.18);
+}
+
+.settings-page .demo-info-item.warn {
+  color: rgba(255, 246, 220, 0.74);
+  background:
+    linear-gradient(135deg, rgba(255, 193, 7, 0.085), rgba(255, 255, 255, 0.018)),
+    rgba(255, 193, 7, 0.028);
+  border-color: rgba(255, 193, 7, 0.18);
+}
+
+.settings-page .demo-info-item svg {
+  flex: 0 0 auto;
+  margin-top: 1px;
+}
+
+/* Notifications */
+.settings-page .notif-status-card {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: clamp(12px, 1.4vw, 16px);
+  min-height: 88px;
+  padding: clamp(14px, 1.55vw, 18px);
+  border-radius: clamp(17px, 1.55vw, 22px);
+  border: 1px solid rgba(255, 193, 7, 0.18);
+  background: var(--settings-notif-bg);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.070),
+    0 16px 36px rgba(0, 0, 0, 0.11);
+  isolation: isolate;
+}
+
+.settings-page .notif-status-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(255, 193, 7, 0.115), transparent 35%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.045), transparent 44%);
+  opacity: 0.76;
+}
+
+.settings-page .notif-status-left {
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.settings-page .notif-status-dot {
+  position: relative;
+  width: 13px;
+  height: 13px;
+  border-radius: 999px;
+  box-shadow: none;
+}
+
+.settings-page .notif-status-dot::after {
+  content: "";
+  position: absolute;
+  inset: -6px;
+  border-radius: inherit;
+  opacity: 0.28;
+  background: currentColor;
+}
+
+.settings-page .notif-status-dot.granted {
+  color: rgb(var(--success-rgb));
+  background: rgb(var(--success-rgb));
+  box-shadow: 0 0 18px rgba(var(--success-rgb), 0.26);
+  animation: pulse-dot 2.4s ease-in-out infinite;
+}
+
+.settings-page .notif-status-dot.denied {
+  color: #ff5656;
+  background: #ff5656;
+  box-shadow: 0 0 16px rgba(255, 68, 68, 0.18);
+}
+
+.settings-page .notif-status-dot.default {
+  color: #FFC107;
+  background: #FFC107;
+  box-shadow: 0 0 16px rgba(255, 193, 7, 0.20);
+}
+
+.settings-page .notif-status-dot.unsupported {
+  color: rgba(255, 250, 240, 0.36);
+  background: rgba(255, 250, 240, 0.36);
+}
+
+.settings-page .notif-status-title {
+  margin: 0 0 3px;
+  color: var(--text-primary);
+  font-size: clamp(0.94rem, 1vw, 1.05rem);
+  font-weight: 950;
+  letter-spacing: -0.035em;
+  line-height: 1.08;
+}
+
+.settings-page .notif-status-desc {
+  max-width: 52ch;
+  margin: 0;
+  color: rgba(255, 250, 240, 0.56);
+  font-size: 0.74rem;
+  font-weight: 650;
+  line-height: 1.38;
+}
+
+.settings-page .notif-status-card .btn-primary {
+  min-width: 104px;
+  min-height: 40px;
+  border-radius: 999px;
+  background:
+    linear-gradient(135deg, rgba(var(--settings-gold, 239, 197, 110), 1), rgba(221, 159, 65, 1)) !important;
+  border: 1px solid rgba(var(--settings-gold, 239, 197, 110), 0.44) !important;
+  color: #1a1208 !important;
+  font-weight: 950;
+  box-shadow:
+    0 12px 26px rgba(var(--settings-gold, 239, 197, 110), 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.26);
+}
+
+/* M3 switch scoped polish */
+.settings-page .m3-switch {
+  width: 54px;
+  height: 32px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.080),
+    0 10px 22px rgba(0, 0, 0, 0.12);
+}
+
+.settings-page .m3-switch:focus-visible {
+  outline: 2px solid rgba(var(--settings-gold, 239, 197, 110), 0.78);
+  outline-offset: 3px;
+}
+
+.settings-page .m3-switch.off {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.085), rgba(255, 255, 255, 0.045)),
+    rgba(255, 255, 255, 0.050);
+  border-color: rgba(255, 255, 255, 0.20);
+}
+
+.settings-page .m3-switch.on {
+  background:
+    linear-gradient(135deg, rgba(var(--settings-demo-purple), 1), rgba(124, 58, 237, 1));
+  border-color: rgba(var(--settings-demo-purple), 0.42);
+}
+
+.settings-page .notif-status-card .m3-switch.on {
+  background:
+    linear-gradient(135deg, rgba(var(--success-rgb), 1), rgba(37, 154, 91, 1));
+  border-color: rgba(var(--success-rgb), 0.34);
+}
+
+.settings-page .m3-switch:disabled {
+  opacity: 0.88;
+  cursor: not-allowed;
+}
+
+.settings-page .m3-switch-handle {
+  top: 1px;
+  width: 28px;
+  height: 28px;
+}
+
+.settings-page .m3-switch.off .m3-switch-handle {
+  left: 2px;
+}
+
+.settings-page .m3-switch.on .m3-switch-handle {
+  left: 22px;
+}
+
+.settings-page .m3-switch-handle-shape {
+  box-shadow:
+    0 4px 10px rgba(0, 0, 0, 0.20),
+    inset 0 1px 0 rgba(255, 255, 255, 0.55);
+}
+
+.settings-page .m3-switch.off .m3-switch-handle-shape {
+  background: rgba(255, 250, 240, 0.72);
+}
+
+.settings-page .m3-switch.on .m3-switch-handle-shape {
+  background: #fffaf0;
+}
+
+@media (max-width: 900px) {
+  .settings-page .demo-info-list {
+    grid-template-columns: 1fr;
+  }
+
+  .settings-page .demo-stats-preview {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .settings-page .demo-toggle-card,
+  .settings-page .notif-status-card {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 12px;
+    min-height: 0;
+    padding: 12px;
+    border-radius: 17px;
+  }
+
+  .settings-page .demo-toggle-left,
+  .settings-page .notif-status-left {
+    width: 100%;
+    gap: 10px;
+  }
+
+  .settings-page .demo-toggle-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 14px;
+  }
+
+  .settings-page .demo-toggle-title,
+  .settings-page .notif-status-title {
+    font-size: 0.94rem;
+  }
+
+  .settings-page .demo-toggle-desc,
+  .settings-page .notif-status-desc {
+    font-size: 0.70rem;
+    line-height: 1.34;
+  }
+
+  .settings-page .demo-toggle-card .m3-switch,
+  .settings-page .notif-status-card .m3-switch {
+    align-self: flex-end;
+  }
+
+  .settings-page .notif-status-card .btn-primary {
+    width: 100%;
+  }
+
+  .settings-page .demo-stat-chip {
+    min-height: 62px;
+    padding: 9px;
+  }
+
+  .settings-page .demo-chip-value {
+    font-size: 0.98rem;
+  }
+
+  .settings-page .demo-chip-label {
+    font-size: 0.62rem;
+  }
+
+  .settings-page .demo-info-item {
+    min-height: 0;
+    padding: 9px;
+    border-radius: 13px;
+    font-size: 0.70rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .settings-page .demo-stats-preview {
+    grid-template-columns: 1fr 1fr;
+    gap: 7px;
+  }
+
+  .settings-page .demo-toggle-left,
+  .settings-page .notif-status-left {
+    align-items: flex-start;
+  }
+
+  .settings-page .demo-toggle-icon {
+    width: 36px;
+    height: 36px;
+  }
+
+  .settings-page .m3-switch {
+    width: 52px;
+    height: 31px;
+  }
+
+  .settings-page .m3-switch.on .m3-switch-handle {
+    left: 21px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .settings-page .demo-toggle-card,
+  .settings-page .demo-toggle-icon,
+  .settings-page .demo-stats-preview,
+  .settings-page .demo-stat-chip,
+  .settings-page .demo-info-item,
+  .settings-page .notif-status-card,
+  .settings-page .notif-status-dot,
+  .settings-page .m3-switch,
+  .settings-page .m3-switch-handle,
+  .settings-page .m3-switch-handle-shape {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+[data-theme="light"] .settings-page {
+  --settings-demo-bg:
+    linear-gradient(135deg, rgba(var(--settings-demo-purple), 0.115), rgba(var(--accent-cyan-rgb), 0.035)),
+    radial-gradient(circle at 0% 0%, rgba(var(--settings-demo-purple), 0.13), transparent 34%),
+    rgba(255, 255, 255, 0.58);
+  --settings-notif-bg:
+    linear-gradient(135deg, rgba(var(--settings-notif-gold), 0.13), rgba(var(--accent-cyan-rgb), 0.030)),
+    radial-gradient(circle at 0% 0%, rgba(var(--settings-notif-gold), 0.14), transparent 34%),
+    rgba(255, 255, 255, 0.58);
+}
+
+[data-theme="light"] .settings-page .demo-toggle-card,
+[data-theme="light"] .settings-page .notif-status-card,
+[data-theme="light"] .settings-page .demo-stat-chip,
+[data-theme="light"] .settings-page .demo-info-item {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.80),
+    0 12px 28px rgba(75, 56, 22, 0.07);
+}
+
+[data-theme="light"] .settings-page .demo-toggle-desc,
+[data-theme="light"] .settings-page .demo-chip-label,
+[data-theme="light"] .settings-page .notif-status-desc {
+  color: rgba(40, 33, 26, 0.58);
+}
+
+[data-theme="light"] .settings-page .demo-toggle-card.active .demo-toggle-desc {
+  color: rgba(72, 45, 120, 0.78);
+}
+
+[data-theme="light"] .settings-page .demo-info-item.safe {
+  color: rgba(25, 92, 56, 0.74);
+  background:
+    linear-gradient(135deg, rgba(var(--success-rgb), 0.10), rgba(255, 255, 255, 0.40)),
+    rgba(255, 255, 255, 0.42);
+}
+
+[data-theme="light"] .settings-page .demo-info-item.warn {
+  color: rgba(118, 82, 10, 0.78);
+  background:
+    linear-gradient(135deg, rgba(255, 193, 7, 0.13), rgba(255, 255, 255, 0.40)),
+    rgba(255, 255, 255, 0.42);
+}
+
+[data-theme="light"] .settings-page .notif-status-dot.unsupported {
+  color: rgba(40, 33, 26, 0.34);
+  background: rgba(40, 33, 26, 0.34);
+}
+
+[data-theme="light"] .settings-page .m3-switch.off {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(255, 248, 238, 0.50)),
+    rgba(255, 255, 255, 0.56);
+  border-color: rgba(52, 39, 24, 0.16);
+}
+
+[data-theme="light"] .settings-page .m3-switch.off .m3-switch-handle-shape {
+  background: rgba(61, 50, 38, 0.72);
+}
+
+/* === END SETTINGS NOTIFICATIONS DEMO PHASE 6 === */
+
