@@ -508,7 +508,7 @@ const BillingPage = () => {
         </div>
 
         {/* Mobile Card List */}
-        <div className="mobile-billing-list show-on-mobile">
+        <div className="mobile-billing-list show-on-mobile billing-mobile-deck">
           {filteredBookings.length === 0 ? (
             <div className="empty-state" style={{padding: '32px', textAlign: 'center', color: 'var(--text-muted)'}}>
               Tidak ada data transaksi.
@@ -517,12 +517,15 @@ const BillingPage = () => {
             const remaining = calculateRemaining(b);
             const total = calculateTotal(b);
             return (
-              <div key={b.id} className="mobile-billing-card" onClick={() => handleOpenInvoice(b)}>
-                <div className="mobile-bill-top">
-                  <span className="mobile-bill-band">{b.band}</span>
+              <div key={b.id} className={`mobile-billing-card billing-mobile-card ${remaining > 0 ? 'has-balance' : 'is-paid'} ${b.status}`} onClick={() => handleOpenInvoice(b)}>
+                <div className="mobile-bill-top mobile-bill-header-row">
+                  <span className="mobile-bill-band">
+                    <span>{b.band}</span>
+                    {b.discountAmount > 0 && <span title="VIP Discount" className="billing-vip-badge mobile-vip-badge">VIP</span>}
+                  </span>
                   <span className="mobile-bill-id">INV-{b.id.toString().padStart(5, '0')}</span>
                 </div>
-                <div className="mobile-bill-mid">
+                <div className="mobile-bill-mid mobile-bill-metrics">
                   <span className="mobile-bill-tag date">{format(new Date(b.date), 'dd MMM yyyy')}</span>
                   <span className="mobile-bill-tag total">{formatCurrency(total)}</span>
                   {remaining > 0 && <span className="mobile-bill-tag debt">Sisa: {formatCurrency(remaining)}</span>}
@@ -533,7 +536,7 @@ const BillingPage = () => {
                     ) : null;
                   })()}
                 </div>
-                <div className="mobile-bill-bottom" onClick={e => e.stopPropagation()}>
+                <div className="mobile-bill-bottom mobile-bill-control-row" onClick={e => e.stopPropagation()}>
                   <select 
                     className={`status-select ${b.status}`}
                     value={b.status}
@@ -544,7 +547,7 @@ const BillingPage = () => {
                     <option value="dp">DP {b.dpAmount > 0 ? `(${formatCurrency(b.dpAmount)})` : ''}</option>
                     <option value="confirmed">Lunas</option>
                   </select>
-                  <div className="mobile-bill-actions" onClick={e => e.stopPropagation()}>
+                  <div className="mobile-bill-actions mobile-bill-action-cluster" onClick={e => e.stopPropagation()}>
                     {remaining > 0 && (
                       <button className="btn-sm-pay" onClick={(e) => handleMarkAsPaid(e, b.id)} aria-label={`Tandai lunas invoice band ${b.band}`}>Lunasi</button>
                     )}

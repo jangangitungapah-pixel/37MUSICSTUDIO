@@ -3506,3 +3506,400 @@
 }
 /* === END BILLING DESKTOP TABLE DENSITY PHASE 4 === */
 
+
+/* === START BILLING MOBILE CARD APP NATIVE PHASE 5 === */
+@media (max-width: 768px) {
+  .billing-page {
+    overflow-x: clip;
+  }
+
+  .billing-page .billing-mobile-deck {
+    display: flex !important;
+    flex-direction: column;
+    gap: 8px;
+    padding: 8px;
+    padding-bottom: calc(112px + env(safe-area-inset-bottom, 0px)) !important;
+    overflow: visible;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .billing-page .billing-mobile-card {
+    position: relative;
+    isolation: isolate;
+    display: grid;
+    gap: 9px;
+    width: 100%;
+    max-width: 100%;
+    padding: 11px;
+    border-radius: 18px;
+    border: 1px solid rgba(255, 255, 255, 0.092);
+    background:
+      radial-gradient(circle at 0% 0%, rgba(var(--accent-cyan-rgb), 0.075), transparent 36%),
+      linear-gradient(180deg, rgba(255, 255, 255, 0.068), rgba(255, 255, 255, 0.024)),
+      rgba(255, 255, 255, 0.034);
+    box-shadow:
+      0 14px 34px rgba(0, 0, 0, 0.18),
+      inset 0 1px 0 rgba(255, 255, 255, 0.064);
+    backdrop-filter: blur(24px) saturate(1.04);
+    -webkit-backdrop-filter: blur(24px) saturate(1.04);
+    overflow: hidden;
+    transform: translateZ(0);
+  }
+
+  .billing-page .billing-mobile-card::before {
+    content: "";
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 3px;
+    opacity: 1;
+    pointer-events: none;
+    background: linear-gradient(180deg, rgba(var(--accent-cyan-rgb), 0.90), rgba(239, 197, 110, 0.70));
+  }
+
+  .billing-page .billing-mobile-card.pending::before,
+  .billing-page .billing-mobile-card.has-balance.pending::before {
+    background: linear-gradient(180deg, var(--accent-pink), rgba(239, 197, 110, 0.86));
+  }
+
+  .billing-page .billing-mobile-card.dp::before,
+  .billing-page .billing-mobile-card.has-balance.dp::before {
+    background: linear-gradient(180deg, rgb(var(--warning-rgb)), rgba(239, 197, 110, 0.76));
+  }
+
+  .billing-page .billing-mobile-card.confirmed::before,
+  .billing-page .billing-mobile-card.is-paid::before {
+    background: linear-gradient(180deg, rgb(var(--success-rgb)), rgba(var(--accent-cyan-rgb), 0.72));
+  }
+
+  .billing-page .billing-mobile-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background:
+      linear-gradient(120deg, rgba(255, 255, 255, 0.058), transparent 34%, transparent 70%, rgba(var(--accent-cyan-rgb), 0.034));
+  }
+
+  .billing-page .billing-mobile-card:active {
+    transform: scale(0.992);
+    background:
+      radial-gradient(circle at 0% 0%, rgba(var(--accent-cyan-rgb), 0.10), transparent 36%),
+      linear-gradient(180deg, rgba(255, 255, 255, 0.080), rgba(255, 255, 255, 0.032)),
+      rgba(255, 255, 255, 0.046);
+  }
+
+  .billing-page .mobile-bill-header-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start;
+    gap: 8px;
+  }
+
+  .billing-page .mobile-bill-band {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+    color: var(--text-primary);
+    font-size: 0.92rem;
+    line-height: 1.12;
+    font-weight: 950;
+    letter-spacing: -0.035em;
+  }
+
+  .billing-page .mobile-bill-band > span:first-child {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .billing-page .mobile-vip-badge {
+    min-height: 17px;
+    padding-inline: 6px;
+    font-size: 0.56rem;
+    flex-shrink: 0;
+  }
+
+  .billing-page .mobile-bill-id {
+    min-height: 22px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding-inline: 7px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.085);
+    background: rgba(255, 255, 255, 0.044);
+    color: var(--text-muted);
+    font-size: 0.62rem;
+    line-height: 1;
+    font-weight: 900;
+    letter-spacing: 0.030em;
+    white-space: nowrap;
+  }
+
+  .billing-page .mobile-bill-metrics {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+    align-items: stretch;
+  }
+
+  .billing-page .mobile-bill-tag {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 28px;
+    width: 100%;
+    min-width: 0;
+    padding: 0 8px;
+    border-radius: 11px;
+    font-size: 0.67rem;
+    line-height: 1;
+    font-weight: 900;
+    letter-spacing: 0.005em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .billing-page .mobile-bill-tag.date {
+    justify-content: flex-start;
+    color: var(--text-secondary);
+    background: rgba(255, 255, 255, 0.046);
+    border: 1px solid rgba(255, 255, 255, 0.065);
+  }
+
+  .billing-page .mobile-bill-tag.total {
+    color: var(--accent-cyan);
+    background: rgba(var(--accent-cyan-rgb), 0.080);
+    border: 1px solid rgba(var(--accent-cyan-rgb), 0.145);
+  }
+
+  .billing-page .mobile-bill-tag.debt {
+    grid-column: span 2;
+    justify-content: flex-start;
+    color: rgb(var(--warning-rgb));
+    background:
+      linear-gradient(90deg, rgba(var(--warning-rgb), 0.110), rgba(239, 197, 110, 0.055)),
+      rgba(var(--warning-rgb), 0.045);
+    border: 1px solid rgba(var(--warning-rgb), 0.20);
+  }
+
+  .billing-page .mobile-bill-tag.deadline {
+    grid-column: span 2;
+    justify-content: flex-start;
+    min-height: 27px;
+    border-radius: 10px;
+  }
+
+  .billing-page .mobile-bill-tag.deadline.today,
+  .billing-page .mobile-bill-tag.deadline.overdue {
+    color: var(--accent-pink);
+    background:
+      linear-gradient(90deg, rgba(var(--accent-pink-rgb), 0.120), rgba(var(--warning-rgb), 0.060)),
+      rgba(var(--accent-pink-rgb), 0.040);
+    border-color: rgba(var(--accent-pink-rgb), 0.22);
+    animation: none;
+  }
+
+  .billing-page .mobile-bill-tag.deadline.upcoming {
+    color: var(--accent-cyan);
+    background: rgba(var(--accent-cyan-rgb), 0.075);
+    border-color: rgba(var(--accent-cyan-rgb), 0.16);
+  }
+
+  .billing-page .mobile-bill-control-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .billing-page .mobile-bill-control-row .status-select {
+    width: 100%;
+    min-height: 40px;
+    padding: 0 30px 0 12px;
+    border-radius: 14px;
+    font-size: 0.74rem;
+    line-height: 1;
+    font-weight: 950;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.062),
+      0 10px 22px rgba(0, 0, 0, 0.10);
+  }
+
+  .billing-page .mobile-bill-control-row .status-select:hover {
+    transform: none;
+  }
+
+  .billing-page .mobile-bill-control-row .status-select:focus-visible {
+    outline: 2px solid rgba(239, 197, 110, 0.72);
+    outline-offset: 3px;
+  }
+
+  .billing-page .mobile-bill-action-cluster {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 7px;
+    flex-shrink: 0;
+  }
+
+  .billing-page .mobile-bill-action-cluster .btn-sm-pay {
+    min-height: 40px;
+    padding: 0 12px;
+    border-radius: 14px;
+    font-size: 0.72rem;
+    line-height: 1;
+    font-weight: 950;
+  }
+
+  .billing-page .mobile-bill-action-cluster .icon-btn {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    border-radius: 14px;
+    border: 1px solid rgba(var(--accent-cyan-rgb), 0.17);
+    background: rgba(var(--accent-cyan-rgb), 0.070);
+    color: var(--accent-cyan);
+    box-shadow: none;
+  }
+
+  .billing-page .mobile-bill-action-cluster .icon-btn svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .billing-page .billing-mobile-deck .empty-state {
+    margin: 8px;
+    padding: 36px 18px !important;
+    border-radius: 18px;
+    border: 1px solid rgba(255, 255, 255, 0.085);
+    background:
+      radial-gradient(circle at 50% 0%, rgba(var(--accent-cyan-rgb), 0.075), transparent 42%),
+      rgba(255, 255, 255, 0.028);
+    color: var(--text-muted);
+    font-size: 0.82rem;
+    font-weight: 750;
+  }
+}
+
+@media (max-width: 420px) {
+  .billing-page .billing-mobile-deck {
+    padding: 7px;
+    gap: 7px;
+  }
+
+  .billing-page .billing-mobile-card {
+    padding: 10px;
+    border-radius: 16px;
+    gap: 8px;
+  }
+
+  .billing-page .mobile-bill-band {
+    font-size: 0.88rem;
+  }
+
+  .billing-page .mobile-bill-id {
+    font-size: 0.59rem;
+    padding-inline: 6px;
+  }
+
+  .billing-page .mobile-bill-metrics {
+    gap: 5px;
+  }
+
+  .billing-page .mobile-bill-tag {
+    min-height: 27px;
+    padding-inline: 7px;
+    font-size: 0.64rem;
+  }
+
+  .billing-page .mobile-bill-control-row {
+    grid-template-columns: 1fr;
+    gap: 7px;
+  }
+
+  .billing-page .mobile-bill-action-cluster {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 40px;
+    width: 100%;
+  }
+
+  .billing-page .mobile-bill-action-cluster .btn-sm-pay {
+    width: 100%;
+  }
+}
+
+@media (max-width: 360px) {
+  .billing-page .mobile-bill-metrics {
+    grid-template-columns: 1fr;
+  }
+
+  .billing-page .mobile-bill-tag.debt,
+  .billing-page .mobile-bill-tag.deadline {
+    grid-column: auto;
+  }
+
+  .billing-page .mobile-bill-tag.total,
+  .billing-page .mobile-bill-tag.date,
+  .billing-page .mobile-bill-tag.debt,
+  .billing-page .mobile-bill-tag.deadline {
+    justify-content: flex-start;
+  }
+}
+
+[data-theme="light"] .billing-page .billing-mobile-card {
+  border-color: rgba(35, 28, 18, 0.085);
+  background:
+    radial-gradient(circle at 0% 0%, rgba(2, 132, 199, 0.075), transparent 36%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.86), rgba(255, 250, 242, 0.58)),
+    rgba(255, 251, 244, 0.82);
+  box-shadow:
+    0 13px 30px rgba(88, 65, 35, 0.10),
+    inset 0 1px 0 rgba(255, 255, 255, 0.70);
+}
+
+[data-theme="light"] .billing-page .mobile-bill-id,
+[data-theme="light"] .billing-page .mobile-bill-tag.date {
+  border-color: rgba(35, 28, 18, 0.070);
+  background: rgba(255, 255, 255, 0.58);
+}
+
+[data-theme="light"] .billing-page .mobile-bill-control-row .status-select,
+[data-theme="light"] .billing-page .mobile-bill-action-cluster .icon-btn {
+  box-shadow: 0 8px 20px rgba(88, 65, 35, 0.08);
+}
+
+[data-theme="light"] .billing-page .billing-mobile-deck .empty-state {
+  border-color: rgba(35, 28, 18, 0.080);
+  background:
+    radial-gradient(circle at 50% 0%, rgba(2, 132, 199, 0.080), transparent 42%),
+    rgba(255, 255, 255, 0.60);
+}
+
+@media (hover: none) {
+  .billing-page .billing-mobile-card:hover,
+  .billing-page .mobile-bill-action-cluster .btn-sm-pay:hover,
+  .billing-page .mobile-bill-action-cluster .icon-btn:hover {
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .billing-page .billing-mobile-card,
+  .billing-page .billing-mobile-card *,
+  .billing-page .billing-mobile-card *::before,
+  .billing-page .billing-mobile-card *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+/* === END BILLING MOBILE CARD APP NATIVE PHASE 5 === */
+
