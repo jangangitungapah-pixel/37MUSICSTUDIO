@@ -3908,3 +3908,645 @@
 }
 
 /* === END GALLERY ALBUM GRID PHASE 6 === */
+
+/* === START GALLERY MODALS PHASE 7 === */
+
+/*
+  Phase 7 scope:
+  - Upload modal redesign
+  - Album management modal redesign
+  - Modal className hooks and modal-local class cleanup
+  - No Gallery store, route, auth, PublicGalleryPage, photo grid, album grid, or lightbox logic touched
+*/
+
+.gallery-upload-modal-shell,
+.gallery-album-modal-shell {
+  width: min(94vw, 720px);
+  max-height: min(88vh, 860px);
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.115);
+  border-radius: clamp(22px, 2vw, 30px);
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.088), rgba(255, 255, 255, 0.034)),
+    radial-gradient(circle at 0% 0%, rgba(var(--gallery-gold, 239, 197, 110), 0.11), transparent 34%),
+    radial-gradient(circle at 100% 14%, rgba(var(--accent-cyan-rgb), 0.10), transparent 36%),
+    rgba(12, 15, 23, 0.82);
+  box-shadow:
+    0 28px 80px rgba(0, 0, 0, 0.42),
+    inset 0 1px 0 rgba(255, 255, 255, 0.085);
+  backdrop-filter: blur(28px) saturate(1.12);
+  -webkit-backdrop-filter: blur(28px) saturate(1.12);
+}
+
+.gallery-upload-modal-shell::before,
+.gallery-album-modal-shell::before {
+  content: "";
+  position: absolute;
+  inset-inline: clamp(20px, 4vw, 56px);
+  top: 0;
+  height: 1px;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, rgba(var(--gallery-gold, 239, 197, 110), 0.58), rgba(var(--accent-cyan-rgb), 0.42), transparent);
+  opacity: 0.85;
+}
+
+.gallery-upload-form-modern,
+.gallery-album-manager {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(14px, 1.6vw, 20px);
+  max-height: calc(min(88vh, 860px) - 92px);
+  overflow-y: auto;
+  padding-right: 4px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(var(--gallery-gold, 239, 197, 110), 0.38) transparent;
+}
+
+.gallery-upload-form-modern::-webkit-scrollbar,
+.gallery-album-manager::-webkit-scrollbar,
+.gallery-album-list::-webkit-scrollbar,
+.upload-queue-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.gallery-upload-form-modern::-webkit-scrollbar-thumb,
+.gallery-album-manager::-webkit-scrollbar-thumb,
+.gallery-album-list::-webkit-scrollbar-thumb,
+.upload-queue-list::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(var(--gallery-gold, 239, 197, 110), 0.34);
+}
+
+.gallery-upload-tabs-modern {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 7px;
+  padding: 5px;
+  border: 1px solid rgba(255, 255, 255, 0.095);
+  border-radius: 17px;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.064), rgba(255, 255, 255, 0.022)),
+    rgba(0, 0, 0, 0.14);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.gallery-upload-tabs-modern .upload-tab-btn {
+  min-height: 40px;
+  justify-content: center;
+  border-radius: 13px;
+  font-weight: 880;
+  letter-spacing: -0.015em;
+}
+
+.gallery-upload-tabs-modern .upload-tab-btn.active {
+  color: #171006;
+  background:
+    linear-gradient(135deg, rgba(var(--gallery-gold, 239, 197, 110), 1), rgba(224, 168, 82, 1));
+  box-shadow:
+    0 9px 20px rgba(var(--gallery-gold, 239, 197, 110), 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.30);
+}
+
+.gallery-upload-file-panel,
+.gallery-url-panel,
+.gallery-url-caption-group,
+.gallery-upload-album-group,
+.gallery-visibility-group,
+.gallery-album-create-form,
+.gallery-album-list-section {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: clamp(13px, 1.4vw, 16px);
+  border-radius: clamp(17px, 1.5vw, 22px);
+  border: 1px solid rgba(255, 255, 255, 0.085);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.058), rgba(255, 255, 255, 0.018)),
+    rgba(0, 0, 0, 0.11);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.052),
+    0 12px 30px rgba(0, 0, 0, 0.10);
+}
+
+.gallery-url-panel,
+.gallery-url-caption-group,
+.gallery-upload-album-group,
+.gallery-visibility-group {
+  margin: 0;
+}
+
+.gallery-upload-modal-shell .bf-label,
+.gallery-album-modal-shell .bf-label,
+.gallery-compact-label {
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 0.78rem;
+  font-weight: 850;
+  letter-spacing: -0.01em;
+}
+
+.gallery-upload-modal-shell .bf-input,
+.gallery-album-modal-shell .bf-input {
+  min-height: 42px;
+  border-radius: 14px;
+  border-color: rgba(255, 255, 255, 0.105);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.062), rgba(255, 255, 255, 0.02)),
+    rgba(0, 0, 0, 0.14);
+  color: var(--text-primary);
+  font-weight: 650;
+}
+
+.gallery-upload-modal-shell .bf-input:focus,
+.gallery-album-modal-shell .bf-input:focus {
+  border-color: rgba(var(--accent-cyan-rgb), 0.38);
+  box-shadow:
+    0 0 0 3px rgba(var(--accent-cyan-rgb), 0.085),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.gallery-upload-modal-shell .drag-upload-zone {
+  min-height: 186px;
+  border-radius: 20px;
+  border: 1px dashed rgba(var(--gallery-gold, 239, 197, 110), 0.34);
+  background:
+    linear-gradient(145deg, rgba(var(--gallery-gold, 239, 197, 110), 0.07), rgba(var(--accent-cyan-rgb), 0.045)),
+    rgba(255, 255, 255, 0.025);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 16px 36px rgba(0, 0, 0, 0.12);
+}
+
+.gallery-upload-modal-shell .drag-upload-zone:hover,
+.gallery-upload-modal-shell .drag-upload-zone.dragging {
+  border-color: rgba(var(--accent-cyan-rgb), 0.48);
+  background:
+    linear-gradient(145deg, rgba(var(--accent-cyan-rgb), 0.105), rgba(var(--gallery-gold, 239, 197, 110), 0.055)),
+    rgba(255, 255, 255, 0.035);
+  transform: translateY(-1px);
+}
+
+.gallery-upload-modal-shell .drag-upload-zone.compact {
+  min-height: 112px;
+}
+
+.gallery-upload-modal-shell .drag-title {
+  font-weight: 900;
+  letter-spacing: -0.03em;
+}
+
+.gallery-upload-modal-shell .drag-subtitle {
+  color: var(--text-muted);
+  font-weight: 650;
+}
+
+.gallery-upload-modal-shell .upload-icon {
+  color: rgb(var(--gallery-gold, 239, 197, 110));
+  filter: drop-shadow(0 0 14px rgba(var(--gallery-gold, 239, 197, 110), 0.22));
+}
+
+.gallery-upload-modal-shell .upload-queue-container {
+  overflow: hidden;
+  border-radius: 18px;
+  border-color: rgba(255, 255, 255, 0.085);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.052), rgba(255, 255, 255, 0.018)),
+    rgba(0, 0, 0, 0.12);
+}
+
+.gallery-upload-modal-shell .upload-queue-header {
+  padding: 11px 13px;
+  border-bottom-color: rgba(255, 255, 255, 0.075);
+}
+
+.gallery-upload-modal-shell .upload-queue-header span {
+  font-weight: 900;
+  letter-spacing: -0.02em;
+}
+
+.gallery-upload-modal-shell .clear-queue-btn {
+  border-radius: 999px;
+  padding: 6px 10px;
+  border: 1px solid rgba(255, 82, 82, 0.20);
+  background: rgba(255, 82, 82, 0.075);
+  color: #ff9a9a;
+  font-weight: 820;
+}
+
+.gallery-upload-modal-shell .upload-queue-list {
+  max-height: 240px;
+  padding: 10px;
+}
+
+.gallery-upload-modal-shell .upload-queue-item {
+  border-radius: 16px;
+  border-color: rgba(255, 255, 255, 0.075);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.058), rgba(255, 255, 255, 0.018)),
+    rgba(255, 255, 255, 0.02);
+}
+
+.gallery-upload-modal-shell .queue-thumbnail {
+  border-radius: 13px;
+  border-color: rgba(255, 255, 255, 0.10);
+  overflow: hidden;
+}
+
+.gallery-upload-modal-shell .queue-filename {
+  font-weight: 850;
+}
+
+.gallery-upload-modal-shell .queue-caption-input {
+  min-height: 36px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+}
+
+.gallery-upload-modal-shell .url-preview-container {
+  overflow: hidden;
+  border-radius: 18px;
+  border: 1px solid rgba(var(--gallery-gold, 239, 197, 110), 0.18);
+  background:
+    linear-gradient(135deg, rgba(var(--gallery-gold, 239, 197, 110), 0.055), rgba(var(--accent-cyan-rgb), 0.035)),
+    rgba(0, 0, 0, 0.18);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.18);
+}
+
+.gallery-upload-modal-shell .url-preview-container img {
+  width: 100%;
+  max-height: 280px;
+  object-fit: cover;
+  display: block;
+}
+
+.gallery-upload-modal-shell .modal-toggles-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.gallery-upload-modal-shell .modal-toggle-card {
+  border-radius: 16px;
+  border-color: rgba(255, 255, 255, 0.09);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.052), rgba(255, 255, 255, 0.018)),
+    rgba(0, 0, 0, 0.10);
+}
+
+.gallery-upload-modal-shell .modal-toggle-card.selected {
+  border-color: rgba(var(--gallery-gold, 239, 197, 110), 0.28);
+  background:
+    linear-gradient(135deg, rgba(var(--gallery-gold, 239, 197, 110), 0.105), rgba(var(--accent-cyan-rgb), 0.04)),
+    rgba(255, 255, 255, 0.025);
+}
+
+.gallery-upload-modal-shell .toggle-indicator {
+  border-radius: 10px;
+}
+
+.gallery-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 2px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.075);
+}
+
+.gallery-modal-actions .btn-secondary,
+.gallery-modal-actions .btn-primary,
+.gallery-album-create-btn {
+  min-height: 42px;
+  border-radius: 999px;
+  padding: 0 16px;
+  justify-content: center;
+  font-weight: 900;
+}
+
+.gallery-album-create-form {
+  gap: 13px;
+}
+
+.gallery-modal-section-title {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: 0.96rem;
+  font-weight: 950;
+  letter-spacing: -0.025em;
+}
+
+.gallery-compact-form-group {
+  margin: 0;
+}
+
+.gallery-album-create-btn {
+  width: 100%;
+}
+
+.gallery-album-list-section {
+  gap: 12px;
+}
+
+.gallery-album-empty-note {
+  margin: 8px 0;
+  color: var(--text-muted);
+  font-size: 0.86rem;
+  font-weight: 650;
+  text-align: center;
+}
+
+.gallery-album-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 300px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.gallery-album-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 17px;
+  border: 1px solid rgba(255, 255, 255, 0.085);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.058), rgba(255, 255, 255, 0.018)),
+    rgba(0, 0, 0, 0.105);
+  transition:
+    border-color 0.18s ease,
+    background 0.18s ease,
+    transform 0.18s ease;
+}
+
+.gallery-album-row:hover {
+  transform: translateY(-1px);
+  border-color: rgba(var(--gallery-gold, 239, 197, 110), 0.20);
+  background:
+    linear-gradient(135deg, rgba(var(--gallery-gold, 239, 197, 110), 0.075), rgba(255, 255, 255, 0.024)),
+    rgba(0, 0, 0, 0.12);
+}
+
+.gallery-album-edit-stack,
+.gallery-album-row-copy {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+}
+
+.gallery-album-edit-stack {
+  gap: 8px;
+}
+
+.album-edit-input {
+  min-height: 36px !important;
+  border-radius: 12px !important;
+  padding: 6px 10px !important;
+  font-size: 0.86rem !important;
+}
+
+.album-edit-input-muted {
+  font-size: 0.78rem !important;
+}
+
+.gallery-album-edit-actions,
+.gallery-album-row-actions {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.gallery-album-edit-actions {
+  margin-top: 2px;
+}
+
+.album-inline-btn {
+  min-height: 30px;
+  height: auto;
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 0.74rem;
+  font-weight: 880;
+}
+
+.gallery-album-row-copy {
+  gap: 4px;
+  overflow: hidden;
+}
+
+.gallery-album-row-title,
+.gallery-album-row-desc,
+.gallery-album-row-count {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.gallery-album-row-title {
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+}
+
+.gallery-album-row-desc {
+  color: var(--text-muted);
+  font-size: 0.76rem;
+  font-weight: 650;
+}
+
+.gallery-album-row-count {
+  width: fit-content;
+  max-width: 100%;
+  padding: 3px 8px;
+  border-radius: 999px;
+  color: rgba(255, 232, 184, 0.94);
+  background: rgba(var(--gallery-gold, 239, 197, 110), 0.09);
+  border: 1px solid rgba(var(--gallery-gold, 239, 197, 110), 0.15);
+  font-size: 0.68rem;
+  font-weight: 850;
+}
+
+.gallery-album-row-actions {
+  flex: 0 0 auto;
+}
+
+.album-icon-btn {
+  width: 34px;
+  height: 34px;
+  padding: 0 !important;
+  border-radius: 12px !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.album-icon-btn-danger {
+  border-color: rgba(255, 82, 82, 0.22);
+  background: rgba(255, 82, 82, 0.08);
+  color: #ff8a8a;
+}
+
+.album-icon-btn-danger:hover {
+  background: rgba(255, 82, 82, 0.92);
+  color: #fff;
+}
+
+.gallery-album-footer-actions {
+  justify-content: flex-end;
+  margin-top: 0;
+}
+
+[data-theme="light"] .gallery-upload-modal-shell,
+[data-theme="light"] .gallery-album-modal-shell {
+  border-color: rgba(15, 23, 42, 0.09);
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.94), rgba(248, 250, 252, 0.76)),
+    radial-gradient(circle at 0% 0%, rgba(var(--gallery-gold, 239, 197, 110), 0.14), transparent 34%),
+    radial-gradient(circle at 100% 14%, rgba(var(--accent-cyan-rgb), 0.10), transparent 36%),
+    rgba(255, 255, 255, 0.86);
+  box-shadow:
+    0 24px 70px rgba(15, 23, 42, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.78);
+}
+
+[data-theme="light"] .gallery-upload-file-panel,
+[data-theme="light"] .gallery-url-panel,
+[data-theme="light"] .gallery-url-caption-group,
+[data-theme="light"] .gallery-upload-album-group,
+[data-theme="light"] .gallery-visibility-group,
+[data-theme="light"] .gallery-album-create-form,
+[data-theme="light"] .gallery-album-list-section,
+[data-theme="light"] .gallery-album-row {
+  border-color: rgba(15, 23, 42, 0.08);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.78), rgba(248, 250, 252, 0.58)),
+    rgba(255, 255, 255, 0.66);
+}
+
+[data-theme="light"] .gallery-upload-modal-shell .bf-label,
+[data-theme="light"] .gallery-album-modal-shell .bf-label,
+[data-theme="light"] .gallery-compact-label {
+  color: #334155;
+}
+
+[data-theme="light"] .gallery-upload-modal-shell .bf-input,
+[data-theme="light"] .gallery-album-modal-shell .bf-input,
+[data-theme="light"] .gallery-upload-tabs-modern,
+[data-theme="light"] .gallery-upload-modal-shell .upload-queue-container {
+  border-color: rgba(15, 23, 42, 0.08);
+  background: rgba(255, 255, 255, 0.66);
+}
+
+[data-theme="light"] .gallery-album-row-title {
+  color: #0f172a;
+}
+
+[data-theme="light"] .gallery-album-row-desc,
+[data-theme="light"] .gallery-album-empty-note {
+  color: #64748b;
+}
+
+[data-theme="light"] .gallery-album-row-count {
+  color: #7c520d;
+  background: rgba(var(--gallery-gold, 239, 197, 110), 0.15);
+}
+
+@media (max-width: 768px) {
+  .gallery-upload-modal-shell,
+  .gallery-album-modal-shell {
+    width: min(96vw, 720px);
+    max-height: 88vh;
+    border-radius: 20px;
+  }
+
+  .gallery-upload-form-modern,
+  .gallery-album-manager {
+    max-height: calc(88vh - 84px);
+    gap: 12px;
+  }
+
+  .gallery-upload-tabs-modern {
+    border-radius: 15px;
+  }
+
+  .gallery-upload-tabs-modern .upload-tab-btn {
+    min-height: 38px;
+    font-size: 0.78rem;
+  }
+
+  .gallery-upload-file-panel,
+  .gallery-url-panel,
+  .gallery-url-caption-group,
+  .gallery-upload-album-group,
+  .gallery-visibility-group,
+  .gallery-album-create-form,
+  .gallery-album-list-section {
+    padding: 12px;
+    border-radius: 17px;
+  }
+
+  .gallery-upload-modal-shell .drag-upload-zone {
+    min-height: 150px;
+    border-radius: 17px;
+  }
+
+  .gallery-upload-modal-shell .modal-toggles-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .gallery-modal-actions {
+    flex-direction: column-reverse;
+  }
+
+  .gallery-modal-actions .btn-secondary,
+  .gallery-modal-actions .btn-primary {
+    width: 100%;
+  }
+
+  .gallery-album-row {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .gallery-album-row-actions,
+  .gallery-album-edit-actions {
+    width: 100%;
+  }
+
+  .album-icon-btn,
+  .album-inline-btn {
+    flex: 1 1 0;
+  }
+
+  .album-icon-btn {
+    width: auto;
+  }
+}
+
+@media (max-width: 430px) {
+  .gallery-upload-modal-shell,
+  .gallery-album-modal-shell {
+    width: 98vw;
+    border-radius: 18px;
+  }
+
+  .gallery-upload-tabs-modern .upload-tab-btn span {
+    max-width: 96px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .gallery-album-list {
+    max-height: 260px;
+  }
+}
+
+/* === END GALLERY MODALS PHASE 7 === */

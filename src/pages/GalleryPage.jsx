@@ -895,9 +895,9 @@ const GalleryPage = () => {
       </AnimatePresence>
 
       {/* ── Add Photo Modal ────────────────────────────────────────────────── */}
-      <Modal isOpen={isUploadModalOpen} onClose={() => !loading && setIsUploadModalOpen(false)} title="Tambah Foto Galeri">
-        <form className="gallery-upload-form" onSubmit={handleUploadSubmit}>
-          <div className="upload-tabs-container">
+      <Modal isOpen={isUploadModalOpen} onClose={() => !loading && setIsUploadModalOpen(false)} title="Tambah Foto Galeri" className="gallery-upload-modal-shell">
+        <form className="gallery-upload-form gallery-upload-form-modern" onSubmit={handleUploadSubmit}>
+          <div className="upload-tabs-container gallery-upload-tabs-modern">
             <button type="button" className={`upload-tab-btn ${uploadTab === 'file' ? 'active' : ''}`} onClick={() => !loading && setUploadTab('file')}>
               <UploadCloud size={16} /><span>Unggah File</span>
             </button>
@@ -908,7 +908,7 @@ const GalleryPage = () => {
 
           <div className="upload-tab-content">
             {uploadTab === 'file' ? (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <div className="gallery-upload-file-panel">
                 <div
                   ref={dragRef}
                   className={`drag-upload-zone ${isDragging ? 'dragging' : ''} ${selectedFiles.length > 0 ? 'compact' : ''}`}
@@ -961,7 +961,7 @@ const GalleryPage = () => {
                 )}
               </div>
             ) : (
-              <div className="form-group">
+              <div className="form-group gallery-url-panel">
                 <label htmlFor="gallery-image-url" className="bf-label">Tautan URL Gambar <span className="bf-required">*</span></label>
                 <input id="gallery-image-url" type="url" className="bf-input" placeholder="Contoh: https://images.unsplash.com/photo-..." value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} disabled={loading} required={uploadTab === 'url'} />
                 {imageUrl && (
@@ -974,13 +974,13 @@ const GalleryPage = () => {
           </div>
 
           {uploadTab === 'url' && (
-            <div className="form-group" style={{ marginTop: '8px' }}>
+            <div className="form-group gallery-url-caption-group">
               <label htmlFor="gallery-caption" className="bf-label">Keterangan Foto <span className="bf-required">*</span></label>
               <input id="gallery-caption" type="text" className="bf-input" placeholder="Misal: Studio 37 Rehearsal Room" value={caption} onChange={(e) => setCaption(e.target.value)} maxLength={80} required={uploadTab === 'url'} disabled={loading} />
             </div>
           )}
 
-          <div className="form-group">
+          <div className="form-group gallery-upload-album-group">
             <label htmlFor="upload-photo-album" className="bf-label">Masukkan Ke Album (Opsional)</label>
             <select id="upload-photo-album" className="bf-input" value={uploadAlbumId} onChange={(e) => setUploadAlbumId(e.target.value)} disabled={loading}>
               <option value="">Tanpa Album (Uncategorized)</option>
@@ -988,7 +988,7 @@ const GalleryPage = () => {
             </select>
           </div>
 
-          <div className="form-group">
+          <div className="form-group gallery-visibility-group">
             <label className="bf-label">Lokasi Penayangan</label>
             <div className="modal-toggles-grid">
               <label className={`modal-toggle-card ${showOnLandingPage ? 'selected' : ''}`}>
@@ -1004,7 +1004,7 @@ const GalleryPage = () => {
             </div>
           </div>
 
-          <div className="bf-actions" style={{ marginTop: '20px' }}>
+          <div className="bf-actions gallery-modal-actions gallery-upload-actions">
             <button type="button" className="btn-secondary" onClick={() => setIsUploadModalOpen(false)} disabled={loading}>Batal</button>
             <button type="submit" className="btn-primary" disabled={loading || (uploadTab === 'file' && selectedFiles.length === 0) || (uploadTab === 'url' && !imageUrl)}>
               {loading ? <Loader2 size={16} className="spinner" /> : null}
@@ -1018,41 +1018,40 @@ const GalleryPage = () => {
       </Modal>
 
       {/* ── Album Management Modal ────────────────────────────────────────── */}
-      <Modal isOpen={isAlbumModalOpen} onClose={() => !isCreatingAlbum && setIsAlbumModalOpen(false)} title="Kelola Album Galeri">
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-          <form onSubmit={handleCreateAlbumSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px', padding: '16px', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '14px' }}>
-            <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: '700' }}>Buat Album Baru</h4>
-            <div className="form-group" style={{ margin: 0 }}>
-              <label htmlFor="new-album-name" className="bf-label" style={{ fontSize: '0.85rem' }}>Nama Album <span className="bf-required">*</span></label>
+      <Modal isOpen={isAlbumModalOpen} onClose={() => !isCreatingAlbum && setIsAlbumModalOpen(false)} title="Kelola Album Galeri" className="gallery-album-modal-shell">
+        <div className="gallery-album-manager">
+          <form className="gallery-album-create-form" onSubmit={handleCreateAlbumSubmit}>
+            <h4 className="gallery-modal-section-title">Buat Album Baru</h4>
+            <div className="form-group gallery-compact-form-group">
+              <label htmlFor="new-album-name" className="bf-label gallery-compact-label">Nama Album <span className="bf-required">*</span></label>
               <input id="new-album-name" type="text" className="bf-input" placeholder="Contoh: Suasana Live Room" value={newAlbumName} onChange={(e) => setNewAlbumName(e.target.value)} maxLength={40} required disabled={isCreatingAlbum} />
             </div>
-            <div className="form-group" style={{ margin: 0 }}>
-              <label htmlFor="new-album-desc" className="bf-label" style={{ fontSize: '0.85rem' }}>Deskripsi Singkat</label>
+            <div className="form-group gallery-compact-form-group">
+              <label htmlFor="new-album-desc" className="bf-label gallery-compact-label">Deskripsi Singkat</label>
               <input id="new-album-desc" type="text" className="bf-input" placeholder="Misal: Foto-foto live room utama" value={newAlbumDesc} onChange={(e) => setNewAlbumDesc(e.target.value)} maxLength={80} disabled={isCreatingAlbum} />
             </div>
-            <button type="submit" className="btn-primary" disabled={isCreatingAlbum} style={{ width: '100%', padding: '10px 14px', justifyContent: 'center' }}>
+            <button type="submit" className="btn-primary gallery-album-create-btn" disabled={isCreatingAlbum}>
               {isCreatingAlbum ? <Loader2 size={16} className="spinner" /> : <Plus size={16} />}
               <span>Buat Album</span>
             </button>
           </form>
 
-          <div>
-            <h4 style={{ margin: '0 0 12px 0', fontSize: '1rem', fontWeight: '700' }}>Daftar Album ({albums.length})</h4>
+          <div className="gallery-album-list-section">
+            <h4 className="gallery-modal-section-title">Daftar Album ({albums.length})</h4>
             {albums.length === 0 ? (
-              <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', margin: '8px 0', textAlign: 'center' }}>Belum ada album dibuat.</p>
+              <p className="gallery-album-empty-note">Belum ada album dibuat.</p>
             ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', maxHeight: '250px', overflowY: 'auto', paddingRight: '4px' }}>
+              <div className="gallery-album-list">
                 {albums.map(alb => {
                   const count = gallery.filter(p => p.albumId === alb.id).length;
                   const isEditing = editingAlbumId === alb.id;
                   return (
-                    <div key={alb.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 14px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '10px', gap: '12px' }}>
+                    <div key={alb.id} className="gallery-album-row">
                       {isEditing ? (
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', flex: 1 }}>
+                        <div className="gallery-album-edit-stack">
                           <input
                             type="text"
-                            className="bf-input"
-                            style={{ padding: '6px 10px', fontSize: '0.88rem', height: 'auto' }}
+                            className="bf-input album-edit-input"
                             value={editingName}
                             onChange={(e) => setEditingName(e.target.value)}
                             maxLength={40}
@@ -1061,18 +1060,16 @@ const GalleryPage = () => {
                           />
                           <input
                             type="text"
-                            className="bf-input"
-                            style={{ padding: '6px 10px', fontSize: '0.8rem', height: 'auto' }}
+                            className="bf-input album-edit-input album-edit-input-muted"
                             value={editingDesc}
                             onChange={(e) => setEditingDesc(e.target.value)}
                             maxLength={80}
                             placeholder="Deskripsi Album"
                           />
-                          <div style={{ display: 'flex', gap: '6px', marginTop: '2px' }}>
+                          <div className="gallery-album-edit-actions">
                             <button
                               type="button"
-                              className="btn-primary"
-                              style={{ padding: '4px 8px', fontSize: '0.75rem', height: 'auto', borderRadius: '6px' }}
+                              className="btn-primary album-inline-btn"
                               onClick={() => handleSaveAlbumEdit(alb.id)}
                             >
                               Simpan
@@ -1088,33 +1085,31 @@ const GalleryPage = () => {
                           </div>
                         </div>
                       ) : (
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', overflow: 'hidden', flex: 1 }}>
-                          <span style={{ fontWeight: '600', fontSize: '0.92rem', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }} title={alb.name}>{alb.name}</span>
-                          {alb.description && <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>{alb.description}</span>}
-                          <span style={{ fontSize: '0.75rem', color: 'var(--accent-pink)', fontWeight: '600' }}>🏷️ {count} Foto</span>
+                        <div className="gallery-album-row-copy">
+                          <span className="gallery-album-row-title" title={alb.name}>{alb.name}</span>
+                          {alb.description && <span className="gallery-album-row-desc">{alb.description}</span>}
+                          <span className="gallery-album-row-count">🏷️ {count} Foto</span>
                         </div>
                       )}
                       
                       {!isEditing && (
-                        <div style={{ display: 'flex', gap: '6px', flexShrink: 0 }}>
+                        <div className="gallery-album-row-actions">
                           <button
                             type="button"
-                            className="btn-secondary"
-                            onClick={() => {
-                              setEditingAlbumId(alb.id);
-                              setEditingName(alb.name);
-                              setEditingDesc(alb.description || '');
-                            }}
-                            style={{ padding: '6px 8px', height: 'auto', borderRadius: '8px' }}
+                            className="btn-secondary album-icon-btn"
+                              onClick={() => {
+                                setEditingAlbumId(alb.id);
+                                setEditingName(alb.name);
+                                setEditingDesc(alb.description || '');
+                              }}
                             title="Edit Album"
                           >
                             <Settings2 size={13} />
                           </button>
                           <button
                             type="button"
-                            className="photo-delete-btn"
-                            onClick={() => handleDeleteAlbum(alb.id, alb.name)}
-                            style={{ padding: '6px 8px', height: 'auto', borderRadius: '8px' }}
+                            className="photo-delete-btn album-icon-btn album-icon-btn-danger"
+                              onClick={() => handleDeleteAlbum(alb.id, alb.name)}
                             title="Hapus Album"
                           >
                             <Trash2 size={13} />
@@ -1128,7 +1123,7 @@ const GalleryPage = () => {
             )}
           </div>
 
-          <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '4px' }}>
+          <div className="gallery-modal-actions gallery-album-footer-actions">
             <button type="button" className="btn-secondary" onClick={() => setIsAlbumModalOpen(false)} disabled={isCreatingAlbum}>Tutup</button>
           </div>
         </div>
