@@ -92,39 +92,35 @@ const Sidebar = () => {
     }
   };
 
-
-
   const menuItems = [
-    { icon: <PieChart size={19} />, label: 'Dashboard', path: '/dashboard' },
-    { icon: <CalendarDays size={19} />, label: 'Calendar', path: '/calendar' },
-    { icon: <Users size={19} />, label: 'Customers', path: '/customers' },
-    { icon: <MessageCircle size={19} />, label: 'Pesan Client', path: '/messages' },
-    { icon: <Package size={19} />, label: 'Inventory', path: '/inventory' },
-    { icon: <CreditCard size={19} />, label: 'Billing / POS', path: '/billing' },
-    { icon: <BookOpen size={19} />, label: 'Pembukuan', path: '/finance' },
-    { icon: <Image size={19} />, label: 'Galeri Foto', path: '/gallery' },
-    { icon: <Shield size={19} />, label: 'Staff', path: '/staff' },
-    { icon: <Hammer size={19} />, label: 'Maintenance', path: '/maintenance' },
-    { icon: <Settings size={19} />, label: 'Settings', path: '/settings' },
+    { icon: <PieChart size={19} />, label: 'Dashboard', path: '/admin/dashboard', permissionPath: '/dashboard' },
+    { icon: <CalendarDays size={19} />, label: 'Calendar', path: '/admin/calendar', permissionPath: '/calendar' },
+    { icon: <Users size={19} />, label: 'Customers', path: '/admin/customers', permissionPath: '/customers' },
+    { icon: <MessageCircle size={19} />, label: 'Pesan Client', path: '/admin/messages', permissionPath: '/messages' },
+    { icon: <Package size={19} />, label: 'Inventory', path: '/admin/inventory', permissionPath: '/inventory' },
+    { icon: <CreditCard size={19} />, label: 'Billing / POS', path: '/admin/billing', permissionPath: '/billing' },
+    { icon: <BookOpen size={19} />, label: 'Pembukuan', path: '/admin/finance', permissionPath: '/finance' },
+    { icon: <Image size={19} />, label: 'Galeri Foto', path: '/admin/gallery', permissionPath: '/gallery' },
+    { icon: <Shield size={19} />, label: 'Staff', path: '/admin/staff', permissionPath: '/staff' },
+    { icon: <Hammer size={19} />, label: 'Maintenance', path: '/admin/maintenance', permissionPath: '/maintenance' },
+    { icon: <Settings size={19} />, label: 'Settings', path: '/admin/settings', permissionPath: '/settings' },
   ];
 
   // Get first letter of username or email for avatar
   const displayName = userProfile?.username || user?.displayName || (user?.email ? user.email.split('@')[0] : 'User');
   const avatarLetter = displayName.charAt(0).toUpperCase();
 
-  // Get current page title for mobile header
-  
   // Separate primary and secondary menus for Bottom Nav
-  const primaryMobileMenus = menuItems.slice(0, 4); // Dashboard, Calendar, Customers, Inventory
-  const secondaryMobileMenus = menuItems.slice(4); // Billing, Finance, Staff, Maintenance, Settings
+  const primaryMobileMenus = menuItems.slice(0, 4); // Dashboard, Calendar, Customers, Messages
+  const secondaryMobileMenus = menuItems.slice(4); // Inventory, Billing, Finance, Staff, Maintenance, Settings
   const currentMenu = menuItems.find((item) => location.pathname.startsWith(item.path)) || menuItems[0];
   const currentRoleLabel = userProfile?.role === 'admin' ? 'Administrator' : 'Staff';
   const mobileStatusLabel = unreadCount > 0 ? String(unreadCount > 99 ? '99+' : unreadCount) + ' notifikasi' : 'Command Center';
   const mobileNavLabels = {
-    '/dashboard': 'Home',
-    '/calendar': 'Jadwal',
-    '/customers': 'Client',
-    '/messages': 'Pesan',
+    '/admin/dashboard': 'Home',
+    '/admin/calendar': 'Jadwal',
+    '/admin/customers': 'Client',
+    '/admin/messages': 'Pesan',
   };
 
   return (
@@ -183,8 +179,8 @@ const Sidebar = () => {
       {/* ===== BOTTOM NAV BAR (MOBILE ONLY) ===== */}
       {typeof document !== 'undefined' && createPortal(
         <nav className={`bottom-nav-bar ${mobileOpen ? 'is-hidden-by-sheet' : ''}`} aria-label="Navigasi utama mobile">
-          {primaryMobileMenus.filter((item) => hasPermission(userProfile, ROUTE_PERMISSIONS[item.permissionPath || item.path])).map((item) => {
-            const isActive = location.pathname.startsWith(item.path) || (item.path === '/dashboard' && location.pathname === '/');
+          {primaryMobileMenus.filter((item) => hasPermission(userProfile, ROUTE_PERMISSIONS[item.permissionPath])).map((item) => {
+            const isActive = location.pathname.startsWith(item.path);
             return (
               <NavLink 
                 key={item.path}
@@ -201,11 +197,8 @@ const Sidebar = () => {
             );
           })}
           <button
-
             type="button"
-
             className="bn-item"
-
             onClick={() => { playClick(); setMobileOpen(true); }}
             aria-label="Menu Lainnya"
             aria-haspopup="dialog"
@@ -275,7 +268,7 @@ const Sidebar = () => {
           </div>
         </div>
         <div className="bottom-sheet-grid">
-          {secondaryMobileMenus.filter((item) => hasPermission(userProfile, ROUTE_PERMISSIONS[item.permissionPath || item.path])).map((item) => (
+          {secondaryMobileMenus.filter((item) => hasPermission(userProfile, ROUTE_PERMISSIONS[item.permissionPath])).map((item) => (
             <NavLink 
               key={item.path}
               to={item.path} 
@@ -337,8 +330,8 @@ const Sidebar = () => {
             variants={sidebarContainerVariants}
             style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}
           >
-            {menuItems.filter((item) => hasPermission(userProfile, ROUTE_PERMISSIONS[item.permissionPath || item.path])).map((item) => {
-              const isActive = location.pathname.startsWith(item.path) || (item.path === '/dashboard' && location.pathname === '/');
+            {menuItems.filter((item) => hasPermission(userProfile, ROUTE_PERMISSIONS[item.permissionPath])).map((item) => {
+              const isActive = location.pathname.startsWith(item.path);
               return (
                 <motion.div
                   key={item.path}
@@ -375,7 +368,7 @@ const Sidebar = () => {
             <div className="demo-mode-badge">
               <button
                 className="demo-badge-link"
-                onClick={() => { navigate('/settings'); setMobileOpen(false); }}
+                onClick={() => { navigate('/admin/settings'); setMobileOpen(false); }}
                 onMouseEnter={playHover}
                 title="Mode Demo Aktif — klik untuk ke Settings"
                 aria-label="Mode Demo Aktif, klik untuk membuka Pengaturan"
