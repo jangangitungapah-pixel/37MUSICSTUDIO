@@ -1,5 +1,12 @@
 import { useReducedMotion } from 'framer-motion';
-import { useState, useEffect } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+
+const checkIsMobileViewport = () => {
+  if (typeof window === 'undefined') return false;
+  const matchesWidth = window.innerWidth <= 1024;
+  const matchesTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+  return matchesWidth || (matchesTouch && matchesWidth);
+};
 
 /**
  * Hook to handle accessibility preferences and performance adjustments around animations.
@@ -8,26 +15,28 @@ import { useState, useEffect } from 'react';
  */
 export const useAppMotion = () => {
   const prefersReducedMotion = useReducedMotion();
-
-  const checkIsMobile = () => {
-    if (typeof window === 'undefined') return false;
-    // Screens <= 1024px (covers mobile phones and tablets in portrait/landscape)
-    // or devices that support touch and are <= 1024px wide
-    const matchesWidth = window.innerWidth <= 1024;
-    const matchesTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-    return matchesWidth || (matchesTouch && matchesWidth);
-  };
-
-  const [isMobile, setIsMobile] = useState(checkIsMobile);
+  const [isMobile, setIsMobile] = useState(checkIsMobileViewport);
 
   useEffect(() => {
-    if (typeof window === 'undefined') return;
+    if (typeof window === 'undefined') return undefined;
 
+    let frameId = null;
     const handleResize = () => {
-      setIsMobile(checkIsMobile());
+      if (frameId) window.cancelAnimationFrame(frameId);
+      frameId = window.requestAnimationFrame(() => {
+        frameId = null;
+        setIsMobile((previous) => {
+          const next = checkIsMobileViewport();
+          return previous === next ? previous : next;
+        });
+      });
     };
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+
+    window.addEventListener('resize', handleResize, { passive: true });
+    return () => {
+      if (frameId) window.cancelAnimationFrame(frameId);
+      window.removeEventListener('resize', handleResize);
+    };
   }, []);
 
   const shouldReduce = prefersReducedMotion || isMobile;
@@ -35,11 +44,11 @@ export const useAppMotion = () => {
   /**
    * Helper to merge/override motion props when reduced motion or mobile viewport is active.
    * Falls back to simple opacity transitions instead of heavy transforms or physics springs.
-   * 
+   *
    * @param {Object} normalProps - The standard animation props (variants, transition, etc.)
    * @param {Object} reducedProps - Optional overrides when reduced motion is active
    */
-  const getMotionProps = (normalProps, reducedProps = null) => {
+  const getMotionProps = useCallback((normalProps, reducedProps = null) => {
     if (!shouldReduce) {
       return normalProps;
     }
@@ -61,12 +70,12 @@ export const useAppMotion = () => {
     delete merged.whileInView;
 
     return merged;
-  };
+  }, [shouldReduce]);
 
-  return {
+  return useMemo(() => ({
     isReduced: shouldReduce,
     getMotionProps,
-  };
+  }), [getMotionProps, shouldReduce]);
 };
 
 export default useAppMotion;
