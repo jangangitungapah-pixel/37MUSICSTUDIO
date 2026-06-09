@@ -5848,3 +5848,310 @@ html[data-theme-switching="true"] .dashboard-quick-modal .quick-dash-form .form-
     min-height: 68px !important;
   }
 }
+
+/* ──────────────────────────────────────────────────────────────────────────
+   37 ADMIN COMMAND PANEL ROW POLISH 8.5I
+   --------------------------------------------------------------------------
+   Hot polish for Tagihan Prioritas and Operasional panels.
+   Scope:
+   - tighter command panel header
+   - cleaner billing rows
+   - action buttons stay on the right on mobile
+   - softer urgency treatment
+   - operational passive customer card polish
+   Logic, JSX, stores, and actions are untouched.
+   ────────────────────────────────────────────────────────────────────────── */
+
+.admin-dashboard-modern .dash-command-panel {
+  gap: 0.72rem !important;
+}
+
+.admin-dashboard-modern .dash-command-head {
+  grid-template-columns: minmax(0, 1fr) auto !important;
+  align-items: start !important;
+  gap: 0.72rem !important;
+}
+
+.admin-dashboard-modern .dash-command-title {
+  align-items: flex-start !important;
+  gap: 0.58rem !important;
+}
+
+.admin-dashboard-modern .dash-command-title > svg {
+  width: 18px !important;
+  height: 18px !important;
+  margin-top: 0.02rem !important;
+  color: var(--ad-cyan, #58e0e9) !important;
+}
+
+.admin-dashboard-modern .dash-command-title h3 {
+  font-size: 0.98rem !important;
+  letter-spacing: -0.035em !important;
+}
+
+.admin-dashboard-modern .dash-command-title p {
+  margin-top: 0.16rem !important;
+  font-size: 0.68rem !important;
+  opacity: 0.92;
+}
+
+.admin-dashboard-modern .dash-mini-link {
+  min-height: 31px !important;
+  padding: 0 0.62rem !important;
+  border-radius: 0.72rem !important;
+  font-size: 0.64rem !important;
+}
+
+/* Command rows become compact premium operational tiles */
+.admin-dashboard-modern .dash-command-panel .dash-work-list {
+  gap: 0.48rem !important;
+}
+
+.admin-dashboard-modern .dash-command-panel .dash-work-item,
+.admin-dashboard-modern .dash-command-panel .dash-slot-item {
+  min-height: 66px !important;
+  grid-template-columns: minmax(0, 1fr) auto !important;
+  align-items: center !important;
+  gap: 0.7rem !important;
+  padding: 0.72rem !important;
+  border-radius: 0.98rem !important;
+  overflow: hidden !important;
+}
+
+.admin-dashboard-modern .dash-command-panel .dash-work-item::after,
+.admin-dashboard-modern .dash-command-panel .dash-slot-item::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.72rem;
+  bottom: 0.72rem;
+  width: 3px;
+  border-radius: 999px;
+  background: rgba(88, 224, 233, 0.42);
+  opacity: 0.58;
+  pointer-events: none;
+}
+
+.admin-dashboard-modern .dash-command-panel .dash-work-item.urgency-overdue::after,
+.admin-dashboard-modern .dash-command-panel .dash-work-item.urgency-today::after {
+  background: rgba(255, 111, 159, 0.62);
+}
+
+.admin-dashboard-modern .dash-command-panel .dash-work-item.urgency-soon::after,
+.admin-dashboard-modern .dash-command-panel .dash-work-item.urgency-tomorrow::after {
+  background: rgba(239, 197, 110, 0.58);
+}
+
+/* Softer billing urgency, less blood-red block */
+.admin-dashboard-modern .dash-command-panel .dash-work-item.urgency-overdue,
+.admin-dashboard-modern .dash-command-panel .dash-work-item.urgency-today {
+  border-color: rgba(255, 61, 112, 0.20) !important;
+  background:
+    radial-gradient(circle at 0% 50%, rgba(255, 61, 112, 0.070), transparent 38%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.052), rgba(255, 255, 255, 0.016)),
+    rgba(255, 61, 112, 0.022) !important;
+}
+
+.admin-dashboard-modern .dash-command-panel .dash-work-item.urgency-overdue:hover,
+.admin-dashboard-modern .dash-command-panel .dash-work-item.urgency-today:hover {
+  border-color: rgba(255, 111, 159, 0.28) !important;
+  background:
+    radial-gradient(circle at 0% 50%, rgba(255, 61, 112, 0.090), transparent 38%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.060), rgba(255, 255, 255, 0.018)),
+    rgba(255, 61, 112, 0.030) !important;
+}
+
+.admin-dashboard-modern .dash-command-panel .dash-work-main {
+  min-width: 0 !important;
+  padding-left: 0.14rem;
+  gap: 0.18rem !important;
+}
+
+.admin-dashboard-modern .dash-command-panel .dash-work-main strong {
+  color: var(--ad-text, #fffaf0) !important;
+  font-size: 0.86rem !important;
+  line-height: 1.12 !important;
+  letter-spacing: -0.026em !important;
+}
+
+.admin-dashboard-modern .dash-command-panel .dash-work-main span {
+  color: var(--ad-muted, rgba(255, 250, 240, 0.66)) !important;
+  font-size: 0.66rem !important;
+  line-height: 1.28 !important;
+}
+
+/* Keep direct action button on the right, not dropped below */
+.admin-dashboard-modern .dash-command-panel .dash-work-item > .dash-icon-action,
+.admin-dashboard-modern .dash-command-panel .dash-work-item > .dash-work-actions,
+.admin-dashboard-modern .dash-command-panel .dash-work-item > svg {
+  grid-column: 2 !important;
+  grid-row: 1 !important;
+  justify-self: end !important;
+  align-self: center !important;
+}
+
+.admin-dashboard-modern .dash-command-panel .dash-work-actions {
+  justify-content: flex-end !important;
+}
+
+.admin-dashboard-modern .dash-command-panel .dash-icon-action {
+  width: 38px !important;
+  height: 38px !important;
+  min-width: 38px !important;
+  border-radius: 0.92rem !important;
+  color: rgba(255, 250, 240, 0.72) !important;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.075), transparent 58%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.058), rgba(255, 255, 255, 0.018)),
+    rgba(255, 255, 255, 0.034) !important;
+}
+
+.admin-dashboard-modern .dash-command-panel .dash-icon-action.send {
+  color: rgba(88, 224, 233, 0.90) !important;
+  border-color: rgba(88, 224, 233, 0.18) !important;
+}
+
+.admin-dashboard-modern .dash-command-panel .dash-icon-action.send:hover {
+  color: var(--ad-cyan, #58e0e9) !important;
+  border-color: rgba(88, 224, 233, 0.34) !important;
+  background: rgba(88, 224, 233, 0.085) !important;
+}
+
+/* Operational passive customer CTA */
+.admin-dashboard-modern .dash-command-panel .dash-work-item.as-button {
+  min-height: 72px !important;
+  cursor: pointer;
+  border-color: rgba(255, 255, 255, 0.095) !important;
+  background:
+    radial-gradient(circle at 0% 50%, rgba(88, 224, 233, 0.046), transparent 38%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.056), rgba(255, 255, 255, 0.018)),
+    rgba(255, 255, 255, 0.032) !important;
+}
+
+.admin-dashboard-modern .dash-command-panel .dash-work-item.as-button:hover {
+  border-color: rgba(88, 224, 233, 0.22) !important;
+  background:
+    radial-gradient(circle at 0% 50%, rgba(88, 224, 233, 0.070), transparent 38%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.060), rgba(255, 255, 255, 0.018)),
+    rgba(88, 224, 233, 0.030) !important;
+}
+
+.admin-dashboard-modern .dash-command-panel .dash-work-item.as-button > svg {
+  width: 34px !important;
+  height: 34px !important;
+  padding: 9px;
+  border-radius: 0.9rem;
+  color: rgba(239, 197, 110, 0.92) !important;
+  border: 1px solid rgba(239, 197, 110, 0.18);
+  background:
+    radial-gradient(circle at 50% 0%, rgba(239, 197, 110, 0.16), transparent 58%),
+    rgba(239, 197, 110, 0.070);
+}
+
+/* Light mode */
+[data-theme="light"] .admin-dashboard-modern .dash-command-panel .dash-work-item,
+[data-theme="light"] .admin-dashboard-modern .dash-command-panel .dash-slot-item {
+  border-color: rgba(96, 73, 41, 0.11) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.70), rgba(255, 255, 255, 0.34)),
+    rgba(255, 250, 241, 0.52) !important;
+}
+
+[data-theme="light"] .admin-dashboard-modern .dash-command-panel .dash-work-item.urgency-overdue,
+[data-theme="light"] .admin-dashboard-modern .dash-command-panel .dash-work-item.urgency-today {
+  border-color: rgba(199, 56, 101, 0.18) !important;
+  background:
+    radial-gradient(circle at 0% 50%, rgba(199, 56, 101, 0.052), transparent 38%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.74), rgba(255, 255, 255, 0.36)),
+    rgba(255, 250, 241, 0.56) !important;
+}
+
+[data-theme="light"] .admin-dashboard-modern .dash-command-panel .dash-work-main strong {
+  color: rgba(34, 27, 18, 0.96) !important;
+}
+
+[data-theme="light"] .admin-dashboard-modern .dash-command-panel .dash-work-main span {
+  color: rgba(45, 38, 28, 0.64) !important;
+}
+
+[data-theme="light"] .admin-dashboard-modern .dash-command-panel .dash-icon-action {
+  color: rgba(45, 38, 28, 0.68) !important;
+  border-color: rgba(96, 73, 41, 0.12) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.34)),
+    rgba(255, 250, 241, 0.54) !important;
+}
+
+[data-theme="light"] .admin-dashboard-modern .dash-command-panel .dash-icon-action.send {
+  color: var(--ad-cyan, #188b99) !important;
+  border-color: rgba(24, 139, 153, 0.18) !important;
+}
+
+[data-theme="light"] .admin-dashboard-modern .dash-command-panel .dash-work-item.as-button > svg {
+  color: var(--ad-gold, #b9852f) !important;
+  border-color: rgba(185, 133, 47, 0.18);
+  background: rgba(185, 133, 47, 0.070);
+}
+
+/* Mobile command polish */
+@media (max-width: 768px) {
+  .admin-dashboard-modern .dash-command-panel {
+    padding: 0.86rem !important;
+    gap: 0.62rem !important;
+  }
+
+  .admin-dashboard-modern .dash-command-head {
+    grid-template-columns: minmax(0, 1fr) auto !important;
+  }
+
+  .admin-dashboard-modern .dash-command-panel .dash-work-item,
+  .admin-dashboard-modern .dash-command-panel .dash-slot-item {
+    min-height: 62px !important;
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    padding: 0.64rem 0.66rem !important;
+    gap: 0.56rem !important;
+  }
+
+  .admin-dashboard-modern .dash-command-panel .dash-work-main strong {
+    font-size: 0.82rem !important;
+  }
+
+  .admin-dashboard-modern .dash-command-panel .dash-work-main span {
+    font-size: 0.62rem !important;
+    white-space: normal !important;
+  }
+
+  .admin-dashboard-modern .dash-command-panel .dash-icon-action {
+    width: 36px !important;
+    height: 36px !important;
+    min-width: 36px !important;
+  }
+
+  .admin-dashboard-modern .dash-command-panel .dash-work-item.as-button {
+    min-height: 66px !important;
+  }
+}
+
+@media (max-width: 430px) {
+  .admin-dashboard-modern .dash-command-head {
+    grid-template-columns: minmax(0, 1fr) auto !important;
+  }
+
+  .admin-dashboard-modern .dash-command-panel .dash-work-item,
+  .admin-dashboard-modern .dash-command-panel .dash-slot-item,
+  .admin-dashboard-modern .dash-command-panel .dash-work-item.as-button {
+    grid-template-columns: minmax(0, 1fr) auto !important;
+  }
+
+  .admin-dashboard-modern .dash-command-panel .dash-work-actions {
+    justify-content: flex-end !important;
+  }
+
+  .admin-dashboard-modern .dash-command-panel .dash-work-main span {
+    white-space: normal !important;
+  }
+
+  .admin-dashboard-modern .dash-command-panel .dash-mini-link {
+    width: auto !important;
+  }
+}
