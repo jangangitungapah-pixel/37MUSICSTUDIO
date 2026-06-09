@@ -7,8 +7,8 @@ import { useThemeStore } from '../store/useThemeStore';
 import { useAuthStore } from '../store/useAuthStore';
 import { format } from 'date-fns';
 import { Wallet, TrendingUp, TrendingDown, Plus, Trash2, Search, Download, Printer, X } from 'lucide-react';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer } from 'recharts';
-import Chart from 'react-apexcharts';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, AreaChart, PieChart, Pie, Cell } from 'recharts';
+
 import { toast } from 'sonner';
 import Modal from '../components/Modal';
 import {
@@ -573,95 +573,6 @@ const FinancePage = () => {
     () => buildExpensePieData(periodFilteredData),
     [periodFilteredData]
   );
-
-  const expenseDonutChart = useMemo(() => {
-    const labels = pieChartData.map((item) => item.name);
-    const series = pieChartData.map((item) => Number(item.value || 0));
-    const colors = labels.map((_, index) => PIE_COLORS[index % PIE_COLORS.length]);
-
-    return {
-      series,
-      options: {
-        chart: {
-          type: 'donut',
-          background: 'transparent',
-          parentHeightOffset: 0,
-          sparkline: { enabled: true },
-          toolbar: { show: false },
-          animations: {
-            enabled: !isFinanceMobile,
-            speed: 520,
-            animateGradually: { enabled: false },
-            dynamicAnimation: { enabled: false },
-          },
-        },
-        labels,
-        colors,
-        stroke: {
-          show: true,
-          width: isFinanceMobile ? 2 : 3,
-          colors: [isLight ? '#fffaf0' : '#121823'],
-        },
-        dataLabels: { enabled: false },
-        legend: { show: false },
-        tooltip: {
-          enabled: true,
-          theme: isLight ? 'light' : 'dark',
-          fillSeriesColor: false,
-          y: {
-            formatter: (value) => formatCurrency(value),
-          },
-        },
-        plotOptions: {
-          pie: {
-            expandOnClick: false,
-            offsetY: 0,
-            donut: {
-              size: isFinanceMobile ? '72%' : '68%',
-              background: 'transparent',
-              labels: {
-                show: true,
-                name: {
-                  show: true,
-                  offsetY: isFinanceMobile ? 13 : 15,
-                  color: isLight ? '#4b4757' : 'rgba(255, 250, 240, 0.54)',
-                  fontSize: isFinanceMobile ? '8px' : '9px',
-                  fontFamily: 'Space Grotesk, system-ui, sans-serif',
-                  fontWeight: 800,
-                  formatter: () => 'kategori',
-                },
-                value: {
-                  show: true,
-                  offsetY: isFinanceMobile ? -8 : -10,
-                  color: isLight ? '#17131f' : '#fffaf0',
-                  fontSize: isFinanceMobile ? '14px' : '17px',
-                  fontFamily: 'Bebas Neue, Space Grotesk, system-ui, sans-serif',
-                  fontWeight: 700,
-                  formatter: () => String(labels.length),
-                },
-                total: {
-                  show: true,
-                  showAlways: true,
-                  label: 'kategori',
-                  color: isLight ? '#4b4757' : 'rgba(255, 250, 240, 0.54)',
-                  fontSize: isFinanceMobile ? '8px' : '9px',
-                  fontFamily: 'Space Grotesk, system-ui, sans-serif',
-                  fontWeight: 800,
-                  formatter: () => String(labels.length),
-                },
-              },
-            },
-          },
-        },
-        states: {
-          normal: { filter: { type: 'none' } },
-          hover: { filter: { type: 'lighten', value: 0.04 } },
-          active: { filter: { type: 'none' } },
-        },
-        grid: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
-      },
-    };
-  }, [isFinanceMobile, isLight, pieChartData]);
   const revenueForecast = useMemo(
     () => getRevenueForecast(bookings, transactions, pricePerHour),
     [bookings, transactions, pricePerHour]
@@ -1427,7 +1338,7 @@ const FinancePage = () => {
             </div>
           </div>
 
-                    {/* Category Breakdown (Apex Donut) */}
+                              {/* Category Breakdown (Pie Chart) */}
           <div className="sidebar-widget-card glass-panel expense-breakdown-widget">
             <div className="widget-header">
               <TrendingDown size={16} color="var(--accent-pink)" />
@@ -1436,13 +1347,36 @@ const FinancePage = () => {
             <div className="widget-content">
               {pieChartData.length > 0 ? (
                 <>
-                  <div className="sidebar-chart-wrapper apex-donut-wrapper">
-                    <Chart
-                      options={expenseDonutChart.options}
-                      series={expenseDonutChart.series}
-                      type="donut"
-                      height={isFinanceMobile ? 118 : 148}
-                    />
+                  <div className="sidebar-chart-wrapper recharts-donut-wrapper">
+                    <ResponsiveContainer width="100%" height={isFinanceMobile ? 132 : 150}>
+                      <PieChart margin={{ top: 8, right: 8, bottom: 8, left: 8 }}>
+                        <Pie
+                          data={pieChartData}
+                          cx="50%"
+                          cy="50%"
+                          innerRadius={isFinanceMobile ? 34 : 38}
+                          outerRadius={isFinanceMobile ? 52 : 58}
+                          paddingAngle={3}
+                          dataKey="value"
+                          isAnimationActive={!isFinanceMobile}
+                        >
+                          {pieChartData.map((_, i) => (
+                            <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} stroke={isLight ? '#fffaf0' : '#121823'} strokeWidth={2} />
+                          ))}
+                        </Pie>
+                        <RechartsTooltip
+                          formatter={(v) => formatCurrency(v)}
+                          contentStyle={{
+                            backgroundColor: tooltipBg,
+                            border: `1px solid ${tooltipBorder}`,
+                            borderRadius: '10px',
+                            fontSize: '0.8rem',
+                            color: tooltipTextColor,
+                          }}
+                          itemStyle={{ color: tooltipTextColor }}
+                        />
+                      </PieChart>
+                    </ResponsiveContainer>
                   </div>
 
                   <div className="pie-legend-list">

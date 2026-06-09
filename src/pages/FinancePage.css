@@ -6622,45 +6622,35 @@
 /* === END 10.1G-4 PEMBUKUAN AUDIT MOBILE FIX === */
 
 
-/* === START 10.1G-8.1 PEMBUKUAN APEX DONUT JSX REPAIR === */
+/* === START 10.1G-9 PEMBUKUAN RESTORE RECHARTS DONUT === */
 
-/* Phase 10.1G-8.1 - repair broken JSX and stabilize ApexCharts expense donut.
-   Replaces the whole Breakdown Pengeluaran widget section to fix broken closing tags.
+/* Phase 10.1G-9 - restore original Recharts donut style.
+   Restores the first PieChart-based renderer, then fixes mobile size and centering.
    Data source remains pieChartData, legend remains custom UI. */
 
-.finance-page .expense-breakdown-widget .apex-donut-wrapper {
+.finance-page .expense-breakdown-widget .recharts-donut-wrapper {
   display: grid !important;
   place-items: center !important;
-  height: 158px !important;
-  min-height: 158px !important;
-  max-height: 158px !important;
+  height: 166px !important;
+  min-height: 166px !important;
+  max-height: 166px !important;
   padding: 0 !important;
   overflow: hidden !important;
 }
 
-.finance-page .expense-breakdown-widget .apexcharts-canvas,
-.finance-page .expense-breakdown-widget .apexcharts-svg {
+.finance-page .expense-breakdown-widget .recharts-donut-wrapper .recharts-responsive-container {
+  width: 100% !important;
+  height: 150px !important;
+  min-height: 150px !important;
+}
+
+.finance-page .expense-breakdown-widget .recharts-donut-wrapper .recharts-wrapper,
+.finance-page .expense-breakdown-widget .recharts-donut-wrapper .recharts-surface {
   overflow: visible !important;
 }
 
-.finance-page .expense-breakdown-widget .apexcharts-canvas {
-  filter:
-    drop-shadow(0 0 18px rgba(255, 61, 112, 0.14))
-    drop-shadow(0 0 14px rgba(88, 224, 233, 0.06));
-}
-
-.finance-page .expense-breakdown-widget .apexcharts-pie-series path {
-  transition: filter 0.16s ease, opacity 0.16s ease;
-}
-
-.finance-page .expense-breakdown-widget .apexcharts-pie-series path:hover {
-  filter: brightness(1.08);
-}
-
-.finance-page .expense-breakdown-widget .apexcharts-datalabel-label,
-.finance-page .expense-breakdown-widget .apexcharts-datalabel-value {
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
+.finance-page .expense-breakdown-widget .recharts-pie-sector {
+  outline: none !important;
 }
 
 .finance-page .expense-breakdown-widget .pie-legend-list {
@@ -6670,23 +6660,29 @@
 }
 
 @media (max-width: 768px) {
-  .finance-page .expense-breakdown-widget .apex-donut-wrapper {
-    height: 126px !important;
-    min-height: 126px !important;
-    max-height: 126px !important;
+  .finance-page .expense-breakdown-widget .recharts-donut-wrapper {
+    height: 144px !important;
+    min-height: 144px !important;
+    max-height: 144px !important;
     margin-top: 3px !important;
-    margin-bottom: 7px !important;
+    margin-bottom: 8px !important;
     border-radius: 13px !important;
   }
 
-  .finance-page .expense-breakdown-widget .apexcharts-canvas {
-    filter: none;
+  .finance-page .expense-breakdown-widget .recharts-donut-wrapper .recharts-responsive-container {
+    height: 132px !important;
+    min-height: 132px !important;
+  }
+
+  .finance-page .expense-breakdown-widget .recharts-donut-wrapper .recharts-wrapper,
+  .finance-page .expense-breakdown-widget .recharts-donut-wrapper .recharts-surface {
+    overflow: visible !important;
   }
 
   .finance-page .expense-breakdown-widget .pie-legend-list {
     max-height: 174px !important;
     gap: 4px !important;
-    margin-top: 5px !important;
+    margin-top: 6px !important;
   }
 
   .finance-page .expense-breakdown-widget .pie-legend-item {
@@ -6707,10 +6703,15 @@
 }
 
 @media (max-width: 430px) {
-  .finance-page .expense-breakdown-widget .apex-donut-wrapper {
-    height: 120px !important;
-    min-height: 120px !important;
-    max-height: 120px !important;
+  .finance-page .expense-breakdown-widget .recharts-donut-wrapper {
+    height: 138px !important;
+    min-height: 138px !important;
+    max-height: 138px !important;
+  }
+
+  .finance-page .expense-breakdown-widget .recharts-donut-wrapper .recharts-responsive-container {
+    height: 132px !important;
+    min-height: 132px !important;
   }
 
   .finance-page .expense-breakdown-widget .pie-legend-list {
@@ -6718,11 +6719,5 @@
   }
 }
 
-@media (hover: none) {
-  .finance-page .expense-breakdown-widget .apexcharts-pie-series path:hover {
-    filter: none;
-  }
-}
-
-/* === END 10.1G-8.1 PEMBUKUAN APEX DONUT JSX REPAIR === */
+/* === END 10.1G-9 PEMBUKUAN RESTORE RECHARTS DONUT === */
 
