@@ -453,107 +453,138 @@ const GalleryPage = () => {
         </div>
       </section>
       {/* ── View Mode Toggle + Toolbar ────────────────────────────────────────── */}
-      <div className="gallery-toolbar-row" style={{ marginTop: '24px', flexWrap: 'wrap', gap: '16px' }}>
-        {/* Left side: view toggle + actions */}
-        <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', alignItems: 'center' }}>
-          <div className="gallery-view-toggle">
-            <button
-              className={`view-toggle-btn ${viewMode === 'photos' ? 'active' : ''}`}
-              onClick={() => {
-                handleSwitchView('photos');
-                setIsBulkSelectActive(false);
-                setIsReorderActive(false);
-                setSelectedPhotoIds([]);
-              }}
-              title="Tampilan Semua Foto"
-            >
-              <LayoutGrid size={15} />
-              <span>Semua Foto</span>
-            </button>
-            <button
-              className={`view-toggle-btn ${viewMode === 'albums' ? 'active' : ''}`}
-              onClick={() => {
-                handleSwitchView('albums');
-                setIsBulkSelectActive(false);
-                setIsReorderActive(false);
-                setSelectedPhotoIds([]);
-              }}
-              title="Tampilan Per Album"
-            >
-              <BookImage size={15} />
-              <span>Per Album</span>
-            </button>
-          </div>
-
-          {viewMode === 'photos' && (
-            <div style={{ display: 'flex', gap: '8px' }}>
+      <section className="gallery-toolbar-shell" aria-label="Kontrol tampilan dan filter galeri">
+        <div className="gallery-toolbar-primary">
+          <div className="gallery-toolbar-mode-group">
+            <div className="gallery-view-toggle gallery-view-toggle-modern" role="group" aria-label="Mode tampilan galeri">
               <button
                 type="button"
-                className={`view-toggle-btn ${isBulkSelectActive ? 'active' : ''}`}
+                className={`view-toggle-btn ${viewMode === 'photos' ? 'active' : ''}`}
                 onClick={() => {
-                  setIsBulkSelectActive(!isBulkSelectActive);
+                  handleSwitchView('photos');
+                  setIsBulkSelectActive(false);
                   setIsReorderActive(false);
                   setSelectedPhotoIds([]);
                 }}
-                title="Pilih Beberapa Foto Sekaligus"
+                aria-pressed={viewMode === 'photos'}
+                title="Tampilan Semua Foto"
               >
-                <Check size={14} />
-                <span>{isBulkSelectActive ? 'Batal Pilih' : 'Pilih Massal'}</span>
+                <LayoutGrid size={15} />
+                <span>Semua Foto</span>
               </button>
-              {activeTab === 'all' && selectedAlbumFilter === 'all' && (
+              <button
+                type="button"
+                className={`view-toggle-btn ${viewMode === 'albums' ? 'active' : ''}`}
+                onClick={() => {
+                  handleSwitchView('albums');
+                  setIsBulkSelectActive(false);
+                  setIsReorderActive(false);
+                  setSelectedPhotoIds([]);
+                }}
+                aria-pressed={viewMode === 'albums'}
+                title="Tampilan Per Album"
+              >
+                <BookImage size={15} />
+                <span>Per Album</span>
+              </button>
+            </div>
+
+            {viewMode === 'photos' && (
+              <div className="gallery-action-mode-group" role="group" aria-label="Mode aksi foto">
                 <button
                   type="button"
-                  className={`view-toggle-btn ${isReorderActive ? 'active' : ''}`}
+                  className={`view-toggle-btn gallery-mode-action-btn ${isBulkSelectActive ? 'active' : ''}`}
                   onClick={() => {
-                    setIsReorderActive(!isReorderActive);
-                    setIsBulkSelectActive(false);
+                    setIsBulkSelectActive(!isBulkSelectActive);
+                    setIsReorderActive(false);
                     setSelectedPhotoIds([]);
                   }}
-                  title="Seret foto untuk mengubah urutan landing page"
+                  aria-pressed={isBulkSelectActive}
+                  title="Pilih Beberapa Foto Sekaligus"
                 >
-                  <Settings2 size={14} />
-                  <span>{isReorderActive ? 'Selesai Susun' : 'Susun Urutan'}</span>
+                  <Check size={14} />
+                  <span>{isBulkSelectActive ? 'Batal Pilih' : 'Pilih Massal'}</span>
                 </button>
-              )}
+                {activeTab === 'all' && selectedAlbumFilter === 'all' && (
+                  <button
+                    type="button"
+                    className={`view-toggle-btn gallery-mode-action-btn ${isReorderActive ? 'active' : ''}`}
+                    onClick={() => {
+                      setIsReorderActive(!isReorderActive);
+                      setIsBulkSelectActive(false);
+                      setSelectedPhotoIds([]);
+                    }}
+                    aria-pressed={isReorderActive}
+                    title="Seret foto untuk mengubah urutan landing page"
+                  >
+                    <Settings2 size={14} />
+                    <span>{isReorderActive ? 'Selesai Susun' : 'Susun Urutan'}</span>
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
+
+          {viewMode === 'photos' && (
+            <div className="gallery-toolbar-search-wrap">
+              <div className="app-search app-search-md gallery-search-field">
+                <Search className="app-search-icon" />
+                <input
+                  type="text"
+                  className="app-search-input"
+                  placeholder="Cari foto, caption, atau deskripsi..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  aria-label="Cari foto galeri"
+                />
+                {searchQuery && (
+                  <button type="button" className="app-search-clear" onClick={() => setSearchQuery('')} aria-label="Bersihkan pencarian">
+                    <X size={14} />
+                  </button>
+                )}
+              </div>
             </div>
           )}
         </div>
 
-        {/* Right side: only show filters in 'photos' view */}
         {viewMode === 'photos' && (
-          <div className="gallery-filters-right">
-            <div className="gallery-filter-tabs">
-              <button className={`gallery-filter-btn ${activeTab === 'all' ? 'active' : ''}`} onClick={() => setActiveTab('all')}>
-                Semua ({gallery.length})
+          <div className="gallery-toolbar-secondary">
+            <span className="gallery-toolbar-label">Filter tampilan</span>
+            <div className="gallery-filter-tabs gallery-filter-tabs-modern" role="tablist" aria-label="Filter foto galeri">
+              <button
+                type="button"
+                role="tab"
+                aria-selected={activeTab === 'all'}
+                className={`gallery-filter-btn ${activeTab === 'all' ? 'active' : ''}`}
+                onClick={() => setActiveTab('all')}
+              >
+                <span>Semua</span>
+                <strong>{gallery.length}</strong>
               </button>
-              <button className={`gallery-filter-btn ${activeTab === 'landing' ? 'active' : ''}`} onClick={() => setActiveTab('landing')}>
-                Landing ({gallery.filter(p => p.showOnLandingPage).length})
+              <button
+                type="button"
+                role="tab"
+                aria-selected={activeTab === 'landing'}
+                className={`gallery-filter-btn ${activeTab === 'landing' ? 'active' : ''}`}
+                onClick={() => setActiveTab('landing')}
+              >
+                <span>Landing</span>
+                <strong>{gallery.filter(p => p.showOnLandingPage).length}</strong>
               </button>
-              <button className={`gallery-filter-btn ${activeTab === 'customer' ? 'active' : ''}`} onClick={() => setActiveTab('customer')}>
-                Customer ({gallery.filter(p => p.showToCustomer).length})
+              <button
+                type="button"
+                role="tab"
+                aria-selected={activeTab === 'customer'}
+                className={`gallery-filter-btn ${activeTab === 'customer' ? 'active' : ''}`}
+                onClick={() => setActiveTab('customer')}
+              >
+                <span>Customer</span>
+                <strong>{gallery.filter(p => p.showToCustomer).length}</strong>
               </button>
-            </div>
-
-            <div className="app-search app-search-md">
-              <Search className="app-search-icon" />
-              <input
-                type="text"
-                className="app-search-input"
-                placeholder="Cari foto..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                aria-label="Cari foto galeri"
-              />
-              {searchQuery && (
-                <button type="button" className="app-search-clear" onClick={() => setSearchQuery('')} aria-label="Bersihkan pencarian">
-                  <X size={14} />
-                </button>
-              )}
             </div>
           </div>
         )}
-      </div>
-
+      </section>
       {/* ══════════════════════════════════════════════════════════════════════ */}
       {/* PHOTOS VIEW                                                          */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
