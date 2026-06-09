@@ -1660,3 +1660,342 @@
 }
 
 /* === END STAFF PERMISSIONS PHASE 6 === */
+
+/* === START STAFF AUDIT LOG PHASE 7 === */
+
+.audit-log-panel {
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  gap: 14px;
+  padding: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.085);
+  border-radius: 22px;
+  background:
+    radial-gradient(circle at top left, rgba(var(--accent-cyan-rgb), 0.09), transparent 34%),
+    radial-gradient(circle at bottom right, rgba(var(--accent-pink-rgb), 0.08), transparent 34%),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.065), rgba(255, 255, 255, 0.024));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.09),
+    0 14px 34px rgba(0, 0, 0, 0.17);
+}
+
+.audit-log-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.065), transparent 28%, transparent 72%, rgba(255, 255, 255, 0.035)),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.045), transparent 48%);
+  opacity: 0.68;
+}
+
+.audit-log-panel > * {
+  position: relative;
+  z-index: 1;
+}
+
+.audit-log-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin: 0;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.075);
+}
+
+.audit-log-header > div:first-child {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  gap: 10px;
+}
+
+.audit-icon {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid rgba(var(--accent-cyan-rgb), 0.22);
+  border-radius: 14px;
+  color: var(--accent-cyan);
+  background:
+    radial-gradient(circle at 28% 22%, rgba(var(--accent-cyan-rgb), 0.24), transparent 42%),
+    rgba(255, 255, 255, 0.052);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.09),
+    0 10px 24px rgba(var(--accent-cyan-rgb), 0.08);
+}
+
+.audit-icon svg {
+  width: 17px;
+  height: 17px;
+}
+
+.audit-log-header h3 {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: 1rem;
+  font-weight: 860;
+  letter-spacing: -0.035em;
+}
+
+.audit-log-header p {
+  margin: 2px 0 0;
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+  line-height: 1.35;
+}
+
+.audit-log-timeline {
+  display: grid;
+  gap: 8px;
+}
+
+.timeline-item {
+  position: relative;
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr);
+  align-items: stretch;
+  gap: 9px;
+  min-height: 0;
+}
+
+.timeline-item::before {
+  content: "";
+  position: absolute;
+  top: 24px;
+  bottom: -10px;
+  left: 11px;
+  width: 1px;
+  background: linear-gradient(
+    180deg,
+    rgba(var(--accent-cyan-rgb), 0.34),
+    rgba(var(--accent-pink-rgb), 0.18),
+    transparent
+  );
+}
+
+.timeline-item:last-child::before {
+  display: none;
+}
+
+.timeline-marker {
+  position: relative;
+  display: grid;
+  width: 22px;
+  height: 22px;
+  margin-top: 8px;
+  place-items: center;
+  border: 1px solid rgba(var(--accent-cyan-rgb), 0.22);
+  border-radius: 999px;
+  color: var(--accent-cyan);
+  background:
+    radial-gradient(circle, rgba(var(--accent-cyan-rgb), 0.24), rgba(var(--accent-cyan-rgb), 0.055));
+  box-shadow:
+    0 0 0 4px rgba(var(--accent-cyan-rgb), 0.055),
+    inset 0 1px 0 rgba(255, 255, 255, 0.11);
+}
+
+.timeline-marker svg {
+  width: 12px;
+  height: 12px;
+}
+
+.timeline-content {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+  padding: 10px 11px;
+  border: 1px solid rgba(255, 255, 255, 0.075);
+  border-radius: 16px;
+  background:
+    radial-gradient(circle at top right, rgba(var(--accent-pink-rgb), 0.07), transparent 36%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.018));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.07),
+    0 10px 24px rgba(0, 0, 0, 0.12);
+}
+
+.timeline-content.app-card {
+  margin: 0;
+}
+
+.timeline-action {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  color: var(--text-primary);
+  font-size: 0.84rem;
+  font-weight: 820;
+  line-height: 1.25;
+}
+
+.timeline-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  color: var(--text-secondary);
+  font-size: 0.72rem;
+  font-weight: 650;
+  line-height: 1.25;
+}
+
+.timeline-actor {
+  display: inline-flex;
+  align-items: center;
+  min-height: 22px;
+  padding: 4px 8px;
+  border: 1px solid rgba(var(--accent-cyan-rgb), 0.16);
+  border-radius: 999px;
+  color: var(--accent-cyan);
+  background: rgba(var(--accent-cyan-rgb), 0.07);
+  font-size: 0.68rem;
+  font-weight: 800;
+}
+
+.timeline-time {
+  color: var(--text-muted);
+  font-size: 0.68rem;
+  font-weight: 720;
+}
+
+.audit-log-empty {
+  display: grid;
+  place-items: center;
+  min-height: 120px;
+  padding: 18px;
+  border: 1px dashed rgba(255, 255, 255, 0.12);
+  border-radius: 18px;
+  color: var(--text-secondary);
+  background:
+    radial-gradient(circle at center, rgba(var(--accent-cyan-rgb), 0.08), transparent 40%),
+    rgba(255, 255, 255, 0.025);
+  text-align: center;
+}
+
+.audit-log-empty .empty-circle {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  margin-bottom: 8px;
+  border: 1px solid rgba(var(--accent-cyan-rgb), 0.18);
+  border-radius: 999px;
+  color: var(--accent-cyan);
+  background: rgba(var(--accent-cyan-rgb), 0.07);
+}
+
+.audit-log-empty p {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+@media (max-width: 760px) {
+  .audit-log-panel {
+    gap: 12px;
+    padding: 13px;
+    border-radius: 19px;
+  }
+
+  .audit-log-header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 10px;
+    padding-bottom: 10px;
+  }
+
+  .audit-log-header > div:first-child {
+    align-items: flex-start;
+  }
+
+  .audit-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 13px;
+  }
+
+  .audit-log-header h3 {
+    font-size: 0.96rem;
+  }
+
+  .audit-log-header p {
+    font-size: 0.74rem;
+  }
+
+  .audit-log-timeline {
+    gap: 7px;
+  }
+
+  .timeline-item {
+    grid-template-columns: 20px minmax(0, 1fr);
+    gap: 8px;
+  }
+
+  .timeline-item::before {
+    left: 9px;
+  }
+
+  .timeline-marker {
+    width: 19px;
+    height: 19px;
+    margin-top: 9px;
+  }
+
+  .timeline-marker svg {
+    width: 10px;
+    height: 10px;
+  }
+
+  .timeline-content {
+    gap: 5px;
+    padding: 9px 10px;
+    border-radius: 14px;
+  }
+
+  .timeline-action {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 0.8rem;
+  }
+
+  .timeline-meta {
+    gap: 5px;
+    font-size: 0.68rem;
+  }
+
+  .timeline-actor {
+    min-height: 21px;
+    padding: 4px 7px;
+    font-size: 0.65rem;
+  }
+
+  .timeline-time {
+    font-size: 0.65rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .audit-log-panel {
+    padding: 12px;
+  }
+
+  .timeline-content {
+    padding: 8px 9px;
+  }
+
+  .audit-log-empty {
+    min-height: 105px;
+    padding: 14px;
+  }
+}
+
+/* === END STAFF AUDIT LOG PHASE 7 === */
