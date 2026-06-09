@@ -5978,3 +5978,275 @@
 
 /* === END SETTINGS MOBILE DENSITY PHASE 9 === */
 
+
+/* === START SETTINGS STATIC ROUNDED TABS PHASE 10 === */
+
+/*
+  Phase 10 scope:
+  - Make mobile settings tab bar static in normal document flow
+  - Remove sticky/floating behavior from the tab bar
+  - Restore rounded container corners
+  - Keep horizontal scroll and active tab state
+  - Prevent overlap with content panels
+  - No JSX, route, store, activeSection, handlers, FCM, backup, restore, reset logic, field names, or data model touched
+*/
+
+@media (max-width: 768px) {
+  .settings-page {
+    --settings-mobile-tab-radius-static: 18px;
+    --settings-mobile-tab-pad-static: 6px;
+    --settings-mobile-tab-gap-static: 7px;
+  }
+
+  .settings-page .settings-layout {
+    gap: 10px !important;
+  }
+
+  .settings-page .settings-nav.app-panel {
+    position: relative !important;
+    top: auto !important;
+    inset: auto !important;
+    z-index: 2 !important;
+
+    width: 100% !important;
+    max-width: 100% !important;
+    min-height: 48px !important;
+    height: auto !important;
+    max-height: none !important;
+
+    margin: 0 0 10px !important;
+    padding: var(--settings-mobile-tab-pad-static) !important;
+    border-radius: var(--settings-mobile-tab-radius-static) !important;
+
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: var(--settings-mobile-tab-gap-static) !important;
+
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch !important;
+    scrollbar-width: none !important;
+    scroll-padding-inline: 8px;
+    scroll-snap-type: x proximity;
+
+    border: 1px solid rgba(255, 255, 255, 0.085) !important;
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.060), rgba(255, 255, 255, 0.026)),
+      radial-gradient(circle at 0% 50%, rgba(var(--settings-gold, 239, 197, 110), 0.075), transparent 36%),
+      radial-gradient(circle at 100% 50%, rgba(var(--accent-cyan-rgb), 0.065), transparent 36%),
+      rgba(13, 16, 24, 0.66) !important;
+    box-shadow:
+      0 12px 28px rgba(0, 0, 0, 0.18),
+      inset 0 1px 0 rgba(255, 255, 255, 0.065) !important;
+    backdrop-filter: blur(18px) saturate(1.06) !important;
+    -webkit-backdrop-filter: blur(18px) saturate(1.06) !important;
+    transform: none !important;
+  }
+
+  .settings-page .settings-nav.app-panel::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  .settings-page .settings-nav.app-panel::before {
+    border-radius: inherit !important;
+    opacity: 0.54 !important;
+  }
+
+  .settings-page .settings-nav.app-panel::after {
+    content: "" !important;
+    flex: 0 0 8px !important;
+    width: 8px !important;
+    height: 1px !important;
+  }
+
+  .settings-page .settings-nav-brand,
+  .settings-page .settings-nav-divider {
+    display: none !important;
+  }
+
+  .settings-page .settings-nav-item {
+    position: relative !important;
+    flex: 0 0 auto !important;
+    width: auto !important;
+    min-width: max-content !important;
+    min-height: 36px !important;
+    height: 36px !important;
+
+    display: inline-flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px !important;
+
+    padding: 6px 11px !important;
+    border-radius: 999px !important;
+    border: 1px solid rgba(255, 255, 255, 0.075) !important;
+    background: rgba(255, 255, 255, 0.045) !important;
+
+    color: rgba(255, 250, 240, 0.66) !important;
+    font-size: 0.68rem !important;
+    font-weight: 720 !important;
+    letter-spacing: -0.012em !important;
+    line-height: 1 !important;
+    white-space: nowrap !important;
+
+    box-shadow: none !important;
+    transform: none !important;
+    touch-action: manipulation;
+    scroll-snap-align: start;
+  }
+
+  .settings-page .settings-nav-item:hover,
+  .settings-page .settings-nav-item:focus-visible {
+    transform: none !important;
+  }
+
+  .settings-page .settings-nav-item.active,
+  .settings-page .settings-nav-item[aria-current="page"] {
+    color: #fff7df !important;
+    border-color: rgba(var(--settings-gold, 239, 197, 110), 0.28) !important;
+    background:
+      linear-gradient(135deg, rgba(var(--settings-gold, 239, 197, 110), 0.18), rgba(var(--accent-cyan-rgb), 0.075)),
+      rgba(255, 255, 255, 0.070) !important;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.080),
+      0 8px 18px rgba(0, 0, 0, 0.12) !important;
+  }
+
+  .settings-page .settings-nav-indicator {
+    display: block !important;
+    inset: 0 !important;
+    border-radius: 999px !important;
+    opacity: 0.44 !important;
+    box-shadow: none !important;
+  }
+
+  .settings-page .settings-nav-icon {
+    width: 24px !important;
+    height: 24px !important;
+    border-radius: 999px !important;
+    flex: 0 0 24px !important;
+    background: rgba(255, 255, 255, 0.050) !important;
+  }
+
+  .settings-page .settings-nav-icon svg {
+    width: 14px !important;
+    height: 14px !important;
+  }
+
+  .settings-page .settings-nav-label {
+    max-width: none !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+    white-space: nowrap !important;
+    font-size: 0.68rem !important;
+    font-weight: 720 !important;
+    line-height: 1 !important;
+  }
+
+  .settings-page .settings-nav-chevron {
+    display: none !important;
+  }
+
+  .settings-page .settings-content-area {
+    position: relative !important;
+    z-index: 1 !important;
+    margin-top: 0 !important;
+  }
+
+  .settings-page .settings-panel-wrapper {
+    margin-top: 0 !important;
+  }
+
+  .settings-page .settings-panel.app-panel {
+    margin-top: 0 !important;
+  }
+}
+
+@media (max-width: 560px) {
+  .settings-page .settings-nav.app-panel {
+    min-height: 46px !important;
+    padding: 5px !important;
+    border-radius: 17px !important;
+    margin-bottom: 9px !important;
+  }
+
+  .settings-page .settings-nav-item {
+    min-height: 34px !important;
+    height: 34px !important;
+    padding: 5px 10px !important;
+  }
+
+  .settings-page .settings-nav-icon {
+    width: 23px !important;
+    height: 23px !important;
+    flex-basis: 23px !important;
+  }
+
+  .settings-page .settings-nav-label {
+    font-size: 0.66rem !important;
+  }
+}
+
+@media (max-width: 420px) {
+  .settings-page .settings-nav.app-panel {
+    border-radius: 16px !important;
+    margin-bottom: 8px !important;
+  }
+
+  .settings-page .settings-nav-item {
+    gap: 5px !important;
+    padding-inline: 9px !important;
+  }
+
+  .settings-page .settings-nav-label {
+    font-size: 0.64rem !important;
+  }
+}
+
+@media (max-width: 360px) {
+  .settings-page .settings-nav-icon {
+    display: inline-flex !important;
+    width: 21px !important;
+    height: 21px !important;
+    flex-basis: 21px !important;
+  }
+
+  .settings-page .settings-nav-label {
+    font-size: 0.62rem !important;
+  }
+}
+
+[data-theme="light"] .settings-page .settings-nav.app-panel {
+  border-color: rgba(54, 41, 24, 0.10) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.76), rgba(255, 248, 238, 0.58)),
+    radial-gradient(circle at 0% 50%, rgba(var(--settings-gold, 239, 197, 110), 0.12), transparent 36%),
+    radial-gradient(circle at 100% 50%, rgba(var(--accent-cyan-rgb), 0.075), transparent 36%),
+    rgba(255, 250, 242, 0.72) !important;
+  box-shadow:
+    0 10px 24px rgba(75, 56, 22, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.76) !important;
+}
+
+[data-theme="light"] .settings-page .settings-nav-item {
+  color: rgba(42, 35, 28, 0.62) !important;
+  border-color: rgba(54, 41, 24, 0.075) !important;
+  background: rgba(255, 255, 255, 0.52) !important;
+}
+
+[data-theme="light"] .settings-page .settings-nav-item.active,
+[data-theme="light"] .settings-page .settings-nav-item[aria-current="page"] {
+  color: #5f4216 !important;
+  border-color: rgba(138, 91, 19, 0.22) !important;
+  background:
+    linear-gradient(135deg, rgba(var(--settings-gold, 239, 197, 110), 0.22), rgba(var(--accent-cyan-rgb), 0.075)),
+    rgba(255, 255, 255, 0.66) !important;
+}
+
+/* === END SETTINGS STATIC ROUNDED TABS PHASE 10 === */
+
