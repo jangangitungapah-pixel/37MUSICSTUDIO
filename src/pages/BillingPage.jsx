@@ -334,16 +334,21 @@ const BillingPage = () => {
       </section>
 
       <div className="billing-content app-panel">
-        <div className="app-table-toolbar">
-          <div className="app-table-toolbar-left">
-            <div>
+        <div className="app-table-toolbar billing-control-deck">
+          <div className="app-table-toolbar-left billing-control-heading">
+            <div className="billing-toolbar-title-stack">
               <span className="app-table-toolbar-title">Daftar Tagihan</span>
               <span className="app-table-toolbar-subtitle">{filteredBookings.length} transaksi ditemukan</span>
+                <div className="billing-toolbar-signal-row" aria-label="Ringkasan filter billing">
+                  <span className="billing-signal-chip all">{billableBookings.length} semua</span>
+                  <span className="billing-signal-chip paid">{billableBookings.filter(b => b.status === 'confirmed').length} lunas</span>
+                  <span className="billing-signal-chip open">{billableBookings.filter(b => b.status !== 'confirmed').length} open</span>
+                </div>
             </div>
           </div>
-          <div className="app-table-toolbar-right">
+          <div className="app-table-toolbar-right billing-control-actions">
             {/* Filter Dropdown */}
-            <div className="filter-dropdown-container tour-bill-tabs">
+            <div className="filter-dropdown-container tour-bill-tabs billing-control-filter">
               <button 
                 type="button"
                 className="filter-dropdown-toggle"
@@ -398,7 +403,7 @@ const BillingPage = () => {
               )}
             </div>
 
-            <div className="app-search app-search-md tour-bill-search">
+            <div className="app-search app-search-md tour-bill-search billing-control-search">
               <Search className="app-search-icon" />
               <input 
                 type="text" 

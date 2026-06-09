@@ -2686,3 +2686,444 @@
 }
 /* === END BILLING POS COMMAND SHELL PHASE 2 === */
 
+
+/* === START BILLING CONTROL DECK PHASE 3 === */
+.billing-page .billing-content.app-panel {
+  position: relative;
+  border-radius: clamp(18px, 1.7vw, 28px);
+  border: 1px solid rgba(255, 255, 255, 0.085);
+  background:
+    radial-gradient(circle at 0% 0%, rgba(var(--accent-cyan-rgb), 0.075), transparent 32%),
+    radial-gradient(circle at 100% 0%, rgba(239, 197, 110, 0.070), transparent 30%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.020)),
+    var(--glass-bg);
+  box-shadow:
+    0 22px 64px rgba(0, 0, 0, 0.20),
+    inset 0 1px 0 rgba(255, 255, 255, 0.060);
+  backdrop-filter: blur(26px) saturate(1.06);
+  -webkit-backdrop-filter: blur(26px) saturate(1.06);
+}
+
+.billing-page .billing-control-deck {
+  position: relative;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: clamp(10px, 1.2vw, 16px);
+  min-height: 74px;
+  padding: clamp(12px, 1.25vw, 16px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.075);
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.020)),
+    rgba(8, 11, 16, 0.18);
+}
+
+.billing-page .billing-control-deck::before {
+  content: "";
+  position: absolute;
+  inset-inline: clamp(14px, 1.4vw, 20px);
+  top: 0;
+  height: 1px;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, rgba(239, 197, 110, 0.26), rgba(var(--accent-cyan-rgb), 0.20), transparent);
+}
+
+.billing-page .billing-control-heading {
+  display: flex;
+  align-items: center;
+  min-width: min(100%, 260px);
+}
+
+.billing-toolbar-title-stack {
+  display: grid;
+  gap: 6px;
+}
+
+.billing-page .billing-control-deck .app-table-toolbar-title {
+  color: var(--text-primary);
+  font-size: clamp(0.98rem, 1.12vw, 1.18rem);
+  line-height: 1;
+  font-weight: 950;
+  letter-spacing: -0.035em;
+}
+
+.billing-page .billing-control-deck .app-table-toolbar-subtitle {
+  color: var(--text-muted);
+  font-size: 0.74rem;
+  line-height: 1.1;
+  font-weight: 750;
+}
+
+.billing-toolbar-signal-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.billing-signal-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 0 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.090);
+  background: rgba(255, 255, 255, 0.045);
+  color: var(--text-secondary);
+  font-size: 0.64rem;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: 0.015em;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.billing-signal-chip.all {
+  color: var(--accent-cyan);
+  border-color: rgba(var(--accent-cyan-rgb), 0.20);
+  background: rgba(var(--accent-cyan-rgb), 0.070);
+}
+
+.billing-signal-chip.paid {
+  color: rgb(var(--success-rgb));
+  border-color: rgba(var(--success-rgb), 0.20);
+  background: rgba(var(--success-rgb), 0.070);
+}
+
+.billing-signal-chip.open {
+  color: rgb(var(--warning-rgb));
+  border-color: rgba(var(--warning-rgb), 0.22);
+  background: rgba(var(--warning-rgb), 0.075);
+}
+
+.billing-page .billing-control-actions {
+  display: grid;
+  grid-template-columns: minmax(178px, 210px) minmax(220px, 320px);
+  align-items: center;
+  gap: 10px;
+  width: min(100%, 548px);
+}
+
+.billing-page .billing-control-filter {
+  position: relative;
+  width: auto;
+  min-width: 0;
+  z-index: 70;
+}
+
+.billing-page .billing-control-filter .filter-dropdown-toggle {
+  min-height: 42px;
+  padding: 0 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.090);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.070), rgba(255, 255, 255, 0.025)),
+    rgba(255, 255, 255, 0.035);
+  color: var(--text-primary);
+  box-shadow:
+    0 12px 28px rgba(0, 0, 0, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.060);
+  font-size: 0.78rem;
+  font-weight: 900;
+}
+
+.billing-page .billing-control-filter .filter-dropdown-toggle:hover {
+  transform: translateY(-1px);
+  border-color: rgba(var(--accent-cyan-rgb), 0.24);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.090), rgba(255, 255, 255, 0.035)),
+    rgba(var(--accent-cyan-rgb), 0.045);
+  box-shadow:
+    0 16px 34px rgba(0, 0, 0, 0.18),
+    0 0 0 1px rgba(var(--accent-cyan-rgb), 0.050) inset;
+}
+
+.billing-page .billing-control-filter .filter-dropdown-toggle:focus-visible {
+  outline: 2px solid rgba(239, 197, 110, 0.72);
+  outline-offset: 3px;
+}
+
+.billing-page .billing-control-filter .filter-dropdown-icon {
+  color: var(--accent-cyan);
+}
+
+.billing-page .billing-control-filter .filter-dropdown-label {
+  font-size: 0.76rem;
+  letter-spacing: -0.015em;
+}
+
+.billing-page .billing-control-filter .filter-dropdown-menu {
+  top: calc(100% + 8px);
+  right: 0;
+  left: auto;
+  width: min(260px, calc(100vw - 32px));
+  padding: 7px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.105);
+  background:
+    radial-gradient(circle at 0% 0%, rgba(var(--accent-cyan-rgb), 0.10), transparent 46%),
+    linear-gradient(180deg, rgba(28, 31, 42, 0.98), rgba(13, 16, 24, 0.98));
+  box-shadow:
+    0 22px 58px rgba(0, 0, 0, 0.48),
+    inset 0 1px 0 rgba(255, 255, 255, 0.080);
+  backdrop-filter: blur(22px) saturate(1.08);
+  -webkit-backdrop-filter: blur(22px) saturate(1.08);
+}
+
+.billing-page .billing-control-filter .filter-dropdown-item {
+  min-height: 38px;
+  padding: 0 10px;
+  border-radius: 11px;
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+  font-weight: 850;
+}
+
+.billing-page .billing-control-filter .filter-dropdown-item:hover {
+  background: rgba(255, 255, 255, 0.070);
+  color: var(--text-primary);
+}
+
+.billing-page .billing-control-filter .filter-dropdown-item.active {
+  background:
+    linear-gradient(90deg, rgba(239, 197, 110, 0.13), rgba(var(--accent-cyan-rgb), 0.075)),
+    rgba(255, 255, 255, 0.055);
+  color: rgba(255, 226, 171, 0.96);
+  box-shadow: inset 0 0 0 1px rgba(239, 197, 110, 0.16);
+}
+
+.billing-page .billing-control-filter .tab-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  height: 22px;
+  padding-inline: 7px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.075);
+  color: var(--text-primary);
+  font-size: 0.68rem;
+  font-weight: 950;
+  font-variant-numeric: tabular-nums;
+}
+
+.billing-page .billing-control-search {
+  position: relative;
+  width: 100%;
+  max-width: none;
+  min-height: 42px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.090);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.070), rgba(255, 255, 255, 0.025)),
+    rgba(255, 255, 255, 0.035);
+  box-shadow:
+    0 12px 28px rgba(0, 0, 0, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.060);
+  overflow: hidden;
+}
+
+.billing-page .billing-control-search:focus-within {
+  border-color: rgba(239, 197, 110, 0.42);
+  box-shadow:
+    0 14px 34px rgba(0, 0, 0, 0.18),
+    0 0 0 3px rgba(239, 197, 110, 0.13);
+}
+
+.billing-page .billing-control-search .app-search-icon {
+  color: rgba(var(--accent-cyan-rgb), 0.88);
+}
+
+.billing-page .billing-control-search .app-search-input {
+  height: 42px;
+  color: var(--text-primary);
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.billing-page .billing-control-search .app-search-input::placeholder {
+  color: var(--text-muted);
+  font-weight: 700;
+}
+
+.billing-page .billing-control-search .app-search-clear {
+  width: 28px;
+  height: 28px;
+  border-radius: 10px;
+  color: var(--text-secondary);
+  background: rgba(255, 255, 255, 0.060);
+}
+
+.billing-page .billing-control-search .app-search-clear:hover {
+  color: var(--text-primary);
+  background: rgba(var(--accent-pink-rgb), 0.13);
+}
+
+[data-theme="light"] .billing-page .billing-content.app-panel {
+  border-color: rgba(35, 28, 18, 0.09);
+  background:
+    radial-gradient(circle at 0% 0%, rgba(2, 132, 199, 0.080), transparent 32%),
+    radial-gradient(circle at 100% 0%, rgba(217, 151, 35, 0.075), transparent 30%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.88), rgba(255, 250, 242, 0.64)),
+    rgba(255, 251, 244, 0.82);
+  box-shadow:
+    0 18px 48px rgba(88, 65, 35, 0.11),
+    inset 0 1px 0 rgba(255, 255, 255, 0.75);
+}
+
+[data-theme="light"] .billing-page .billing-control-deck {
+  border-bottom-color: rgba(35, 28, 18, 0.08);
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.48)),
+    rgba(255, 248, 235, 0.44);
+}
+
+[data-theme="light"] .billing-signal-chip {
+  border-color: rgba(35, 28, 18, 0.075);
+  background: rgba(255, 255, 255, 0.62);
+}
+
+[data-theme="light"] .billing-page .billing-control-filter .filter-dropdown-toggle,
+[data-theme="light"] .billing-page .billing-control-search {
+  border-color: rgba(35, 28, 18, 0.09);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.86), rgba(255, 255, 255, 0.58)),
+    rgba(255, 250, 242, 0.72);
+  box-shadow:
+    0 12px 28px rgba(88, 65, 35, 0.09),
+    inset 0 1px 0 rgba(255, 255, 255, 0.72);
+}
+
+[data-theme="light"] .billing-page .billing-control-filter .filter-dropdown-menu {
+  border-color: rgba(35, 28, 18, 0.11);
+  background:
+    radial-gradient(circle at 0% 0%, rgba(2, 132, 199, 0.080), transparent 46%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(255, 250, 242, 0.98));
+  box-shadow:
+    0 22px 58px rgba(88, 65, 35, 0.17),
+    inset 0 1px 0 rgba(255, 255, 255, 0.80);
+}
+
+[data-theme="light"] .billing-page .billing-control-filter .filter-dropdown-item.active {
+  color: #9a5d10;
+  background:
+    linear-gradient(90deg, rgba(217, 151, 35, 0.13), rgba(2, 132, 199, 0.075)),
+    rgba(255, 255, 255, 0.72);
+  box-shadow: inset 0 0 0 1px rgba(217, 151, 35, 0.16);
+}
+
+@media (max-width: 1024px) {
+  .billing-page .billing-control-deck {
+    align-items: flex-start;
+  }
+
+  .billing-page .billing-control-actions {
+    grid-template-columns: minmax(164px, 190px) minmax(190px, 1fr);
+    width: min(100%, 500px);
+  }
+}
+
+@media (max-width: 768px) {
+  .billing-page .billing-control-deck {
+    display: grid;
+    grid-template-columns: 1fr;
+    min-height: auto;
+    gap: 11px;
+    padding: 11px;
+    border-radius: 0;
+  }
+
+  .billing-page .billing-control-heading {
+    width: 100%;
+  }
+
+  .billing-toolbar-title-stack {
+    gap: 7px;
+  }
+
+  .billing-toolbar-signal-row {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 2px;
+    scrollbar-width: none;
+  }
+
+  .billing-toolbar-signal-row::-webkit-scrollbar {
+    display: none;
+  }
+
+  .billing-page .billing-control-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+    width: 100%;
+    gap: 8px;
+  }
+
+  .billing-page .billing-control-search {
+    order: -1;
+    min-height: 42px;
+  }
+
+  .billing-page .billing-control-filter {
+    width: 100%;
+  }
+
+  .billing-page .billing-control-filter .filter-dropdown-toggle {
+    min-height: 42px;
+  }
+
+  .billing-page .billing-control-filter .filter-dropdown-menu {
+    left: 0;
+    right: auto;
+    width: 100%;
+    min-width: 100%;
+  }
+}
+
+@media (max-width: 420px) {
+  .billing-page .billing-control-deck {
+    padding: 10px;
+  }
+
+  .billing-page .billing-control-deck .app-table-toolbar-title {
+    font-size: 0.98rem;
+  }
+
+  .billing-page .billing-control-deck .app-table-toolbar-subtitle {
+    font-size: 0.70rem;
+  }
+
+  .billing-signal-chip {
+    min-height: 23px;
+    padding-inline: 7px;
+    font-size: 0.61rem;
+  }
+
+  .billing-page .billing-control-filter .filter-dropdown-label {
+    font-size: 0.72rem;
+  }
+
+  .billing-page .billing-control-search .app-search-input {
+    font-size: 0.78rem;
+  }
+}
+
+@media (hover: none) {
+  .billing-page .billing-control-filter .filter-dropdown-toggle:hover {
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .billing-page .billing-control-deck *,
+  .billing-page .billing-control-deck *::before,
+  .billing-page .billing-control-deck *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+/* === END BILLING CONTROL DECK PHASE 3 === */
+
