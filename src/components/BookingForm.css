@@ -1768,3 +1768,131 @@ select.bf-input {
 }
 
 /* 37 ADMIN CALENDAR MOBILE + PERFORMANCE LOCK 8.7G END */
+
+/* 37 ADMIN CALENDAR LIGHT MODE FINAL LOCK 8.7H START */
+
+/* Booking form light mode lock */
+[data-theme="light"] .modal-content:has(.booking-form),
+[data-theme="light"] .modal-container:has(.booking-form),
+[data-theme="light"] .fluent-dialog:has(.booking-form) {
+  border-color: rgba(96,73,41,0.12) !important;
+  background:
+    radial-gradient(circle at 12% 0%, rgba(185,133,47,0.090), transparent 34%),
+    radial-gradient(circle at 88% 6%, rgba(24,139,153,0.060), transparent 34%),
+    radial-gradient(circle at 50% 100%, rgba(199,56,101,0.040), transparent 42%),
+    linear-gradient(180deg, rgba(255,252,246,0.98), rgba(255,250,241,0.90)),
+    rgba(255,250,241,0.96) !important;
+  box-shadow:
+    0 30px 74px rgba(96,73,41,0.18),
+    inset 0 1px 0 rgba(255,255,255,0.78) !important;
+}
+
+[data-theme="light"] .booking-form {
+  color: rgba(34,27,18,0.96) !important;
+  scrollbar-color: rgba(185,133,47,0.50) rgba(96,73,41,0.055) !important;
+}
+
+[data-theme="light"] .booking-form::-webkit-scrollbar-track {
+  background: rgba(96,73,41,0.055) !important;
+}
+
+[data-theme="light"] .booking-form::-webkit-scrollbar-thumb {
+  background: rgba(185,133,47,0.54) !important;
+}
+
+[data-theme="light"] .bf-ambient-hero,
+[data-theme="light"] .bf-type-toggle,
+[data-theme="light"] .bf-section,
+[data-theme="light"] .bf-input,
+[data-theme="light"] .bf-duration-picker,
+[data-theme="light"] .bf-time-preview,
+[data-theme="light"] .bf-recurring-panel,
+[data-theme="light"] .bf-deadline-field,
+[data-theme="light"] .bf-dp-section,
+[data-theme="light"] .bf-price-card,
+[data-theme="light"] .bf-status-card,
+[data-theme="light"] .bf-equipment-list label,
+[data-theme="light"] .bf-paid-notice {
+  border-color: rgba(96,73,41,0.10) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.78), rgba(255,255,255,0.34)),
+    rgba(255,250,241,0.52) !important;
+  box-shadow:
+    0 10px 24px rgba(96,73,41,0.085),
+    inset 0 1px 0 rgba(255,255,255,0.76) !important;
+}
+
+[data-theme="light"] .bf-hero-copy strong,
+[data-theme="light"] .bf-input,
+[data-theme="light"] .bf-dur-val,
+[data-theme="light"] .bf-price-row span:last-child,
+[data-theme="light"] .bf-status-card.selected .bf-status-label {
+  color: rgba(34,27,18,0.96) !important;
+}
+
+[data-theme="light"] .bf-label,
+[data-theme="light"] .bf-section-title,
+[data-theme="light"] .bf-price-row,
+[data-theme="light"] .bf-hero-meta span,
+[data-theme="light"] .bf-status-label,
+[data-theme="light"] .bf-dur-btn,
+[data-theme="light"] .bf-dur-val small,
+[data-theme="light"] .bf-field-hint {
+  color: rgba(45,38,28,0.62) !important;
+}
+
+[data-theme="light"] .bf-input::placeholder {
+  color: rgba(45,38,28,0.40) !important;
+}
+
+[data-theme="light"] .bf-input:focus {
+  border-color: rgba(185,133,47,0.36) !important;
+  box-shadow:
+    0 0 0 3px rgba(185,133,47,0.12),
+    inset 0 1px 0 rgba(255,255,255,0.76) !important;
+}
+
+[data-theme="light"] select.bf-input option {
+  background-color: #fffaf1 !important;
+  color: rgba(34,27,18,0.96) !important;
+}
+
+[data-theme="light"] .bf-type-btn {
+  color: rgba(45,38,28,0.68) !important;
+}
+
+[data-theme="light"] .bf-type-btn.active,
+[data-theme="light"] .bf-type-btn.active.booking,
+[data-theme="light"] .bf-type-btn.active.recording,
+[data-theme="light"] .bf-type-btn.active.maintenance,
+[data-theme="light"] .bf-dur-btn:hover:not(:disabled) {
+  color: rgba(34,27,18,0.96) !important;
+  border-color: rgba(185,133,47,0.26) !important;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255,255,255,0.42), transparent 58%),
+    linear-gradient(180deg, #ffe6a8, #d9a651) !important;
+  box-shadow:
+    0 12px 24px rgba(185,133,47,0.14),
+    inset 0 1px 0 rgba(255,255,255,0.72) !important;
+}
+
+[data-theme="light"] .bf-hero-icon {
+  color: rgba(34,27,18,0.96) !important;
+}
+
+[data-theme="light"] .bf-price-row.total .bf-total-val,
+[data-theme="light"] .bf-total-val {
+  color: rgba(125,83,18,0.96) !important;
+}
+
+@media (max-width: 768px) {
+  [data-theme="light"] .modal-content:has(.booking-form),
+  [data-theme="light"] .modal-container:has(.booking-form),
+  [data-theme="light"] .fluent-dialog:has(.booking-form) {
+    box-shadow:
+      0 22px 54px rgba(96,73,41,0.16),
+      inset 0 1px 0 rgba(255,255,255,0.74) !important;
+  }
+}
+
+/* 37 ADMIN CALENDAR LIGHT MODE FINAL LOCK 8.7H END */

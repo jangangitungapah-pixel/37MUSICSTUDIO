@@ -6278,3 +6278,300 @@ body.calendar-move-lock .main-content {
 }
 
 /* 37 ADMIN CALENDAR MOBILE + PERFORMANCE LOCK 8.7G END */
+
+/* 37 ADMIN CALENDAR LIGHT MODE FINAL LOCK 8.7H START */
+
+/* Page canvas */
+[data-theme="light"] .calendar-page {
+  --cal-light-bg: #f7efe2;
+  --cal-light-panel: rgba(255,250,241,0.86);
+  --cal-light-panel-soft: rgba(255,250,241,0.68);
+  --cal-light-text: rgba(34,27,18,0.96);
+  --cal-light-muted: rgba(45,38,28,0.60);
+  --cal-light-line: rgba(96,73,41,0.115);
+
+  background:
+    radial-gradient(circle at 10% 0%, rgba(185,133,47,0.105), transparent 34%),
+    radial-gradient(circle at 90% 4%, rgba(24,139,153,0.070), transparent 34%),
+    radial-gradient(circle at 50% 100%, rgba(199,56,101,0.045), transparent 42%),
+    linear-gradient(180deg, #fffaf1, var(--cal-light-bg)) !important;
+  color: var(--cal-light-text) !important;
+}
+
+[data-theme="light"] .calendar-page .ambient-orb {
+  opacity: 0.24 !important;
+  filter: blur(46px) saturate(0.96) !important;
+}
+
+/* Main surfaces */
+[data-theme="light"] .calendar-page .calendar-page-header,
+[data-theme="light"] .calendar-page .calendar-workspace,
+[data-theme="light"] .calendar-page .calendar-stat-card,
+[data-theme="light"] .calendar-page .app-smart-panel,
+[data-theme="light"] .calendar-page .monthly-grid-wrapper,
+[data-theme="light"] .calendar-page .calendar-timeline-wrapper {
+  border-color: var(--cal-light-line) !important;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(185,133,47,0.075), transparent 36%),
+    radial-gradient(circle at 100% 0%, rgba(24,139,153,0.052), transparent 34%),
+    linear-gradient(180deg, rgba(255,255,255,0.82), rgba(255,255,255,0.34)),
+    var(--cal-light-panel) !important;
+  box-shadow:
+    0 16px 40px rgba(96,73,41,0.105),
+    inset 0 1px 0 rgba(255,255,255,0.76) !important;
+}
+
+/* Text hierarchy */
+[data-theme="light"] .calendar-page .app-page-title,
+[data-theme="light"] .calendar-page .calendar-stat-value,
+[data-theme="light"] .calendar-page .current-month,
+[data-theme="light"] .calendar-page .smart-head h3,
+[data-theme="light"] .calendar-page .cal-request-info strong,
+[data-theme="light"] .calendar-page .timeline-hour-label,
+[data-theme="light"] .calendar-page .timeline-date-number,
+[data-theme="light"] .calendar-page .booking-band-name,
+[data-theme="light"] .detail-header-info h4,
+[data-theme="light"] .detail-price-row span:last-child,
+[data-theme="light"] .detail-price-row.total {
+  color: var(--cal-light-text) !important;
+}
+
+[data-theme="light"] .calendar-page .app-page-subtitle,
+[data-theme="light"] .calendar-page .calendar-stat-label,
+[data-theme="light"] .calendar-page .calendar-stat-legend-item,
+[data-theme="light"] .calendar-page .smart-head p,
+[data-theme="light"] .calendar-page .cal-request-info span,
+[data-theme="light"] .calendar-page .timeline-hour-end,
+[data-theme="light"] .calendar-page .timeline-date-day,
+[data-theme="light"] .calendar-page .booking-time-label,
+[data-theme="light"] .detail-info-row,
+[data-theme="light"] .detail-price-row,
+[data-theme="light"] .detail-status-section label {
+  color: var(--cal-light-muted) !important;
+}
+
+/* Header controls */
+[data-theme="light"] .calendar-page .calendar-header-search,
+[data-theme="light"] .calendar-page .app-search,
+[data-theme="light"] .calendar-page .calendar-page-header .btn-secondary,
+[data-theme="light"] .calendar-page .calendar-print-btn,
+[data-theme="light"] .calendar-page .cal-panel-toggle,
+[data-theme="light"] .calendar-page .nav-arrow,
+[data-theme="light"] .calendar-page .icon-btn.nav-arrow,
+[data-theme="light"] .calendar-page .view-switcher,
+[data-theme="light"] .calendar-page .filter-chip,
+[data-theme="light"] .calendar-page .today-btn {
+  border-color: rgba(96,73,41,0.105) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.78), rgba(255,255,255,0.34)),
+    rgba(255,250,241,0.54) !important;
+  color: rgba(45,38,28,0.68) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.76) !important;
+}
+
+[data-theme="light"] .calendar-page .app-search-input {
+  color: var(--cal-light-text) !important;
+}
+
+[data-theme="light"] .calendar-page .app-search-input::placeholder {
+  color: rgba(45,38,28,0.40) !important;
+}
+
+[data-theme="light"] .calendar-page .calendar-new-btn,
+[data-theme="light"] .calendar-page .calendar-page-header .btn-primary,
+[data-theme="light"] .calendar-page .view-btn.active,
+[data-theme="light"] .calendar-page .nav-arrow:hover,
+[data-theme="light"] .calendar-page .today-btn:hover {
+  color: rgba(34,27,18,0.96) !important;
+  border-color: rgba(185,133,47,0.26) !important;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255,255,255,0.42), transparent 58%),
+    linear-gradient(180deg, #ffe6a8, #d9a651) !important;
+  box-shadow:
+    0 12px 24px rgba(185,133,47,0.14),
+    inset 0 1px 0 rgba(255,255,255,0.72) !important;
+}
+
+/* Insight panels */
+[data-theme="light"] .calendar-page .calendar-stat-legend-item,
+[data-theme="light"] .calendar-page .cal-request-chip,
+[data-theme="light"] .calendar-page .cal-smart-alert {
+  border-color: rgba(96,73,41,0.095) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.74), rgba(255,255,255,0.30)),
+    rgba(255,250,241,0.48) !important;
+}
+
+[data-theme="light"] .calendar-page .cal-smart-alert {
+  color: rgba(125,83,18,0.96) !important;
+  border-color: rgba(185,133,47,0.18) !important;
+}
+
+/* Timeline grid */
+[data-theme="light"] .calendar-page .monthly-grid,
+[data-theme="light"] .calendar-page .calendar-timeline-grid {
+  background:
+    linear-gradient(90deg, rgba(96,73,41,0.045) 1px, transparent 1px),
+    linear-gradient(180deg, rgba(96,73,41,0.038) 1px, transparent 1px),
+    rgba(255,250,241,0.22) !important;
+}
+
+[data-theme="light"] .calendar-page .grid-corner-cell,
+[data-theme="light"] .calendar-page .timeline-corner,
+[data-theme="light"] .calendar-page .grid-header-cell,
+[data-theme="light"] .calendar-page .timeline-hour-header,
+[data-theme="light"] .calendar-page .time-label,
+[data-theme="light"] .calendar-page .timeline-date-cell {
+  border-color: rgba(96,73,41,0.095) !important;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255,255,255,0.78), transparent 56%),
+    linear-gradient(180deg, rgba(255,252,246,0.98), rgba(255,250,241,0.90)) !important;
+}
+
+[data-theme="light"] .calendar-page .timeline-slot-cell {
+  border-color: rgba(96,73,41,0.050) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.38), rgba(255,255,255,0.08)),
+    rgba(255,250,241,0.24) !important;
+}
+
+[data-theme="light"] .calendar-page .timeline-slot-cell:hover {
+  background:
+    radial-gradient(circle at 50% 50%, rgba(185,133,47,0.075), transparent 54%),
+    rgba(185,133,47,0.028) !important;
+  border-color: rgba(185,133,47,0.18) !important;
+}
+
+[data-theme="light"] .calendar-page .today-date .timeline-date-number {
+  color: #061013 !important;
+}
+
+[data-theme="light"] .calendar-page .corner-label {
+  color: rgba(125,83,18,0.96) !important;
+  border-color: rgba(185,133,47,0.18) !important;
+  background: rgba(185,133,47,0.075) !important;
+}
+
+/* Booking bars */
+[data-theme="light"] .calendar-page .booked-cell,
+[data-theme="light"] .calendar-page .timeline-booking-card {
+  border-color: rgba(96,73,41,0.105) !important;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(255,255,255,0.74), transparent 36%),
+    linear-gradient(180deg, rgba(255,255,255,0.74), rgba(255,255,255,0.26)),
+    rgba(255,250,241,0.52) !important;
+  box-shadow:
+    0 12px 26px rgba(96,73,41,0.12),
+    inset 0 1px 0 rgba(255,255,255,0.72) !important;
+}
+
+[data-theme="light"] .calendar-page .booked-cell.status-confirmed {
+  border-left-color: #148e9d !important;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(24,139,153,0.12), transparent 40%),
+    linear-gradient(180deg, rgba(255,255,255,0.76), rgba(255,255,255,0.28)),
+    rgba(255,250,241,0.50) !important;
+}
+
+[data-theme="light"] .calendar-page .booked-cell.status-dp {
+  border-left-color: #b9852f !important;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(185,133,47,0.13), transparent 40%),
+    linear-gradient(180deg, rgba(255,255,255,0.76), rgba(255,255,255,0.28)),
+    rgba(255,250,241,0.50) !important;
+}
+
+[data-theme="light"] .calendar-page .booked-cell.status-pending,
+[data-theme="light"] .calendar-page .booked-cell.booking-recording {
+  border-left-color: #c73865 !important;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(199,56,101,0.11), transparent 40%),
+    linear-gradient(180deg, rgba(255,255,255,0.76), rgba(255,255,255,0.28)),
+    rgba(255,250,241,0.50) !important;
+}
+
+[data-theme="light"] .calendar-page .booked-cell.booking-vip {
+  border-left-color: #c49a1f !important;
+}
+
+/* Detail popup */
+[data-theme="light"] .detail-overlay {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(185,133,47,0.10), transparent 36%),
+    rgba(247,239,226,0.62) !important;
+}
+
+[data-theme="light"] .booking-detail-popup {
+  border-color: rgba(96,73,41,0.12) !important;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(185,133,47,0.080), transparent 38%),
+    radial-gradient(circle at 100% 0%, rgba(24,139,153,0.060), transparent 36%),
+    linear-gradient(180deg, rgba(255,252,246,0.96), rgba(255,250,241,0.86)),
+    rgba(255,250,241,0.94) !important;
+  box-shadow:
+    0 24px 64px rgba(96,73,41,0.18),
+    inset 0 1px 0 rgba(255,255,255,0.76) !important;
+}
+
+[data-theme="light"] .detail-header,
+[data-theme="light"] .detail-footer {
+  border-color: rgba(96,73,41,0.10) !important;
+}
+
+[data-theme="light"] .detail-info-row,
+[data-theme="light"] .duration-controls,
+[data-theme="light"] .detail-price-card,
+[data-theme="light"] .status-btn {
+  border-color: rgba(96,73,41,0.10) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.74), rgba(255,255,255,0.30)),
+    rgba(255,250,241,0.46) !important;
+}
+
+/* Reschedule modal */
+[data-theme="light"] .modal-content:has(.reschedule-form),
+[data-theme="light"] .modal-container:has(.reschedule-form),
+[data-theme="light"] .fluent-dialog:has(.reschedule-form) {
+  border-color: rgba(96,73,41,0.12) !important;
+  background:
+    radial-gradient(circle at 12% 0%, rgba(185,133,47,0.090), transparent 34%),
+    radial-gradient(circle at 88% 6%, rgba(24,139,153,0.060), transparent 34%),
+    linear-gradient(180deg, rgba(255,252,246,0.98), rgba(255,250,241,0.90)),
+    rgba(255,250,241,0.96) !important;
+  box-shadow:
+    0 28px 72px rgba(96,73,41,0.18),
+    inset 0 1px 0 rgba(255,255,255,0.78) !important;
+}
+
+[data-theme="light"] .reschedule-form .form-group,
+[data-theme="light"] .reschedule-form .form-input {
+  border-color: rgba(96,73,41,0.10) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.78), rgba(255,255,255,0.34)),
+    rgba(255,250,241,0.52) !important;
+}
+
+[data-theme="light"] .reschedule-form .form-input,
+[data-theme="light"] .reschedule-form label {
+  color: var(--cal-light-text) !important;
+}
+
+/* Mobile light performance */
+@media (max-width: 768px) {
+  [data-theme="light"] .calendar-page .ambient-orb {
+    opacity: 0.16 !important;
+    filter: blur(34px) saturate(0.94) !important;
+  }
+
+  [data-theme="light"] .calendar-page .calendar-page-header,
+  [data-theme="light"] .calendar-page .calendar-workspace,
+  [data-theme="light"] .calendar-page .calendar-stat-card,
+  [data-theme="light"] .calendar-page .app-smart-panel,
+  [data-theme="light"] .booking-detail-popup {
+    box-shadow:
+      0 12px 28px rgba(96,73,41,0.10),
+      inset 0 1px 0 rgba(255,255,255,0.72) !important;
+  }
+}
+
+/* 37 ADMIN CALENDAR LIGHT MODE FINAL LOCK 8.7H END */
