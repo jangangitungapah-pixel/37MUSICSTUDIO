@@ -2482,3 +2482,186 @@
 }
 
 /* === END STAFF MOBILE CLEARANCE PHASE 8 === */
+
+/* === START STAFF MOBILE VISUAL STABILIZATION PHASE 8.5 === */
+
+@media (max-width: 760px) {
+  .staff-command-shell {
+    border-color: rgba(255, 255, 255, 0.13);
+    background:
+      radial-gradient(circle at 12% 0%, rgba(var(--accent-pink-rgb), 0.18), transparent 34%),
+      radial-gradient(circle at 96% 4%, rgba(var(--accent-cyan-rgb), 0.13), transparent 32%),
+      linear-gradient(145deg, rgba(20, 24, 36, 0.94), rgba(12, 15, 24, 0.96));
+  }
+
+  .staff-command-shell::before {
+    background:
+      linear-gradient(90deg, rgba(255, 255, 255, 0.035), transparent 34%, transparent 76%, rgba(255, 255, 255, 0.025)),
+      linear-gradient(180deg, rgba(255, 255, 255, 0.035), transparent 42%);
+    opacity: 0.42;
+  }
+
+  .staff-command-shell .app-page-title {
+    color: #ffffff;
+    text-shadow: 0 2px 18px rgba(0, 0, 0, 0.5);
+  }
+
+  .staff-command-shell .app-page-subtitle {
+    color: rgba(235, 242, 255, 0.82);
+    text-shadow: 0 1px 12px rgba(0, 0, 0, 0.42);
+  }
+
+  .staff-command-eyebrow {
+    color: rgba(90, 218, 255, 0.96);
+    text-shadow: 0 1px 10px rgba(0, 0, 0, 0.38);
+  }
+
+  .staff-state-pill {
+    border-color: rgba(255, 255, 255, 0.13);
+    color: rgba(235, 242, 255, 0.78);
+    background: rgba(5, 8, 16, 0.38);
+    backdrop-filter: blur(10px);
+  }
+
+  .staff-state-pill strong {
+    color: #ffffff;
+  }
+
+  .staff-primary-action {
+    box-shadow:
+      0 12px 26px rgba(var(--accent-pink-rgb), 0.26),
+      inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  }
+
+  .staff-metric-card {
+    border-color: rgba(255, 255, 255, 0.13);
+    background:
+      radial-gradient(circle at 100% 0%, rgba(var(--accent-pink-rgb), 0.1), transparent 38%),
+      linear-gradient(145deg, rgba(22, 26, 38, 0.94), rgba(12, 15, 24, 0.96));
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.1),
+      0 10px 24px rgba(0, 0, 0, 0.22);
+  }
+
+  .staff-metric-card:nth-child(2),
+  .staff-metric-card:nth-child(3),
+  .staff-metric-card.is-split {
+    background:
+      radial-gradient(circle at 100% 0%, rgba(var(--accent-cyan-rgb), 0.1), transparent 36%),
+      radial-gradient(circle at 0% 100%, rgba(var(--accent-pink-rgb), 0.075), transparent 34%),
+      linear-gradient(145deg, rgba(22, 26, 38, 0.94), rgba(12, 15, 24, 0.96));
+  }
+
+  .staff-metric-card::before {
+    opacity: 0.45;
+  }
+
+  .staff-metric-label {
+    color: rgba(235, 242, 255, 0.74);
+    text-shadow: 0 1px 10px rgba(0, 0, 0, 0.42);
+  }
+
+  .staff-metric-card strong {
+    color: #ffffff;
+    text-shadow: 0 2px 16px rgba(0, 0, 0, 0.52);
+  }
+
+  .staff-metric-card small {
+    color: rgba(235, 242, 255, 0.72);
+  }
+
+  .staff-toolbar-compact {
+    background:
+      radial-gradient(circle at 100% 0%, rgba(var(--accent-cyan-rgb), 0.08), transparent 36%),
+      linear-gradient(145deg, rgba(22, 26, 38, 0.88), rgba(12, 15, 24, 0.94));
+  }
+
+  .staff-toolbar-compact .app-table-toolbar-title {
+    color: #ffffff;
+  }
+
+  .staff-toolbar-compact .app-table-toolbar-subtitle {
+    color: rgba(235, 242, 255, 0.72);
+  }
+
+  .staff-search {
+    border-color: rgba(255, 255, 255, 0.12);
+    background: rgba(4, 7, 14, 0.36);
+  }
+
+  .audit-log-panel {
+    background:
+      radial-gradient(circle at 0% 0%, rgba(var(--accent-cyan-rgb), 0.08), transparent 34%),
+      linear-gradient(145deg, rgba(20, 24, 36, 0.94), rgba(12, 15, 24, 0.96));
+  }
+
+  .audit-log-header h3 {
+    color: #ffffff;
+  }
+
+  .audit-log-header p {
+    color: rgba(235, 242, 255, 0.72);
+  }
+
+  .timeline-content {
+    border-color: rgba(255, 255, 255, 0.1);
+    background:
+      radial-gradient(circle at 100% 0%, rgba(var(--accent-cyan-rgb), 0.055), transparent 34%),
+      linear-gradient(145deg, rgba(24, 28, 40, 0.88), rgba(12, 15, 24, 0.9));
+  }
+
+  .timeline-action {
+    color: rgba(255, 255, 255, 0.92);
+    font-size: 0.78rem;
+    line-height: 1.35;
+  }
+
+  .timeline-meta {
+    color: rgba(235, 242, 255, 0.72);
+    font-size: 0.66rem;
+    line-height: 1.35;
+  }
+
+  .timeline-actor {
+    max-width: 100%;
+    overflow: hidden;
+    color: rgba(96, 220, 255, 0.98);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .timeline-time {
+    color: rgba(235, 242, 255, 0.58);
+  }
+}
+
+@media (max-width: 430px) {
+  .staff-command-shell {
+    background:
+      radial-gradient(circle at 10% 0%, rgba(var(--accent-pink-rgb), 0.14), transparent 30%),
+      radial-gradient(circle at 100% 0%, rgba(var(--accent-cyan-rgb), 0.1), transparent 30%),
+      linear-gradient(145deg, rgba(18, 22, 34, 0.96), rgba(10, 13, 22, 0.98));
+  }
+
+  .staff-command-shell .app-page-title {
+    font-size: clamp(1.24rem, 7.5vw, 1.58rem);
+  }
+
+  .staff-state-pill {
+    backdrop-filter: none;
+  }
+
+  .staff-metric-card {
+    min-height: 76px;
+  }
+
+  .timeline-action {
+    font-size: 0.76rem;
+  }
+
+  .timeline-meta {
+    font-size: 0.64rem;
+  }
+}
+
+/* === END STAFF MOBILE VISUAL STABILIZATION PHASE 8.5 === */
