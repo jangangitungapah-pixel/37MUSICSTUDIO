@@ -421,7 +421,7 @@ const StaffPage = () => {
       </motion.div>
 
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title={editingStaff ? "Edit Staff" : "Tambah Staff"}>
-        <form className="staff-form" onSubmit={handleFormSubmit(onSubmitStaff)}>
+        <form className="staff-form staff-form-modern" onSubmit={handleFormSubmit(onSubmitStaff)}>
           <div className="bf-row">
             <div className="form-group">
               <label htmlFor="staff-name" className="bf-label">Nama Lengkap <span className="bf-required">*</span></label>
@@ -499,7 +499,7 @@ const StaffPage = () => {
 
           <div className="form-group">
             <label className="bf-label">Izin Akses Menu (Hanya Staff)</label>
-            <div className="permission-grid">
+            <div className="permission-grid staff-permission-grid-modern">
               {Object.values(PERMISSIONS).map((permission) => (
                 <label key={permission} className={`permission-card ${watchedPermissions.includes(permission) ? 'selected' : ''} ${watchedRole === 'admin' ? 'disabled' : ''}`}>
                   <input
@@ -517,7 +517,7 @@ const StaffPage = () => {
             </div>
           </div>
 
-          <div className="bf-actions">
+          <div className="bf-actions staff-modal-actions">
             <button type="button" className="btn-secondary" onClick={() => setIsModalOpen(false)} disabled={loading}>Batal</button>
             <button type="submit" className="btn-primary" disabled={loading}>
               {loading ? <Loader2 size={16} className="spinner" /> : null}
@@ -528,7 +528,7 @@ const StaffPage = () => {
       </Modal>
 
       <Modal isOpen={isPasswordModalOpen} onClose={() => setIsPasswordModalOpen(false)} title={`Ganti Password: ${resetTargetStaff?.name || ''}`}>
-        <form className="staff-form" onSubmit={handleFormResetSubmit(onSubmitResetPassword)}>
+        <form className="staff-form staff-form-modern" onSubmit={handleFormResetSubmit(onSubmitResetPassword)}>
           <div className="form-group">
             <label htmlFor="staff-new-password" className="bf-label">Password Baru <span className="bf-required">*</span></label>
             <input
@@ -546,7 +546,7 @@ const StaffPage = () => {
             />
             {errorsReset.newPassword && <span className="cf-error-message" style={{ color: 'var(--accent-pink)', fontSize: '11px', marginTop: '4px', display: 'block' }}>{errorsReset.newPassword.message}</span>}
           </div>
-          <div className="bf-actions">
+          <div className="bf-actions staff-modal-actions">
             <button type="button" className="btn-secondary" onClick={() => setIsPasswordModalOpen(false)} disabled={loading}>
               Batal
             </button>

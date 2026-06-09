@@ -1153,3 +1153,269 @@
 }
 
 /* === END STAFF CARD GRID PHASE 4 === */
+
+/* === START STAFF MODALS PHASE 5 === */
+
+.staff-form-modern {
+  display: grid;
+  gap: 14px;
+}
+
+.staff-form-modern::before {
+  content: "";
+  display: block;
+  height: 1px;
+  margin-bottom: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(var(--accent-cyan-rgb), 0.38),
+    rgba(var(--accent-pink-rgb), 0.32),
+    transparent
+  );
+  opacity: 0.8;
+}
+
+.staff-form-modern .bf-row {
+  gap: 12px;
+}
+
+.staff-form-modern .form-group {
+  display: grid;
+  gap: 7px;
+  min-width: 0;
+}
+
+.staff-form-modern .bf-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--text-secondary);
+  font-size: 0.76rem;
+  font-weight: 820;
+  letter-spacing: 0.025em;
+}
+
+.staff-form-modern .bf-required {
+  color: var(--accent-pink);
+}
+
+.staff-form-modern .bf-input {
+  min-height: 42px;
+  padding: 10px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 15px;
+  color: var(--text-primary);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.065), rgba(255, 255, 255, 0.026)),
+    rgba(0, 0, 0, 0.12);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.075),
+    0 10px 24px rgba(0, 0, 0, 0.12);
+  font-size: 0.88rem;
+  transition:
+    border-color var(--fluent-duration-fast) var(--fluent-curve-easy-ease),
+    box-shadow var(--fluent-duration-fast) var(--fluent-curve-easy-ease),
+    background var(--fluent-duration-fast) var(--fluent-curve-easy-ease);
+}
+
+.staff-form-modern .bf-input:hover {
+  border-color: rgba(var(--accent-cyan-rgb), 0.22);
+}
+
+.staff-form-modern .bf-input:focus {
+  border-color: rgba(var(--accent-cyan-rgb), 0.42);
+  background:
+    linear-gradient(135deg, rgba(var(--accent-cyan-rgb), 0.08), rgba(255, 255, 255, 0.028)),
+    rgba(0, 0, 0, 0.12);
+  box-shadow:
+    0 0 0 3px rgba(var(--accent-cyan-rgb), 0.11),
+    inset 0 1px 0 rgba(255, 255, 255, 0.095);
+}
+
+.staff-form-modern select.bf-input {
+  cursor: pointer;
+}
+
+.staff-form-modern .cf-error-message {
+  display: inline-flex;
+  align-items: center;
+  min-height: 22px;
+  padding: 5px 8px;
+  border: 1px solid rgba(var(--accent-pink-rgb), 0.22);
+  border-radius: 999px;
+  color: rgba(255, 190, 204, 0.96);
+  background: rgba(var(--accent-pink-rgb), 0.08);
+  font-size: 0.72rem;
+  font-weight: 720;
+  line-height: 1.2;
+}
+
+.staff-form-modern .staff-permission-grid-modern {
+  max-height: min(42vh, 360px);
+  overflow: auto;
+  padding: 2px 4px 4px 2px;
+  gap: 9px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(var(--accent-cyan-rgb), 0.42) transparent;
+}
+
+.staff-form-modern .staff-permission-grid-modern::-webkit-scrollbar {
+  width: 8px;
+}
+
+.staff-form-modern .staff-permission-grid-modern::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.staff-form-modern .staff-permission-grid-modern::-webkit-scrollbar-thumb {
+  border: 2px solid transparent;
+  border-radius: 999px;
+  background: rgba(var(--accent-cyan-rgb), 0.38);
+  background-clip: content-box;
+}
+
+.staff-form-modern .permission-card {
+  min-height: 48px;
+  padding: 10px 11px;
+  border: 1px solid rgba(255, 255, 255, 0.085);
+  border-radius: 15px;
+  background:
+    radial-gradient(circle at top left, rgba(var(--accent-cyan-rgb), 0.075), transparent 38%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.058), rgba(255, 255, 255, 0.022));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.07),
+    0 10px 22px rgba(0, 0, 0, 0.12);
+  transition:
+    transform var(--fluent-duration-fast) var(--fluent-curve-easy-ease),
+    border-color var(--fluent-duration-fast) var(--fluent-curve-easy-ease),
+    background var(--fluent-duration-fast) var(--fluent-curve-easy-ease);
+}
+
+.staff-form-modern .permission-card:hover {
+  transform: translateY(-1px);
+  border-color: rgba(var(--accent-cyan-rgb), 0.22);
+  background:
+    radial-gradient(circle at top left, rgba(var(--accent-cyan-rgb), 0.12), transparent 38%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.068), rgba(255, 255, 255, 0.026));
+}
+
+.staff-form-modern .permission-card.active,
+.staff-form-modern .permission-card[aria-pressed="true"] {
+  border-color: rgba(var(--accent-pink-rgb), 0.34);
+  background:
+    radial-gradient(circle at top left, rgba(var(--accent-pink-rgb), 0.16), transparent 38%),
+    linear-gradient(135deg, rgba(var(--accent-cyan-rgb), 0.1), rgba(255, 255, 255, 0.026));
+}
+
+.staff-form-modern .permission-card:disabled,
+.staff-form-modern .permission-card.disabled {
+  cursor: not-allowed;
+  opacity: 0.58;
+  filter: grayscale(0.22);
+}
+
+.staff-form-modern .permission-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 11px;
+  background:
+    radial-gradient(circle at 28% 24%, rgba(var(--accent-cyan-rgb), 0.24), transparent 42%),
+    rgba(255, 255, 255, 0.055);
+}
+
+.staff-form-modern .permission-icon svg {
+  width: 15px;
+  height: 15px;
+}
+
+.staff-form-modern .permission-label {
+  color: var(--text-primary);
+  font-size: 0.82rem;
+  font-weight: 760;
+  line-height: 1.25;
+}
+
+.staff-form-modern .staff-modal-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 9px;
+  margin-top: 2px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.075);
+}
+
+.staff-form-modern .staff-modal-actions .btn-secondary,
+.staff-form-modern .staff-modal-actions .btn-primary {
+  min-height: 39px;
+  padding: 9px 15px;
+  border-radius: 999px;
+  font-size: 0.84rem;
+  font-weight: 820;
+}
+
+.staff-form-modern .staff-modal-actions .btn-secondary {
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  background: rgba(255, 255, 255, 0.052);
+}
+
+.staff-form-modern .staff-modal-actions .btn-primary {
+  box-shadow:
+    0 12px 28px rgba(var(--accent-pink-rgb), 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+
+@media (min-width: 760px) {
+  .staff-form-modern .staff-permission-grid-modern {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1120px) {
+  .staff-form-modern .staff-permission-grid-modern {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 680px) {
+  .staff-form-modern {
+    gap: 12px;
+  }
+
+  .staff-form-modern .bf-row {
+    grid-template-columns: 1fr;
+    gap: 11px;
+  }
+
+  .staff-form-modern .bf-input {
+    min-height: 40px;
+    border-radius: 14px;
+    font-size: 0.86rem;
+  }
+
+  .staff-form-modern .staff-permission-grid-modern {
+    grid-template-columns: 1fr;
+    max-height: 34vh;
+    gap: 8px;
+  }
+
+  .staff-form-modern .permission-card {
+    min-height: 46px;
+    padding: 9px 10px;
+    border-radius: 14px;
+  }
+
+  .staff-form-modern .staff-modal-actions {
+    align-items: stretch;
+    flex-direction: column-reverse;
+  }
+
+  .staff-form-modern .staff-modal-actions .btn-secondary,
+  .staff-form-modern .staff-modal-actions .btn-primary {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* === END STAFF MODALS PHASE 5 === */
