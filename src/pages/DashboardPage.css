@@ -3712,3 +3712,598 @@
     justify-content: flex-start !important;
   }
 }
+
+/* ──────────────────────────────────────────────────────────────────────────
+   37 ADMIN DASHBOARD COMMAND INSIGHTS 8.5E
+   --------------------------------------------------------------------------
+   Safe fifth phase for Admin Dashboard overhaul.
+   Scope:
+   - smart insights strip
+   - operational command center panels
+   - request, billing, maintenance action rows
+   Logic, stores, actions, modals, charts, and routes are untouched.
+   ────────────────────────────────────────────────────────────────────────── */
+
+/* Smart Insights */
+.admin-dashboard-modern .app-smart-panel {
+  position: relative !important;
+  border-radius: clamp(1.18rem, 1.8vw, 1.45rem) !important;
+  padding: clamp(0.72rem, 1.25vw, 0.95rem) !important;
+  overflow: hidden !important;
+}
+
+.admin-dashboard-modern .app-smart-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(88, 224, 233, 0.052), transparent 34%),
+    radial-gradient(circle at 100% 0%, rgba(239, 197, 110, 0.052), transparent 34%),
+    linear-gradient(90deg, rgba(255,255,255,0.016), transparent 48%, rgba(255,255,255,0.012));
+  opacity: 0.92;
+}
+
+.admin-dashboard-modern .app-smart-panel > * {
+  position: relative;
+  z-index: 1;
+}
+
+.admin-dashboard-modern .app-smart-grid {
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: clamp(0.58rem, 1vw, 0.76rem) !important;
+  align-items: stretch !important;
+}
+
+.admin-dashboard-modern .smart-item {
+  position: relative !important;
+  min-height: 128px !important;
+  display: grid !important;
+  align-content: start !important;
+  gap: 0.52rem !important;
+  padding: 0.88rem !important;
+  border-radius: 1.08rem !important;
+  overflow: hidden !important;
+  isolation: isolate;
+  transition:
+    border-color 160ms ease,
+    background 160ms ease,
+    box-shadow 160ms ease,
+    transform 160ms ease !important;
+}
+
+.admin-dashboard-modern .smart-item::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(255,255,255,0.052), transparent 42%),
+    linear-gradient(180deg, rgba(255,255,255,0.040), rgba(255,255,255,0.010));
+  opacity: 0.82;
+}
+
+.admin-dashboard-modern .smart-item:hover {
+  transform: translateY(-1px) !important;
+  border-color: rgba(88, 224, 233, 0.18) !important;
+}
+
+.admin-dashboard-modern .smart-head {
+  display: inline-flex !important;
+  align-items: center !important;
+  width: fit-content;
+  max-width: 100%;
+  gap: 0.42rem !important;
+  min-height: 28px;
+  padding: 0 0.56rem;
+  border-radius: 999px;
+  border: 1px solid currentColor;
+  background: rgba(255,255,255,0.038);
+  opacity: 0.96;
+}
+
+.admin-dashboard-modern .smart-head svg {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+}
+
+.admin-dashboard-modern .smart-head span {
+  color: currentColor !important;
+  font-size: 0.60rem !important;
+  line-height: 1 !important;
+  font-weight: 950 !important;
+  letter-spacing: 0.085em !important;
+  text-transform: uppercase !important;
+  white-space: nowrap;
+}
+
+.admin-dashboard-modern .smart-item strong {
+  display: block !important;
+  color: var(--ad-text, #fffaf0) !important;
+  font-size: 0.96rem !important;
+  line-height: 1.18 !important;
+  font-weight: 950 !important;
+  letter-spacing: -0.032em !important;
+}
+
+.admin-dashboard-modern .smart-item small {
+  display: block !important;
+  color: var(--ad-muted, rgba(255,250,240,0.66)) !important;
+  font-size: 0.72rem !important;
+  line-height: 1.45 !important;
+  font-weight: 760 !important;
+  letter-spacing: -0.012em !important;
+}
+
+/* Operational Command Center */
+.admin-dashboard-modern .dash-command-grid {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: clamp(0.72rem, 1.3vw, 0.98rem) !important;
+  align-items: stretch !important;
+}
+
+.admin-dashboard-modern .dash-command-grid > * {
+  min-width: 0;
+}
+
+.admin-dashboard-modern .dash-command-panel {
+  position: relative !important;
+  min-height: 252px !important;
+  display: grid !important;
+  grid-template-rows: auto 1fr;
+  gap: 0.88rem !important;
+  padding: clamp(0.92rem, 1.45vw, 1.12rem) !important;
+  border-radius: clamp(1.18rem, 1.8vw, 1.42rem) !important;
+  overflow: hidden !important;
+  isolation: isolate;
+}
+
+.admin-dashboard-modern .dash-command-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(88, 224, 233, 0.050), transparent 34%),
+    radial-gradient(circle at 100% 8%, rgba(239, 197, 110, 0.050), transparent 34%),
+    linear-gradient(180deg, rgba(255,255,255,0.028), transparent 56%);
+  opacity: 0.94;
+}
+
+.admin-dashboard-modern .dash-command-head {
+  position: relative;
+  z-index: 1;
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start !important;
+  gap: 0.72rem !important;
+}
+
+.admin-dashboard-modern .dash-command-title {
+  min-width: 0;
+  display: flex !important;
+  align-items: flex-start !important;
+  gap: 0.62rem !important;
+}
+
+.admin-dashboard-modern .dash-command-title > svg {
+  width: 18px !important;
+  height: 18px !important;
+  margin-top: 0.1rem !important;
+  flex-shrink: 0 !important;
+  color: var(--ad-cyan, #58e0e9) !important;
+  filter: drop-shadow(0 0 12px rgba(88,224,233,0.18));
+}
+
+.admin-dashboard-modern .dash-command-title h3 {
+  margin: 0 !important;
+  color: var(--ad-text, #fffaf0) !important;
+  font-size: 1rem !important;
+  line-height: 1.12 !important;
+  font-weight: 950 !important;
+  letter-spacing: -0.040em !important;
+}
+
+.admin-dashboard-modern .dash-command-title p {
+  margin: 0.22rem 0 0 !important;
+  color: var(--ad-muted, rgba(255,250,240,0.66)) !important;
+  font-size: 0.70rem !important;
+  line-height: 1.35 !important;
+  font-weight: 780 !important;
+}
+
+.admin-dashboard-modern .dash-mini-link {
+  min-height: 34px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 0.68rem !important;
+  border-radius: 0.78rem !important;
+  border: 1px solid var(--ad-line-soft, rgba(255,255,255,0.07)) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.060), rgba(255,255,255,0.018)),
+    rgba(255,255,255,0.034) !important;
+  color: var(--ad-muted, rgba(255,250,240,0.66)) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.050) !important;
+  font-size: 0.68rem !important;
+  line-height: 1 !important;
+  font-weight: 950 !important;
+  letter-spacing: -0.01em !important;
+  white-space: nowrap;
+  transform: none !important;
+}
+
+.admin-dashboard-modern .dash-mini-link:hover {
+  color: var(--ad-cyan, #58e0e9) !important;
+  border-color: rgba(88,224,233,0.24) !important;
+  background: rgba(88,224,233,0.075) !important;
+  transform: none !important;
+}
+
+.admin-dashboard-modern .dash-work-list {
+  position: relative;
+  z-index: 1;
+  display: grid !important;
+  align-content: start;
+  gap: 0.56rem !important;
+  min-height: 0 !important;
+}
+
+.admin-dashboard-modern .dash-work-list.compact {
+  min-height: 0 !important;
+}
+
+.admin-dashboard-modern .dash-work-item,
+.admin-dashboard-modern .dash-slot-item {
+  position: relative;
+  min-height: 58px;
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center !important;
+  gap: 0.68rem !important;
+  padding: 0.68rem 0.74rem !important;
+  border: 1px solid var(--ad-line-soft, rgba(255,255,255,0.07)) !important;
+  border-radius: 1rem !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.048), rgba(255,255,255,0.014)),
+    rgba(255,255,255,0.028) !important;
+  color: var(--ad-muted, rgba(255,250,240,0.66)) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.045) !important;
+  transition:
+    border-color 160ms ease,
+    background 160ms ease,
+    transform 160ms ease !important;
+}
+
+.admin-dashboard-modern .dash-work-item:hover,
+.admin-dashboard-modern .dash-slot-item:hover {
+  transform: translateY(-1px) !important;
+  border-color: rgba(88, 224, 233, 0.18) !important;
+  background:
+    linear-gradient(180deg, rgba(88,224,233,0.064), rgba(255,255,255,0.014)),
+    rgba(255,255,255,0.032) !important;
+}
+
+.admin-dashboard-modern .dash-work-item.urgency-overdue,
+.admin-dashboard-modern .dash-work-item.urgency-today {
+  border-color: rgba(255, 61, 112, 0.22) !important;
+  background:
+    radial-gradient(circle at 0% 50%, rgba(255,61,112,0.095), transparent 42%),
+    linear-gradient(180deg, rgba(255,255,255,0.048), rgba(255,255,255,0.014)),
+    rgba(255,61,112,0.032) !important;
+}
+
+.admin-dashboard-modern .dash-work-item.urgency-tomorrow,
+.admin-dashboard-modern .dash-work-item.urgency-soon {
+  border-color: rgba(239, 197, 110, 0.20) !important;
+  background:
+    radial-gradient(circle at 0% 50%, rgba(239,197,110,0.080), transparent 42%),
+    linear-gradient(180deg, rgba(255,255,255,0.048), rgba(255,255,255,0.014)),
+    rgba(239,197,110,0.028) !important;
+}
+
+.admin-dashboard-modern .dash-work-item.as-button {
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+}
+
+.admin-dashboard-modern .dash-work-main {
+  min-width: 0;
+  display: grid !important;
+  gap: 0.18rem !important;
+}
+
+.admin-dashboard-modern .dash-work-main strong,
+.admin-dashboard-modern .dash-slot-item strong {
+  color: var(--ad-text, #fffaf0) !important;
+  font-size: 0.86rem !important;
+  line-height: 1.18 !important;
+  font-weight: 950 !important;
+  letter-spacing: -0.028em !important;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-dashboard-modern .dash-work-main span,
+.admin-dashboard-modern .dash-slot-item span {
+  color: var(--ad-muted, rgba(255,250,240,0.66)) !important;
+  font-size: 0.68rem !important;
+  line-height: 1.35 !important;
+  font-weight: 760 !important;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-dashboard-modern .dash-work-actions {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  gap: 0.38rem !important;
+}
+
+.admin-dashboard-modern .dash-icon-action {
+  width: 32px !important;
+  height: 32px !important;
+  min-width: 32px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 0.78rem !important;
+  border: 1px solid var(--ad-line-soft, rgba(255,255,255,0.07)) !important;
+  background: rgba(255, 255, 255, 0.042) !important;
+  color: var(--ad-muted, rgba(255,250,240,0.66)) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.045) !important;
+  transform: none !important;
+}
+
+.admin-dashboard-modern .dash-icon-action.approve:hover {
+  color: var(--ad-green, #82d8a0) !important;
+  border-color: rgba(130,216,160,0.28) !important;
+  background: rgba(130,216,160,0.075) !important;
+}
+
+.admin-dashboard-modern .dash-icon-action.reject:hover {
+  color: var(--ad-pink, #ff3d70) !important;
+  border-color: rgba(255,61,112,0.28) !important;
+  background: rgba(255,61,112,0.075) !important;
+}
+
+.admin-dashboard-modern .dash-icon-action.send:hover {
+  color: var(--ad-cyan, #58e0e9) !important;
+  border-color: rgba(88,224,233,0.28) !important;
+  background: rgba(88,224,233,0.075) !important;
+}
+
+.admin-dashboard-modern .dash-work-empty {
+  min-height: 116px !important;
+  display: grid !important;
+  place-items: center !important;
+  align-content: center !important;
+  gap: 0.52rem !important;
+  padding: 1rem !important;
+  border: 1px dashed rgba(255,255,255,0.13) !important;
+  border-radius: 1rem !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.030), rgba(255,255,255,0.010)),
+    rgba(255,255,255,0.018) !important;
+  color: var(--ad-muted, rgba(255,250,240,0.66)) !important;
+  text-align: center;
+}
+
+.admin-dashboard-modern .dash-work-empty svg {
+  color: var(--ad-green, #82d8a0) !important;
+  opacity: 0.92;
+}
+
+.admin-dashboard-modern .dash-work-empty span {
+  color: var(--ad-muted, rgba(255,250,240,0.66)) !important;
+  font-size: 0.78rem !important;
+  line-height: 1.35 !important;
+  font-weight: 820 !important;
+}
+
+/* Light mode */
+[data-theme="light"] .admin-dashboard-modern .app-smart-panel::before {
+  background:
+    radial-gradient(circle at 0% 0%, rgba(24,139,153,0.040), transparent 34%),
+    radial-gradient(circle at 100% 0%, rgba(185,133,47,0.055), transparent 34%),
+    linear-gradient(90deg, rgba(255,255,255,0.28), transparent 48%, rgba(255,255,255,0.18));
+}
+
+[data-theme="light"] .admin-dashboard-modern .smart-item::before,
+[data-theme="light"] .admin-dashboard-modern .dash-command-panel::before {
+  background:
+    radial-gradient(circle at 0% 0%, rgba(24,139,153,0.040), transparent 36%),
+    radial-gradient(circle at 100% 10%, rgba(185,133,47,0.045), transparent 36%),
+    linear-gradient(180deg, rgba(255,255,255,0.24), transparent 58%);
+}
+
+[data-theme="light"] .admin-dashboard-modern .smart-head {
+  background: rgba(255,255,255,0.46);
+}
+
+[data-theme="light"] .admin-dashboard-modern .smart-item strong,
+[data-theme="light"] .admin-dashboard-modern .dash-command-title h3,
+[data-theme="light"] .admin-dashboard-modern .dash-work-main strong,
+[data-theme="light"] .admin-dashboard-modern .dash-slot-item strong {
+  color: rgba(34,27,18,0.96) !important;
+}
+
+[data-theme="light"] .admin-dashboard-modern .smart-item small,
+[data-theme="light"] .admin-dashboard-modern .dash-command-title p,
+[data-theme="light"] .admin-dashboard-modern .dash-work-main span,
+[data-theme="light"] .admin-dashboard-modern .dash-slot-item span,
+[data-theme="light"] .admin-dashboard-modern .dash-work-empty span {
+  color: rgba(45,38,28,0.64) !important;
+}
+
+[data-theme="light"] .admin-dashboard-modern .dash-mini-link,
+[data-theme="light"] .admin-dashboard-modern .dash-work-item,
+[data-theme="light"] .admin-dashboard-modern .dash-slot-item,
+[data-theme="light"] .admin-dashboard-modern .dash-icon-action {
+  border-color: rgba(96,73,41,0.11) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.68), rgba(255,255,255,0.32)),
+    rgba(255,250,241,0.50) !important;
+  color: rgba(45,38,28,0.70) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.74) !important;
+}
+
+[data-theme="light"] .admin-dashboard-modern .dash-work-item:hover,
+[data-theme="light"] .admin-dashboard-modern .dash-slot-item:hover {
+  border-color: rgba(24,139,153,0.17) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.76), rgba(255,255,255,0.38)),
+    rgba(255,250,241,0.62) !important;
+}
+
+[data-theme="light"] .admin-dashboard-modern .dash-work-item.urgency-overdue,
+[data-theme="light"] .admin-dashboard-modern .dash-work-item.urgency-today {
+  border-color: rgba(199,56,101,0.18) !important;
+  background:
+    radial-gradient(circle at 0% 50%, rgba(199,56,101,0.058), transparent 42%),
+    linear-gradient(180deg, rgba(255,255,255,0.72), rgba(255,255,255,0.34)),
+    rgba(255,250,241,0.52) !important;
+}
+
+[data-theme="light"] .admin-dashboard-modern .dash-work-item.urgency-tomorrow,
+[data-theme="light"] .admin-dashboard-modern .dash-work-item.urgency-soon {
+  border-color: rgba(185,133,47,0.18) !important;
+  background:
+    radial-gradient(circle at 0% 50%, rgba(185,133,47,0.058), transparent 42%),
+    linear-gradient(180deg, rgba(255,255,255,0.72), rgba(255,255,255,0.34)),
+    rgba(255,250,241,0.52) !important;
+}
+
+[data-theme="light"] .admin-dashboard-modern .dash-work-empty {
+  border-color: rgba(96,73,41,0.12) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.52), rgba(255,255,255,0.26)),
+    rgba(255,250,241,0.44) !important;
+}
+
+/* Responsive */
+@media (max-width: 1180px) {
+  .admin-dashboard-modern .app-smart-grid,
+  .admin-dashboard-modern .dash-command-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .admin-dashboard-modern .dash-command-panel {
+    min-height: 236px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .admin-dashboard-modern .app-smart-panel {
+    padding: 0.72rem !important;
+    border-radius: 1.16rem !important;
+  }
+
+  .admin-dashboard-modern .app-smart-grid,
+  .admin-dashboard-modern .dash-command-grid {
+    grid-template-columns: 1fr !important;
+    gap: 0.72rem !important;
+  }
+
+  .admin-dashboard-modern .smart-item,
+  .admin-dashboard-modern .dash-command-panel {
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+
+  .admin-dashboard-modern .smart-item {
+    min-height: 116px !important;
+    padding: 0.78rem !important;
+    border-radius: 1rem !important;
+    transform: none !important;
+  }
+
+  .admin-dashboard-modern .smart-item:hover {
+    transform: none !important;
+  }
+
+  .admin-dashboard-modern .dash-command-panel {
+    min-height: 0 !important;
+    padding: 0.88rem !important;
+    border-radius: 1.16rem !important;
+  }
+
+  .admin-dashboard-modern .dash-command-head {
+    gap: 0.62rem !important;
+  }
+
+  .admin-dashboard-modern .dash-command-title h3 {
+    font-size: 0.95rem !important;
+  }
+
+  .admin-dashboard-modern .dash-work-item,
+  .admin-dashboard-modern .dash-slot-item {
+    min-height: 56px;
+    padding: 0.62rem !important;
+    gap: 0.56rem !important;
+    transform: none !important;
+  }
+
+  .admin-dashboard-modern .dash-work-item:hover,
+  .admin-dashboard-modern .dash-slot-item:hover {
+    transform: none !important;
+  }
+
+  .admin-dashboard-modern .dash-work-main strong,
+  .admin-dashboard-modern .dash-slot-item strong {
+    font-size: 0.82rem !important;
+  }
+
+  .admin-dashboard-modern .dash-work-main span,
+  .admin-dashboard-modern .dash-slot-item span {
+    font-size: 0.64rem !important;
+  }
+
+  .admin-dashboard-modern .dash-icon-action {
+    width: 30px !important;
+    height: 30px !important;
+    min-width: 30px !important;
+  }
+}
+
+@media (max-width: 430px) {
+  .admin-dashboard-modern .smart-head {
+    max-width: 100%;
+  }
+
+  .admin-dashboard-modern .smart-head span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .admin-dashboard-modern .dash-command-head {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-dashboard-modern .dash-mini-link {
+    width: fit-content;
+  }
+
+  .admin-dashboard-modern .dash-work-item,
+  .admin-dashboard-modern .dash-slot-item {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-dashboard-modern .dash-work-actions {
+    justify-content: flex-start !important;
+  }
+
+  .admin-dashboard-modern .dash-work-main span,
+  .admin-dashboard-modern .dash-slot-item span {
+    white-space: normal;
+  }
+}
