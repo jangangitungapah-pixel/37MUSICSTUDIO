@@ -5792,3 +5792,101 @@
 }
 
 /* === END GALLERY LIGHTBOX CONTROLS HOTFIX PHASE 8.5.1 === */
+
+/* === START GALLERY LIGHTBOX CONTROLS FORCE PHASE 8.5.2 === */
+
+/*
+  Phase 8.5.2 scope:
+  - Hard mobile override for lightbox controls.
+  - Previous rules still left the buttons clipped above viewport on mobile.
+  - This forces the controls into a visible top-right dock area.
+  - CSS-only.
+*/
+
+@media (max-width: 768px) {
+  .gallery-lightbox-modern {
+    padding-top: max(104px, calc(env(safe-area-inset-top, 0px) + 96px)) !important;
+  }
+
+  .gallery-lightbox-modern .lightbox-close,
+  .gallery-lightbox-modern .lightbox-gear-btn,
+  .gallery-lightbox-modern .lightbox-control-btn,
+  .gallery-lightbox-modern .lightbox-close-modern,
+  .gallery-lightbox-modern .lightbox-gear-modern {
+    position: fixed !important;
+    top: max(72px, calc(env(safe-area-inset-top, 0px) + 72px)) !important;
+    bottom: auto !important;
+    left: auto !important;
+    display: inline-flex !important;
+    width: 44px !important;
+    height: 44px !important;
+    min-width: 44px !important;
+    min-height: 44px !important;
+    max-width: 44px !important;
+    max-height: 44px !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+    transform: translate3d(0, 0, 0) !important;
+    z-index: 2147483647 !important;
+  }
+
+  .gallery-lightbox-modern .lightbox-close,
+  .gallery-lightbox-modern .lightbox-close-modern {
+    right: max(12px, calc(env(safe-area-inset-right, 0px) + 12px)) !important;
+  }
+
+  .gallery-lightbox-modern .lightbox-gear-btn,
+  .gallery-lightbox-modern .lightbox-gear-modern {
+    right: max(64px, calc(env(safe-area-inset-right, 0px) + 64px)) !important;
+  }
+
+  .gallery-lightbox-modern .lightbox-gear-btn.active,
+  .gallery-lightbox-modern .lightbox-gear-modern.active {
+    transform: translate3d(0, 0, 0) !important;
+  }
+
+  .gallery-lightbox-modern .lightbox-body-modern {
+    max-height: calc(100dvh - 128px) !important;
+  }
+
+  .gallery-lightbox-modern .lightbox-image-stage {
+    max-height: 52dvh !important;
+  }
+
+  .gallery-lightbox-modern .lightbox-image-stage img {
+    max-height: calc(52dvh - 14px) !important;
+  }
+}
+
+@media (max-width: 430px) {
+  .gallery-lightbox-modern {
+    padding-top: max(96px, calc(env(safe-area-inset-top, 0px) + 88px)) !important;
+  }
+
+  .gallery-lightbox-modern .lightbox-close,
+  .gallery-lightbox-modern .lightbox-gear-btn,
+  .gallery-lightbox-modern .lightbox-control-btn,
+  .gallery-lightbox-modern .lightbox-close-modern,
+  .gallery-lightbox-modern .lightbox-gear-modern {
+    top: max(58px, calc(env(safe-area-inset-top, 0px) + 58px)) !important;
+    width: 42px !important;
+    height: 42px !important;
+    min-width: 42px !important;
+    min-height: 42px !important;
+    max-width: 42px !important;
+    max-height: 42px !important;
+  }
+
+  .gallery-lightbox-modern .lightbox-close,
+  .gallery-lightbox-modern .lightbox-close-modern {
+    right: max(10px, calc(env(safe-area-inset-right, 0px) + 10px)) !important;
+  }
+
+  .gallery-lightbox-modern .lightbox-gear-btn,
+  .gallery-lightbox-modern .lightbox-gear-modern {
+    right: max(58px, calc(env(safe-area-inset-right, 0px) + 58px)) !important;
+  }
+}
+
+/* === END GALLERY LIGHTBOX CONTROLS FORCE PHASE 8.5.2 === */
