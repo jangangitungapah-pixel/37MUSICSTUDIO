@@ -265,32 +265,74 @@ const StaffPage = () => {
         </div>
       </div>
 
-      <div className="app-table-toolbar" style={{ marginTop: '20px' }}>
-        <div className="app-table-toolbar-left">
-          <div>
-            <span className="app-table-toolbar-title">Daftar Tim</span>
-            <span className="app-table-toolbar-subtitle">{filteredStaff.length} anggota ditemukan</span>
+            <section className="staff-overview-shell" aria-label="Ringkasan dan pencarian staff">
+        <div className="staff-overview-grid">
+          <article className="staff-metric-card">
+            <span className="staff-metric-label">Total Anggota</span>
+            <strong>{staffMembers.length}</strong>
+            <small>{filteredStaff.length} tampil di daftar</small>
+          </article>
+
+          <article className="staff-metric-card">
+            <span className="staff-metric-label">Admin</span>
+            <strong>{staffMembers.filter((staff) => staff.role === 'admin').length}</strong>
+            <small>Akses kontrol penuh</small>
+          </article>
+
+          <article className="staff-metric-card">
+            <span className="staff-metric-label">Staff</span>
+            <strong>{staffMembers.filter((staff) => staff.role !== 'admin').length}</strong>
+            <small>Operasional harian</small>
+          </article>
+
+          <article className="staff-metric-card is-split">
+            <span className="staff-metric-label">Status</span>
+            <strong>
+              {staffMembers.filter((staff) => staff.status !== 'inactive').length}
+              <span>/</span>
+              {staffMembers.filter((staff) => staff.status === 'inactive').length}
+            </strong>
+            <small>Aktif / Nonaktif</small>
+          </article>
+        </div>
+
+        <div className="app-table-toolbar staff-toolbar-compact">
+          <div className="app-table-toolbar-left staff-toolbar-copy">
+            <div>
+              <span className="staff-toolbar-eyebrow">Team Directory</span>
+              <span className="app-table-toolbar-title">Daftar Tim</span>
+              <span className="app-table-toolbar-subtitle">
+                {filteredStaff.length} anggota ditemukan
+              </span>
+            </div>
+          </div>
+
+          <div className="app-table-toolbar-right staff-toolbar-actions">
+            <div className="app-search app-search-md staff-search">
+              <Search className="app-search-icon" />
+              <input
+                type="text"
+                className="app-search-input"
+                placeholder="Cari staff, username, role..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                aria-label="Cari anggota tim"
+              />
+              {searchQuery && (
+                <button
+                  type="button"
+                  className="app-search-clear"
+                  onClick={() => setSearchQuery('')}
+                  aria-label="Bersihkan pencarian"
+                  title="Bersihkan pencarian"
+                >
+                  <X size={14} />
+                </button>
+              )}
+            </div>
           </div>
         </div>
-        <div className="app-table-toolbar-right">
-          <div className="app-search app-search-md">
-            <Search className="app-search-icon" />
-            <input 
-              type="text" 
-              className="app-search-input"
-              placeholder="Cari staff, username, role..." 
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              aria-label="Cari anggota tim"
-            />
-            {searchQuery && (
-              <button type="button" className="app-search-clear" onClick={() => setSearchQuery('')} aria-label="Bersihkan pencarian" title="Bersihkan pencarian">
-                <X size={14} />
-              </button>
-            )}
-          </div>
-        </div>
-      </div>
+      </section>
 
       <motion.div 
         className="staff-grid"
