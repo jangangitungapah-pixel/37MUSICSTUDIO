@@ -6721,3 +6721,138 @@
 
 /* === END 10.1G-9 PEMBUKUAN RESTORE RECHARTS DONUT === */
 
+
+/* === START 10.1G-9.3 PEMBUKUAN RECHARTS DONUT CSS SCOPE === */
+
+/* Phase 10.1G-9.3 - Fix restored Recharts donut CSS scope.
+   Audit result:
+   - JSX sudah benar: Recharts PieChart/Pie/Cell aktif.
+   - Data pie hidup karena legend tampil.
+   - Masalah ada di mobile compact override global:
+     .sidebar-chart-wrapper dan .recharts-responsive-container dipaksa 104px.
+   - Patch ini hanya override khusus .expense-breakdown-widget .recharts-donut-wrapper.
+   - Tidak menyentuh transaksi, store, export, PDF, print, kalkulasi, atau data finance. */
+
+.finance-page .expense-breakdown-widget .recharts-donut-wrapper {
+  display: grid !important;
+  place-items: center !important;
+  width: 100% !important;
+  height: 166px !important;
+  min-height: 166px !important;
+  max-height: 166px !important;
+  margin: 2px 0 10px !important;
+  padding: 0 !important;
+  overflow: visible !important;
+}
+
+.finance-page .expense-breakdown-widget .recharts-donut-wrapper .recharts-responsive-container {
+  width: min(100%, 280px) !important;
+  height: 150px !important;
+  min-height: 150px !important;
+  max-height: 150px !important;
+  margin-inline: auto !important;
+  overflow: visible !important;
+}
+
+.finance-page .expense-breakdown-widget .recharts-donut-wrapper .recharts-wrapper {
+  margin-inline: auto !important;
+  overflow: visible !important;
+}
+
+.finance-page .expense-breakdown-widget .recharts-donut-wrapper .recharts-surface {
+  display: block !important;
+  margin-inline: auto !important;
+  overflow: visible !important;
+}
+
+.finance-page .expense-breakdown-widget .recharts-donut-wrapper .recharts-pie,
+.finance-page .expense-breakdown-widget .recharts-donut-wrapper .recharts-pie-sector,
+.finance-page .expense-breakdown-widget .recharts-donut-wrapper .recharts-sector {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+.finance-page .expense-breakdown-widget .pie-legend-list {
+  max-height: 214px !important;
+  margin-top: 8px !important;
+  overflow-y: auto !important;
+  padding-right: 2px !important;
+}
+
+@media (max-width: 768px) {
+  .finance-page .expense-breakdown-widget .recharts-donut-wrapper {
+    height: 144px !important;
+    min-height: 144px !important;
+    max-height: 144px !important;
+    margin-top: 2px !important;
+    margin-bottom: 8px !important;
+    border-radius: 13px !important;
+  }
+
+  .finance-page .expense-breakdown-widget .recharts-donut-wrapper .recharts-responsive-container {
+    width: min(100%, 230px) !important;
+    height: 132px !important;
+    min-height: 132px !important;
+    max-height: 132px !important;
+  }
+
+  .finance-page .expense-breakdown-widget .recharts-donut-wrapper .recharts-wrapper,
+  .finance-page .expense-breakdown-widget .recharts-donut-wrapper .recharts-surface {
+    overflow: visible !important;
+  }
+
+  .finance-page .expense-breakdown-widget .pie-legend-list {
+    max-height: 178px !important;
+    gap: 4px !important;
+    margin-top: 6px !important;
+  }
+
+  .finance-page .expense-breakdown-widget .pie-legend-item {
+    min-height: 25px !important;
+    padding: 4px 6px !important;
+    border-radius: 9px !important;
+  }
+
+  .finance-page .expense-breakdown-widget .pie-legend-dot {
+    width: 7px !important;
+    height: 7px !important;
+  }
+
+  .finance-page .expense-breakdown-widget .pie-legend-name {
+    max-width: 52vw !important;
+    font-size: 0.58rem !important;
+  }
+
+  .finance-page .expense-breakdown-widget .pie-legend-val {
+    max-width: 38% !important;
+    font-size: 0.56rem !important;
+  }
+}
+
+@media (max-width: 430px) {
+  .finance-page .expense-breakdown-widget .recharts-donut-wrapper {
+    height: 140px !important;
+    min-height: 140px !important;
+    max-height: 140px !important;
+  }
+
+  .finance-page .expense-breakdown-widget .recharts-donut-wrapper .recharts-responsive-container {
+    width: min(100%, 220px) !important;
+    height: 132px !important;
+    min-height: 132px !important;
+    max-height: 132px !important;
+  }
+
+  .finance-page .expense-breakdown-widget .pie-legend-list {
+    max-height: 170px !important;
+  }
+}
+
+@media (max-width: 360px) {
+  .finance-page .expense-breakdown-widget .recharts-donut-wrapper .recharts-responsive-container {
+    width: min(100%, 204px) !important;
+  }
+}
+
+/* === END 10.1G-9.3 PEMBUKUAN RECHARTS DONUT CSS SCOPE === */
+
