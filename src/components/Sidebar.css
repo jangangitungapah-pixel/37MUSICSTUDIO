@@ -2913,6 +2913,665 @@
   }
 }
 
+/* === START 37 MORE MENU PUBLIC CALENDAR FOUNDATION PHASE A === */
+@media (max-width: 1024px) {
+  :root {
+    --more-sheet-width: 452px;
+    --more-sheet-top-gap: calc(18px + env(safe-area-inset-top, 0px));
+    --more-sheet-side-gap: 10px;
+    --more-sheet-radius: 30px;
+  }
+
+  .mobile-bottom-sheet-wrapper {
+    width: 100vw !important;
+    height: 100dvh !important;
+    max-width: 100vw !important;
+    max-height: 100dvh !important;
+    inset: 0 !important;
+    padding: 0 max(var(--more-sheet-side-gap), env(safe-area-inset-right, 0px)) 0 max(var(--more-sheet-side-gap), env(safe-area-inset-left, 0px)) !important;
+    align-items: flex-end !important;
+    justify-content: center !important;
+    overflow: hidden !important;
+    pointer-events: none !important;
+  }
+
+  .mobile-bottom-sheet-wrapper .modal-content.mobile-bottom-sheet {
+    position: relative !important;
+    width: min(calc(100vw - 20px), var(--more-sheet-width)) !important;
+    max-width: min(calc(100vw - 20px), var(--more-sheet-width)) !important;
+    max-height: calc(100dvh - var(--more-sheet-top-gap)) !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+    pointer-events: auto !important;
+    isolation: isolate !important;
+
+    border-radius: var(--more-sheet-radius) var(--more-sheet-radius) 0 0 !important;
+    border: 1px solid rgba(255, 255, 255, 0.115) !important;
+    border-bottom: 0 !important;
+
+    background:
+      radial-gradient(circle at 18% 0%, rgba(239, 197, 110, 0.145), transparent 36%),
+      radial-gradient(circle at 86% 8%, rgba(88, 224, 233, 0.095), transparent 34%),
+      radial-gradient(circle at 28% 100%, rgba(255, 56, 113, 0.075), transparent 38%),
+      linear-gradient(180deg, rgba(255,255,255,0.082), rgba(255,255,255,0.025)),
+      rgba(18, 22, 31, 0.965) !important;
+
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.115),
+      0 -26px 78px rgba(0,0,0,0.40),
+      0 0 0 1px rgba(0,0,0,0.16) !important;
+
+    -webkit-backdrop-filter: blur(28px) saturate(1.08) !important;
+    backdrop-filter: blur(28px) saturate(1.08) !important;
+  }
+
+  .mobile-bottom-sheet-wrapper .modal-content.mobile-bottom-sheet::before {
+    content: "" !important;
+    position: absolute !important;
+    inset: 1px !important;
+    z-index: 0 !important;
+    pointer-events: none !important;
+    border-radius: calc(var(--more-sheet-radius) - 1px) calc(var(--more-sheet-radius) - 1px) 0 0 !important;
+    background:
+      linear-gradient(135deg, rgba(255,255,255,0.078), transparent 34%),
+      linear-gradient(315deg, rgba(88,224,233,0.050), transparent 36%) !important;
+    opacity: 0.82 !important;
+  }
+
+  .mobile-bottom-sheet-wrapper .modal-content.mobile-bottom-sheet::after {
+    content: "" !important;
+    position: absolute !important;
+    left: 16px !important;
+    right: 16px !important;
+    top: 0 !important;
+    height: 1px !important;
+    z-index: 1 !important;
+    pointer-events: none !important;
+    background: linear-gradient(90deg, transparent, rgba(239,197,110,0.38), transparent) !important;
+  }
+
+  .mobile-bottom-sheet .modal-close-floating {
+    top: 14px !important;
+    right: 14px !important;
+    width: 36px !important;
+    height: 36px !important;
+    border-radius: 14px !important;
+    z-index: 5 !important;
+    color: rgba(255,250,240,0.74) !important;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.078), rgba(255,255,255,0.028)),
+      rgba(255,255,255,0.040) !important;
+    border: 1px solid rgba(255,255,255,0.090) !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.08) !important;
+  }
+
+  .mobile-bottom-sheet .modal-close-floating:hover,
+  .mobile-bottom-sheet .modal-close-floating:focus-visible {
+    color: #fffaf0 !important;
+    border-color: rgba(239,197,110,0.28) !important;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.105), rgba(255,255,255,0.036)),
+      rgba(255,255,255,0.055) !important;
+  }
+
+  .mobile-bottom-sheet .modal-body {
+    position: relative !important;
+    z-index: 2 !important;
+    min-height: 0 !important;
+    max-height: calc(100dvh - var(--more-sheet-top-gap)) !important;
+    padding: 0 !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    overscroll-behavior: contain !important;
+    -webkit-overflow-scrolling: touch !important;
+    scrollbar-width: thin !important;
+    scrollbar-color: rgba(239,197,110,0.46) transparent !important;
+  }
+
+  .bottom-sheet-header {
+    position: relative !important;
+    z-index: 2 !important;
+    display: grid !important;
+    grid-template-columns: 42px minmax(0, 1fr) 42px !important;
+    align-items: center !important;
+    gap: 8px !important;
+    min-height: 68px !important;
+    padding: 18px 56px 14px !important;
+    margin: 0 !important;
+    border-bottom: 1px solid rgba(255,255,255,0.075) !important;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.040), rgba(255,255,255,0.010)) !important;
+  }
+
+  .sheet-drag-handle {
+    position: absolute !important;
+    top: 10px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    width: 46px !important;
+    height: 4px !important;
+    margin: 0 !important;
+    border-radius: 999px !important;
+    background: rgba(255,250,240,0.24) !important;
+    box-shadow: 0 0 18px rgba(239,197,110,0.10) !important;
+  }
+
+  .bottom-sheet-header h3 {
+    grid-column: 2 !important;
+    margin: 0 !important;
+    text-align: center !important;
+    font-size: 1rem !important;
+    line-height: 1.05 !important;
+    font-weight: 950 !important;
+    letter-spacing: -0.028em !important;
+    color: #fffaf0 !important;
+  }
+
+  .bottom-sheet-header h3::after {
+    content: "Command Center" !important;
+    display: block !important;
+    margin-top: 5px !important;
+    font-size: 0.61rem !important;
+    line-height: 1 !important;
+    font-weight: 850 !important;
+    letter-spacing: 0.11em !important;
+    text-transform: uppercase !important;
+    color: rgba(255,250,240,0.48) !important;
+  }
+
+  .mobile-sheet-profile {
+    position: relative !important;
+    z-index: 2 !important;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    align-items: center !important;
+    gap: 10px !important;
+    padding: 13px 14px !important;
+    border-bottom: 1px solid rgba(255,255,255,0.070) !important;
+    background:
+      radial-gradient(circle at 0% 0%, rgba(239,197,110,0.075), transparent 42%),
+      linear-gradient(180deg, rgba(255,255,255,0.036), rgba(255,255,255,0.010)) !important;
+  }
+
+  .mobile-sheet-user {
+    min-width: 0 !important;
+    display: grid !important;
+    grid-template-columns: 42px minmax(0, 1fr) !important;
+    align-items: center !important;
+    gap: 10px !important;
+    padding: 8px !important;
+    border-radius: 18px !important;
+    border: 1px solid rgba(255,255,255,0.080) !important;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.058), rgba(255,255,255,0.018)),
+      rgba(255,255,255,0.024) !important;
+    color: inherit !important;
+    text-align: left !important;
+    cursor: pointer !important;
+    -webkit-tap-highlight-color: transparent !important;
+  }
+
+  .mobile-sheet-avatar {
+    width: 42px !important;
+    height: 42px !important;
+    border-radius: 16px !important;
+    display: grid !important;
+    place-items: center !important;
+    flex-shrink: 0 !important;
+    font-weight: 950 !important;
+    color: #17130c !important;
+    background: linear-gradient(135deg, #fff4cf, #d6b466) !important;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.62),
+      0 10px 22px rgba(0,0,0,0.18) !important;
+  }
+
+  .mobile-sheet-user-copy {
+    min-width: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 3px !important;
+  }
+
+  .mobile-sheet-name {
+    max-width: 100% !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    color: #fffaf0 !important;
+    font-size: 0.86rem !important;
+    line-height: 1.1 !important;
+    font-weight: 950 !important;
+    letter-spacing: -0.025em !important;
+  }
+
+  .mobile-sheet-role {
+    color: rgba(255,250,240,0.54) !important;
+    font-size: 0.66rem !important;
+    line-height: 1.1 !important;
+    font-weight: 850 !important;
+    letter-spacing: 0.08em !important;
+    text-transform: uppercase !important;
+  }
+
+  .mobile-sheet-actions {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+  }
+
+  .mobile-sheet-action {
+    position: relative !important;
+    width: 40px !important;
+    height: 40px !important;
+    min-width: 40px !important;
+    min-height: 40px !important;
+    display: grid !important;
+    place-items: center !important;
+    border-radius: 16px !important;
+    border: 1px solid rgba(255,255,255,0.085) !important;
+    color: rgba(255,250,240,0.78) !important;
+    background:
+      radial-gradient(circle at 50% 0%, rgba(255,255,255,0.10), transparent 64%),
+      rgba(255,255,255,0.044) !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.07) !important;
+    cursor: pointer !important;
+    -webkit-tap-highlight-color: transparent !important;
+  }
+
+  .mobile-sheet-action:active {
+    transform: scale(0.965) !important;
+  }
+
+  .mobile-sheet-dot {
+    position: absolute !important;
+    top: -5px !important;
+    right: -5px !important;
+    min-width: 18px !important;
+    height: 18px !important;
+    padding: 0 5px !important;
+    display: grid !important;
+    place-items: center !important;
+    border-radius: 999px !important;
+    background: #ff2a5f !important;
+    color: #ffffff !important;
+    font-size: 0.58rem !important;
+    font-weight: 950 !important;
+    box-shadow: 0 8px 18px rgba(255,42,95,0.30) !important;
+  }
+
+  .bottom-sheet-grid {
+    position: relative !important;
+    z-index: 2 !important;
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 10px !important;
+    padding: 14px 14px calc(16px + env(safe-area-inset-bottom, 0px)) !important;
+    margin: 0 !important;
+  }
+
+  .sheet-nav-item {
+    position: relative !important;
+    min-width: 0 !important;
+    min-height: 72px !important;
+    padding: 10px 10px !important;
+    border-radius: 20px !important;
+    overflow: hidden !important;
+
+    display: grid !important;
+    grid-template-columns: 42px minmax(0, 1fr) 16px !important;
+    align-items: center !important;
+    gap: 10px !important;
+
+    color: #fffaf0 !important;
+    text-align: left !important;
+    text-decoration: none !important;
+
+    background:
+      radial-gradient(circle at 50% 0%, rgba(255,255,255,0.086), transparent 60%),
+      linear-gradient(180deg, rgba(255,255,255,0.062), rgba(255,255,255,0.016)),
+      rgba(255,255,255,0.024) !important;
+
+    border: 1px solid rgba(255,255,255,0.088) !important;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.078),
+      0 10px 22px rgba(0,0,0,0.13) !important;
+
+    -webkit-tap-highlight-color: transparent !important;
+    touch-action: manipulation !important;
+    transition:
+      transform 150ms cubic-bezier(0.2, 0, 0, 1),
+      border-color 150ms cubic-bezier(0.2, 0, 0, 1),
+      background-color 150ms cubic-bezier(0.2, 0, 0, 1),
+      box-shadow 150ms cubic-bezier(0.2, 0, 0, 1) !important;
+  }
+
+  .sheet-nav-item::before {
+    content: "" !important;
+    position: absolute !important;
+    inset: 0 !important;
+    z-index: 0 !important;
+    pointer-events: none !important;
+    background:
+      radial-gradient(circle at 12% 0%, rgba(239,197,110,0.070), transparent 42%),
+      radial-gradient(circle at 88% 16%, rgba(88,224,233,0.056), transparent 42%) !important;
+    opacity: 0.92 !important;
+  }
+
+  .sheet-nav-item::after {
+    content: "›" !important;
+    position: relative !important;
+    z-index: 1 !important;
+    justify-self: end !important;
+    color: rgba(255,250,240,0.42) !important;
+    font-size: 1.2rem !important;
+    line-height: 1 !important;
+    font-weight: 800 !important;
+  }
+
+  .sheet-nav-item:hover,
+  .sheet-nav-item:focus-visible {
+    border-color: rgba(239,197,110,0.24) !important;
+    background:
+      radial-gradient(circle at 50% 0%, rgba(255,255,255,0.105), transparent 60%),
+      linear-gradient(180deg, rgba(255,255,255,0.080), rgba(255,255,255,0.020)),
+      rgba(255,255,255,0.032) !important;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.090),
+      0 14px 30px rgba(0,0,0,0.17),
+      0 0 0 1px rgba(239,197,110,0.050) !important;
+  }
+
+  .sheet-nav-item:active {
+    transform: scale(0.972) !important;
+  }
+
+  .sheet-icon {
+    position: relative !important;
+    z-index: 1 !important;
+    width: 42px !important;
+    height: 42px !important;
+    min-width: 42px !important;
+    min-height: 42px !important;
+    border-radius: 16px !important;
+
+    display: grid !important;
+    place-items: center !important;
+
+    color: rgba(255,250,240,0.88) !important;
+    background:
+      radial-gradient(circle at 50% 0%, rgba(255,255,255,0.13), transparent 62%),
+      rgba(255,255,255,0.060) !important;
+    border: 1px solid rgba(255,255,255,0.070) !important;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.080),
+      0 8px 18px rgba(0,0,0,0.12) !important;
+  }
+
+  .sheet-icon svg {
+    width: 18px !important;
+    height: 18px !important;
+    stroke-width: 2.25 !important;
+  }
+
+  .sheet-nav-item span {
+    position: relative !important;
+    z-index: 1 !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    color: #fffaf0 !important;
+    text-align: left !important;
+    font-size: 0.78rem !important;
+    line-height: 1.05 !important;
+    font-weight: 950 !important;
+    letter-spacing: -0.025em !important;
+  }
+
+  .sheet-nav-item span::after {
+    content: "Buka modul" !important;
+    display: block !important;
+    margin-top: 5px !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    color: rgba(255,250,240,0.48) !important;
+    font-size: 0.61rem !important;
+    line-height: 1 !important;
+    font-weight: 800 !important;
+    letter-spacing: 0 !important;
+  }
+
+  .sheet-nav-item[href="/inventory"] span::after {
+    content: "Stok dan item studio" !important;
+  }
+
+  .sheet-nav-item[href="/billing"] span::after {
+    content: "POS dan pembayaran" !important;
+  }
+
+  .sheet-nav-item[href="/finance"] span::after {
+    content: "Pembukuan studio" !important;
+  }
+
+  .sheet-nav-item[href="/gallery"] span::after {
+    content: "Foto dan portfolio" !important;
+  }
+
+  .sheet-nav-item[href="/staff"] span::after {
+    content: "Tim dan akses" !important;
+  }
+
+  .sheet-nav-item[href="/maintenance"] span::after {
+    content: "Perawatan aset" !important;
+  }
+
+  .sheet-nav-item[href="/settings"] span::after {
+    content: "Preferensi sistem" !important;
+  }
+
+  .sheet-nav-item.text-danger {
+    grid-column: 1 / -1 !important;
+    min-height: 58px !important;
+    grid-template-columns: 42px minmax(0, 1fr) auto !important;
+    color: #ff6b82 !important;
+    background:
+      radial-gradient(circle at 12% 0%, rgba(255, 70, 105, 0.18), transparent 46%),
+      linear-gradient(180deg, rgba(255, 70, 105, 0.070), rgba(255,255,255,0.010)),
+      rgba(255,255,255,0.020) !important;
+    border-color: rgba(255, 107, 130, 0.17) !important;
+  }
+
+  .sheet-nav-item.text-danger::after {
+    content: "Keluar" !important;
+    color: rgba(255, 107, 130, 0.68) !important;
+    font-size: 0.68rem !important;
+    font-weight: 900 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.06em !important;
+  }
+
+  .sheet-nav-item.text-danger .sheet-icon {
+    color: #ff6b82 !important;
+    background: rgba(255, 107, 130, 0.105) !important;
+    border-color: rgba(255, 107, 130, 0.16) !important;
+  }
+
+  .sheet-nav-item.text-danger span {
+    color: #ff6b82 !important;
+  }
+
+  .sheet-nav-item.text-danger span::after {
+    content: "Akhiri sesi dashboard" !important;
+    color: rgba(255, 107, 130, 0.58) !important;
+  }
+}
+
+@media (max-width: 420px) {
+  .mobile-bottom-sheet-wrapper .modal-content.mobile-bottom-sheet {
+    width: calc(100vw - 16px) !important;
+    max-width: calc(100vw - 16px) !important;
+    border-radius: 28px 28px 0 0 !important;
+  }
+
+  .bottom-sheet-header {
+    min-height: 64px !important;
+    padding: 17px 52px 13px !important;
+  }
+
+  .mobile-sheet-profile {
+    grid-template-columns: 1fr !important;
+    gap: 9px !important;
+    padding: 12px !important;
+  }
+
+  .mobile-sheet-actions {
+    width: 100% !important;
+    justify-content: stretch !important;
+  }
+
+  .mobile-sheet-action {
+    flex: 1 !important;
+    width: auto !important;
+  }
+
+  .bottom-sheet-grid {
+    gap: 8px !important;
+    padding: 12px 12px calc(14px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  .sheet-nav-item {
+    min-height: 70px !important;
+    grid-template-columns: 40px minmax(0, 1fr) 14px !important;
+    gap: 9px !important;
+    padding: 9px !important;
+    border-radius: 18px !important;
+  }
+
+  .sheet-icon {
+    width: 40px !important;
+    height: 40px !important;
+    min-width: 40px !important;
+    min-height: 40px !important;
+  }
+
+  .sheet-nav-item span {
+    font-size: 0.72rem !important;
+  }
+
+  .sheet-nav-item span::after {
+    font-size: 0.58rem !important;
+  }
+}
+
+@media (max-width: 360px) {
+  .bottom-sheet-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .sheet-nav-item {
+    min-height: 62px !important;
+  }
+}
+
+@media (max-width: 1024px) {
+  [data-theme="light"] .mobile-bottom-sheet-wrapper .modal-content.mobile-bottom-sheet {
+    border-color: rgba(96, 73, 41, 0.13) !important;
+    background:
+      radial-gradient(circle at 18% 0%, rgba(185, 133, 47, 0.090), transparent 36%),
+      radial-gradient(circle at 86% 8%, rgba(24, 139, 153, 0.060), transparent 34%),
+      radial-gradient(circle at 28% 100%, rgba(232, 25, 78, 0.055), transparent 38%),
+      linear-gradient(180deg, rgba(255,252,246,0.98), rgba(255,250,241,0.90)),
+      rgba(255, 250, 241, 0.96) !important;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.82),
+      0 -24px 66px rgba(96, 73, 41, 0.14) !important;
+  }
+
+  [data-theme="light"] .bottom-sheet-header {
+    border-bottom-color: rgba(96, 73, 41, 0.11) !important;
+    background: linear-gradient(180deg, rgba(255,255,255,0.66), rgba(255,255,255,0.18)) !important;
+  }
+
+  [data-theme="light"] .bottom-sheet-header h3,
+  [data-theme="light"] .mobile-sheet-name,
+  [data-theme="light"] .sheet-nav-item span {
+    color: #211c16 !important;
+  }
+
+  [data-theme="light"] .bottom-sheet-header h3::after,
+  [data-theme="light"] .mobile-sheet-role,
+  [data-theme="light"] .sheet-nav-item span::after {
+    color: rgba(33, 28, 22, 0.52) !important;
+  }
+
+  [data-theme="light"] .sheet-drag-handle {
+    background: rgba(96, 73, 41, 0.22) !important;
+  }
+
+  [data-theme="light"] .mobile-sheet-profile {
+    border-bottom-color: rgba(96, 73, 41, 0.10) !important;
+    background:
+      radial-gradient(circle at 0% 0%, rgba(185,133,47,0.060), transparent 42%),
+      linear-gradient(180deg, rgba(255,255,255,0.62), rgba(255,255,255,0.20)) !important;
+  }
+
+  [data-theme="light"] .mobile-sheet-user,
+  [data-theme="light"] .sheet-nav-item {
+    color: #211c16 !important;
+    background:
+      radial-gradient(circle at 50% 0%, rgba(255,255,255,0.96), transparent 60%),
+      linear-gradient(180deg, rgba(255,255,255,0.98), rgba(248,245,238,0.84)),
+      rgba(255,255,255,0.90) !important;
+    border-color: rgba(96, 73, 41, 0.11) !important;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.82),
+      0 10px 20px rgba(96, 73, 41, 0.07) !important;
+  }
+
+  [data-theme="light"] .mobile-sheet-action,
+  [data-theme="light"] .sheet-icon {
+    color: rgba(33, 28, 22, 0.72) !important;
+    background: rgba(96, 73, 41, 0.060) !important;
+    border-color: rgba(96, 73, 41, 0.10) !important;
+  }
+
+  [data-theme="light"] .mobile-bottom-sheet .modal-close-floating {
+    color: rgba(33, 28, 22, 0.62) !important;
+    background: rgba(96, 73, 41, 0.055) !important;
+    border-color: rgba(96, 73, 41, 0.10) !important;
+  }
+
+  [data-theme="light"] .sheet-nav-item.text-danger span,
+  [data-theme="light"] .sheet-nav-item.text-danger .sheet-icon {
+    color: #d9304f !important;
+  }
+
+  [data-theme="light"] .sheet-nav-item.text-danger span::after,
+  [data-theme="light"] .sheet-nav-item.text-danger::after {
+    color: rgba(217, 48, 79, 0.62) !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mobile-bottom-sheet,
+  .mobile-bottom-sheet *,
+  .mobile-bottom-sheet *::before,
+  .mobile-bottom-sheet *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+/* === END 37 MORE MENU PUBLIC CALENDAR FOUNDATION PHASE A === */
+
+
 /* ──────────────────────────────────────────────────────────────────────────
    37 DESKTOP SIDEBAR RESTORE 8.5J
    --------------------------------------------------------------------------
