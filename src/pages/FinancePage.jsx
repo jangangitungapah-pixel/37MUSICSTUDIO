@@ -55,6 +55,8 @@ const CATEGORIES = {
   expense: ['Operasional', 'Listrik / Air', 'Gaji', 'Perawatan', 'Alat Baru', 'Lainnya']
 };
 
+const LEDGER_PAGE_SIZE = 12;
+
 const CustomActiveDot = (props) => {
   const { cx, cy, stroke, theme } = props;
   if (!cx || !cy) return null;
@@ -322,6 +324,7 @@ const FinancePage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [receiptToPrint, setReceiptToPrint] = useState(null);
   const [isExporting, setIsExporting] = useState(false);
+  const [ledgerPage, setLedgerPage] = useState(1);
 
   // Combine bookings and manual transactions
   const combinedData = useMemo(
@@ -351,6 +354,15 @@ const FinancePage = () => {
     if (filterType === 'all') return periodFilteredData;
     return periodFilteredData.filter(d => d.type === filterType);
   }, [periodFilteredData, filterType]);
+
+  useEffect(() => {
+    setLedgerPage(1);
+  }, [filterPeriod, filterType, searchQuery]);
+
+  useEffect(() => {
+    const nextPageCount = Math.max(1, Math.ceil(filteredData.length / LEDGER_PAGE_SIZE));
+    setLedgerPage((currentPage) => Math.min(currentPage, nextPageCount));
+  }, [filteredData.length]);
 
   // Today's Expense Tracker calculations
   const todayStr = format(new Date(), 'yyyy-MM-dd');
@@ -488,6 +500,16 @@ const FinancePage = () => {
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel()
   });
+
+  const ledgerRowModel = table.getRowModel();
+  const ledgerTotalRows = ledgerRowModel.rows.length;
+  const ledgerPageCount = Math.max(1, Math.ceil(ledgerTotalRows / LEDGER_PAGE_SIZE));
+  const safeLedgerPage = Math.min(ledgerPage, ledgerPageCount);
+  const ledgerStartIndex = (safeLedgerPage - 1) * LEDGER_PAGE_SIZE;
+  const ledgerEndIndex = ledgerStartIndex + LEDGER_PAGE_SIZE;
+  const ledgerRows = ledgerRowModel.rows.slice(ledgerStartIndex, ledgerEndIndex);
+  const ledgerStart = ledgerTotalRows === 0 ? 0 : ledgerStartIndex + 1;
+  const ledgerEnd = Math.min(ledgerEndIndex, ledgerTotalRows);
 
   // Chart Data preparation
   const lineChartData = useMemo(
@@ -1085,7 +1107,7 @@ const FinancePage = () => {
                     ))}
                   </thead>
                   <tbody>
-                    {table.getRowModel().rows.map(row => {
+                    {ledgerRows.map(row => {
                       const entry = row.original;
                       return (
                         <tr key={entry.id}>
@@ -1112,7 +1134,7 @@ const FinancePage = () => {
                   </div>
                   <h4 className="empty-state-title" style={{ fontSize: '0.95rem' }}>Tidak ada transaksi</h4>
                 </div>
-              ) : table.getRowModel().rows.map(row => {
+              ) : ledgerRows.map(row => {
                 const entry = row.original;
                 return (
                   <div key={entry.id} className={`mobile-ledger-card ${entry.type}`}>
@@ -1148,6 +1170,56 @@ const FinancePage = () => {
                 );
               })}
             </div>
+            {filteredData.length > LEDGER_PAGE_SIZE && (
+              <div className="ledger-pagination hide-on-print" aria-label="Navigasi halaman transaksi">
+                <div className="ledger-pagination-info">
+                  <span>{ledgerStart}-{ledgerEnd}</span>
+                  <span>dari {ledgerTotalRows} transaksi</span>
+                </div>
+
+                <div className="ledger-pagination-controls">
+                  <button
+                    type="button"
+                    className="ledger-page-btn"
+                    onClick={() => setLedgerPage((page) => Math.max(1, page - 1))}
+                    disabled={safeLedgerPage === 1}
+                    aria-label="Halaman sebelumnya"
+                  >
+                    Sebelumnya
+                  </button>
+
+                  <label className="ledger-page-select-wrap">
+                    <span>Halaman</span>
+                    <select
+                      className="ledger-page-select"
+                      value={safeLedgerPage}
+                      onChange={(event) => setLedgerPage(Number(event.target.value))}
+                      aria-label="Pilih halaman transaksi"
+                    >
+                      {Array.from({ length: ledgerPageCount }, (_, index) => {
+                        const pageNumber = index + 1;
+                        return (
+                          <option key={pageNumber} value={pageNumber}>
+                            {pageNumber} / {ledgerPageCount}
+                          </option>
+                        );
+                      })}
+                    </select>
+                  </label>
+
+                  <button
+                    type="button"
+                    className="ledger-page-btn"
+                    onClick={() => setLedgerPage((page) => Math.min(ledgerPageCount, page + 1))}
+                    disabled={safeLedgerPage === ledgerPageCount}
+                    aria-label="Halaman berikutnya"
+                  >
+                    Berikutnya
+                  </button>
+                </div>
+              </div>
+            )}
+
           </div>
         </div>
 
