@@ -1626,4 +1626,347 @@
   }
 }
 
+/* ──────────────────────────────────────────────────────────────────────────
+   37 ADMIN DASHBOARD SHELL FOUNDATION 8.5A
+   --------------------------------------------------------------------------
+   Safe first phase for Admin Dashboard overhaul.
+   Scope:
+   - premium ambient page shell
+   - shared glass/card foundation
+   - dark/light mode color foundation
+   - mobile performance guard
+   Logic, stores, charts, forms, actions, and routes are untouched.
+   ────────────────────────────────────────────────────────────────────────── */
 
+.admin-dashboard-modern {
+  --ad-bg-deep: #07090e;
+  --ad-bg-soft: #0b0f16;
+  --ad-surface: rgba(16, 20, 29, 0.66);
+  --ad-surface-soft: rgba(255, 255, 255, 0.040);
+  --ad-line: rgba(255, 255, 255, 0.105);
+  --ad-line-soft: rgba(255, 255, 255, 0.070);
+  --ad-text: #fffaf0;
+  --ad-muted: rgba(255, 250, 240, 0.66);
+  --ad-faint: rgba(255, 250, 240, 0.42);
+  --ad-gold: #efc56e;
+  --ad-pink: #ff3d70;
+  --ad-cyan: #58e0e9;
+  --ad-green: #82d8a0;
+
+  position: relative;
+  isolation: isolate;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.9rem, 1.6vw, 1.18rem) !important;
+  padding-bottom: clamp(2rem, 4vw, 3.5rem) !important;
+  color: var(--ad-text);
+}
+
+.admin-dashboard-modern,
+.admin-dashboard-modern *,
+.admin-dashboard-modern *::before,
+.admin-dashboard-modern *::after {
+  box-sizing: border-box;
+}
+
+.admin-dashboard-modern::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -3;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 14% 0%, rgba(239, 197, 110, 0.09), transparent 34rem),
+    radial-gradient(circle at 88% 4%, rgba(88, 224, 233, 0.075), transparent 34rem),
+    radial-gradient(circle at 50% 54%, rgba(255, 61, 112, 0.035), transparent 38rem),
+    linear-gradient(180deg, #07090e 0%, #0a0d12 48%, #05070a 100%);
+}
+
+.admin-dashboard-modern::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.014) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.012) 1px, transparent 1px);
+  background-size: 72px 72px;
+  opacity: 0.66;
+  -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,0.70), transparent 78%);
+  mask-image: linear-gradient(to bottom, rgba(0,0,0,0.70), transparent 78%);
+}
+
+.admin-dashboard-modern .dashboard-ambient-bg {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: -1 !important;
+  pointer-events: none !important;
+  overflow: hidden !important;
+}
+
+.admin-dashboard-modern .ambient-orb {
+  position: absolute !important;
+  width: 32rem !important;
+  height: 32rem !important;
+  border-radius: 999px !important;
+  opacity: 0.14 !important;
+  filter: blur(80px) !important;
+  transform: translateZ(0);
+}
+
+.admin-dashboard-modern .orb-1 {
+  top: -14rem !important;
+  left: -12rem !important;
+  background: var(--ad-gold) !important;
+}
+
+.admin-dashboard-modern .orb-2 {
+  top: -13rem !important;
+  right: -12rem !important;
+  background: var(--ad-cyan) !important;
+}
+
+.admin-dashboard-modern .orb-3 {
+  bottom: 8rem !important;
+  left: 30% !important;
+  background: var(--ad-pink) !important;
+  opacity: 0.075 !important;
+}
+
+/* Shared premium shell surfaces */
+.admin-dashboard-modern .glass-panel,
+.admin-dashboard-modern .app-card,
+.admin-dashboard-modern .dash-greeting,
+.admin-dashboard-modern .dash-stat-card,
+.admin-dashboard-modern .chart-container,
+.admin-dashboard-modern .dash-upcoming,
+.admin-dashboard-modern .dash-table-card,
+.admin-dashboard-modern .dash-command-panel,
+.admin-dashboard-modern .app-smart-panel,
+.admin-dashboard-modern .smart-item {
+  border-color: var(--ad-line) !important;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(239, 197, 110, 0.050), transparent 34%),
+    radial-gradient(circle at 100% 0%, rgba(88, 224, 233, 0.034), transparent 34%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.064), rgba(255, 255, 255, 0.022)),
+    rgba(14, 18, 26, 0.62) !important;
+  box-shadow:
+    0 22px 64px rgba(0, 0, 0, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.070) !important;
+  -webkit-backdrop-filter: blur(22px) saturate(1.05);
+  backdrop-filter: blur(22px) saturate(1.05);
+}
+
+.admin-dashboard-modern .glass-panel:hover,
+.admin-dashboard-modern .app-card:hover,
+.admin-dashboard-modern .dash-stat-card:hover,
+.admin-dashboard-modern .chart-container:hover,
+.admin-dashboard-modern .dash-command-panel:hover,
+.admin-dashboard-modern .smart-item:hover {
+  border-color: rgba(239, 197, 110, 0.20) !important;
+  box-shadow:
+    0 28px 78px rgba(0, 0, 0, 0.27),
+    0 0 0 1px rgba(239, 197, 110, 0.040),
+    inset 0 1px 0 rgba(255, 255, 255, 0.086) !important;
+}
+
+/* Base rhythm only, no component rewrite yet */
+.admin-dashboard-modern .dash-greeting,
+.admin-dashboard-modern .chart-container,
+.admin-dashboard-modern .dash-upcoming,
+.admin-dashboard-modern .dash-table-card,
+.admin-dashboard-modern .dash-command-panel,
+.admin-dashboard-modern .app-smart-panel {
+  border-radius: clamp(1.18rem, 1.8vw, 1.55rem) !important;
+}
+
+.admin-dashboard-modern .dash-stats-grid,
+.admin-dashboard-modern .dash-main-grid,
+.admin-dashboard-modern .dash-command-grid {
+  gap: clamp(0.72rem, 1.3vw, 0.95rem) !important;
+}
+
+.admin-dashboard-modern .dash-greeting-title,
+.admin-dashboard-modern .dash-stat-value,
+.admin-dashboard-modern .chart-title,
+.admin-dashboard-modern .dash-command-title h3,
+.admin-dashboard-modern .smart-item strong {
+  color: var(--ad-text) !important;
+}
+
+.admin-dashboard-modern .dash-greeting-sub,
+.admin-dashboard-modern .chart-sub,
+.admin-dashboard-modern .dash-command-title p,
+.admin-dashboard-modern .smart-item small,
+.admin-dashboard-modern .dash-stat-sub,
+.admin-dashboard-modern .dash-stat-progress-info {
+  color: var(--ad-muted) !important;
+}
+
+.admin-dashboard-modern .chart-link-btn,
+.admin-dashboard-modern .dash-mini-link,
+.admin-dashboard-modern .dash-alert-chip,
+.admin-dashboard-modern .dash-pill,
+.admin-dashboard-modern .upcoming-tag {
+  border-color: var(--ad-line-soft) !important;
+  background: rgba(255, 255, 255, 0.042) !important;
+  color: var(--ad-muted) !important;
+}
+
+.admin-dashboard-modern .chart-link-btn:hover,
+.admin-dashboard-modern .dash-mini-link:hover {
+  color: var(--ad-cyan) !important;
+  border-color: rgba(88, 224, 233, 0.24) !important;
+  background: rgba(88, 224, 233, 0.070) !important;
+}
+
+.admin-dashboard-modern .recharts-cartesian-grid line {
+  stroke: rgba(255,255,255,0.075) !important;
+}
+
+.admin-dashboard-modern .recharts-text {
+  fill: rgba(255, 250, 240, 0.52) !important;
+}
+
+/* Light mode shell foundation */
+[data-theme="light"] .admin-dashboard-modern {
+  --ad-bg-deep: #f6efe5;
+  --ad-bg-soft: #eee4d6;
+  --ad-surface: rgba(255, 250, 241, 0.68);
+  --ad-surface-soft: rgba(255, 255, 255, 0.42);
+  --ad-line: rgba(96, 73, 41, 0.13);
+  --ad-line-soft: rgba(96, 73, 41, 0.085);
+  --ad-text: rgba(34, 27, 18, 0.96);
+  --ad-muted: rgba(45, 38, 28, 0.68);
+  --ad-faint: rgba(45, 38, 28, 0.48);
+  --ad-gold: #b9852f;
+  --ad-pink: #c73865;
+  --ad-cyan: #188b99;
+  --ad-green: #16855a;
+}
+
+[data-theme="light"] .admin-dashboard-modern::before {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(239, 197, 110, 0.135), transparent 31rem),
+    radial-gradient(circle at 8% 18%, rgba(255, 56, 113, 0.052), transparent 29rem),
+    radial-gradient(circle at 90% 20%, rgba(35, 176, 191, 0.060), transparent 31rem),
+    linear-gradient(180deg, #f6efe5 0%, #eee4d6 46%, #e9dfd1 100%) !important;
+}
+
+[data-theme="light"] .admin-dashboard-modern::after {
+  background:
+    linear-gradient(rgba(70, 52, 28, 0.020) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(70, 52, 28, 0.020) 1px, transparent 1px);
+  background-size: 72px 72px;
+  opacity: 0.58;
+}
+
+[data-theme="light"] .admin-dashboard-modern .ambient-orb {
+  opacity: 0.10 !important;
+}
+
+[data-theme="light"] .admin-dashboard-modern .glass-panel,
+[data-theme="light"] .admin-dashboard-modern .app-card,
+[data-theme="light"] .admin-dashboard-modern .dash-greeting,
+[data-theme="light"] .admin-dashboard-modern .dash-stat-card,
+[data-theme="light"] .admin-dashboard-modern .chart-container,
+[data-theme="light"] .admin-dashboard-modern .dash-upcoming,
+[data-theme="light"] .admin-dashboard-modern .dash-table-card,
+[data-theme="light"] .admin-dashboard-modern .dash-command-panel,
+[data-theme="light"] .admin-dashboard-modern .app-smart-panel,
+[data-theme="light"] .admin-dashboard-modern .smart-item {
+  border-color: rgba(96, 73, 41, 0.13) !important;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(239, 197, 110, 0.060), transparent 34%),
+    radial-gradient(circle at 100% 0%, rgba(35, 176, 191, 0.035), transparent 34%),
+    linear-gradient(180deg, rgba(255, 252, 246, 0.78), rgba(255, 250, 241, 0.52)),
+    rgba(255, 250, 241, 0.62) !important;
+  color: rgba(34, 27, 18, 0.92) !important;
+  box-shadow:
+    0 22px 62px rgba(96, 73, 41, 0.115),
+    inset 0 1px 0 rgba(255, 255, 255, 0.76) !important;
+}
+
+[data-theme="light"] .admin-dashboard-modern .dash-greeting-title,
+[data-theme="light"] .admin-dashboard-modern .dash-stat-value,
+[data-theme="light"] .admin-dashboard-modern .chart-title,
+[data-theme="light"] .admin-dashboard-modern .dash-command-title h3,
+[data-theme="light"] .admin-dashboard-modern .smart-item strong {
+  color: rgba(34, 27, 18, 0.96) !important;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.28);
+}
+
+[data-theme="light"] .admin-dashboard-modern .dash-greeting-sub,
+[data-theme="light"] .admin-dashboard-modern .chart-sub,
+[data-theme="light"] .admin-dashboard-modern .dash-command-title p,
+[data-theme="light"] .admin-dashboard-modern .smart-item small,
+[data-theme="light"] .admin-dashboard-modern .dash-stat-sub,
+[data-theme="light"] .admin-dashboard-modern .dash-stat-progress-info {
+  color: rgba(45, 38, 28, 0.66) !important;
+}
+
+[data-theme="light"] .admin-dashboard-modern .chart-link-btn,
+[data-theme="light"] .admin-dashboard-modern .dash-mini-link,
+[data-theme="light"] .admin-dashboard-modern .dash-alert-chip,
+[data-theme="light"] .admin-dashboard-modern .dash-pill,
+[data-theme="light"] .admin-dashboard-modern .upcoming-tag {
+  border-color: rgba(96, 73, 41, 0.13) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.70), rgba(255, 255, 255, 0.36)),
+    rgba(255, 250, 241, 0.50) !important;
+  color: rgba(45, 38, 28, 0.72) !important;
+}
+
+[data-theme="light"] .admin-dashboard-modern .recharts-cartesian-grid line {
+  stroke: rgba(96, 73, 41, 0.10) !important;
+}
+
+[data-theme="light"] .admin-dashboard-modern .recharts-text {
+  fill: rgba(45, 38, 28, 0.54) !important;
+}
+
+/* Mobile safety, visual foundation only */
+@media (max-width: 768px) {
+  .admin-dashboard-modern {
+    gap: 0.75rem !important;
+    padding-bottom: calc(82px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  .admin-dashboard-modern .glass-panel,
+  .admin-dashboard-modern .app-card,
+  .admin-dashboard-modern .dash-greeting,
+  .admin-dashboard-modern .dash-stat-card,
+  .admin-dashboard-modern .chart-container,
+  .admin-dashboard-modern .dash-upcoming,
+  .admin-dashboard-modern .dash-table-card,
+  .admin-dashboard-modern .dash-command-panel,
+  .admin-dashboard-modern .app-smart-panel,
+  .admin-dashboard-modern .smart-item {
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+
+  .admin-dashboard-modern .dashboard-ambient-bg .ambient-orb {
+    filter: blur(64px) !important;
+    opacity: 0.09 !important;
+  }
+
+  .admin-dashboard-modern .dash-greeting,
+  .admin-dashboard-modern .chart-container,
+  .admin-dashboard-modern .dash-upcoming,
+  .admin-dashboard-modern .dash-table-card,
+  .admin-dashboard-modern .dash-command-panel,
+  .admin-dashboard-modern .app-smart-panel {
+    border-radius: 1.18rem !important;
+  }
+
+  .admin-dashboard-modern .dash-stat-card:hover,
+  .admin-dashboard-modern .upcoming-item:hover,
+  .admin-dashboard-modern .top-cust-row:hover,
+  .admin-dashboard-modern .dash-work-item:hover,
+  .admin-dashboard-modern .dash-slot-item:hover {
+    transform: none !important;
+  }
+}

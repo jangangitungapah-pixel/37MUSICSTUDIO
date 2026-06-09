@@ -449,7 +449,7 @@ const DashboardPage = () => {
   const displayName = userProfile?.name || userProfile?.username || user?.displayName || (user?.email ? user.email.split('@')[0] : 'Admin');
 
   return (
-    <div className="app-page dashboard-page">
+    <div className="app-page dashboard-page admin-dashboard-modern">
 
       {/* Fluent Ambient Background */}
       <div className="dashboard-ambient-bg">
