@@ -724,7 +724,7 @@ const GalleryPage = () => {
                     </div>
                   ) : (
                     <motion.div
-                      className="album-grid"
+                      className="album-grid album-grid-modern"
                       variants={staggerContainer}
                       initial="hidden"
                       animate="visible"
@@ -733,7 +733,7 @@ const GalleryPage = () => {
                         <motion.div
                           key={alb.id}
                           variants={staggerItem}
-                          className="album-card"
+                          className="album-card album-card-modern"
                           onClick={() => setOpenAlbumId(alb.id)}
                           role="button"
                           tabIndex={0}
@@ -741,7 +741,7 @@ const GalleryPage = () => {
                           onKeyDown={(e) => e.key === 'Enter' && setOpenAlbumId(alb.id)}
                         >
                           {/* Cover photo collage */}
-                          <div className="album-cover">
+                          <div className="album-cover album-cover-modern">
                             {alb.photos.length === 0 ? (
                               <div className="album-cover-empty">
                                 <Image size={32} />
@@ -759,7 +759,7 @@ const GalleryPage = () => {
                               <span className="album-photo-count">{alb.photoCount} foto</span>
                             </div>
                           </div>
-                          <div className="album-card-info">
+                          <div className="album-card-info album-card-info-modern">
                             <Folder size={13} className={alb.id === '__uncategorized__' ? 'icon-muted' : 'icon-landing'} />
                             <div className="album-card-text">
                               <strong>{alb.name}</strong>
@@ -783,9 +783,9 @@ const GalleryPage = () => {
                   transition={{ duration: 0.22 }}
                 >
                   {/* Back + album header */}
-                  <div className="album-drilldown-header">
+                  <div className="album-drilldown-header album-drilldown-shell">
                     <button
-                      className="album-back-btn"
+                      className="album-back-btn album-back-btn-modern"
                       onClick={() => setOpenAlbumId(null)}
                       aria-label="Kembali ke daftar album"
                     >
@@ -800,8 +800,7 @@ const GalleryPage = () => {
                     {/* Only show delete for real albums (not uncategorized) */}
                     {openAlbumId !== '__uncategorized__' && (
                       <button
-                        className="photo-delete-btn"
-                        style={{ flex: 'none', padding: '7px 14px', borderRadius: '10px' }}
+                        className="photo-delete-btn album-delete-btn"
                         onClick={() => handleDeleteAlbum(openAlbumId, openAlbumData.name)}
                         title="Hapus Album"
                       >
@@ -823,7 +822,7 @@ const GalleryPage = () => {
                     </div>
                   ) : (
                     <>
-                      <p className="gallery-count-info" style={{ marginTop: '16px' }}>
+                      <p className="gallery-count-info album-photo-count-info">
                         {openAlbumData.photos.length} foto • Klik foto untuk preview &amp; pengaturan
                       </p>
                       <motion.div
