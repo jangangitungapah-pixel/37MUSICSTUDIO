@@ -7080,3 +7080,109 @@ body.calendar-move-lock .main-content {
 }
 
 /* 37 ADMIN CALENDAR MOBILE SCROLL RULES HOTFIX 8.7J END */
+
+/* 37 CALENDAR GRID AUTO SCROLL HOTFIX 8.7J-1 START */
+
+/*
+  Calendar grid scroll must be auto.
+  Previous mobile scroll lock used overflow-y:hidden + touch-action:pan-x,
+  which made the grid sometimes refuse vertical or diagonal scrolling.
+*/
+
+/* Desktop + tablet baseline */
+.calendar-page .monthly-grid-wrapper,
+.calendar-page .calendar-timeline-wrapper {
+  overflow: auto !important;
+  overflow-x: auto !important;
+  overflow-y: auto !important;
+  overscroll-behavior: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+  touch-action: auto !important;
+  scrollbar-gutter: stable both-edges !important;
+}
+
+.calendar-page .monthly-grid,
+.calendar-page .calendar-timeline-grid {
+  overflow: visible !important;
+  min-width: max-content !important;
+}
+
+/* Mobile: let browser decide scroll direction naturally */
+@media (max-width: 768px) {
+  .calendar-page .monthly-grid-wrapper,
+  .calendar-page .calendar-timeline-wrapper {
+    width: 100% !important;
+    max-width: 100% !important;
+
+    overflow: auto !important;
+    overflow-x: auto !important;
+    overflow-y: auto !important;
+
+    overscroll-behavior: auto !important;
+    overscroll-behavior-x: auto !important;
+    overscroll-behavior-y: auto !important;
+
+    -webkit-overflow-scrolling: touch !important;
+    touch-action: auto !important;
+    scrollbar-gutter: stable both-edges !important;
+  }
+
+  .calendar-page .monthly-grid,
+  .calendar-page .calendar-timeline-grid {
+    overflow: visible !important;
+    min-width: max-content !important;
+    min-height: max-content !important;
+    touch-action: auto !important;
+  }
+
+  /* Chips can stay horizontal, but don't block grid behavior */
+  .calendar-page .quick-filters,
+  .calendar-page .view-switcher,
+  .calendar-page .calendar-toolbar-right {
+    touch-action: auto !important;
+    overscroll-behavior: auto !important;
+  }
+}
+
+/* Only drag/resize modes may lock scroll */
+.calendar-page .monthly-grid-wrapper.is-resize-active,
+.calendar-page .monthly-grid-wrapper.is-move-active,
+.calendar-page .calendar-timeline-wrapper.is-resize-active,
+.calendar-page .calendar-timeline-wrapper.is-move-active {
+  overflow: hidden !important;
+  touch-action: none !important;
+  overscroll-behavior: none !important;
+  -webkit-overflow-scrolling: auto !important;
+}
+
+/* Body lock during drag/resize only */
+body.calendar-resize-lock .calendar-page .monthly-grid-wrapper,
+body.calendar-move-lock .calendar-page .monthly-grid-wrapper,
+body.calendar-resize-lock .calendar-page .calendar-timeline-wrapper,
+body.calendar-move-lock .calendar-page .calendar-timeline-wrapper {
+  overflow: hidden !important;
+  touch-action: none !important;
+  overscroll-behavior: none !important;
+}
+
+/* Make sure ordinary grid cells do not hijack normal scroll */
+.calendar-page .timeline-slot-cell,
+.calendar-page .grid-cell {
+  touch-action: auto !important;
+}
+
+/* Booking cards need pointer events, but should not block scroll unless drag starts */
+.calendar-page .booked-cell,
+.calendar-page .timeline-booking-card {
+  touch-action: manipulation !important;
+}
+
+/* During active move/resize, booking interaction is controlled by JS */
+.calendar-page .monthly-grid-wrapper.is-move-active .booked-cell,
+.calendar-page .monthly-grid-wrapper.is-resize-active .booked-cell,
+.calendar-page .calendar-timeline-wrapper.is-move-active .booked-cell,
+.calendar-page .calendar-timeline-wrapper.is-resize-active .booked-cell {
+  touch-action: none !important;
+}
+
+/* 37 CALENDAR GRID AUTO SCROLL HOTFIX 8.7J-1 END */
