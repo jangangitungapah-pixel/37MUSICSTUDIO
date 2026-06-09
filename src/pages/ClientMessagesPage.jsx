@@ -160,36 +160,73 @@ const ClientMessagesPage = () => {
 
   return (
     <div className="messages-page">
-      <header className="messages-hero">
-        <div>
+      <header className="messages-hero" aria-labelledby="messagesHeroTitle">
+        {/* === START 37 ADMIN MESSAGES PHASE 2 HERO COMMAND CENTER === */}
+        <div className="messages-hero-main">
           <span className="messages-kicker">
             <MessageCircle size={16} />
-            Client Inbox
+            37 Admin Inbox
           </span>
-          <h1>Pesan dari client.</h1>
+
+          <h1 id="messagesHeroTitle">Pesan dari client.</h1>
+
           <p>
             Semua pesan dari client portal masuk ke sini. Admin bisa follow up via WhatsApp,
             menyalin kontak, memberi catatan, dan menandai status tindak lanjut.
           </p>
+
+          <div className="messages-command-strip" aria-label="Status operasional inbox">
+            <span>
+              <Clock3 size={14} />
+              <strong>{isLoaded ? filteredMessages.length : '...'}</strong>
+              <small>pesan tampil</small>
+            </span>
+            <span>
+              <RefreshCw size={14} />
+              <strong>{activeFilter === 'all' ? 'Semua' : statusLabel(activeFilter)}</strong>
+              <small>filter aktif</small>
+            </span>
+            <span>
+              <Search size={14} />
+              <strong>{searchTerm ? 'Search on' : 'Ready'}</strong>
+              <small>client lookup</small>
+            </span>
+          </div>
         </div>
 
-        <div className="messages-summary-grid">
-          <div className="messages-summary-card">
-            <span>Open</span>
+        <div className="messages-hero-orbit" aria-hidden="true">
+          <span />
+          <span />
+          <span />
+        </div>
+
+        <div className="messages-summary-grid" aria-label="Ringkasan pesan client">
+          <div className="messages-summary-card is-open">
+            <span>
+              <Clock3 size={14} />
+              Open
+            </span>
             <strong>{isLoaded ? openCount : '...'}</strong>
             <small>Belum selesai.</small>
           </div>
-          <div className="messages-summary-card compact">
-            <span>Dibalas</span>
+          <div className="messages-summary-card compact is-replied">
+            <span>
+              <Reply size={14} />
+              Dibalas
+            </span>
             <strong>{isLoaded ? repliedCount : '...'}</strong>
             <small>Sudah follow up.</small>
           </div>
-          <div className="messages-summary-card compact">
-            <span>Selesai</span>
+          <div className="messages-summary-card compact is-done">
+            <span>
+              <CheckCircle2 size={14} />
+              Selesai
+            </span>
             <strong>{isLoaded ? doneCount : '...'}</strong>
             <small>Closed.</small>
           </div>
         </div>
+        {/* === END 37 ADMIN MESSAGES PHASE 2 HERO COMMAND CENTER === */}
       </header>
 
       {error && (
