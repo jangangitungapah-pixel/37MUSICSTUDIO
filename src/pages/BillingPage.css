@@ -6439,3 +6439,576 @@
 }
 /* === END PREMIUM DIGITAL INVOICE REDESIGN PHASE 11 === */
 
+
+/* === START MOBILE DIGITAL INVOICE LAYOUT FIX PHASE 12 === */
+@media screen and (max-width: 760px) {
+  /*
+    Mobile digital invoice layout fix.
+    Scope: screen preview only + A4 digital mode only.
+    Thermal mode, print media, and React PDF stay protected.
+  */
+
+  .modal-content.invoice-modal-wide {
+    width: calc(100vw - 10px) !important;
+    max-width: calc(100vw - 10px) !important;
+    max-height: calc(100dvh - 10px - env(safe-area-inset-top, 0px)) !important;
+    padding: 6px !important;
+    border-radius: 18px !important;
+    overflow: hidden !important;
+  }
+
+  .modal-content.invoice-modal-wide .inv2-shell {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 8px !important;
+    width: 100% !important;
+    max-height: calc(100dvh - 24px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)) !important;
+    padding: 0 !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    scroll-padding-bottom: calc(18px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  .modal-content.invoice-modal-wide .inv2-paper.a4-mode {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    border-radius: 17px !important;
+    box-shadow:
+      0 14px 34px rgba(0, 0, 0, 0.24),
+      0 0 0 1px rgba(23, 20, 15, 0.050),
+      inset 0 1px 0 rgba(255, 255, 255, 0.88) !important;
+  }
+
+  .modal-content.invoice-modal-wide .inv2-paper.a4-mode::after {
+    right: -10px !important;
+    bottom: 62px !important;
+    font-size: clamp(4.5rem, 28vw, 7rem) !important;
+    opacity: 0.82 !important;
+  }
+
+  .modal-content.invoice-modal-wide .inv2-paper.a4-mode .inv2-accent {
+    height: 6px !important;
+  }
+
+  /* Header: compact and readable */
+  .modal-content.invoice-modal-wide .inv2-paper.a4-mode .inv2-header {
+    margin: 8px 8px 7px !important;
+    padding: 12px !important;
+    border-radius: 16px !important;
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+
+  .modal-content.invoice-modal-wide .inv2-paper.a4-mode .inv2-brand {
+    gap: 9px !important;
+    align-items: center !important;
+  }
+
+  .modal-content.invoice-modal-wide .inv2-paper.a4-mode .inv2-brand-icon-wrap {
+    width: 42px !important;
+    height: 42px !important;
+    flex-basis: 42px !important;
+    border-radius: 14px !important;
+  }
+
+  .modal-content.invoice-modal-wide .inv2-paper.a4-mode .inv2-brand-icon {
+    font-size: 1.28rem !important;
+  }
+
+  .modal-content.invoice-modal-wide .inv2-paper.a4-mode .inv2-brand-name {
+    max-width: 100% !important;
+    font-size: 0.92rem !important;
+    line-height: 1 !important;
+    letter-spacing: -0.035em !important;
+  }
+
+  .modal-content.invoice-modal-wide .inv2-paper.a4-mode .inv2-brand-sub {
+    max-width: 100% !important;
+    font-size: 0.60rem !important;
+    line-height: 1.20 !important;
+  }
+
+  .modal-content.invoice-modal-wide .inv2-paper.a4-mode .inv2-title-block {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 8px !important;
+    text-align: left !important;
+  }
+
+  .modal-content.invoice-modal-wide .inv2-paper.a4-mode .inv2-title {
+    font-size: clamp(1.32rem, 8vw, 1.96rem) !important;
+    line-height: 0.88 !important;
+    letter-spacing: -0.055em !important;
+  }
+
+  .modal-content.invoice-modal-wide .inv2-paper.a4-mode .inv2-status-badge {
+    min-height: 25px !important;
+    padding: 0 9px !important;
+    border-radius: 999px !important;
+    font-size: 0.54rem !important;
+    letter-spacing: 0.040em !important;
+    white-space: nowrap !important;
+    flex-shrink: 0 !important;
+  }
+
+  /* Cards: single column with less air */
+  .modal-content.invoice-modal-wide .inv2-paper.a4-mode .inv2-details-grid,
+  .modal-content.invoice-modal-wide .inv2-paper.a4-mode .inv2-summary-section {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 7px !important;
+    padding: 0 8px 8px !important;
+  }
+
+  .modal-content.invoice-modal-wide .inv2-paper.a4-mode .inv2-bill-to,
+  .modal-content.invoice-modal-wide .inv2-paper.a4-mode .inv2-meta-info,
+  .modal-content.invoice-modal-wide .inv2-paper.a4-mode .inv2-notes,
+  .modal-content.invoice-modal-wide .inv2-paper.a4-mode .inv2-summary-box {
+    padding: 10px !important;
+    border-radius: 14px !important;
+  }
+
+  .modal-content.invoice-modal-wide .inv2-paper.a4-mode .inv2-label {
+    margin-bottom: 5px !important;
+    font-size: 0.50rem !important;
+    line-height: 1 !important;
+    letter-spacing: 0.090em !important;
+  }
+
+  .modal-content.invoice-modal-wide .inv2-paper.a4-mode .inv2-customer-name {
+    font-size: 1rem !important;
+    line-height: 1.02 !important;
+    margin-bottom: 6px !important;
+  }
+
+  .modal-content.invoice-modal-wide .inv2-paper.a4-mode .inv2-customer-phone {
+    min-height: 22px !important;
+    padding-inline: 8px !important;
+    font-size: 0.62rem !important;
+  }
+
+  .modal-content.invoice-modal-wide .inv2-paper.a4-mode .inv2-meta-item {
+    display: grid !important;
+    grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr) !important;
+    gap: 8px !important;
+    padding: 7px 0 !important;
+  }
+
+  .modal-content.invoice-modal-wide .inv2-paper.a4-mode .inv2-meta-item:first-child {
+    padding-top: 0 !important;
+  }
+
+  .modal-content.invoice-modal-wide .inv2-paper.a4-mode .inv2-meta-item:last-child {
+    padding-bottom: 0 !important;
+  }
+
+  .modal-content.invoice-modal-wide .inv2-paper.a4-mode .inv2-meta-item .inv2-label {
+    margin: 0 !important;
+  }
+
+  .modal-content.invoice-modal-wide .inv2-paper.a4-mode .inv2-val,
+  .modal-content.invoice-modal-wide .inv2-paper.a4-mode .inv2-val-mono {
+    font-size: 0.66rem !important;
+    line-height: 1.12 !important;
+    text-align: right !important;
+    overflow-wrap: anywhere !important;
+  }
+
+  /* Table becomes a mobile service card, no horizontal scroll */
+  .modal-content.invoice-modal-wide .inv2-paper.a4-mode .inv2-table-wrapper {
+    padding: 0 8px !important;
+    margin-bottom: 8px !important;
+    overflow: visible !important;
+  }
+
+  .modal-content.invoice-modal-wide .inv2-paper.a4-mode .inv2-items {
+    display: block !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    border-radius: 14px !important;
+    overflow: hidden !important;
+  }
+
+  .modal-content.invoice-modal-wide .inv2-paper.a4-mode .inv2-items thead {
+    display: none !important;
+  }
+
+  .modal-content.invoice-modal-wide .inv2-paper.a4-mode .inv2-items tbody {
+    display: grid !important;
+    gap: 0 !important;
+    width: 100% !important;
+  }
+
+  .modal-content.invoice-modal-wide .inv2-paper.a4-mode .inv2-items tr {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 7px 8px !important;
+    width: 100% !important;
+    padding: 10px !important;
+    border-bottom: 1px solid rgba(23, 20, 15, 0.075) !important;
+  }
+
+  .modal-content.invoice-modal-wide .inv2-paper.a4-mode .inv2-items tr:last-child {
+    border-bottom: 0 !important;
+  }
+
+  .modal-content.invoice-modal-wide .inv2-paper.a4-mode .inv2-items td {
+    display: block !important;
+    width: auto !important;
+    padding: 0 !important;
+    border: 0 !important;
+    min-width: 0 !important;
+  }
+
+  .modal-content.invoice-modal-wide .inv2-paper.a4-mode .inv2-items td.col-desc {
+    grid-column: 1 / -1 !important;
+  }
+
+  .modal-content.invoice-modal-wide .inv2-paper.a4-mode .inv2-items td.col-qty,
+  .modal-content.invoice-modal-wide .inv2-paper.a4-mode .inv2-items td.col-rate {
+    min-height: 25px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 8px !important;
+    padding: 0 8px !important;
+    border-radius: 10px !important;
+    background: rgba(23, 20, 15, 0.050) !important;
+    color: rgba(23, 20, 15, 0.72) !important;
+    font-size: 0.60rem !important;
+    line-height: 1 !important;
+    font-weight: 850 !important;
+    text-align: left !important;
+  }
+
+  .modal-content.invoice-modal-wide .inv2-paper.a4-mode .inv2-items td.col-qty::before {
+    content: "Durasi";
+    color: rgba(23, 20, 15, 0.46);
+    font-size: 0.52rem;
+    font-weight: 950;
+    letter-spacing: 0.055em;
+    text-transform: uppercase;
+  }
+
+  .modal-content.invoice-modal-wide .inv2-paper.a4-mode .inv2-items td.col-rate::before {
+    content: "Tarif";
+    color: rgba(23, 20, 15, 0.46);
+    font-size: 0.52rem;
+    font-weight: 950;
+    letter-spacing: 0.055em;
+    text-transform: uppercase;
+  }
+
+  .modal-content.invoice-modal-wide .inv2-paper.a4-mode .inv2-items td.col-amt {
+    grid-column: 1 / -1 !important;
+    min-height: 34px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 10px !important;
+    padding: 0 10px !important;
+    border-radius: 12px !important;
+    background:
+      linear-gradient(90deg, rgba(23, 20, 15, 0.90), rgba(35, 30, 24, 0.86)) !important;
+    color: #fffdf8 !important;
+    font-size: 0.82rem !important;
+    line-height: 1 !important;
+    font-weight: 950 !important;
+    text-align: right !important;
+  }
+
+  .modal-content.invoice-modal-wide .inv2-paper.a4-mode .inv2-items td.col-amt::before {
+    content: "Jumlah";
+    color: rgba(255, 255, 255, 0.58);
+    font-size: 0.56rem;
+    font-weight: 950;
+    letter-spacing: 0.075em;
+    text-transform: uppercase;
+  }
+
+  .modal-content.invoice-modal-wide .inv2-paper.a4-mode .inv2-item-name {
+    font-size: 0.80rem !important;
+    line-height: 1.08 !important;
+    margin-bottom: 4px !important;
+  }
+
+  .modal-content.invoice-modal-wide .inv2-paper.a4-mode .inv2-item-time {
+    font-size: 0.58rem !important;
+    line-height: 1.28 !important;
+  }
+
+  .modal-content.invoice-modal-wide .inv2-paper.a4-mode .inv2-discount-row td {
+    background: transparent !important;
+  }
+
+  .modal-content.invoice-modal-wide .inv2-paper.a4-mode .inv2-discount-row td.col-desc {
+    grid-column: 1 / -1 !important;
+  }
+
+  .modal-content.invoice-modal-wide .inv2-paper.a4-mode .inv2-discount-row td.col-qty,
+  .modal-content.invoice-modal-wide .inv2-paper.a4-mode .inv2-discount-row td.col-rate {
+    display: none !important;
+  }
+
+  .modal-content.invoice-modal-wide .inv2-paper.a4-mode .inv2-discount-row td.col-amt {
+    background:
+      linear-gradient(90deg, rgba(217, 169, 74, 0.20), rgba(217, 169, 74, 0.080)) !important;
+    color: #8a5a12 !important;
+  }
+
+  .modal-content.invoice-modal-wide .inv2-paper.a4-mode .inv2-discount-row td.col-amt::before {
+    content: "Diskon";
+    color: rgba(138, 90, 18, 0.62);
+  }
+
+  .modal-content.invoice-modal-wide .inv2-paper.a4-mode .inv2-discount-label {
+    font-size: 0.66rem !important;
+    line-height: 1.2 !important;
+  }
+
+  /* Summary: payment first, notes second */
+  .modal-content.invoice-modal-wide .inv2-paper.a4-mode .inv2-summary-box {
+    order: 1 !important;
+    gap: 7px !important;
+  }
+
+  .modal-content.invoice-modal-wide .inv2-paper.a4-mode .inv2-notes {
+    order: 2 !important;
+  }
+
+  .modal-content.invoice-modal-wide .inv2-paper.a4-mode .inv2-notes p {
+    font-size: 0.60rem !important;
+    line-height: 1.34 !important;
+  }
+
+  .modal-content.invoice-modal-wide .inv2-paper.a4-mode .inv2-sum-row {
+    min-height: 22px !important;
+    gap: 8px !important;
+  }
+
+  .modal-content.invoice-modal-wide .inv2-paper.a4-mode .sum-label {
+    font-size: 0.64rem !important;
+  }
+
+  .modal-content.invoice-modal-wide .inv2-paper.a4-mode .sum-val {
+    font-size: 0.68rem !important;
+  }
+
+  .modal-content.invoice-modal-wide .inv2-paper.a4-mode .inv2-divider {
+    margin: 2px 0 !important;
+  }
+
+  .modal-content.invoice-modal-wide .inv2-paper.a4-mode .inv2-grand-total {
+    min-height: 58px !important;
+    padding: 10px !important;
+    border-radius: 14px !important;
+  }
+
+  .modal-content.invoice-modal-wide .inv2-paper.a4-mode .grand-label {
+    font-size: 0.54rem !important;
+    line-height: 1 !important;
+  }
+
+  .modal-content.invoice-modal-wide .inv2-paper.a4-mode .grand-val {
+    font-size: clamp(0.95rem, 5vw, 1.14rem) !important;
+    line-height: 1 !important;
+  }
+
+  .modal-content.invoice-modal-wide .inv2-paper.a4-mode .inv2-watermark {
+    left: 48% !important;
+    top: 62% !important;
+    opacity: 0.040 !important;
+  }
+
+  .modal-content.invoice-modal-wide .inv2-paper.a4-mode .inv2-watermark span {
+    font-size: clamp(4.5rem, 24vw, 6.8rem) !important;
+  }
+
+  .modal-content.invoice-modal-wide .inv2-paper.a4-mode .inv2-footer {
+    padding: 10px !important;
+  }
+
+  .modal-content.invoice-modal-wide .inv2-paper.a4-mode .inv2-footer-content {
+    display: grid !important;
+    gap: 5px !important;
+  }
+
+  .modal-content.invoice-modal-wide .inv2-paper.a4-mode .footer-thanks {
+    font-size: 0.60rem !important;
+    line-height: 1.22 !important;
+  }
+
+  .modal-content.invoice-modal-wide .inv2-paper.a4-mode .footer-brand {
+    font-size: 0.62rem !important;
+    line-height: 1 !important;
+  }
+
+  /* Action panel also gets compact so invoice preview has breathing room */
+  .modal-content.invoice-modal-wide .inv2-actions {
+    padding: 8px !important;
+    border-radius: 15px !important;
+  }
+
+  .modal-content.invoice-modal-wide .inv2-actions-header {
+    margin-bottom: 7px !important;
+    padding-bottom: 7px !important;
+  }
+
+  .modal-content.invoice-modal-wide .inv2-actions-title {
+    font-size: 0.82rem !important;
+  }
+
+  .modal-content.invoice-modal-wide .inv2-actions-sub {
+    font-size: 0.60rem !important;
+  }
+
+  .modal-content.invoice-modal-wide .inv2-format-toggle {
+    gap: 5px !important;
+    padding: 4px !important;
+    border-radius: 13px !important;
+  }
+
+  .modal-content.invoice-modal-wide .format-btn {
+    min-height: 34px !important;
+    border-radius: 10px !important;
+    font-size: 0.60rem !important;
+  }
+
+  .modal-content.invoice-modal-wide .inv2-share-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 5px !important;
+    margin-top: 7px !important;
+  }
+
+  .modal-content.invoice-modal-wide .inv2-share-btn {
+    min-height: 54px !important;
+    padding: 6px 4px !important;
+    border-radius: 12px !important;
+  }
+
+  .modal-content.invoice-modal-wide .inv2-share-btn svg {
+    width: 15px !important;
+    height: 15px !important;
+  }
+
+  .modal-content.invoice-modal-wide .inv2-share-btn span {
+    margin-top: 3px !important;
+    font-size: 0.58rem !important;
+    line-height: 1 !important;
+  }
+
+  .modal-content.invoice-modal-wide .inv2-share-btn small {
+    display: none !important;
+  }
+
+  .modal-content.invoice-modal-wide .inv2-pay-btn {
+    min-height: 36px !important;
+    margin-top: 7px !important;
+    border-radius: 12px !important;
+    font-size: 0.66rem !important;
+  }
+
+  .modal-content.invoice-modal-wide .inv2-main-btns {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 5px !important;
+    margin-top: 7px !important;
+  }
+
+  .modal-content.invoice-modal-wide .inv2-btn-close,
+  .modal-content.invoice-modal-wide .inv2-btn-print {
+    min-height: 36px !important;
+    width: 100% !important;
+    padding: 0 6px !important;
+    border-radius: 12px !important;
+    font-size: 0.60rem !important;
+  }
+
+  .modal-content.invoice-modal-wide .inv2-btn-close svg,
+  .modal-content.invoice-modal-wide .inv2-btn-print svg {
+    width: 14px !important;
+    height: 14px !important;
+  }
+}
+
+@media screen and (max-width: 430px) {
+  .modal-content.invoice-modal-wide .inv2-paper.a4-mode .inv2-header {
+    margin: 7px 7px 6px !important;
+    padding: 10px !important;
+  }
+
+  .modal-content.invoice-modal-wide .inv2-paper.a4-mode .inv2-brand-icon-wrap {
+    width: 38px !important;
+    height: 38px !important;
+    flex-basis: 38px !important;
+  }
+
+  .modal-content.invoice-modal-wide .inv2-paper.a4-mode .inv2-title {
+    font-size: clamp(1.16rem, 7.5vw, 1.62rem) !important;
+  }
+
+  .modal-content.invoice-modal-wide .inv2-paper.a4-mode .inv2-status-badge {
+    min-height: 23px !important;
+    padding-inline: 8px !important;
+    font-size: 0.50rem !important;
+  }
+
+  .modal-content.invoice-modal-wide .inv2-paper.a4-mode .inv2-details-grid,
+  .modal-content.invoice-modal-wide .inv2-paper.a4-mode .inv2-summary-section,
+  .modal-content.invoice-modal-wide .inv2-paper.a4-mode .inv2-table-wrapper {
+    padding-inline: 7px !important;
+  }
+
+  .modal-content.invoice-modal-wide .inv2-paper.a4-mode .inv2-meta-item {
+    grid-template-columns: 1fr !important;
+    gap: 4px !important;
+  }
+
+  .modal-content.invoice-modal-wide .inv2-paper.a4-mode .inv2-val,
+  .modal-content.invoice-modal-wide .inv2-paper.a4-mode .inv2-val-mono {
+    text-align: left !important;
+  }
+
+  .modal-content.invoice-modal-wide .inv2-paper.a4-mode .inv2-items tr {
+    grid-template-columns: 1fr !important;
+    padding: 9px !important;
+  }
+
+  .modal-content.invoice-modal-wide .inv2-paper.a4-mode .inv2-items td.col-qty,
+  .modal-content.invoice-modal-wide .inv2-paper.a4-mode .inv2-items td.col-rate,
+  .modal-content.invoice-modal-wide .inv2-paper.a4-mode .inv2-items td.col-amt {
+    grid-column: 1 !important;
+  }
+
+  .modal-content.invoice-modal-wide .inv2-share-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .modal-content.invoice-modal-wide .inv2-main-btns {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media screen and (max-width: 360px) {
+  .modal-content.invoice-modal-wide {
+    width: calc(100vw - 6px) !important;
+    max-width: calc(100vw - 6px) !important;
+    padding: 4px !important;
+  }
+
+  .modal-content.invoice-modal-wide .inv2-paper.a4-mode .inv2-title-block {
+    display: grid !important;
+    gap: 6px !important;
+    justify-content: start !important;
+  }
+
+  .modal-content.invoice-modal-wide .inv2-paper.a4-mode .inv2-status-badge {
+    width: fit-content !important;
+  }
+}
+/* === END MOBILE DIGITAL INVOICE LAYOUT FIX PHASE 12 === */
+
