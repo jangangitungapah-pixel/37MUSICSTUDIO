@@ -7699,3 +7699,441 @@ body.calendar-resize-lock {
 }
 
 /* 37 RESIZE CONFIRM MODAL + POPUP VIEWPORT LOCK 8.7L END */
+
+/* 37 ADMIN CALENDAR MOBILE LAYOUT LOCK 8.7M START */
+
+/* Mobile calendar page rhythm */
+@media (max-width: 768px) {
+  .calendar-page {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-height: 100dvh !important;
+    padding-bottom: calc(92px + env(safe-area-inset-bottom, 0px)) !important;
+    overflow-x: hidden !important;
+  }
+
+  .calendar-main-content,
+  .calendar-shell {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    gap: 0.68rem !important;
+    overflow: visible !important;
+  }
+
+  /* Header becomes compact command card */
+  .calendar-page .calendar-page-header {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    align-items: stretch !important;
+    gap: 0.66rem !important;
+    padding: 0.78rem !important;
+    border-radius: 1.18rem !important;
+  }
+
+  .calendar-page .app-page-header-left {
+    display: grid !important;
+    grid-template-columns: auto minmax(0, 1fr) !important;
+    align-items: center !important;
+    gap: 0.62rem !important;
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  .calendar-page .calendar-header-icon {
+    width: 2.35rem !important;
+    height: 2.35rem !important;
+    min-width: 2.35rem !important;
+    border-radius: 0.82rem !important;
+  }
+
+  .calendar-page .app-page-title {
+    font-size: 1.48rem !important;
+    line-height: 0.92 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  .calendar-page .app-page-subtitle {
+    font-size: 0.62rem !important;
+    line-height: 1.1 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  .calendar-page .calendar-header-actions {
+    display: grid !important;
+    grid-template-columns: 1fr auto !important;
+    align-items: center !important;
+    gap: 0.5rem !important;
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  .calendar-page .calendar-header-search,
+  .calendar-page .app-search {
+    width: 100% !important;
+    min-height: 2.45rem !important;
+    justify-self: stretch !important;
+  }
+
+  .calendar-page .app-page-actions-buttons {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    gap: 0.38rem !important;
+    flex-wrap: nowrap !important;
+    min-width: 0 !important;
+  }
+
+  /* Header action buttons compact on mobile */
+  .calendar-page .calendar-page-header .btn-secondary,
+  .calendar-page .calendar-page-header .btn-primary,
+  .calendar-page .calendar-new-btn,
+  .calendar-page .calendar-print-btn,
+  .calendar-page .cal-panel-toggle {
+    width: 2.35rem !important;
+    height: 2.35rem !important;
+    min-width: 2.35rem !important;
+    min-height: 2.35rem !important;
+    max-width: 2.35rem !important;
+    padding: 0 !important;
+    border-radius: 999px !important;
+    overflow: hidden !important;
+    font-size: 0 !important;
+  }
+
+  .calendar-page .calendar-page-header .btn-secondary svg,
+  .calendar-page .calendar-page-header .btn-primary svg,
+  .calendar-page .calendar-new-btn svg,
+  .calendar-page .calendar-print-btn svg,
+  .calendar-page .cal-panel-toggle svg {
+    width: 1rem !important;
+    height: 1rem !important;
+    margin: 0 !important;
+  }
+
+  /* Stats should not crop, especially status legend card */
+  .calendar-page .calendar-overview {
+    gap: 0.62rem !important;
+  }
+
+  .calendar-page .calendar-stats-grid {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 0.56rem !important;
+  }
+
+  .calendar-page .calendar-stat-card {
+    min-height: 4.85rem !important;
+    height: auto !important;
+    max-height: none !important;
+    padding: 0.72rem !important;
+    border-radius: 1.05rem !important;
+    overflow: visible !important;
+  }
+
+  .calendar-page .calendar-stat-icon {
+    width: 2.05rem !important;
+    height: 2.05rem !important;
+    min-width: 2.05rem !important;
+    border-radius: 0.72rem !important;
+  }
+
+  .calendar-page .calendar-stat-value {
+    font-size: 1.72rem !important;
+    line-height: 0.95 !important;
+  }
+
+  .calendar-page .calendar-stat-label {
+    margin-top: 0.24rem !important;
+    font-size: 0.54rem !important;
+  }
+
+  .calendar-page .calendar-stat-legend {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    align-items: stretch !important;
+    justify-content: stretch !important;
+    gap: 0.38rem !important;
+    width: 100% !important;
+  }
+
+  .calendar-page .calendar-stat-legend-item {
+    width: 100% !important;
+    min-height: 2.15rem !important;
+    justify-content: flex-start !important;
+    padding: 0 0.72rem !important;
+    font-size: 0.68rem !important;
+  }
+
+  /* Workspace compact */
+  .calendar-page .calendar-workspace {
+    border-radius: 1.08rem !important;
+    overflow: hidden !important;
+  }
+
+  .calendar-page .calendar-workspace-toolbar {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 0.56rem !important;
+    padding: 0.62rem !important;
+  }
+
+  .calendar-page .calendar-toolbar-left {
+    display: grid !important;
+    grid-template-columns: auto minmax(0, 1fr) auto auto !important;
+    align-items: center !important;
+    gap: 0.42rem !important;
+    width: 100% !important;
+  }
+
+  .calendar-page .nav-arrow,
+  .calendar-page .icon-btn.nav-arrow {
+    width: 2.1rem !important;
+    height: 2.1rem !important;
+    min-width: 2.1rem !important;
+    border-radius: 0.75rem !important;
+  }
+
+  .calendar-page .current-month {
+    min-width: 0 !important;
+    max-width: 100% !important;
+    font-size: 1.02rem !important;
+    text-align: center !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  .calendar-page .today-btn {
+    min-height: 2.1rem !important;
+    padding: 0 0.62rem !important;
+    font-size: 0.66rem !important;
+  }
+
+  .calendar-page .calendar-toolbar-right {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 0.48rem !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow: visible !important;
+  }
+
+  .calendar-page .view-switcher {
+    width: 100% !important;
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 0.24rem !important;
+    min-height: 2.42rem !important;
+    padding: 0.26rem !important;
+    overflow: hidden !important;
+  }
+
+  .calendar-page .view-btn {
+    min-width: 0 !important;
+    min-height: 1.9rem !important;
+    padding: 0 0.4rem !important;
+    justify-content: center !important;
+    font-size: 0.66rem !important;
+  }
+
+  .calendar-page .view-btn svg {
+    width: 0.82rem !important;
+    height: 0.82rem !important;
+  }
+
+  .calendar-page .quick-filters {
+    width: 100% !important;
+    max-width: 100% !important;
+    display: flex !important;
+    gap: 0.34rem !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    padding-bottom: 0.08rem !important;
+    scrollbar-width: none !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  .calendar-page .quick-filters::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  .calendar-page .filter-chip {
+    flex: 0 0 auto !important;
+    height: 2rem !important;
+    min-height: 2rem !important;
+    padding: 0 0.62rem !important;
+    font-size: 0.62rem !important;
+  }
+
+  /* Grid must be usable above bottom nav */
+  .calendar-page .monthly-grid-wrapper,
+  .calendar-page .calendar-timeline-wrapper {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: min(58dvh, 34rem) !important;
+    min-height: 24rem !important;
+    max-height: calc(100dvh - 8rem) !important;
+    margin-bottom: calc(82px + env(safe-area-inset-bottom, 0px)) !important;
+
+    overflow: auto !important;
+    overflow-x: auto !important;
+    overflow-y: auto !important;
+
+    overscroll-behavior: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    touch-action: auto !important;
+
+    border-radius: 0.95rem !important;
+    scrollbar-gutter: auto !important;
+  }
+
+  .calendar-page .monthly-grid,
+  .calendar-page .calendar-timeline-grid {
+    min-width: max-content !important;
+    min-height: max-content !important;
+    overflow: visible !important;
+  }
+
+  /* Date/hour headers readable in mobile grid */
+  .calendar-page .timeline-hour-header {
+    min-height: 2.6rem !important;
+    padding: 0.42rem 0.34rem !important;
+  }
+
+  .calendar-page .timeline-hour-label {
+    font-size: 0.82rem !important;
+  }
+
+  .calendar-page .timeline-hour-end {
+    font-size: 0.48rem !important;
+  }
+
+  .calendar-page .timeline-date-cell {
+    min-width: 4.35rem !important;
+  }
+
+  .calendar-page .timeline-date-number {
+    width: 1.58rem !important;
+    height: 1.58rem !important;
+    font-size: 0.98rem !important;
+  }
+
+  .calendar-page .timeline-date-day {
+    font-size: 0.48rem !important;
+  }
+
+  /* Booking cards mobile readability */
+  .calendar-page .booked-cell,
+  .calendar-page .timeline-booking-card {
+    min-height: calc(100% - 0.36rem) !important;
+    margin: 0.18rem 0.16rem !important;
+    padding: 0.32rem 1.22rem 0.24rem 0.48rem !important;
+    border-radius: 0.7rem !important;
+  }
+
+  .calendar-page .booking-band-name {
+    font-size: 0.68rem !important;
+    line-height: 1.02 !important;
+  }
+
+  .calendar-page .booking-time-label {
+    font-size: 0.52rem !important;
+    line-height: 0.82rem !important;
+    height: 0.82rem !important;
+  }
+
+  .calendar-page .rec-indicator {
+    height: 0.72rem !important;
+    min-height: 0.72rem !important;
+    max-height: 0.72rem !important;
+    padding: 0 0.22rem !important;
+  }
+
+  .calendar-page .rec-text {
+    font-size: 0.45rem !important;
+  }
+
+  /* Detail/mobile modals should sit inside viewport */
+  .booking-detail-popup.mobile-sheet {
+    left: 10px !important;
+    right: 10px !important;
+    bottom: calc(10px + env(safe-area-inset-bottom, 0px)) !important;
+    width: auto !important;
+    max-height: min(82dvh, 680px) !important;
+    border-radius: 1.25rem !important;
+  }
+
+  .booking-detail-popup.mobile-sheet .detail-body {
+    max-height: min(58dvh, 460px) !important;
+  }
+}
+
+/* Narrow Galaxy-size lock */
+@media (max-width: 430px) {
+  .calendar-page .calendar-header-actions {
+    grid-template-columns: 1fr auto !important;
+  }
+
+  .calendar-page .app-page-actions-buttons {
+    max-width: 5.1rem !important;
+  }
+
+  .calendar-page .calendar-page-header .btn-secondary,
+  .calendar-page .calendar-page-header .btn-primary,
+  .calendar-page .calendar-new-btn,
+  .calendar-page .calendar-print-btn,
+  .calendar-page .cal-panel-toggle {
+    width: 2.18rem !important;
+    height: 2.18rem !important;
+    min-width: 2.18rem !important;
+    min-height: 2.18rem !important;
+  }
+
+  .calendar-page .calendar-stat-card {
+    min-height: 4.65rem !important;
+  }
+
+  .calendar-page .calendar-stat-legend-item {
+    min-height: 2.02rem !important;
+  }
+
+  .calendar-page .monthly-grid-wrapper,
+  .calendar-page .calendar-timeline-wrapper {
+    height: min(56dvh, 32rem) !important;
+    min-height: 23rem !important;
+  }
+}
+
+/* Tiny width safety */
+@media (max-width: 370px) {
+  .calendar-page .calendar-header-icon {
+    width: 2.15rem !important;
+    height: 2.15rem !important;
+    min-width: 2.15rem !important;
+  }
+
+  .calendar-page .app-page-title {
+    font-size: 1.28rem !important;
+  }
+
+  .calendar-page .app-page-subtitle {
+    font-size: 0.56rem !important;
+  }
+
+  .calendar-page .view-btn span {
+    display: none !important;
+  }
+
+  .calendar-page .view-btn svg {
+    width: 0.95rem !important;
+    height: 0.95rem !important;
+  }
+}
+
+/* 37 ADMIN CALENDAR MOBILE LAYOUT LOCK 8.7M END */
