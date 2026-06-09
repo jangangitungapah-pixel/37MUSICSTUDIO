@@ -3759,3 +3759,55 @@
     inset 0 1px 0 rgba(255,255,255,0.78) !important;
 }
 
+/* ──────────────────────────────────────────────────────────────────────────
+   37 SIDEBAR BELL TOGGLE COLLISION FIX 8.6B-2
+   ────────────────────────────────────────────────────────────────────────── */
+
+@media (min-width: 769px) {
+  .admin-shell-modern .sidebar-header {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    align-items: center !important;
+    column-gap: 0.75rem !important;
+    padding-right: 3.15rem !important;
+  }
+
+  .admin-shell-modern .sidebar-brand {
+    min-width: 0 !important;
+  }
+
+  .admin-shell-modern .sidebar-bell {
+    position: relative !important;
+    right: auto !important;
+    left: auto !important;
+    justify-self: end !important;
+    flex-shrink: 0 !important;
+    width: 2.28rem !important;
+    height: 2.28rem !important;
+    min-width: 2.28rem !important;
+    z-index: 2 !important;
+  }
+
+  .admin-shell-modern .collapse-toggle {
+    top: 1.42rem !important;
+    right: -1.02rem !important;
+    z-index: 60 !important;
+  }
+
+  .admin-shell-modern .sidebar.collapsed .sidebar-header {
+    grid-template-columns: 1fr !important;
+    justify-items: center !important;
+    padding-right: 0.62rem !important;
+  }
+
+  .admin-shell-modern .sidebar.collapsed .sidebar-bell {
+    display: none !important;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .admin-shell-modern .sidebar-header {
+    padding-right: 3.35rem !important;
+  }
+}
+
