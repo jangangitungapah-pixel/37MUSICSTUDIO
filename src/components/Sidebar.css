@@ -3571,6 +3571,411 @@
 }
 /* === END 37 MORE MENU PUBLIC CALENDAR FOUNDATION PHASE A === */
 
+/* === START 37 MORE MENU CARD TYPOGRAPHY POLISH PHASE B === */
+@media (max-width: 1024px) {
+  .mobile-bottom-sheet-wrapper .modal-content.mobile-bottom-sheet {
+    background:
+      radial-gradient(circle at 18% 0%, rgba(239, 197, 110, 0.112), transparent 36%),
+      radial-gradient(circle at 86% 8%, rgba(88, 224, 233, 0.078), transparent 34%),
+      radial-gradient(circle at 28% 100%, rgba(255, 56, 113, 0.056), transparent 38%),
+      linear-gradient(180deg, rgba(255,255,255,0.070), rgba(255,255,255,0.022)),
+      rgba(18, 22, 31, 0.965) !important;
+    border-color: rgba(255,255,255,0.095) !important;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.095),
+      0 -22px 66px rgba(0,0,0,0.34),
+      0 0 0 1px rgba(0,0,0,0.13) !important;
+  }
+
+  .bottom-sheet-header {
+    min-height: 64px !important;
+    padding-top: 17px !important;
+    padding-bottom: 12px !important;
+  }
+
+  .bottom-sheet-header h3 {
+    font-size: 0.94rem !important;
+    font-weight: 900 !important;
+    letter-spacing: -0.018em !important;
+  }
+
+  .bottom-sheet-header h3::after {
+    margin-top: 4px !important;
+    font-size: 0.56rem !important;
+    font-weight: 760 !important;
+    letter-spacing: 0.10em !important;
+    color: rgba(255,250,240,0.43) !important;
+  }
+
+  .mobile-bottom-sheet .modal-close-floating {
+    width: 34px !important;
+    height: 34px !important;
+    border-radius: 13px !important;
+    color: rgba(255,250,240,0.66) !important;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.062), rgba(255,255,255,0.022)),
+      rgba(255,255,255,0.034) !important;
+    border-color: rgba(255,255,255,0.072) !important;
+  }
+
+  .mobile-sheet-profile {
+    gap: 9px !important;
+    padding: 11px 12px !important;
+    background:
+      radial-gradient(circle at 0% 0%, rgba(239,197,110,0.052), transparent 42%),
+      linear-gradient(180deg, rgba(255,255,255,0.028), rgba(255,255,255,0.008)) !important;
+  }
+
+  .mobile-sheet-user {
+    grid-template-columns: 38px minmax(0, 1fr) !important;
+    gap: 9px !important;
+    padding: 7px !important;
+    border-radius: 17px !important;
+    border-color: rgba(255,255,255,0.066) !important;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.046), rgba(255,255,255,0.014)),
+      rgba(255,255,255,0.018) !important;
+  }
+
+  .mobile-sheet-avatar {
+    width: 38px !important;
+    height: 38px !important;
+    border-radius: 15px !important;
+    font-size: 0.88rem !important;
+    font-weight: 900 !important;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.52),
+      0 8px 16px rgba(0,0,0,0.14) !important;
+  }
+
+  .mobile-sheet-name {
+    font-size: 0.82rem !important;
+    font-weight: 850 !important;
+    letter-spacing: -0.018em !important;
+  }
+
+  .mobile-sheet-role {
+    font-size: 0.61rem !important;
+    font-weight: 760 !important;
+    letter-spacing: 0.075em !important;
+    color: rgba(255,250,240,0.48) !important;
+  }
+
+  .mobile-sheet-actions {
+    gap: 7px !important;
+  }
+
+  .mobile-sheet-action {
+    width: 38px !important;
+    height: 38px !important;
+    min-width: 38px !important;
+    min-height: 38px !important;
+    border-radius: 15px !important;
+    border-color: rgba(255,255,255,0.070) !important;
+    color: rgba(255,250,240,0.70) !important;
+    background:
+      radial-gradient(circle at 50% 0%, rgba(255,255,255,0.080), transparent 64%),
+      rgba(255,255,255,0.034) !important;
+  }
+
+  .mobile-sheet-action svg {
+    width: 16px !important;
+    height: 16px !important;
+    stroke-width: 2.15 !important;
+  }
+
+  .mobile-sheet-dot {
+    top: -4px !important;
+    right: -4px !important;
+    min-width: 17px !important;
+    height: 17px !important;
+    font-size: 0.56rem !important;
+    box-shadow: 0 7px 14px rgba(255,42,95,0.24) !important;
+  }
+
+  .bottom-sheet-grid {
+    gap: 9px !important;
+    padding: 12px 12px calc(18px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  .sheet-nav-item {
+    min-height: 68px !important;
+    grid-template-columns: 38px minmax(0, 1fr) 12px !important;
+    gap: 9px !important;
+    padding: 9px 10px !important;
+    border-radius: 18px !important;
+
+    background:
+      radial-gradient(circle at 50% 0%, rgba(255,255,255,0.066), transparent 60%),
+      linear-gradient(180deg, rgba(255,255,255,0.048), rgba(255,255,255,0.013)),
+      rgba(255,255,255,0.018) !important;
+
+    border-color: rgba(255,255,255,0.070) !important;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.058),
+      0 8px 18px rgba(0,0,0,0.105) !important;
+  }
+
+  .sheet-nav-item::before {
+    background:
+      radial-gradient(circle at 12% 0%, rgba(239,197,110,0.048), transparent 42%),
+      radial-gradient(circle at 88% 16%, rgba(88,224,233,0.040), transparent 42%) !important;
+    opacity: 0.84 !important;
+  }
+
+  .sheet-nav-item::after {
+    content: "›" !important;
+    width: 12px !important;
+    justify-self: center !important;
+    text-align: center !important;
+    color: rgba(255,250,240,0.30) !important;
+    font-size: 1rem !important;
+    font-weight: 800 !important;
+    transform: translateX(0) !important;
+  }
+
+  .sheet-nav-item:hover,
+  .sheet-nav-item:focus-visible {
+    border-color: rgba(239,197,110,0.18) !important;
+    background:
+      radial-gradient(circle at 50% 0%, rgba(255,255,255,0.080), transparent 60%),
+      linear-gradient(180deg, rgba(255,255,255,0.062), rgba(255,255,255,0.016)),
+      rgba(255,255,255,0.025) !important;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.070),
+      0 10px 22px rgba(0,0,0,0.13),
+      0 0 0 1px rgba(239,197,110,0.035) !important;
+  }
+
+  .sheet-icon {
+    width: 38px !important;
+    height: 38px !important;
+    min-width: 38px !important;
+    min-height: 38px !important;
+    border-radius: 15px !important;
+    color: rgba(255,250,240,0.80) !important;
+    background:
+      radial-gradient(circle at 50% 0%, rgba(255,255,255,0.095), transparent 62%),
+      rgba(255,255,255,0.048) !important;
+    border-color: rgba(255,255,255,0.058) !important;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.060),
+      0 6px 14px rgba(0,0,0,0.10) !important;
+  }
+
+  .sheet-icon svg {
+    width: 17px !important;
+    height: 17px !important;
+    stroke-width: 2.15 !important;
+  }
+
+  .sheet-nav-item span {
+    min-width: 0 !important;
+    font-size: 0.73rem !important;
+    line-height: 1.04 !important;
+    font-weight: 830 !important;
+    letter-spacing: -0.018em !important;
+    color: rgba(255,250,240,0.90) !important;
+  }
+
+  .sheet-nav-item span::after {
+    margin-top: 4px !important;
+    font-size: 0.56rem !important;
+    line-height: 1.05 !important;
+    font-weight: 700 !important;
+    color: rgba(255,250,240,0.42) !important;
+  }
+
+  .sheet-nav-item[href="/inventory"] span::after {
+    content: "Stok & item studio" !important;
+  }
+
+  .sheet-nav-item[href="/billing"] span::after {
+    content: "POS & pembayaran" !important;
+  }
+
+  .sheet-nav-item[href="/finance"] span::after {
+    content: "Buku kas studio" !important;
+  }
+
+  .sheet-nav-item[href="/gallery"] span::after {
+    content: "Portfolio foto" !important;
+  }
+
+  .sheet-nav-item[href="/staff"] span::after {
+    content: "Tim & akses" !important;
+  }
+
+  .sheet-nav-item[href="/maintenance"] span::after {
+    content: "Aset & perawatan" !important;
+  }
+
+  .sheet-nav-item[href="/settings"] span::after {
+    content: "Preferensi app" !important;
+  }
+
+  .sheet-nav-item.text-danger {
+    min-height: 54px !important;
+    grid-template-columns: 38px minmax(0, 1fr) auto !important;
+    gap: 10px !important;
+    padding: 9px 11px !important;
+    border-radius: 18px !important;
+    color: #ff7186 !important;
+    background:
+      radial-gradient(circle at 12% 0%, rgba(255, 70, 105, 0.115), transparent 46%),
+      linear-gradient(180deg, rgba(255, 70, 105, 0.050), rgba(255,255,255,0.008)),
+      rgba(255,255,255,0.016) !important;
+    border-color: rgba(255, 113, 134, 0.135) !important;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.045),
+      0 8px 18px rgba(0,0,0,0.10) !important;
+  }
+
+  .sheet-nav-item.text-danger::before {
+    background:
+      radial-gradient(circle at 0% 0%, rgba(255,113,134,0.115), transparent 42%) !important;
+    opacity: 0.74 !important;
+  }
+
+  .sheet-nav-item.text-danger::after {
+    color: rgba(255, 113, 134, 0.52) !important;
+    font-size: 0.60rem !important;
+    font-weight: 820 !important;
+    letter-spacing: 0.045em !important;
+  }
+
+  .sheet-nav-item.text-danger .sheet-icon {
+    width: 38px !important;
+    height: 38px !important;
+    min-width: 38px !important;
+    min-height: 38px !important;
+    color: #ff7186 !important;
+    background: rgba(255, 113, 134, 0.076) !important;
+    border-color: rgba(255, 113, 134, 0.120) !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.050) !important;
+  }
+
+  .sheet-nav-item.text-danger span {
+    font-size: 0.73rem !important;
+    font-weight: 830 !important;
+    color: #ff7186 !important;
+  }
+
+  .sheet-nav-item.text-danger span::after {
+    margin-top: 4px !important;
+    font-size: 0.56rem !important;
+    font-weight: 700 !important;
+    color: rgba(255, 113, 134, 0.50) !important;
+  }
+}
+
+@media (max-width: 420px) {
+  .bottom-sheet-grid {
+    gap: 8px !important;
+    padding: 11px 11px calc(18px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  .sheet-nav-item {
+    min-height: 66px !important;
+    grid-template-columns: 36px minmax(0, 1fr) 10px !important;
+    gap: 8px !important;
+    padding: 8px 9px !important;
+    border-radius: 17px !important;
+  }
+
+  .sheet-icon {
+    width: 36px !important;
+    height: 36px !important;
+    min-width: 36px !important;
+    min-height: 36px !important;
+    border-radius: 14px !important;
+  }
+
+  .sheet-nav-item span {
+    font-size: 0.69rem !important;
+  }
+
+  .sheet-nav-item span::after {
+    font-size: 0.535rem !important;
+  }
+
+  .sheet-nav-item.text-danger {
+    min-height: 52px !important;
+  }
+}
+
+@media (max-width: 360px) {
+  .bottom-sheet-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .sheet-nav-item {
+    min-height: 58px !important;
+  }
+
+  .sheet-nav-item span::after {
+    white-space: normal !important;
+    display: -webkit-box !important;
+    -webkit-line-clamp: 1 !important;
+    -webkit-box-orient: vertical !important;
+  }
+}
+
+@media (max-width: 1024px) {
+  [data-theme="light"] .mobile-bottom-sheet-wrapper .modal-content.mobile-bottom-sheet {
+    background:
+      radial-gradient(circle at 18% 0%, rgba(185, 133, 47, 0.070), transparent 36%),
+      radial-gradient(circle at 86% 8%, rgba(24, 139, 153, 0.050), transparent 34%),
+      radial-gradient(circle at 28% 100%, rgba(232, 25, 78, 0.040), transparent 38%),
+      linear-gradient(180deg, rgba(255,252,246,0.98), rgba(255,250,241,0.92)),
+      rgba(255, 250, 241, 0.96) !important;
+  }
+
+  [data-theme="light"] .sheet-nav-item {
+    background:
+      radial-gradient(circle at 50% 0%, rgba(255,255,255,0.88), transparent 60%),
+      linear-gradient(180deg, rgba(255,255,255,0.96), rgba(248,245,238,0.82)),
+      rgba(255,255,255,0.88) !important;
+    border-color: rgba(96, 73, 41, 0.090) !important;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.78),
+      0 8px 16px rgba(96, 73, 41, 0.055) !important;
+  }
+
+  [data-theme="light"] .sheet-nav-item::after {
+    color: rgba(33, 28, 22, 0.28) !important;
+  }
+
+  [data-theme="light"] .sheet-icon {
+    color: rgba(33, 28, 22, 0.66) !important;
+    background: rgba(96, 73, 41, 0.048) !important;
+    border-color: rgba(96, 73, 41, 0.082) !important;
+  }
+
+  [data-theme="light"] .sheet-nav-item span {
+    color: rgba(33, 28, 22, 0.88) !important;
+  }
+
+  [data-theme="light"] .sheet-nav-item span::after {
+    color: rgba(33, 28, 22, 0.46) !important;
+  }
+
+  [data-theme="light"] .mobile-sheet-user {
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.86), rgba(248,245,238,0.64)),
+      rgba(255,255,255,0.74) !important;
+  }
+
+  [data-theme="light"] .sheet-nav-item.text-danger {
+    background:
+      radial-gradient(circle at 12% 0%, rgba(217, 48, 79, 0.082), transparent 46%),
+      linear-gradient(180deg, rgba(217, 48, 79, 0.040), rgba(255,255,255,0.76)),
+      rgba(255,255,255,0.82) !important;
+    border-color: rgba(217, 48, 79, 0.12) !important;
+  }
+}
+/* === END 37 MORE MENU CARD TYPOGRAPHY POLISH PHASE B === */
+
 
 /* ──────────────────────────────────────────────────────────────────────────
    37 DESKTOP SIDEBAR RESTORE 8.5J
