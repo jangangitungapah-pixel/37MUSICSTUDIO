@@ -6056,3 +6056,476 @@ tr:hover
   }
 }
 /* === END PHASE 9.1E-1 CUSTOMER DETAIL SHEET HOTFIX === */
+
+/* === START PHASE 9.1E-2 CUSTOMER DETAIL POPUP MODAL === */
+/*
+  Customer Detail Popup Modal Conversion
+  Screenshot issue:
+  - Detail panel appears as side panel and squeezes the customer table.
+  Goal:
+  - Convert selected customer detail into centered modal popup.
+  - Give more layout space for membership, stats, professional profile, timeline.
+  - Keep current selectedCustomer logic, close button, and business workflow untouched.
+  Scope:
+  - CSS-only visual/positioning conversion.
+  - Safe to rerun by marker.
+*/
+
+.customers-page .customers-content-area {
+  position: relative;
+}
+
+.customers-page .customer-detail-panel.app-panel {
+  position: fixed !important;
+  left: 50% !important;
+  top: 50% !important;
+  right: auto !important;
+  bottom: auto !important;
+  transform: translate(-50%, -50%) !important;
+
+  width: min(980px, calc(100vw - 2rem)) !important;
+  max-width: min(980px, calc(100vw - 2rem)) !important;
+  height: auto !important;
+  max-height: min(88dvh, 860px) !important;
+
+  z-index: 1200 !important;
+  display: grid !important;
+  grid-template-rows: auto minmax(0, 1fr) auto !important;
+
+  overflow: hidden !important;
+  border-radius: 1.55rem !important;
+  isolation: isolate;
+  animation: customerDetailPopupIn 180ms cubic-bezier(0.16, 1, 0.3, 1) both !important;
+
+  background:
+    radial-gradient(circle at 10% 0%, rgba(88, 224, 233, 0.14), transparent 34%),
+    radial-gradient(circle at 92% 0%, rgba(239, 197, 110, 0.12), transparent 32%),
+    radial-gradient(circle at 90% 92%, rgba(255, 61, 112, 0.08), transparent 36%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.020)),
+    rgba(10, 14, 22, 0.97) !important;
+
+  border: 1px solid rgba(255, 250, 240, 0.12) !important;
+  box-shadow:
+    0 32px 110px rgba(0, 0, 0, 0.62),
+    0 0 0 1px rgba(255, 255, 255, 0.035),
+    inset 0 1px 0 rgba(255, 255, 255, 0.075) !important;
+
+  backdrop-filter: blur(18px) saturate(142%) !important;
+  -webkit-backdrop-filter: blur(18px) saturate(142%) !important;
+}
+
+.customers-page .customer-detail-panel.app-panel::before {
+  content: "";
+  position: fixed;
+  inset: -100vmax;
+  z-index: -2;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 50% 42%, rgba(88, 224, 233, 0.08), transparent 34rem),
+    rgba(0, 0, 0, 0.58);
+  backdrop-filter: blur(7px) saturate(115%);
+  -webkit-backdrop-filter: blur(7px) saturate(115%);
+}
+
+.customers-page .customer-detail-panel.app-panel::after {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  z-index: -1;
+  pointer-events: none;
+  border-radius: calc(1.55rem - 1px);
+  background:
+    linear-gradient(120deg, rgba(255, 250, 240, 0.10), transparent 30%),
+    linear-gradient(300deg, rgba(88, 224, 233, 0.08), transparent 36%);
+}
+
+@keyframes customerDetailPopupIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, calc(-50% + 18px)) scale(0.975);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+.customers-page .customer-detail-panel .detail-panel-header {
+  display: grid !important;
+  grid-template-columns: auto minmax(0, 1fr) auto auto !important;
+  align-items: center !important;
+  justify-items: start !important;
+  min-height: 92px !important;
+  padding: 1rem 1.15rem !important;
+  gap: 0.85rem !important;
+  text-align: left !important;
+  border-bottom: 1px solid rgba(255, 250, 240, 0.09) !important;
+}
+
+.customers-page .customer-detail-panel .detail-avatar {
+  order: initial !important;
+  margin: 0 !important;
+  width: 56px !important;
+  height: 56px !important;
+  border-radius: 1.15rem !important;
+  font-size: 1.42rem !important;
+}
+
+.customers-page .customer-detail-panel .detail-panel-header h3 {
+  order: initial !important;
+  flex: initial !important;
+  width: auto !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  text-align: left !important;
+  font-size: clamp(1.08rem, 2vw, 1.35rem) !important;
+  line-height: 1.05 !important;
+}
+
+.customers-page .customer-detail-panel .detail-panel-header .status-badge {
+  order: initial !important;
+  margin: 0 !important;
+  justify-self: end !important;
+}
+
+.customers-page .customer-detail-panel .detail-panel-close {
+  position: static !important;
+  justify-self: end !important;
+  width: 36px !important;
+  height: 36px !important;
+  margin: 0 !important;
+}
+
+.customers-page .customer-detail-panel .detail-panel-body {
+  min-height: 0 !important;
+  max-height: none !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  padding: 1.1rem !important;
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+  align-content: start !important;
+  gap: 1rem !important;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+}
+
+.customers-page .customer-detail-panel .detail-panel-body::-webkit-scrollbar {
+  width: 8px;
+}
+
+.customers-page .customer-detail-panel .detail-panel-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.customers-page .customer-detail-panel .detail-panel-body::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(255, 250, 240, 0.18);
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+.customers-page .customer-detail-panel .detail-section {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.customers-page .customer-detail-panel .client-link-action-section,
+.customers-page .customer-detail-panel .professional-profile-section,
+.customers-page .customer-detail-panel .detail-section:has(.membership-tier-card),
+.customers-page .customer-detail-panel .detail-section:has(.customer-booking-timeline),
+.customers-page .customer-detail-panel .detail-section:has(.detail-notes) {
+  grid-column: span 2;
+}
+
+.customers-page .customer-detail-panel .professional-profile-section {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.customers-page .customer-detail-panel .customer-pro-card {
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+}
+
+.customers-page .customer-detail-panel .customer-pro-card > div {
+  min-height: 76px;
+}
+
+.customers-page .customer-detail-panel .membership-tier-card {
+  min-height: 104px !important;
+  grid-template-columns: minmax(0, 1fr) auto !important;
+  padding: 1.05rem 1.15rem !important;
+}
+
+.customers-page .customer-detail-panel .tier-icon {
+  font-size: 2.25rem !important;
+}
+
+.customers-page .customer-detail-panel .tier-name {
+  font-size: 1.08rem !important;
+}
+
+.customers-page .customer-detail-panel .points-value {
+  font-size: clamp(2rem, 5vw, 3.1rem) !important;
+}
+
+.customers-page .customer-detail-panel .stat-grid.stat-grid-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 0.7rem !important;
+}
+
+.customers-page .customer-detail-panel .mini-stat {
+  min-height: 84px !important;
+  padding: 0.72rem 0.78rem !important;
+}
+
+.customers-page .customer-detail-panel .mini-stat-value {
+  font-size: clamp(1.25rem, 2.4vw, 1.72rem) !important;
+}
+
+.customers-page .customer-detail-panel .customer-booking-timeline {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.7rem;
+}
+
+.customers-page .customer-detail-panel .customer-booking-item {
+  min-height: 72px;
+}
+
+.customers-page .customer-detail-panel .detail-panel-footer {
+  padding: 0.9rem 1.1rem calc(0.95rem + env(safe-area-inset-bottom)) !important;
+  border-top: 1px solid rgba(255, 250, 240, 0.09) !important;
+  background:
+    linear-gradient(180deg, rgba(10, 14, 22, 0.16), rgba(10, 14, 22, 0.94) 34%),
+    rgba(10, 14, 22, 0.94) !important;
+}
+
+.customers-page .customer-detail-panel .wa-crm-buttons {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 0.55rem !important;
+  margin-bottom: 0.65rem !important;
+}
+
+.customers-page .customer-detail-panel .wa-btn,
+.customers-page .customer-detail-panel .btn-edit-full {
+  min-height: 42px !important;
+}
+
+.customers-page .customers-container {
+  flex-basis: 100%;
+}
+
+[data-theme="light"] .customers-page .customer-detail-panel.app-panel {
+  background:
+    radial-gradient(circle at 10% 0%, rgba(88, 224, 233, 0.12), transparent 34%),
+    radial-gradient(circle at 92% 0%, rgba(239, 197, 110, 0.11), transparent 32%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(255, 255, 255, 0.82)) !important;
+  border-color: rgba(22, 27, 36, 0.11) !important;
+  box-shadow:
+    0 32px 100px rgba(20, 24, 32, 0.22),
+    0 0 0 1px rgba(22, 27, 36, 0.035),
+    inset 0 1px 0 rgba(255, 255, 255, 0.80) !important;
+}
+
+[data-theme="light"] .customers-page .customer-detail-panel.app-panel::before {
+  background:
+    radial-gradient(circle at 50% 42%, rgba(88, 224, 233, 0.10), transparent 34rem),
+    rgba(12, 16, 24, 0.26);
+}
+
+[data-theme="light"] .customers-page .customer-detail-panel .detail-panel-footer {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.96) 34%),
+    rgba(255, 255, 255, 0.96) !important;
+  border-top-color: rgba(22, 27, 36, 0.08) !important;
+}
+
+@media (max-width: 1180px) {
+  .customers-page .customer-detail-panel.app-panel {
+    width: min(900px, calc(100vw - 1.5rem)) !important;
+    max-width: min(900px, calc(100vw - 1.5rem)) !important;
+  }
+
+  .customers-page .customer-detail-panel .customer-pro-card {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (max-width: 860px) {
+  .customers-page .customer-detail-panel.app-panel {
+    width: calc(100vw - 1rem) !important;
+    max-width: calc(100vw - 1rem) !important;
+    max-height: calc(100dvh - 1.25rem - env(safe-area-inset-bottom)) !important;
+    border-radius: 1.25rem !important;
+  }
+
+  .customers-page .customer-detail-panel .detail-panel-header {
+    min-height: 82px !important;
+    grid-template-columns: auto minmax(0, 1fr) auto !important;
+    grid-template-areas:
+      "avatar title close"
+      "avatar status close" !important;
+    padding: 0.85rem 0.92rem !important;
+    gap: 0.34rem 0.72rem !important;
+  }
+
+  .customers-page .customer-detail-panel .detail-avatar {
+    grid-area: avatar;
+    width: 48px !important;
+    height: 48px !important;
+    border-radius: 1rem !important;
+  }
+
+  .customers-page .customer-detail-panel .detail-panel-header h3 {
+    grid-area: title;
+    align-self: end;
+    font-size: 1.05rem !important;
+  }
+
+  .customers-page .customer-detail-panel .detail-panel-header .status-badge {
+    grid-area: status;
+    justify-self: start !important;
+    align-self: start;
+  }
+
+  .customers-page .customer-detail-panel .detail-panel-close {
+    grid-area: close;
+    align-self: start;
+  }
+
+  .customers-page .customer-detail-panel .detail-panel-body {
+    padding: 0.9rem !important;
+    grid-template-columns: 1fr !important;
+    gap: 0.85rem !important;
+  }
+
+  .customers-page .customer-detail-panel .client-link-action-section,
+  .customers-page .customer-detail-panel .professional-profile-section,
+  .customers-page .customer-detail-panel .detail-section:has(.membership-tier-card),
+  .customers-page .customer-detail-panel .detail-section:has(.customer-booking-timeline),
+  .customers-page .customer-detail-panel .detail-section:has(.detail-notes) {
+    grid-column: auto;
+  }
+
+  .customers-page .customer-detail-panel .customer-pro-card {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .customers-page .customer-detail-panel .customer-booking-timeline {
+    grid-template-columns: 1fr;
+  }
+
+  .customers-page .customer-detail-panel .detail-panel-footer {
+    padding: 0.78rem 0.9rem calc(0.84rem + env(safe-area-inset-bottom)) !important;
+  }
+}
+
+@media (max-width: 520px) {
+  .customers-page .customer-detail-panel.app-panel {
+    width: calc(100vw - 0.75rem) !important;
+    max-width: calc(100vw - 0.75rem) !important;
+    max-height: calc(100dvh - 0.75rem - env(safe-area-inset-bottom)) !important;
+    border-radius: 1.05rem !important;
+  }
+
+  .customers-page .customer-detail-panel .detail-panel-header {
+    min-height: 76px !important;
+    padding: 0.75rem 0.8rem !important;
+  }
+
+  .customers-page .customer-detail-panel .detail-avatar {
+    width: 42px !important;
+    height: 42px !important;
+    font-size: 1.12rem !important;
+  }
+
+  .customers-page .customer-detail-panel .detail-panel-close {
+    width: 32px !important;
+    height: 32px !important;
+  }
+
+  .customers-page .customer-detail-panel .detail-panel-body {
+    padding: 0.75rem !important;
+    gap: 0.72rem !important;
+  }
+
+  .customers-page .customer-detail-panel .customer-pro-card {
+    grid-template-columns: 1fr !important;
+  }
+
+  .customers-page .customer-detail-panel .membership-tier-card {
+    min-height: 82px !important;
+    padding: 0.78rem !important;
+  }
+
+  .customers-page .customer-detail-panel .tier-icon {
+    font-size: 1.7rem !important;
+  }
+
+  .customers-page .customer-detail-panel .points-value {
+    font-size: clamp(1.35rem, 8vw, 2rem) !important;
+  }
+
+  .customers-page .customer-detail-panel .stat-grid.stat-grid-3 {
+    gap: 0.42rem !important;
+  }
+
+  .customers-page .customer-detail-panel .mini-stat {
+    min-height: 62px !important;
+    padding: 0.52rem 0.38rem !important;
+  }
+
+  .customers-page .customer-detail-panel .mini-stat-value {
+    font-size: clamp(0.88rem, 5vw, 1.15rem) !important;
+  }
+
+  .customers-page .customer-detail-panel .mini-stat-label {
+    font-size: 0.52rem !important;
+  }
+
+  .customers-page .customer-detail-panel .wa-crm-buttons {
+    gap: 0.4rem !important;
+  }
+
+  .customers-page .customer-detail-panel .wa-btn {
+    min-height: 36px !important;
+    padding-inline: 0.42rem !important;
+    font-size: 0.68rem !important;
+  }
+
+  .customers-page .customer-detail-panel .btn-edit-full {
+    min-height: 38px !important;
+  }
+}
+
+@media (max-width: 360px) {
+  .customers-page .customer-detail-panel .stat-grid.stat-grid-3 {
+    grid-template-columns: 1fr !important;
+  }
+
+  .customers-page .customer-detail-panel .wa-crm-buttons {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (hover: none), (pointer: coarse) {
+  .customers-page .customer-detail-panel.app-panel {
+    backdrop-filter: blur(9px) saturate(115%) !important;
+    -webkit-backdrop-filter: blur(9px) saturate(115%) !important;
+  }
+
+  .customers-page .customer-detail-panel.app-panel::before {
+    backdrop-filter: blur(4px) saturate(105%);
+    -webkit-backdrop-filter: blur(4px) saturate(105%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .customers-page .customer-detail-panel.app-panel {
+    animation: none !important;
+  }
+}
+/* === END PHASE 9.1E-2 CUSTOMER DETAIL POPUP MODAL === */
