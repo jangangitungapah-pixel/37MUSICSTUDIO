@@ -1,10 +1,22 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNotificationStore } from '../store/useNotificationStore';
 import { hasBookingOverlap } from '../lib/bookingWorkflows';
 
 const getPointerPoint = (event) => {
   const source = event.touches?.[0] || event.changedTouches?.[0] || event;
   return { x: source.clientX ?? 0, y: source.clientY ?? 0 };
+};
+
+const buildBookingsByDate = (bookings = []) => {
+  const grouped = new Map();
+  bookings.forEach((booking) => {
+    const date = booking?.date;
+    if (!date) return;
+    const dayBookings = grouped.get(date) || [];
+    dayBookings.push(booking);
+    grouped.set(date, dayBookings);
+  });
+  return grouped;
 };
 
 export const useCalendarBookingMove = ({
@@ -29,6 +41,12 @@ export const useCalendarBookingMove = ({
   const suppressNextBookingClickRef = useRef(false);
   const lastTargetUpdateRef = useRef(0);
   const translationRef = useRef({ dx: 0, dy: 0 });
+  const ghostElementRef = useRef(null);
+  const ghostFrameRef = useRef(null);
+  const latestGhostTranslationRef = useRef({ dx: 0, dy: 0 });
+
+  const blockedDateSet = useMemo(() => new Set(blockedDates || []), [blockedDates]);
+  const bookingsByDate = useMemo(() => buildBookingsByDate(bookings), [bookings]);
 
   const getMoveTargetAtPoint = useCallback((point, booking) => {
     const element = document.elementFromPoint(point.x, point.y)?.closest('[data-calendar-cell="true"]');
@@ -39,9 +57,10 @@ export const useCalendarBookingMove = ({
     if (!date || Number.isNaN(hour)) return null;
 
     const candidate = { date, hour, duration: Number(booking.duration || 1) };
-    const isBlocked = blockedDates.includes(date);
+    const isBlocked = blockedDateSet.has(date);
     const isOutsideHours = hour < Number(operationalHours.start) || hour + candidate.duration > Number(operationalHours.end);
-    const hasConflict = hasBookingOverlap(bookings, candidate, booking.id);
+    const dayBookings = bookingsByDate.get(date) || [];
+    const hasConflict = hasBookingOverlap(dayBookings, candidate, booking.id);
     const isSameSlot = booking.date === date && Number(booking.hour) === hour;
 
     return {
@@ -52,7 +71,7 @@ export const useCalendarBookingMove = ({
       isValid: !isBlocked && !isOutsideHours && !hasConflict,
       reason: isBlocked ? 'Tanggal diblokir' : isOutsideHours ? 'Di luar jam operasional' : hasConflict ? 'Slot bentrok' : 'Slot tersedia',
     };
-  }, [blockedDates, bookings, gridWrapperRef, operationalHours.end, operationalHours.start]);
+  }, [blockedDateSet, bookingsByDate, gridWrapperRef, operationalHours.end, operationalHours.start]);
 
   const applyMoveTarget = useCallback((point, booking) => {
     const target = getMoveTargetAtPoint(point, booking);
@@ -65,6 +84,21 @@ export const useCalendarBookingMove = ({
       setMoveTarget(target);
     }
   }, [getMoveTargetAtPoint]);
+
+  const scheduleGhostTransform = useCallback((dx, dy) => {
+    latestGhostTranslationRef.current = { dx, dy };
+    if (ghostFrameRef.current) return;
+
+    ghostFrameRef.current = window.requestAnimationFrame(() => {
+      ghostFrameRef.current = null;
+      const ghostEl = ghostElementRef.current || document.querySelector('.mobile-booking-drag-ghost');
+      ghostElementRef.current = ghostEl;
+      if (ghostEl) {
+        const latest = latestGhostTranslationRef.current;
+        ghostEl.style.transform = `translate3d(${latest.dx}px, ${latest.dy}px, 0)`;
+      }
+    });
+  }, []);
 
   const finishMobileMove = useCallback((booking, target) => {
     if (!target) {
@@ -124,6 +158,14 @@ export const useCalendarBookingMove = ({
       }
     };
 
+    const clearGhostFrame = () => {
+      if (ghostFrameRef.current) {
+        window.cancelAnimationFrame(ghostFrameRef.current);
+        ghostFrameRef.current = null;
+      }
+      ghostElementRef.current = null;
+    };
+
     const setGhostAtPoint = (point) => {
       setMoveGhost({
         x: point.x - (ghostWidth / 2),
@@ -138,6 +180,7 @@ export const useCalendarBookingMove = ({
       isCleanedUp = true;
       activeCleanupRef.current = null;
       clearTimer();
+      clearGhostFrame();
       document.body.classList.remove('calendar-move-lock', 'calendar-interaction-lock');
       document.removeEventListener('pointermove', handlePointerMove);
       document.removeEventListener('pointerup', handlePointerUp);
@@ -148,6 +191,7 @@ export const useCalendarBookingMove = ({
       moveTargetRef.current = null;
       lastTargetUpdateRef.current = 0;
       translationRef.current = { dx: 0, dy: 0 };
+      latestGhostTranslationRef.current = { dx: 0, dy: 0 };
       if (isActivated) {
         clearSuppressClickTimer();
         suppressClickTimerRef.current = window.setTimeout(() => {
@@ -163,6 +207,7 @@ export const useCalendarBookingMove = ({
       suppressNextBookingClickRef.current = true;
       touchStartRef.current = null;
       moveTargetRef.current = null;
+      ghostElementRef.current = null;
       document.body.classList.add('calendar-move-lock', 'calendar-interaction-lock');
       setSelectedBooking(null);
       setMovingBooking(booking);
@@ -185,19 +230,14 @@ export const useCalendarBookingMove = ({
       moveEvent.stopPropagation();
       if (movedDistance > 12) hasDraggedAfterActivation = true;
 
-      // Direct DOM update of the ghost position via translate3d for ultra smoothness
       const dx = point.x - startPoint.x;
       const dy = point.y - startPoint.y;
       translationRef.current = { dx, dy };
+      scheduleGhostTransform(dx, dy);
 
-      const ghostEl = document.querySelector('.mobile-booking-drag-ghost');
-      if (ghostEl) {
-        ghostEl.style.transform = `translate3d(${dx}px, ${dy}px, 0)`;
-      }
-
-      // Throttle hit-testing (document.elementFromPoint) to at most once every 24ms.
+      // Throttle hit-testing (document.elementFromPoint) to at most once every 32ms on mobile.
       const nowTime = performance.now();
-      if (nowTime - lastTargetUpdateRef.current > 24) {
+      if (nowTime - lastTargetUpdateRef.current > 32) {
         applyMoveTarget(point, booking);
         lastTargetUpdateRef.current = nowTime;
       }
@@ -225,12 +265,13 @@ export const useCalendarBookingMove = ({
     document.addEventListener('pointermove', handlePointerMove, { passive: false });
     document.addEventListener('pointerup', handlePointerUp);
     document.addEventListener('pointercancel', handlePointerCancel);
-  }, [applyMoveTarget, finishMobileMove, getCalendarCellHeight, isMobile, resizingBooking, setSelectedBooking, touchStartRef]);
+  }, [applyMoveTarget, finishMobileMove, getCalendarCellHeight, isMobile, resizingBooking, scheduleGhostTransform, setSelectedBooking, touchStartRef]);
 
   useEffect(() => () => {
     activeCleanupRef.current?.();
     if (longPressTimerRef.current) window.clearTimeout(longPressTimerRef.current);
     if (suppressClickTimerRef.current) window.clearTimeout(suppressClickTimerRef.current);
+    if (ghostFrameRef.current) window.cancelAnimationFrame(ghostFrameRef.current);
     document.body.classList.remove('calendar-move-lock', 'calendar-interaction-lock');
   }, []);
 
