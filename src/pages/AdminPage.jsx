@@ -420,9 +420,10 @@ export function AdminPage() {
       adminUser: adminAuthState.user,
       addManualBooking: async (booking) => {
         try {
-          await adminBookingRepository.createManualBooking(booking);
+          return await adminBookingRepository.createManualBooking(booking);
         } catch (error) {
           console.error('Failed to create admin booking.', error);
+          throw error;
         }
       },
       deleteManualBooking: async (bookingId) => {

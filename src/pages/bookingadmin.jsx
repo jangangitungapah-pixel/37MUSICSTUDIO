@@ -654,11 +654,13 @@ function FieldShell({
 
 function BookingModal({
   bookingForm,
+  isSaving = false,
   isOpen,
   onChange,
   onClose,
   onSubmit,
   paymentPreview,
+  saveError = '',
 }) {
   if (!isOpen) return null;
 
@@ -713,6 +715,12 @@ function BookingModal({
         </div>
 
         <div className="grid gap-3 sm:grid-cols-2">
+          {saveError ? (
+            <div className="sm:col-span-2 rounded-[1.25rem] border border-studio-accent/35 bg-studio-accent/10 px-4 py-3 text-sm font-semibold leading-6 text-[var(--ui-text-main)] ring-1 ring-studio-accent/15">
+              {saveError}
+            </div>
+          ) : null}
+
           <FieldShell icon={UserRound} label="Nama customer">
             <input
               className="w-full border-0 bg-transparent text-sm font-semibold text-[var(--ui-text-strong)] outline-none placeholder:text-[var(--ui-text-soft)]"
@@ -883,11 +891,13 @@ function BookingModal({
             </button>
 
             <button
-              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full [background:var(--ui-primary-bg)] px-5 text-sm font-semibold text-[var(--ui-primary-text)] shadow-[var(--ui-shadow-soft)] transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
+              aria-busy={isSaving}
+              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full [background:var(--ui-primary-bg)] px-5 text-sm font-semibold text-[var(--ui-primary-text)] shadow-[var(--ui-shadow-soft)] transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20 disabled:cursor-not-allowed disabled:opacity-60"
+              disabled={isSaving}
               type="submit"
             >
               <Plus size={16} strokeWidth={2.35} aria-hidden="true" />
-              Simpan booking
+              {isSaving ? 'Menyimpan...' : 'Simpan booking'}
             </button>
           </div>
         </div>
@@ -1623,6 +1633,8 @@ export function BookingAdmin() {
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
   const [detailBooking, setDetailBooking] = useState(null);
   const [bookingActionId, setBookingActionId] = useState('');
+  const [bookingSaveError, setBookingSaveError] = useState('');
+  const [isBookingSaving, setIsBookingSaving] = useState(false);
   const [bookingForm, setBookingForm] = useState(() => {
     const now = new Date();
     return createInitialBookingForm(createDate(now.getFullYear(), now.getMonth(), now.getDate()));
@@ -1696,6 +1708,11 @@ export function BookingAdmin() {
   };
 
   const closeBookingModal = () => {
+    if (isBookingSaving) {
+      return;
+    }
+
+    setBookingSaveError('');
     setIsBookingModalOpen(false);
   };
 
@@ -1768,8 +1785,9 @@ export function BookingAdmin() {
     });
   };
 
-  const handleBookingSubmit = (event) => {
+  const handleBookingSubmit = async (event) => {
     event.preventDefault();
+    setBookingSaveError('');
 
     const payment = calculateBookingPayment(bookingForm);
     const nextBooking = {
@@ -1793,16 +1811,26 @@ export function BookingAdmin() {
       updatedAt: new Date().toISOString(),
     };
 
-    addManualBooking(nextBooking);
+    setIsBookingSaving(true);
 
-    const nextDate = parseDateInputToDate(bookingForm.bookingDate, cursorDate);
-    setCursorDate(nextDate);
-    setSelectedSlot({
-      dateKey: bookingForm.bookingDate,
-      label: formatFullDateLabel(nextDate),
-      timeKey: bookingForm.startTime,
-    });
-    setIsBookingModalOpen(false);
+    try {
+      const savedBooking = await addManualBooking(nextBooking);
+      const nextDate = parseDateInputToDate(bookingForm.bookingDate, cursorDate);
+
+      setCursorDate(nextDate);
+      setSelectedSlot({
+        dateKey: bookingForm.bookingDate,
+        label: formatFullDateLabel(nextDate),
+        timeKey: bookingForm.startTime,
+      });
+      setDetailBooking(savedBooking || nextBooking);
+      setIsBookingModalOpen(false);
+    } catch (error) {
+      console.error('Failed to save booking.', error);
+      setBookingSaveError('Booking belum tersimpan. Cek koneksi, login Firebase, atau Firestore rules.');
+    } finally {
+      setIsBookingSaving(false);
+    }
   };
 
   const goToPreviousPeriod = () => {
@@ -1914,7 +1942,9 @@ export function BookingAdmin() {
       <BookingModal
         bookingForm={bookingForm}
         isOpen={isBookingModalOpen}
+        isSaving={isBookingSaving}
         paymentPreview={paymentPreview}
+        saveError={bookingSaveError}
         onChange={handleFormChange}
         onClose={closeBookingModal}
         onSubmit={handleBookingSubmit}
