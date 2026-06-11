@@ -2,7 +2,7 @@ import {
   useMemo,
   useState,
 } from 'react';
-import { Link, useSearchParams } from 'react-router';
+import { Link, useOutletContext, useSearchParams } from 'react-router';
 import {
   ArrowUpRight,
   CalendarClock,
@@ -782,13 +782,19 @@ function CustomerDetailPanel({
 }
 
 export function CustomerAdmin() {
+  const adminContext = useOutletContext() || {};
+  const { manualBookings = [] } = adminContext;
   const [searchParams] = useSearchParams();
   const [searchTerm, setSearchTerm] = useState(searchParams.get('q') || '');
   const [statusFilter, setStatusFilter] = useState('all');
   const [sortMode, setSortMode] = useState('lastBooking');
   const [selectedCustomerId, setSelectedCustomerId] = useState(null);
 
-  const bookings = useMemo(() => createAdminBookingSnapshot(new Date()), []);
+  const baseBookings = useMemo(() => createAdminBookingSnapshot(new Date()), []);
+  const bookings = useMemo(
+    () => [...baseBookings, ...manualBookings],
+    [baseBookings, manualBookings],
+  );
   const customers = useMemo(() => buildCustomersFromBookings(bookings), [bookings]);
   const stats = useMemo(() => getCustomerStats(customers), [customers]);
   const filteredCustomers = useMemo(

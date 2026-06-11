@@ -360,6 +360,7 @@ function AdminBottomBar({
 
 export function AdminPage() {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [manualBookings, setManualBookings] = useState([]);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -370,6 +371,16 @@ export function AdminPage() {
   const activeItem = useMemo(
     () => getActiveAdminItem(location.pathname),
     [location.pathname],
+  );
+  const adminOutletContext = useMemo(
+    () => ({
+      activeItem,
+      addManualBooking: (booking) => {
+        setManualBookings((current) => [...current, booking]);
+      },
+      manualBookings,
+    }),
+    [activeItem, manualBookings],
   );
 
   if (!hasDevAccess) {
@@ -393,7 +404,7 @@ export function AdminPage() {
           37 Music Studio Admin Shell
         </div>
 
-        <Outlet context={{ activeItem }} />
+        <Outlet context={adminOutletContext} />
       </div>
 
       <AdminBottomBar activePath={location.pathname} />

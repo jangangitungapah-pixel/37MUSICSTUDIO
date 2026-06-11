@@ -17,7 +17,7 @@ import {
   X,
   ChevronDown,
 } from 'lucide-react';
-import { Link, useSearchParams } from 'react-router';
+import { Link, useOutletContext, useSearchParams } from 'react-router';
 import { cn } from '../lib/cn.js';
 
 const PRICE_PER_HOUR = 120000;
@@ -1572,6 +1572,11 @@ function SelectedSlotPanel({
 }
 
 export function BookingAdmin() {
+  const adminContext = useOutletContext() || {};
+  const {
+    addManualBooking = () => {},
+    manualBookings = [],
+  } = adminContext;
   const [searchParams] = useSearchParams();
   const [viewMode, setViewMode] = useState(getInitialViewMode);
   const [cursorDate, setCursorDate] = useState(() => {
@@ -1579,7 +1584,6 @@ export function BookingAdmin() {
 
     return createDate(now.getFullYear(), now.getMonth(), now.getDate());
   });
-  const [manualBookings, setManualBookings] = useState([]);
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
   const [detailBooking, setDetailBooking] = useState(null);
   const [bookingForm, setBookingForm] = useState(() => {
@@ -1700,7 +1704,7 @@ export function BookingAdmin() {
       totalPrice: payment.totalPrice,
     };
 
-    setManualBookings((current) => [...current, nextBooking]);
+    addManualBooking(nextBooking);
 
     const nextDate = parseDateInputToDate(bookingForm.bookingDate, cursorDate);
     setCursorDate(nextDate);
