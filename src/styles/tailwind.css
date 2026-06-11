@@ -13,7 +13,7 @@
 
   --color-studio-night: #090a10;
   --color-studio-shell: #101018;
-  --color-studio-paper: #f8f4fb;
+  --color-studio-paper: #f7f1fb;
 
   --color-studio-50: #fbf9fd;
   --color-studio-100: #f4f0f7;
@@ -37,6 +37,84 @@
 }
 
 @layer base {
+  :root {
+    color-scheme: light;
+
+    --ui-bg-base: #f7f1fb;
+    --ui-bg-page:
+      radial-gradient(circle at 8% 8%, rgb(255 74 155 / 0.28), transparent 25rem),
+      radial-gradient(circle at 88% 24%, rgb(69 211 255 / 0.24), transparent 32rem),
+      radial-gradient(circle at 52% 4%, rgb(154 118 255 / 0.14), transparent 28rem),
+      linear-gradient(180deg, #fff9fd 0%, #f4edfb 42%, #edf9ff 76%, #fffafd 100%);
+    --ui-grid-opacity: 0.34;
+    --ui-grid-line: rgb(23 20 29 / 0.055);
+    --ui-grid-line-soft: rgb(23 20 29 / 0.045);
+    --ui-top-fade: rgb(255 255 255 / 0.8);
+    --ui-left-wash: rgb(255 74 155 / 0.14);
+    --ui-right-wash: rgb(69 211 255 / 0.16);
+
+    --ui-text-strong: #0e0c12;
+    --ui-text-main: rgb(23 20 29 / 0.78);
+    --ui-text-muted: rgb(23 20 29 / 0.58);
+    --ui-text-soft: rgb(23 20 29 / 0.42);
+
+    --ui-border: rgb(23 20 29 / 0.1);
+    --ui-border-strong: rgb(23 20 29 / 0.14);
+    --ui-glass: rgb(255 255 255 / 0.68);
+    --ui-glass-soft: rgb(255 255 255 / 0.46);
+    --ui-control: rgb(255 255 255 / 0.74);
+    --ui-control-hover: rgb(255 255 255 / 0.94);
+
+    --ui-primary-bg: linear-gradient(135deg, #0e0c12, #403747);
+    --ui-primary-text: #ffffff;
+    --ui-secondary-bg: rgb(255 255 255 / 0.62);
+    --ui-secondary-text: rgb(23 20 29 / 0.72);
+
+    --ui-shadow-soft: 0 22px 70px rgb(73 48 94 / 0.14);
+    --ui-shadow-control: 0 14px 34px rgb(73 48 94 / 0.08);
+    --ui-shadow-header: 0 18px 70px rgb(73 48 94 / 0.13);
+    --ui-ring: rgb(23 20 29 / 0.035);
+  }
+
+  html[data-theme="dark"] {
+    color-scheme: dark;
+
+    --ui-bg-base: #090a10;
+    --ui-bg-page:
+      radial-gradient(circle at 8% 8%, rgb(255 74 155 / 0.18), transparent 28rem),
+      radial-gradient(circle at 88% 24%, rgb(69 211 255 / 0.12), transparent 34rem),
+      radial-gradient(circle at 52% 6%, rgb(154 118 255 / 0.10), transparent 26rem),
+      linear-gradient(180deg, #090a10 0%, #0b0b13 48%, #07080d 100%);
+    --ui-grid-opacity: 0.16;
+    --ui-grid-line: rgb(255 255 255 / 0.055);
+    --ui-grid-line-soft: rgb(255 255 255 / 0.04);
+    --ui-top-fade: rgb(9 10 16 / 0.78);
+    --ui-left-wash: rgb(255 74 155 / 0.08);
+    --ui-right-wash: rgb(69 211 255 / 0.08);
+
+    --ui-text-strong: #ffffff;
+    --ui-text-main: rgb(244 240 247 / 0.78);
+    --ui-text-muted: rgb(244 240 247 / 0.58);
+    --ui-text-soft: rgb(244 240 247 / 0.42);
+
+    --ui-border: rgb(255 255 255 / 0.1);
+    --ui-border-strong: rgb(255 255 255 / 0.14);
+    --ui-glass: rgb(255 255 255 / 0.035);
+    --ui-glass-soft: rgb(255 255 255 / 0.045);
+    --ui-control: rgb(255 255 255 / 0.06);
+    --ui-control-hover: rgb(255 255 255 / 0.1);
+
+    --ui-primary-bg: #ffffff;
+    --ui-primary-text: #0e0c12;
+    --ui-secondary-bg: transparent;
+    --ui-secondary-text: rgb(244 240 247 / 0.82);
+
+    --ui-shadow-soft: 0 22px 70px rgb(0 0 0 / 0.24);
+    --ui-shadow-control: none;
+    --ui-shadow-header: none;
+    --ui-ring: rgb(255 255 255 / 0.08);
+  }
+
   * {
     box-sizing: border-box;
   }
@@ -44,17 +122,12 @@
   html {
     min-width: 320px;
     min-height: 100%;
-    background: #f8f4fb;
-    color: #17141d;
+    background: var(--ui-bg-base);
+    color: var(--ui-text-main);
     font-family: var(--font-sans);
     text-rendering: geometricPrecision;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-  }
-
-  html[data-theme="dark"] {
-    background: #090a10;
-    color: #f4f0f7;
   }
 
   body {

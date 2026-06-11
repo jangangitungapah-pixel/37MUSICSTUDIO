@@ -9,13 +9,13 @@ const foundationNotes = [
   },
   {
     label: 'System',
-    title: 'Tailwind tokens',
-    text: 'Warna, shadow, spacing, radius, dan dark mode tetap konsisten lewat token Tailwind.',
+    title: 'Palette switch',
+    text: 'Struktur komponen tetap sama. Dark dan light hanya mengganti palet warna lewat token.',
   },
   {
     label: 'Motion',
-    title: 'Calm interface',
-    text: 'Visual dibuat modern, ringan, dan tidak terlalu berat supaya enak dipakai harian.',
+    title: 'Stable interface',
+    text: 'Tidak ada cabang layout antara dark dan light, jadi posisi elemen tidak lompat saat toggle.',
   },
 ];
 
@@ -49,25 +49,25 @@ function StatusDropdown() {
   };
 
   return (
-    <div className="relative grid gap-2 text-sm font-medium text-studio-700 dark:text-studio-300">
+    <div className="relative grid gap-2 text-sm font-medium text-[var(--ui-text-main)]">
       <span>Status</span>
 
       <button
         aria-expanded={isOpen}
         aria-haspopup="listbox"
-        className="group flex min-h-12 w-full items-center justify-between gap-3 rounded-2xl border border-studio-950/10 bg-white/78 px-4 text-left text-sm font-medium text-studio-950 shadow-[inset_0_1px_0_rgba(255,255,255,0.86),0_14px_34px_rgba(73,48,94,0.08)] outline-none ring-1 ring-studio-950/[0.025] transition hover:border-studio-accent/30 hover:bg-white/95 focus-visible:border-studio-accent/40 focus-visible:ring-4 focus-visible:ring-studio-accent/15 dark:border-white/10 dark:bg-white/[0.06] dark:text-white dark:shadow-none dark:ring-transparent dark:hover:border-studio-accent/35 dark:hover:bg-white/[0.09]"
+        className="group flex min-h-12 w-full items-center justify-between gap-3 rounded-2xl border border-[var(--ui-border)] bg-[var(--ui-control)] px-4 text-left text-sm font-medium text-[var(--ui-text-strong)] shadow-[var(--ui-shadow-control)] outline-none ring-1 ring-[var(--ui-ring)] transition hover:border-studio-accent/30 hover:bg-[var(--ui-control-hover)] focus-visible:border-studio-accent/40 focus-visible:ring-4 focus-visible:ring-studio-accent/15"
         type="button"
         onClick={() => setIsOpen((current) => !current)}
       >
         <span className="grid gap-0.5">
           <span>{selectedOption.label}</span>
-          <span className="hidden text-xs font-normal text-studio-500 dark:text-studio-400 sm:block">
+          <span className="hidden text-xs font-normal text-[var(--ui-text-muted)] sm:block">
             {selectedOption.description}
           </span>
         </span>
 
         <ChevronDown
-          className={isOpen ? 'shrink-0 rotate-180 text-studio-accent transition' : 'shrink-0 text-studio-500 transition group-hover:text-studio-accent dark:text-studio-400'}
+          className={isOpen ? 'shrink-0 rotate-180 text-studio-accent transition' : 'shrink-0 text-[var(--ui-text-muted)] transition group-hover:text-studio-accent'}
           size={18}
           aria-hidden="true"
         />
@@ -75,7 +75,7 @@ function StatusDropdown() {
 
       {isOpen && (
         <div
-          className="absolute left-0 right-0 top-[calc(100%+8px)] z-30 overflow-hidden rounded-2xl border border-studio-950/10 bg-white/96 p-1.5 shadow-[0_24px_70px_rgba(73,48,94,0.18)] ring-1 ring-studio-950/[0.04] backdrop-blur-xl dark:border-white/10 dark:bg-[#12121a]/95 dark:shadow-studio-soft dark:ring-white/10"
+          className="absolute left-0 right-0 top-[calc(100%+8px)] z-30 overflow-hidden rounded-2xl border border-[var(--ui-border)] bg-[var(--ui-glass)] p-1.5 shadow-[var(--ui-shadow-soft)] ring-1 ring-[var(--ui-ring)] backdrop-blur-xl"
           role="listbox"
           aria-label="Status options"
         >
@@ -85,8 +85,8 @@ function StatusDropdown() {
             return (
               <button
                 className={isSelected
-                  ? 'flex w-full items-start justify-between gap-3 rounded-xl bg-studio-accent/12 px-3 py-3 text-left text-studio-950 dark:bg-studio-accent/18 dark:text-white'
-                  : 'flex w-full items-start justify-between gap-3 rounded-xl px-3 py-3 text-left text-studio-700 transition hover:bg-studio-950/[0.045] dark:text-studio-200 dark:hover:bg-white/[0.07]'
+                  ? 'flex w-full items-start justify-between gap-3 rounded-xl bg-studio-accent/14 px-3 py-3 text-left text-[var(--ui-text-strong)]'
+                  : 'flex w-full items-start justify-between gap-3 rounded-xl px-3 py-3 text-left text-[var(--ui-text-main)] transition hover:bg-studio-accent/8'
                 }
                 key={option.value}
                 type="button"
@@ -96,7 +96,7 @@ function StatusDropdown() {
               >
                 <span className="grid gap-1">
                   <span className="text-sm font-semibold">{option.label}</span>
-                  <span className="text-xs font-normal leading-5 text-studio-500 dark:text-studio-400">
+                  <span className="text-xs font-normal leading-5 text-[var(--ui-text-muted)]">
                     {option.description}
                   </span>
                 </span>
@@ -117,24 +117,22 @@ export function ThemePreview() {
   return (
     <div className="grid gap-16 py-4 sm:gap-20 lg:py-10">
       <section className="relative grid min-h-[62vh] content-center gap-8 lg:grid-cols-[minmax(0,0.96fr)_360px] lg:items-center">
-        <div className="pointer-events-none absolute -inset-x-8 top-8 -z-10 hidden h-[420px] rounded-[4rem] bg-white/22 shadow-[inset_0_1px_0_rgba(255,255,255,0.5),0_34px_100px_rgba(73,48,94,0.08)] backdrop-blur-[2px] dark:hidden lg:block" />
-
         <div className="grid gap-7">
           <div className="flex flex-wrap items-center gap-3">
-            <span className="inline-flex w-fit rounded-full border border-white/80 bg-white/62 px-3 py-1.5 text-xs font-medium tracking-[0.18em] text-studio-accent shadow-[0_12px_34px_rgba(73,48,94,0.08)] dark:border-white/10 dark:bg-white/[0.045] dark:shadow-none">
+            <span className="inline-flex w-fit rounded-full border border-[var(--ui-border)] bg-[var(--ui-glass)] px-3 py-1.5 text-xs font-medium tracking-[0.18em] text-studio-accent shadow-[var(--ui-shadow-control)]">
               STUDIO OPS UI
             </span>
-            <span className="text-sm text-studio-600 dark:text-studio-400">
+            <span className="text-sm text-[var(--ui-text-muted)]">
               Tailwind-first · Fresh rebuild · 37 Music Studio
             </span>
           </div>
 
           <div className="grid gap-5">
-            <h1 className="m-0 max-w-[940px] text-[clamp(3rem,8vw,7.2rem)] font-semibold leading-[0.94] tracking-[-0.075em] text-studio-950 dark:text-white">
+            <h1 className="m-0 max-w-[940px] text-[clamp(3rem,8vw,7.2rem)] font-semibold leading-[0.94] tracking-[-0.075em] text-[var(--ui-text-strong)]">
               Build the studio system with calmer UI.
             </h1>
 
-            <p className="m-0 max-w-[690px] text-[clamp(1rem,1.6vw,1.24rem)] leading-8 text-studio-700 dark:text-studio-300">
+            <p className="m-0 max-w-[690px] text-[clamp(1rem,1.6vw,1.24rem)] leading-8 text-[var(--ui-text-main)]">
               Fondasi visual dibuat lebih lapang, modern, dan tidak bergantung pada banyak card.
               Container tetap kuat, tapi halaman utama terasa seperti dashboard studio premium yang ringan.
             </p>
@@ -142,14 +140,14 @@ export function ThemePreview() {
 
           <div className="flex flex-wrap items-center gap-3">
             <button
-              className="inline-flex min-h-12 items-center justify-center rounded-full bg-gradient-to-br from-studio-950 to-studio-700 px-6 text-sm font-semibold tracking-[-0.01em] text-white shadow-[0_20px_54px_rgba(23,20,29,0.20)] transition hover:-translate-y-0.5 hover:shadow-[0_24px_64px_rgba(23,20,29,0.26)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20 dark:bg-white dark:bg-none dark:text-studio-950"
+              className="inline-flex min-h-12 items-center justify-center rounded-full bg-[image:var(--ui-primary-bg)] px-6 text-sm font-semibold tracking-[-0.01em] text-[var(--ui-primary-text)] shadow-[var(--ui-shadow-soft)] transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
               type="button"
             >
               Start foundation
             </button>
 
             <button
-              className="inline-flex min-h-12 items-center justify-center rounded-full border border-studio-950/10 bg-white/62 px-6 text-sm font-medium tracking-[-0.01em] text-studio-700 shadow-[inset_0_1px_0_rgba(255,255,255,0.82),0_12px_30px_rgba(73,48,94,0.08)] transition hover:-translate-y-0.5 hover:border-studio-accent/35 hover:bg-white/90 hover:text-studio-950 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20 dark:border-white/10 dark:bg-transparent dark:text-studio-200 dark:shadow-none dark:hover:text-white"
+              className="inline-flex min-h-12 items-center justify-center rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] px-6 text-sm font-medium tracking-[-0.01em] text-[var(--ui-secondary-text)] shadow-[var(--ui-shadow-control)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
               type="button"
             >
               View UI system
@@ -157,12 +155,12 @@ export function ThemePreview() {
           </div>
         </div>
 
-        <aside className="hidden border-l border-studio-950/14 bg-white/16 pl-8 dark:border-white/10 dark:bg-transparent lg:grid lg:gap-7">
+        <aside className="hidden border-l border-[var(--ui-border-strong)] bg-[var(--ui-glass-soft)] pl-8 lg:grid lg:gap-7">
           <div>
-            <p className="m-0 text-sm font-medium text-studio-600 dark:text-studio-400">
+            <p className="m-0 text-sm font-medium text-[var(--ui-text-muted)]">
               Current phase
             </p>
-            <p className="mt-2 text-3xl font-semibold tracking-[-0.05em] text-studio-950 dark:text-white">
+            <p className="mt-2 text-3xl font-semibold tracking-[-0.05em] text-[var(--ui-text-strong)]">
               UI Foundation
             </p>
           </div>
@@ -172,7 +170,7 @@ export function ThemePreview() {
               <dt className="text-xs font-medium uppercase tracking-[0.18em] text-studio-accent">
                 Stack
               </dt>
-              <dd className="m-0 mt-1 text-studio-700 dark:text-studio-300">
+              <dd className="m-0 mt-1 text-[var(--ui-text-main)]">
                 React · Vite · Tailwind
               </dd>
             </div>
@@ -180,7 +178,7 @@ export function ThemePreview() {
               <dt className="text-xs font-medium uppercase tracking-[0.18em] text-studio-accent">
                 Direction
               </dt>
-              <dd className="m-0 mt-1 text-studio-700 dark:text-studio-300">
+              <dd className="m-0 mt-1 text-[var(--ui-text-main)]">
                 Spatial, clean, operational
               </dd>
             </div>
@@ -188,7 +186,7 @@ export function ThemePreview() {
               <dt className="text-xs font-medium uppercase tracking-[0.18em] text-studio-accent">
                 Rule
               </dt>
-              <dd className="m-0 mt-1 text-studio-700 dark:text-studio-300">
+              <dd className="m-0 mt-1 text-[var(--ui-text-main)]">
                 Card only when useful
               </dd>
             </div>
@@ -201,24 +199,24 @@ export function ThemePreview() {
           <p className="m-0 text-xs font-medium uppercase tracking-[0.18em] text-studio-accent">
             Foundation notes
           </p>
-          <h2 className="mt-3 text-3xl font-semibold tracking-[-0.055em] text-studio-950 dark:text-white sm:text-4xl">
+          <h2 className="mt-3 text-3xl font-semibold tracking-[-0.055em] text-[var(--ui-text-strong)] sm:text-4xl">
             Lebih sedikit kotak, lebih banyak ruang.
           </h2>
         </div>
 
-        <div className="grid gap-0 border-y border-studio-950/14 bg-white/18 shadow-[inset_0_1px_0_rgba(255,255,255,0.35)] dark:border-white/10 dark:bg-transparent dark:shadow-none md:grid-cols-3">
+        <div className="grid gap-0 border-y border-[var(--ui-border-strong)] bg-[var(--ui-glass-soft)] shadow-[var(--ui-shadow-control)] md:grid-cols-3">
           {foundationNotes.map((item, index) => (
             <article
-              className="grid gap-3 border-studio-950/10 px-0 py-7 md:px-7 md:[&:not(:first-child)]:border-l dark:border-white/10"
+              className="grid gap-3 border-[var(--ui-border)] px-0 py-7 md:px-7 md:[&:not(:first-child)]:border-l"
               key={item.title}
             >
               <span className="text-xs font-medium uppercase tracking-[0.18em] text-studio-accent">
                 {String(index + 1).padStart(2, '0')} · {item.label}
               </span>
-              <h3 className="m-0 text-xl font-semibold tracking-[-0.035em] text-studio-950 dark:text-white">
+              <h3 className="m-0 text-xl font-semibold tracking-[-0.035em] text-[var(--ui-text-strong)]">
                 {item.title}
               </h3>
-              <p className="m-0 leading-7 text-studio-700 dark:text-studio-300">
+              <p className="m-0 leading-7 text-[var(--ui-text-main)]">
                 {item.text}
               </p>
             </article>
@@ -226,25 +224,25 @@ export function ThemePreview() {
         </div>
       </section>
 
-      <section className="grid gap-6 border-t border-studio-950/14 bg-white/14 pt-8 shadow-[inset_0_1px_0_rgba(255,255,255,0.34)] dark:border-white/10 dark:bg-transparent dark:shadow-none lg:grid-cols-[0.85fr_1fr]">
+      <section className="grid gap-6 border-t border-[var(--ui-border-strong)] bg-[var(--ui-glass-soft)] pt-8 shadow-[var(--ui-shadow-control)] lg:grid-cols-[0.85fr_1fr]">
         <div className="grid gap-3">
           <p className="m-0 text-xs font-medium uppercase tracking-[0.18em] text-studio-accent">
             Form baseline
           </p>
-          <h2 className="m-0 text-3xl font-semibold tracking-[-0.055em] text-studio-950 dark:text-white">
+          <h2 className="m-0 text-3xl font-semibold tracking-[-0.055em] text-[var(--ui-text-strong)]">
             Komponen tetap jelas tanpa harus selalu jadi card.
           </h2>
-          <p className="m-0 max-w-xl leading-7 text-studio-700 dark:text-studio-300">
+          <p className="m-0 max-w-xl leading-7 text-[var(--ui-text-main)]">
             Form, button, badge, dan panel nanti akan kita pecah jadi component library kecil.
             Untuk landing dan dashboard awal, layout dibuat lebih flat dan lapang.
           </p>
         </div>
 
         <form className="grid gap-4 sm:grid-cols-2">
-          <label className="grid gap-2 text-sm font-medium text-studio-700 dark:text-studio-300">
+          <label className="grid gap-2 text-sm font-medium text-[var(--ui-text-main)]">
             <span>Nama project</span>
             <input
-              className="min-h-12 w-full rounded-2xl border border-studio-950/10 bg-white/78 px-4 text-sm font-medium text-studio-950 shadow-[inset_0_1px_0_rgba(255,255,255,0.86),0_14px_34px_rgba(73,48,94,0.08)] outline-none ring-1 ring-studio-950/[0.025] transition focus:border-studio-accent/40 focus:ring-4 focus:ring-studio-accent/15 dark:border-white/10 dark:bg-white/[0.06] dark:text-white dark:shadow-none dark:ring-transparent"
+              className="min-h-12 w-full rounded-2xl border border-[var(--ui-border)] bg-[var(--ui-control)] px-4 text-sm font-medium text-[var(--ui-text-strong)] shadow-[var(--ui-shadow-control)] outline-none ring-1 ring-[var(--ui-ring)] transition focus:border-studio-accent/40 focus:ring-4 focus:ring-studio-accent/15"
               value="37 Music Studio"
               readOnly
             />
