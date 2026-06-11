@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+@source "../";
+@source "../../index.html";
+
 @custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
 
 @theme {
@@ -32,6 +35,13 @@
   --shadow-studio-glow: 0 14px 28px rgb(255 74 155 / 0.26);
 }
 
+:root {
+  --studio-night: #090a10;
+  --studio-paper: #f6f3f8;
+  --studio-ink: #17141d;
+  --studio-accent: #ff4a9b;
+}
+
 @layer base {
   * {
     box-sizing: border-box;
@@ -40,8 +50,8 @@
   html {
     min-width: 320px;
     min-height: 100%;
-    background: var(--color-studio-paper);
-    color: var(--color-studio-900);
+    background: var(--studio-paper);
+    color: var(--studio-ink);
     font-family: var(--font-sans);
     text-rendering: geometricPrecision;
     -webkit-font-smoothing: antialiased;
@@ -49,8 +59,8 @@
   }
 
   html[data-theme="dark"] {
-    background: var(--color-studio-night);
-    color: var(--color-studio-100);
+    background: var(--studio-night);
+    color: white;
   }
 
   body {
