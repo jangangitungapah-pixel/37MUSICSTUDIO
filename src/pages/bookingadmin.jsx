@@ -866,20 +866,20 @@ function BookingModal({
   );
 }
 
-function DetailLine({
+function DetailRow({
   helper,
   icon: Icon,
   label,
   value,
 }) {
   return (
-    <div className="grid gap-1 border-t border-[var(--ui-border)] py-3 first:border-t-0">
-      <div className="flex items-center gap-2 text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-[var(--ui-text-muted)]">
-        {Icon ? <Icon size={14} strokeWidth={2.35} aria-hidden="true" /> : null}
+    <div className="grid gap-0.5 border-t border-[var(--ui-border)] py-2.5 first:border-t-0 sm:py-3">
+      <div className="flex items-center gap-2 text-[0.58rem] font-semibold uppercase tracking-[0.13em] text-[var(--ui-text-muted)] sm:text-[0.68rem] sm:tracking-[0.16em]">
+        {Icon ? <Icon size={13} strokeWidth={2.35} aria-hidden="true" /> : null}
         {label}
       </div>
 
-      <strong className="text-base font-semibold tracking-[-0.03em] text-[var(--ui-text-strong)]">
+      <strong className="text-[0.95rem] font-semibold leading-5 tracking-[-0.035em] text-[var(--ui-text-strong)] sm:text-base">
         {value}
       </strong>
 
@@ -892,41 +892,24 @@ function DetailLine({
   );
 }
 
-function DetailColumn({
-  children,
-  label,
-}) {
-  return (
-    <section className="grid gap-2" aria-label={label}>
-      <span className="text-[0.58rem] font-semibold uppercase tracking-[0.14em] text-studio-accent sm:text-[0.68rem] sm:tracking-[0.18em]">
-        {label}
-      </span>
-
-      <div className="grid gap-0">
-        {children}
-      </div>
-    </section>
-  );
-}
-
-function PaymentValue({
+function PaymentMini({
   helper,
   icon: Icon,
   label,
   value,
 }) {
   return (
-    <div className="grid gap-1 border-t border-[var(--ui-border)] py-3 sm:border-l sm:border-t-0 sm:px-5 sm:first:border-l-0">
-      <div className="flex items-center gap-2 text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-[var(--ui-text-muted)]">
-        {Icon ? <Icon size={14} strokeWidth={2.35} aria-hidden="true" /> : null}
-        {label}
+    <div className="grid min-w-0 gap-0.5 border-l border-[var(--ui-border)] px-2 py-2 first:border-l-0 sm:px-4 sm:py-3">
+      <div className="flex min-w-0 items-center gap-1.5 text-[0.52rem] font-semibold uppercase tracking-[0.11em] text-[var(--ui-text-muted)] sm:text-[0.68rem] sm:tracking-[0.16em]">
+        {Icon ? <Icon className="shrink-0" size={12} strokeWidth={2.35} aria-hidden="true" /> : null}
+        <span className="truncate">{label}</span>
       </div>
 
-      <strong className="text-xl font-semibold tracking-[-0.045em] text-[var(--ui-text-strong)]">
+      <strong className="truncate text-base font-semibold leading-5 tracking-[-0.05em] text-[var(--ui-text-strong)] sm:text-xl">
         {value}
       </strong>
 
-      <span className="text-xs font-medium leading-5 text-[var(--ui-text-muted)]">
+      <span className="truncate text-[0.68rem] font-medium leading-4 text-[var(--ui-text-muted)] sm:text-xs sm:leading-5">
         {helper}
       </span>
     </div>
@@ -959,143 +942,157 @@ function BookingDetailModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 grid items-end p-2 pb-[max(0.75rem,env(safe-area-inset-bottom))] [background:color-mix(in_srgb,var(--ui-bg-base)_62%,transparent)] backdrop-blur-xl sm:place-items-center sm:p-4"
+      className="fixed inset-0 z-50 flex items-end justify-center p-2 pb-[max(0.75rem,env(safe-area-inset-bottom))] [background:color-mix(in_srgb,var(--ui-bg-base)_62%,transparent)] backdrop-blur-xl sm:items-center sm:p-4"
       role="dialog"
       aria-modal="true"
       aria-labelledby="booking-detail-title"
     >
-      <div className="grid max-h-[calc(100dvh-16px)] w-full gap-4 overflow-auto rounded-t-[1.75rem] border border-[var(--ui-border-strong)] bg-[var(--ui-bg-base)] p-4 pb-[max(1rem,env(safe-area-inset-bottom))] shadow-[var(--ui-shadow-soft)] ring-1 ring-[var(--ui-ring)] sm:max-h-[calc(100dvh-32px)] sm:w-[min(760px,calc(100vw-32px))] sm:rounded-[2rem] sm:p-6">
-        <div className="flex items-start justify-between gap-4">
-          <div className="grid gap-3">
-            <span className="inline-flex w-fit items-center gap-2 rounded-full border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 py-1.5 text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-studio-accent ring-1 ring-[var(--ui-ring)]">
-              <ReceiptText size={14} strokeWidth={2.35} aria-hidden="true" />
-              Detail booking
-            </span>
-
-            <div className="grid gap-1">
-              <h2
-                className="m-0 text-[clamp(2rem,4vw,3.25rem)] font-semibold leading-none tracking-[-0.075em] text-[var(--ui-text-strong)]"
-                id="booking-detail-title"
-              >
-                {displayName}
-              </h2>
-
-              <p className="m-0 max-w-2xl text-sm leading-6 text-[var(--ui-text-muted)]">
-                {sessionLabel} pada {formatFullDateLabel(bookingDate)}, pukul {booking.time} sampai {endTime}.
-              </p>
-            </div>
-          </div>
-
-          <button
-            aria-label="Close booking detail"
-            className="grid size-10 shrink-0 place-items-center rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] text-[var(--ui-secondary-text)] shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/25"
-            type="button"
-            onClick={onClose}
-          >
-            <X size={17} strokeWidth={2.35} aria-hidden="true" />
-          </button>
-        </div>
-
-        <section className="grid gap-4 border-y border-[var(--ui-border)] py-4" aria-label="Ringkasan booking">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div className="grid gap-1">
-              <span className="text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-[var(--ui-text-muted)]">
-                Status pembayaran
+      <div className="flex max-h-[calc(100dvh-5.5rem)] w-full flex-col overflow-hidden rounded-[1.5rem] border border-[var(--ui-border-strong)] bg-[var(--ui-bg-base)] shadow-[var(--ui-shadow-soft)] ring-1 ring-[var(--ui-ring)] sm:max-h-[calc(100dvh-32px)] sm:w-[min(760px,calc(100vw-32px))] sm:rounded-[2rem]">
+        <header className="shrink-0 border-b border-[var(--ui-border)] px-4 py-3 sm:px-6 sm:py-5">
+          <div className="flex items-start justify-between gap-3">
+            <div className="grid min-w-0 gap-2">
+              <span className="inline-flex w-fit items-center gap-2 rounded-full border border-[var(--ui-border)] bg-[var(--ui-control)] px-2.5 py-1.5 text-[0.58rem] font-semibold uppercase tracking-[0.16em] text-studio-accent ring-1 ring-[var(--ui-ring)] sm:px-3 sm:text-[0.68rem] sm:tracking-[0.18em]">
+                <ReceiptText size={13} strokeWidth={2.35} aria-hidden="true" />
+                Detail booking
               </span>
 
-              <strong className="inline-flex items-center gap-2 text-2xl font-semibold tracking-[-0.055em] text-[var(--ui-text-strong)]">
-                <span className={cn('size-2 rounded-full', statusDotClass)} aria-hidden="true" />
-                {paymentLabel}
-              </strong>
+              <div className="grid gap-1">
+                <h2
+                  className="m-0 truncate text-3xl font-semibold leading-none tracking-[-0.07em] text-[var(--ui-text-strong)] sm:text-[clamp(2rem,4vw,3.25rem)]"
+                  id="booking-detail-title"
+                >
+                  {displayName}
+                </h2>
+
+                <p className="m-0 max-w-2xl text-sm leading-6 text-[var(--ui-text-muted)]">
+                  {sessionLabel} • {formatFullDateLabel(bookingDate)} • {booking.time} - {endTime}
+                </p>
+              </div>
             </div>
 
-            <span className="inline-flex items-center gap-2 rounded-full border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 py-2 text-xs font-semibold uppercase tracking-[0.14em] text-[var(--ui-text-main)] ring-1 ring-[var(--ui-ring)]">
-              <span className={cn('size-2 rounded-full', statusDotClass)} aria-hidden="true" />
-              {sessionLabel}
+            <button
+              aria-label="Close booking detail"
+              className="grid size-9 shrink-0 place-items-center rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] text-[var(--ui-secondary-text)] shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/25 sm:size-10"
+              type="button"
+              onClick={onClose}
+            >
+              <X size={17} strokeWidth={2.35} aria-hidden="true" />
+            </button>
+          </div>
+        </header>
+
+        <div className="grid gap-4 overflow-y-auto px-4 py-4 sm:px-6 sm:py-5">
+          <section className="grid gap-3" aria-label="Ringkasan booking">
+            <div className="flex items-center justify-between gap-3">
+              <div className="grid min-w-0 gap-0.5">
+                <span className="text-[0.58rem] font-semibold uppercase tracking-[0.14em] text-[var(--ui-text-muted)] sm:text-[0.68rem] sm:tracking-[0.16em]">
+                  Status pembayaran
+                </span>
+
+                <strong className="inline-flex min-w-0 items-center gap-2 text-2xl font-semibold leading-none tracking-[-0.055em] text-[var(--ui-text-strong)] sm:text-3xl">
+                  <span className={cn('size-2 shrink-0 rounded-full', statusDotClass)} aria-hidden="true" />
+                  <span className="truncate">{paymentLabel}</span>
+                </strong>
+              </div>
+
+              <span className="inline-flex max-w-[48%] shrink-0 items-center gap-1.5 rounded-full border border-[var(--ui-border)] bg-[var(--ui-control)] px-2.5 py-1.5 text-[0.62rem] font-semibold uppercase tracking-[0.1em] text-[var(--ui-text-main)] ring-1 ring-[var(--ui-ring)] sm:max-w-none sm:px-3 sm:py-2 sm:text-xs sm:tracking-[0.14em]">
+                <span className={cn('size-1.5 shrink-0 rounded-full sm:size-2', statusDotClass)} aria-hidden="true" />
+                <span className="truncate">{sessionLabel}</span>
+              </span>
+            </div>
+
+            <div className="grid grid-cols-3 gap-0 border-y border-[var(--ui-border)]">
+              <PaymentMini
+                icon={WalletCards}
+                label="Total"
+                value={formatCurrency(booking.totalPrice)}
+                helper={duration + ' jam'}
+              />
+
+              <PaymentMini
+                icon={Banknote}
+                label="Bayar"
+                value={formatCurrency(paidAmount)}
+                helper={booking.status === 'dp' ? 'DP' : paymentLabel}
+              />
+
+              <PaymentMini
+                icon={ReceiptText}
+                label="Sisa"
+                value={formatCurrency(booking.remainingPayment)}
+                helper={booking.remainingPayment > 0 ? 'Belum lunas' : 'Lunas'}
+              />
+            </div>
+          </section>
+
+          <section className="grid gap-3 sm:grid-cols-2 sm:gap-6" aria-label="Data booking">
+            <div className="grid gap-0">
+              <span className="pb-1 text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-studio-accent">
+                Customer
+              </span>
+
+              <DetailRow
+                icon={UserRound}
+                label="Nama"
+                value={displayName}
+                helper={booking.phone || 'Nomor telepon belum diisi'}
+              />
+
+              <DetailRow
+                icon={Phone}
+                label="Nomor telepon"
+                value={booking.phone || '-'}
+                helper="Kontak customer"
+              />
+            </div>
+
+            <div className="grid gap-0">
+              <span className="pb-1 text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-studio-accent">
+                Jadwal
+              </span>
+
+              <DetailRow
+                icon={CalendarDays}
+                label="Tanggal"
+                value={formatFullDateLabel(bookingDate)}
+                helper={booking.dateKey}
+              />
+
+              <DetailRow
+                icon={Clock3}
+                label="Waktu"
+                value={booking.time + ' - ' + endTime}
+                helper={'Durasi ' + duration + ' jam'}
+              />
+            </div>
+          </section>
+
+          <section className="grid gap-1.5 border-y border-[var(--ui-border)] py-3" aria-label="Catatan booking">
+            <span className="text-[0.58rem] font-semibold uppercase tracking-[0.14em] text-[var(--ui-text-muted)] sm:text-[0.68rem] sm:tracking-[0.16em]">
+              Catatan
             </span>
-          </div>
 
-          <div className="grid gap-0 border-y border-[var(--ui-border)] sm:grid-cols-3">
-            <PaymentValue
-              icon={WalletCards}
-              label="Total"
-              value={formatCurrency(booking.totalPrice)}
-              helper={duration + ' jam x ' + formatCurrency(PRICE_PER_HOUR)}
-            />
-
-            <PaymentValue
-              icon={Banknote}
-              label="Terbayar"
-              value={formatCurrency(paidAmount)}
-              helper={booking.status === 'dp' ? 'Nominal DP' : paymentLabel}
-            />
-
-            <PaymentValue
-              icon={ReceiptText}
-              label="Sisa"
-              value={formatCurrency(booking.remainingPayment)}
-              helper={booking.remainingPayment > 0 ? 'Belum lunas' : 'Tidak ada sisa'}
-            />
-          </div>
-        </section>
-
-        <section className="grid gap-5 sm:grid-cols-2" aria-label="Data booking">
-          <DetailColumn label="Customer">
-            <DetailLine
-              icon={UserRound}
-              label="Nama"
-              value={displayName}
-              helper={booking.phone || 'Nomor telepon belum diisi'}
-            />
-
-            <DetailLine
-              icon={Phone}
-              label="Nomor telepon"
-              value={booking.phone || '-'}
-              helper="Kontak customer"
-            />
-          </DetailColumn>
-
-          <DetailColumn label="Jadwal">
-            <DetailLine
-              icon={CalendarDays}
-              label="Tanggal"
-              value={formatFullDateLabel(bookingDate)}
-              helper={booking.dateKey}
-            />
-
-            <DetailLine
-              icon={Clock3}
-              label="Waktu"
-              value={booking.time + ' - ' + endTime}
-              helper={'Durasi ' + duration + ' jam'}
-            />
-          </DetailColumn>
-        </section>
-
-        <section className="grid gap-2 border-y border-[var(--ui-border)] py-4" aria-label="Catatan booking">
-          <span className="text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-[var(--ui-text-muted)]">
-            Catatan
-          </span>
-
-          <p className="m-0 text-sm leading-7 text-[var(--ui-text-main)]">
-            {booking.notes || 'Belum ada catatan tambahan untuk booking ini.'}
-          </p>
-        </section>
-
-        <div className="sticky bottom-0 z-10 -mx-4 flex flex-wrap items-center justify-between gap-3 border-t border-[var(--ui-border)] bg-[var(--ui-bg-base)] px-4 pb-[max(0.25rem,env(safe-area-inset-bottom))] pt-3 sm:static sm:mx-0 sm:bg-transparent sm:px-0 sm:pb-0 sm:pt-4">
-          <span className="text-sm font-semibold text-[var(--ui-text-muted)]">
-            Detail ini masih read-only. Edit booking bisa dibuat di phase berikutnya.
-          </span>
-
-          <button
-            className="inline-flex min-h-11 items-center justify-center rounded-full [background:var(--ui-primary-bg)] px-5 text-sm font-semibold text-[var(--ui-primary-text)] shadow-[var(--ui-shadow-soft)] transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
-            type="button"
-            onClick={onClose}
-          >
-            Tutup detail
-          </button>
+            <p className="m-0 text-sm leading-6 text-[var(--ui-text-main)]">
+              {booking.notes || 'Belum ada catatan tambahan untuk booking ini.'}
+            </p>
+          </section>
         </div>
+
+        <footer className="shrink-0 border-t border-[var(--ui-border)] bg-[var(--ui-bg-base)] px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 sm:px-6 sm:pb-5">
+          <div className="flex items-center justify-between gap-3">
+            <span className="hidden text-xs font-semibold leading-5 text-[var(--ui-text-muted)] sm:block">
+              Detail ini masih read-only. Edit booking bisa dibuat di phase berikutnya.
+            </span>
+
+            <button
+              className="inline-flex min-h-10 w-full items-center justify-center rounded-full [background:var(--ui-primary-bg)] px-5 text-sm font-semibold text-[var(--ui-primary-text)] shadow-[var(--ui-shadow-soft)] transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20 sm:w-auto"
+              type="button"
+              onClick={onClose}
+            >
+              Tutup detail
+            </button>
+          </div>
+        </footer>
       </div>
     </div>
   );
