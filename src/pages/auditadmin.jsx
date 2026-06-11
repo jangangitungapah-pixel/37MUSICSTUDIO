@@ -95,6 +95,107 @@ function getSnapshotSession(log) {
   return log.bookingSnapshot?.sessionType || 'Studio session';
 }
 
+function getAuditTimeValue(log) {
+  const date = new Date(log?.at || log?.recordedAt || 0);
+
+  return Number.isNaN(date.getTime()) ? 0 : date.getTime();
+}
+
+function compareAuditLogsByTime(firstLog, secondLog) {
+  const firstTime = getAuditTimeValue(firstLog);
+  const secondTime = getAuditTimeValue(secondLog);
+
+  if (firstTime !== secondTime) {
+    return secondTime - firstTime;
+  }
+
+  return String(secondLog.id || '').localeCompare(String(firstLog.id || ''));
+}
+
+function createBookingAuditSnapshot(booking) {
+  return {
+    customerName: booking.customerName || booking.title || '',
+    dateKey: booking.dateKey || '',
+    phone: booking.phone || '',
+    sessionType: booking.sessionType || booking.title || '',
+    status: booking.status || '',
+    time: booking.time || '',
+    totalPrice: booking.totalPrice || 0,
+  };
+}
+
+function createBookingAuditTrailLog(booking, entry, index) {
+  return {
+    action: entry.action || 'activity',
+    at: entry.at || booking.updatedAt || booking.createdAt || '',
+    bookingId: booking.id,
+    bookingSnapshot: createBookingAuditSnapshot(booking),
+    by: entry.by || booking.updatedBy || booking.createdBy || {},
+    id: booking.id + ':' + (entry.id || entry.action || 'activity') + ':' + index,
+    label: entry.label || entry.action || 'Booking activity',
+    recordedAt: entry.at || booking.updatedAt || booking.createdAt || '',
+    source: 'booking.auditTrail',
+    studioId: booking.studioId || 'main-studio',
+  };
+}
+
+function createBookingLastActionLog(booking) {
+  if (!booking.lastAction) {
+    return null;
+  }
+
+  return {
+    action: booking.lastAction,
+    at: booking.lastActionAt || booking.updatedAt || booking.createdAt || '',
+    bookingId: booking.id,
+    bookingSnapshot: createBookingAuditSnapshot(booking),
+    by: booking.updatedBy || booking.createdBy || {},
+    id: booking.id + ':last-action:' + booking.lastAction,
+    label: booking.lastActionLabel || booking.lastAction,
+    recordedAt: booking.lastActionAt || booking.updatedAt || booking.createdAt || '',
+    source: 'booking.lastAction',
+    studioId: booking.studioId || 'main-studio',
+  };
+}
+
+function createBookingAuditTrailLogs(booking) {
+  if (!booking || !booking.id) {
+    return [];
+  }
+
+  const trail = Array.isArray(booking.auditTrail) ? booking.auditTrail : [];
+
+  if (trail.length > 0) {
+    return trail.map((entry, index) => createBookingAuditTrailLog(booking, entry, index));
+  }
+
+  const lastActionLog = createBookingLastActionLog(booking);
+
+  return lastActionLog ? [lastActionLog] : [];
+}
+
+function mergeAuditLogs(bookingLogs, detachedLogs) {
+  const seenIds = new Set();
+
+  return [...bookingLogs, ...detachedLogs]
+    .filter((log) => {
+      const stableId = log.id || [
+        log.bookingId,
+        log.action,
+        log.at,
+        log.label,
+      ].join(':');
+
+      if (seenIds.has(stableId)) {
+        return false;
+      }
+
+      seenIds.add(stableId);
+      return true;
+    })
+    .sort(compareAuditLogsByTime);
+}
+
 function AuditMetric({
   helper,
   icon: Icon,
@@ -271,7 +372,7 @@ function AuditEmptyState({
         <p className="m-0 text-sm leading-6 text-[var(--ui-text-muted)]">
           {hasLogs
             ? 'Coba ubah keyword atau filter action untuk melihat aktivitas lain.'
-            : 'Log delete akan muncul setelah ada booking yang dihapus. Activity create/edit/paid tetap bisa dilihat di detail booking.'}
+            : 'Activity create/edit/paid dibaca dari auditTrail booking aktif. Log delete dibaca dari bookingAuditLogs karena booking-nya sudah dihapus.'}
         </p>
       </div>
     </div>
@@ -279,9 +380,9 @@ function AuditEmptyState({
 }
 
 export function AuditAdmin() {
-  const { adminUser = null } = useOutletContext() || {};
+  const { adminUser = null, manualBookings = [] } = useOutletContext() || {};
   const [actionFilter, setActionFilter] = useState('all');
-  const [auditLogs, setAuditLogs] = useState([]);
+  const [detachedAuditLogs, setDetachedAuditLogs] = useState([]);
   const [errorMessage, setErrorMessage] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -291,7 +392,7 @@ export function AuditAdmin() {
 
     const unsubscribe = adminBookingRepository.subscribeBookingAuditLogs(
       (nextLogs) => {
-        setAuditLogs(nextLogs);
+        setDetachedAuditLogs(nextLogs);
         setIsLoading(false);
       },
       () => {
@@ -302,6 +403,16 @@ export function AuditAdmin() {
 
     return unsubscribe;
   }, []);
+
+  const bookingAuditTrailLogs = useMemo(
+    () => manualBookings.flatMap((booking) => createBookingAuditTrailLogs(booking)),
+    [manualBookings],
+  );
+
+  const auditLogs = useMemo(
+    () => mergeAuditLogs(bookingAuditTrailLogs, detachedAuditLogs),
+    [bookingAuditTrailLogs, detachedAuditLogs],
+  );
 
   const filteredLogs = useMemo(() => {
     const normalizedQuery = normalizeSearchText(searchQuery);
@@ -361,7 +472,7 @@ export function AuditAdmin() {
             </h1>
 
             <p className="m-0 max-w-2xl text-sm leading-6 text-[var(--ui-text-muted)]">
-              Monitor aktivitas booking yang tercatat di Firestore. Login aktif: {adminUser?.email || 'admin'}.
+              Monitor aktivitas booking dari auditTrail booking aktif dan bookingAuditLogs. Login aktif: {adminUser?.email || 'admin'}.
             </p>
           </div>
 
