@@ -384,7 +384,11 @@ export function AdminPage() {
     () => ({
       activeItem,
       addManualBooking: async (booking) => {
-        await adminBookingRepository.createManualBooking(booking);
+        try {
+          await adminBookingRepository.createManualBooking(booking);
+        } catch (error) {
+          console.error('Failed to create admin booking.', error);
+        }
       },
       manualBookings,
     }),
