@@ -4,6 +4,7 @@ import {
 } from 'react';
 import { Link, useSearchParams } from 'react-router';
 import {
+  ArrowUpRight,
   CalendarClock,
   CalendarDays,
   CheckCircle2,
@@ -100,8 +101,16 @@ function createCustomerKey(booking) {
   );
 }
 
+function prettifyCustomerName(name) {
+  return String(name || 'Unknown customer')
+    .replace(/([a-z])([A-Z])/g, '$1 $2')
+    .replace(/[_-]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
 function getCustomerInitials(name) {
-  const cleanName = String(name || 'Customer').trim();
+  const cleanName = prettifyCustomerName(name);
 
   return cleanName
     .split(/\s+/)
@@ -142,10 +151,11 @@ function buildCustomersFromBookings(bookings, today = new Date()) {
   bookings.forEach((booking) => {
     const key = createCustomerKey(booking);
     const date = parseDateKey(booking.dateKey);
+    const customerName = prettifyCustomerName(booking.customerName);
     const current = customerMap.get(key) || {
       id: key,
-      initials: getCustomerInitials(booking.customerName),
-      name: booking.customerName || 'Unknown customer',
+      initials: getCustomerInitials(customerName),
+      name: customerName,
       phone: booking.phone || '-',
       totalBookings: 0,
       totalRevenue: 0,
@@ -161,6 +171,7 @@ function buildCustomersFromBookings(bookings, today = new Date()) {
 
     const normalizedBooking = {
       ...booking,
+      customerName,
       parsedDate: date,
     };
 
@@ -253,74 +264,99 @@ function CustomerHero({
   stats,
 }) {
   return (
-    <header className="relative overflow-hidden rounded-[2rem] border border-[var(--ui-border-strong)] bg-[linear-gradient(145deg,var(--ui-glass),var(--ui-glass-soft))] p-5 shadow-[var(--ui-shadow-soft)] ring-1 ring-[var(--ui-ring)] backdrop-blur-2xl sm:p-7">
-      <div className="pointer-events-none absolute -right-24 -top-32 size-72 rounded-full bg-studio-accent/16 blur-3xl" aria-hidden="true" />
-      <div className="pointer-events-none absolute -bottom-32 -left-20 size-72 rounded-full bg-studio-cyan/14 blur-3xl" aria-hidden="true" />
+    <header className="grid gap-5 py-2 sm:py-3 lg:grid-cols-[minmax(0,1fr)_minmax(260px,360px)] lg:items-end">
+      <div className="grid gap-3">
+        <div className="inline-flex w-fit items-center gap-2 rounded-full border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] px-3 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-studio-accent ring-1 ring-[var(--ui-ring)]">
+          <Sparkles size={14} strokeWidth={2.35} aria-hidden="true" />
+          Customer Directory
+        </div>
 
-      <div className="relative z-10 grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(260px,360px)] lg:items-end">
         <div className="grid gap-3">
-          <div className="inline-flex w-fit items-center gap-2 rounded-full border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] px-3 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-studio-accent ring-1 ring-[var(--ui-ring)]">
-            <Sparkles size={14} strokeWidth={2.35} aria-hidden="true" />
-            Customer Directory
-          </div>
+          <h1 className="m-0 max-w-4xl text-[clamp(2.35rem,5.4vw,5.15rem)] font-semibold leading-[0.95] tracking-[-0.075em] text-[var(--ui-text-strong)]">
+            Customer list dari histori booking studio.
+          </h1>
 
-          <div className="grid gap-3">
-            <h1 className="m-0 max-w-4xl text-[clamp(2.55rem,6vw,5.9rem)] font-semibold leading-[0.94] tracking-[-0.075em] text-[var(--ui-text-strong)]">
-              Customer list dari histori booking studio.
-            </h1>
-
-            <p className="m-0 max-w-2xl text-[clamp(0.98rem,1.25vw,1.12rem)] leading-8 text-[var(--ui-text-main)]">
-              Halaman ini mengelompokkan customer dari data booking admin, jadi admin bisa melihat kontak, total booking, status, dan langsung lompat ke booking board yang sudah difilter.
-            </p>
-          </div>
+          <p className="m-0 max-w-2xl text-[clamp(0.95rem,1.12vw,1.05rem)] leading-8 text-[var(--ui-text-main)]">
+            Directory ringan untuk melihat kontak, status, dan shortcut ke booking board tanpa membuat halaman terasa penuh kotak.
+          </p>
         </div>
+      </div>
 
-        <div className="grid gap-3 rounded-[1.5rem] border border-[var(--ui-border)] bg-[var(--ui-control)] p-4 shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)]">
-          <span className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--ui-text-muted)]">
-            Active customer
-          </span>
+      <div className="grid gap-2 border-y border-[var(--ui-border)] py-4 lg:border-l lg:border-y-0 lg:py-0 lg:pl-6">
+        <span className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--ui-text-muted)]">
+          Active customer
+        </span>
 
-          <strong className="text-2xl font-semibold tracking-[-0.055em] text-[var(--ui-text-strong)]">
-            {activeCustomer ? activeCustomer.name : stats.totalCustomers + ' customers'}
-          </strong>
+        <strong className="text-2xl font-semibold tracking-[-0.055em] text-[var(--ui-text-strong)]">
+          {activeCustomer ? activeCustomer.name : stats.totalCustomers + ' customers'}
+        </strong>
 
-          <span className="text-sm leading-6 text-[var(--ui-text-muted)]">
-            {activeCustomer
-              ? activeCustomer.totalBookings + ' booking tercatat, favorit sesi ' + activeCustomer.favoriteSession + '.'
-              : 'Pilih customer untuk membuka detail ringkas dan riwayat booking.'}
-          </span>
-        </div>
+        <span className="text-sm leading-6 text-[var(--ui-text-muted)]">
+          {activeCustomer
+            ? activeCustomer.totalBookings + ' booking tercatat, favorit sesi ' + activeCustomer.favoriteSession + '.'
+            : 'Pilih customer untuk membuka inspector di sisi kanan.'}
+        </span>
       </div>
     </header>
   );
 }
 
-function StatCard({
-  helper,
-  icon: Icon,
-  label,
-  value,
+function MetricStrip({
+  stats,
 }) {
+  const items = [
+    {
+      icon: UsersRound,
+      label: 'Total customers',
+      value: stats.totalCustomers,
+      helper: 'Customer unik',
+    },
+    {
+      icon: CheckCircle2,
+      label: 'Returning',
+      value: stats.returningCustomers,
+      helper: 'Lebih dari 1 booking',
+    },
+    {
+      icon: CalendarClock,
+      label: 'Upcoming',
+      value: stats.upcomingCustomers,
+      helper: 'Punya jadwal mendatang',
+    },
+    {
+      icon: CreditCard,
+      label: 'Revenue',
+      value: formatCurrency(stats.totalRevenue),
+      helper: 'Snapshot aktif',
+    },
+  ];
+
   return (
-    <article className="grid gap-3 rounded-[1.5rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-4 shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)]">
-      <div className="flex items-center justify-between gap-3">
-        <span className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--ui-text-muted)]">
-          {label}
-        </span>
+    <section className="grid gap-0 overflow-hidden rounded-[1.75rem] border-y border-[var(--ui-border)] sm:grid-cols-2 xl:grid-cols-4 xl:rounded-none xl:border-x-0">
+      {items.map((item) => {
+        const Icon = item.icon;
 
-        <span className="grid size-9 place-items-center rounded-2xl border border-[var(--ui-border)] bg-[var(--ui-control)] text-studio-accent">
-          <Icon size={17} strokeWidth={2.35} aria-hidden="true" />
-        </span>
-      </div>
+        return (
+          <article
+            className="grid gap-2 border-b border-[var(--ui-border)] px-1 py-4 last:border-b-0 sm:border-l sm:border-b-0 sm:px-5 sm:first:border-l-0 xl:px-6"
+            key={item.label}
+          >
+            <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.15em] text-[var(--ui-text-muted)]">
+              <Icon className="text-studio-accent" size={15} strokeWidth={2.35} aria-hidden="true" />
+              {item.label}
+            </div>
 
-      <strong className="text-2xl font-semibold tracking-[-0.055em] text-[var(--ui-text-strong)]">
-        {value}
-      </strong>
+            <strong className="text-2xl font-semibold tracking-[-0.055em] text-[var(--ui-text-strong)]">
+              {item.value}
+            </strong>
 
-      <span className="text-sm leading-6 text-[var(--ui-text-muted)]">
-        {helper}
-      </span>
-    </article>
+            <span className="text-sm leading-6 text-[var(--ui-text-muted)]">
+              {item.helper}
+            </span>
+          </article>
+        );
+      })}
+    </section>
   );
 }
 
@@ -334,7 +370,7 @@ function CustomerToolbar({
   onStatusFilterChange,
 }) {
   return (
-    <section className="grid gap-3 rounded-[1.5rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-3 shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] lg:grid-cols-[minmax(0,1fr)_auto_auto] lg:items-end">
+    <section className="grid gap-3 rounded-[1.5rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-3 ring-1 ring-[var(--ui-ring)] lg:grid-cols-[minmax(0,1fr)_auto_auto] lg:items-end">
       <label className="grid gap-1.5 text-sm font-semibold text-[var(--ui-text-main)]">
         Search customer
         <span className="flex min-h-12 items-center gap-3 rounded-[1.25rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 ring-1 ring-[var(--ui-ring)] focus-within:border-studio-accent/55 focus-within:ring-4 focus-within:ring-studio-accent/20">
@@ -406,7 +442,7 @@ function CustomerStatusBadge({ status }) {
   return (
     <span
       className={cn(
-        'inline-flex w-fit items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-semibold uppercase tracking-[0.12em]',
+        'inline-flex w-fit items-center gap-1.5 rounded-full border px-2.5 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.12em]',
         getStatusClass(status),
       )}
     >
@@ -424,7 +460,7 @@ function CustomerList({
   if (!customers.length) {
     return (
       <section className="grid min-h-80 place-items-center rounded-[2rem] border border-[var(--ui-border-strong)] bg-[linear-gradient(145deg,var(--ui-glass),var(--ui-glass-soft))] p-8 text-center shadow-[var(--ui-shadow-soft)] ring-1 ring-[var(--ui-ring)]">
-        <div className="grid max-w-md gap-3 justify-items-center">
+        <div className="grid max-w-md justify-items-center gap-3">
           <span className="grid size-14 place-items-center rounded-[1.25rem] border border-[var(--ui-border)] bg-[var(--ui-control)] text-studio-accent">
             <UsersRound size={24} strokeWidth={2.2} aria-hidden="true" />
           </span>
@@ -442,14 +478,14 @@ function CustomerList({
   }
 
   return (
-    <section className="overflow-hidden rounded-[2rem] border border-[var(--ui-border-strong)] bg-[linear-gradient(145deg,var(--ui-glass),var(--ui-glass-soft))] shadow-[var(--ui-shadow-soft)] ring-1 ring-[var(--ui-ring)] backdrop-blur-2xl">
-      <div className="hidden grid-cols-[minmax(220px,1.3fr)_minmax(150px,0.8fr)_minmax(150px,0.7fr)_minmax(150px,0.7fr)_minmax(130px,0.65fr)_auto] gap-0 border-b border-[var(--ui-border-strong)] bg-[var(--ui-glass-soft)] px-4 py-3 text-xs font-semibold uppercase tracking-[0.14em] text-[var(--ui-text-muted)] lg:grid">
+    <section className="overflow-hidden rounded-[1.75rem] border border-[var(--ui-border-strong)] bg-[color-mix(in_srgb,var(--ui-glass)_72%,transparent)] ring-1 ring-[var(--ui-ring)] backdrop-blur-xl">
+      <div className="hidden grid-cols-[minmax(230px,1.35fr)_minmax(138px,0.75fr)_minmax(116px,0.58fr)_minmax(116px,0.58fr)_minmax(122px,0.58fr)_minmax(156px,0.68fr)] border-b border-[var(--ui-border-strong)] px-4 py-3 text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-[var(--ui-text-muted)] lg:grid">
         <span>Customer</span>
         <span>Contact</span>
-        <span>Total booking</span>
-        <span>Last booking</span>
+        <span>Total</span>
+        <span>Last</span>
         <span>Status</span>
-        <span>Action</span>
+        <span className="text-right">Action</span>
       </div>
 
       <div className="grid">
@@ -459,37 +495,39 @@ function CustomerList({
           return (
             <article
               className={cn(
-                'grid gap-4 border-b border-[var(--ui-border)] p-4 last:border-b-0 lg:grid-cols-[minmax(220px,1.3fr)_minmax(150px,0.8fr)_minmax(150px,0.7fr)_minmax(150px,0.7fr)_minmax(130px,0.65fr)_auto] lg:items-center',
-                isSelected ? 'bg-[var(--ui-control-hover)]' : 'bg-transparent hover:bg-[var(--ui-glass-soft)]',
+                'grid gap-3 border-b border-[var(--ui-border)] px-4 py-3.5 last:border-b-0 lg:grid-cols-[minmax(230px,1.35fr)_minmax(138px,0.75fr)_minmax(116px,0.58fr)_minmax(116px,0.58fr)_minmax(122px,0.58fr)_minmax(156px,0.68fr)] lg:items-center',
+                isSelected
+                  ? 'bg-[color-mix(in_srgb,var(--ui-control-hover)_72%,transparent)]'
+                  : 'bg-transparent hover:bg-[var(--ui-glass-soft)]',
               )}
               key={customer.id}
             >
               <button
-                className="flex min-w-0 items-center gap-3 text-left focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
+                className="flex min-w-0 items-center gap-3 rounded-[1.1rem] text-left transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
                 type="button"
                 onClick={() => onSelectCustomer(customer)}
               >
-                <span className="grid size-12 shrink-0 place-items-center rounded-[1.15rem] border border-[var(--ui-border)] [background:var(--ui-primary-bg)] text-sm font-semibold tracking-[-0.03em] text-[var(--ui-primary-text)] shadow-[var(--ui-shadow-control)]">
+                <span className="grid size-11 shrink-0 place-items-center rounded-[1rem] [background:var(--ui-primary-bg)] text-xs font-semibold tracking-[-0.03em] text-[var(--ui-primary-text)] shadow-[var(--ui-shadow-control)]">
                   {customer.initials}
                 </span>
 
-                <span className="grid min-w-0 gap-1">
-                  <strong className="truncate text-base font-semibold tracking-[-0.035em] text-[var(--ui-text-strong)]">
+                <span className="grid min-w-0 gap-0.5">
+                  <strong className="truncate text-[0.95rem] font-semibold tracking-[-0.035em] text-[var(--ui-text-strong)]">
                     {customer.name}
                   </strong>
-                  <span className="truncate text-sm text-[var(--ui-text-muted)]">
+                  <span className="truncate text-xs font-medium text-[var(--ui-text-muted)]">
                     Favorit: {customer.favoriteSession}
                   </span>
                 </span>
               </button>
 
               <div className="flex items-center gap-2 text-sm font-semibold text-[var(--ui-text-main)]">
-                <Phone size={15} strokeWidth={2.35} aria-hidden="true" />
-                <span>{customer.phone}</span>
+                <Phone className="shrink-0 text-[var(--ui-text-muted)]" size={14} strokeWidth={2.35} aria-hidden="true" />
+                <span className="truncate">{customer.phone}</span>
               </div>
 
               <div className="grid gap-0.5">
-                <strong className="text-base font-semibold text-[var(--ui-text-strong)]">
+                <strong className="text-sm font-semibold text-[var(--ui-text-strong)]">
                   {customer.totalBookings} sesi
                 </strong>
                 <span className="text-xs font-medium text-[var(--ui-text-muted)]">
@@ -508,9 +546,9 @@ function CustomerList({
 
               <CustomerStatusBadge status={customer.status} />
 
-              <div className="flex flex-wrap gap-2 lg:justify-end">
+              <div className="flex items-center gap-2 lg:justify-end">
                 <button
-                  className="inline-flex min-h-10 items-center justify-center rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] px-4 text-sm font-semibold text-[var(--ui-secondary-text)] shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/25"
+                  className="inline-flex min-h-9 items-center justify-center rounded-full border border-transparent px-2.5 text-sm font-semibold text-[var(--ui-text-muted)] transition hover:bg-[var(--ui-control)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
                   type="button"
                   onClick={() => onSelectCustomer(customer)}
                 >
@@ -518,10 +556,11 @@ function CustomerList({
                 </button>
 
                 <Link
-                  className="inline-flex min-h-10 items-center justify-center rounded-full [background:var(--ui-primary-bg)] px-4 text-sm font-semibold text-[var(--ui-primary-text)] shadow-[var(--ui-shadow-soft)] transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
+                  className="inline-flex min-h-9 items-center justify-center gap-1.5 whitespace-nowrap rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] px-3 text-sm font-semibold text-[var(--ui-secondary-text)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
                   to={'/admin/bookings?customer=' + encodeURIComponent(customer.phone)}
                 >
-                  View bookings
+                  Board
+                  <ArrowUpRight size={14} strokeWidth={2.35} aria-hidden="true" />
                 </Link>
               </div>
             </article>
@@ -538,9 +577,9 @@ function DetailMetric({
   value,
 }) {
   return (
-    <div className="grid gap-1 rounded-[1.25rem] border border-[var(--ui-border)] bg-[var(--ui-control)] p-3 ring-1 ring-[var(--ui-ring)]">
-      <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.13em] text-[var(--ui-text-muted)]">
-        <Icon size={14} strokeWidth={2.35} aria-hidden="true" />
+    <div className="grid gap-1 border-t border-[var(--ui-border)] py-3 first:border-t-0">
+      <span className="inline-flex items-center gap-2 text-[0.68rem] font-semibold uppercase tracking-[0.13em] text-[var(--ui-text-muted)]">
+        <Icon size={13} strokeWidth={2.35} aria-hidden="true" />
         {label}
       </span>
 
@@ -579,7 +618,7 @@ function CustomerDetailPanel({
     <aside className="grid gap-4 rounded-[2rem] border border-[var(--ui-border-strong)] bg-[linear-gradient(145deg,var(--ui-glass),var(--ui-glass-soft))] p-4 shadow-[var(--ui-shadow-soft)] ring-1 ring-[var(--ui-ring)] backdrop-blur-2xl sm:p-5">
       <div className="flex items-start justify-between gap-3">
         <div className="flex min-w-0 items-center gap-3">
-          <span className="grid size-14 shrink-0 place-items-center rounded-[1.25rem] border border-[var(--ui-border)] [background:var(--ui-primary-bg)] text-base font-semibold tracking-[-0.03em] text-[var(--ui-primary-text)] shadow-[var(--ui-shadow-control)]">
+          <span className="grid size-13 shrink-0 place-items-center rounded-[1.15rem] [background:var(--ui-primary-bg)] text-sm font-semibold tracking-[-0.03em] text-[var(--ui-primary-text)] shadow-[var(--ui-shadow-control)]">
             {customer.initials}
           </span>
 
@@ -596,7 +635,7 @@ function CustomerDetailPanel({
 
         <button
           aria-label="Close customer detail"
-          className="grid size-10 shrink-0 place-items-center rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] text-[var(--ui-secondary-text)] shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/25"
+          className="grid size-10 shrink-0 place-items-center rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] text-[var(--ui-secondary-text)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/25"
           type="button"
           onClick={onClose}
         >
@@ -604,7 +643,7 @@ function CustomerDetailPanel({
         </button>
       </div>
 
-      <div className="grid gap-2 sm:grid-cols-2">
+      <div className="grid gap-0 border-y border-[var(--ui-border)]">
         <DetailMetric
           icon={CalendarDays}
           label="Total booking"
@@ -627,17 +666,18 @@ function CustomerDetailPanel({
         />
       </div>
 
-      <div className="grid gap-2 rounded-[1.5rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-3 ring-1 ring-[var(--ui-ring)]">
+      <div className="grid gap-3">
         <div className="flex items-center justify-between gap-3">
           <span className="text-xs font-semibold uppercase tracking-[0.16em] text-studio-accent">
             Booking history
           </span>
 
           <Link
-            className="inline-flex min-h-9 items-center justify-center rounded-full [background:var(--ui-primary-bg)] px-4 text-xs font-semibold uppercase tracking-[0.12em] text-[var(--ui-primary-text)] shadow-[var(--ui-shadow-soft)] transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
+            className="inline-flex min-h-9 items-center justify-center gap-1.5 rounded-full [background:var(--ui-primary-bg)] px-4 text-xs font-semibold uppercase tracking-[0.12em] text-[var(--ui-primary-text)] shadow-[var(--ui-shadow-soft)] transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
             to={'/admin/bookings?customer=' + encodeURIComponent(customer.phone)}
           >
             View board
+            <ArrowUpRight size={13} strokeWidth={2.35} aria-hidden="true" />
           </Link>
         </div>
 
@@ -652,7 +692,7 @@ function CustomerDetailPanel({
                   {booking.sessionType || booking.title}
                 </strong>
 
-                <span className="rounded-full border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] px-2 py-1 text-xs font-semibold uppercase tracking-[0.1em] text-[var(--ui-text-main)]">
+                <span className="rounded-full border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] px-2 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.1em] text-[var(--ui-text-main)]">
                   {getPaymentLabel(booking.status)}
                 </span>
               </div>
@@ -702,32 +742,7 @@ export function CustomerAdmin() {
 
       <CustomerHero activeCustomer={selectedCustomer} stats={stats} />
 
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard
-          icon={UsersRound}
-          label="Total customers"
-          value={stats.totalCustomers}
-          helper="Customer unik dari data booking."
-        />
-        <StatCard
-          icon={CheckCircle2}
-          label="Returning"
-          value={stats.returningCustomers}
-          helper="Customer dengan lebih dari satu booking."
-        />
-        <StatCard
-          icon={CalendarClock}
-          label="Upcoming"
-          value={stats.upcomingCustomers}
-          helper="Customer dengan jadwal mendatang."
-        />
-        <StatCard
-          icon={CreditCard}
-          label="Revenue"
-          value={formatCurrency(stats.totalRevenue)}
-          helper="Total nilai booking pada snapshot aktif."
-        />
-      </div>
+      <MetricStrip stats={stats} />
 
       <CustomerToolbar
         resultCount={filteredCustomers.length}
@@ -739,7 +754,7 @@ export function CustomerAdmin() {
         onStatusFilterChange={setStatusFilter}
       />
 
-      <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(340px,420px)] xl:items-start">
+      <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(320px,390px)] xl:items-start">
         <CustomerList
           customers={filteredCustomers}
           selectedCustomerId={selectedCustomer?.id || ''}
