@@ -13,6 +13,7 @@ import {
   Users,
 } from 'lucide-react';
 import { cn } from '../lib/cn.js';
+import { BookingAdmin } from './bookingadmin.jsx';
 
 const DEV_AUTH_STORAGE_KEY = 'thirty-seven-dev-auth';
 
@@ -362,6 +363,10 @@ function AdminHeader({
 function AdminContent({
   activeItem,
 }) {
+  if (activeItem.key === 'booking') {
+    return <BookingAdmin activeItem={activeItem} />;
+  }
+
   const ActiveIcon = activeItem.icon;
 
   return (
