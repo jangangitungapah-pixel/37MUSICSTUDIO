@@ -7216,3 +7216,204 @@ body.admin-login-scroll-unlocked #root {
     min-height: 36px !important;
   }
 }
+
+/* === START CUSTOMER ADMIN REPLIES STABILIZATION PHASE 4.5 === */
+
+.client-message-center-page .client-admin-reply-stack {
+  display: grid;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.client-message-center-page .client-admin-reply-note {
+  position: relative;
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  gap: 10px;
+  align-items: flex-start;
+  margin-top: 12px;
+  padding: 12px;
+  border-radius: 18px;
+  border: 1px solid rgba(var(--accent-cyan-rgb), 0.16);
+  background:
+    radial-gradient(circle at 0% 0%, rgba(var(--accent-cyan-rgb), 0.11), transparent 42%),
+    linear-gradient(180deg, rgba(255,255,255,0.055), rgba(255,255,255,0.014)),
+    rgba(12, 18, 28, 0.64);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.060),
+    0 12px 28px rgba(0,0,0,0.14);
+  overflow: hidden;
+}
+
+.client-message-center-page .client-admin-reply-note::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 3px;
+  background: linear-gradient(180deg, var(--accent-cyan), rgba(var(--accent-cyan-rgb), 0.18));
+  opacity: 0.88;
+}
+
+.client-message-center-page .client-admin-reply-note > svg {
+  width: 34px;
+  height: 34px;
+  padding: 8px;
+  border-radius: 13px;
+  color: var(--accent-cyan);
+  background: rgba(var(--accent-cyan-rgb), 0.11);
+  border: 1px solid rgba(var(--accent-cyan-rgb), 0.16);
+}
+
+.client-message-center-page .client-admin-reply-note > div {
+  min-width: 0;
+  display: grid;
+  gap: 5px;
+}
+
+.client-message-center-page .client-admin-reply-note strong {
+  color: var(--text-primary);
+  font-size: 0.84rem;
+  font-weight: 900;
+  letter-spacing: -0.015em;
+}
+
+.client-message-center-page .client-admin-reply-note p {
+  margin: 0;
+  color: rgba(235, 240, 250, 0.84);
+  font-size: 0.86rem;
+  font-weight: 600;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.client-message-center-page .client-admin-reply-note small {
+  width: fit-content;
+  display: inline-flex;
+  align-items: center;
+  min-height: 22px;
+  padding: 0 8px;
+  border-radius: 999px;
+  color: var(--text-muted);
+  background: rgba(255,255,255,0.055);
+  font-size: 0.68rem;
+  font-weight: 800;
+}
+
+.client-message-center-page .client-message-reply-strip {
+  width: min(1180px, 100%);
+  margin-inline: auto;
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr);
+  gap: 12px;
+  align-items: flex-start;
+  padding: 14px;
+  border-radius: 22px;
+  border: 1px solid rgba(var(--accent-cyan-rgb), 0.18);
+  background:
+    radial-gradient(circle at 0% 0%, rgba(var(--accent-cyan-rgb), 0.12), transparent 38%),
+    linear-gradient(180deg, rgba(255,255,255,0.060), rgba(255,255,255,0.014)),
+    rgba(17, 21, 31, 0.86);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.070),
+    0 16px 36px rgba(0,0,0,0.18);
+}
+
+.client-message-center-page .client-message-reply-icon {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 16px;
+  color: var(--accent-cyan);
+  background: rgba(var(--accent-cyan-rgb), 0.12);
+  border: 1px solid rgba(var(--accent-cyan-rgb), 0.18);
+}
+
+.client-message-center-page .client-message-reply-strip span {
+  display: inline-flex;
+  margin-bottom: 3px;
+  color: var(--text-muted);
+  font-size: 0.7rem;
+  font-weight: 900;
+  letter-spacing: 0.075em;
+  text-transform: uppercase;
+}
+
+.client-message-center-page .client-message-reply-strip strong {
+  display: block;
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  font-weight: 950;
+}
+
+.client-message-center-page .client-message-reply-strip p {
+  margin: 5px 0 0;
+  color: rgba(235, 240, 250, 0.82);
+  font-size: 0.88rem;
+  font-weight: 620;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+
+[data-theme="light"] .client-message-center-page .client-admin-reply-note,
+[data-theme="light"] .client-message-center-page .client-message-reply-strip {
+  background:
+    radial-gradient(circle at 0% 0%, rgba(var(--accent-cyan-rgb), 0.08), transparent 38%),
+    linear-gradient(180deg, rgba(255,255,255,0.96), rgba(248,249,252,0.86));
+  border-color: rgba(20, 23, 32, 0.09);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.84),
+    0 14px 30px rgba(20,23,32,0.08);
+}
+
+[data-theme="light"] .client-message-center-page .client-admin-reply-note p,
+[data-theme="light"] .client-message-center-page .client-message-reply-strip p {
+  color: rgba(20, 23, 32, 0.76);
+}
+
+[data-theme="light"] .client-message-center-page .client-admin-reply-note small {
+  color: rgba(20, 23, 32, 0.58);
+  background: rgba(20,23,32,0.055);
+}
+
+@media (max-width: 560px) {
+  .client-message-center-page .client-admin-reply-stack {
+    gap: 8px;
+    margin-top: 10px;
+  }
+
+  .client-message-center-page .client-admin-reply-note {
+    grid-template-columns: 30px minmax(0, 1fr);
+    gap: 9px;
+    padding: 10px;
+    border-radius: 16px;
+  }
+
+  .client-message-center-page .client-admin-reply-note > svg {
+    width: 30px;
+    height: 30px;
+    padding: 7px;
+    border-radius: 12px;
+  }
+
+  .client-message-center-page .client-admin-reply-note p {
+    font-size: 0.82rem;
+    line-height: 1.5;
+  }
+
+  .client-message-center-page .client-message-reply-strip {
+    grid-template-columns: 36px minmax(0, 1fr);
+    gap: 10px;
+    padding: 12px;
+    border-radius: 18px;
+  }
+
+  .client-message-center-page .client-message-reply-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 14px;
+  }
+}
+
+/* === END CUSTOMER ADMIN REPLIES STABILIZATION PHASE 4.5 === */
