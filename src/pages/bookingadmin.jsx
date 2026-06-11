@@ -1,4 +1,6 @@
-import { useMemo, useState } from 'react';
+import {
+  useMemo,
+  useState } from 'react';
 import {
   Banknote,
   CalendarDays,
@@ -12,6 +14,7 @@ import {
   UserRound,
   WalletCards,
   X,
+  ChevronDown,
 } from 'lucide-react';
 import { cn } from '../lib/cn.js';
 
@@ -447,6 +450,107 @@ function getGridMinWidth(viewMode, visibleDays) {
   return 448;
 }
 
+function ThemedSelect({
+  icon: Icon,
+  label,
+  name,
+  onChange,
+  options,
+  value,
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+  const selectedOption = options.find((option) => String(option.value) === String(value)) || options[0];
+
+  const handleSelect = (nextValue) => {
+    onChange({
+      target: {
+        name,
+        value: nextValue,
+      },
+    });
+    setIsOpen(false);
+  };
+
+  return (
+    <div
+      className="relative grid gap-2 text-sm font-semibold text-[var(--ui-text-main)]"
+      onBlur={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget)) {
+          setIsOpen(false);
+        }
+      }}
+    >
+      {label}
+
+      <button
+        aria-expanded={isOpen}
+        aria-haspopup="listbox"
+        className="flex min-h-12 w-full items-center gap-3 rounded-[1.25rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 text-left text-sm font-semibold text-[var(--ui-text-strong)] shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] transition hover:bg-[var(--ui-control-hover)] focus-visible:border-studio-accent/55 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
+        type="button"
+        onClick={() => setIsOpen((current) => !current)}
+      >
+        {Icon ? (
+          <Icon
+            className="shrink-0 text-[var(--ui-text-muted)]"
+            size={16}
+            strokeWidth={2.25}
+            aria-hidden="true"
+          />
+        ) : null}
+
+        <span className="min-w-0 flex-1 truncate">
+          {selectedOption.label}
+        </span>
+
+        <ChevronDown
+          className={cn(
+            'shrink-0 text-[var(--ui-text-muted)] transition-transform',
+            isOpen ? 'rotate-180' : '',
+          )}
+          size={16}
+          strokeWidth={2.25}
+          aria-hidden="true"
+        />
+      </button>
+
+      {isOpen ? (
+        <div
+          className="absolute left-0 right-0 top-[calc(100%+0.5rem)] z-40 max-h-64 overflow-auto rounded-[1.25rem] border border-[var(--ui-border-strong)] bg-[var(--ui-bg-base)] p-1.5 shadow-[var(--ui-shadow-soft)] ring-1 ring-[var(--ui-ring)]"
+          role="listbox"
+        >
+          {options.map((option) => {
+            const isSelected = String(option.value) === String(value);
+
+            return (
+              <button
+                aria-selected={isSelected}
+                className={cn(
+                  'flex min-h-10 w-full items-center justify-between gap-3 rounded-2xl px-3 text-left text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20',
+                  isSelected
+                    ? 'bg-[var(--ui-control-hover)] text-studio-accent'
+                    : 'text-[var(--ui-text-main)] hover:bg-[var(--ui-control)] hover:text-[var(--ui-text-strong)]',
+                )}
+                key={option.value}
+                role="option"
+                type="button"
+                onClick={() => handleSelect(option.value)}
+              >
+                <span className="truncate">
+                  {option.label}
+                </span>
+
+                {isSelected ? (
+                  <span className="size-2 rounded-full bg-studio-accent" aria-hidden="true" />
+                ) : null}
+              </button>
+            );
+          })}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
 function FieldShell({
   children,
   icon: Icon,
@@ -472,6 +576,19 @@ function BookingModal({
   paymentPreview,
 }) {
   if (!isOpen) return null;
+
+  const timeSelectOptions = createTimeSlots().map((slot) => ({
+    label: slot.key,
+    value: slot.key,
+  }));
+  const durationSelectOptions = durationOptions.map((duration) => ({
+    label: duration + ' jam',
+    value: String(duration),
+  }));
+  const sessionSelectOptions = sessionTypes.map((item) => ({
+    label: item,
+    value: item,
+  }));
 
   return (
     <div
@@ -546,50 +663,32 @@ function BookingModal({
             />
           </FieldShell>
 
-          <FieldShell icon={Clock3} label="Jam mulai">
-            <select
-              className="w-full border-0 bg-transparent text-sm font-semibold text-[var(--ui-text-strong)] outline-none"
-              name="startTime"
-              value={bookingForm.startTime}
-              onChange={onChange}
-            >
-              {createTimeSlots().map((slot) => (
-                <option key={slot.key} value={slot.key}>
-                  {slot.key}
-                </option>
-              ))}
-            </select>
-          </FieldShell>
+          <ThemedSelect
+            icon={Clock3}
+            label="Jam mulai"
+            name="startTime"
+            options={timeSelectOptions}
+            value={bookingForm.startTime}
+            onChange={onChange}
+          />
 
-          <label className="grid gap-2 text-sm font-semibold text-[var(--ui-text-main)]">
-            Durasi booking
-            <select
-              className="min-h-12 rounded-[1.25rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 text-sm font-semibold text-[var(--ui-text-strong)] shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] outline-none focus:border-studio-accent/55 focus:ring-4 focus:ring-studio-accent/20"
-              name="durationHours"
-              value={bookingForm.durationHours}
-              onChange={onChange}
-            >
-              {durationOptions.map((duration) => (
-                <option key={duration} value={duration}>
-                  {duration} jam
-                </option>
-              ))}
-            </select>
-          </label>
+          <ThemedSelect
+            icon={Clock3}
+            label="Durasi booking"
+            name="durationHours"
+            options={durationSelectOptions}
+            value={bookingForm.durationHours}
+            onChange={onChange}
+          />
 
-          <label className="grid gap-2 text-sm font-semibold text-[var(--ui-text-main)]">
-            Tipe sesi
-            <select
-              className="min-h-12 rounded-[1.25rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 text-sm font-semibold text-[var(--ui-text-strong)] shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] outline-none focus:border-studio-accent/55 focus:ring-4 focus:ring-studio-accent/20"
-              name="sessionType"
-              value={bookingForm.sessionType}
-              onChange={onChange}
-            >
-              {sessionTypes.map((item) => (
-                <option key={item}>{item}</option>
-              ))}
-            </select>
-          </label>
+          <ThemedSelect
+            icon={ReceiptText}
+            label="Tipe sesi"
+            name="sessionType"
+            options={sessionSelectOptions}
+            value={bookingForm.sessionType}
+            onChange={onChange}
+          />
         </div>
 
         <div className="grid gap-3 rounded-[1.5rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-4 ring-1 ring-[var(--ui-ring)]">
