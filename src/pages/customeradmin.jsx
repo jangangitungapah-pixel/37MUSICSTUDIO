@@ -21,7 +21,6 @@ import {
   X,
 } from 'lucide-react';
 import { cn } from '../lib/cn.js';
-import { createAdminBookingSnapshot } from './bookingadmin.jsx';
 
 const customerStatusFilters = [
   {
@@ -274,11 +273,11 @@ function CustomerHero({
 
         <div className="grid gap-3">
           <h1 className="m-0 max-w-4xl text-[clamp(2.35rem,5.4vw,5.15rem)] font-semibold leading-[0.95] tracking-[-0.075em] text-[var(--ui-text-strong)]">
-            Customer list dari histori booking studio.
+            Customer list dari booking real Firestore.
           </h1>
 
           <p className="m-0 max-w-2xl text-[clamp(0.95rem,1.12vw,1.05rem)] leading-8 text-[var(--ui-text-main)]">
-            Directory ringan untuk melihat kontak, status, dan shortcut ke booking board tanpa membuat halaman terasa penuh kotak.
+            Directory ringan untuk melihat kontak, status, dan shortcut ke booking board berdasarkan data booking real.
           </p>
         </div>
       </div>
@@ -328,7 +327,7 @@ function MetricStrip({
       icon: CreditCard,
       label: 'Revenue',
       value: formatCurrency(stats.totalRevenue),
-      helper: 'Snapshot aktif',
+      helper: 'Data booking real',
     },
   ];
 
@@ -790,10 +789,9 @@ export function CustomerAdmin() {
   const [sortMode, setSortMode] = useState('lastBooking');
   const [selectedCustomerId, setSelectedCustomerId] = useState(null);
 
-  const baseBookings = useMemo(() => createAdminBookingSnapshot(new Date()), []);
   const bookings = useMemo(
-    () => [...baseBookings, ...manualBookings],
-    [baseBookings, manualBookings],
+    () => manualBookings,
+    [manualBookings],
   );
   const customers = useMemo(() => buildCustomersFromBookings(bookings), [bookings]);
   const stats = useMemo(() => getCustomerStats(customers), [customers]);
