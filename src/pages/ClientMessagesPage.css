@@ -4718,3 +4718,248 @@
   }
 }
 /* === END 37 ADMIN MESSAGES PHASE 6 LIGHT PERFORMANCE FINAL LOCK === */
+
+/* CLIENT_INBOX_HERO_RESPONSIVE_PHASE_2_START */
+
+/*
+  Phase 2 hotfix v2:
+  Responsive hero polish for admin Client Inbox.
+
+  Safe scope:
+  - Only CSS overrides for the Client Inbox hero area.
+  - No data, handler, route, auth, Firebase/API/storage, search/filter, or mailbox logic changes.
+*/
+
+.messages-inbox-page {
+  min-width: 0 !important;
+  overflow-x: clip !important;
+  container-type: inline-size !important;
+}
+
+.messages-inbox-hero {
+  width: 100% !important;
+  min-width: 0 !important;
+  display: grid !important;
+  grid-template-columns: minmax(0, 1.08fr) minmax(360px, 0.92fr) !important;
+  align-items: stretch !important;
+  gap: clamp(16px, 2.1vw, 28px) !important;
+  padding: clamp(20px, 2.7vw, 32px) !important;
+  overflow: hidden !important;
+}
+
+.messages-inbox-titleblock {
+  min-width: 0 !important;
+  max-width: 760px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  justify-content: center !important;
+  gap: clamp(10px, 1.4vw, 14px) !important;
+}
+
+.messages-inbox-titleblock .messages-kicker,
+.messages-inbox-hero .messages-kicker {
+  width: fit-content !important;
+  max-width: 100% !important;
+  min-height: 30px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 7px 13px !important;
+  white-space: nowrap !important;
+  line-height: 1 !important;
+}
+
+#messagesHeroTitle {
+  max-width: min(100%, 720px) !important;
+  margin: 0 !important;
+  font-size: clamp(2.55rem, 5.2vw, 4.8rem) !important;
+  line-height: 0.88 !important;
+  letter-spacing: -0.075em !important;
+  text-wrap: balance !important;
+  overflow-wrap: normal !important;
+  word-break: normal !important;
+}
+
+.messages-inbox-titleblock p {
+  max-width: min(100%, 720px) !important;
+  margin: 0 !important;
+  font-size: clamp(0.92rem, 1.25vw, 1.02rem) !important;
+  line-height: 1.55 !important;
+  letter-spacing: -0.01em !important;
+  text-wrap: pretty !important;
+}
+
+.messages-inbox-metrics {
+  min-width: 0 !important;
+  width: 100% !important;
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(112px, 1fr)) !important;
+  align-items: stretch !important;
+  gap: clamp(10px, 1.4vw, 14px) !important;
+}
+
+.messages-metric-card {
+  min-width: 0 !important;
+  min-height: clamp(112px, 11vw, 148px) !important;
+  display: grid !important;
+  align-content: space-between !important;
+  gap: 12px !important;
+  padding: clamp(14px, 1.6vw, 18px) !important;
+  overflow: hidden !important;
+}
+
+.messages-metric-card span,
+.messages-metric-card small {
+  max-width: 100% !important;
+  line-height: 1.25 !important;
+  overflow-wrap: anywhere !important;
+}
+
+.messages-metric-card strong {
+  display: block !important;
+  font-size: clamp(2rem, 3.6vw, 2.85rem) !important;
+  line-height: 0.92 !important;
+  letter-spacing: -0.07em !important;
+}
+
+@container (max-width: 980px) {
+  .messages-inbox-hero {
+    grid-template-columns: 1fr !important;
+    align-items: start !important;
+  }
+
+  .messages-inbox-titleblock {
+    max-width: 100% !important;
+  }
+
+  #messagesHeroTitle {
+    max-width: 760px !important;
+    font-size: clamp(2.45rem, 8cqi, 4.35rem) !important;
+    line-height: 0.9 !important;
+  }
+
+  .messages-inbox-titleblock p {
+    max-width: 820px !important;
+  }
+
+  .messages-inbox-metrics {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+
+  .messages-metric-card {
+    min-height: 92px !important;
+  }
+}
+
+@container (max-width: 680px) {
+  .messages-inbox-hero {
+    padding: clamp(16px, 4cqi, 24px) !important;
+    gap: 16px !important;
+  }
+
+  #messagesHeroTitle {
+    font-size: clamp(2.15rem, 11cqi, 3.35rem) !important;
+    line-height: 0.93 !important;
+    letter-spacing: -0.065em !important;
+  }
+
+  .messages-inbox-titleblock p {
+    font-size: 0.94rem !important;
+    line-height: 1.5 !important;
+  }
+
+  .messages-inbox-metrics {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 10px !important;
+  }
+
+  .messages-metric-card {
+    min-height: 78px !important;
+    padding: 12px !important;
+    border-radius: 16px !important;
+  }
+
+  .messages-metric-card strong {
+    font-size: clamp(1.7rem, 7.5cqi, 2.2rem) !important;
+  }
+
+  .messages-metric-card span,
+  .messages-metric-card small {
+    font-size: 0.68rem !important;
+    letter-spacing: 0.04em !important;
+  }
+}
+
+@container (max-width: 480px) {
+  .messages-inbox-hero {
+    border-radius: 22px !important;
+  }
+
+  .messages-inbox-titleblock .messages-kicker,
+  .messages-inbox-hero .messages-kicker {
+    min-height: 28px !important;
+    padding: 6px 10px !important;
+    font-size: 0.68rem !important;
+  }
+
+  #messagesHeroTitle {
+    max-width: 100% !important;
+    font-size: clamp(2rem, 12.5cqi, 2.75rem) !important;
+  }
+
+  .messages-inbox-metrics {
+    display: grid !important;
+    grid-auto-flow: column !important;
+    grid-auto-columns: minmax(118px, 1fr) !important;
+    grid-template-columns: none !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    overscroll-behavior-inline: contain !important;
+    scroll-snap-type: x proximity !important;
+    padding-bottom: 2px !important;
+    scrollbar-width: none !important;
+  }
+
+  .messages-inbox-metrics::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  .messages-metric-card {
+    scroll-snap-align: start !important;
+  }
+}
+
+@media (max-width: 1180px) {
+  .messages-inbox-hero {
+    grid-template-columns: 1fr !important;
+  }
+
+  .messages-inbox-metrics {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .messages-inbox-hero {
+    padding: 16px !important;
+    gap: 16px !important;
+  }
+
+  #messagesHeroTitle {
+    font-size: clamp(2.05rem, 12vw, 3.1rem) !important;
+    line-height: 0.94 !important;
+  }
+
+  .messages-inbox-titleblock p {
+    font-size: 0.92rem !important;
+    line-height: 1.5 !important;
+  }
+
+  .messages-metric-card {
+    min-height: 78px !important;
+  }
+}
+
+/* CLIENT_INBOX_HERO_RESPONSIVE_PHASE_2_END */
+
