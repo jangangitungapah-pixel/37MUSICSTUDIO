@@ -1,3 +1,4 @@
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap");
 @import "tailwindcss";
 
 @source "../";
@@ -7,8 +8,8 @@
 
 @theme {
   --font-sans:
-    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-    sans-serif;
+    "Plus Jakarta Sans", Inter, ui-sans-serif, system-ui, -apple-system,
+    BlinkMacSystemFont, "Segoe UI", sans-serif;
 
   --color-studio-night: #090a10;
   --color-studio-shell: #101018;
@@ -30,9 +31,9 @@
   --color-studio-purple: #9a76ff;
   --color-studio-cyan: #45d3ff;
 
-  --shadow-studio-card: 0 14px 34px rgb(0 0 0 / 0.16);
-  --shadow-studio-soft: 0 20px 60px rgb(0 0 0 / 0.22);
-  --shadow-studio-glow: 0 14px 28px rgb(255 74 155 / 0.26);
+  --shadow-studio-card: 0 14px 34px rgb(0 0 0 / 0.12);
+  --shadow-studio-soft: 0 18px 54px rgb(0 0 0 / 0.18);
+  --shadow-studio-glow: 0 14px 28px rgb(255 74 155 / 0.22);
 }
 
 @layer base {
