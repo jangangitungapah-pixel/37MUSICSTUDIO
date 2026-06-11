@@ -1,12 +1,12 @@
-import { useMemo, useState } from 'react';
+import {
+  useMemo,
+  useState } from 'react';
 import {
   CalendarDays,
   ChevronLeft,
   ChevronRight,
-  Clock3,
   Grid3X3,
   Plus,
-  Sparkles,
 } from 'lucide-react';
 import { cn } from '../lib/cn.js';
 
@@ -661,7 +661,7 @@ function SelectedSlotPanel({
   );
 }
 
-export function BookingAdmin({ activeItem }) {
+export function BookingAdmin() {
   const [viewMode, setViewMode] = useState('month');
   const [cursorDate, setCursorDate] = useState(() => {
     const now = new Date();
@@ -679,8 +679,6 @@ export function BookingAdmin({ activeItem }) {
     };
   });
 
-  const activeTitle = activeItem?.label || 'Booking';
-
   const timeSlots = useMemo(() => createTimeSlots(), []);
   const visibleDays = useMemo(() => createVisibleDays(viewMode, cursorDate), [cursorDate, viewMode]);
   const bookings = useMemo(() => createDemoBookingsForMonth(cursorDate), [cursorDate]);
@@ -696,16 +694,6 @@ export function BookingAdmin({ activeItem }) {
     () => getViewRangeLabel(viewMode, visibleDays, cursorDate),
     [cursorDate, viewMode, visibleDays],
   );
-
-  const summary = useMemo(() => {
-    const totalSlots = visibleDays.length * timeSlots.length;
-
-    return {
-      availableSlots: totalSlots - visibleBookings.length,
-      bookedSlots: visibleBookings.length,
-      totalSlots,
-    };
-  }, [timeSlots, visibleBookings, visibleDays]);
 
   const updateCursorDate = (nextDate) => {
     setCursorDate(nextDate);
@@ -760,70 +748,9 @@ export function BookingAdmin({ activeItem }) {
   };
 
   return (
-    <section className="grid gap-6 py-6" aria-labelledby="booking-admin-title">
-      <div className="grid gap-5 border-b border-[var(--ui-border-strong)] pb-6">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="inline-flex w-fit items-center gap-2 rounded-full border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] px-3 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-studio-accent ring-1 ring-[var(--ui-ring)]">
-            <Sparkles size={14} strokeWidth={2.35} aria-hidden="true" />
-            {activeTitle} Calendar
-          </div>
-
-          <div className="inline-flex min-h-10 items-center gap-2 rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] px-4 text-sm font-semibold text-[var(--ui-secondary-text)] shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)]">
-            <Clock3 size={15} strokeWidth={2.35} aria-hidden="true" />
-            {padNumber(studioHours.openHour)}:00 sampai {padNumber(studioHours.closeHour)}:00
-          </div>
-        </div>
-
-        <div className="grid gap-3">
-          <h2
-            className="m-0 max-w-[820px] text-[clamp(2.35rem,5vw,5rem)] font-semibold leading-[0.94] tracking-[-0.075em] text-[var(--ui-text-strong)]"
-            id="booking-admin-title"
-          >
-            Calendar grid booking yang bisa diganti periode.
-          </h2>
-
-          <p className="m-0 max-w-2xl text-[clamp(0.98rem,1.25vw,1.12rem)] leading-8 text-[var(--ui-text-main)]">
-            Toolbar sekarang menampilkan counter status booking aktif: Pending, DP, dan Lunas. Counter mengikuti booking yang terlihat di view Day, Week, atau Month.
-          </p>
-        </div>
-      </div>
-
-      <div className="grid gap-4 sm:grid-cols-3">
-        <article className="grid gap-1 border-y border-[var(--ui-border)] py-4 sm:border-y-0 sm:border-l sm:px-5 sm:first:border-l-0">
-          <span className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--ui-text-muted)]">
-            Visible slot
-          </span>
-          <strong className="text-3xl font-semibold tracking-[-0.06em] text-[var(--ui-text-strong)]">
-            {summary.totalSlots}
-          </strong>
-          <span className="text-sm leading-6 text-[var(--ui-text-muted)]">
-            {visibleDays.length} hari x {timeSlots.length} jam
-          </span>
-        </article>
-
-        <article className="grid gap-1 border-y border-[var(--ui-border)] py-4 sm:border-y-0 sm:border-l sm:px-5 sm:first:border-l-0">
-          <span className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--ui-text-muted)]">
-            Booked
-          </span>
-          <strong className="text-3xl font-semibold tracking-[-0.06em] text-[var(--ui-text-strong)]">
-            {summary.bookedSlots}
-          </strong>
-          <span className="text-sm leading-6 text-[var(--ui-text-muted)]">
-            Dummy event sesuai view aktif
-          </span>
-        </article>
-
-        <article className="grid gap-1 border-y border-[var(--ui-border)] py-4 sm:border-y-0 sm:border-l sm:px-5 sm:first:border-l-0">
-          <span className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--ui-text-muted)]">
-            Available
-          </span>
-          <strong className="text-3xl font-semibold tracking-[-0.06em] text-[var(--ui-text-strong)]">
-            {summary.availableSlots}
-          </strong>
-          <span className="text-sm leading-6 text-[var(--ui-text-muted)]">
-            Slot kosong di view aktif
-          </span>
-        </article>
+    <section className="grid gap-4 py-2" aria-labelledby="booking-admin-title">
+      <div className="sr-only" id="booking-admin-title">
+        Booking calendar workspace
       </div>
 
       <div className="grid gap-4">
