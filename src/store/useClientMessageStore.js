@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { auth, db } from '../firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import {
+  arrayUnion,
   collection,
   doc,
   getDoc,
@@ -120,6 +121,77 @@ export const useClientMessageStore = create((set, get) => {
       });
 
       return payload;
+    },
+
+    sendAdminReply: async (id, reply = {}) => {
+      const user = auth.currentUser;
+
+      if (!user || user.isAnonymous) {
+        throw new Error('Login admin diperlukan untuk membalas pesan.');
+      }
+
+      const text = String(reply?.message || '').trim();
+
+      if (text.length < 2) {
+        throw new Error('Balasan tidak boleh kosong.');
+      }
+
+      const now = new Date().toISOString();
+      const replyPayload = {
+        id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+        senderRole: 'admin',
+        senderUid: user.uid,
+        senderName: String(reply?.senderName || user.displayName || user.email || 'Admin 37 Music Studio').trim(),
+        message: text,
+        createdAt: now,
+        isReadByClient: false,
+      };
+
+      const firestorePayload = {
+        status: 'replied',
+        replies: arrayUnion(replyPayload),
+        latestAdminReply: text,
+        latestAdminReplyAt: now,
+        lastMessagePreview: text,
+        lastMessageAt: now,
+        isReadByAdmin: true,
+        isReadByClient: false,
+        updatedAt: now,
+      };
+
+      const localPayload = {
+        status: 'replied',
+        replies: replyPayload,
+        latestAdminReply: text,
+        latestAdminReplyAt: now,
+        lastMessagePreview: text,
+        lastMessageAt: now,
+        isReadByAdmin: true,
+        isReadByClient: false,
+        updatedAt: now,
+      };
+
+      set((state) => ({
+        messages: sortMessages(state.messages.map((message) => (
+          message.id === id
+            ? {
+                ...message,
+                ...localPayload,
+                replies: [...(message.replies || []), replyPayload],
+              }
+            : message
+        ))),
+      }));
+
+      await updateDoc(doc(messagesRef, id.toString()), firestorePayload);
+
+      useNotificationStore.getState().addNotification({
+        type: 'success',
+        title: 'Balasan terkirim',
+        message: 'Balasan admin sudah masuk ke inbox customer.',
+      });
+
+      return replyPayload;
     },
 
     updateMessageStatus: async (id, status, data = {}) => {
