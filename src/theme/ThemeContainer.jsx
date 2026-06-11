@@ -1,17 +1,30 @@
-import { Sparkles } from 'lucide-react';
+import { Moon, Sparkles, Sun } from 'lucide-react';
 import { cn } from '../lib/cn.js';
 import { useTheme } from './ThemeProvider.jsx';
 
-const themeToggleLabels = {
-  dark: 'Light mode',
-  light: 'Dark mode',
+const themeSwitchStates = {
+  dark: {
+    ariaLabel: 'Switch to light mode',
+    checked: true,
+    knobClass: 'translate-x-8',
+    knobIcon: Moon,
+    trackHintClass: 'bg-studio-cyan/16',
+  },
+  light: {
+    ariaLabel: 'Switch to dark mode',
+    checked: false,
+    knobClass: 'translate-x-0',
+    knobIcon: Sun,
+    trackHintClass: 'bg-studio-accent/14',
+  },
 };
 
 export function ThemeContainer({ children }) {
   const { mode, density, toggleMode, toggleDensity } = useTheme();
 
   const isCompact = density === 'compact';
-  const themeToggleLabel = themeToggleLabels[mode] || 'Theme';
+  const themeSwitch = themeSwitchStates[mode] || themeSwitchStates.dark;
+  const ThemeSwitchIcon = themeSwitch.knobIcon;
 
   return (
     <div className="relative isolate min-h-screen overflow-x-clip bg-[var(--ui-bg-base)] text-[var(--ui-text-main)] transition-colors duration-300">
@@ -50,11 +63,11 @@ export function ThemeContainer({ children }) {
         </a>
 
         <nav
-          className="flex items-center justify-end gap-2 max-[820px]:justify-stretch max-[520px]:flex-col"
+          className="flex items-center justify-end gap-2 max-[820px]:justify-stretch max-[520px]:flex-row"
           aria-label="Theme controls"
         >
           <button
-            className="inline-flex min-h-10 items-center justify-center rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] px-4 text-sm font-semibold text-[var(--ui-secondary-text)] shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/25 max-[820px]:flex-1 max-[520px]:w-full"
+            className="inline-flex min-h-10 items-center justify-center rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] px-4 text-sm font-semibold text-[var(--ui-secondary-text)] shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/25 max-[820px]:flex-1 max-[520px]:flex-none"
             type="button"
             onClick={toggleDensity}
           >
@@ -62,11 +75,41 @@ export function ThemeContainer({ children }) {
           </button>
 
           <button
-            className="inline-flex min-h-10 w-[116px] items-center justify-center rounded-full [background:var(--ui-primary-bg)] px-5 text-sm font-semibold text-[var(--ui-primary-text)] shadow-[var(--ui-shadow-soft)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/25 max-[820px]:flex-1 max-[520px]:w-full"
+            aria-checked={themeSwitch.checked}
+            aria-label={themeSwitch.ariaLabel}
+            className="group relative inline-flex h-10 w-[76px] shrink-0 items-center rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] p-1 shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/25"
+            role="switch"
+            title={themeSwitch.ariaLabel}
             type="button"
             onClick={toggleMode}
           >
-            {themeToggleLabel}
+            <span className="sr-only">{themeSwitch.ariaLabel}</span>
+
+            <span className="absolute left-2 grid size-6 place-items-center text-[var(--ui-text-soft)] transition group-hover:text-studio-accent">
+              <Sun size={14} aria-hidden="true" />
+            </span>
+
+            <span className="absolute right-2 grid size-6 place-items-center text-[var(--ui-text-soft)] transition group-hover:text-studio-cyan">
+              <Moon size={14} aria-hidden="true" />
+            </span>
+
+            <span
+              className={cn(
+                'relative z-10 grid size-8 place-items-center rounded-full [background:var(--ui-primary-bg)] text-[var(--ui-primary-text)] shadow-[var(--ui-shadow-soft)] transition-transform duration-300 ease-out',
+                themeSwitch.knobClass,
+              )}
+              aria-hidden="true"
+            >
+              <ThemeSwitchIcon size={16} strokeWidth={2.35} />
+            </span>
+
+            <span
+              className={cn(
+                'pointer-events-none absolute inset-1 rounded-full blur-md transition-opacity duration-300',
+                themeSwitch.trackHintClass,
+              )}
+              aria-hidden="true"
+            />
           </button>
         </nav>
       </header>
@@ -80,7 +123,7 @@ export function ThemeContainer({ children }) {
         <section className="grid gap-8">
           <div className="inline-flex w-fit items-center gap-2 text-xs font-semibold text-[var(--ui-text-muted)]">
             <Sparkles size={14} className="text-studio-accent" aria-hidden="true" />
-            <span>Tailwind Container Theme v0.9</span>
+            <span>Tailwind Container Theme v1.0</span>
           </div>
 
           {children}
