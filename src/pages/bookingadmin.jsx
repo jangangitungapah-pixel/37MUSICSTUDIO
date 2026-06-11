@@ -403,6 +403,20 @@ function createInitialBookingForm(date, timeKey = '10:00') {
   };
 }
 
+function createBookingFormFromBooking(booking) {
+  return {
+    bookingDate: booking.dateKey || formatDateKey(new Date()),
+    customerName: booking.customerName || '',
+    dpAmount: booking.status === 'dp' ? String(booking.dpAmount || '') : '',
+    durationHours: getClampedBookingDuration(booking),
+    notes: booking.notes || '',
+    paymentStatus: booking.status || 'pending',
+    phone: booking.phone || '',
+    sessionType: booking.sessionType || booking.title || 'Latihan Band',
+    startTime: booking.time || '10:00',
+  };
+}
+
 function getBookingForSlot(bookings, dayKey, timeKey) {
   return bookings.find((booking) => booking.dateKey === dayKey && booking.time === timeKey);
 }
@@ -654,13 +668,19 @@ function FieldShell({
 
 function BookingModal({
   bookingForm,
+  footerHint = 'Simpan ke Firestore',
   isSaving = false,
   isOpen,
+  modalDescription = '',
+  modalEyebrow = 'Booking form',
+  modalTitle = 'Tambah booking studio',
   onChange,
   onClose,
   onSubmit,
   paymentPreview,
   saveError = '',
+  submitLabel = 'Simpan booking',
+  submittingLabel = 'Menyimpan...',
 }) {
   if (!isOpen) return null;
 
@@ -676,6 +696,8 @@ function BookingModal({
     label: item,
     value: item,
   }));
+  const formDescription = modalDescription || 'Harga otomatis ' + formatCurrency(PRICE_PER_HOUR) + ' per jam. Data tersimpan ke Firestore.';
+
 
   return (
     <div
@@ -691,16 +713,16 @@ function BookingModal({
         <div className="flex items-start justify-between gap-4">
           <div className="grid gap-1">
             <span className="text-xs font-semibold uppercase tracking-[0.18em] text-studio-accent">
-              Booking form
+              {modalEyebrow}
             </span>
             <h2
               className="m-0 text-2xl font-semibold tracking-[-0.06em] text-[var(--ui-text-strong)] sm:text-3xl"
               id="booking-modal-title"
             >
-              Tambah booking studio
+              {modalTitle}
             </h2>
             <p className="m-0 text-sm leading-6 text-[var(--ui-text-muted)]">
-              Harga otomatis {formatCurrency(PRICE_PER_HOUR)} per jam. Data phase ini masih state lokal dulu.
+              {formDescription}
             </p>
           </div>
 
@@ -878,7 +900,7 @@ function BookingModal({
         <div className="sticky bottom-0 z-10 -mx-4 flex flex-wrap items-center justify-between gap-3 border-t border-[var(--ui-border)] bg-[var(--ui-bg-base)] px-4 pb-[max(0.25rem,env(safe-area-inset-bottom))] pt-3 sm:static sm:mx-0 sm:bg-transparent sm:px-0 sm:pb-0 sm:pt-4">
           <span className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--ui-text-muted)]">
             <ReceiptText size={16} strokeWidth={2.35} aria-hidden="true" />
-            Simpan ke state lokal dulu
+            {footerHint}
           </span>
 
           <div className="flex flex-wrap gap-2">
@@ -897,7 +919,7 @@ function BookingModal({
               type="submit"
             >
               <Plus size={16} strokeWidth={2.35} aria-hidden="true" />
-              {isSaving ? 'Menyimpan...' : 'Simpan booking'}
+              {isSaving ? submittingLabel : submitLabel}
             </button>
           </div>
         </div>
@@ -961,6 +983,7 @@ function BookingDetailModal({
   bookingActionId = '',
   onClose,
   onDelete,
+  onEdit,
   onMarkPaid,
 }) {
   if (!booking) return null;
@@ -1137,6 +1160,15 @@ function BookingDetailModal({
             <div className="flex flex-wrap items-center gap-2 sm:justify-end">
               {canManageBooking ? (
                 <>
+                  <button
+                    className="inline-flex min-h-10 items-center justify-center rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] px-4 text-sm font-semibold text-[var(--ui-secondary-text)] shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20 disabled:cursor-not-allowed disabled:opacity-50"
+                    disabled={isActionPending}
+                    type="button"
+                    onClick={() => onEdit(booking)}
+                  >
+                    Edit
+                  </button>
+
                   <button
                     className="inline-flex min-h-10 items-center justify-center rounded-full border border-studio-cyan/35 bg-studio-cyan/10 px-4 text-sm font-semibold text-studio-cyan ring-1 ring-studio-cyan/15 transition hover:-translate-y-0.5 hover:bg-studio-cyan/15 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-cyan/20 disabled:cursor-not-allowed disabled:opacity-50"
                     disabled={isActionPending || isPaid}
@@ -1635,6 +1667,14 @@ export function BookingAdmin() {
   const [bookingActionId, setBookingActionId] = useState('');
   const [bookingSaveError, setBookingSaveError] = useState('');
   const [isBookingSaving, setIsBookingSaving] = useState(false);
+  const [editingBooking, setEditingBooking] = useState(null);
+  const [editBookingForm, setEditBookingForm] = useState(() => {
+    const now = new Date();
+
+    return createInitialBookingForm(createDate(now.getFullYear(), now.getMonth(), now.getDate()));
+  });
+  const [editSaveError, setEditSaveError] = useState('');
+  const [isBookingUpdating, setIsBookingUpdating] = useState(false);
   const [bookingForm, setBookingForm] = useState(() => {
     const now = new Date();
     return createInitialBookingForm(createDate(now.getFullYear(), now.getMonth(), now.getDate()));
@@ -1683,6 +1723,10 @@ export function BookingAdmin() {
     () => calculateBookingPayment(bookingForm),
     [bookingForm],
   );
+  const editPaymentPreview = useMemo(
+    () => calculateBookingPayment(editBookingForm),
+    [editBookingForm],
+  );
   const summary = useMemo(() => {
     const totalSlots = visibleDays.length * timeSlots.length;
 
@@ -1718,6 +1762,25 @@ export function BookingAdmin() {
 
   const closeBookingDetailModal = () => {
     setDetailBooking(null);
+  };
+
+  const openEditBookingModal = (booking) => {
+    if (!booking) {
+      return;
+    }
+
+    setEditingBooking(booking);
+    setEditBookingForm(createBookingFormFromBooking(booking));
+    setEditSaveError('');
+  };
+
+  const closeEditBookingModal = () => {
+    if (isBookingUpdating) {
+      return;
+    }
+
+    setEditingBooking(null);
+    setEditSaveError('');
   };
 
   const handleMarkBookingPaid = async (booking) => {
@@ -1783,6 +1846,76 @@ export function BookingAdmin() {
 
       return next;
     });
+  };
+
+  const handleEditFormChange = (event) => {
+    const { name, value } = event.target;
+
+    setEditBookingForm((current) => {
+      const nextForm = {
+        ...current,
+        [name]: value,
+      };
+
+      if (name === 'paymentStatus' && value !== 'dp') {
+        nextForm.dpAmount = '';
+      }
+
+      return nextForm;
+    });
+  };
+
+  const handleEditBookingSubmit = async (event) => {
+    event.preventDefault();
+
+    if (!editingBooking) {
+      return;
+    }
+
+    setEditSaveError('');
+
+    const payment = calculateBookingPayment(editBookingForm);
+    const nextBooking = {
+      ...editingBooking,
+      customerName: editBookingForm.customerName.trim(),
+      dateKey: editBookingForm.bookingDate,
+      dpAmount: payment.dpAmount,
+      durationHours: Number(editBookingForm.durationHours) || 1,
+      notes: editBookingForm.notes.trim(),
+      phone: editBookingForm.phone.trim(),
+      remainingPayment: payment.remainingPayment,
+      sessionType: editBookingForm.sessionType,
+      source: editingBooking.source || 'admin',
+      status: editBookingForm.paymentStatus,
+      studioId: editingBooking.studioId || 'main-studio',
+      time: editBookingForm.startTime,
+      title: editBookingForm.sessionType,
+      tone: getToneByStatus(editBookingForm.paymentStatus),
+      totalPrice: payment.totalPrice,
+      updatedAt: new Date().toISOString(),
+    };
+
+    setIsBookingUpdating(true);
+
+    try {
+      await updateManualBooking(nextBooking);
+
+      const nextDate = parseDateInputToDate(editBookingForm.bookingDate, cursorDate);
+
+      setCursorDate(nextDate);
+      setSelectedSlot({
+        dateKey: editBookingForm.bookingDate,
+        label: formatFullDateLabel(nextDate),
+        timeKey: editBookingForm.startTime,
+      });
+      setDetailBooking(nextBooking);
+      setEditingBooking(null);
+    } catch (error) {
+      console.error('Failed to update booking.', error);
+      setEditSaveError('Perubahan belum tersimpan. Cek koneksi, login Firebase, atau Firestore rules.');
+    } finally {
+      setIsBookingUpdating(false);
+    }
   };
 
   const handleBookingSubmit = async (event) => {
@@ -1941,10 +2074,16 @@ export function BookingAdmin() {
 
       <BookingModal
         bookingForm={bookingForm}
+        footerHint="Simpan booking ke Firestore"
         isOpen={isBookingModalOpen}
         isSaving={isBookingSaving}
+        modalDescription="Harga otomatis mengikuti durasi booking. Data baru akan tersimpan ke Firestore."
+        modalEyebrow="Booking baru"
+        modalTitle="Tambah booking studio"
         paymentPreview={paymentPreview}
         saveError={bookingSaveError}
+        submitLabel="Simpan booking"
+        submittingLabel="Menyimpan..."
         onChange={handleFormChange}
         onClose={closeBookingModal}
         onSubmit={handleBookingSubmit}
@@ -1955,7 +2094,25 @@ export function BookingAdmin() {
         bookingActionId={bookingActionId}
         onClose={closeBookingDetailModal}
         onDelete={handleDeleteBooking}
+        onEdit={openEditBookingModal}
         onMarkPaid={handleMarkBookingPaid}
+      />
+
+      <BookingModal
+        bookingForm={editBookingForm}
+        footerHint="Update booking di Firestore"
+        isOpen={Boolean(editingBooking)}
+        isSaving={isBookingUpdating}
+        modalDescription="Ubah detail booking, pembayaran, jadwal, dan catatan. Perubahan akan dikirim ke Firestore."
+        modalEyebrow="Edit booking"
+        modalTitle="Edit booking studio"
+        paymentPreview={editPaymentPreview}
+        saveError={editSaveError}
+        submitLabel="Simpan perubahan"
+        submittingLabel="Menyimpan perubahan..."
+        onChange={handleEditFormChange}
+        onClose={closeEditBookingModal}
+        onSubmit={handleEditBookingSubmit}
       />
     </section>
   );
