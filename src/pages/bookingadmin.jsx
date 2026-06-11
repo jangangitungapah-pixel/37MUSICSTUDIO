@@ -191,9 +191,9 @@ const bookingSeeds = [
 ];
 
 const toneClasses = {
-  accent: 'border-studio-accent/35 bg-studio-accent/12 text-[var(--ui-text-strong)]',
-  cyan: 'border-studio-cyan/35 bg-studio-cyan/12 text-[var(--ui-text-strong)]',
-  purple: 'border-studio-purple/35 bg-studio-purple/12 text-[var(--ui-text-strong)]',
+  accent: 'border-studio-accent/45 bg-studio-accent/14 text-[var(--ui-text-strong)] shadow-[0_14px_34px_rgb(255_59_161/0.12)]',
+  cyan: 'border-studio-cyan/45 bg-studio-cyan/14 text-[var(--ui-text-strong)] shadow-[0_14px_34px_rgb(34_211_238/0.12)]',
+  purple: 'border-studio-purple/45 bg-studio-purple/14 text-[var(--ui-text-strong)] shadow-[0_14px_34px_rgb(139_92_246/0.12)]',
 };
 
 function createDate(year, monthIndex, dayNumber) {
@@ -264,6 +264,20 @@ function formatCurrency(value) {
     maximumFractionDigits: 0,
     style: 'currency',
   }).format(Math.max(0, Number(value) || 0));
+}
+
+function formatCompactCurrency(value) {
+  const cleanValue = Math.max(0, Number(value) || 0);
+
+  if (cleanValue >= 1000000) {
+    const millionValue = cleanValue / 1000000;
+
+    return 'Rp' + millionValue.toLocaleString('id-ID', {
+      maximumFractionDigits: 1,
+    }) + 'jt';
+  }
+
+  return 'Rp' + Math.round(cleanValue / 1000).toLocaleString('id-ID') + 'rb';
 }
 
 function parseMoney(value) {
@@ -867,9 +881,24 @@ function CalendarCell({
   onSelect,
   time,
 }) {
+  const duration = booking ? getClampedBookingDuration(booking) : 0;
+  const displayName = booking?.customerName || booking?.title || '';
+  const sessionLabel = booking?.sessionType || booking?.title || 'Booking';
+  const compactTotal = booking ? formatCompactCurrency(booking.totalPrice) : '';
+  const blockToneClass = booking ? toneClasses[booking.tone] : '';
+  let statusDotClass = 'bg-studio-accent';
+
+  if (booking?.status === 'dp') {
+    statusDotClass = 'bg-studio-purple';
+  }
+
+  if (booking?.status === 'paid') {
+    statusDotClass = 'bg-studio-cyan';
+  }
+
   return (
     <button
-      aria-label={booking ? booking.customerName + ', ' + day.fullLabel + ', ' + time.label + ', durasi ' + getClampedBookingDuration(booking) + ' jam' : 'Empty slot, ' + day.fullLabel + ', ' + time.label}
+      aria-label={booking ? displayName + ', ' + day.fullLabel + ', ' + time.label + ', durasi ' + duration + ' jam' : 'Empty slot, ' + day.fullLabel + ', ' + time.label}
       className={cn(
         'group relative min-h-[58px] overflow-visible border-b border-r border-[var(--ui-border)] p-1.5 text-left transition focus-visible:relative focus-visible:z-30 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/25',
         solidSurfaces.gridCell,
@@ -885,29 +914,77 @@ function CalendarCell({
       {booking && isBookingStart ? (
         <span
           className={cn(
-            'absolute left-1.5 right-1.5 top-1.5 z-20 grid content-start overflow-hidden rounded-[1rem] border px-2.5 py-2 shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)]',
-            toneClasses[booking.tone],
+            'absolute left-1.5 right-1.5 top-1.5 z-20 flex flex-col overflow-hidden rounded-[1.15rem] border px-2.5 text-left ring-1 ring-[var(--ui-ring)] backdrop-blur-xl',
+            duration >= 2 ? 'py-2.5' : 'py-2',
+            blockToneClass,
           )}
           style={{ height: durationHeight }}
         >
-          <span className="truncate text-[0.72rem] font-semibold tracking-[-0.02em]">
-            {booking.customerName || booking.title}
+          <span
+            className="pointer-events-none absolute inset-x-0 top-0 h-px bg-[var(--ui-border-strong)] opacity-70"
+            aria-hidden="true"
+          />
+
+          <span
+            className={cn('pointer-events-none absolute bottom-2 left-2 top-2 w-1 rounded-full', statusDotClass)}
+            aria-hidden="true"
+          />
+
+          <span className="grid min-w-0 gap-1 pl-3">
+            <span className="flex min-w-0 items-start justify-between gap-2">
+              <span className="min-w-0">
+                <span className="block truncate text-[0.76rem] font-semibold leading-4 tracking-[-0.035em] text-[var(--ui-text-strong)]">
+                  {displayName}
+                </span>
+
+                {duration >= 2 ? (
+                  <span className="mt-0.5 block truncate text-[0.6rem] font-semibold uppercase tracking-[0.12em] text-[var(--ui-text-muted)]">
+                    {sessionLabel}
+                  </span>
+                ) : null}
+              </span>
+
+              <span
+                className={cn('mt-1 size-2 shrink-0 rounded-full ring-4 ring-[var(--ui-ring)]', statusDotClass)}
+                aria-hidden="true"
+              />
+            </span>
+
+            {duration >= 2 ? (
+              <span className="inline-flex w-fit max-w-full items-center gap-1.5 rounded-full border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] px-2 py-1 text-[0.6rem] font-semibold uppercase tracking-[0.1em] text-[var(--ui-text-main)]">
+                <Clock3
+                  className="shrink-0 text-[var(--ui-text-muted)]"
+                  size={11}
+                  strokeWidth={2.35}
+                  aria-hidden="true"
+                />
+                <span className="truncate">
+                  {time.key} · {duration} jam
+                </span>
+              </span>
+            ) : null}
           </span>
 
-          <span className="mt-0.5 truncate text-[0.65rem] font-semibold uppercase tracking-[0.12em] text-[var(--ui-text-muted)]">
-            {time.key} • {getClampedBookingDuration(booking)} jam
-          </span>
+          <span
+            className={cn(
+              'mt-auto flex min-w-0 items-center justify-between gap-2 pl-3',
+              duration >= 2 ? 'border-t border-[var(--ui-border)] pt-1.5' : 'pt-1',
+            )}
+          >
+            <span className="truncate rounded-full bg-[var(--ui-control)] px-1.5 py-0.5 text-[0.58rem] font-semibold uppercase tracking-[0.12em] text-[var(--ui-text-main)]">
+              {getStatusLabel(booking.status)}
+            </span>
 
-          <span className="mt-auto flex items-center justify-between gap-2 pt-2 text-[0.65rem] font-semibold uppercase tracking-[0.12em] text-[var(--ui-text-muted)]">
-            <span>{getStatusLabel(booking.status)}</span>
-            <span>{formatCurrency(booking.totalPrice)}</span>
+            <span className="shrink-0 text-[0.62rem] font-semibold tracking-[-0.02em] text-[var(--ui-text-strong)]">
+              {compactTotal}
+            </span>
           </span>
         </span>
       ) : null}
 
       {booking && !isBookingStart ? (
         <span className="sr-only">
-          Slot lanjutan dari booking {booking.customerName || booking.title}
+          Slot lanjutan dari booking {displayName}
         </span>
       ) : null}
 
