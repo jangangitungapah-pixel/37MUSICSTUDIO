@@ -1,4 +1,4 @@
-import { Moon, Sparkles, Sun } from 'lucide-react';
+import { LockKeyhole, Moon, Sparkles, Sun } from 'lucide-react';
 import { cn } from '../lib/cn.js';
 import { useTheme } from './ThemeProvider.jsx';
 
@@ -19,12 +19,13 @@ const themeSwitchStates = {
   },
 };
 
-export function ThemeContainer({ children }) {
+export function ThemeContainer({ children, currentPath = '/' }) {
   const { mode, density, toggleMode, toggleDensity } = useTheme();
 
   const isCompact = density === 'compact';
   const themeSwitch = themeSwitchStates[mode] || themeSwitchStates.dark;
   const ThemeSwitchIcon = themeSwitch.knobIcon;
+  const isLoginPage = currentPath === '/login';
 
   return (
     <div className="relative isolate min-h-screen overflow-x-clip bg-[var(--ui-bg-base)] text-[var(--ui-text-main)] transition-colors duration-300">
@@ -66,6 +67,19 @@ export function ThemeContainer({ children }) {
           className="flex items-center justify-end gap-2 max-[820px]:justify-stretch max-[520px]:flex-row"
           aria-label="Theme controls"
         >
+          <a
+            aria-label="Open login page"
+            aria-current={isLoginPage ? 'page' : undefined}
+            className={cn(
+              'inline-grid size-10 shrink-0 place-items-center rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] text-[var(--ui-secondary-text)] shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/25',
+              isLoginPage && 'border-studio-accent/45 text-studio-accent',
+            )}
+            href="/login"
+            title="Open login page"
+          >
+            <LockKeyhole size={17} strokeWidth={2.35} aria-hidden="true" />
+          </a>
+
           <button
             className="inline-flex min-h-10 items-center justify-center rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] px-4 text-sm font-semibold text-[var(--ui-secondary-text)] shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/25 max-[820px]:flex-1 max-[520px]:flex-none"
             type="button"
@@ -123,7 +137,7 @@ export function ThemeContainer({ children }) {
         <section className="grid gap-8">
           <div className="inline-flex w-fit items-center gap-2 text-xs font-semibold text-[var(--ui-text-muted)]">
             <Sparkles size={14} className="text-studio-accent" aria-hidden="true" />
-            <span>Tailwind Container Theme v1.0</span>
+            <span>Tailwind Container Theme v1.1</span>
           </div>
 
           {children}
