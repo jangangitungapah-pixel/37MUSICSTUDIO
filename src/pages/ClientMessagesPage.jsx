@@ -94,7 +94,7 @@ const folderOptions = [
 ];
 
 const ClientMessagesPage = () => {
-  const { messages, isLoaded, error, updateMessageStatus } = useClientMessageStore();
+  const { messages, isLoaded, error, updateMessageStatus, sendAdminReply } = useClientMessageStore();
   const [activeFilter, setActiveFilter] = useState('open');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedMessageId, setSelectedMessageId] = useState(null);
@@ -214,6 +214,34 @@ const ClientMessagesPage = () => {
       title: 'Catatan disimpan',
       message: 'Pesan ditandai sudah dibalas.',
     });
+  };
+
+  const sendCustomerReply = async (message) => {
+    const note = String(replyDrafts[message.id] || '').trim();
+
+    if (!note) {
+      addNotification({
+        type: 'warning',
+        title: 'Balasan kosong',
+        message: 'Tulis balasan untuk customer dulu.',
+      });
+      return;
+    }
+
+    try {
+      await sendAdminReply(message.id, {
+        message: note,
+        senderName: 'Admin 37 Music Studio',
+      });
+
+      setReplyDrafts((current) => ({ ...current, [message.id]: '' }));
+    } catch (replyError) {
+      addNotification({
+        type: 'error',
+        title: 'Balasan gagal dikirim',
+        message: replyError.message || 'Coba lagi beberapa saat lagi.',
+      });
+    }
   };
 
   const markReplied = async (message) => {
@@ -443,8 +471,8 @@ const ClientMessagesPage = () => {
                 </section>
               )}
 
-              <section className="inbox-reply-composer" aria-label="Catatan follow up admin">
-                <label htmlFor={'reply-note-' + selectedMessage.id}>Catatan follow up</label>
+              <section className="inbox-reply-composer" aria-label="Balasan customer dan catatan follow up admin">
+                <label htmlFor={'reply-note-' + selectedMessage.id}>Balasan / Catatan follow up</label>
                 <textarea
                   id={'reply-note-' + selectedMessage.id}
                   value={replyDrafts[selectedMessage.id] || ''}
@@ -452,13 +480,24 @@ const ClientMessagesPage = () => {
                     ...current,
                     [selectedMessage.id]: event.target.value,
                   }))}
-                  placeholder="Tulis catatan internal. Contoh: Sudah dibalas via WA, client minta Sabtu malam."
+                  placeholder="Tulis balasan untuk customer. Contoh: Halo kak, slot Sabtu jam 19.00 masih tersedia."
                   rows={5}
                 />
                 <div className="inbox-detail-actions">
-                  <button type="button" className="inbox-action primary" onClick={() => saveReplyNote(selectedMessage)}>
+                  <button type="button" className="inbox-action primary" onClick={() => sendCustomerReply(selectedMessage)}>
+
                     <Send size={15} />
-                    Simpan Catatan
+
+                    Kirim Balasan
+
+                  </button>
+
+                  <button type="button" className="inbox-action" onClick={() => saveReplyNote(selectedMessage)}>
+
+                    <Reply size={15} />
+
+                    Simpan Catatan Internal
+
                   </button>
                   <a
                     className={'inbox-action whatsapp' + (!selectedWaHref ? ' is-disabled' : '')}
