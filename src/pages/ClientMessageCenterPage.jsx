@@ -47,6 +47,36 @@ const statusTone = (status) => {
   return 'cyan';
 };
 
+const getAdminReplies = (message) => {
+  const replies = Array.isArray(message?.replies) ? message.replies : [];
+  return replies
+    .filter((reply) => String(reply?.message || '').trim())
+    .sort((a, b) => String(a.createdAt || '').localeCompare(String(b.createdAt || '')));
+};
+
+const getLatestAdminReply = (message) => {
+  const replies = getAdminReplies(message);
+  if (replies.length > 0) return replies[replies.length - 1];
+
+  const fallback = String(message?.latestAdminReply || message?.adminReplyNote || '').trim();
+  if (!fallback) return null;
+
+  return {
+    id: 'legacy-admin-reply-' + (message?.id || 'message'),
+    senderName: 'Admin 37 Music Studio',
+    message: fallback,
+    createdAt: message?.latestAdminReplyAt || message?.repliedAt || message?.updatedAt || message?.createdAt || '',
+    isLegacy: true,
+  };
+};
+
+const getReplySearchText = (message) => {
+  const replies = getAdminReplies(message);
+  return replies
+    .map((reply) => [reply.senderName, reply.message].filter(Boolean).join(' '))
+    .join(' ');
+};
+
 const filterOptions = [
   { key: 'all', label: 'Semua' },
   { key: 'open', label: 'Open' },
@@ -117,6 +147,8 @@ const ClientMessageCenterPage = () => {
         message.subject,
         message.message,
         message.adminReplyNote,
+        message.latestAdminReply,
+        getReplySearchText(message),
         message.status,
       ].filter(Boolean).join(' '));
 
@@ -128,7 +160,8 @@ const ClientMessageCenterPage = () => {
   const repliedCount = sortedMessages.filter((message) => clean(message.status) === 'replied').length;
   const doneCount = sortedMessages.filter((message) => clean(message.status) === 'done').length;
   const messageLength = messageDraft.trim().length;
-  const latestAdminReply = sortedMessages.find((message) => message.adminReplyNote);
+  const latestAdminReplyMessage = sortedMessages.find((message) => getLatestAdminReply(message));
+  const latestAdminReply = latestAdminReplyMessage ? getLatestAdminReply(latestAdminReplyMessage) : null;
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -255,8 +288,8 @@ const ClientMessageCenterPage = () => {
           </div>
           <div>
             <span>Balasan admin terbaru</span>
-            <strong>{latestAdminReply.subject || "Pesan Client Portal"}</strong>
-            <p>{latestAdminReply.adminReplyNote}</p>
+            <strong>{latestAdminReply.senderName || 'Admin 37 Music Studio'}</strong>
+            <p>{latestAdminReply.message}</p>
           </div>
         </section>
       )}
@@ -379,30 +412,54 @@ const ClientMessageCenterPage = () => {
             </div>
           ) : (
             <div className="client-message-thread-list">
-              {filteredMessages.map((message) => (
-                <article className="client-message-thread-card" key={message.id}>
-                  <div className="client-message-thread-top">
-                    <div>
-                      <span>{message.subject || 'Pesan Client Portal'}</span>
-                      <strong>{message.message}</strong>
-                      <div className="client-message-thread-meta">
-                        <small>{formatDateTime(message.updatedAt || message.createdAt)}</small>
-                        {message.source && <small>{message.source === "client-message-center" ? "Client Center" : message.source}</small>}
-                      </div>
-                    </div>
-                    <span className={'client-status-pill status-' + statusTone(message.status)}>
-                      {statusLabel(message.status)}
-                    </span>
-                  </div>
+              {filteredMessages.map((message) => {
+                const adminReplies = getAdminReplies(message);
+                const legacyReply = adminReplies.length === 0 ? getLatestAdminReply(message) : null;
 
-                  {message.adminReplyNote && (
-                    <div className="client-admin-reply-note">
-                      <Reply size={15} />
-                      <p>{message.adminReplyNote}</p>
+                return (
+                  <article className="client-message-thread-card" key={message.id}>
+                    <div className="client-message-thread-top">
+                      <div>
+                        <span>{message.subject || 'Pesan Client Portal'}</span>
+                        <strong>{message.message}</strong>
+                        <div className="client-message-thread-meta">
+                          <small>{formatDateTime(message.updatedAt || message.createdAt)}</small>
+                          {message.source && <small>{message.source === "client-message-center" ? "Client Center" : message.source}</small>}
+                        </div>
+                      </div>
+                      <span className={'client-status-pill status-' + statusTone(message.status)}>
+                        {statusLabel(message.status)}
+                      </span>
                     </div>
-                  )}
-                </article>
-              ))}
+
+                    {adminReplies.length > 0 && (
+                      <div className="client-admin-reply-stack" aria-label="Balasan admin">
+                        {adminReplies.map((reply) => (
+                          <div className="client-admin-reply-note" key={reply.id || reply.createdAt || reply.message}>
+                            <Reply size={15} />
+                            <div>
+                              <strong>{reply.senderName || 'Admin 37 Music Studio'}</strong>
+                              <p>{reply.message}</p>
+                              {reply.createdAt && <small>{formatDateTime(reply.createdAt)}</small>}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {legacyReply && (
+                      <div className="client-admin-reply-note">
+                        <Reply size={15} />
+                        <div>
+                          <strong>{legacyReply.senderName || 'Admin 37 Music Studio'}</strong>
+                          <p>{legacyReply.message}</p>
+                          {legacyReply.createdAt && <small>{formatDateTime(legacyReply.createdAt)}</small>}
+                        </div>
+                      </div>
+                    )}
+                  </article>
+                );
+              })}
             </div>
           )}
         </section>
