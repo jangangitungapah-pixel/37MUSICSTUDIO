@@ -303,13 +303,31 @@ const ClientMessagesPage = () => {
   const selectedAdminReplies = selectedMessage ? getAdminReplies(selectedMessage) : [];
 
   useEffect(() => {
-    if (typeof document === 'undefined') {
+    if (typeof document === 'undefined' || typeof window === 'undefined') {
       return undefined;
     }
 
-    document.body.classList.toggle('client-inbox-mobile-chat-open', Boolean(selectedMessage));
+    const mobileQuery = window.matchMedia('(max-width: 720px)');
+
+    const syncMobileChatClass = () => {
+      document.body.classList.toggle('client-inbox-mobile-chat-open', Boolean(selectedMessage) && mobileQuery.matches);
+    };
+
+    syncMobileChatClass();
+
+    if (typeof mobileQuery.addEventListener === 'function') {
+      mobileQuery.addEventListener('change', syncMobileChatClass);
+    } else if (typeof mobileQuery.addListener === 'function') {
+      mobileQuery.addListener(syncMobileChatClass);
+    }
 
     return () => {
+      if (typeof mobileQuery.removeEventListener === 'function') {
+        mobileQuery.removeEventListener('change', syncMobileChatClass);
+      } else if (typeof mobileQuery.removeListener === 'function') {
+        mobileQuery.removeListener(syncMobileChatClass);
+      }
+
       document.body.classList.remove('client-inbox-mobile-chat-open');
     };
   }, [selectedMessage]);
