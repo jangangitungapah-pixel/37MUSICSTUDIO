@@ -487,14 +487,22 @@ function getDayColumnTemplate(viewMode) {
 
 function getGridMinWidth(viewMode, visibleDays) {
   if (viewMode === 'month') {
-    return 168 + visibleDays.length * 116;
+    return 136 + visibleDays.length * 100;
   }
 
   if (viewMode === 'week') {
-    return 168 + visibleDays.length * 148;
+    return 136 + visibleDays.length * 124;
   }
 
-  return 448;
+  return 376;
+}
+
+function getInitialViewMode() {
+  if (typeof window === 'undefined') {
+    return 'month';
+  }
+
+  return window.matchMedia('(max-width: 767px)').matches ? 'week' : 'month';
 }
 
 function ThemedSelect({
@@ -520,7 +528,7 @@ function ThemedSelect({
 
   return (
     <div
-      className="relative grid gap-2 text-sm font-semibold text-[var(--ui-text-main)]"
+      className="relative grid gap-1.5 text-sm font-semibold text-[var(--ui-text-main)]"
       onBlur={(event) => {
         if (!event.currentTarget.contains(event.relatedTarget)) {
           setIsOpen(false);
@@ -532,7 +540,7 @@ function ThemedSelect({
       <button
         aria-expanded={isOpen}
         aria-haspopup="listbox"
-        className="flex min-h-12 w-full items-center gap-3 rounded-[1.25rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 text-left text-sm font-semibold text-[var(--ui-text-strong)] shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] transition hover:bg-[var(--ui-control-hover)] focus-visible:border-studio-accent/55 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
+        className="flex min-h-11 w-full items-center gap-3 rounded-[1.15rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 text-left text-sm font-semibold text-[var(--ui-text-strong)] shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] transition hover:bg-[var(--ui-control-hover)] focus-visible:border-studio-accent/55 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20 sm:min-h-12 sm:rounded-[1.25rem]"
         type="button"
         onClick={() => setIsOpen((current) => !current)}
       >
@@ -604,9 +612,9 @@ function FieldShell({
   label,
 }) {
   return (
-    <label className="grid gap-2 text-sm font-semibold text-[var(--ui-text-main)]">
+    <label className="grid gap-1.5 text-sm font-semibold text-[var(--ui-text-main)]">
       {label}
-      <span className="flex min-h-12 items-center gap-3 rounded-[1.25rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 ring-1 ring-[var(--ui-ring)] focus-within:border-studio-accent/55 focus-within:ring-4 focus-within:ring-studio-accent/20">
+      <span className="flex min-h-11 items-center gap-3 rounded-[1.15rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 ring-1 ring-[var(--ui-ring)] focus-within:border-studio-accent/55 focus-within:ring-4 focus-within:ring-studio-accent/20 sm:min-h-12 sm:rounded-[1.25rem]">
         {Icon ? <Icon size={16} strokeWidth={2.25} aria-hidden="true" /> : null}
         {children}
       </span>
@@ -639,13 +647,13 @@ function BookingModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 grid place-items-center p-4 [background:color-mix(in_srgb,var(--ui-bg-base)_62%,transparent)] backdrop-blur-xl"
+      className="fixed inset-0 z-50 grid items-end p-2 pb-[max(0.75rem,env(safe-area-inset-bottom))] [background:color-mix(in_srgb,var(--ui-bg-base)_62%,transparent)] backdrop-blur-xl sm:place-items-center sm:p-4"
       role="dialog"
       aria-modal="true"
       aria-labelledby="booking-modal-title"
     >
       <form
-        className="grid max-h-[calc(100vh-32px)] w-[min(760px,calc(100vw-32px))] gap-5 overflow-auto rounded-[2rem] border border-[var(--ui-border-strong)] bg-[var(--ui-bg-base)] p-5 shadow-[var(--ui-shadow-soft)] ring-1 ring-[var(--ui-ring)] sm:p-6"
+        className="grid max-h-[calc(100dvh-16px)] w-full gap-4 overflow-auto rounded-t-[1.75rem] border border-[var(--ui-border-strong)] bg-[var(--ui-bg-base)] p-4 pb-[max(1rem,env(safe-area-inset-bottom))] shadow-[var(--ui-shadow-soft)] ring-1 ring-[var(--ui-ring)] sm:max-h-[calc(100dvh-32px)] sm:w-[min(760px,calc(100vw-32px))] sm:rounded-[2rem] sm:p-6"
         onSubmit={onSubmit}
       >
         <div className="flex items-start justify-between gap-4">
@@ -654,7 +662,7 @@ function BookingModal({
               Booking form
             </span>
             <h2
-              className="m-0 text-3xl font-semibold tracking-[-0.06em] text-[var(--ui-text-strong)]"
+              className="m-0 text-2xl font-semibold tracking-[-0.06em] text-[var(--ui-text-strong)] sm:text-3xl"
               id="booking-modal-title"
             >
               Tambah booking studio
@@ -674,7 +682,7 @@ function BookingModal({
           </button>
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid gap-3 sm:grid-cols-2">
           <FieldShell icon={UserRound} label="Nama customer">
             <input
               className="w-full border-0 bg-transparent text-sm font-semibold text-[var(--ui-text-strong)] outline-none placeholder:text-[var(--ui-text-soft)]"
@@ -738,7 +746,7 @@ function BookingModal({
           />
         </div>
 
-        <div className="grid gap-3 rounded-[1.5rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-4 ring-1 ring-[var(--ui-ring)]">
+        <div className="grid gap-3 rounded-[1.35rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-3 ring-1 ring-[var(--ui-ring)] sm:rounded-[1.5rem] sm:p-4">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <span className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--ui-text-strong)]">
               <WalletCards size={16} strokeWidth={2.35} aria-hidden="true" />
@@ -755,7 +763,7 @@ function BookingModal({
               <button
                 aria-pressed={bookingForm.paymentStatus === item.key}
                 className={cn(
-                  'min-h-11 rounded-full border px-4 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/25',
+                  'min-h-10 rounded-full border px-4 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/25 sm:min-h-11',
                   bookingForm.paymentStatus === item.key
                     ? 'border-studio-accent/35 bg-[var(--ui-control-hover)] text-studio-accent shadow-[var(--ui-shadow-control)] ring-1 ring-studio-accent/15'
                     : 'border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] text-[var(--ui-secondary-text)] hover:bg-[var(--ui-control)] hover:text-[var(--ui-text-strong)]',
@@ -829,7 +837,7 @@ function BookingModal({
           />
         </label>
 
-        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[var(--ui-border)] pt-4">
+        <div className="sticky bottom-0 z-10 -mx-4 flex flex-wrap items-center justify-between gap-3 border-t border-[var(--ui-border)] bg-[var(--ui-bg-base)] px-4 pb-[max(0.25rem,env(safe-area-inset-bottom))] pt-3 sm:static sm:mx-0 sm:bg-transparent sm:px-0 sm:pb-0 sm:pt-4">
           <span className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--ui-text-muted)]">
             <ReceiptText size={16} strokeWidth={2.35} aria-hidden="true" />
             Simpan ke state lokal dulu
@@ -951,12 +959,12 @@ function BookingDetailModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 grid place-items-center p-4 [background:color-mix(in_srgb,var(--ui-bg-base)_62%,transparent)] backdrop-blur-xl"
+      className="fixed inset-0 z-50 grid items-end p-2 pb-[max(0.75rem,env(safe-area-inset-bottom))] [background:color-mix(in_srgb,var(--ui-bg-base)_62%,transparent)] backdrop-blur-xl sm:place-items-center sm:p-4"
       role="dialog"
       aria-modal="true"
       aria-labelledby="booking-detail-title"
     >
-      <div className="grid max-h-[calc(100vh-32px)] w-[min(760px,calc(100vw-32px))] gap-5 overflow-auto rounded-[2rem] border border-[var(--ui-border-strong)] bg-[var(--ui-bg-base)] p-5 shadow-[var(--ui-shadow-soft)] ring-1 ring-[var(--ui-ring)] sm:p-6">
+      <div className="grid max-h-[calc(100dvh-16px)] w-full gap-4 overflow-auto rounded-t-[1.75rem] border border-[var(--ui-border-strong)] bg-[var(--ui-bg-base)] p-4 pb-[max(1rem,env(safe-area-inset-bottom))] shadow-[var(--ui-shadow-soft)] ring-1 ring-[var(--ui-ring)] sm:max-h-[calc(100dvh-32px)] sm:w-[min(760px,calc(100vw-32px))] sm:rounded-[2rem] sm:p-6">
         <div className="flex items-start justify-between gap-4">
           <div className="grid gap-3">
             <span className="inline-flex w-fit items-center gap-2 rounded-full border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 py-1.5 text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-studio-accent ring-1 ring-[var(--ui-ring)]">
@@ -1075,7 +1083,7 @@ function BookingDetailModal({
           </p>
         </section>
 
-        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[var(--ui-border)] pt-4">
+        <div className="sticky bottom-0 z-10 -mx-4 flex flex-wrap items-center justify-between gap-3 border-t border-[var(--ui-border)] bg-[var(--ui-bg-base)] px-4 pb-[max(0.25rem,env(safe-area-inset-bottom))] pt-3 sm:static sm:mx-0 sm:bg-transparent sm:px-0 sm:pb-0 sm:pt-4">
           <span className="text-sm font-semibold text-[var(--ui-text-muted)]">
             Detail ini masih read-only. Edit booking bisa dibuat di phase berikutnya.
           </span>
@@ -1221,7 +1229,7 @@ function TimeCell({ slot }) {
   return (
     <div
       className={cn(
-        'sticky left-0 z-10 grid min-h-[58px] w-[168px] place-items-center border-b border-r border-[var(--ui-border-strong)] px-3 text-center shadow-[12px_0_22px_rgb(0_0_0/0.08)]',
+        'sticky left-0 z-10 grid min-h-[58px] w-[136px] place-items-center border-b border-r border-[var(--ui-border-strong)] px-2 text-center shadow-[12px_0_22px_rgb(0_0_0/0.08)]',
         solidSurfaces.gridSticky,
       )}
     >
@@ -1234,7 +1242,7 @@ function TimeCell({ slot }) {
 
 function BookingStatusCounters({ counts }) {
   return (
-    <div className="flex flex-wrap items-center gap-2 rounded-full border border-[var(--ui-border)] bg-[var(--ui-control)] p-1.5 shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)]">
+    <div className="flex w-full flex-wrap items-center justify-center gap-2 rounded-full border border-[var(--ui-border)] bg-[var(--ui-control)] p-1.5 shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] sm:w-auto">
       {bookingStatusItems.map((item) => (
         <div
           className="inline-flex min-h-9 items-center gap-2 rounded-full border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] px-3 text-xs font-semibold uppercase tracking-[0.13em] text-[var(--ui-text-main)]"
@@ -1277,7 +1285,7 @@ function BookingSlotCounters({ summary, timeSlots, visibleDays }) {
     <div className="grid gap-0 border-y border-[var(--ui-border)] sm:grid-cols-3">
       {items.map((item) => (
         <article
-          className="grid gap-0.5 py-3 sm:border-l sm:border-[var(--ui-border)] sm:px-5 sm:first:border-l-0"
+          className="grid gap-0.5 py-2.5 sm:border-l sm:border-[var(--ui-border)] sm:px-5 sm:py-3 sm:first:border-l-0"
           key={item.key}
         >
           <span className="text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-[var(--ui-text-muted)]">
@@ -1300,7 +1308,7 @@ function ViewToggle({
   value,
 }) {
   return (
-    <div className="flex flex-wrap rounded-full border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-1 shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)]">
+    <div className="flex w-full flex-wrap rounded-full border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-1 shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] sm:w-auto">
       {viewOptions.map((option) => (
         <button
           aria-pressed={value === option.key}
@@ -1333,8 +1341,8 @@ function CalendarToolbar({
   viewMode,
 }) {
   return (
-    <div className="grid gap-3 rounded-[1.75rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-3 ring-1 ring-[var(--ui-ring)] xl:grid-cols-[minmax(0,1fr)_auto_auto] xl:items-center">
-      <div className="flex flex-wrap items-center gap-2">
+    <div className="grid gap-3 rounded-[1.5rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-3 ring-1 ring-[var(--ui-ring)] lg:grid-cols-[minmax(0,1fr)_auto_auto] lg:items-center xl:rounded-[1.75rem]">
+      <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 sm:flex sm:flex-wrap">
         <button
           aria-label="Previous period"
           className="grid size-10 place-items-center rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] text-[var(--ui-secondary-text)] shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/25"
@@ -1344,7 +1352,7 @@ function CalendarToolbar({
           <ChevronLeft size={17} strokeWidth={2.35} aria-hidden="true" />
         </button>
 
-        <div className="inline-flex min-h-10 min-w-[220px] items-center gap-2 rounded-full border border-[var(--ui-border)] bg-[var(--ui-control)] px-4 text-sm font-semibold text-[var(--ui-text-strong)] shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)]">
+        <div className="inline-flex min-h-10 min-w-0 items-center gap-2 rounded-full border border-[var(--ui-border)] bg-[var(--ui-control)] px-4 text-sm font-semibold text-[var(--ui-text-strong)] shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] sm:min-w-[220px]">
           <CalendarDays size={16} strokeWidth={2.35} aria-hidden="true" />
           <span className="truncate">{rangeLabel}</span>
         </div>
@@ -1369,7 +1377,7 @@ function CalendarToolbar({
 
       <BookingStatusCounters counts={statusCounts} />
 
-      <div className="flex flex-wrap items-center gap-2 xl:justify-end">
+      <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 sm:flex sm:flex-wrap lg:justify-end">
         <ViewToggle
           onChange={onViewChange}
           value={viewMode}
@@ -1399,7 +1407,7 @@ function CalendarGrid({
   visibleDays,
 }) {
   const dayColumnTemplate = getDayColumnTemplate(viewMode);
-  const gridTemplateColumns = '168px repeat(' + visibleDays.length + ', ' + dayColumnTemplate + ')';
+  const gridTemplateColumns = '136px repeat(' + visibleDays.length + ', ' + dayColumnTemplate + ')';
   const gridMinWidth = getGridMinWidth(viewMode, visibleDays);
 
   return (
@@ -1451,7 +1459,7 @@ function CalendarGrid({
           >
             <div
               className={cn(
-                'sticky left-0 z-20 grid h-14 w-[168px] place-items-center border-b border-r border-[var(--ui-border-strong)] px-3 text-center shadow-[12px_0_22px_rgb(0_0_0/0.08)]',
+                'sticky left-0 z-20 grid h-14 w-[136px] place-items-center border-b border-r border-[var(--ui-border-strong)] px-2 text-center shadow-[12px_0_22px_rgb(0_0_0/0.08)]',
                 solidSurfaces.gridCorner,
               )}
             >
@@ -1534,7 +1542,7 @@ function SelectedSlotPanel({
 }
 
 export function BookingAdmin() {
-  const [viewMode, setViewMode] = useState('month');
+  const [viewMode, setViewMode] = useState(getInitialViewMode);
   const [cursorDate, setCursorDate] = useState(() => {
     const now = new Date();
 
@@ -1714,7 +1722,7 @@ export function BookingAdmin() {
   };
 
   return (
-    <section className="grid gap-4 py-2" aria-labelledby="booking-admin-title">
+    <section className="grid gap-4 pb-[calc(7.5rem+env(safe-area-inset-bottom))] pt-2 md:pb-4" aria-labelledby="booking-admin-title">
       <div className="sr-only" id="booking-admin-title">
         Booking calendar workspace
       </div>
