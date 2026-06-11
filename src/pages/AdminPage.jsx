@@ -1,4 +1,6 @@
-import { useMemo, useState } from 'react';
+import {
+  useMemo,
+  useState } from 'react';
 import {
   ArrowRight,
   Calendar,
@@ -11,11 +13,31 @@ import {
   SlidersHorizontal,
   Sparkles,
   Users,
+  Moon,
+  Sun,
 } from 'lucide-react';
 import { cn } from '../lib/cn.js';
+import { useTheme } from '../theme/ThemeProvider.jsx';
 import { BookingAdmin } from './bookingadmin.jsx';
 
 const DEV_AUTH_STORAGE_KEY = 'thirty-seven-dev-auth';
+
+const adminThemeSwitchStates = {
+  'dark': {
+    ariaLabel: 'Switch to light mode',
+    checked: true,
+    knobClass: 'translate-x-8',
+    knobIcon: Moon,
+    trackHintClass: 'bg-studio-cyan/16',
+  },
+  'light': {
+    ariaLabel: 'Switch to dark mode',
+    checked: false,
+    knobClass: 'translate-x-0',
+    knobIcon: Sun,
+    trackHintClass: 'bg-studio-accent/14',
+  },
+};
 
 const adminNavItems = [
   {
@@ -184,6 +206,76 @@ function NavButton({
   );
 }
 
+function AdminThemeControls({ collapsed = false }) {
+  const { density, mode, toggleDensity, toggleMode } = useTheme();
+  const themeSwitch = adminThemeSwitchStates[mode] || adminThemeSwitchStates['dark'];
+  const ThemeSwitchIcon = themeSwitch.knobIcon;
+
+  return (
+    <div
+      className={cn(
+        'grid gap-2 border-t border-[var(--ui-border)] pt-3',
+        collapsed ? 'justify-items-center' : '',
+      )}
+      aria-label="Admin theme controls"
+    >
+      <button
+        aria-label="Toggle density"
+        className={cn(
+          'min-h-10 items-center gap-2 rounded-2xl border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] text-sm font-semibold text-[var(--ui-secondary-text)] shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/25',
+          collapsed ? 'grid w-11 place-items-center px-0' : 'inline-flex justify-center px-3',
+        )}
+        type="button"
+        onClick={toggleDensity}
+      >
+        <SlidersHorizontal size={15} strokeWidth={2.25} aria-hidden="true" />
+        {!collapsed ? <span>Density: {density}</span> : null}
+      </button>
+
+      <button
+        aria-checked={themeSwitch.checked}
+        aria-label={themeSwitch.ariaLabel}
+        className={cn(
+          'group relative h-10 items-center rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] p-1 shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/25',
+          collapsed ? 'inline-flex w-[76px]' : 'inline-flex w-full',
+        )}
+        role="switch"
+        title={themeSwitch.ariaLabel}
+        type="button"
+        onClick={toggleMode}
+      >
+        <span className="sr-only">{themeSwitch.ariaLabel}</span>
+
+        <span className="absolute left-2 grid size-6 place-items-center text-[var(--ui-text-soft)] transition group-hover:text-studio-accent">
+          <Sun size={14} aria-hidden="true" />
+        </span>
+
+        <span className="absolute right-2 grid size-6 place-items-center text-[var(--ui-text-soft)] transition group-hover:text-studio-cyan">
+          <Moon size={14} aria-hidden="true" />
+        </span>
+
+        <span
+          className={cn(
+            'relative z-10 grid size-8 place-items-center rounded-full [background:var(--ui-primary-bg)] text-[var(--ui-primary-text)] shadow-[var(--ui-shadow-soft)] transition-transform duration-300 ease-out',
+            themeSwitch.knobClass,
+          )}
+          aria-hidden="true"
+        >
+          <ThemeSwitchIcon size={16} strokeWidth={2.35} />
+        </span>
+
+        <span
+          className={cn(
+            'pointer-events-none absolute inset-1 rounded-full blur-md transition-opacity duration-300',
+            themeSwitch.trackHintClass,
+          )}
+          aria-hidden="true"
+        />
+      </button>
+    </div>
+  );
+}
+
 function AdminSidebar({
   activeNav,
   collapsed,
@@ -193,8 +285,8 @@ function AdminSidebar({
   return (
     <aside
       className={cn(
-        'sticky top-6 hidden self-start overflow-hidden rounded-[2rem] border border-[var(--ui-border-strong)] bg-[linear-gradient(145deg,var(--ui-glass),var(--ui-glass-soft))] p-3 shadow-[var(--ui-shadow-soft)] ring-1 ring-[var(--ui-ring)] backdrop-blur-2xl md:grid',
-        collapsed ? 'w-[88px]' : 'w-[276px]',
+        'sticky top-4 hidden self-start overflow-hidden rounded-[2rem] border border-[var(--ui-border-strong)] bg-[linear-gradient(145deg,var(--ui-glass),var(--ui-glass-soft))] p-3 shadow-[var(--ui-shadow-soft)] ring-1 ring-[var(--ui-ring)] backdrop-blur-2xl md:grid',
+        collapsed ? 'w-[88px]' : 'w-[292px]',
       )}
       aria-label="Admin desktop navigation"
     >
@@ -256,6 +348,8 @@ function AdminSidebar({
             />
           ))}
         </nav>
+
+        <AdminThemeControls collapsed={collapsed} />
 
         <div className={cn('border-t border-[var(--ui-border)] pt-3', collapsed ? 'grid justify-items-center' : '')}>
           <button
@@ -445,7 +539,7 @@ export function AdminPage() {
 
   return (
     <section
-      className="grid gap-6 pb-24 pt-2 md:grid-cols-[auto_minmax(0,1fr)] md:gap-6 md:pb-4"
+      className="grid gap-4 pb-24 pt-0 md:grid-cols-[auto_minmax(0,1fr)] md:gap-5 md:pb-4"
       aria-labelledby="admin-shell-title"
     >
       <AdminSidebar
@@ -456,7 +550,7 @@ export function AdminPage() {
       />
 
       <div className="grid min-w-0 gap-0">
-        <AdminHeader activeItem={activeItem} />
+        {activeItem.key !== 'booking' ? <AdminHeader activeItem={activeItem} /> : null}
 
         <div className="sr-only" id="admin-shell-title">
           37 Music Studio Admin Shell

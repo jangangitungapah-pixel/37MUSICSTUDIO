@@ -26,6 +26,7 @@ export function ThemeContainer({ children, currentPath = '/' }) {
   const themeSwitch = themeSwitchStates[mode] || themeSwitchStates.dark;
   const ThemeSwitchIcon = themeSwitch.knobIcon;
   const isLoginPage = currentPath === '/login';
+  const isAdminPage = currentPath === '/admin';
 
   return (
     <div className="relative isolate min-h-screen overflow-x-clip bg-[var(--ui-bg-base)] text-[var(--ui-text-main)] transition-colors duration-300">
@@ -40,13 +41,14 @@ export function ThemeContainer({ children, currentPath = '/' }) {
       <div className="pointer-events-none fixed -right-48 bottom-[10vh] -z-10 size-[560px] rounded-full bg-studio-cyan/16 blur-3xl" />
       <div className="pointer-events-none fixed left-1/2 top-24 -z-10 size-[360px] -translate-x-1/2 rounded-full bg-studio-purple/10 blur-3xl" />
 
-      <header
-        className={cn(
-          'mx-auto flex w-[min(1180px,calc(100vw-32px))] items-center justify-between gap-4',
-          'max-[820px]:relative max-[820px]:flex-col max-[820px]:items-stretch',
-          isCompact ? 'my-3 min-h-16 py-3' : 'my-4 min-h-[76px] py-4',
-        )}
-      >
+      {!isAdminPage ? (
+        <header
+          className={cn(
+            'mx-auto flex w-[min(1180px,calc(100vw-32px))] items-center justify-between gap-4',
+            'max-[820px]:relative max-[820px]:flex-col max-[820px]:items-stretch',
+            isCompact ? 'my-3 min-h-16 py-3' : 'my-4 min-h-[76px] py-4',
+          )}
+        >
         <a className="flex min-w-0 items-center gap-3" href="/" aria-label="37 Music Studio Home">
           <span className="grid size-11 place-items-center rounded-2xl border border-[var(--ui-border)] bg-[var(--ui-control)] text-sm font-semibold tracking-[-0.04em] text-[var(--ui-text-strong)] shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)]">
             37
@@ -126,19 +128,27 @@ export function ThemeContainer({ children, currentPath = '/' }) {
             />
           </button>
         </nav>
-      </header>
+        </header>
+      ) : null}
 
       <main
         className={cn(
-          'mx-auto grid w-[min(1180px,calc(100vw-32px))]',
-          isCompact ? 'gap-8 py-4' : 'gap-10 py-8 sm:py-12',
+          'mx-auto grid',
+          isAdminPage ? 'w-[min(1760px,calc(100vw-20px))]' : 'w-[min(1180px,calc(100vw-32px))]',
+          isAdminPage
+            ? 'gap-4 py-3 sm:py-4'
+            : isCompact
+              ? 'gap-8 py-4'
+              : 'gap-10 py-8 sm:py-12',
         )}
       >
-        <section className="grid gap-8">
-          <div className="inline-flex w-fit items-center gap-2 text-xs font-semibold text-[var(--ui-text-muted)]">
-            <Sparkles size={14} className="text-studio-accent" aria-hidden="true" />
-            <span>Tailwind Container Theme v1.1</span>
-          </div>
+        <section className={cn('grid', isAdminPage ? 'gap-4' : 'gap-8')}>
+          {!isAdminPage ? (
+            <div className="inline-flex w-fit items-center gap-2 text-xs font-semibold text-[var(--ui-text-muted)]">
+              <Sparkles size={14} className="text-studio-accent" aria-hidden="true" />
+              <span>Tailwind Container Theme v1.1</span>
+            </div>
+          ) : null}
 
           {children}
         </section>
