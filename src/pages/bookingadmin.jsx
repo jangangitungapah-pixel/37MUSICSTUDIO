@@ -27,9 +27,9 @@ const studioHours = {
 
 const solidSurfaces = {
   gridShell: '[background:color-mix(in_srgb,var(--ui-bg-base)_90%,var(--ui-control-hover))]',
-  gridHeader: '[background:color-mix(in_srgb,var(--ui-bg-base)_84%,var(--ui-control-hover))]',
-  gridCorner: '[background:color-mix(in_srgb,var(--ui-bg-base)_78%,var(--ui-control-hover))]',
-  gridSticky: '[background:color-mix(in_srgb,var(--ui-bg-base)_82%,var(--ui-control))]',
+  gridHeader: '[background:color-mix(in_srgb,var(--ui-bg-base)_94%,var(--ui-control-hover))]',
+  gridCorner: '[background:color-mix(in_srgb,var(--ui-bg-base)_96%,var(--ui-control-hover))]',
+  gridSticky: '[background:color-mix(in_srgb,var(--ui-bg-base)_94%,var(--ui-control))]',
   gridCell: '[background:color-mix(in_srgb,var(--ui-bg-base)_88%,transparent)]',
   gridCellWeekend: '[background:color-mix(in_srgb,var(--ui-bg-base)_82%,var(--ui-control))]',
 };
@@ -898,7 +898,7 @@ function DetailColumn({
 }) {
   return (
     <section className="grid gap-2" aria-label={label}>
-      <span className="text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-studio-accent">
+      <span className="text-[0.58rem] font-semibold uppercase tracking-[0.14em] text-studio-accent sm:text-[0.68rem] sm:tracking-[0.18em]">
         {label}
       </span>
 
@@ -1135,7 +1135,7 @@ function CalendarCell({
         day.isWeekend ? solidSurfaces.gridCellWeekend : '',
         isSelected ? 'ring-2 ring-studio-accent/30 [background:color-mix(in_srgb,var(--ui-bg-base)_72%,var(--ui-control-hover))]' : '',
         isBookingSpan ? '[background:color-mix(in_srgb,var(--ui-bg-base)_80%,var(--ui-control))]' : '',
-        isBookingStart ? 'z-20' : 'z-0',
+        isBookingStart ? 'z-10' : 'z-0',
         !isBookingSpan ? 'hover:[background:color-mix(in_srgb,var(--ui-bg-base)_78%,var(--ui-control))]' : '',
       )}
       type="button"
@@ -1144,27 +1144,27 @@ function CalendarCell({
       {booking && isBookingStart ? (
         <span
           className={cn(
-            'absolute left-1.5 right-1.5 top-1 z-20 grid content-start overflow-hidden rounded-[0.95rem] border px-2 py-1.5 text-left ring-1 ring-[var(--ui-ring)] backdrop-blur-xl',
+            'pointer-events-none absolute inset-x-1 top-1 z-10 grid max-w-[calc(100%-0.5rem)] content-start overflow-hidden rounded-[0.85rem] border px-1.5 py-1.5 text-left ring-1 ring-[var(--ui-ring)] backdrop-blur-xl sm:inset-x-1.5 sm:rounded-[0.95rem] sm:px-2',
             blockToneClass,
           )}
           style={{ height: durationHeight }}
         >
           <span
-            className={cn('pointer-events-none absolute bottom-1.5 left-1.5 top-1.5 w-0.5 rounded-full', statusDotClass)}
+            className={cn('pointer-events-none absolute bottom-1.5 left-1 top-1.5 w-0.5 rounded-full sm:left-1.5', statusDotClass)}
             aria-hidden="true"
           />
 
-          <span className="grid min-w-0 gap-0.5 pl-2">
-            <span className="block truncate text-[0.62rem] font-semibold leading-3 tracking-[-0.035em] text-[var(--ui-text-strong)]">
+          <span className="grid min-w-0 gap-[0.08rem] pl-1.5 sm:gap-0.5 sm:pl-2">
+            <span className="block truncate text-[0.56rem] font-semibold leading-[0.68rem] tracking-[-0.035em] text-[var(--ui-text-strong)] sm:text-[0.62rem] sm:leading-3">
               {displayName}
             </span>
 
-            <span className="block truncate text-[0.48rem] font-semibold uppercase leading-3 tracking-[0.08em] text-[var(--ui-text-muted)]">
+            <span className="block truncate text-[0.4rem] font-semibold uppercase leading-[0.58rem] tracking-[0.06em] text-[var(--ui-text-muted)] sm:text-[0.48rem] sm:leading-3 sm:tracking-[0.08em]">
               {sessionLabel}
             </span>
 
-            <span className="inline-flex w-fit max-w-full items-center gap-1 rounded-full border border-[var(--ui-border)] bg-[var(--ui-control)] px-1.5 py-px text-[0.46rem] font-semibold uppercase leading-3 tracking-[0.08em] text-[var(--ui-text-main)]">
-              <span className={cn('size-1 shrink-0 rounded-full', statusDotClass)} aria-hidden="true" />
+            <span className="inline-flex w-fit max-w-full items-center gap-1 rounded-full border border-[var(--ui-border)] bg-[var(--ui-control)] px-1 py-px text-[0.38rem] font-semibold uppercase leading-[0.58rem] tracking-[0.06em] text-[var(--ui-text-main)] sm:px-1.5 sm:text-[0.46rem] sm:leading-3 sm:tracking-[0.08em]">
+              <span className={cn('size-0.5 shrink-0 rounded-full sm:size-1', statusDotClass)} aria-hidden="true" />
               <span className="truncate">
                 {paymentLabel}
               </span>
@@ -1205,7 +1205,7 @@ function CalendarHeaderCell({
       aria-label={'Select ' + day.fullLabel}
       aria-pressed={isActiveDay}
       className={cn(
-        'grid h-12 place-items-center border-b border-r border-[var(--ui-border-strong)] px-1.5 text-center transition hover:[background:color-mix(in_srgb,var(--ui-bg-base)_72%,var(--ui-control-hover))] focus-visible:relative focus-visible:z-20 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/25 sm:h-14 sm:px-2',
+        'relative z-20 grid h-12 place-items-center border-b border-r border-[var(--ui-border-strong)] px-1.5 text-center transition hover:[background:color-mix(in_srgb,var(--ui-bg-base)_72%,var(--ui-control-hover))] focus-visible:relative focus-visible:z-30 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/25 sm:h-14 sm:px-2',
         solidSurfaces.gridHeader,
         day.isWeekend ? 'text-studio-accent' : 'text-[var(--ui-text-main)]',
         isActiveDay ? 'ring-2 ring-studio-accent/25 [background:color-mix(in_srgb,var(--ui-bg-base)_70%,var(--ui-control-hover))]' : '',
@@ -1229,7 +1229,7 @@ function TimeCell({ slot }) {
   return (
     <div
       className={cn(
-        'sticky left-0 z-10 grid min-h-[54px] w-[112px] place-items-center border-b border-r border-[var(--ui-border-strong)] px-1.5 text-center shadow-[12px_0_22px_rgb(0_0_0/0.08)] sm:w-[136px] sm:px-2',
+        'sticky left-0 z-40 grid min-h-[54px] w-[112px] place-items-center border-b border-r border-[var(--ui-border-strong)] px-1.5 text-center shadow-[12px_0_22px_rgb(0_0_0/0.14)] sm:w-[136px] sm:px-2',
         solidSurfaces.gridSticky,
       )}
     >
@@ -1416,7 +1416,7 @@ function CalendarGrid({
   return (
     <div
       className={cn(
-        'overflow-hidden rounded-[1.35rem] border border-[var(--ui-border-strong)] shadow-[var(--ui-shadow-soft)] ring-1 ring-[var(--ui-ring)] sm:rounded-[1.75rem]',
+        'isolate overflow-hidden rounded-[1.35rem] border border-[var(--ui-border-strong)] shadow-[var(--ui-shadow-soft)] ring-1 ring-[var(--ui-ring)] sm:rounded-[1.75rem]',
         solidSurfaces.gridShell,
       )}
     >
@@ -1451,7 +1451,7 @@ function CalendarGrid({
         </div>
       </div>
 
-      <div className="overflow-x-auto">
+      <div className="relative z-0 overflow-x-auto">
         <div
           className="min-w-max"
           style={{ minWidth: gridMinWidth }}
@@ -1462,7 +1462,7 @@ function CalendarGrid({
           >
             <div
               className={cn(
-                'sticky left-0 z-20 grid h-12 w-[112px] place-items-center border-b border-r border-[var(--ui-border-strong)] px-1.5 text-center shadow-[12px_0_22px_rgb(0_0_0/0.08)] sm:h-14 sm:w-[136px] sm:px-2',
+                'sticky left-0 z-50 grid h-12 w-[112px] place-items-center border-b border-r border-[var(--ui-border-strong)] px-1.5 text-center shadow-[12px_0_22px_rgb(0_0_0/0.16)] sm:h-14 sm:w-[136px] sm:px-2',
                 solidSurfaces.gridCorner,
               )}
             >
@@ -1470,7 +1470,7 @@ function CalendarGrid({
                 <span className="text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-studio-accent">
                   Booking
                 </span>
-                <span className="text-xs font-semibold text-[var(--ui-text-muted)]">
+                <span className="text-[0.64rem] font-semibold text-[var(--ui-text-muted)] sm:text-xs">
                   {padNumber(studioHours.openHour)}:00 - {padNumber(studioHours.closeHour)}:00
                 </span>
               </span>
