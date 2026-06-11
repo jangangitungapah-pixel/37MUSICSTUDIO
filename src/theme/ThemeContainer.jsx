@@ -34,7 +34,7 @@ export function ThemeContainer({ children }) {
         )}
       >
         <a className="flex min-w-0 items-center gap-3" href="/" aria-label="37 Music Studio Home">
-          <span className="grid size-11 place-items-center rounded-2xl border border-studio-accent/25 bg-[var(--ui-control)] text-sm font-semibold tracking-[-0.04em] text-[var(--ui-text-strong)] shadow-[var(--ui-shadow-control)]">
+          <span className="grid size-11 place-items-center rounded-2xl border border-[var(--ui-border)] bg-[var(--ui-control)] text-sm font-semibold tracking-[-0.04em] text-[var(--ui-text-strong)] shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)]">
             37
           </span>
 
@@ -43,7 +43,7 @@ export function ThemeContainer({ children }) {
               37 Music Studio
             </strong>
 
-            <small className="text-xs font-normal text-[var(--ui-text-muted)]">
+            <small className="text-xs font-medium text-[var(--ui-text-muted)]">
               Tailwind rebuild system
             </small>
           </span>
@@ -54,7 +54,7 @@ export function ThemeContainer({ children }) {
           aria-label="Theme controls"
         >
           <button
-            className="inline-flex min-h-10 items-center justify-center rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] px-4 text-sm font-medium text-[var(--ui-secondary-text)] shadow-[var(--ui-shadow-control)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20 max-[820px]:flex-1 max-[520px]:w-full"
+            className="inline-flex min-h-10 items-center justify-center rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] px-4 text-sm font-semibold text-[var(--ui-secondary-text)] shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/25 max-[820px]:flex-1 max-[520px]:w-full"
             type="button"
             onClick={toggleDensity}
           >
@@ -62,7 +62,7 @@ export function ThemeContainer({ children }) {
           </button>
 
           <button
-            className="inline-flex min-h-10 w-[112px] items-center justify-center rounded-full bg-[image:var(--ui-primary-bg)] px-5 text-sm font-semibold text-[var(--ui-primary-text)] shadow-[var(--ui-shadow-soft)] transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20 max-[820px]:flex-1 max-[520px]:w-full"
+            className="inline-flex min-h-10 w-[116px] items-center justify-center rounded-full [background:var(--ui-primary-bg)] px-5 text-sm font-semibold text-[var(--ui-primary-text)] shadow-[var(--ui-shadow-soft)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/25 max-[820px]:flex-1 max-[520px]:w-full"
             type="button"
             onClick={toggleMode}
           >
@@ -78,9 +78,9 @@ export function ThemeContainer({ children }) {
         )}
       >
         <section className="grid gap-8">
-          <div className="inline-flex w-fit items-center gap-2 text-xs font-medium text-[var(--ui-text-muted)]">
+          <div className="inline-flex w-fit items-center gap-2 text-xs font-semibold text-[var(--ui-text-muted)]">
             <Sparkles size={14} className="text-studio-accent" aria-hidden="true" />
-            <span>Tailwind Container Theme v0.8</span>
+            <span>Tailwind Container Theme v0.9</span>
           </div>
 
           {children}

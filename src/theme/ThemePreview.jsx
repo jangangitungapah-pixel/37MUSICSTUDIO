@@ -49,13 +49,13 @@ function StatusDropdown() {
   };
 
   return (
-    <div className="relative grid gap-2 text-sm font-medium text-[var(--ui-text-main)]">
+    <div className="relative grid gap-2 text-sm font-semibold text-[var(--ui-text-main)]">
       <span>Status</span>
 
       <button
         aria-expanded={isOpen}
         aria-haspopup="listbox"
-        className="group flex min-h-12 w-full items-center justify-between gap-3 rounded-2xl border border-[var(--ui-border)] bg-[var(--ui-control)] px-4 text-left text-sm font-medium text-[var(--ui-text-strong)] shadow-[var(--ui-shadow-control)] outline-none ring-1 ring-[var(--ui-ring)] transition hover:border-studio-accent/30 hover:bg-[var(--ui-control-hover)] focus-visible:border-studio-accent/40 focus-visible:ring-4 focus-visible:ring-studio-accent/15"
+        className="group flex min-h-12 w-full items-center justify-between gap-3 rounded-2xl border border-[var(--ui-border)] bg-[var(--ui-control)] px-4 text-left text-sm font-semibold text-[var(--ui-text-strong)] shadow-[var(--ui-shadow-control)] outline-none ring-1 ring-[var(--ui-ring)] transition hover:border-studio-accent/35 hover:bg-[var(--ui-control-hover)] focus-visible:border-studio-accent/50 focus-visible:ring-4 focus-visible:ring-studio-accent/20"
         type="button"
         onClick={() => setIsOpen((current) => !current)}
       >
@@ -140,14 +140,14 @@ export function ThemePreview() {
 
           <div className="flex flex-wrap items-center gap-3">
             <button
-              className="inline-flex min-h-12 items-center justify-center rounded-full bg-[image:var(--ui-primary-bg)] px-6 text-sm font-semibold tracking-[-0.01em] text-[var(--ui-primary-text)] shadow-[var(--ui-shadow-soft)] transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
+              className="inline-flex min-h-12 items-center justify-center rounded-full [background:var(--ui-primary-bg)] px-6 text-sm font-semibold tracking-[-0.01em] text-[var(--ui-primary-text)] shadow-[var(--ui-shadow-soft)] transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
               type="button"
             >
               Start foundation
             </button>
 
             <button
-              className="inline-flex min-h-12 items-center justify-center rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] px-6 text-sm font-medium tracking-[-0.01em] text-[var(--ui-secondary-text)] shadow-[var(--ui-shadow-control)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
+              className="inline-flex min-h-12 items-center justify-center rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] px-6 text-sm font-semibold tracking-[-0.01em] text-[var(--ui-secondary-text)] shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/25"
               type="button"
             >
               View UI system
@@ -155,7 +155,7 @@ export function ThemePreview() {
           </div>
         </div>
 
-        <aside className="hidden border-l border-[var(--ui-border-strong)] pl-8 lg:grid lg:gap-7">
+        <aside className="hidden border-l border-[var(--ui-border-strong)] pl-8 text-[var(--ui-text-main)] lg:grid lg:gap-7">
           <div>
             <p className="m-0 text-sm font-medium text-[var(--ui-text-muted)]">
               Current phase
@@ -239,10 +239,10 @@ export function ThemePreview() {
         </div>
 
         <form className="grid gap-4 sm:grid-cols-2">
-          <label className="grid gap-2 text-sm font-medium text-[var(--ui-text-main)]">
+          <label className="grid gap-2 text-sm font-semibold text-[var(--ui-text-main)]">
             <span>Nama project</span>
             <input
-              className="min-h-12 w-full rounded-2xl border border-[var(--ui-border)] bg-[var(--ui-control)] px-4 text-sm font-medium text-[var(--ui-text-strong)] shadow-[var(--ui-shadow-control)] outline-none ring-1 ring-[var(--ui-ring)] transition focus:border-studio-accent/40 focus:ring-4 focus:ring-studio-accent/15"
+              className="min-h-12 w-full rounded-2xl border border-[var(--ui-border)] bg-[var(--ui-control)] px-4 text-sm font-semibold text-[var(--ui-text-strong)] shadow-[var(--ui-shadow-control)] outline-none ring-1 ring-[var(--ui-ring)] transition focus:border-studio-accent/50 focus:ring-4 focus:ring-studio-accent/20"
               value="37 Music Studio"
               readOnly
             />
