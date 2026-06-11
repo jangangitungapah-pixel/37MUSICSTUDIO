@@ -272,6 +272,62 @@ export async function createManualBooking(booking) {
   return normalizedBooking;
 }
 
+export async function updateManualBooking(booking) {
+  const normalizedBooking = normalizeAdminBooking(booking);
+
+  if (!normalizedBooking) {
+    return null;
+  }
+
+  if (canUseFirestore()) {
+    const bookingRef = doc(getBookingsCollection(), normalizedBooking.id);
+
+    await setDoc(
+      bookingRef,
+      createFirestorePayload(normalizedBooking),
+      { merge: true },
+    );
+
+    return normalizedBooking;
+  }
+
+  const currentBookings = readManualBookingsFromStorage();
+  const nextBookings = currentBookings.some((item) => item.id === normalizedBooking.id)
+    ? currentBookings.map((item) => (item.id === normalizedBooking.id ? normalizedBooking : item))
+    : [...currentBookings, normalizedBooking];
+
+  const sortedBookings = nextBookings.sort(compareBookings);
+
+  writeManualBookingsToStorage(sortedBookings);
+  emitManualBookings(sortedBookings);
+
+  return normalizedBooking;
+}
+
+export async function deleteManualBooking(bookingId) {
+  const normalizedBookingId = safeString(bookingId);
+
+  if (!normalizedBookingId) {
+    return false;
+  }
+
+  if (canUseFirestore()) {
+    const bookingRef = doc(getBookingsCollection(), normalizedBookingId);
+
+    await deleteDoc(bookingRef);
+
+    return true;
+  }
+
+  const currentBookings = readManualBookingsFromStorage();
+  const nextBookings = currentBookings.filter((booking) => booking.id !== normalizedBookingId);
+
+  writeManualBookingsToStorage(nextBookings);
+  emitManualBookings(nextBookings);
+
+  return true;
+}
+
 export async function clearManualBookings() {
   if (canUseFirestore()) {
     const snapshot = await getDocs(getStudioBookingsQuery());
@@ -290,6 +346,8 @@ export async function clearManualBookings() {
 export const adminBookingRepository = {
   clearManualBookings,
   createManualBooking,
+  deleteManualBooking,
   normalizeAdminBooking,
   subscribeManualBookings,
+  updateManualBooking,
 };

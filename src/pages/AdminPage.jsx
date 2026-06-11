@@ -425,7 +425,21 @@ export function AdminPage() {
           console.error('Failed to create admin booking.', error);
         }
       },
+      deleteManualBooking: async (bookingId) => {
+        try {
+          await adminBookingRepository.deleteManualBooking(bookingId);
+        } catch (error) {
+          console.error('Failed to delete admin booking.', error);
+        }
+      },
       manualBookings,
+      updateManualBooking: async (booking) => {
+        try {
+          await adminBookingRepository.updateManualBooking(booking);
+        } catch (error) {
+          console.error('Failed to update admin booking.', error);
+        }
+      },
     }),
     [activeItem, adminAuthState.user, manualBookings],
   );

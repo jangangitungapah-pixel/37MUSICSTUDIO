@@ -948,7 +948,10 @@ function PaymentMini({
 
 function BookingDetailModal({
   booking,
+  bookingActionId = '',
   onClose,
+  onDelete,
+  onMarkPaid,
 }) {
   if (!booking) return null;
 
@@ -960,6 +963,11 @@ function BookingDetailModal({
   const displayName = booking.customerName || booking.title;
   const sessionLabel = booking.sessionType || booking.title || 'Booking';
   const paymentLabel = getStatusLabel(booking.status);
+  const canManageBooking = booking.source === 'admin' || booking.studioId === 'main-studio';
+  const isDeletePending = bookingActionId === booking.id + ':delete';
+  const isPaidPending = bookingActionId === booking.id + ':paid';
+  const isActionPending = isDeletePending || isPaidPending;
+  const isPaid = booking.status === 'paid';
   let statusDotClass = 'bg-studio-accent';
 
   if (booking.status === 'dp') {
@@ -1109,18 +1117,44 @@ function BookingDetailModal({
         </div>
 
         <footer className="shrink-0 border-t border-[var(--ui-border)] bg-[var(--ui-bg-base)] px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 sm:px-6 sm:pb-5">
-          <div className="flex items-center justify-between gap-3">
-            <span className="hidden text-xs font-semibold leading-5 text-[var(--ui-text-muted)] sm:block">
-              Detail ini masih read-only. Edit booking bisa dibuat di phase berikutnya.
+          <div className="grid gap-3 sm:flex sm:items-center sm:justify-between">
+            <span className="text-xs font-semibold leading-5 text-[var(--ui-text-muted)]">
+              {canManageBooking
+                ? 'Booking ini tersimpan di Firestore dan bisa dikelola dari admin.'
+                : 'Demo booking ini masih read-only. Buat booking baru untuk mencoba action Firestore.'}
             </span>
 
-            <button
-              className="inline-flex min-h-10 w-full items-center justify-center rounded-full [background:var(--ui-primary-bg)] px-5 text-sm font-semibold text-[var(--ui-primary-text)] shadow-[var(--ui-shadow-soft)] transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20 sm:w-auto"
-              type="button"
-              onClick={onClose}
-            >
-              Tutup detail
-            </button>
+            <div className="flex flex-wrap items-center gap-2 sm:justify-end">
+              {canManageBooking ? (
+                <>
+                  <button
+                    className="inline-flex min-h-10 items-center justify-center rounded-full border border-studio-cyan/35 bg-studio-cyan/10 px-4 text-sm font-semibold text-studio-cyan ring-1 ring-studio-cyan/15 transition hover:-translate-y-0.5 hover:bg-studio-cyan/15 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-cyan/20 disabled:cursor-not-allowed disabled:opacity-50"
+                    disabled={isActionPending || isPaid}
+                    type="button"
+                    onClick={() => onMarkPaid(booking)}
+                  >
+                    {isPaidPending ? 'Memproses...' : isPaid ? 'Sudah lunas' : 'Mark lunas'}
+                  </button>
+
+                  <button
+                    className="inline-flex min-h-10 items-center justify-center rounded-full border border-studio-accent/35 bg-studio-accent/10 px-4 text-sm font-semibold text-studio-accent ring-1 ring-studio-accent/15 transition hover:-translate-y-0.5 hover:bg-studio-accent/15 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20 disabled:cursor-not-allowed disabled:opacity-50"
+                    disabled={isActionPending}
+                    type="button"
+                    onClick={() => onDelete(booking)}
+                  >
+                    {isDeletePending ? 'Menghapus...' : 'Hapus'}
+                  </button>
+                </>
+              ) : null}
+
+              <button
+                className="inline-flex min-h-10 items-center justify-center rounded-full [background:var(--ui-primary-bg)] px-5 text-sm font-semibold text-[var(--ui-primary-text)] shadow-[var(--ui-shadow-soft)] transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
+                type="button"
+                onClick={onClose}
+              >
+                Tutup
+              </button>
+            </div>
           </div>
         </footer>
       </div>
@@ -1575,7 +1609,9 @@ export function BookingAdmin() {
   const adminContext = useOutletContext() || {};
   const {
     addManualBooking = () => {},
+    deleteManualBooking = () => {},
     manualBookings = [],
+    updateManualBooking = () => {},
   } = adminContext;
   const [searchParams] = useSearchParams();
   const [viewMode, setViewMode] = useState(getInitialViewMode);
@@ -1586,6 +1622,7 @@ export function BookingAdmin() {
   });
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
   const [detailBooking, setDetailBooking] = useState(null);
+  const [bookingActionId, setBookingActionId] = useState('');
   const [bookingForm, setBookingForm] = useState(() => {
     const now = new Date();
     return createInitialBookingForm(createDate(now.getFullYear(), now.getMonth(), now.getDate()));
@@ -1664,6 +1701,54 @@ export function BookingAdmin() {
 
   const closeBookingDetailModal = () => {
     setDetailBooking(null);
+  };
+
+  const handleMarkBookingPaid = async (booking) => {
+    if (!booking || booking.status === 'paid') {
+      return;
+    }
+
+    const nextBooking = {
+      ...booking,
+      dpAmount: booking.totalPrice,
+      remainingPayment: 0,
+      status: 'paid',
+      tone: getToneByStatus('paid'),
+      updatedAt: new Date().toISOString(),
+    };
+
+    setBookingActionId(booking.id + ':paid');
+
+    try {
+      await updateManualBooking(nextBooking);
+      setDetailBooking(nextBooking);
+    } finally {
+      setBookingActionId('');
+    }
+  };
+
+  const handleDeleteBooking = async (booking) => {
+    if (!booking) {
+      return;
+    }
+
+    const label = booking.customerName || booking.title || 'booking ini';
+    const shouldDelete = typeof window === 'undefined'
+      ? true
+      : window.confirm('Hapus booking ' + label + '?');
+
+    if (!shouldDelete) {
+      return;
+    }
+
+    setBookingActionId(booking.id + ':delete');
+
+    try {
+      await deleteManualBooking(booking.id);
+      setDetailBooking(null);
+    } finally {
+      setBookingActionId('');
+    }
   };
 
   const handleFormChange = (event) => {
@@ -1837,7 +1922,10 @@ export function BookingAdmin() {
 
       <BookingDetailModal
         booking={detailBooking}
+        bookingActionId={bookingActionId}
         onClose={closeBookingDetailModal}
+        onDelete={handleDeleteBooking}
+        onMarkPaid={handleMarkBookingPaid}
       />
     </section>
   );
