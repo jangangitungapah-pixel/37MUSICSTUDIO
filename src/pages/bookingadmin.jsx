@@ -1,7 +1,4 @@
-import {
-  useMemo,
-  useState,
-} from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   Banknote,
   CalendarDays,
@@ -1244,6 +1241,47 @@ function BookingDetailModal({
   );
 }
 
+function BookingToast({
+  onClose,
+  toast,
+}) {
+  if (!toast) return null;
+
+  const isError = toast.tone === 'error';
+  const toneClass = isError
+    ? 'border-studio-accent/35 bg-studio-accent/10 ring-studio-accent/15'
+    : 'border-studio-cyan/35 bg-studio-cyan/10 ring-studio-cyan/15';
+  const dotClass = isError ? 'bg-studio-accent' : 'bg-studio-cyan';
+
+  return (
+    <div className="pointer-events-none fixed inset-x-3 bottom-[calc(5.75rem+env(safe-area-inset-bottom))] z-[70] flex justify-end md:bottom-4 md:right-4 md:left-auto">
+      <div
+        aria-live={isError ? 'assertive' : 'polite'}
+        className={cn(
+          'pointer-events-auto flex w-full max-w-[24rem] items-start gap-3 rounded-[1.35rem] border px-4 py-3 text-sm font-semibold leading-6 text-[var(--ui-text-main)] shadow-[var(--ui-shadow-soft)] ring-1 backdrop-blur-xl',
+          toneClass,
+        )}
+        role={isError ? 'alert' : 'status'}
+      >
+        <span className={cn('mt-2 size-2 shrink-0 rounded-full', dotClass)} aria-hidden="true" />
+
+        <span className="min-w-0 flex-1">
+          {toast.message}
+        </span>
+
+        <button
+          aria-label="Tutup notifikasi"
+          className="grid size-8 shrink-0 place-items-center rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] text-[var(--ui-secondary-text)] shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
+          type="button"
+          onClick={onClose}
+        >
+          <X size={14} strokeWidth={2.45} aria-hidden="true" />
+        </button>
+      </div>
+    </div>
+  );
+}
+
 function CalendarCell({
   booking,
   day,
@@ -1715,6 +1753,7 @@ export function BookingAdmin() {
   });
   const [editSaveError, setEditSaveError] = useState('');
   const [isBookingUpdating, setIsBookingUpdating] = useState(false);
+  const [bookingToast, setBookingToast] = useState(null);
   const [bookingForm, setBookingForm] = useState(() => {
     const now = new Date();
     return createInitialBookingForm(createDate(now.getFullYear(), now.getMonth(), now.getDate()));
@@ -1767,6 +1806,27 @@ export function BookingAdmin() {
     () => calculateBookingPayment(editBookingForm),
     [editBookingForm],
   );
+  const showBookingToast = (tone, message) => {
+    setBookingToast({
+      id: Date.now(),
+      message,
+      tone,
+    });
+  };
+
+  useEffect(() => {
+    if (!bookingToast || typeof window === 'undefined') {
+      return undefined;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      setBookingToast(null);
+    }, bookingToast.tone === 'error' ? 6500 : 4200);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [bookingToast]);
   const summary = useMemo(() => {
     const totalSlots = visibleDays.length * timeSlots.length;
 
@@ -1842,6 +1902,10 @@ export function BookingAdmin() {
     try {
       await updateManualBooking(nextBooking);
       setDetailBooking(nextBooking);
+      showBookingToast('success', 'Booking ditandai lunas.');
+    } catch (error) {
+      console.error('Failed to mark booking paid.', error);
+      showBookingToast('error', 'Status lunas belum tersimpan. Cek koneksi atau Firestore rules.');
     } finally {
       setBookingActionId('');
     }
@@ -1866,6 +1930,10 @@ export function BookingAdmin() {
     try {
       await deleteManualBooking(booking.id);
       setDetailBooking(null);
+      showBookingToast('success', 'Booking dihapus.');
+    } catch (error) {
+      console.error('Failed to delete booking.', error);
+      showBookingToast('error', 'Booking belum terhapus. Cek koneksi atau Firestore rules.');
     } finally {
       setBookingActionId('');
     }
@@ -1946,7 +2014,10 @@ export function BookingAdmin() {
     const editBookingConflict = getBookingConflict(bookings, nextBooking, editingBooking.id);
 
     if (editBookingConflict) {
-      setEditSaveError(getBookingConflictMessage(editBookingConflict));
+      const conflictMessage = getBookingConflictMessage(editBookingConflict);
+
+      setEditSaveError(conflictMessage);
+      showBookingToast('error', conflictMessage);
       return;
     }
 
@@ -1965,9 +2036,11 @@ export function BookingAdmin() {
       });
       setDetailBooking(nextBooking);
       setEditingBooking(null);
+      showBookingToast('success', 'Perubahan booking tersimpan.');
     } catch (error) {
       console.error('Failed to update booking.', error);
       setEditSaveError('Perubahan belum tersimpan. Cek koneksi, login Firebase, atau Firestore rules.');
+      showBookingToast('error', 'Perubahan belum tersimpan. Cek koneksi, login Firebase, atau Firestore rules.');
     } finally {
       setIsBookingUpdating(false);
     }
@@ -2002,7 +2075,10 @@ export function BookingAdmin() {
     const bookingConflict = getBookingConflict(bookings, nextBooking);
 
     if (bookingConflict) {
-      setBookingSaveError(getBookingConflictMessage(bookingConflict));
+      const conflictMessage = getBookingConflictMessage(bookingConflict);
+
+      setBookingSaveError(conflictMessage);
+      showBookingToast('error', conflictMessage);
       return;
     }
 
@@ -2020,9 +2096,11 @@ export function BookingAdmin() {
       });
       setDetailBooking(savedBooking || nextBooking);
       setIsBookingModalOpen(false);
+      showBookingToast('success', 'Booking baru tersimpan.');
     } catch (error) {
       console.error('Failed to save booking.', error);
       setBookingSaveError('Booking belum tersimpan. Cek koneksi, login Firebase, atau Firestore rules.');
+      showBookingToast('error', 'Booking belum tersimpan. Cek koneksi, login Firebase, atau Firestore rules.');
     } finally {
       setIsBookingSaving(false);
     }
@@ -2083,6 +2161,11 @@ export function BookingAdmin() {
       <div className="sr-only" id="booking-admin-title">
         Booking calendar workspace
       </div>
+
+      <BookingToast
+        toast={bookingToast}
+        onClose={() => setBookingToast(null)}
+      />
 
       <div className="grid gap-3 md:gap-4">
         <CalendarToolbar
