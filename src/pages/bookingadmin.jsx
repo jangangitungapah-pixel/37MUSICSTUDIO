@@ -7,7 +7,6 @@ import {
   Grid3X3,
   Plus,
   Sparkles,
-  Target,
 } from 'lucide-react';
 import { cn } from '../lib/cn.js';
 
@@ -43,6 +42,24 @@ const viewOptions = [
   },
 ];
 
+const bookingStatusItems = [
+  {
+    key: 'pending',
+    label: 'Pending',
+    dotClass: 'bg-studio-accent',
+  },
+  {
+    key: 'dp',
+    label: 'DP',
+    dotClass: 'bg-studio-purple',
+  },
+  {
+    key: 'paid',
+    label: 'Lunas',
+    dotClass: 'bg-studio-cyan',
+  },
+];
+
 const dayShortNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 const monthNames = [
@@ -66,6 +83,7 @@ const bookingSeeds = [
     day: 3,
     time: '10:00',
     title: 'Band rehearsal',
+    status: 'pending',
     tone: 'accent',
   },
   {
@@ -73,6 +91,7 @@ const bookingSeeds = [
     day: 7,
     time: '14:00',
     title: 'Vocal take',
+    status: 'dp',
     tone: 'cyan',
   },
   {
@@ -80,6 +99,7 @@ const bookingSeeds = [
     day: 12,
     time: '19:00',
     title: 'Live session',
+    status: 'paid',
     tone: 'purple',
   },
   {
@@ -87,6 +107,7 @@ const bookingSeeds = [
     day: 19,
     time: '20:00',
     title: 'Tracking',
+    status: 'pending',
     tone: 'accent',
   },
   {
@@ -94,6 +115,7 @@ const bookingSeeds = [
     day: 25,
     time: '16:00',
     title: 'Mix review',
+    status: 'dp',
     tone: 'cyan',
   },
 ];
@@ -164,16 +186,6 @@ function formatDayLabel(date) {
 
 function formatFullDateLabel(date) {
   return formatDayLabel(date) + ' ' + monthNames[date.getMonth()] + ' ' + date.getFullYear();
-}
-
-function parseDateInputValue(value, fallback) {
-  const parts = value.split('-').map(Number);
-
-  if (parts.length !== 3 || parts.some((part) => Number.isNaN(part))) {
-    return fallback;
-  }
-
-  return createDate(parts[0], parts[1] - 1, parts[2]);
 }
 
 function createCalendarDay(date) {
@@ -250,6 +262,19 @@ function getBookingForSlot(bookings, dayKey, timeKey) {
   return bookings.find((booking) => booking.dateKey === dayKey && booking.time === timeKey);
 }
 
+function getVisibleBookings(bookings, visibleDays) {
+  const visibleKeys = new Set(visibleDays.map((day) => day.key));
+
+  return bookings.filter((booking) => visibleKeys.has(booking.dateKey));
+}
+
+function getBookingStatusCounts(visibleBookings) {
+  return bookingStatusItems.reduce((counts, item) => {
+    counts[item.key] = visibleBookings.filter((booking) => booking.status === item.key).length;
+    return counts;
+  }, {});
+}
+
 function getViewRangeLabel(viewMode, visibleDays, cursorDate) {
   if (viewMode === 'day') {
     return formatFullDateLabel(cursorDate);
@@ -319,8 +344,9 @@ function CalendarCell({
           <span className="truncate text-[0.72rem] font-semibold tracking-[-0.02em]">
             {booking.title}
           </span>
-          <span className="mt-0.5 text-[0.65rem] font-semibold uppercase tracking-[0.12em] text-[var(--ui-text-muted)]">
-            {time.key}
+          <span className="mt-0.5 flex items-center justify-between gap-2 text-[0.65rem] font-semibold uppercase tracking-[0.12em] text-[var(--ui-text-muted)]">
+            <span>{time.key}</span>
+            <span>{booking.status === 'paid' ? 'Lunas' : booking.status.toUpperCase()}</span>
           </span>
         </span>
       ) : (
@@ -384,6 +410,25 @@ function TimeCell({ slot }) {
   );
 }
 
+function BookingStatusCounters({ counts }) {
+  return (
+    <div className="flex flex-wrap items-center gap-2 rounded-full border border-[var(--ui-border)] bg-[var(--ui-control)] p-1.5 shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)]">
+      {bookingStatusItems.map((item) => (
+        <div
+          className="inline-flex min-h-9 items-center gap-2 rounded-full border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] px-3 text-xs font-semibold uppercase tracking-[0.13em] text-[var(--ui-text-main)]"
+          key={item.key}
+        >
+          <span className={cn('size-2 rounded-full', item.dotClass)} />
+          <span>{item.label}</span>
+          <strong className="text-sm tracking-[-0.03em] text-[var(--ui-text-strong)]">
+            {counts[item.key] || 0}
+          </strong>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function ViewToggle({
   onChange,
   value,
@@ -412,17 +457,16 @@ function ViewToggle({
 }
 
 function CalendarToolbar({
-  cursorDate,
-  onChangeDate,
   onNext,
   onPrev,
   onToday,
   onViewChange,
   rangeLabel,
+  statusCounts,
   viewMode,
 }) {
   return (
-    <div className="grid gap-3 rounded-[1.75rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-3 ring-1 ring-[var(--ui-ring)] lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
+    <div className="grid gap-3 rounded-[1.75rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-3 ring-1 ring-[var(--ui-ring)] xl:grid-cols-[minmax(0,1fr)_auto_auto] xl:items-center">
       <div className="flex flex-wrap items-center gap-2">
         <button
           aria-label="Previous period"
@@ -456,17 +500,9 @@ function CalendarToolbar({
         </button>
       </div>
 
-      <div className="flex flex-wrap items-center gap-2 lg:justify-end">
-        <label className="inline-flex min-h-10 items-center gap-2 rounded-full border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 text-sm font-semibold text-[var(--ui-text-main)] shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] focus-within:border-studio-accent/55 focus-within:ring-4 focus-within:ring-studio-accent/20">
-          <Target size={15} strokeWidth={2.35} aria-hidden="true" />
-          <input
-            className="w-[136px] border-0 bg-transparent text-sm font-semibold text-[var(--ui-text-strong)] outline-none"
-            type="date"
-            value={formatDateKey(cursorDate)}
-            onChange={(event) => onChangeDate(parseDateInputValue(event.target.value, cursorDate))}
-          />
-        </label>
+      <BookingStatusCounters counts={statusCounts} />
 
+      <div className="flex flex-wrap items-center gap-2 xl:justify-end">
         <ViewToggle
           onChange={onViewChange}
           value={viewMode}
@@ -528,9 +564,11 @@ function CalendarGrid({
 
         <div className="hidden items-center gap-2 text-xs font-semibold text-[var(--ui-text-muted)] sm:flex">
           <span className="size-2 rounded-full bg-studio-accent" />
-          Booked
+          Pending
+          <span className="ml-2 size-2 rounded-full bg-studio-purple" />
+          DP
           <span className="ml-2 size-2 rounded-full bg-studio-cyan" />
-          Recording
+          Lunas
         </div>
       </div>
 
@@ -612,7 +650,7 @@ function SelectedSlotPanel({
       {selectedSlot.label} jam {selectedSlot.timeKey}.
       {booking ? (
         <span>
-          {' '}Slot ini sudah terisi untuk <span className="font-semibold text-[var(--ui-text-strong)]">{booking.title}</span>.
+          {' '}Slot ini sudah terisi untuk <span className="font-semibold text-[var(--ui-text-strong)]">{booking.title}</span> dengan status <span className="font-semibold text-[var(--ui-text-strong)]">{booking.status === 'paid' ? 'Lunas' : booking.status.toUpperCase()}</span>.
         </span>
       ) : (
         <span>
@@ -646,26 +684,28 @@ export function BookingAdmin({ activeItem }) {
   const timeSlots = useMemo(() => createTimeSlots(), []);
   const visibleDays = useMemo(() => createVisibleDays(viewMode, cursorDate), [cursorDate, viewMode]);
   const bookings = useMemo(() => createDemoBookingsForMonth(cursorDate), [cursorDate]);
+  const visibleBookings = useMemo(
+    () => getVisibleBookings(bookings, visibleDays),
+    [bookings, visibleDays],
+  );
+  const statusCounts = useMemo(
+    () => getBookingStatusCounts(visibleBookings),
+    [visibleBookings],
+  );
   const rangeLabel = useMemo(
     () => getViewRangeLabel(viewMode, visibleDays, cursorDate),
     [cursorDate, viewMode, visibleDays],
   );
 
-  const visibleBookingCount = useMemo(() => {
-    const visibleKeys = new Set(visibleDays.map((day) => day.key));
-
-    return bookings.filter((booking) => visibleKeys.has(booking.dateKey)).length;
-  }, [bookings, visibleDays]);
-
   const summary = useMemo(() => {
     const totalSlots = visibleDays.length * timeSlots.length;
 
     return {
-      availableSlots: totalSlots - visibleBookingCount,
-      bookedSlots: visibleBookingCount,
+      availableSlots: totalSlots - visibleBookings.length,
+      bookedSlots: visibleBookings.length,
       totalSlots,
     };
-  }, [timeSlots, visibleBookingCount, visibleDays]);
+  }, [timeSlots, visibleBookings, visibleDays]);
 
   const updateCursorDate = (nextDate) => {
     setCursorDate(nextDate);
@@ -743,7 +783,7 @@ export function BookingAdmin({ activeItem }) {
           </h2>
 
           <p className="m-0 max-w-2xl text-[clamp(0.98rem,1.25vw,1.12rem)] leading-8 text-[var(--ui-text-main)]">
-            Calendar sekarang mengikuti tanggal asli dari JavaScript Date. Kamu bisa pindah hari, minggu, bulan, pilih tanggal langsung, dan melihat jumlah slot sesuai view aktif.
+            Toolbar sekarang menampilkan counter status booking aktif: Pending, DP, dan Lunas. Counter mengikuti booking yang terlihat di view Day, Week, atau Month.
           </p>
         </div>
       </div>
@@ -769,7 +809,7 @@ export function BookingAdmin({ activeItem }) {
             {summary.bookedSlots}
           </strong>
           <span className="text-sm leading-6 text-[var(--ui-text-muted)]">
-            Dummy event sesuai bulan aktif
+            Dummy event sesuai view aktif
           </span>
         </article>
 
@@ -788,10 +828,9 @@ export function BookingAdmin({ activeItem }) {
 
       <div className="grid gap-4">
         <CalendarToolbar
-          cursorDate={cursorDate}
           rangeLabel={rangeLabel}
+          statusCounts={statusCounts}
           viewMode={viewMode}
-          onChangeDate={updateCursorDate}
           onNext={goToNextPeriod}
           onPrev={goToPreviousPeriod}
           onToday={goToToday}
