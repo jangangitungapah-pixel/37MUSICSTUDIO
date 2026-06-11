@@ -1,0 +1,32 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isAdminUid() {
+      return isSignedIn()
+        && request.auth.uid in [];
+    }
+
+    function isAdminEmail() {
+      return isSignedIn()
+        && request.auth.token.email != null
+        && request.auth.token.email in ["email-admin-lo@domain.com"];
+    }
+
+    function isAdmin() {
+      return isAdminUid() || isAdminEmail();
+    }
+
+    match /bookings/{bookingId} {
+      allow read, create, update, delete: if isAdmin();
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
