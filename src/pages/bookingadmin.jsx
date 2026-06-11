@@ -111,84 +111,6 @@ const monthNames = [
   'December',
 ];
 
-const bookingSeeds = [
-  {
-    id: 'booking-01',
-    day: 3,
-    time: '10:00',
-    title: 'Band rehearsal',
-    customerName: 'Raka Pradana',
-    phone: '081234567890',
-    durationHours: 2,
-    sessionType: 'Latihan Band',
-    status: 'pending',
-    totalPrice: PRICE_PER_HOUR * 2,
-    dpAmount: 0,
-    remainingPayment: PRICE_PER_HOUR * 2,
-    tone: 'accent',
-  },
-  {
-    id: 'booking-02',
-    day: 7,
-    time: '14:00',
-    title: 'Vocal take',
-    customerName: 'Mira Ayu',
-    phone: '081298765432',
-    durationHours: 1,
-    sessionType: 'Vocal Session',
-    status: 'dp',
-    totalPrice: PRICE_PER_HOUR,
-    dpAmount: 50000,
-    remainingPayment: PRICE_PER_HOUR - 50000,
-    tone: 'purple',
-  },
-  {
-    id: 'booking-03',
-    day: 12,
-    time: '19:00',
-    title: 'Live session',
-    customerName: 'Dimas Wicak',
-    phone: '082211223344',
-    durationHours: 3,
-    sessionType: 'Recording',
-    status: 'paid',
-    totalPrice: PRICE_PER_HOUR * 3,
-    dpAmount: PRICE_PER_HOUR * 3,
-    remainingPayment: 0,
-    tone: 'cyan',
-  },
-  {
-    id: 'booking-04',
-    day: 19,
-    time: '20:00',
-    title: 'Tracking',
-    customerName: 'The Velvet Room',
-    phone: '087700001111',
-    durationHours: 2,
-    sessionType: 'Recording',
-    status: 'pending',
-    totalPrice: PRICE_PER_HOUR * 2,
-    dpAmount: 0,
-    remainingPayment: PRICE_PER_HOUR * 2,
-    tone: 'accent',
-  },
-  {
-    id: 'booking-05',
-    day: 25,
-    time: '16:00',
-    title: 'Mix review',
-    customerName: 'Nara Studio Project',
-    phone: '085500001111',
-    durationHours: 1,
-    sessionType: 'Mixing Review',
-    status: 'dp',
-    totalPrice: PRICE_PER_HOUR,
-    dpAmount: 70000,
-    remainingPayment: PRICE_PER_HOUR - 70000,
-    tone: 'purple',
-  },
-];
-
 const toneClasses = {
   accent: 'border-studio-accent/45 bg-studio-accent/14 text-[var(--ui-text-strong)] shadow-[0_14px_34px_rgb(255_59_161/0.12)]',
   cyan: 'border-studio-cyan/45 bg-studio-cyan/14 text-[var(--ui-text-strong)] shadow-[0_14px_34px_rgb(34_211_238/0.12)]',
@@ -365,25 +287,6 @@ function createTimeSlots() {
       compactLabel: padNumber(startHour) + ' - ' + padNumber(endHour),
     };
   });
-}
-
-function createDemoBookingsForMonth(cursorDate) {
-  const year = cursorDate.getFullYear();
-  const monthIndex = cursorDate.getMonth();
-  const daysInMonth = getDaysInMonth(year, monthIndex);
-
-  return bookingSeeds
-    .filter((booking) => booking.day <= daysInMonth)
-    .map((booking) => ({
-      ...booking,
-      dateKey: formatDateKey(createDate(year, monthIndex, booking.day)),
-    }));
-}
-
-export function createAdminBookingSnapshot(date = new Date()) {
-  const cursorDate = createDate(date.getFullYear(), date.getMonth(), date.getDate());
-
-  return createDemoBookingsForMonth(cursorDate);
 }
 
 function createInitialBookingForm(date, timeKey = '10:00') {
@@ -865,7 +768,7 @@ function BookingModal({
             <input
               className="w-full border-0 bg-transparent text-sm font-semibold text-[var(--ui-text-strong)] outline-none placeholder:text-[var(--ui-text-soft)]"
               name="customerName"
-              placeholder="Contoh: Raka Pradana"
+              placeholder="Contoh: Nama customer atau nama band"
               required
               type="text"
               value={bookingForm.customerName}
@@ -1304,7 +1207,7 @@ function BookingDetailModal({
             <span className="text-xs font-semibold leading-5 text-[var(--ui-text-muted)]">
               {canManageBooking
                 ? 'Booking ini tersimpan di Firestore dan bisa dikelola dari admin.'
-                : 'Demo booking ini masih read-only. Buat booking baru untuk mencoba action Firestore.'}
+                : 'Booking ini belum punya metadata admin lengkap untuk action Firestore.'}
             </span>
 
             <div className="flex flex-wrap items-center gap-2 sm:justify-end">
@@ -1886,10 +1789,9 @@ export function BookingAdmin() {
 
   const timeSlots = useMemo(() => createTimeSlots(), []);
   const visibleDays = useMemo(() => createVisibleDays(viewMode, cursorDate), [cursorDate, viewMode]);
-  const baseBookings = useMemo(() => createDemoBookingsForMonth(cursorDate), [cursorDate]);
   const bookings = useMemo(
-    () => [...baseBookings, ...manualBookings],
-    [baseBookings, manualBookings],
+    () => manualBookings,
+    [manualBookings],
   );
   const customerFilter = searchParams.get('customer') || '';
   const normalizedCustomerFilter = useMemo(
