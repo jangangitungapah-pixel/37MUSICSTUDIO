@@ -2,15 +2,19 @@
 
 Fresh rebuild untuk aplikasi operasional 37 Music Studio.
 
-## Phase 1
+## Phase 2
 
-Fondasi awal yang dibuat:
+Fondasi UI sekarang dibuat **Tailwind-first**.
 
-- React + Vite minimal
-- Global UI theme tokens
+Yang sudah tersedia:
+
+- React + Vite
+- Tailwind v4 via `@tailwindcss/vite`
+- Satu CSS entry utama: `src/styles/tailwind.css`
 - ThemeProvider untuk dark/light mode
-- ThemeContainer sebagai wrapper layout utama
-- Preview page untuk cek card, button, panel, container, dan responsive spacing
+- Density mode: comfortable / compact
+- ThemeContainer dengan utility class Tailwind
+- Preview page Tailwind untuk hero, card, panel, input, select, dan button
 - Vitest smoke test untuk token tema
 
 ## Command
@@ -21,3 +25,9 @@ npm run lint
 npm test
 npm run build
 ```
+
+## Prinsip UI
+
+- Tailwind utility-first sebagai gaya utama
+- CSS custom hanya untuk token global, base reset, dan custom variant dark
+- Komponen ke depan wajib reusable dan Tailwind-first

@@ -1,0 +1,91 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+@theme {
+  --font-sans:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+
+  --color-studio-night: #090a10;
+  --color-studio-shell: #101018;
+  --color-studio-paper: #f6f3f8;
+
+  --color-studio-50: #fbf9fd;
+  --color-studio-100: #f4f0f7;
+  --color-studio-200: #e8dfef;
+  --color-studio-300: #cec2d8;
+  --color-studio-400: #9f91ad;
+  --color-studio-500: #75677f;
+  --color-studio-600: #5c5066;
+  --color-studio-700: #403747;
+  --color-studio-800: #27232d;
+  --color-studio-900: #17141d;
+  --color-studio-950: #0e0c12;
+
+  --color-studio-accent: #ff4a9b;
+  --color-studio-purple: #9a76ff;
+  --color-studio-cyan: #45d3ff;
+
+  --shadow-studio-card: 0 14px 34px rgb(0 0 0 / 0.16);
+  --shadow-studio-soft: 0 20px 60px rgb(0 0 0 / 0.22);
+  --shadow-studio-glow: 0 14px 28px rgb(255 74 155 / 0.26);
+}
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    min-width: 320px;
+    min-height: 100%;
+    background: var(--color-studio-paper);
+    color: var(--color-studio-900);
+    font-family: var(--font-sans);
+    text-rendering: geometricPrecision;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  html[data-theme="dark"] {
+    background: var(--color-studio-night);
+    color: var(--color-studio-100);
+  }
+
+  body {
+    min-width: 320px;
+    min-height: 100vh;
+    margin: 0;
+  }
+
+  button,
+  input,
+  select,
+  textarea {
+    font: inherit;
+  }
+
+  button {
+    cursor: pointer;
+  }
+
+  button:disabled {
+    cursor: not-allowed;
+    opacity: 0.62;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  ::selection {
+    background: rgb(255 74 155 / 0.18);
+    color: currentColor;
+  }
+
+  #root {
+    min-height: 100vh;
+  }
+}

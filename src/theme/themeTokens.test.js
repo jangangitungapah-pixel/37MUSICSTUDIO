@@ -31,8 +31,9 @@ describe('theme tokens', () => {
     expect(getSafeDensityMode('tiny')).toBe('comfortable');
   });
 
-  it('exposes theme metadata and container sizes', () => {
+  it('exposes Tailwind-oriented theme metadata and container sizes', () => {
     expect(themeMeta.appName).toBe('37 Music Studio');
+    expect(themeMeta.themeName).toContain('Tailwind');
     expect(containerSizes.page).toContain('1180px');
   });
 });

@@ -1,7 +1,7 @@
 {
   "name": "37musicstudio",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.2.0",
   "type": "module",
   "description": "Fresh rebuild for 37 Music Studio web app.",
   "scripts": {
@@ -12,16 +12,18 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@vitejs/plugin-react": "^6.0.1",
-    "vite": "^8.0.12",
+    "lucide-react": "^1.16.0",
     "react": "^19.2.6",
-    "react-dom": "^19.2.6",
-    "lucide-react": "^1.16.0"
+    "react-dom": "^19.2.6"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@tailwindcss/vite": "^4.3.0",
+    "@vitejs/plugin-react": "^6.0.1",
     "eslint": "^10.3.0",
     "globals": "^17.6.0",
+    "tailwindcss": "^4.3.0",
+    "vite": "^8.0.12",
     "vitest": "^4.1.7"
   }
 }

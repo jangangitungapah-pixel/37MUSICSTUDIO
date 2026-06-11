@@ -3,15 +3,15 @@ export const themeModes = ['dark', 'light'];
 export const densityModes = ['comfortable', 'compact'];
 
 export const containerSizes = {
-  page: 'min(1180px, calc(100vw - 32px))',
-  narrow: 'min(920px, calc(100vw - 32px))',
-  reading: 'min(760px, calc(100vw - 32px))',
+  page: 'max-w-[1180px]',
+  narrow: 'max-w-[920px]',
+  reading: 'max-w-[760px]',
 };
 
 export const themeMeta = {
   appName: '37 Music Studio',
-  themeName: 'Studio Container Theme',
-  version: '0.1.0',
+  themeName: 'Tailwind Studio Container Theme',
+  version: '0.2.0',
 };
 
 export function isThemeMode(value) {
