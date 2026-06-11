@@ -1688,6 +1688,7 @@ export function BookingAdmin() {
 
     const payment = calculateBookingPayment(bookingForm);
     const nextBooking = {
+      createdAt: new Date().toISOString(),
       customerName: bookingForm.customerName.trim(),
       dateKey: bookingForm.bookingDate,
       dpAmount: payment.dpAmount,
@@ -1697,11 +1698,14 @@ export function BookingAdmin() {
       phone: bookingForm.phone.trim(),
       remainingPayment: payment.remainingPayment,
       sessionType: bookingForm.sessionType,
+      source: 'admin',
       status: bookingForm.paymentStatus,
+      studioId: 'main-studio',
       time: bookingForm.startTime,
       title: bookingForm.sessionType,
       tone: getToneByStatus(bookingForm.paymentStatus),
       totalPrice: payment.totalPrice,
+      updatedAt: new Date().toISOString(),
     };
 
     addManualBooking(nextBooking);

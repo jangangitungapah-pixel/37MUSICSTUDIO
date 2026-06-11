@@ -1,4 +1,5 @@
 import {
+  useEffect,
   useMemo,
   useState,
 } from 'react';
@@ -20,6 +21,7 @@ import {
 } from 'lucide-react';
 import { cn } from '../lib/cn.js';
 import { useTheme } from '../theme/ThemeProvider.jsx';
+import { adminBookingRepository } from '../services/adminBookingRepository.js';
 
 const DEV_AUTH_STORAGE_KEY = 'thirty-seven-dev-auth';
 
@@ -364,6 +366,12 @@ export function AdminPage() {
   const location = useLocation();
   const navigate = useNavigate();
 
+  useEffect(() => {
+    const unsubscribe = adminBookingRepository.subscribeManualBookings(setManualBookings);
+
+    return unsubscribe;
+  }, []);
+
   const hasDevAccess =
     typeof window !== 'undefined' &&
     window.sessionStorage.getItem(DEV_AUTH_STORAGE_KEY) === 'true';
@@ -375,8 +383,8 @@ export function AdminPage() {
   const adminOutletContext = useMemo(
     () => ({
       activeItem,
-      addManualBooking: (booking) => {
-        setManualBookings((current) => [...current, booking]);
+      addManualBooking: async (booking) => {
+        await adminBookingRepository.createManualBooking(booking);
       },
       manualBookings,
     }),
