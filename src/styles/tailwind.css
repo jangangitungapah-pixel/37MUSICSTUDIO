@@ -35,13 +35,6 @@
   --shadow-studio-glow: 0 14px 28px rgb(255 74 155 / 0.26);
 }
 
-:root {
-  --studio-night: #090a10;
-  --studio-paper: #f6f3f8;
-  --studio-ink: #17141d;
-  --studio-accent: #ff4a9b;
-}
-
 @layer base {
   * {
     box-sizing: border-box;
@@ -50,8 +43,8 @@
   html {
     min-width: 320px;
     min-height: 100%;
-    background: var(--studio-paper);
-    color: var(--studio-ink);
+    background: #f6f3f8;
+    color: #17141d;
     font-family: var(--font-sans);
     text-rendering: geometricPrecision;
     -webkit-font-smoothing: antialiased;
@@ -59,8 +52,8 @@
   }
 
   html[data-theme="dark"] {
-    background: var(--studio-night);
-    color: white;
+    background: #090a10;
+    color: #f4f0f7;
   }
 
   body {
