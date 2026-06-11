@@ -1,5 +1,8 @@
 import {
-  ArrowLeft, useEffect, useMemo, useState } from 'react';
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import {
   CheckCircle2,
   Clock3,
@@ -455,7 +458,7 @@ const ClientMessagesPage = () => {
                   onClick={() => setSelectedMessageId(null)}
                   aria-label="Kembali ke daftar pesan"
                 >
-                  <ArrowLeft size={18} />
+                  <span className="inbox-mobile-back-glyph" aria-hidden="true">‹</span>
                   <span>Pesan</span>
                 </button>
                 <div className="inbox-detail-identity">

@@ -7258,3 +7258,33 @@
 
 /* CLIENT_INBOX_MOBILE_CHAT_SCREEN_PHASE_6_END */
 
+/* CLIENT_INBOX_MOBILE_BACK_ICON_HOTFIX_START */
+
+/*
+  Hotfix:
+  Replace undefined React icon component with a plain glyph for the mobile back button.
+
+  Reason:
+  React crashed because a rendered element type was undefined.
+  This avoids any dependency on ArrowLeft export/import.
+*/
+
+.inbox-mobile-back-glyph {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 18px !important;
+  height: 18px !important;
+  margin-top: -1px !important;
+  font-size: 1.55rem !important;
+  line-height: 1 !important;
+  font-weight: 900 !important;
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+}
+
+.inbox-mobile-back {
+  line-height: 1 !important;
+}
+
+/* CLIENT_INBOX_MOBILE_BACK_ICON_HOTFIX_END */
+
