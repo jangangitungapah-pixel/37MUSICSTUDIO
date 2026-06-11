@@ -174,19 +174,22 @@ const ClientMessagesPage = () => {
   }, [sortedMessages, activeFilter, searchTerm]);
 
   useEffect(() => {
-    if (filteredMessages.length === 0) {
-      setSelectedMessageId(null);
+    if (!selectedMessageId) {
       return;
     }
 
     const selectedStillVisible = filteredMessages.some((message) => message.id === selectedMessageId);
     if (!selectedStillVisible) {
-      setSelectedMessageId(filteredMessages[0].id);
+      setSelectedMessageId(null);
     }
   }, [filteredMessages, selectedMessageId]);
 
   const selectedMessage = useMemo(() => {
-    return filteredMessages.find((message) => message.id === selectedMessageId) || filteredMessages[0] || null;
+    if (!selectedMessageId) {
+      return null;
+    }
+
+    return filteredMessages.find((message) => message.id === selectedMessageId) || null;
   }, [filteredMessages, selectedMessageId]);
 
   const copyText = async (value, label) => {
@@ -354,7 +357,10 @@ const ClientMessagesPage = () => {
                   key={key}
                   type="button"
                   className={'inbox-folder-btn ' + (isActive ? 'is-active' : '')}
-                  onClick={() => setActiveFilter(key)}
+                  onClick={() => {
+                    setActiveFilter(key);
+                    setSelectedMessageId(null);
+                  }}
                   aria-pressed={isActive}
                 >
                   <span className="inbox-folder-icon"><Icon size={16} /></span>
