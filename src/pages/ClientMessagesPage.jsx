@@ -86,6 +86,28 @@ const getMessagePreview = (message) => {
   return text.length > 120 ? text.slice(0, 120) + '…' : text;
 };
 
+const getAdminReplies = (message) => {
+  const replies = Array.isArray(message?.replies) ? message.replies : [];
+
+  return replies
+    .filter((reply) => String(reply?.message || '').trim())
+    .sort((a, b) => String(a.createdAt || '').localeCompare(String(b.createdAt || '')));
+};
+
+const getAdminReplySearchText = (message) => {
+  return getAdminReplies(message)
+    .map((reply) => [
+      reply.senderName,
+      reply.message,
+      reply.createdAt,
+    ].filter(Boolean).join(' '))
+    .join(' ');
+};
+
+const getReplyKey = (reply, messageId, index) => {
+  return reply?.id || [messageId, reply?.createdAt, reply?.message, index].filter(Boolean).join('-');
+};
+
 const folderOptions = [
   { key: 'open', label: 'Inbox', description: 'Belum selesai', icon: Inbox },
   { key: 'replied', label: 'Dibalas', description: 'Sudah difollow up', icon: Reply },
@@ -138,6 +160,8 @@ const ClientMessagesPage = () => {
         message.subject,
         message.clientUid,
         message.adminReplyNote,
+        message.latestAdminReply,
+        getAdminReplySearchText(message),
         message.source,
       ].filter(Boolean).join(' '));
 
@@ -269,6 +293,7 @@ const ClientMessagesPage = () => {
 
   const activeFolder = folderOptions.find((folder) => folder.key === activeFilter) || folderOptions[0];
   const selectedWaHref = selectedMessage ? getWhatsAppHref(selectedMessage) : '';
+  const selectedAdminReplies = selectedMessage ? getAdminReplies(selectedMessage) : [];
 
   return (
     <div className="messages-page messages-inbox-page">
@@ -471,7 +496,64 @@ const ClientMessagesPage = () => {
                 </section>
               )}
 
-              <section className="inbox-reply-composer" aria-label="Balasan customer dan catatan follow up admin">
+              
+
+
+              {selectedAdminReplies.length > 0 && (
+
+
+                <section className="inbox-admin-reply-history" aria-label="Riwayat balasan admin ke customer">
+
+
+                  <div className="inbox-admin-reply-history-head">
+
+
+                    <span>Balasan terkirim ke customer</span>
+
+
+                    <strong>{selectedAdminReplies.length} balasan</strong>
+
+
+                  </div>
+
+
+
+                  {selectedAdminReplies.map((reply, index) => (
+
+
+                    <div className="inbox-reply-note inbox-customer-reply-note" key={getReplyKey(reply, selectedMessage.id, index)}>
+
+
+                      <Send size={16} />
+
+
+                      <div>
+
+
+                        <strong>{reply.senderName || 'Admin 37 Music Studio'}</strong>
+
+
+                        <p>{reply.message}</p>
+
+
+                        {reply.createdAt && <small>{formatDateTime(reply.createdAt)}</small>}
+
+
+                      </div>
+
+
+                    </div>
+
+
+                  ))}
+
+
+                </section>
+
+
+              )}
+
+<section className="inbox-reply-composer" aria-label="Balasan customer dan catatan follow up admin">
                 <label htmlFor={'reply-note-' + selectedMessage.id}>Balasan / Catatan follow up</label>
                 <textarea
                   id={'reply-note-' + selectedMessage.id}
