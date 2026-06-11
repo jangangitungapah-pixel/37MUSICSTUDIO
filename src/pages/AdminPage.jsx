@@ -21,9 +21,15 @@ import {
 } from 'lucide-react';
 import { cn } from '../lib/cn.js';
 import { useTheme } from '../theme/ThemeProvider.jsx';
+import { adminAuthRepository } from '../services/adminAuthRepository.js';
 import { adminBookingRepository } from '../services/adminBookingRepository.js';
 
-const DEV_AUTH_STORAGE_KEY = 'thirty-seven-dev-auth';
+const initialAdminAuthState = {
+  errorMessage: '',
+  isAuthenticated: false,
+  isReady: false,
+  user: null,
+};
 
 const adminThemeSwitchStates = {
   dark: {
@@ -59,12 +65,9 @@ const adminNavItems = [
   },
 ];
 
-function clearDevAccess(navigate) {
-  if (typeof window !== 'undefined') {
-    window.sessionStorage.removeItem(DEV_AUTH_STORAGE_KEY);
-  }
-
-  navigate('/login');
+async function signOutAdmin(navigate) {
+  await adminAuthRepository.signOutAdmin();
+  navigate('/login', { replace: true });
 }
 
 function getActiveAdminItem(pathname) {
@@ -94,7 +97,7 @@ function AdminLockedState() {
         </h1>
 
         <p className="m-0 max-w-xl leading-8 text-[var(--ui-text-main)]">
-          Halaman admin masih mode developing. Gunakan akses dev dari halaman login untuk membuka portal admin awal.
+          Halaman admin membutuhkan sesi Firebase Auth. Login dulu untuk membuka portal booking dan customer.
         </p>
 
         <Link
@@ -103,6 +106,32 @@ function AdminLockedState() {
         >
           Ke halaman login
         </Link>
+      </div>
+    </section>
+  );
+}
+
+function AdminAuthLoadingState() {
+  return (
+    <section
+      className="grid min-h-[62vh] content-center gap-5 py-4"
+      aria-labelledby="admin-auth-loading-title"
+    >
+      <div className="grid max-w-2xl gap-3">
+        <p className="m-0 text-xs font-semibold uppercase tracking-[0.18em] text-studio-accent">
+          Admin Auth
+        </p>
+
+        <h1
+          className="m-0 text-[clamp(3rem,7vw,6rem)] font-semibold leading-[0.94] tracking-[-0.075em] text-[var(--ui-text-strong)]"
+          id="admin-auth-loading-title"
+        >
+          Mengecek akses admin.
+        </h1>
+
+        <p className="m-0 max-w-xl leading-8 text-[var(--ui-text-main)]">
+          Portal sedang memvalidasi sesi Firebase Auth sebelum membuka dashboard.
+        </p>
       </div>
     </section>
   );
@@ -317,7 +346,7 @@ function AdminSidebar({
 
         <div className={cn('border-t border-[var(--ui-border)] pt-3', collapsed ? 'grid justify-items-center' : '')}>
           <button
-            aria-label="Logout development access"
+            aria-label="Logout admin access"
             className={cn(
               'grid min-h-11 items-center gap-3 rounded-2xl border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] px-3 text-sm font-semibold text-[var(--ui-secondary-text)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/25',
               collapsed ? 'w-11 grid-cols-1 justify-items-center px-0' : 'w-full grid-cols-[2rem_minmax(0,1fr)] text-left',
@@ -326,7 +355,7 @@ function AdminSidebar({
             onClick={onLogout}
           >
             <LockKeyhole size={16} strokeWidth={2.25} aria-hidden="true" />
-            {!collapsed ? <span>Logout dev</span> : null}
+            {!collapsed ? <span>Logout admin</span> : null}
           </button>
         </div>
       </div>
@@ -363,18 +392,23 @@ function AdminBottomBar({
 export function AdminPage() {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [manualBookings, setManualBookings] = useState([]);
+  const [adminAuthState, setAdminAuthState] = useState(initialAdminAuthState);
   const location = useLocation();
   const navigate = useNavigate();
 
+  useEffect(() => adminAuthRepository.subscribeAdminAuth(setAdminAuthState), []);
+
   useEffect(() => {
+    if (!adminAuthState.isAuthenticated) {
+      setManualBookings([]);
+
+      return undefined;
+    }
+
     const unsubscribe = adminBookingRepository.subscribeManualBookings(setManualBookings);
 
     return unsubscribe;
-  }, []);
-
-  const hasDevAccess =
-    typeof window !== 'undefined' &&
-    window.sessionStorage.getItem(DEV_AUTH_STORAGE_KEY) === 'true';
+  }, [adminAuthState.isAuthenticated]);
 
   const activeItem = useMemo(
     () => getActiveAdminItem(location.pathname),
@@ -383,6 +417,7 @@ export function AdminPage() {
   const adminOutletContext = useMemo(
     () => ({
       activeItem,
+      adminUser: adminAuthState.user,
       addManualBooking: async (booking) => {
         try {
           await adminBookingRepository.createManualBooking(booking);
@@ -392,10 +427,14 @@ export function AdminPage() {
       },
       manualBookings,
     }),
-    [activeItem, manualBookings],
+    [activeItem, adminAuthState.user, manualBookings],
   );
 
-  if (!hasDevAccess) {
+  if (!adminAuthState.isReady) {
+    return <AdminAuthLoadingState />;
+  }
+
+  if (!adminAuthState.isAuthenticated) {
     return <AdminLockedState />;
   }
 
@@ -407,7 +446,7 @@ export function AdminPage() {
       <AdminSidebar
         activePath={location.pathname}
         collapsed={isSidebarCollapsed}
-        onLogout={() => clearDevAccess(navigate)}
+        onLogout={() => { void signOutAdmin(navigate); }}
         onToggleCollapse={() => setIsSidebarCollapsed((current) => !current)}
       />
 

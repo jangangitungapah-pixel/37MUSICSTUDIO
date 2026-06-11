@@ -1,34 +1,35 @@
-import { useState } from 'react';
+import {
+  useEffect,
+  useState,
+} from 'react';
+import { useNavigate } from 'react-router';
 import {
   AlertCircle,
   ArrowRight,
   Headphones,
   LockKeyhole,
+  Mail,
   Radio,
   ShieldCheck,
   Sparkles,
-  UserRound,
 } from 'lucide-react';
-
-const DEV_USERNAME = 'admin';
-const DEV_PASSWORD = 'admin';
-const DEV_AUTH_STORAGE_KEY = 'thirty-seven-dev-auth';
+import { adminAuthRepository } from '../services/adminAuthRepository.js';
 
 const accessHighlights = [
   {
     icon: Headphones,
-    title: 'Dev access ready',
-    text: 'Masuk dengan akun dev untuk membuka halaman admin kosong dan mulai membangun dashboard.',
+    title: 'Firebase Auth',
+    text: 'Admin login sekarang memakai akun email dan password dari Firebase Authentication.',
   },
   {
     icon: Radio,
-    title: 'Admin canvas',
-    text: 'Halaman admin dibuat kosong dulu supaya modul bisa disusun pelan-pelan tanpa merusak UI utama.',
+    title: 'Admin portal',
+    text: 'Booking dan customer admin tetap memakai shell yang sama, tapi aksesnya mulai diamankan.',
   },
   {
     icon: ShieldCheck,
-    title: 'Route sementara',
-    text: 'Credential dev hanya untuk sesi build ini. Nanti bisa diganti ke auth yang sebenarnya.',
+    title: 'Rules ready',
+    text: 'Setelah login auth aman, Firestore rules bisa dikunci ke request.auth.',
   },
 ];
 
@@ -40,8 +41,8 @@ const statusStyles = {
 
 const initialStatus = {
   kind: 'idle',
-  title: 'Akses development siap',
-  text: 'Gunakan username admin dan password admin untuk masuk ke halaman admin kosong.',
+  title: 'Akses admin Firebase siap',
+  text: 'Gunakan email dan kata sandi akun yang sudah dibuat di Firebase Authentication.',
 };
 
 function getStatusClassName(kind) {
@@ -93,12 +94,23 @@ function LoginInput({
 }
 
 export function LoginPage() {
+  const navigate = useNavigate();
   const [form, setForm] = useState({
-    username: '',
+    email: '',
     password: '',
   });
-
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [status, setStatus] = useState(initialStatus);
+
+  useEffect(() => {
+    const unsubscribe = adminAuthRepository.subscribeAdminAuth((authState) => {
+      if (authState.isReady && authState.isAuthenticated) {
+        navigate('/admin/bookings', { replace: true });
+      }
+    });
+
+    return unsubscribe;
+  }, [navigate]);
 
   const updateField = (field) => (event) => {
     setForm((current) => ({
@@ -111,38 +123,44 @@ export function LoginPage() {
     }
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
-    const username = form.username.trim();
-    const password = form.password.trim();
+    const email = form.email.trim();
+    const password = form.password;
 
-    if (!username || !password) {
+    if (!email || !password) {
       setStatus({
         kind: 'error',
-        title: 'Lengkapi akses development',
-        text: 'Isi username dan password dev dulu sebelum masuk ke admin.',
+        title: 'Lengkapi akses admin',
+        text: 'Isi email dan kata sandi akun Firebase dulu sebelum masuk.',
       });
       return;
     }
-    if (username !== DEV_USERNAME || password !== DEV_PASSWORD) {
+
+    setIsSubmitting(true);
+
+    try {
+      await adminAuthRepository.signInAdmin({
+        email,
+        password,
+      });
+
+      setStatus({
+        kind: 'success',
+        title: 'Akses admin siap',
+        text: 'Login Firebase berhasil. Kamu akan diarahkan ke admin booking.',
+      });
+
+      navigate('/admin/bookings', { replace: true });
+    } catch (error) {
       setStatus({
         kind: 'error',
-        title: 'Username atau password belum cocok',
-        text: 'Untuk sesi developing ini, gunakan username admin dan password admin.',
+        title: 'Login admin gagal',
+        text: adminAuthRepository.getAdminAuthErrorMessage(error),
       });
-      return;
-    }
-    setStatus({
-      kind: 'success',
-      title: 'Akses admin siap',
-      text: 'Login development berhasil. Kamu akan diarahkan ke halaman admin kosong.',
-    });
-
-    if (typeof window !== 'undefined') {
-      window.sessionStorage.setItem(DEV_AUTH_STORAGE_KEY, 'true');
-      window.history.pushState({}, '', '/admin');
-      window.dispatchEvent(new Event('popstate'));
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -154,7 +172,7 @@ export function LoginPage() {
       <div className="grid gap-8">
         <div className="inline-flex w-fit items-center gap-2 rounded-full border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] px-3 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-studio-accent ring-1 ring-[var(--ui-ring)]">
           <Sparkles size={14} strokeWidth={2.35} aria-hidden="true" />
-          Akses Development
+          Firebase Admin Access
         </div>
 
         <div className="grid gap-5">
@@ -166,7 +184,7 @@ export function LoginPage() {
           </h1>
 
           <p className="m-0 max-w-[640px] text-[clamp(1rem,1.45vw,1.18rem)] leading-8 text-[var(--ui-text-main)]">
-            Untuk sesi developing, gunakan username admin dan password admin. Setelah masuk, kamu akan diarahkan ke halaman admin kosong dulu.
+            Gunakan akun admin yang sudah dibuat di Firebase Authentication. Setelah login, booking dan customer akan membaca data dari Firestore.
           </p>
         </div>
 
@@ -213,11 +231,11 @@ export function LoginPage() {
 
             <div className="grid gap-2">
               <h2 className="m-0 text-[1.65rem] font-semibold tracking-[-0.055em] text-[var(--ui-text-strong)]">
-                Masuk ke admin dev
+                Masuk ke admin
               </h2>
 
               <p className="m-0 leading-7 text-[var(--ui-text-main)]">
-                Gunakan akses sementara untuk membuka canvas admin. Credential dev: admin / admin.
+                Pakai email dan kata sandi dari Firebase Auth. Credential development lama sudah tidak dipakai.
               </p>
             </div>
           </div>
@@ -246,40 +264,42 @@ export function LoginPage() {
 
           <div className="grid gap-4">
             <LoginInput
-              autoComplete="username"
-              helper="Dev access"
-              icon={UserRound}
-              id="studio-username"
-              label="Username"
-              onChange={updateField('username')}
-              placeholder="admin"
-              type="text"
-              value={form.username}
+              autoComplete="email"
+              helper="Firebase Auth"
+              icon={Mail}
+              id="studio-email"
+              label="Email admin"
+              onChange={updateField('email')}
+              placeholder="admin@studio37new.com"
+              type="email"
+              value={form.email}
             />
 
             <LoginInput
               autoComplete="current-password"
-              helper="Dev password"
+              helper="Password"
               icon={LockKeyhole}
               id="studio-password"
               label="Password"
               onChange={updateField('password')}
-              placeholder="admin"
+              placeholder="••••••••"
               type="password"
               value={form.password}
             />
           </div>
 
           <button
-            className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full [background:var(--ui-primary-bg)] px-6 text-sm font-semibold tracking-[-0.01em] text-[var(--ui-primary-text)] shadow-[var(--ui-shadow-soft)] transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/25"
+            aria-busy={isSubmitting}
+            className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full [background:var(--ui-primary-bg)] px-6 text-sm font-semibold tracking-[-0.01em] text-[var(--ui-primary-text)] shadow-[var(--ui-shadow-soft)] transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/25 disabled:cursor-not-allowed disabled:opacity-60"
+            disabled={isSubmitting}
             type="submit"
           >
-            Masuk ke admin
+            {isSubmitting ? 'Memproses login...' : 'Masuk ke admin'}
             <ArrowRight size={17} strokeWidth={2.35} aria-hidden="true" />
           </button>
 
           <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[var(--ui-border)] pt-5 text-sm text-[var(--ui-text-muted)]">
-            <span>Dev credential: admin / admin</span>
+            <span>Firebase Authentication</span>
             <a
               className="font-semibold text-[var(--ui-text-strong)] transition hover:text-studio-accent focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
               href="/"
