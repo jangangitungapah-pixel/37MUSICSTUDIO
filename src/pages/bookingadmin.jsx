@@ -16,6 +16,15 @@ const studioHours = {
   closeHour: 23,
 };
 
+const solidSurfaces = {
+  gridShell: '[background:color-mix(in_srgb,var(--ui-bg-base)_90%,var(--ui-control-hover))]',
+  gridHeader: '[background:color-mix(in_srgb,var(--ui-bg-base)_84%,var(--ui-control-hover))]',
+  gridCorner: '[background:color-mix(in_srgb,var(--ui-bg-base)_78%,var(--ui-control-hover))]',
+  gridSticky: '[background:color-mix(in_srgb,var(--ui-bg-base)_82%,var(--ui-control))]',
+  gridCell: '[background:color-mix(in_srgb,var(--ui-bg-base)_88%,transparent)]',
+  gridCellWeekend: '[background:color-mix(in_srgb,var(--ui-bg-base)_82%,var(--ui-control))]',
+};
+
 const viewOptions = [
   {
     key: 'day',
@@ -99,6 +108,10 @@ function createDate(year, monthIndex, dayNumber) {
   return new Date(year, monthIndex, dayNumber);
 }
 
+function getDaysInMonth(year, monthIndex) {
+  return createDate(year, monthIndex + 1, 0).getDate();
+}
+
 function clampDay(year, monthIndex, dayNumber) {
   return Math.min(dayNumber, getDaysInMonth(year, monthIndex));
 }
@@ -108,9 +121,7 @@ function addDays(date, amount) {
 }
 
 function addMonths(date, amount) {
-  const targetYear = date.getFullYear();
-  const targetMonth = date.getMonth() + amount;
-  const targetDate = createDate(targetYear, targetMonth, 1);
+  const targetDate = createDate(date.getFullYear(), date.getMonth() + amount, 1);
   const nextDay = clampDay(
     targetDate.getFullYear(),
     targetDate.getMonth(),
@@ -118,10 +129,6 @@ function addMonths(date, amount) {
   );
 
   return createDate(targetDate.getFullYear(), targetDate.getMonth(), nextDay);
-}
-
-function getDaysInMonth(year, monthIndex) {
-  return createDate(year, monthIndex + 1, 0).getDate();
 }
 
 function getMondayStart(date) {
@@ -169,24 +176,6 @@ function parseDateInputValue(value, fallback) {
   return createDate(parts[0], parts[1] - 1, parts[2]);
 }
 
-function createMonthDays(date) {
-  const year = date.getFullYear();
-  const monthIndex = date.getMonth();
-  const daysInMonth = getDaysInMonth(year, monthIndex);
-
-  return Array.from({ length: daysInMonth }, (_, index) => {
-    const dayDate = createDate(year, monthIndex, index + 1);
-
-    return createCalendarDay(dayDate);
-  });
-}
-
-function createWeekDays(date) {
-  const startDate = getMondayStart(date);
-
-  return Array.from({ length: 7 }, (_, index) => createCalendarDay(addDays(startDate, index)));
-}
-
 function createCalendarDay(date) {
   const dayName = dayShortNames[date.getDay()];
 
@@ -201,6 +190,22 @@ function createCalendarDay(date) {
     date,
     isWeekend: dayName === 'Sat' || dayName === 'Sun',
   };
+}
+
+function createMonthDays(date) {
+  const year = date.getFullYear();
+  const monthIndex = date.getMonth();
+  const daysInMonth = getDaysInMonth(year, monthIndex);
+
+  return Array.from({ length: daysInMonth }, (_, index) => (
+    createCalendarDay(createDate(year, monthIndex, index + 1))
+  ));
+}
+
+function createWeekDays(date) {
+  const startDate = getMondayStart(date);
+
+  return Array.from({ length: 7 }, (_, index) => createCalendarDay(addDays(startDate, index)));
 }
 
 function createVisibleDays(viewMode, cursorDate) {
@@ -295,10 +300,11 @@ function CalendarCell({
     <button
       aria-label={booking ? booking.title + ', ' + day.fullLabel + ', ' + time.label : 'Empty slot, ' + day.fullLabel + ', ' + time.label}
       className={cn(
-        'group min-h-[58px] border-b border-r border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-1.5 text-left transition focus-visible:relative focus-visible:z-20 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/25',
-        day.isWeekend ? 'bg-[var(--ui-control)]/55' : '',
-        isSelected ? 'bg-[var(--ui-control-hover)] ring-2 ring-studio-accent/30' : '',
-        booking ? 'hover:bg-[var(--ui-control-hover)]' : 'hover:bg-[var(--ui-control)]',
+        'group min-h-[58px] border-b border-r border-[var(--ui-border)] p-1.5 text-left transition focus-visible:relative focus-visible:z-20 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/25',
+        solidSurfaces.gridCell,
+        day.isWeekend ? solidSurfaces.gridCellWeekend : '',
+        isSelected ? 'ring-2 ring-studio-accent/30 [background:color-mix(in_srgb,var(--ui-bg-base)_72%,var(--ui-control-hover))]' : '',
+        booking ? 'hover:[background:color-mix(in_srgb,var(--ui-bg-base)_72%,var(--ui-control-hover))]' : 'hover:[background:color-mix(in_srgb,var(--ui-bg-base)_78%,var(--ui-control))]',
       )}
       type="button"
       onClick={onSelect}
@@ -343,9 +349,10 @@ function CalendarHeaderCell({
       aria-label={'Select ' + day.fullLabel}
       aria-pressed={isActiveDay}
       className={cn(
-        'grid h-14 place-items-center border-b border-r border-[var(--ui-border)] bg-[var(--ui-control)] px-2 text-center transition hover:bg-[var(--ui-control-hover)] focus-visible:relative focus-visible:z-20 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/25',
+        'grid h-14 place-items-center border-b border-r border-[var(--ui-border-strong)] px-2 text-center transition hover:[background:color-mix(in_srgb,var(--ui-bg-base)_72%,var(--ui-control-hover))] focus-visible:relative focus-visible:z-20 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/25',
+        solidSurfaces.gridHeader,
         day.isWeekend ? 'text-studio-accent' : 'text-[var(--ui-text-main)]',
-        isActiveDay ? 'bg-[var(--ui-control-hover)] ring-2 ring-studio-accent/20' : '',
+        isActiveDay ? 'ring-2 ring-studio-accent/25 [background:color-mix(in_srgb,var(--ui-bg-base)_70%,var(--ui-control-hover))]' : '',
       )}
       type="button"
       onClick={onSelectDay}
@@ -364,7 +371,12 @@ function CalendarHeaderCell({
 
 function TimeCell({ slot }) {
   return (
-    <div className="sticky left-0 z-10 grid min-h-[58px] w-[168px] place-items-center border-b border-r border-[var(--ui-border-strong)] bg-[var(--ui-control)] px-3 text-center shadow-[12px_0_22px_rgb(0_0_0/0.04)]">
+    <div
+      className={cn(
+        'sticky left-0 z-10 grid min-h-[58px] w-[168px] place-items-center border-b border-r border-[var(--ui-border-strong)] px-3 text-center shadow-[12px_0_22px_rgb(0_0_0/0.08)]',
+        solidSurfaces.gridSticky,
+      )}
+    >
       <span className="text-xs font-semibold tracking-[-0.015em] text-[var(--ui-text-main)]">
         {slot.label}
       </span>
@@ -487,8 +499,18 @@ function CalendarGrid({
   const gridMinWidth = getGridMinWidth(viewMode, visibleDays);
 
   return (
-    <div className="overflow-hidden rounded-[1.75rem] border border-[var(--ui-border-strong)] bg-[linear-gradient(145deg,var(--ui-glass),var(--ui-glass-soft))] shadow-[var(--ui-shadow-soft)] ring-1 ring-[var(--ui-ring)] backdrop-blur-2xl">
-      <div className="flex items-center justify-between gap-3 border-b border-[var(--ui-border)] bg-[var(--ui-glass-soft)] px-4 py-3">
+    <div
+      className={cn(
+        'overflow-hidden rounded-[1.75rem] border border-[var(--ui-border-strong)] shadow-[var(--ui-shadow-soft)] ring-1 ring-[var(--ui-ring)]',
+        solidSurfaces.gridShell,
+      )}
+    >
+      <div
+        className={cn(
+          'flex items-center justify-between gap-3 border-b border-[var(--ui-border-strong)] px-4 py-3',
+          solidSurfaces.gridCorner,
+        )}
+      >
         <div className="flex min-w-0 items-center gap-3">
           <div className="grid size-10 shrink-0 place-items-center rounded-2xl border border-[var(--ui-border)] bg-[var(--ui-control)] text-studio-accent shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)]">
             <Grid3X3 size={18} strokeWidth={2.35} aria-hidden="true" />
@@ -521,7 +543,12 @@ function CalendarGrid({
             className="grid"
             style={{ gridTemplateColumns }}
           >
-            <div className="sticky left-0 z-20 grid h-14 w-[168px] place-items-center border-b border-r border-[var(--ui-border-strong)] bg-[var(--ui-control-hover)] px-3 text-center shadow-[12px_0_22px_rgb(0_0_0/0.04)]">
+            <div
+              className={cn(
+                'sticky left-0 z-20 grid h-14 w-[168px] place-items-center border-b border-r border-[var(--ui-border-strong)] px-3 text-center shadow-[12px_0_22px_rgb(0_0_0/0.08)]',
+                solidSurfaces.gridCorner,
+              )}
+            >
               <span className="grid gap-0.5">
                 <span className="text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-studio-accent">
                   Booking
