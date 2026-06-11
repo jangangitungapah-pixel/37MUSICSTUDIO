@@ -13,7 +13,7 @@
 
   --color-studio-night: #090a10;
   --color-studio-shell: #101018;
-  --color-studio-paper: #f6f3f8;
+  --color-studio-paper: #f8f4fb;
 
   --color-studio-50: #fbf9fd;
   --color-studio-100: #f4f0f7;
@@ -31,9 +31,9 @@
   --color-studio-purple: #9a76ff;
   --color-studio-cyan: #45d3ff;
 
-  --shadow-studio-card: 0 14px 34px rgb(0 0 0 / 0.12);
-  --shadow-studio-soft: 0 18px 54px rgb(0 0 0 / 0.18);
-  --shadow-studio-glow: 0 14px 28px rgb(255 74 155 / 0.22);
+  --shadow-studio-card: 0 18px 48px rgb(65 45 86 / 0.12);
+  --shadow-studio-soft: 0 22px 70px rgb(65 45 86 / 0.16);
+  --shadow-studio-glow: 0 18px 42px rgb(255 74 155 / 0.24);
 }
 
 @layer base {
@@ -44,7 +44,7 @@
   html {
     min-width: 320px;
     min-height: 100%;
-    background: #f6f3f8;
+    background: #f8f4fb;
     color: #17141d;
     font-family: var(--font-sans);
     text-rendering: geometricPrecision;

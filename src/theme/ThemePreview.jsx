@@ -55,7 +55,7 @@ function StatusDropdown() {
       <button
         aria-expanded={isOpen}
         aria-haspopup="listbox"
-        className="group flex min-h-12 w-full items-center justify-between gap-3 rounded-2xl border border-studio-950/10 bg-white/70 px-4 text-left text-sm font-medium text-studio-950 outline-none transition hover:border-studio-accent/30 hover:bg-white focus-visible:border-studio-accent/40 focus-visible:ring-4 focus-visible:ring-studio-accent/15 dark:border-white/10 dark:bg-white/[0.06] dark:text-white dark:hover:border-studio-accent/35 dark:hover:bg-white/[0.09]"
+        className="group flex min-h-12 w-full items-center justify-between gap-3 rounded-2xl border border-studio-950/10 bg-white/72 shadow-[inset_0_1px_0_rgba(255,255,255,0.72)] dark:shadow-none px-4 text-left text-sm font-medium text-studio-950 outline-none transition hover:border-studio-accent/30 hover:bg-white focus-visible:border-studio-accent/40 focus-visible:ring-4 focus-visible:ring-studio-accent/15 dark:border-white/10 dark:bg-white/[0.06] dark:text-white dark:hover:border-studio-accent/35 dark:hover:bg-white/[0.09]"
         type="button"
         onClick={() => setIsOpen((current) => !current)}
       >
@@ -140,14 +140,14 @@ export function ThemePreview() {
 
           <div className="flex flex-wrap items-center gap-3">
             <button
-              className="inline-flex min-h-12 items-center justify-center rounded-full bg-white px-6 text-sm font-semibold tracking-[-0.01em] text-studio-950 shadow-studio-soft transition hover:-translate-y-0.5 hover:bg-studio-100 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20 dark:bg-white dark:text-studio-950"
+              className="inline-flex min-h-12 items-center justify-center rounded-full bg-gradient-to-br from-studio-950 to-studio-700 px-6 text-sm font-semibold tracking-[-0.01em] text-white shadow-[0_20px_54px_rgba(23,20,29,0.18)] transition hover:-translate-y-0.5 hover:shadow-[0_24px_64px_rgba(23,20,29,0.24)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20 dark:bg-white dark:bg-none dark:text-studio-950"
               type="button"
             >
               Start foundation
             </button>
 
             <button
-              className="inline-flex min-h-12 items-center justify-center rounded-full border border-white/10 px-6 text-sm font-medium tracking-[-0.01em] text-studio-700 transition hover:-translate-y-0.5 hover:border-studio-accent/35 hover:text-studio-950 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20 dark:text-studio-200 dark:hover:text-white"
+              className="inline-flex min-h-12 items-center justify-center rounded-full border border-studio-950/10 bg-white/45 px-6 text-sm font-medium tracking-[-0.01em] text-studio-700 shadow-[inset_0_1px_0_rgba(255,255,255,0.74)] transition hover:-translate-y-0.5 hover:border-studio-accent/35 hover:bg-white/72 shadow-[inset_0_1px_0_rgba(255,255,255,0.72)] dark:shadow-none hover:text-studio-950 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20 dark:border-white/10 dark:bg-transparent dark:text-studio-200 dark:shadow-none dark:hover:text-white"
               type="button"
             >
               View UI system
@@ -204,7 +204,7 @@ export function ThemePreview() {
           </h2>
         </div>
 
-        <div className="grid gap-0 border-y border-studio-950/10 dark:border-white/10 md:grid-cols-3">
+        <div className="grid gap-0 border-y border-studio-950/12 dark:border-white/10 md:grid-cols-3">
           {foundationNotes.map((item, index) => (
             <article
               className="grid gap-3 border-studio-950/10 py-7 md:px-7 md:[&:not(:first-child)]:border-l dark:border-white/10"
@@ -242,7 +242,7 @@ export function ThemePreview() {
           <label className="grid gap-2 text-sm font-medium text-studio-600 dark:text-studio-300">
             <span>Nama project</span>
             <input
-              className="min-h-12 w-full rounded-2xl border border-studio-950/10 bg-white/70 px-4 text-sm font-medium text-studio-950 outline-none transition focus:border-studio-accent/40 focus:ring-4 focus:ring-studio-accent/15 dark:border-white/10 dark:bg-white/[0.06] dark:text-white"
+              className="min-h-12 w-full rounded-2xl border border-studio-950/10 bg-white/72 shadow-[inset_0_1px_0_rgba(255,255,255,0.72)] dark:shadow-none px-4 text-sm font-medium text-studio-950 outline-none transition focus:border-studio-accent/40 focus:ring-4 focus:ring-studio-accent/15 dark:border-white/10 dark:bg-white/[0.06] dark:text-white"
               value="37 Music Studio"
               readOnly
             />
