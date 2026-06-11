@@ -4,28 +4,31 @@ import {
   ArrowRight,
   Headphones,
   LockKeyhole,
-  Mail,
   Radio,
   ShieldCheck,
   Sparkles,
   UserRound,
 } from 'lucide-react';
 
+const DEV_USERNAME = 'admin';
+const DEV_PASSWORD = 'admin';
+const DEV_AUTH_STORAGE_KEY = 'thirty-seven-dev-auth';
+
 const accessHighlights = [
   {
     icon: Headphones,
-    title: 'Sesi lebih siap',
-    text: 'Masuk untuk lanjut mengatur latihan, recording, atau kebutuhan sesi tanpa alur yang berantakan.',
+    title: 'Dev access ready',
+    text: 'Masuk dengan akun dev untuk membuka halaman admin kosong dan mulai membangun dashboard.',
   },
   {
     icon: Radio,
-    title: 'Kebutuhan lebih jelas',
-    text: 'Bantu pastikan format sesi sesuai tujuan, dari latihan band sampai live recording atau tracking.',
+    title: 'Admin canvas',
+    text: 'Halaman admin dibuat kosong dulu supaya modul bisa disusun pelan-pelan tanpa merusak UI utama.',
   },
   {
     icon: ShieldCheck,
-    title: 'Booking lebih tenang',
-    text: 'Akses dibuat sederhana supaya kamu bisa lanjut ke jadwal dan detail sesi dengan nyaman.',
+    title: 'Route sementara',
+    text: 'Credential dev hanya untuk sesi build ini. Nanti bisa diganti ke auth yang sebenarnya.',
   },
 ];
 
@@ -37,8 +40,8 @@ const statusStyles = {
 
 const initialStatus = {
   kind: 'idle',
-  title: 'Siapkan sesi yang mau kamu jalani',
-  text: 'Latihan band, live recording, atau tracking. Masuk untuk lanjut mengatur kebutuhan sesi dengan lebih mudah.',
+  title: 'Akses development siap',
+  text: 'Gunakan username admin dan password admin untuk masuk ke halaman admin kosong.',
 };
 
 function getStatusClassName(kind) {
@@ -91,7 +94,7 @@ function LoginInput({
 
 export function LoginPage() {
   const [form, setForm] = useState({
-    email: '',
+    username: '',
     password: '',
   });
 
@@ -111,32 +114,36 @@ export function LoginPage() {
   const handleSubmit = (event) => {
     event.preventDefault();
 
-    const email = form.email.trim();
+    const username = form.username.trim();
     const password = form.password.trim();
 
-    if (!email || !email.includes('@')) {
+    if (!username || !password) {
       setStatus({
         kind: 'error',
-        title: 'Emailnya belum pas',
-        text: 'Masukkan email yang kamu gunakan untuk akses atau booking sesi.',
+        title: 'Lengkapi akses development',
+        text: 'Isi username dan password dev dulu sebelum masuk ke admin.',
       });
       return;
     }
-
-    if (password.length < 8) {
+    if (username !== DEV_USERNAME || password !== DEV_PASSWORD) {
       setStatus({
         kind: 'error',
-        title: 'Password masih terlalu pendek',
-        text: 'Gunakan minimal 8 karakter supaya akses sesi tetap aman.',
+        title: 'Username atau password belum cocok',
+        text: 'Untuk sesi developing ini, gunakan username admin dan password admin.',
       });
       return;
     }
-
     setStatus({
       kind: 'success',
-      title: 'Akses siap dilanjutkan',
-      text: 'Validasi awal lolos. Berikutnya tinggal hubungkan ke sistem booking atau auth.',
+      title: 'Akses admin siap',
+      text: 'Login development berhasil. Kamu akan diarahkan ke halaman admin kosong.',
     });
+
+    if (typeof window !== 'undefined') {
+      window.sessionStorage.setItem(DEV_AUTH_STORAGE_KEY, 'true');
+      window.history.pushState({}, '', '/admin');
+      window.dispatchEvent(new Event('popstate'));
+    }
   };
 
   return (
@@ -147,7 +154,7 @@ export function LoginPage() {
       <div className="grid gap-8">
         <div className="inline-flex w-fit items-center gap-2 rounded-full border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] px-3 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-studio-accent ring-1 ring-[var(--ui-ring)]">
           <Sparkles size={14} strokeWidth={2.35} aria-hidden="true" />
-          Akses Sesi
+          Akses Development
         </div>
 
         <div className="grid gap-5">
@@ -155,11 +162,11 @@ export function LoginPage() {
             className="m-0 max-w-[820px] text-[clamp(3rem,7vw,6.3rem)] font-semibold leading-[0.94] tracking-[-0.075em] text-[var(--ui-text-strong)]"
             id="login-title"
           >
-            Masuk untuk lanjut atur sesi musikmu.
+            Masuk untuk lanjut ke admin studio.
           </h1>
 
           <p className="m-0 max-w-[640px] text-[clamp(1rem,1.45vw,1.18rem)] leading-8 text-[var(--ui-text-main)]">
-            Mau latihan band, live recording, atau tracking? Masuk untuk cek akses, lanjutkan kebutuhan sesi, dan buat proses booking terasa lebih rapi dari awal.
+            Untuk sesi developing, gunakan username admin dan password admin. Setelah masuk, kamu akan diarahkan ke halaman admin kosong dulu.
           </p>
         </div>
 
@@ -206,11 +213,11 @@ export function LoginPage() {
 
             <div className="grid gap-2">
               <h2 className="m-0 text-[1.65rem] font-semibold tracking-[-0.055em] text-[var(--ui-text-strong)]">
-                Lanjutkan kebutuhan sesimu
+                Masuk ke admin dev
               </h2>
 
               <p className="m-0 leading-7 text-[var(--ui-text-main)]">
-                Pakai akun yang sudah terdaftar untuk lanjut ke jadwal, booking, dan detail sesi 37 Music Studio.
+                Gunakan akses sementara untuk membuka canvas admin. Credential dev: admin / admin.
               </p>
             </div>
           </div>
@@ -239,25 +246,25 @@ export function LoginPage() {
 
           <div className="grid gap-4">
             <LoginInput
-              autoComplete="email"
-              helper="Akun terdaftar"
-              icon={Mail}
-              id="studio-email"
-              label="Email akun"
-              onChange={updateField('email')}
-              placeholder="nama@email.com"
-              type="email"
-              value={form.email}
+              autoComplete="username"
+              helper="Dev access"
+              icon={UserRound}
+              id="studio-username"
+              label="Username"
+              onChange={updateField('username')}
+              placeholder="admin"
+              type="text"
+              value={form.username}
             />
 
             <LoginInput
               autoComplete="current-password"
-              helper="Min. 8 karakter"
-              icon={UserRound}
+              helper="Dev password"
+              icon={LockKeyhole}
               id="studio-password"
               label="Password"
               onChange={updateField('password')}
-              placeholder="Password akun"
+              placeholder="admin"
               type="password"
               value={form.password}
             />
@@ -267,17 +274,17 @@ export function LoginPage() {
             className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full [background:var(--ui-primary-bg)] px-6 text-sm font-semibold tracking-[-0.01em] text-[var(--ui-primary-text)] shadow-[var(--ui-shadow-soft)] transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/25"
             type="submit"
           >
-            Lanjut atur sesi
+            Masuk ke admin
             <ArrowRight size={17} strokeWidth={2.35} aria-hidden="true" />
           </button>
 
           <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[var(--ui-border)] pt-5 text-sm text-[var(--ui-text-muted)]">
-            <span>Belum punya akses booking?</span>
+            <span>Dev credential: admin / admin</span>
             <a
               className="font-semibold text-[var(--ui-text-strong)] transition hover:text-studio-accent focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
               href="/"
             >
-              Lihat layanan dulu
+              Kembali ke landing
             </a>
           </div>
         </form>

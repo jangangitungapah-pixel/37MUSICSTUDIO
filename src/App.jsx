@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { AdminPage } from './pages/AdminPage.jsx';
 import { LoginPage } from './pages/LoginPage.jsx';
 import { ThemeContainer } from './theme/ThemeContainer.jsx';
 import { ThemePreview } from './theme/ThemePreview.jsx';
@@ -9,6 +10,18 @@ function getCurrentPathname() {
   }
 
   return window.location.pathname || '/';
+}
+
+function resolvePage(pathname) {
+  if (pathname === '/admin') {
+    return <AdminPage />;
+  }
+
+  if (pathname === '/login') {
+    return <LoginPage />;
+  }
+
+  return <ThemePreview />;
 }
 
 function App() {
@@ -26,7 +39,7 @@ function App() {
     };
   }, []);
 
-  const page = pathname === '/login' ? <LoginPage /> : <ThemePreview />;
+  const page = resolvePage(pathname);
 
   return (
     <ThemeContainer currentPath={pathname}>
