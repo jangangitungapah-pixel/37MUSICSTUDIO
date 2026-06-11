@@ -438,12 +438,12 @@ const ClientMessagesPage = () => {
           </div>
         </section>
 
-        <article className="inbox-detail-panel" aria-label="Detail pesan client">
+        <article className="inbox-detail-panel is-messenger-chat" aria-label="Percakapan client">
           {!selectedMessage ? (
             <div className="inbox-detail-empty">
               <Inbox size={28} />
-              <strong>Pilih pesan untuk dibaca.</strong>
-              <p>Detail percakapan, kontak client, catatan admin, dan aksi follow up akan tampil di panel ini.</p>
+              <strong>Pilih percakapan.</strong>
+              <p>Pilih pesan dari daftar untuk membaca chat, membalas client, atau menutup follow up.</p>
             </div>
           ) : (
             <>
@@ -463,97 +463,66 @@ const ClientMessagesPage = () => {
                 </span>
               </header>
 
-              <section className="inbox-contact-strip" aria-label="Kontak client">
-                <button type="button" onClick={() => copyText(selectedMessage.clientEmail, 'Email client')}>
-                  <Mail size={14} />
-                  <span>{selectedMessage.clientEmail || 'Email belum ada'}</span>
-                  <Copy size={13} />
-                </button>
-                <button type="button" onClick={() => copyText(selectedMessage.clientPhone, 'Nomor WhatsApp')}>
-                  <Phone size={14} />
-                  <span>{selectedMessage.clientPhone || 'Nomor belum ada'}</span>
-                  <Copy size={13} />
-                </button>
-                <button type="button" onClick={() => copyText(selectedMessage.clientUid, 'UID client')}>
-                  <UserRound size={14} />
-                  <span>{selectedMessage.clientUid || 'UID belum ada'}</span>
-                  <Copy size={13} />
-                </button>
-              </section>
-
-              <section className="inbox-message-reader">
-                <span>Isi Pesan</span>
-                <p>{selectedMessage.message || 'Tidak ada isi pesan.'}</p>
-              </section>
-
-              {selectedMessage.adminReplyNote && (
-                <section className="inbox-reply-note">
-                  <Reply size={16} />
-                  <div>
-                    <strong>Catatan admin</strong>
-                    <p>{selectedMessage.adminReplyNote}</p>
-                  </div>
+              <div className="inbox-chat-scroll" aria-label="Isi percakapan client">
+                <section className="inbox-contact-strip" aria-label="Kontak client">
+                  <button type="button" onClick={() => copyText(selectedMessage.clientEmail, 'Email client')}>
+                    <Mail size={14} />
+                    <span>{selectedMessage.clientEmail || 'Email belum ada'}</span>
+                    <Copy size={13} />
+                  </button>
+                  <button type="button" onClick={() => copyText(selectedMessage.clientPhone, 'Nomor WhatsApp')}>
+                    <Phone size={14} />
+                    <span>{selectedMessage.clientPhone || 'Nomor belum ada'}</span>
+                    <Copy size={13} />
+                  </button>
+                  <button type="button" onClick={() => copyText(selectedMessage.clientUid, 'UID client')}>
+                    <UserRound size={14} />
+                    <span>{selectedMessage.clientUid || 'UID belum ada'}</span>
+                    <Copy size={13} />
+                  </button>
                 </section>
-              )}
 
-              
+                <div className="inbox-chat-day-pill">
+                  {formatDateTime(selectedMessage.createdAt)}
+                </div>
 
+                <section className="inbox-message-reader inbox-chat-bubble is-client" aria-label="Pesan dari client">
+                  <span>{getDisplayName(selectedMessage)}</span>
+                  <p>{selectedMessage.message || 'Tidak ada isi pesan.'}</p>
+                </section>
 
-              {selectedAdminReplies.length > 0 && (
+                {selectedMessage.adminReplyNote && (
+                  <section className="inbox-reply-note inbox-chat-bubble is-internal-note" aria-label="Catatan internal admin">
+                    <Reply size={16} />
+                    <div>
+                      <strong>Catatan internal</strong>
+                      <p>{selectedMessage.adminReplyNote}</p>
+                    </div>
+                  </section>
+                )}
 
-
-                <section className="inbox-admin-reply-history" aria-label="Riwayat balasan admin ke customer">
-
-
-                  <div className="inbox-admin-reply-history-head">
-
-
-                    <span>Balasan terkirim ke customer</span>
-
-
-                    <strong>{selectedAdminReplies.length} balasan</strong>
-
-
-                  </div>
-
-
-
-                  {selectedAdminReplies.map((reply, index) => (
-
-
-                    <div className="inbox-reply-note inbox-customer-reply-note" key={getReplyKey(reply, selectedMessage.id, index)}>
-
-
-                      <Send size={16} />
-
-
-                      <div>
-
-
-                        <strong>{reply.senderName || 'Admin 37 Music Studio'}</strong>
-
-
-                        <p>{reply.message}</p>
-
-
-                        {reply.createdAt && <small>{formatDateTime(reply.createdAt)}</small>}
-
-
-                      </div>
-
-
+                {selectedAdminReplies.length > 0 && (
+                  <section className="inbox-admin-reply-history inbox-chat-thread" aria-label="Riwayat balasan admin ke customer">
+                    <div className="inbox-admin-reply-history-head">
+                      <span>Balasan admin</span>
+                      <strong>{selectedAdminReplies.length} balasan</strong>
                     </div>
 
+                    {selectedAdminReplies.map((reply, index) => (
+                      <div className="inbox-reply-note inbox-customer-reply-note inbox-chat-bubble is-admin" key={getReplyKey(reply, selectedMessage.id, index)}>
+                        <Send size={16} />
+                        <div>
+                          <strong>{reply.senderName || 'Admin 37 Music Studio'}</strong>
+                          <p>{reply.message}</p>
+                          {reply.createdAt && <small>{formatDateTime(reply.createdAt)}</small>}
+                        </div>
+                      </div>
+                    ))}
+                  </section>
+                )}
+              </div>
 
-                  ))}
-
-
-                </section>
-
-
-              )}
-
-<section className="inbox-reply-composer" aria-label="Balasan customer dan catatan follow up admin">
+              <section className="inbox-reply-composer" aria-label="Balasan customer dan catatan follow up admin">
                 <label htmlFor={'reply-note-' + selectedMessage.id}>Balasan / Catatan follow up</label>
                 <textarea
                   id={'reply-note-' + selectedMessage.id}
@@ -562,25 +531,20 @@ const ClientMessagesPage = () => {
                     ...current,
                     [selectedMessage.id]: event.target.value,
                   }))}
-                  placeholder="Tulis balasan untuk customer. Contoh: Halo kak, slot Sabtu jam 19.00 masih tersedia."
-                  rows={5}
+                  placeholder="Tulis balasan untuk customer..."
+                  rows={3}
                 />
                 <div className="inbox-detail-actions">
                   <button type="button" className="inbox-action primary" onClick={() => sendCustomerReply(selectedMessage)}>
-
                     <Send size={15} />
-
-                    Kirim Balasan
-
+                    Kirim
                   </button>
 
                   <button type="button" className="inbox-action" onClick={() => saveReplyNote(selectedMessage)}>
-
                     <Reply size={15} />
-
-                    Simpan Catatan Internal
-
+                    Catatan
                   </button>
+
                   <a
                     className={'inbox-action whatsapp' + (!selectedWaHref ? ' is-disabled' : '')}
                     href={selectedWaHref || undefined}
@@ -599,8 +563,9 @@ const ClientMessagesPage = () => {
                     }}
                   >
                     <MessageCircle size={15} />
-                    Balas WhatsApp
+                    WhatsApp
                   </a>
+
                   <button
                     type="button"
                     className="inbox-action"
@@ -608,8 +573,9 @@ const ClientMessagesPage = () => {
                     disabled={selectedMessage.status === 'replied' || selectedMessage.status === 'done'}
                   >
                     <Reply size={15} />
-                    Tandai Dibalas
+                    Dibalas
                   </button>
+
                   <button
                     type="button"
                     className="inbox-action success"

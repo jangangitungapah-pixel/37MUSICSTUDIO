@@ -6609,3 +6609,168 @@
 
 /* CLIENT_INBOX_MESSENGER_SIMPLIFY_PHASE_4_END */
 
+/* CLIENT_INBOX_CHAT_MARKUP_PHASE_5_START */
+
+/*
+  Phase 5:
+  JSX-backed chat layout refinement.
+
+  Scope:
+  - New chat scroll wrapper
+  - Simpler chat bubbles
+  - Lighter composer
+  - More Messenger-like density
+*/
+
+.inbox-detail-panel.is-messenger-chat {
+  overflow: hidden !important;
+}
+
+.inbox-detail-panel.is-messenger-chat .inbox-chat-scroll {
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 10px !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  padding: 0 0 18px !important;
+  scroll-behavior: smooth !important;
+  scrollbar-width: thin !important;
+}
+
+.inbox-chat-day-pill {
+  width: fit-content !important;
+  align-self: center !important;
+  margin: 14px auto 4px !important;
+  padding: 5px 10px !important;
+  border-radius: 999px !important;
+  color: rgba(255, 250, 240, 0.46) !important;
+  font-size: 0.68rem !important;
+  line-height: 1 !important;
+  font-weight: 800 !important;
+  background: rgba(255, 255, 255, 0.055) !important;
+}
+
+.inbox-chat-bubble {
+  box-shadow: none !important;
+}
+
+.inbox-message-reader.inbox-chat-bubble.is-client {
+  width: fit-content !important;
+  max-width: min(680px, calc(100% - 36px)) !important;
+  margin: 0 18px 4px !important;
+  align-self: flex-start !important;
+}
+
+.inbox-message-reader.inbox-chat-bubble.is-client span {
+  margin: 0 0 5px 3px !important;
+  color: rgba(255, 250, 240, 0.44) !important;
+  font-size: 0.7rem !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.04em !important;
+  text-transform: none !important;
+}
+
+.inbox-message-reader.inbox-chat-bubble.is-client p {
+  max-width: 100% !important;
+  padding: 13px 15px !important;
+  border-radius: 18px 18px 18px 5px !important;
+  background: rgba(255, 255, 255, 0.080) !important;
+}
+
+.inbox-reply-note.inbox-chat-bubble.is-internal-note {
+  width: min(100% - 36px, 720px) !important;
+  margin: 4px 18px !important;
+  align-self: center !important;
+  border-radius: 16px !important;
+  opacity: 0.92 !important;
+}
+
+.inbox-admin-reply-history.inbox-chat-thread {
+  width: 100% !important;
+  max-width: none !important;
+  margin: 4px 0 0 !important;
+  padding: 0 18px !important;
+}
+
+.inbox-admin-reply-history.inbox-chat-thread .inbox-admin-reply-history-head {
+  width: min(100%, 720px) !important;
+  margin-left: auto !important;
+}
+
+.inbox-customer-reply-note.inbox-chat-bubble.is-admin {
+  margin-left: auto !important;
+  margin-right: 0 !important;
+  max-width: min(680px, 82%) !important;
+}
+
+.inbox-reply-composer textarea {
+  min-height: 48px !important;
+  max-height: 110px !important;
+}
+
+.inbox-detail-actions {
+  gap: 7px !important;
+}
+
+.inbox-detail-actions .inbox-action {
+  min-height: 36px !important;
+  padding-inline: 12px !important;
+}
+
+.inbox-detail-actions .inbox-action.primary {
+  min-width: 92px !important;
+}
+
+@container (max-width: 720px) {
+  .inbox-message-reader.inbox-chat-bubble.is-client,
+  .inbox-reply-note.inbox-chat-bubble.is-internal-note {
+    max-width: calc(100% - 28px) !important;
+    margin-left: 14px !important;
+    margin-right: 14px !important;
+  }
+
+  .inbox-admin-reply-history.inbox-chat-thread {
+    padding-inline: 14px !important;
+  }
+
+  .inbox-customer-reply-note.inbox-chat-bubble.is-admin {
+    max-width: 90% !important;
+  }
+}
+
+@container (max-width: 460px) {
+  .inbox-detail-actions {
+    grid-template-columns: 1fr 1fr !important;
+  }
+
+  .inbox-detail-actions .inbox-action.primary {
+    grid-column: 1 / -1 !important;
+  }
+
+  .inbox-chat-day-pill {
+    font-size: 0.64rem !important;
+  }
+}
+
+@media (max-width: 720px) {
+  .inbox-message-reader.inbox-chat-bubble.is-client,
+  .inbox-reply-note.inbox-chat-bubble.is-internal-note {
+    max-width: calc(100% - 28px) !important;
+    margin-left: 14px !important;
+    margin-right: 14px !important;
+  }
+
+  .inbox-admin-reply-history.inbox-chat-thread {
+    padding-inline: 14px !important;
+  }
+
+  .inbox-customer-reply-note.inbox-chat-bubble.is-admin {
+    max-width: 90% !important;
+  }
+}
+
+/* CLIENT_INBOX_CHAT_MARKUP_PHASE_5_END */
+
