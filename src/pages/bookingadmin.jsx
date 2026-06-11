@@ -442,7 +442,7 @@ function getBookingSpanForSlot(bookings, dayKey, timeKey) {
 function getBookingDurationHeight(booking) {
   const duration = getClampedBookingDuration(booking);
 
-  return Math.max(44, duration * 58 - 12);
+  return Math.max(50, duration * 58 - 8);
 }
 
 function getVisibleBookings(bookings, visibleDays) {
@@ -901,27 +901,27 @@ function CalendarCell({
       {booking && isBookingStart ? (
         <span
           className={cn(
-            'absolute left-1.5 right-1.5 top-1.5 z-20 grid content-start overflow-hidden rounded-[1.05rem] border px-2.5 py-2 text-left ring-1 ring-[var(--ui-ring)] backdrop-blur-xl',
+            'absolute left-1.5 right-1.5 top-1 z-20 grid content-start overflow-hidden rounded-[0.95rem] border px-2 py-1.5 text-left ring-1 ring-[var(--ui-ring)] backdrop-blur-xl',
             blockToneClass,
           )}
           style={{ height: durationHeight }}
         >
           <span
-            className={cn('pointer-events-none absolute bottom-2 left-2 top-2 w-1 rounded-full', statusDotClass)}
+            className={cn('pointer-events-none absolute bottom-1.5 left-1.5 top-1.5 w-0.5 rounded-full', statusDotClass)}
             aria-hidden="true"
           />
 
-          <span className="grid min-w-0 gap-1.5 pl-3">
-            <span className="block truncate text-[0.78rem] font-semibold leading-4 tracking-[-0.035em] text-[var(--ui-text-strong)]">
+          <span className="grid min-w-0 gap-0.5 pl-2">
+            <span className="block truncate text-[0.62rem] font-semibold leading-3 tracking-[-0.035em] text-[var(--ui-text-strong)]">
               {displayName}
             </span>
 
-            <span className="block truncate text-[0.62rem] font-semibold uppercase tracking-[0.13em] text-[var(--ui-text-muted)]">
+            <span className="block truncate text-[0.48rem] font-semibold uppercase leading-3 tracking-[0.08em] text-[var(--ui-text-muted)]">
               {sessionLabel}
             </span>
 
-            <span className="inline-flex w-fit max-w-full items-center gap-1.5 rounded-full border border-[var(--ui-border)] bg-[var(--ui-control)] px-2 py-0.5 text-[0.58rem] font-semibold uppercase tracking-[0.12em] text-[var(--ui-text-main)]">
-              <span className={cn('size-1.5 shrink-0 rounded-full', statusDotClass)} aria-hidden="true" />
+            <span className="inline-flex w-fit max-w-full items-center gap-1 rounded-full border border-[var(--ui-border)] bg-[var(--ui-control)] px-1.5 py-px text-[0.46rem] font-semibold uppercase leading-3 tracking-[0.08em] text-[var(--ui-text-main)]">
+              <span className={cn('size-1 shrink-0 rounded-full', statusDotClass)} aria-hidden="true" />
               <span className="truncate">
                 {paymentLabel}
               </span>
