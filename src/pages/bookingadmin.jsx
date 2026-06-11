@@ -1,12 +1,21 @@
 import { useMemo, useState } from 'react';
 import {
+  Banknote,
   CalendarDays,
   ChevronLeft,
   ChevronRight,
+  Clock3,
   Grid3X3,
+  Phone,
   Plus,
+  ReceiptText,
+  UserRound,
+  WalletCards,
+  X,
 } from 'lucide-react';
 import { cn } from '../lib/cn.js';
+
+const PRICE_PER_HOUR = 120000;
 
 const studioHours = {
   openHour: 10,
@@ -58,6 +67,31 @@ const bookingStatusItems = [
   },
 ];
 
+const paymentOptions = [
+  {
+    key: 'pending',
+    label: 'Pending',
+  },
+  {
+    key: 'dp',
+    label: 'DP',
+  },
+  {
+    key: 'paid',
+    label: 'Lunas',
+  },
+];
+
+const sessionTypes = [
+  'Latihan Band',
+  'Recording',
+  'Mixing Review',
+  'Podcast',
+  'Vocal Session',
+];
+
+const durationOptions = [1, 2, 3, 4, 5, 6];
+
 const dayShortNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 const monthNames = [
@@ -81,7 +115,14 @@ const bookingSeeds = [
     day: 3,
     time: '10:00',
     title: 'Band rehearsal',
+    customerName: 'Raka Pradana',
+    phone: '081234567890',
+    durationHours: 2,
+    sessionType: 'Latihan Band',
     status: 'pending',
+    totalPrice: PRICE_PER_HOUR * 2,
+    dpAmount: 0,
+    remainingPayment: PRICE_PER_HOUR * 2,
     tone: 'accent',
   },
   {
@@ -89,23 +130,44 @@ const bookingSeeds = [
     day: 7,
     time: '14:00',
     title: 'Vocal take',
+    customerName: 'Mira Ayu',
+    phone: '081298765432',
+    durationHours: 1,
+    sessionType: 'Vocal Session',
     status: 'dp',
-    tone: 'cyan',
+    totalPrice: PRICE_PER_HOUR,
+    dpAmount: 50000,
+    remainingPayment: PRICE_PER_HOUR - 50000,
+    tone: 'purple',
   },
   {
     id: 'booking-03',
     day: 12,
     time: '19:00',
     title: 'Live session',
+    customerName: 'Dimas Wicak',
+    phone: '082211223344',
+    durationHours: 3,
+    sessionType: 'Recording',
     status: 'paid',
-    tone: 'purple',
+    totalPrice: PRICE_PER_HOUR * 3,
+    dpAmount: PRICE_PER_HOUR * 3,
+    remainingPayment: 0,
+    tone: 'cyan',
   },
   {
     id: 'booking-04',
     day: 19,
     time: '20:00',
     title: 'Tracking',
+    customerName: 'The Velvet Room',
+    phone: '087700001111',
+    durationHours: 2,
+    sessionType: 'Recording',
     status: 'pending',
+    totalPrice: PRICE_PER_HOUR * 2,
+    dpAmount: 0,
+    remainingPayment: PRICE_PER_HOUR * 2,
     tone: 'accent',
   },
   {
@@ -113,8 +175,15 @@ const bookingSeeds = [
     day: 25,
     time: '16:00',
     title: 'Mix review',
+    customerName: 'Nara Studio Project',
+    phone: '085500001111',
+    durationHours: 1,
+    sessionType: 'Mixing Review',
     status: 'dp',
-    tone: 'cyan',
+    totalPrice: PRICE_PER_HOUR,
+    dpAmount: 70000,
+    remainingPayment: PRICE_PER_HOUR - 70000,
+    tone: 'purple',
   },
 ];
 
@@ -184,6 +253,58 @@ function formatDayLabel(date) {
 
 function formatFullDateLabel(date) {
   return formatDayLabel(date) + ' ' + monthNames[date.getMonth()] + ' ' + date.getFullYear();
+}
+
+function formatCurrency(value) {
+  return new Intl.NumberFormat('id-ID', {
+    currency: 'IDR',
+    maximumFractionDigits: 0,
+    style: 'currency',
+  }).format(Math.max(0, Number(value) || 0));
+}
+
+function parseMoney(value) {
+  return Number(String(value).replace(/[^0-9]/g, '')) || 0;
+}
+
+function getStatusLabel(status) {
+  if (status === 'paid') return 'Lunas';
+  if (status === 'dp') return 'DP';
+  return 'Pending';
+}
+
+function getToneByStatus(status) {
+  if (status === 'paid') return 'cyan';
+  if (status === 'dp') return 'purple';
+  return 'accent';
+}
+
+function calculateBookingPayment(form) {
+  const durationHours = Number(form.durationHours) || 1;
+  const totalPrice = durationHours * PRICE_PER_HOUR;
+  const cleanDpAmount = Math.min(parseMoney(form.dpAmount), totalPrice);
+
+  if (form.paymentStatus === 'paid') {
+    return {
+      dpAmount: totalPrice,
+      remainingPayment: 0,
+      totalPrice,
+    };
+  }
+
+  if (form.paymentStatus === 'dp') {
+    return {
+      dpAmount: cleanDpAmount,
+      remainingPayment: Math.max(0, totalPrice - cleanDpAmount),
+      totalPrice,
+    };
+  }
+
+  return {
+    dpAmount: 0,
+    remainingPayment: totalPrice,
+    totalPrice,
+  };
 }
 
 function createCalendarDay(date) {
@@ -256,6 +377,20 @@ function createDemoBookingsForMonth(cursorDate) {
     }));
 }
 
+function createInitialBookingForm(date, timeKey = '10:00') {
+  return {
+    bookingDate: formatDateKey(date),
+    customerName: '',
+    dpAmount: '',
+    durationHours: 1,
+    notes: '',
+    paymentStatus: 'pending',
+    phone: '',
+    sessionType: 'Latihan Band',
+    startTime: timeKey,
+  };
+}
+
 function getBookingForSlot(bookings, dayKey, timeKey) {
   return bookings.find((booking) => booking.dateKey === dayKey && booking.time === timeKey);
 }
@@ -312,6 +447,271 @@ function getGridMinWidth(viewMode, visibleDays) {
   return 448;
 }
 
+function FieldShell({
+  children,
+  icon: Icon,
+  label,
+}) {
+  return (
+    <label className="grid gap-2 text-sm font-semibold text-[var(--ui-text-main)]">
+      {label}
+      <span className="flex min-h-12 items-center gap-3 rounded-[1.25rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 ring-1 ring-[var(--ui-ring)] focus-within:border-studio-accent/55 focus-within:ring-4 focus-within:ring-studio-accent/20">
+        {Icon ? <Icon size={16} strokeWidth={2.25} aria-hidden="true" /> : null}
+        {children}
+      </span>
+    </label>
+  );
+}
+
+function BookingModal({
+  bookingForm,
+  isOpen,
+  onChange,
+  onClose,
+  onSubmit,
+  paymentPreview,
+}) {
+  if (!isOpen) return null;
+
+  return (
+    <div
+      className="fixed inset-0 z-50 grid place-items-center p-4 [background:color-mix(in_srgb,var(--ui-bg-base)_62%,transparent)] backdrop-blur-xl"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="booking-modal-title"
+    >
+      <form
+        className="grid max-h-[calc(100vh-32px)] w-[min(760px,calc(100vw-32px))] gap-5 overflow-auto rounded-[2rem] border border-[var(--ui-border-strong)] bg-[var(--ui-bg-base)] p-5 shadow-[var(--ui-shadow-soft)] ring-1 ring-[var(--ui-ring)] sm:p-6"
+        onSubmit={onSubmit}
+      >
+        <div className="flex items-start justify-between gap-4">
+          <div className="grid gap-1">
+            <span className="text-xs font-semibold uppercase tracking-[0.18em] text-studio-accent">
+              Booking form
+            </span>
+            <h2
+              className="m-0 text-3xl font-semibold tracking-[-0.06em] text-[var(--ui-text-strong)]"
+              id="booking-modal-title"
+            >
+              Tambah booking studio
+            </h2>
+            <p className="m-0 text-sm leading-6 text-[var(--ui-text-muted)]">
+              Harga otomatis {formatCurrency(PRICE_PER_HOUR)} per jam. Data phase ini masih state lokal dulu.
+            </p>
+          </div>
+
+          <button
+            aria-label="Close booking form"
+            className="grid size-10 shrink-0 place-items-center rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] text-[var(--ui-secondary-text)] shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/25"
+            type="button"
+            onClick={onClose}
+          >
+            <X size={17} strokeWidth={2.35} aria-hidden="true" />
+          </button>
+        </div>
+
+        <div className="grid gap-4 sm:grid-cols-2">
+          <FieldShell icon={UserRound} label="Nama customer">
+            <input
+              className="w-full border-0 bg-transparent text-sm font-semibold text-[var(--ui-text-strong)] outline-none placeholder:text-[var(--ui-text-soft)]"
+              name="customerName"
+              placeholder="Contoh: Raka Pradana"
+              required
+              type="text"
+              value={bookingForm.customerName}
+              onChange={onChange}
+            />
+          </FieldShell>
+
+          <FieldShell icon={Phone} label="Nomor telepon">
+            <input
+              className="w-full border-0 bg-transparent text-sm font-semibold text-[var(--ui-text-strong)] outline-none placeholder:text-[var(--ui-text-soft)]"
+              name="phone"
+              placeholder="08xxxxxxxxxx"
+              required
+              type="tel"
+              value={bookingForm.phone}
+              onChange={onChange}
+            />
+          </FieldShell>
+
+          <FieldShell icon={CalendarDays} label="Tanggal booking">
+            <input
+              className="w-full border-0 bg-transparent text-sm font-semibold text-[var(--ui-text-strong)] outline-none"
+              name="bookingDate"
+              required
+              type="date"
+              value={bookingForm.bookingDate}
+              onChange={onChange}
+            />
+          </FieldShell>
+
+          <FieldShell icon={Clock3} label="Jam mulai">
+            <select
+              className="w-full border-0 bg-transparent text-sm font-semibold text-[var(--ui-text-strong)] outline-none"
+              name="startTime"
+              value={bookingForm.startTime}
+              onChange={onChange}
+            >
+              {createTimeSlots().map((slot) => (
+                <option key={slot.key} value={slot.key}>
+                  {slot.key}
+                </option>
+              ))}
+            </select>
+          </FieldShell>
+
+          <label className="grid gap-2 text-sm font-semibold text-[var(--ui-text-main)]">
+            Durasi booking
+            <select
+              className="min-h-12 rounded-[1.25rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 text-sm font-semibold text-[var(--ui-text-strong)] shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] outline-none focus:border-studio-accent/55 focus:ring-4 focus:ring-studio-accent/20"
+              name="durationHours"
+              value={bookingForm.durationHours}
+              onChange={onChange}
+            >
+              {durationOptions.map((duration) => (
+                <option key={duration} value={duration}>
+                  {duration} jam
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <label className="grid gap-2 text-sm font-semibold text-[var(--ui-text-main)]">
+            Tipe sesi
+            <select
+              className="min-h-12 rounded-[1.25rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 text-sm font-semibold text-[var(--ui-text-strong)] shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] outline-none focus:border-studio-accent/55 focus:ring-4 focus:ring-studio-accent/20"
+              name="sessionType"
+              value={bookingForm.sessionType}
+              onChange={onChange}
+            >
+              {sessionTypes.map((item) => (
+                <option key={item}>{item}</option>
+              ))}
+            </select>
+          </label>
+        </div>
+
+        <div className="grid gap-3 rounded-[1.5rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-4 ring-1 ring-[var(--ui-ring)]">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <span className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--ui-text-strong)]">
+              <WalletCards size={16} strokeWidth={2.35} aria-hidden="true" />
+              Status pembayaran
+            </span>
+
+            <span className="text-sm font-semibold text-[var(--ui-text-muted)]">
+              {formatCurrency(PRICE_PER_HOUR)} / jam
+            </span>
+          </div>
+
+          <div className="grid gap-2 sm:grid-cols-3">
+            {paymentOptions.map((item) => (
+              <button
+                aria-pressed={bookingForm.paymentStatus === item.key}
+                className={cn(
+                  'min-h-11 rounded-full border px-4 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/25',
+                  bookingForm.paymentStatus === item.key
+                    ? 'border-studio-accent/35 bg-[var(--ui-control-hover)] text-studio-accent shadow-[var(--ui-shadow-control)] ring-1 ring-studio-accent/15'
+                    : 'border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] text-[var(--ui-secondary-text)] hover:bg-[var(--ui-control)] hover:text-[var(--ui-text-strong)]',
+                )}
+                key={item.key}
+                type="button"
+                onClick={() => onChange({
+                  target: {
+                    name: 'paymentStatus',
+                    value: item.key,
+                  },
+                })}
+              >
+                {item.label}
+              </button>
+            ))}
+          </div>
+
+          {bookingForm.paymentStatus === 'dp' ? (
+            <FieldShell icon={Banknote} label="Nominal DP">
+              <input
+                className="w-full border-0 bg-transparent text-sm font-semibold text-[var(--ui-text-strong)] outline-none placeholder:text-[var(--ui-text-soft)]"
+                min="0"
+                name="dpAmount"
+                placeholder="Contoh: 50000"
+                type="number"
+                value={bookingForm.dpAmount}
+                onChange={onChange}
+              />
+            </FieldShell>
+          ) : null}
+
+          <div className="grid gap-2 sm:grid-cols-3">
+            <div className="grid gap-1 border-y border-[var(--ui-border)] py-3 sm:border-y-0 sm:border-l sm:px-4 sm:first:border-l-0">
+              <span className="text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-[var(--ui-text-muted)]">
+                Total
+              </span>
+              <strong className="text-lg font-semibold text-[var(--ui-text-strong)]">
+                {formatCurrency(paymentPreview.totalPrice)}
+              </strong>
+            </div>
+
+            <div className="grid gap-1 border-y border-[var(--ui-border)] py-3 sm:border-y-0 sm:border-l sm:px-4 sm:first:border-l-0">
+              <span className="text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-[var(--ui-text-muted)]">
+                Terbayar
+              </span>
+              <strong className="text-lg font-semibold text-[var(--ui-text-strong)]">
+                {formatCurrency(paymentPreview.dpAmount)}
+              </strong>
+            </div>
+
+            <div className="grid gap-1 border-y border-[var(--ui-border)] py-3 sm:border-y-0 sm:border-l sm:px-4 sm:first:border-l-0">
+              <span className="text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-[var(--ui-text-muted)]">
+                Sisa
+              </span>
+              <strong className="text-lg font-semibold text-[var(--ui-text-strong)]">
+                {formatCurrency(paymentPreview.remainingPayment)}
+              </strong>
+            </div>
+          </div>
+        </div>
+
+        <label className="grid gap-2 text-sm font-semibold text-[var(--ui-text-main)]">
+          Catatan tambahan
+          <textarea
+            className="min-h-24 resize-y rounded-[1.25rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 py-3 text-sm font-semibold leading-6 text-[var(--ui-text-strong)] shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] outline-none placeholder:text-[var(--ui-text-soft)] focus:border-studio-accent/55 focus:ring-4 focus:ring-studio-accent/20"
+            name="notes"
+            placeholder="Contoh: butuh ampli gitar tambahan, request mic vocal, dll."
+            value={bookingForm.notes}
+            onChange={onChange}
+          />
+        </label>
+
+        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[var(--ui-border)] pt-4">
+          <span className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--ui-text-muted)]">
+            <ReceiptText size={16} strokeWidth={2.35} aria-hidden="true" />
+            Simpan ke state lokal dulu
+          </span>
+
+          <div className="flex flex-wrap gap-2">
+            <button
+              className="inline-flex min-h-11 items-center justify-center rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] px-5 text-sm font-semibold text-[var(--ui-secondary-text)] shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/25"
+              type="button"
+              onClick={onClose}
+            >
+              Batal
+            </button>
+
+            <button
+              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full [background:var(--ui-primary-bg)] px-5 text-sm font-semibold text-[var(--ui-primary-text)] shadow-[var(--ui-shadow-soft)] transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
+              type="submit"
+            >
+              <Plus size={16} strokeWidth={2.35} aria-hidden="true" />
+              Simpan booking
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  );
+}
+
 function CalendarCell({
   booking,
   day,
@@ -340,11 +740,11 @@ function CalendarCell({
           )}
         >
           <span className="truncate text-[0.72rem] font-semibold tracking-[-0.02em]">
-            {booking.title}
+            {booking.customerName || booking.title}
           </span>
           <span className="mt-0.5 flex items-center justify-between gap-2 text-[0.65rem] font-semibold uppercase tracking-[0.12em] text-[var(--ui-text-muted)]">
             <span>{time.key}</span>
-            <span>{booking.status === 'paid' ? 'Lunas' : booking.status.toUpperCase()}</span>
+            <span>{getStatusLabel(booking.status)}</span>
           </span>
         </span>
       ) : (
@@ -499,6 +899,7 @@ function ViewToggle({
 }
 
 function CalendarToolbar({
+  onAddBooking,
   onNext,
   onPrev,
   onToday,
@@ -553,6 +954,7 @@ function CalendarToolbar({
         <button
           className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full [background:var(--ui-primary-bg)] px-4 text-sm font-semibold text-[var(--ui-primary-text)] shadow-[var(--ui-shadow-soft)] transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
           type="button"
+          onClick={onAddBooking}
         >
           <Plus size={16} strokeWidth={2.35} aria-hidden="true" />
           Add booking
@@ -668,7 +1070,7 @@ function CalendarGrid({
                     isSelected={isSelected}
                     key={day.key + '-' + slot.key}
                     time={slot}
-                    onSelect={() => onSelectSlot(day, slot)}
+                    onSelect={() => onSelectSlot(day, slot, booking)}
                   />
                 );
               })}
@@ -692,11 +1094,11 @@ function SelectedSlotPanel({
       {selectedSlot.label} jam {selectedSlot.timeKey}.
       {booking ? (
         <span>
-          {' '}Slot ini sudah terisi untuk <span className="font-semibold text-[var(--ui-text-strong)]">{booking.title}</span> dengan status <span className="font-semibold text-[var(--ui-text-strong)]">{booking.status === 'paid' ? 'Lunas' : booking.status.toUpperCase()}</span>.
+          {' '}Slot ini sudah terisi untuk <span className="font-semibold text-[var(--ui-text-strong)]">{booking.customerName || booking.title}</span> dengan status <span className="font-semibold text-[var(--ui-text-strong)]">{getStatusLabel(booking.status)}</span>. Total {formatCurrency(booking.totalPrice)} dan sisa {formatCurrency(booking.remainingPayment)}.
         </span>
       ) : (
         <span>
-          {' '}Slot ini kosong dan siap dipakai untuk flow add booking di phase berikutnya.
+          {' '}Slot ini kosong. Klik slot kosong atau tombol Add booking untuk membuka form.
         </span>
       )}
     </div>
@@ -709,6 +1111,12 @@ export function BookingAdmin() {
     const now = new Date();
 
     return createDate(now.getFullYear(), now.getMonth(), now.getDate());
+  });
+  const [manualBookings, setManualBookings] = useState([]);
+  const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
+  const [bookingForm, setBookingForm] = useState(() => {
+    const now = new Date();
+    return createInitialBookingForm(createDate(now.getFullYear(), now.getMonth(), now.getDate()));
   });
   const [selectedSlot, setSelectedSlot] = useState(() => {
     const now = new Date();
@@ -723,7 +1131,11 @@ export function BookingAdmin() {
 
   const timeSlots = useMemo(() => createTimeSlots(), []);
   const visibleDays = useMemo(() => createVisibleDays(viewMode, cursorDate), [cursorDate, viewMode]);
-  const bookings = useMemo(() => createDemoBookingsForMonth(cursorDate), [cursorDate]);
+  const baseBookings = useMemo(() => createDemoBookingsForMonth(cursorDate), [cursorDate]);
+  const bookings = useMemo(
+    () => [...baseBookings, ...manualBookings],
+    [baseBookings, manualBookings],
+  );
   const visibleBookings = useMemo(
     () => getVisibleBookings(bookings, visibleDays),
     [bookings, visibleDays],
@@ -735,6 +1147,10 @@ export function BookingAdmin() {
   const rangeLabel = useMemo(
     () => getViewRangeLabel(viewMode, visibleDays, cursorDate),
     [cursorDate, viewMode, visibleDays],
+  );
+  const paymentPreview = useMemo(
+    () => calculateBookingPayment(bookingForm),
+    [bookingForm],
   );
   const summary = useMemo(() => {
     const totalSlots = visibleDays.length * timeSlots.length;
@@ -753,6 +1169,65 @@ export function BookingAdmin() {
       label: formatFullDateLabel(nextDate),
       timeKey: selectedSlot.timeKey,
     });
+  };
+
+  const openBookingModal = (date = cursorDate, timeKey = selectedSlot.timeKey) => {
+    setBookingForm(createInitialBookingForm(date, timeKey));
+    setIsBookingModalOpen(true);
+  };
+
+  const closeBookingModal = () => {
+    setIsBookingModalOpen(false);
+  };
+
+  const handleFormChange = (event) => {
+    const { name, value } = event.target;
+
+    setBookingForm((current) => {
+      const next = {
+        ...current,
+        [name]: value,
+      };
+
+      if (name === 'paymentStatus' && value !== 'dp') {
+        next.dpAmount = '';
+      }
+
+      return next;
+    });
+  };
+
+  const handleBookingSubmit = (event) => {
+    event.preventDefault();
+
+    const payment = calculateBookingPayment(bookingForm);
+    const nextBooking = {
+      customerName: bookingForm.customerName.trim(),
+      dateKey: bookingForm.bookingDate,
+      dpAmount: payment.dpAmount,
+      durationHours: Number(bookingForm.durationHours) || 1,
+      id: 'manual-' + Date.now(),
+      notes: bookingForm.notes.trim(),
+      phone: bookingForm.phone.trim(),
+      remainingPayment: payment.remainingPayment,
+      sessionType: bookingForm.sessionType,
+      status: bookingForm.paymentStatus,
+      time: bookingForm.startTime,
+      title: bookingForm.sessionType,
+      tone: getToneByStatus(bookingForm.paymentStatus),
+      totalPrice: payment.totalPrice,
+    };
+
+    setManualBookings((current) => [...current, nextBooking]);
+
+    const nextDate = parseDateInputToDate(bookingForm.bookingDate, cursorDate);
+    setCursorDate(nextDate);
+    setSelectedSlot({
+      dateKey: bookingForm.bookingDate,
+      label: formatFullDateLabel(nextDate),
+      timeKey: bookingForm.startTime,
+    });
+    setIsBookingModalOpen(false);
   };
 
   const goToPreviousPeriod = () => {
@@ -789,13 +1264,17 @@ export function BookingAdmin() {
     updateCursorDate(createDate(now.getFullYear(), now.getMonth(), now.getDate()));
   };
 
-  const handleSelectSlot = (day, slot) => {
+  const handleSelectSlot = (day, slot, booking) => {
     setCursorDate(day.date);
     setSelectedSlot({
       dateKey: day.key,
       label: day.fullLabel,
       timeKey: slot.key,
     });
+
+    if (!booking) {
+      openBookingModal(day.date, slot.key);
+    }
   };
 
   return (
@@ -809,6 +1288,7 @@ export function BookingAdmin() {
           rangeLabel={rangeLabel}
           statusCounts={statusCounts}
           viewMode={viewMode}
+          onAddBooking={() => openBookingModal(cursorDate, selectedSlot.timeKey)}
           onNext={goToNextPeriod}
           onPrev={goToPreviousPeriod}
           onToday={goToToday}
@@ -837,6 +1317,25 @@ export function BookingAdmin() {
         bookings={bookings}
         selectedSlot={selectedSlot}
       />
+
+      <BookingModal
+        bookingForm={bookingForm}
+        isOpen={isBookingModalOpen}
+        paymentPreview={paymentPreview}
+        onChange={handleFormChange}
+        onClose={closeBookingModal}
+        onSubmit={handleBookingSubmit}
+      />
     </section>
   );
+}
+
+function parseDateInputToDate(value, fallback) {
+  const parts = value.split('-').map(Number);
+
+  if (parts.length !== 3 || parts.some((part) => Number.isNaN(part))) {
+    return fallback;
+  }
+
+  return createDate(parts[0], parts[1] - 1, parts[2]);
 }
