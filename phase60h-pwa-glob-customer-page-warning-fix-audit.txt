@@ -1,8 +1,0 @@
-37 Music Studio — PWA Glob Warning Fix
-Generated: 2026-06-07T15:19:55.534Z
-
-Fixed:
-- Changed assets/CustomerPage-*.js to assets/CustomersPage-*.js.
-
-Why:
-- Actual route/page file is CustomersPage.jsx, so Vite chunk name uses CustomersPage.
