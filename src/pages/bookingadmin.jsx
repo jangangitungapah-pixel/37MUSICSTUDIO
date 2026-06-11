@@ -858,14 +858,14 @@ function BookingModal({
   );
 }
 
-function DetailMetric({
+function DetailLine({
   helper,
   icon: Icon,
   label,
   value,
 }) {
   return (
-    <article className="grid gap-2 rounded-[1.25rem] border border-[var(--ui-border)] bg-[var(--ui-control)] p-3 ring-1 ring-[var(--ui-ring)]">
+    <div className="grid gap-1 border-t border-[var(--ui-border)] py-3 first:border-t-0">
       <div className="flex items-center gap-2 text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-[var(--ui-text-muted)]">
         {Icon ? <Icon size={14} strokeWidth={2.35} aria-hidden="true" /> : null}
         {label}
@@ -880,7 +880,48 @@ function DetailMetric({
           {helper}
         </span>
       ) : null}
-    </article>
+    </div>
+  );
+}
+
+function DetailColumn({
+  children,
+  label,
+}) {
+  return (
+    <section className="grid gap-2" aria-label={label}>
+      <span className="text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-studio-accent">
+        {label}
+      </span>
+
+      <div className="grid gap-0">
+        {children}
+      </div>
+    </section>
+  );
+}
+
+function PaymentValue({
+  helper,
+  icon: Icon,
+  label,
+  value,
+}) {
+  return (
+    <div className="grid gap-1 border-t border-[var(--ui-border)] py-3 sm:border-l sm:border-t-0 sm:px-5 sm:first:border-l-0">
+      <div className="flex items-center gap-2 text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-[var(--ui-text-muted)]">
+        {Icon ? <Icon size={14} strokeWidth={2.35} aria-hidden="true" /> : null}
+        {label}
+      </div>
+
+      <strong className="text-xl font-semibold tracking-[-0.045em] text-[var(--ui-text-strong)]">
+        {value}
+      </strong>
+
+      <span className="text-xs font-medium leading-5 text-[var(--ui-text-muted)]">
+        {helper}
+      </span>
+    </div>
   );
 }
 
@@ -915,9 +956,9 @@ function BookingDetailModal({
       aria-modal="true"
       aria-labelledby="booking-detail-title"
     >
-      <div className="grid max-h-[calc(100vh-32px)] w-[min(720px,calc(100vw-32px))] gap-5 overflow-auto rounded-[2rem] border border-[var(--ui-border-strong)] bg-[var(--ui-bg-base)] p-5 shadow-[var(--ui-shadow-soft)] ring-1 ring-[var(--ui-ring)] sm:p-6">
+      <div className="grid max-h-[calc(100vh-32px)] w-[min(760px,calc(100vw-32px))] gap-5 overflow-auto rounded-[2rem] border border-[var(--ui-border-strong)] bg-[var(--ui-bg-base)] p-5 shadow-[var(--ui-shadow-soft)] ring-1 ring-[var(--ui-ring)] sm:p-6">
         <div className="flex items-start justify-between gap-4">
-          <div className="grid gap-2">
+          <div className="grid gap-3">
             <span className="inline-flex w-fit items-center gap-2 rounded-full border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 py-1.5 text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-studio-accent ring-1 ring-[var(--ui-ring)]">
               <ReceiptText size={14} strokeWidth={2.35} aria-hidden="true" />
               Detail booking
@@ -925,13 +966,13 @@ function BookingDetailModal({
 
             <div className="grid gap-1">
               <h2
-                className="m-0 text-3xl font-semibold tracking-[-0.06em] text-[var(--ui-text-strong)]"
+                className="m-0 text-[clamp(2rem,4vw,3.25rem)] font-semibold leading-none tracking-[-0.075em] text-[var(--ui-text-strong)]"
                 id="booking-detail-title"
               >
                 {displayName}
               </h2>
 
-              <p className="m-0 text-sm leading-6 text-[var(--ui-text-muted)]">
+              <p className="m-0 max-w-2xl text-sm leading-6 text-[var(--ui-text-muted)]">
                 {sessionLabel} pada {formatFullDateLabel(bookingDate)}, pukul {booking.time} sampai {endTime}.
               </p>
             </div>
@@ -947,14 +988,15 @@ function BookingDetailModal({
           </button>
         </div>
 
-        <section className="grid gap-3 rounded-[1.5rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-4 ring-1 ring-[var(--ui-ring)]" aria-label="Ringkasan booking">
+        <section className="grid gap-4 border-y border-[var(--ui-border)] py-4" aria-label="Ringkasan booking">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="grid gap-1">
               <span className="text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-[var(--ui-text-muted)]">
                 Status pembayaran
               </span>
 
-              <strong className="text-xl font-semibold tracking-[-0.04em] text-[var(--ui-text-strong)]">
+              <strong className="inline-flex items-center gap-2 text-2xl font-semibold tracking-[-0.055em] text-[var(--ui-text-strong)]">
+                <span className={cn('size-2 rounded-full', statusDotClass)} aria-hidden="true" />
                 {paymentLabel}
               </strong>
             </div>
@@ -965,22 +1007,22 @@ function BookingDetailModal({
             </span>
           </div>
 
-          <div className="grid gap-2 sm:grid-cols-3">
-            <DetailMetric
+          <div className="grid gap-0 border-y border-[var(--ui-border)] sm:grid-cols-3">
+            <PaymentValue
               icon={WalletCards}
               label="Total"
               value={formatCurrency(booking.totalPrice)}
               helper={duration + ' jam x ' + formatCurrency(PRICE_PER_HOUR)}
             />
 
-            <DetailMetric
+            <PaymentValue
               icon={Banknote}
               label="Terbayar"
               value={formatCurrency(paidAmount)}
               helper={booking.status === 'dp' ? 'Nominal DP' : paymentLabel}
             />
 
-            <DetailMetric
+            <PaymentValue
               icon={ReceiptText}
               label="Sisa"
               value={formatCurrency(booking.remainingPayment)}
@@ -989,37 +1031,41 @@ function BookingDetailModal({
           </div>
         </section>
 
-        <section className="grid gap-2 sm:grid-cols-2" aria-label="Data booking">
-          <DetailMetric
-            icon={UserRound}
-            label="Customer"
-            value={displayName}
-            helper={booking.phone || 'Nomor telepon belum diisi'}
-          />
+        <section className="grid gap-5 sm:grid-cols-2" aria-label="Data booking">
+          <DetailColumn label="Customer">
+            <DetailLine
+              icon={UserRound}
+              label="Nama"
+              value={displayName}
+              helper={booking.phone || 'Nomor telepon belum diisi'}
+            />
 
-          <DetailMetric
-            icon={Phone}
-            label="Nomor telepon"
-            value={booking.phone || '-'}
-            helper="Kontak customer"
-          />
+            <DetailLine
+              icon={Phone}
+              label="Nomor telepon"
+              value={booking.phone || '-'}
+              helper="Kontak customer"
+            />
+          </DetailColumn>
 
-          <DetailMetric
-            icon={CalendarDays}
-            label="Tanggal"
-            value={formatFullDateLabel(bookingDate)}
-            helper={booking.dateKey}
-          />
+          <DetailColumn label="Jadwal">
+            <DetailLine
+              icon={CalendarDays}
+              label="Tanggal"
+              value={formatFullDateLabel(bookingDate)}
+              helper={booking.dateKey}
+            />
 
-          <DetailMetric
-            icon={Clock3}
-            label="Waktu"
-            value={booking.time + ' - ' + endTime}
-            helper={'Durasi ' + duration + ' jam'}
-          />
+            <DetailLine
+              icon={Clock3}
+              label="Waktu"
+              value={booking.time + ' - ' + endTime}
+              helper={'Durasi ' + duration + ' jam'}
+            />
+          </DetailColumn>
         </section>
 
-        <section className="grid gap-2 rounded-[1.5rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-4 ring-1 ring-[var(--ui-ring)]" aria-label="Catatan booking">
+        <section className="grid gap-2 border-y border-[var(--ui-border)] py-4" aria-label="Catatan booking">
           <span className="text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-[var(--ui-text-muted)]">
             Catatan
           </span>
