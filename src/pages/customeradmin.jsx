@@ -1,8 +1,10 @@
 import {
   useMemo,
   useState,
-} from 'react';
-import { Link, useOutletContext, useSearchParams } from 'react-router';
+  } from 'react';
+import { Link,
+  useOutletContext,
+  useSearchParams } from 'react-router';
 import {
   ArrowUpRight,
   CalendarClock,
@@ -19,6 +21,8 @@ import {
   UserRound,
   UsersRound,
   X,
+  Copy,
+  MessageCircle,
 } from 'lucide-react';
 import { cn } from '../lib/cn.js';
 
@@ -142,6 +146,84 @@ function getPaymentLabel(status) {
   if (status === 'paid') return 'Lunas';
   if (status === 'dp') return 'DP';
   return 'Pending';
+}
+
+function normalizePhoneDigits(value) {
+  return String(value || '').replace(/\D/g, '');
+}
+
+function normalizeWhatsappNumber(value) {
+  const digits = normalizePhoneDigits(value);
+
+  if (!digits) {
+    return '';
+  }
+
+  if (digits.startsWith('62')) {
+    return digits;
+  }
+
+  if (digits.startsWith('0')) {
+    return '62' + digits.slice(1);
+  }
+
+  return digits;
+}
+
+function getCustomerPhoneValue(customer) {
+  const phone = String(customer?.phone || '').trim();
+
+  return phone && phone !== '-' ? phone : '';
+}
+
+function getCustomerBoardQuery(customer) {
+  return getCustomerPhoneValue(customer) || customer?.name || '';
+}
+
+function getPaymentProgress(customer) {
+  const totalRevenue = Math.max(0, Number(customer?.totalRevenue) || 0);
+  const paidRevenue = Math.max(0, Number(customer?.paidRevenue) || 0);
+
+  if (!totalRevenue) {
+    return 0;
+  }
+
+  return Math.min(100, Math.round((paidRevenue / totalRevenue) * 100));
+}
+
+function getPaymentHealthLabel(customer) {
+  const totalRevenue = Math.max(0, Number(customer?.totalRevenue) || 0);
+  const pendingRevenue = Math.max(0, Number(customer?.pendingRevenue) || 0);
+  const paidRevenue = Math.max(0, Number(customer?.paidRevenue) || 0);
+
+  if (!totalRevenue) {
+    return 'Belum ada transaksi';
+  }
+
+  if (pendingRevenue <= 0) {
+    return 'Lunas semua';
+  }
+
+  if (paidRevenue > 0) {
+    return 'Ada sisa bayar';
+  }
+
+  return 'Belum ada pembayaran';
+}
+
+function getPaymentHealthClass(customer) {
+  const pendingRevenue = Math.max(0, Number(customer?.pendingRevenue) || 0);
+  const paidRevenue = Math.max(0, Number(customer?.paidRevenue) || 0);
+
+  if (pendingRevenue <= 0) {
+    return 'border-studio-cyan/35 bg-studio-cyan/10 text-studio-cyan';
+  }
+
+  if (paidRevenue > 0) {
+    return 'border-studio-purple/35 bg-studio-purple/10 text-studio-purple';
+  }
+
+  return 'border-studio-accent/35 bg-studio-accent/10 text-studio-accent';
 }
 
 function buildCustomersFromBookings(bookings, today = new Date()) {
@@ -626,7 +708,7 @@ function CustomerList({
 
                 <Link
                   className="inline-flex min-h-9 items-center justify-center gap-1.5 whitespace-nowrap rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] px-3 text-sm font-semibold text-[var(--ui-secondary-text)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
-                  to={'/admin/bookings?customer=' + encodeURIComponent(customer.phone)}
+                  to={'/admin/bookings?customer=' + encodeURIComponent(getCustomerBoardQuery(customer))}
                 >
                   Board
                   <ArrowUpRight size={14} strokeWidth={2.35} aria-hidden="true" />
@@ -659,10 +741,145 @@ function DetailMetric({
   );
 }
 
+function BookingSummaryCard({
+  booking,
+  emptyLabel = 'Belum ada data',
+  label,
+}) {
+  if (!booking) {
+    return (
+      <div className="grid gap-2 rounded-[1.25rem] border border-dashed border-[var(--ui-border-strong)] bg-[var(--ui-glass-soft)] p-3 ring-1 ring-[var(--ui-ring)]">
+        <span className="text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-[var(--ui-text-muted)]">
+          {label}
+        </span>
+
+        <strong className="text-sm font-semibold text-[var(--ui-text-muted)]">
+          {emptyLabel}
+        </strong>
+      </div>
+    );
+  }
+
+  return (
+    <div className="grid gap-2 rounded-[1.25rem] border border-[var(--ui-border)] bg-[var(--ui-control)] p-3 ring-1 ring-[var(--ui-ring)]">
+      <span className="text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-[var(--ui-text-muted)]">
+        {label}
+      </span>
+
+      <div className="grid gap-0.5">
+        <strong className="text-sm font-semibold text-[var(--ui-text-strong)]">
+          {booking.sessionType || booking.title || 'Studio session'}
+        </strong>
+
+        <span className="text-xs font-medium leading-5 text-[var(--ui-text-muted)]">
+          {formatDateLabel(booking.dateKey)} • {booking.time || '-'} • {booking.durationHours || 1} jam
+        </span>
+      </div>
+
+      <span className="w-fit rounded-full border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] px-2 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.1em] text-[var(--ui-text-main)]">
+        {getPaymentLabel(booking.status)}
+      </span>
+    </div>
+  );
+}
+
+function CustomerPaymentSummary({
+  customer,
+}) {
+  const paymentProgress = getPaymentProgress(customer);
+
+  return (
+    <section className="grid gap-3 rounded-[1.35rem] border border-[var(--ui-border)] bg-[var(--ui-control)] p-3 ring-1 ring-[var(--ui-ring)]" aria-label="Customer payment summary">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <span className="text-xs font-semibold uppercase tracking-[0.16em] text-studio-accent">
+          Payment summary
+        </span>
+
+        <span className={cn('rounded-full border px-2.5 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.11em]', getPaymentHealthClass(customer))}>
+          {getPaymentHealthLabel(customer)}
+        </span>
+      </div>
+
+      <div className="grid gap-1.5">
+        <div className="h-2 overflow-hidden rounded-full bg-[var(--ui-secondary-bg)] ring-1 ring-[var(--ui-ring)]">
+          <div
+            className="h-full rounded-full bg-studio-cyan"
+            style={{ width: paymentProgress + '%' }}
+          />
+        </div>
+
+        <span className="text-xs font-medium text-[var(--ui-text-muted)]">
+          {paymentProgress}% pembayaran terkumpul dari total revenue customer.
+        </span>
+      </div>
+
+      <div className="grid gap-2 sm:grid-cols-3">
+        <div className="grid gap-0.5 rounded-[1rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-3">
+          <span className="text-[0.66rem] font-semibold uppercase tracking-[0.13em] text-[var(--ui-text-muted)]">
+            Total
+          </span>
+          <strong className="text-sm font-semibold text-[var(--ui-text-strong)]">
+            {formatCurrency(customer.totalRevenue)}
+          </strong>
+        </div>
+
+        <div className="grid gap-0.5 rounded-[1rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-3">
+          <span className="text-[0.66rem] font-semibold uppercase tracking-[0.13em] text-[var(--ui-text-muted)]">
+            Terkumpul
+          </span>
+          <strong className="text-sm font-semibold text-[var(--ui-text-strong)]">
+            {formatCurrency(customer.paidRevenue)}
+          </strong>
+        </div>
+
+        <div className="grid gap-0.5 rounded-[1rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-3">
+          <span className="text-[0.66rem] font-semibold uppercase tracking-[0.13em] text-[var(--ui-text-muted)]">
+            Sisa
+          </span>
+          <strong className="text-sm font-semibold text-[var(--ui-text-strong)]">
+            {formatCurrency(customer.pendingRevenue)}
+          </strong>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function CustomerDetailPanel({
   customer,
   onClose,
 }) {
+  const [copyStatus, setCopyStatus] = useState('idle');
+  const phoneValue = getCustomerPhoneValue(customer);
+  const phoneDigits = normalizePhoneDigits(phoneValue);
+  const whatsappNumber = normalizeWhatsappNumber(phoneValue);
+  const boardQuery = getCustomerBoardQuery(customer);
+  const boardHref = '/admin/bookings?customer=' + encodeURIComponent(boardQuery);
+  const phoneHref = phoneDigits ? 'tel:' + phoneDigits : '';
+  const whatsappHref = whatsappNumber ? 'https://wa.me/' + whatsappNumber : '';
+
+  const handleCopyPhone = async () => {
+    if (!phoneValue || typeof navigator === 'undefined' || !navigator.clipboard) {
+      setCopyStatus('error');
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(phoneValue);
+      setCopyStatus('copied');
+
+      if (typeof window !== 'undefined') {
+        window.setTimeout(() => setCopyStatus('idle'), 2200);
+      }
+    } catch (_error) {
+      setCopyStatus('error');
+
+      if (typeof window !== 'undefined') {
+        window.setTimeout(() => setCopyStatus('idle'), 2200);
+      }
+    }
+  };
+
   if (!customer) {
     return (
       <aside className="grid min-h-[360px] content-center justify-items-center gap-4 rounded-[2rem] border border-[var(--ui-border-strong)] bg-[linear-gradient(145deg,var(--ui-glass),var(--ui-glass-soft))] p-6 text-center shadow-[var(--ui-shadow-soft)] ring-1 ring-[var(--ui-ring)] backdrop-blur-2xl">
@@ -676,7 +893,7 @@ function CustomerDetailPanel({
           </h2>
 
           <p className="m-0 text-sm leading-7 text-[var(--ui-text-muted)]">
-            Detail customer akan tampil di sini, termasuk riwayat booking dan shortcut ke booking board.
+            Detail customer akan tampil di sini, termasuk riwayat booking, ringkasan payment, dan shortcut kontak.
           </p>
         </div>
       </aside>
@@ -684,7 +901,7 @@ function CustomerDetailPanel({
   }
 
   return (
-    <aside className="grid gap-4 rounded-[2rem] border border-[var(--ui-border-strong)] bg-[linear-gradient(145deg,var(--ui-glass),var(--ui-glass-soft))] p-4 shadow-[var(--ui-shadow-soft)] ring-1 ring-[var(--ui-ring)] backdrop-blur-2xl sm:p-5">
+    <aside className="grid gap-4 rounded-[2rem] border border-[var(--ui-border-strong)] bg-[linear-gradient(145deg,var(--ui-glass),var(--ui-glass-soft))] p-4 shadow-[var(--ui-shadow-soft)] ring-1 ring-[var(--ui-ring)] backdrop-blur-2xl sm:p-5 xl:sticky xl:top-4">
       <div className="flex items-start justify-between gap-3">
         <div className="flex min-w-0 items-center gap-3">
           <span className="grid size-13 shrink-0 place-items-center rounded-[1.15rem] [background:var(--ui-primary-bg)] text-sm font-semibold tracking-[-0.03em] text-[var(--ui-primary-text)] shadow-[var(--ui-shadow-control)]">
@@ -697,7 +914,7 @@ function CustomerDetailPanel({
               {customer.name}
             </h2>
             <span className="text-sm font-semibold text-[var(--ui-text-muted)]">
-              {customer.phone}
+              {phoneValue || 'Nomor belum tersedia'}
             </span>
           </div>
         </div>
@@ -712,6 +929,66 @@ function CustomerDetailPanel({
         </button>
       </div>
 
+      <div className="grid gap-2 sm:grid-cols-2">
+        {phoneHref ? (
+          <a
+            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] px-4 text-sm font-semibold text-[var(--ui-secondary-text)] shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
+            href={phoneHref}
+          >
+            <Phone size={15} strokeWidth={2.35} aria-hidden="true" />
+            Call
+          </a>
+        ) : (
+          <button
+            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] px-4 text-sm font-semibold text-[var(--ui-text-muted)] opacity-60"
+            disabled
+            type="button"
+          >
+            <Phone size={15} strokeWidth={2.35} aria-hidden="true" />
+            Call
+          </button>
+        )}
+
+        {whatsappHref ? (
+          <a
+            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-studio-cyan/35 bg-studio-cyan/10 px-4 text-sm font-semibold text-studio-cyan ring-1 ring-studio-cyan/15 transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-cyan/20"
+            href={whatsappHref}
+            rel="noreferrer"
+            target="_blank"
+          >
+            <MessageCircle size={15} strokeWidth={2.35} aria-hidden="true" />
+            WhatsApp
+          </a>
+        ) : (
+          <button
+            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] px-4 text-sm font-semibold text-[var(--ui-text-muted)] opacity-60"
+            disabled
+            type="button"
+          >
+            <MessageCircle size={15} strokeWidth={2.35} aria-hidden="true" />
+            WhatsApp
+          </button>
+        )}
+
+        <button
+          className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] px-4 text-sm font-semibold text-[var(--ui-secondary-text)] shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20 disabled:cursor-not-allowed disabled:opacity-60"
+          disabled={!phoneValue}
+          type="button"
+          onClick={handleCopyPhone}
+        >
+          <Copy size={15} strokeWidth={2.35} aria-hidden="true" />
+          {copyStatus === 'copied' ? 'Copied' : copyStatus === 'error' ? 'Copy gagal' : 'Copy phone'}
+        </button>
+
+        <Link
+          className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full [background:var(--ui-primary-bg)] px-4 text-sm font-semibold text-[var(--ui-primary-text)] shadow-[var(--ui-shadow-soft)] transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
+          to={boardHref}
+        >
+          Board
+          <ArrowUpRight size={15} strokeWidth={2.35} aria-hidden="true" />
+        </Link>
+      </div>
+
       <div className="grid gap-0 border-y border-[var(--ui-border)]">
         <DetailMetric
           icon={CalendarDays}
@@ -719,9 +996,9 @@ function CustomerDetailPanel({
           value={customer.totalBookings + ' sesi'}
         />
         <DetailMetric
-          icon={CreditCard}
-          label="Revenue"
-          value={formatCurrency(customer.totalRevenue)}
+          icon={History}
+          label="Favorite session"
+          value={customer.favoriteSession}
         />
         <DetailMetric
           icon={Clock3}
@@ -735,23 +1012,35 @@ function CustomerDetailPanel({
         />
       </div>
 
+      <CustomerPaymentSummary customer={customer} />
+
+      <div className="grid gap-3 sm:grid-cols-2">
+        <BookingSummaryCard
+          booking={customer.lastBooking}
+          emptyLabel="Belum ada booking terakhir"
+          label="Last session"
+        />
+
+        <BookingSummaryCard
+          booking={customer.nextBooking}
+          emptyLabel="Belum ada jadwal mendatang"
+          label="Next session"
+        />
+      </div>
+
       <div className="grid gap-3">
         <div className="flex items-center justify-between gap-3">
           <span className="text-xs font-semibold uppercase tracking-[0.16em] text-studio-accent">
             Booking history
           </span>
 
-          <Link
-            className="inline-flex min-h-9 items-center justify-center gap-1.5 rounded-full [background:var(--ui-primary-bg)] px-4 text-xs font-semibold uppercase tracking-[0.12em] text-[var(--ui-primary-text)] shadow-[var(--ui-shadow-soft)] transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
-            to={'/admin/bookings?customer=' + encodeURIComponent(customer.phone)}
-          >
-            View board
-            <ArrowUpRight size={13} strokeWidth={2.35} aria-hidden="true" />
-          </Link>
+          <span className="rounded-full border border-[var(--ui-border)] bg-[var(--ui-control)] px-2.5 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.11em] text-[var(--ui-text-muted)] ring-1 ring-[var(--ui-ring)]">
+            {customer.bookings.length} sesi
+          </span>
         </div>
 
-        <div className="grid gap-2">
-          {customer.bookings.slice(0, 5).map((booking) => (
+        <div className="grid max-h-[25rem] gap-2 overflow-auto pr-1">
+          {customer.bookings.map((booking) => (
             <div
               className="grid gap-2 rounded-[1.15rem] border border-[var(--ui-border)] bg-[var(--ui-control)] p-3 ring-1 ring-[var(--ui-ring)]"
               key={booking.id}
@@ -771,6 +1060,11 @@ function CustomerDetailPanel({
                 <span>{booking.time}</span>
                 <span>{booking.durationHours} jam</span>
                 <span>{formatCurrency(booking.totalPrice)}</span>
+                {Number(booking.remainingPayment) > 0 ? (
+                  <span className="text-studio-accent">
+                    Sisa {formatCurrency(booking.remainingPayment)}
+                  </span>
+                ) : null}
               </div>
             </div>
           ))}
