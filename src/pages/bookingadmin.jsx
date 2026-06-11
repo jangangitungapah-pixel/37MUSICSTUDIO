@@ -442,7 +442,7 @@ function getBookingSpanForSlot(bookings, dayKey, timeKey) {
 function getBookingDurationHeight(booking) {
   const duration = getClampedBookingDuration(booking);
 
-  return Math.max(50, duration * 58 - 8);
+  return Math.max(46, duration * 54 - 8);
 }
 
 function getVisibleBookings(bookings, visibleDays) {
@@ -475,26 +475,26 @@ function getViewRangeLabel(viewMode, visibleDays, cursorDate) {
 
 function getDayColumnTemplate(viewMode) {
   if (viewMode === 'day') {
-    return 'minmax(280px,1fr)';
+    return 'minmax(220px,1fr)';
   }
 
   if (viewMode === 'week') {
-    return 'minmax(148px,1fr)';
+    return 'minmax(104px,1fr)';
   }
 
-  return '116px';
+  return '92px';
 }
 
 function getGridMinWidth(viewMode, visibleDays) {
   if (viewMode === 'month') {
-    return 136 + visibleDays.length * 100;
+    return 112 + visibleDays.length * 92;
   }
 
   if (viewMode === 'week') {
-    return 136 + visibleDays.length * 124;
+    return 112 + visibleDays.length * 104;
   }
 
-  return 376;
+  return 332;
 }
 
 function getInitialViewMode() {
@@ -798,7 +798,7 @@ function BookingModal({
 
           <div className="grid gap-2 sm:grid-cols-3">
             <div className="grid gap-1 border-y border-[var(--ui-border)] py-3 sm:border-y-0 sm:border-l sm:px-4 sm:first:border-l-0">
-              <span className="text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-[var(--ui-text-muted)]">
+              <span className="text-[0.6rem] font-semibold uppercase tracking-[0.12em] text-[var(--ui-text-muted)] sm:text-[0.68rem] sm:tracking-[0.16em]">
                 Total
               </span>
               <strong className="text-lg font-semibold text-[var(--ui-text-strong)]">
@@ -1130,7 +1130,7 @@ function CalendarCell({
     <button
       aria-label={booking ? displayName + ', ' + sessionLabel + ', status pembayaran ' + paymentLabel + ', ' + day.fullLabel + ', ' + time.label + ', durasi ' + duration + ' jam' : 'Empty slot, ' + day.fullLabel + ', ' + time.label}
       className={cn(
-        'group relative min-h-[58px] overflow-visible border-b border-r border-[var(--ui-border)] p-1.5 text-left transition focus-visible:relative focus-visible:z-30 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/25',
+        'group relative min-h-[54px] overflow-visible border-b border-r border-[var(--ui-border)] p-1 text-left transition focus-visible:relative focus-visible:z-30 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/25 sm:p-1.5',
         solidSurfaces.gridCell,
         day.isWeekend ? solidSurfaces.gridCellWeekend : '',
         isSelected ? 'ring-2 ring-studio-accent/30 [background:color-mix(in_srgb,var(--ui-bg-base)_72%,var(--ui-control-hover))]' : '',
@@ -1182,7 +1182,7 @@ function CalendarCell({
       {!booking ? (
         <span
           className={cn(
-            'grid min-h-[44px] place-items-center rounded-[1rem] border text-[var(--ui-text-soft)] transition',
+            'grid min-h-[38px] place-items-center rounded-[0.85rem] border text-[var(--ui-text-soft)] transition sm:min-h-[44px] sm:rounded-[1rem]',
             isSelected
               ? 'border-studio-accent/35 bg-studio-accent/10 opacity-100'
               : 'border-transparent opacity-0 group-hover:border-[var(--ui-border)] group-hover:bg-[var(--ui-glass-soft)] group-hover:opacity-100',
@@ -1205,7 +1205,7 @@ function CalendarHeaderCell({
       aria-label={'Select ' + day.fullLabel}
       aria-pressed={isActiveDay}
       className={cn(
-        'grid h-14 place-items-center border-b border-r border-[var(--ui-border-strong)] px-2 text-center transition hover:[background:color-mix(in_srgb,var(--ui-bg-base)_72%,var(--ui-control-hover))] focus-visible:relative focus-visible:z-20 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/25',
+        'grid h-12 place-items-center border-b border-r border-[var(--ui-border-strong)] px-1.5 text-center transition hover:[background:color-mix(in_srgb,var(--ui-bg-base)_72%,var(--ui-control-hover))] focus-visible:relative focus-visible:z-20 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/25 sm:h-14 sm:px-2',
         solidSurfaces.gridHeader,
         day.isWeekend ? 'text-studio-accent' : 'text-[var(--ui-text-main)]',
         isActiveDay ? 'ring-2 ring-studio-accent/25 [background:color-mix(in_srgb,var(--ui-bg-base)_70%,var(--ui-control-hover))]' : '',
@@ -1217,7 +1217,7 @@ function CalendarHeaderCell({
         <span className="text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-[var(--ui-text-muted)]">
           {day.dayName}
         </span>
-        <span className="text-sm font-semibold tracking-[-0.02em] text-[var(--ui-text-strong)]">
+        <span className="text-xs font-semibold tracking-[-0.02em] text-[var(--ui-text-strong)] sm:text-sm">
           {formatDayNumber(day.date)}
         </span>
       </span>
@@ -1229,11 +1229,11 @@ function TimeCell({ slot }) {
   return (
     <div
       className={cn(
-        'sticky left-0 z-10 grid min-h-[58px] w-[136px] place-items-center border-b border-r border-[var(--ui-border-strong)] px-2 text-center shadow-[12px_0_22px_rgb(0_0_0/0.08)]',
+        'sticky left-0 z-10 grid min-h-[54px] w-[112px] place-items-center border-b border-r border-[var(--ui-border-strong)] px-1.5 text-center shadow-[12px_0_22px_rgb(0_0_0/0.08)] sm:w-[136px] sm:px-2',
         solidSurfaces.gridSticky,
       )}
     >
-      <span className="text-xs font-semibold tracking-[-0.015em] text-[var(--ui-text-main)]">
+      <span className="text-[0.68rem] font-semibold tracking-[-0.015em] text-[var(--ui-text-main)] sm:text-xs">
         {slot.label}
       </span>
     </div>
@@ -1242,15 +1242,15 @@ function TimeCell({ slot }) {
 
 function BookingStatusCounters({ counts }) {
   return (
-    <div className="flex w-full flex-wrap items-center justify-center gap-2 rounded-full border border-[var(--ui-border)] bg-[var(--ui-control)] p-1.5 shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] sm:w-auto">
+    <div className="grid w-full grid-cols-3 gap-1 rounded-[1.25rem] border border-[var(--ui-border)] bg-[var(--ui-control)] p-1 shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] sm:w-auto sm:flex sm:flex-wrap sm:items-center sm:gap-2 sm:rounded-full sm:p-1.5">
       {bookingStatusItems.map((item) => (
         <div
-          className="inline-flex min-h-9 items-center gap-2 rounded-full border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] px-3 text-xs font-semibold uppercase tracking-[0.13em] text-[var(--ui-text-main)]"
+          className="inline-flex min-h-8 items-center justify-center gap-1.5 rounded-full border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] px-2 text-[0.64rem] font-semibold uppercase tracking-[0.1em] text-[var(--ui-text-main)] sm:min-h-9 sm:gap-2 sm:px-3 sm:text-xs sm:tracking-[0.13em]"
           key={item.key}
         >
-          <span className={cn('size-2 rounded-full', item.dotClass)} />
-          <span>{item.label}</span>
-          <strong className="text-sm tracking-[-0.03em] text-[var(--ui-text-strong)]">
+          <span className={cn('size-1.5 rounded-full sm:size-2', item.dotClass)} />
+          <span className="truncate">{item.label}</span>
+          <strong className="text-xs tracking-[-0.03em] text-[var(--ui-text-strong)] sm:text-sm">
             {counts[item.key] || 0}
           </strong>
         </div>
@@ -1263,7 +1263,7 @@ function BookingSlotCounters({ summary, timeSlots, visibleDays }) {
   const items = [
     {
       key: 'visible',
-      label: 'Visible slot',
+      label: 'Visible',
       value: summary.totalSlots,
       helper: visibleDays.length + ' hari x ' + timeSlots.length + ' jam',
     },
@@ -1271,30 +1271,32 @@ function BookingSlotCounters({ summary, timeSlots, visibleDays }) {
       key: 'booked',
       label: 'Booked',
       value: summary.bookedSlots,
-      helper: 'Booking di view aktif',
+      helper: 'Booking aktif',
     },
     {
       key: 'available',
-      label: 'Available slot',
+      label: 'Available',
       value: summary.availableSlots,
       helper: 'Slot kosong',
     },
   ];
 
   return (
-    <div className="grid gap-0 border-y border-[var(--ui-border)] sm:grid-cols-3">
+    <div className="grid grid-cols-3 gap-0 border-y border-[var(--ui-border)]">
       {items.map((item) => (
         <article
-          className="grid gap-0.5 py-2.5 sm:border-l sm:border-[var(--ui-border)] sm:px-5 sm:py-3 sm:first:border-l-0"
+          className="grid gap-0.5 border-l border-[var(--ui-border)] px-2 py-2 first:border-l-0 sm:px-5 sm:py-3"
           key={item.key}
         >
-          <span className="text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-[var(--ui-text-muted)]">
+          <span className="truncate text-[0.58rem] font-semibold uppercase tracking-[0.11em] text-[var(--ui-text-muted)] sm:text-[0.68rem] sm:tracking-[0.16em]">
             {item.label}
           </span>
-          <strong className="text-2xl font-semibold tracking-[-0.055em] text-[var(--ui-text-strong)]">
+
+          <strong className="text-xl font-semibold leading-none tracking-[-0.055em] text-[var(--ui-text-strong)] sm:text-2xl">
             {item.value}
           </strong>
-          <span className="text-xs font-medium text-[var(--ui-text-muted)]">
+
+          <span className="hidden text-xs font-medium text-[var(--ui-text-muted)] sm:block">
             {item.helper}
           </span>
         </article>
@@ -1308,12 +1310,12 @@ function ViewToggle({
   value,
 }) {
   return (
-    <div className="flex w-full flex-wrap rounded-full border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-1 shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] sm:w-auto">
+    <div className="grid w-full grid-cols-3 rounded-full border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-1 shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] sm:flex sm:w-auto sm:flex-wrap">
       {viewOptions.map((option) => (
         <button
           aria-pressed={value === option.key}
           className={cn(
-            'inline-flex min-h-9 items-center justify-center rounded-full px-3 text-xs font-semibold uppercase tracking-[0.14em] transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/25',
+            'inline-flex min-h-8 items-center justify-center rounded-full px-2 text-[0.66rem] font-semibold uppercase tracking-[0.11em] transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/25 sm:min-h-9 sm:px-3 sm:text-xs sm:tracking-[0.14em]',
             value === option.key
               ? 'bg-[var(--ui-control-hover)] text-studio-accent shadow-[var(--ui-shadow-control)]'
               : 'text-[var(--ui-text-muted)] hover:bg-[var(--ui-control)] hover:text-[var(--ui-text-strong)]',
@@ -1341,33 +1343,33 @@ function CalendarToolbar({
   viewMode,
 }) {
   return (
-    <div className="grid gap-3 rounded-[1.5rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-3 ring-1 ring-[var(--ui-ring)] lg:grid-cols-[minmax(0,1fr)_auto_auto] lg:items-center xl:rounded-[1.75rem]">
-      <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 sm:flex sm:flex-wrap">
+    <div className="grid gap-2 rounded-[1.25rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-2 ring-1 ring-[var(--ui-ring)] sm:gap-3 sm:rounded-[1.5rem] sm:p-3 lg:grid-cols-[minmax(0,1fr)_auto_auto] lg:items-center xl:rounded-[1.75rem]">
+      <div className="grid grid-cols-[auto_minmax(0,1fr)_auto_auto] items-center gap-1.5 sm:flex sm:flex-wrap sm:gap-2">
         <button
           aria-label="Previous period"
-          className="grid size-10 place-items-center rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] text-[var(--ui-secondary-text)] shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/25"
+          className="grid size-9 place-items-center rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] text-[var(--ui-secondary-text)] shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/25 sm:size-10"
           type="button"
           onClick={onPrev}
         >
-          <ChevronLeft size={17} strokeWidth={2.35} aria-hidden="true" />
+          <ChevronLeft size={16} strokeWidth={2.35} aria-hidden="true" />
         </button>
 
-        <div className="inline-flex min-h-10 min-w-0 items-center gap-2 rounded-full border border-[var(--ui-border)] bg-[var(--ui-control)] px-4 text-sm font-semibold text-[var(--ui-text-strong)] shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] sm:min-w-[220px]">
-          <CalendarDays size={16} strokeWidth={2.35} aria-hidden="true" />
+        <div className="inline-flex min-h-9 min-w-0 items-center gap-2 rounded-full border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 text-xs font-semibold text-[var(--ui-text-strong)] shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] sm:min-h-10 sm:min-w-[220px] sm:px-4 sm:text-sm">
+          <CalendarDays size={14} strokeWidth={2.35} aria-hidden="true" />
           <span className="truncate">{rangeLabel}</span>
         </div>
 
         <button
           aria-label="Next period"
-          className="grid size-10 place-items-center rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] text-[var(--ui-secondary-text)] shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/25"
+          className="grid size-9 place-items-center rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] text-[var(--ui-secondary-text)] shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/25 sm:size-10"
           type="button"
           onClick={onNext}
         >
-          <ChevronRight size={17} strokeWidth={2.35} aria-hidden="true" />
+          <ChevronRight size={16} strokeWidth={2.35} aria-hidden="true" />
         </button>
 
         <button
-          className="inline-flex min-h-10 items-center justify-center rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] px-4 text-sm font-semibold text-[var(--ui-secondary-text)] shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/25"
+          className="inline-flex min-h-9 items-center justify-center rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] px-3 text-xs font-semibold text-[var(--ui-secondary-text)] shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/25 sm:min-h-10 sm:px-4 sm:text-sm"
           type="button"
           onClick={onToday}
         >
@@ -1384,12 +1386,13 @@ function CalendarToolbar({
         />
 
         <button
-          className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full [background:var(--ui-primary-bg)] px-4 text-sm font-semibold text-[var(--ui-primary-text)] shadow-[var(--ui-shadow-soft)] transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
+          className="inline-flex min-h-9 items-center justify-center gap-1.5 rounded-full [background:var(--ui-primary-bg)] px-3 text-sm font-semibold text-[var(--ui-primary-text)] shadow-[var(--ui-shadow-soft)] transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20 sm:min-h-10 sm:gap-2 sm:px-4"
           type="button"
           onClick={onAddBooking}
         >
-          <Plus size={16} strokeWidth={2.35} aria-hidden="true" />
-          Add booking
+          <Plus size={15} strokeWidth={2.35} aria-hidden="true" />
+          <span className="sm:hidden">Add</span>
+          <span className="hidden sm:inline">Add booking</span>
         </button>
       </div>
     </div>
@@ -1407,24 +1410,24 @@ function CalendarGrid({
   visibleDays,
 }) {
   const dayColumnTemplate = getDayColumnTemplate(viewMode);
-  const gridTemplateColumns = '136px repeat(' + visibleDays.length + ', ' + dayColumnTemplate + ')';
+  const gridTemplateColumns = '112px repeat(' + visibleDays.length + ', ' + dayColumnTemplate + ')';
   const gridMinWidth = getGridMinWidth(viewMode, visibleDays);
 
   return (
     <div
       className={cn(
-        'overflow-hidden rounded-[1.75rem] border border-[var(--ui-border-strong)] shadow-[var(--ui-shadow-soft)] ring-1 ring-[var(--ui-ring)]',
+        'overflow-hidden rounded-[1.35rem] border border-[var(--ui-border-strong)] shadow-[var(--ui-shadow-soft)] ring-1 ring-[var(--ui-ring)] sm:rounded-[1.75rem]',
         solidSurfaces.gridShell,
       )}
     >
       <div
         className={cn(
-          'flex items-center justify-between gap-3 border-b border-[var(--ui-border-strong)] px-4 py-3',
+          'flex items-center justify-between gap-2 border-b border-[var(--ui-border-strong)] px-3 py-2.5 sm:gap-3 sm:px-4 sm:py-3',
           solidSurfaces.gridCorner,
         )}
       >
         <div className="flex min-w-0 items-center gap-3">
-          <div className="grid size-10 shrink-0 place-items-center rounded-2xl border border-[var(--ui-border)] bg-[var(--ui-control)] text-studio-accent shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)]">
+          <div className="grid size-9 shrink-0 place-items-center rounded-[1rem] border border-[var(--ui-border)] bg-[var(--ui-control)] text-studio-accent shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] sm:size-10 sm:rounded-2xl">
             <Grid3X3 size={18} strokeWidth={2.35} aria-hidden="true" />
           </div>
 
@@ -1459,7 +1462,7 @@ function CalendarGrid({
           >
             <div
               className={cn(
-                'sticky left-0 z-20 grid h-14 w-[136px] place-items-center border-b border-r border-[var(--ui-border-strong)] px-2 text-center shadow-[12px_0_22px_rgb(0_0_0/0.08)]',
+                'sticky left-0 z-20 grid h-12 w-[112px] place-items-center border-b border-r border-[var(--ui-border-strong)] px-1.5 text-center shadow-[12px_0_22px_rgb(0_0_0/0.08)] sm:h-14 sm:w-[136px] sm:px-2',
                 solidSurfaces.gridCorner,
               )}
             >
@@ -1525,7 +1528,7 @@ function SelectedSlotPanel({
   const booking = getBookingForSlot(bookings, selectedSlot.dateKey, selectedSlot.timeKey);
 
   return (
-    <div className="rounded-[1.5rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-4 text-sm leading-7 text-[var(--ui-text-main)] ring-1 ring-[var(--ui-ring)]">
+    <div className="rounded-[1.25rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-3 text-sm leading-6 text-[var(--ui-text-main)] ring-1 ring-[var(--ui-ring)] sm:rounded-[1.5rem] sm:p-4 sm:leading-7">
       <span className="font-semibold text-[var(--ui-text-strong)]">Selected slot:</span>{' '}
       {selectedSlot.label} jam {selectedSlot.timeKey}.
       {booking ? (
@@ -1722,12 +1725,12 @@ export function BookingAdmin() {
   };
 
   return (
-    <section className="grid gap-4 pb-[calc(7.5rem+env(safe-area-inset-bottom))] pt-2 md:pb-4" aria-labelledby="booking-admin-title">
+    <section className="grid gap-3 pb-[calc(7rem+env(safe-area-inset-bottom))] pt-1 md:gap-4 md:pb-4 md:pt-2" aria-labelledby="booking-admin-title">
       <div className="sr-only" id="booking-admin-title">
         Booking calendar workspace
       </div>
 
-      <div className="grid gap-4">
+      <div className="grid gap-3 md:gap-4">
         <CalendarToolbar
           rangeLabel={rangeLabel}
           statusCounts={statusCounts}

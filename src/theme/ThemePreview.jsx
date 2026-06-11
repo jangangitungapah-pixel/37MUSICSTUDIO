@@ -2,14 +2,12 @@ import {
   ArrowRight,
   Calendar,
   Check,
-  Headphones,
   MessageCircle,
   Mic,
   Music,
   Radio,
   ShieldCheck,
   SlidersHorizontal,
-  Sparkles,
   Users,
 } from 'lucide-react';
 
