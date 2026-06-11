@@ -1,6 +1,4 @@
-import {
-  useMemo,
-  useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
   CalendarDays,
   ChevronLeft,
@@ -429,6 +427,50 @@ function BookingStatusCounters({ counts }) {
   );
 }
 
+function BookingSlotCounters({ summary, timeSlots, visibleDays }) {
+  const items = [
+    {
+      key: 'visible',
+      label: 'Visible slot',
+      value: summary.totalSlots,
+      helper: visibleDays.length + ' hari x ' + timeSlots.length + ' jam',
+    },
+    {
+      key: 'booked',
+      label: 'Booked',
+      value: summary.bookedSlots,
+      helper: 'Booking di view aktif',
+    },
+    {
+      key: 'available',
+      label: 'Available slot',
+      value: summary.availableSlots,
+      helper: 'Slot kosong',
+    },
+  ];
+
+  return (
+    <div className="grid gap-2 rounded-[1.5rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-2 ring-1 ring-[var(--ui-ring)] sm:grid-cols-3">
+      {items.map((item) => (
+        <article
+          className="grid gap-0.5 rounded-[1.15rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-4 py-3 shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)]"
+          key={item.key}
+        >
+          <span className="text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-[var(--ui-text-muted)]">
+            {item.label}
+          </span>
+          <strong className="text-2xl font-semibold tracking-[-0.055em] text-[var(--ui-text-strong)]">
+            {item.value}
+          </strong>
+          <span className="text-xs font-medium text-[var(--ui-text-muted)]">
+            {item.helper}
+          </span>
+        </article>
+      ))}
+    </div>
+  );
+}
+
 function ViewToggle({
   onChange,
   value,
@@ -694,6 +736,15 @@ export function BookingAdmin() {
     () => getViewRangeLabel(viewMode, visibleDays, cursorDate),
     [cursorDate, viewMode, visibleDays],
   );
+  const summary = useMemo(() => {
+    const totalSlots = visibleDays.length * timeSlots.length;
+
+    return {
+      availableSlots: totalSlots - visibleBookings.length,
+      bookedSlots: visibleBookings.length,
+      totalSlots,
+    };
+  }, [timeSlots, visibleBookings, visibleDays]);
 
   const updateCursorDate = (nextDate) => {
     setCursorDate(nextDate);
@@ -762,6 +813,12 @@ export function BookingAdmin() {
           onPrev={goToPreviousPeriod}
           onToday={goToToday}
           onViewChange={setViewMode}
+        />
+
+        <BookingSlotCounters
+          summary={summary}
+          timeSlots={timeSlots}
+          visibleDays={visibleDays}
         />
 
         <CalendarGrid
