@@ -984,12 +984,12 @@ function BookingDetailModal({
         <div className="grid gap-4 overflow-y-auto px-4 py-4 sm:px-6 sm:py-5">
           <section className="grid gap-3.5 sm:gap-4" aria-label="Ringkasan booking">
             <div className="flex items-center justify-between gap-3 pb-1 sm:pb-1.5">
-              <div className="grid min-w-0 gap-0.5">
+              <div className="grid min-w-0 gap-1">
                 <span className="text-[0.58rem] font-semibold uppercase tracking-[0.14em] text-[var(--ui-text-muted)] sm:text-[0.68rem] sm:tracking-[0.16em]">
                   Status pembayaran
                 </span>
 
-                <strong className="inline-flex min-w-0 items-center gap-2 text-2xl font-semibold leading-none tracking-[-0.055em] text-[var(--ui-text-strong)] sm:text-3xl">
+                <strong className="inline-flex min-w-0 items-center gap-2 pb-0.5 text-2xl font-semibold leading-[1.18] tracking-[-0.055em] text-[var(--ui-text-strong)] sm:text-3xl sm:leading-[1.14]">
                   <span className={cn('size-2 shrink-0 rounded-full', statusDotClass)} aria-hidden="true" />
                   <span className="truncate">{paymentLabel}</span>
                 </strong>
