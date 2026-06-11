@@ -49,13 +49,13 @@ function StatusDropdown() {
   };
 
   return (
-    <div className="relative grid gap-2 text-sm font-medium text-studio-600 dark:text-studio-300">
+    <div className="relative grid gap-2 text-sm font-medium text-studio-700 dark:text-studio-300">
       <span>Status</span>
 
       <button
         aria-expanded={isOpen}
         aria-haspopup="listbox"
-        className="group flex min-h-12 w-full items-center justify-between gap-3 rounded-2xl border border-studio-950/10 bg-white/72 shadow-[inset_0_1px_0_rgba(255,255,255,0.72)] dark:shadow-none px-4 text-left text-sm font-medium text-studio-950 outline-none transition hover:border-studio-accent/30 hover:bg-white focus-visible:border-studio-accent/40 focus-visible:ring-4 focus-visible:ring-studio-accent/15 dark:border-white/10 dark:bg-white/[0.06] dark:text-white dark:hover:border-studio-accent/35 dark:hover:bg-white/[0.09]"
+        className="group flex min-h-12 w-full items-center justify-between gap-3 rounded-2xl border border-studio-950/10 bg-white/78 px-4 text-left text-sm font-medium text-studio-950 shadow-[inset_0_1px_0_rgba(255,255,255,0.86),0_14px_34px_rgba(73,48,94,0.08)] outline-none ring-1 ring-studio-950/[0.025] transition hover:border-studio-accent/30 hover:bg-white/95 focus-visible:border-studio-accent/40 focus-visible:ring-4 focus-visible:ring-studio-accent/15 dark:border-white/10 dark:bg-white/[0.06] dark:text-white dark:shadow-none dark:ring-transparent dark:hover:border-studio-accent/35 dark:hover:bg-white/[0.09]"
         type="button"
         onClick={() => setIsOpen((current) => !current)}
       >
@@ -75,7 +75,7 @@ function StatusDropdown() {
 
       {isOpen && (
         <div
-          className="absolute left-0 right-0 top-[calc(100%+8px)] z-30 overflow-hidden rounded-2xl border border-studio-950/10 bg-white/95 p-1.5 shadow-studio-soft ring-1 ring-black/5 backdrop-blur-xl dark:border-white/10 dark:bg-[#12121a]/95 dark:ring-white/10"
+          className="absolute left-0 right-0 top-[calc(100%+8px)] z-30 overflow-hidden rounded-2xl border border-studio-950/10 bg-white/96 p-1.5 shadow-[0_24px_70px_rgba(73,48,94,0.18)] ring-1 ring-studio-950/[0.04] backdrop-blur-xl dark:border-white/10 dark:bg-[#12121a]/95 dark:shadow-studio-soft dark:ring-white/10"
           role="listbox"
           aria-label="Status options"
         >
@@ -116,13 +116,15 @@ function StatusDropdown() {
 export function ThemePreview() {
   return (
     <div className="grid gap-16 py-4 sm:gap-20 lg:py-10">
-      <section className="grid min-h-[62vh] content-center gap-8 lg:grid-cols-[minmax(0,0.96fr)_360px] lg:items-center">
+      <section className="relative grid min-h-[62vh] content-center gap-8 lg:grid-cols-[minmax(0,0.96fr)_360px] lg:items-center">
+        <div className="pointer-events-none absolute -inset-x-8 top-8 -z-10 hidden h-[420px] rounded-[4rem] bg-white/22 shadow-[inset_0_1px_0_rgba(255,255,255,0.5),0_34px_100px_rgba(73,48,94,0.08)] backdrop-blur-[2px] dark:hidden lg:block" />
+
         <div className="grid gap-7">
           <div className="flex flex-wrap items-center gap-3">
-            <span className="inline-flex w-fit rounded-full border border-white/10 bg-white/[0.045] px-3 py-1.5 text-xs font-medium tracking-[0.18em] text-studio-accent">
+            <span className="inline-flex w-fit rounded-full border border-white/80 bg-white/62 px-3 py-1.5 text-xs font-medium tracking-[0.18em] text-studio-accent shadow-[0_12px_34px_rgba(73,48,94,0.08)] dark:border-white/10 dark:bg-white/[0.045] dark:shadow-none">
               STUDIO OPS UI
             </span>
-            <span className="text-sm text-studio-500 dark:text-studio-400">
+            <span className="text-sm text-studio-600 dark:text-studio-400">
               Tailwind-first · Fresh rebuild · 37 Music Studio
             </span>
           </div>
@@ -132,7 +134,7 @@ export function ThemePreview() {
               Build the studio system with calmer UI.
             </h1>
 
-            <p className="m-0 max-w-[690px] text-[clamp(1rem,1.6vw,1.24rem)] leading-8 text-studio-600 dark:text-studio-300">
+            <p className="m-0 max-w-[690px] text-[clamp(1rem,1.6vw,1.24rem)] leading-8 text-studio-700 dark:text-studio-300">
               Fondasi visual dibuat lebih lapang, modern, dan tidak bergantung pada banyak card.
               Container tetap kuat, tapi halaman utama terasa seperti dashboard studio premium yang ringan.
             </p>
@@ -140,14 +142,14 @@ export function ThemePreview() {
 
           <div className="flex flex-wrap items-center gap-3">
             <button
-              className="inline-flex min-h-12 items-center justify-center rounded-full bg-gradient-to-br from-studio-950 to-studio-700 px-6 text-sm font-semibold tracking-[-0.01em] text-white shadow-[0_20px_54px_rgba(23,20,29,0.18)] transition hover:-translate-y-0.5 hover:shadow-[0_24px_64px_rgba(23,20,29,0.24)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20 dark:bg-white dark:bg-none dark:text-studio-950"
+              className="inline-flex min-h-12 items-center justify-center rounded-full bg-gradient-to-br from-studio-950 to-studio-700 px-6 text-sm font-semibold tracking-[-0.01em] text-white shadow-[0_20px_54px_rgba(23,20,29,0.20)] transition hover:-translate-y-0.5 hover:shadow-[0_24px_64px_rgba(23,20,29,0.26)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20 dark:bg-white dark:bg-none dark:text-studio-950"
               type="button"
             >
               Start foundation
             </button>
 
             <button
-              className="inline-flex min-h-12 items-center justify-center rounded-full border border-studio-950/10 bg-white/45 px-6 text-sm font-medium tracking-[-0.01em] text-studio-700 shadow-[inset_0_1px_0_rgba(255,255,255,0.74)] transition hover:-translate-y-0.5 hover:border-studio-accent/35 hover:bg-white/72 shadow-[inset_0_1px_0_rgba(255,255,255,0.72)] dark:shadow-none hover:text-studio-950 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20 dark:border-white/10 dark:bg-transparent dark:text-studio-200 dark:shadow-none dark:hover:text-white"
+              className="inline-flex min-h-12 items-center justify-center rounded-full border border-studio-950/10 bg-white/62 px-6 text-sm font-medium tracking-[-0.01em] text-studio-700 shadow-[inset_0_1px_0_rgba(255,255,255,0.82),0_12px_30px_rgba(73,48,94,0.08)] transition hover:-translate-y-0.5 hover:border-studio-accent/35 hover:bg-white/90 hover:text-studio-950 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20 dark:border-white/10 dark:bg-transparent dark:text-studio-200 dark:shadow-none dark:hover:text-white"
               type="button"
             >
               View UI system
@@ -155,9 +157,9 @@ export function ThemePreview() {
           </div>
         </div>
 
-        <aside className="hidden border-l border-studio-950/10 pl-8 dark:border-white/10 lg:grid lg:gap-7">
+        <aside className="hidden border-l border-studio-950/14 bg-white/16 pl-8 dark:border-white/10 dark:bg-transparent lg:grid lg:gap-7">
           <div>
-            <p className="m-0 text-sm font-medium text-studio-500 dark:text-studio-400">
+            <p className="m-0 text-sm font-medium text-studio-600 dark:text-studio-400">
               Current phase
             </p>
             <p className="mt-2 text-3xl font-semibold tracking-[-0.05em] text-studio-950 dark:text-white">
@@ -204,10 +206,10 @@ export function ThemePreview() {
           </h2>
         </div>
 
-        <div className="grid gap-0 border-y border-studio-950/12 dark:border-white/10 md:grid-cols-3">
+        <div className="grid gap-0 border-y border-studio-950/14 bg-white/18 shadow-[inset_0_1px_0_rgba(255,255,255,0.35)] dark:border-white/10 dark:bg-transparent dark:shadow-none md:grid-cols-3">
           {foundationNotes.map((item, index) => (
             <article
-              className="grid gap-3 border-studio-950/10 py-7 md:px-7 md:[&:not(:first-child)]:border-l dark:border-white/10"
+              className="grid gap-3 border-studio-950/10 px-0 py-7 md:px-7 md:[&:not(:first-child)]:border-l dark:border-white/10"
               key={item.title}
             >
               <span className="text-xs font-medium uppercase tracking-[0.18em] text-studio-accent">
@@ -216,7 +218,7 @@ export function ThemePreview() {
               <h3 className="m-0 text-xl font-semibold tracking-[-0.035em] text-studio-950 dark:text-white">
                 {item.title}
               </h3>
-              <p className="m-0 leading-7 text-studio-600 dark:text-studio-300">
+              <p className="m-0 leading-7 text-studio-700 dark:text-studio-300">
                 {item.text}
               </p>
             </article>
@@ -224,7 +226,7 @@ export function ThemePreview() {
         </div>
       </section>
 
-      <section className="grid gap-6 border-t border-studio-950/10 pt-8 dark:border-white/10 lg:grid-cols-[0.85fr_1fr]">
+      <section className="grid gap-6 border-t border-studio-950/14 bg-white/14 pt-8 shadow-[inset_0_1px_0_rgba(255,255,255,0.34)] dark:border-white/10 dark:bg-transparent dark:shadow-none lg:grid-cols-[0.85fr_1fr]">
         <div className="grid gap-3">
           <p className="m-0 text-xs font-medium uppercase tracking-[0.18em] text-studio-accent">
             Form baseline
@@ -232,17 +234,17 @@ export function ThemePreview() {
           <h2 className="m-0 text-3xl font-semibold tracking-[-0.055em] text-studio-950 dark:text-white">
             Komponen tetap jelas tanpa harus selalu jadi card.
           </h2>
-          <p className="m-0 max-w-xl leading-7 text-studio-600 dark:text-studio-300">
+          <p className="m-0 max-w-xl leading-7 text-studio-700 dark:text-studio-300">
             Form, button, badge, dan panel nanti akan kita pecah jadi component library kecil.
             Untuk landing dan dashboard awal, layout dibuat lebih flat dan lapang.
           </p>
         </div>
 
         <form className="grid gap-4 sm:grid-cols-2">
-          <label className="grid gap-2 text-sm font-medium text-studio-600 dark:text-studio-300">
+          <label className="grid gap-2 text-sm font-medium text-studio-700 dark:text-studio-300">
             <span>Nama project</span>
             <input
-              className="min-h-12 w-full rounded-2xl border border-studio-950/10 bg-white/72 shadow-[inset_0_1px_0_rgba(255,255,255,0.72)] dark:shadow-none px-4 text-sm font-medium text-studio-950 outline-none transition focus:border-studio-accent/40 focus:ring-4 focus:ring-studio-accent/15 dark:border-white/10 dark:bg-white/[0.06] dark:text-white"
+              className="min-h-12 w-full rounded-2xl border border-studio-950/10 bg-white/78 px-4 text-sm font-medium text-studio-950 shadow-[inset_0_1px_0_rgba(255,255,255,0.86),0_14px_34px_rgba(73,48,94,0.08)] outline-none ring-1 ring-studio-950/[0.025] transition focus:border-studio-accent/40 focus:ring-4 focus:ring-studio-accent/15 dark:border-white/10 dark:bg-white/[0.06] dark:text-white dark:shadow-none dark:ring-transparent"
               value="37 Music Studio"
               readOnly
             />
