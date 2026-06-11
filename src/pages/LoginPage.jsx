@@ -14,18 +14,18 @@ import {
 const accessHighlights = [
   {
     icon: Headphones,
-    title: 'Session-ready',
-    text: 'Akses cepat untuk jadwal studio, booking, dan catatan sesi.',
+    title: 'Sesi lebih siap',
+    text: 'Masuk untuk lanjut mengatur latihan, recording, atau kebutuhan sesi tanpa alur yang berantakan.',
   },
   {
     icon: Radio,
-    title: 'Studio control',
-    text: 'Disiapkan untuk panel operasional tanpa bikin halaman terasa penuh.',
+    title: 'Kebutuhan lebih jelas',
+    text: 'Bantu pastikan format sesi sesuai tujuan, dari latihan band sampai live recording atau tracking.',
   },
   {
     icon: ShieldCheck,
-    title: 'Clear access',
-    text: 'Form dibuat terang, kontras, dan stabil di dua palet warna.',
+    title: 'Booking lebih tenang',
+    text: 'Akses dibuat sederhana supaya kamu bisa lanjut ke jadwal dan detail sesi dengan nyaman.',
   },
 ];
 
@@ -37,8 +37,8 @@ const statusStyles = {
 
 const initialStatus = {
   kind: 'idle',
-  title: 'Secure studio access',
-  text: 'Masuk untuk mengelola booking, client, jadwal operator, dan session note studio.',
+  title: 'Siapkan sesi yang mau kamu jalani',
+  text: 'Latihan band, live recording, atau tracking. Masuk untuk lanjut mengatur kebutuhan sesi dengan lebih mudah.',
 };
 
 function getStatusClassName(kind) {
@@ -117,8 +117,8 @@ export function LoginPage() {
     if (!email || !email.includes('@')) {
       setStatus({
         kind: 'error',
-        title: 'Email belum valid',
-        text: 'Masukkan email studio yang benar sebelum lanjut.',
+        title: 'Emailnya belum pas',
+        text: 'Masukkan email yang kamu gunakan untuk akses atau booking sesi.',
       });
       return;
     }
@@ -126,16 +126,16 @@ export function LoginPage() {
     if (password.length < 8) {
       setStatus({
         kind: 'error',
-        title: 'Password terlalu pendek',
-        text: 'Gunakan minimal 8 karakter agar akses studio tetap aman.',
+        title: 'Password masih terlalu pendek',
+        text: 'Gunakan minimal 8 karakter supaya akses sesi tetap aman.',
       });
       return;
     }
 
     setStatus({
       kind: 'success',
-      title: 'UI login siap',
-      text: 'Validasi front-end berjalan. Integrasi backend/auth bisa masuk di phase berikutnya.',
+      title: 'Akses siap dilanjutkan',
+      text: 'Validasi awal lolos. Berikutnya tinggal hubungkan ke sistem booking atau auth.',
     });
   };
 
@@ -147,7 +147,7 @@ export function LoginPage() {
       <div className="grid gap-8">
         <div className="inline-flex w-fit items-center gap-2 rounded-full border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] px-3 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-studio-accent ring-1 ring-[var(--ui-ring)]">
           <Sparkles size={14} strokeWidth={2.35} aria-hidden="true" />
-          Studio Access
+          Akses Sesi
         </div>
 
         <div className="grid gap-5">
@@ -155,11 +155,11 @@ export function LoginPage() {
             className="m-0 max-w-[820px] text-[clamp(3rem,7vw,6.3rem)] font-semibold leading-[0.94] tracking-[-0.075em] text-[var(--ui-text-strong)]"
             id="login-title"
           >
-            Login that feels calm before the session starts.
+            Masuk untuk lanjut atur sesi musikmu.
           </h1>
 
           <p className="m-0 max-w-[640px] text-[clamp(1rem,1.45vw,1.18rem)] leading-8 text-[var(--ui-text-main)]">
-            Halaman masuk dibuat premium, lapang, dan tetap stabil saat theme diganti. Struktur layout tidak bercabang antara dark dan light mode.
+            Mau latihan band, live recording, atau tracking? Masuk untuk cek akses, lanjutkan kebutuhan sesi, dan buat proses booking terasa lebih rapi dari awal.
           </p>
         </div>
 
@@ -206,11 +206,11 @@ export function LoginPage() {
 
             <div className="grid gap-2">
               <h2 className="m-0 text-[1.65rem] font-semibold tracking-[-0.055em] text-[var(--ui-text-strong)]">
-                Masuk ke Studio Panel
+                Lanjutkan kebutuhan sesimu
               </h2>
 
               <p className="m-0 leading-7 text-[var(--ui-text-main)]">
-                Gunakan akun internal 37 Music Studio untuk membuka dashboard operasional.
+                Pakai akun yang sudah terdaftar untuk lanjut ke jadwal, booking, dan detail sesi 37 Music Studio.
               </p>
             </div>
           </div>
@@ -240,12 +240,12 @@ export function LoginPage() {
           <div className="grid gap-4">
             <LoginInput
               autoComplete="email"
-              helper="Required"
+              helper="Akun terdaftar"
               icon={Mail}
               id="studio-email"
-              label="Email"
+              label="Email akun"
               onChange={updateField('email')}
-              placeholder="operator@37musicstudio.com"
+              placeholder="nama@email.com"
               type="email"
               value={form.email}
             />
@@ -257,7 +257,7 @@ export function LoginPage() {
               id="studio-password"
               label="Password"
               onChange={updateField('password')}
-              placeholder="Masukkan password"
+              placeholder="Password akun"
               type="password"
               value={form.password}
             />
@@ -267,17 +267,17 @@ export function LoginPage() {
             className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full [background:var(--ui-primary-bg)] px-6 text-sm font-semibold tracking-[-0.01em] text-[var(--ui-primary-text)] shadow-[var(--ui-shadow-soft)] transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/25"
             type="submit"
           >
-            Masuk sekarang
+            Lanjut atur sesi
             <ArrowRight size={17} strokeWidth={2.35} aria-hidden="true" />
           </button>
 
           <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[var(--ui-border)] pt-5 text-sm text-[var(--ui-text-muted)]">
-            <span>Belum tersambung ke backend auth.</span>
+            <span>Belum punya akses booking?</span>
             <a
               className="font-semibold text-[var(--ui-text-strong)] transition hover:text-studio-accent focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
               href="/"
             >
-              Kembali ke home
+              Lihat layanan dulu
             </a>
           </div>
         </form>
