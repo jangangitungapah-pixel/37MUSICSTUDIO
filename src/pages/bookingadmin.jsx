@@ -450,10 +450,10 @@ function BookingSlotCounters({ summary, timeSlots, visibleDays }) {
   ];
 
   return (
-    <div className="grid gap-2 rounded-[1.5rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-2 ring-1 ring-[var(--ui-ring)] sm:grid-cols-3">
+    <div className="grid gap-0 border-y border-[var(--ui-border)] sm:grid-cols-3">
       {items.map((item) => (
         <article
-          className="grid gap-0.5 rounded-[1.15rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-4 py-3 shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)]"
+          className="grid gap-0.5 py-3 sm:border-l sm:border-[var(--ui-border)] sm:px-5 sm:first:border-l-0"
           key={item.key}
         >
           <span className="text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-[var(--ui-text-muted)]">
