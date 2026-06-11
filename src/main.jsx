@@ -7,6 +7,7 @@ import './styles/flat-minimal-system.css'
 import './styles/calendar-mobile-performance.css'
 import './pages/ClientMessagesInbox.css'
 import './pages/ClientMessagesInboxPolish.css'
+import './styles/admin-portal-typography.css'
 import App from './App.jsx'
 import ErrorBoundary from './components/ErrorBoundary.jsx'
 
