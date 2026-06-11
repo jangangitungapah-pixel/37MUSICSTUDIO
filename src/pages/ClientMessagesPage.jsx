@@ -302,6 +302,18 @@ const ClientMessagesPage = () => {
   const selectedWaHref = selectedMessage ? getWhatsAppHref(selectedMessage) : '';
   const selectedAdminReplies = selectedMessage ? getAdminReplies(selectedMessage) : [];
 
+  useEffect(() => {
+    if (typeof document === 'undefined') {
+      return undefined;
+    }
+
+    document.body.classList.toggle('client-inbox-mobile-chat-open', Boolean(selectedMessage));
+
+    return () => {
+      document.body.classList.remove('client-inbox-mobile-chat-open');
+    };
+  }, [selectedMessage]);
+
   return (
     <div className={'messages-page messages-inbox-page' + (selectedMessage ? ' has-selected-message' : '')}>
       <header className="messages-inbox-hero" aria-labelledby="messagesHeroTitle">
