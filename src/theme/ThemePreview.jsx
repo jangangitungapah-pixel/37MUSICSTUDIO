@@ -119,7 +119,7 @@ export function ThemePreview() {
       <section className="relative grid min-h-[62vh] content-center gap-8 lg:grid-cols-[minmax(0,0.96fr)_360px] lg:items-center">
         <div className="grid gap-7">
           <div className="flex flex-wrap items-center gap-3">
-            <span className="inline-flex w-fit rounded-full border border-[var(--ui-border)] bg-[var(--ui-glass)] px-3 py-1.5 text-xs font-medium tracking-[0.18em] text-studio-accent shadow-[var(--ui-shadow-control)]">
+            <span className="inline-flex w-fit text-xs font-medium tracking-[0.18em] text-studio-accent">
               STUDIO OPS UI
             </span>
             <span className="text-sm text-[var(--ui-text-muted)]">
@@ -155,7 +155,7 @@ export function ThemePreview() {
           </div>
         </div>
 
-        <aside className="hidden border-l border-[var(--ui-border-strong)] bg-[var(--ui-glass-soft)] pl-8 lg:grid lg:gap-7">
+        <aside className="hidden border-l border-[var(--ui-border-strong)] pl-8 lg:grid lg:gap-7">
           <div>
             <p className="m-0 text-sm font-medium text-[var(--ui-text-muted)]">
               Current phase
@@ -204,7 +204,7 @@ export function ThemePreview() {
           </h2>
         </div>
 
-        <div className="grid gap-0 border-y border-[var(--ui-border-strong)] bg-[var(--ui-glass-soft)] shadow-[var(--ui-shadow-control)] md:grid-cols-3">
+        <div className="grid gap-0 border-y border-[var(--ui-border-strong)] md:grid-cols-3">
           {foundationNotes.map((item, index) => (
             <article
               className="grid gap-3 border-[var(--ui-border)] px-0 py-7 md:px-7 md:[&:not(:first-child)]:border-l"
@@ -224,7 +224,7 @@ export function ThemePreview() {
         </div>
       </section>
 
-      <section className="grid gap-6 border-t border-[var(--ui-border-strong)] bg-[var(--ui-glass-soft)] pt-8 shadow-[var(--ui-shadow-control)] lg:grid-cols-[0.85fr_1fr]">
+      <section className="grid gap-6 border-t border-[var(--ui-border-strong)] pt-8 lg:grid-cols-[0.85fr_1fr]">
         <div className="grid gap-3">
           <p className="m-0 text-xs font-medium uppercase tracking-[0.18em] text-studio-accent">
             Form baseline

@@ -29,9 +29,8 @@ export function ThemeContainer({ children }) {
       <header
         className={cn(
           'mx-auto flex w-[min(1180px,calc(100vw-32px))] items-center justify-between gap-4',
-          'border border-[var(--ui-border)] bg-[var(--ui-glass)] px-4 shadow-[var(--ui-shadow-header)] ring-1 ring-[var(--ui-ring)] backdrop-blur-2xl',
           'max-[820px]:relative max-[820px]:flex-col max-[820px]:items-stretch',
-          isCompact ? 'my-3 min-h-16 rounded-[26px] py-3' : 'my-4 min-h-[76px] rounded-[30px] py-4',
+          isCompact ? 'my-3 min-h-16 py-3' : 'my-4 min-h-[76px] py-4',
         )}
       >
         <a className="flex min-w-0 items-center gap-3" href="/" aria-label="37 Music Studio Home">
@@ -79,9 +78,9 @@ export function ThemeContainer({ children }) {
         )}
       >
         <section className="grid gap-8">
-          <div className="inline-flex w-fit items-center gap-2 rounded-full border border-[var(--ui-border)] bg-[var(--ui-glass)] px-3 py-1.5 text-xs font-medium text-[var(--ui-text-main)] shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] backdrop-blur-xl">
-            <Sparkles size={14} aria-hidden="true" />
-            <span>Tailwind Container Theme v0.7</span>
+          <div className="inline-flex w-fit items-center gap-2 text-xs font-medium text-[var(--ui-text-muted)]">
+            <Sparkles size={14} className="text-studio-accent" aria-hidden="true" />
+            <span>Tailwind Container Theme v0.8</span>
           </div>
 
           {children}
