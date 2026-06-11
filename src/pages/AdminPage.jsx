@@ -431,14 +431,23 @@ export function AdminPage() {
           await adminBookingRepository.deleteManualBooking(bookingId);
         } catch (error) {
           console.error('Failed to delete admin booking.', error);
+          throw error;
         }
       },
       manualBookings,
+      recordBookingAuditLog: async (entry) => {
+        try {
+          await adminBookingRepository.recordBookingAuditLog(entry);
+        } catch (error) {
+          console.error('Failed to record booking audit log.', error);
+        }
+      },
       updateManualBooking: async (booking) => {
         try {
           await adminBookingRepository.updateManualBooking(booking);
         } catch (error) {
           console.error('Failed to update admin booking.', error);
+          throw error;
         }
       },
     }),

@@ -25,6 +25,11 @@ service cloud.firestore {
       allow read, create, update, delete: if isAdmin();
     }
 
+    match /bookingAuditLogs/{auditLogId} {
+      allow read, create: if isAdmin();
+      allow update, delete: if false;
+    }
+
     match /{document=**} {
       allow read, write: if false;
     }

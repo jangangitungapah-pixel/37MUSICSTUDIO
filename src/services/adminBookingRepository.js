@@ -1,4 +1,5 @@
 import {
+  addDoc,
   collection,
   deleteDoc,
   doc,
@@ -16,6 +17,7 @@ import {
 
 const ADMIN_MANUAL_BOOKINGS_STORAGE_KEY = 'thirty-seven-admin-manual-bookings';
 const BOOKINGS_COLLECTION = 'bookings';
+const BOOKING_AUDIT_LOGS_COLLECTION = 'bookingAuditLogs';
 const DEFAULT_STUDIO_ID = 'main-studio';
 
 const bookingStatusValues = new Set(['pending', 'dp', 'paid']);
@@ -58,6 +60,95 @@ function normalizeTimestampValue(value, fallback) {
   return fallback;
 }
 
+function normalizeAuditActor(actor) {
+  if (!actor || typeof actor !== 'object') {
+    return {
+      displayName: 'Admin',
+      email: '',
+      uid: '',
+    };
+  }
+
+  const email = safeString(actor.email);
+  const displayName = safeString(actor.displayName || actor.name || email, 'Admin');
+
+  return {
+    displayName,
+    email,
+    uid: safeString(actor.uid),
+  };
+}
+
+function normalizeAuditEntry(entry) {
+  if (!entry || typeof entry !== 'object') {
+    return null;
+  }
+
+  const nowIso = new Date().toISOString();
+  const action = safeString(entry.action);
+  const at = normalizeTimestampValue(entry.at, nowIso);
+
+  if (!action || !at) {
+    return null;
+  }
+
+  return {
+    action,
+    at,
+    by: normalizeAuditActor(entry.by),
+    id: safeString(entry.id, 'audit-' + Date.now()),
+    label: safeString(entry.label, action),
+  };
+}
+
+function normalizeAuditTrail(entries) {
+  if (!Array.isArray(entries)) {
+    return [];
+  }
+
+  return entries
+    .map((entry) => normalizeAuditEntry(entry))
+    .filter(Boolean)
+    .slice(-24);
+}
+
+function normalizeBookingAuditLog(entry) {
+  if (!entry || typeof entry !== 'object') {
+    return null;
+  }
+
+  const nowIso = new Date().toISOString();
+  const bookingId = safeString(entry.bookingId);
+  const action = safeString(entry.action);
+
+  if (!bookingId || !action) {
+    return null;
+  }
+
+  const snapshot = entry.bookingSnapshot && typeof entry.bookingSnapshot === 'object'
+    ? entry.bookingSnapshot
+    : {};
+
+  return {
+    action,
+    at: normalizeTimestampValue(entry.at, nowIso),
+    bookingId,
+    bookingSnapshot: {
+      customerName: safeString(snapshot.customerName),
+      dateKey: safeString(snapshot.dateKey),
+      phone: safeString(snapshot.phone),
+      sessionType: safeString(snapshot.sessionType || snapshot.title),
+      status: safeString(snapshot.status),
+      time: safeString(snapshot.time),
+      totalPrice: Math.max(0, safeNumber(snapshot.totalPrice)),
+    },
+    by: normalizeAuditActor(entry.by),
+    label: safeString(entry.label, action),
+    source: safeString(entry.source, 'admin'),
+    studioId: safeString(entry.studioId, DEFAULT_STUDIO_ID),
+  };
+}
+
 function getToneByStatus(status) {
   if (status === 'paid') return 'cyan';
   if (status === 'dp') return 'purple';
@@ -67,6 +158,10 @@ function getToneByStatus(status) {
 
 function getBookingsCollection() {
   return collection(firestoreDb, BOOKINGS_COLLECTION);
+}
+
+function getBookingAuditLogsCollection() {
+  return collection(firestoreDb, BOOKING_AUDIT_LOGS_COLLECTION);
 }
 
 function getStudioBookingsQuery() {
@@ -112,8 +207,10 @@ export function normalizeAdminBooking(booking) {
   const status = bookingStatusValues.has(booking.status) ? booking.status : 'pending';
 
   return {
+    auditTrail: normalizeAuditTrail(booking.auditTrail),
     customerName,
     createdAt: normalizeTimestampValue(booking.createdAt, nowIso),
+    createdBy: normalizeAuditActor(booking.createdBy),
     dateKey,
     dpAmount: Math.max(0, safeNumber(booking.dpAmount)),
     durationHours: Math.max(1, safeNumber(booking.durationHours, 1)),
@@ -129,7 +226,11 @@ export function normalizeAdminBooking(booking) {
     title: safeString(booking.title || sessionType, sessionType),
     tone: safeString(booking.tone, getToneByStatus(status)),
     totalPrice: Math.max(0, safeNumber(booking.totalPrice)),
+    lastAction: safeString(booking.lastAction),
+    lastActionAt: normalizeTimestampValue(booking.lastActionAt, nowIso),
+    lastActionLabel: safeString(booking.lastActionLabel),
     updatedAt: normalizeTimestampValue(booking.updatedAt, nowIso),
+    updatedBy: normalizeAuditActor(booking.updatedBy),
   };
 }
 
@@ -328,6 +429,26 @@ export async function deleteManualBooking(bookingId) {
   return true;
 }
 
+export async function recordBookingAuditLog(entry) {
+  const normalizedLog = normalizeBookingAuditLog(entry);
+
+  if (!normalizedLog) {
+    return null;
+  }
+
+  if (canUseFirestore()) {
+    await addDoc(
+      getBookingAuditLogsCollection(),
+      {
+        ...normalizedLog,
+        recordedAt: serverTimestamp(),
+      },
+    );
+  }
+
+  return normalizedLog;
+}
+
 export async function clearManualBookings() {
   if (canUseFirestore()) {
     const snapshot = await getDocs(getStudioBookingsQuery());
@@ -348,6 +469,7 @@ export const adminBookingRepository = {
   createManualBooking,
   deleteManualBooking,
   normalizeAdminBooking,
+  recordBookingAuditLog,
   subscribeManualBookings,
   updateManualBooking,
 };

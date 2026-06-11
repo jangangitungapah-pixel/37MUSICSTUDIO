@@ -414,6 +414,87 @@ function createBookingFormFromBooking(booking) {
   };
 }
 
+function createAuditActor(user) {
+  const email = String(user?.email || '').trim();
+  const displayName = String(user?.displayName || email || 'Admin').trim();
+
+  return {
+    displayName,
+    email,
+    uid: String(user?.uid || '').trim(),
+  };
+}
+
+function createBookingAuditEntry(action, label, user) {
+  const nowIso = new Date().toISOString();
+
+  return {
+    action,
+    at: nowIso,
+    by: createAuditActor(user),
+    id: 'audit-' + Date.now() + '-' + Math.random().toString(16).slice(2),
+    label,
+  };
+}
+
+function applyBookingAudit(booking, action, label, user, options = {}) {
+  const entry = createBookingAuditEntry(action, label, user);
+  const currentTrail = Array.isArray(booking.auditTrail) ? booking.auditTrail : [];
+  const nextBooking = {
+    ...booking,
+    auditTrail: [...currentTrail, entry].slice(-24),
+    lastAction: entry.action,
+    lastActionAt: entry.at,
+    lastActionLabel: entry.label,
+    updatedAt: entry.at,
+    updatedBy: entry.by,
+  };
+
+  if (options.includeCreatedBy) {
+    nextBooking.createdAt = booking.createdAt || entry.at;
+    nextBooking.createdBy = booking.createdBy || entry.by;
+  }
+
+  return nextBooking;
+}
+
+function createDetachedBookingAuditLog(booking, action, label, user) {
+  const entry = createBookingAuditEntry(action, label, user);
+
+  return {
+    ...entry,
+    bookingId: booking.id,
+    bookingSnapshot: {
+      customerName: booking.customerName || booking.title || '',
+      dateKey: booking.dateKey || '',
+      phone: booking.phone || '',
+      sessionType: booking.sessionType || booking.title || '',
+      status: booking.status || '',
+      time: booking.time || '',
+      totalPrice: booking.totalPrice || 0,
+    },
+    source: 'admin',
+    studioId: booking.studioId || 'main-studio',
+  };
+}
+
+function formatAuditTimestamp(value) {
+  if (!value) {
+    return '-';
+  }
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return String(value);
+  }
+
+  return new Intl.DateTimeFormat('id-ID', {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+  }).format(date);
+}
+
 function getBookingForSlot(bookings, dayKey, timeKey) {
   return bookings.find((booking) => booking.dateKey === dayKey && booking.time === timeKey);
 }
@@ -1038,6 +1119,9 @@ function BookingDetailModal({
   const isPaidPending = bookingActionId === booking.id + ':paid';
   const isActionPending = isDeletePending || isPaidPending;
   const isPaid = booking.status === 'paid';
+  const auditTrail = Array.isArray(booking.auditTrail)
+    ? booking.auditTrail.slice(-5).reverse()
+    : [];
   let statusDotClass = 'bg-studio-accent';
 
   if (booking.status === 'dp') {
@@ -1183,6 +1267,35 @@ function BookingDetailModal({
             <p className="m-0 text-sm leading-6 text-[var(--ui-text-main)]">
               {booking.notes || 'Belum ada catatan tambahan untuk booking ini.'}
             </p>
+          </section>
+
+          <section className="grid gap-2 border-b border-[var(--ui-border)] pb-3" aria-label="Riwayat aktivitas booking">
+            <span className="text-[0.58rem] font-semibold uppercase tracking-[0.14em] text-[var(--ui-text-muted)] sm:text-[0.68rem] sm:tracking-[0.16em]">
+              Activity history
+            </span>
+
+            {auditTrail.length > 0 ? (
+              <div className="grid gap-2">
+                {auditTrail.map((entry) => (
+                  <div
+                    className="grid gap-0.5 rounded-[1rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 py-2 ring-1 ring-[var(--ui-ring)]"
+                    key={entry.id || entry.at + entry.action}
+                  >
+                    <strong className="text-sm font-semibold text-[var(--ui-text-strong)]">
+                      {entry.label || entry.action}
+                    </strong>
+
+                    <span className="text-xs font-medium leading-5 text-[var(--ui-text-muted)]">
+                      {formatAuditTimestamp(entry.at)} • {entry.by?.displayName || entry.by?.email || 'Admin'}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="m-0 text-sm leading-6 text-[var(--ui-text-muted)]">
+                Belum ada riwayat aktivitas untuk booking ini.
+              </p>
+            )}
           </section>
         </div>
 
@@ -1729,8 +1842,10 @@ export function BookingAdmin() {
   const adminContext = useOutletContext() || {};
   const {
     addManualBooking = () => {},
+    adminUser = null,
     deleteManualBooking = () => {},
     manualBookings = [],
+    recordBookingAuditLog = async () => {},
     updateManualBooking = () => {},
   } = adminContext;
   const [searchParams] = useSearchParams();
@@ -1897,11 +2012,13 @@ export function BookingAdmin() {
       updatedAt: new Date().toISOString(),
     };
 
+    const auditedBooking = applyBookingAudit(nextBooking, 'paid', 'Booking ditandai lunas', adminUser);
+
     setBookingActionId(booking.id + ':paid');
 
     try {
-      await updateManualBooking(nextBooking);
-      setDetailBooking(nextBooking);
+      await updateManualBooking(auditedBooking);
+      setDetailBooking(auditedBooking);
       showBookingToast('success', 'Booking ditandai lunas.');
     } catch (error) {
       console.error('Failed to mark booking paid.', error);
@@ -1928,6 +2045,7 @@ export function BookingAdmin() {
     setBookingActionId(booking.id + ':delete');
 
     try {
+      await recordBookingAuditLog(createDetachedBookingAuditLog(booking, 'delete', 'Booking dihapus', adminUser));
       await deleteManualBooking(booking.id);
       setDetailBooking(null);
       showBookingToast('success', 'Booking dihapus.');
@@ -2011,7 +2129,8 @@ export function BookingAdmin() {
       updatedAt: new Date().toISOString(),
     };
 
-    const editBookingConflict = getBookingConflict(bookings, nextBooking, editingBooking.id);
+    const auditedBooking = applyBookingAudit(nextBooking, 'edit', 'Booking diperbarui', adminUser);
+    const editBookingConflict = getBookingConflict(bookings, auditedBooking, editingBooking.id);
 
     if (editBookingConflict) {
       const conflictMessage = getBookingConflictMessage(editBookingConflict);
@@ -2024,7 +2143,7 @@ export function BookingAdmin() {
     setIsBookingUpdating(true);
 
     try {
-      await updateManualBooking(nextBooking);
+      await updateManualBooking(auditedBooking);
 
       const nextDate = parseDateInputToDate(editBookingForm.bookingDate, cursorDate);
 
@@ -2034,7 +2153,7 @@ export function BookingAdmin() {
         label: formatFullDateLabel(nextDate),
         timeKey: editBookingForm.startTime,
       });
-      setDetailBooking(nextBooking);
+      setDetailBooking(auditedBooking);
       setEditingBooking(null);
       showBookingToast('success', 'Perubahan booking tersimpan.');
     } catch (error) {
@@ -2072,7 +2191,8 @@ export function BookingAdmin() {
       updatedAt: new Date().toISOString(),
     };
 
-    const bookingConflict = getBookingConflict(bookings, nextBooking);
+    const auditedBooking = applyBookingAudit(nextBooking, 'create', 'Booking dibuat', adminUser, { includeCreatedBy: true });
+    const bookingConflict = getBookingConflict(bookings, auditedBooking);
 
     if (bookingConflict) {
       const conflictMessage = getBookingConflictMessage(bookingConflict);
@@ -2085,7 +2205,7 @@ export function BookingAdmin() {
     setIsBookingSaving(true);
 
     try {
-      const savedBooking = await addManualBooking(nextBooking);
+      const savedBooking = await addManualBooking(auditedBooking);
       const nextDate = parseDateInputToDate(bookingForm.bookingDate, cursorDate);
 
       setCursorDate(nextDate);
@@ -2094,7 +2214,7 @@ export function BookingAdmin() {
         label: formatFullDateLabel(nextDate),
         timeKey: bookingForm.startTime,
       });
-      setDetailBooking(savedBooking || nextBooking);
+      setDetailBooking(savedBooking || auditedBooking);
       setIsBookingModalOpen(false);
       showBookingToast('success', 'Booking baru tersimpan.');
     } catch (error) {
