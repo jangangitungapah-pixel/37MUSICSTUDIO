@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from 'react';
+import {
+  ArrowLeft, useEffect, useMemo, useState } from 'react';
 import {
   CheckCircle2,
   Clock3,
@@ -296,7 +297,7 @@ const ClientMessagesPage = () => {
   const selectedAdminReplies = selectedMessage ? getAdminReplies(selectedMessage) : [];
 
   return (
-    <div className="messages-page messages-inbox-page">
+    <div className={'messages-page messages-inbox-page' + (selectedMessage ? ' has-selected-message' : '')}>
       <header className="messages-inbox-hero" aria-labelledby="messagesHeroTitle">
         <div className="messages-inbox-titleblock">
           <span className="messages-kicker">
@@ -448,6 +449,15 @@ const ClientMessagesPage = () => {
           ) : (
             <>
               <header className="inbox-detail-header">
+                <button
+                  type="button"
+                  className="inbox-mobile-back"
+                  onClick={() => setSelectedMessageId(null)}
+                  aria-label="Kembali ke daftar pesan"
+                >
+                  <ArrowLeft size={18} />
+                  <span>Pesan</span>
+                </button>
                 <div className="inbox-detail-identity">
                   <span className="inbox-detail-avatar">{getInitial(selectedMessage)}</span>
                   <div>
