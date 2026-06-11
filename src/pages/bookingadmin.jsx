@@ -858,6 +858,195 @@ function BookingModal({
   );
 }
 
+function DetailMetric({
+  helper,
+  icon: Icon,
+  label,
+  value,
+}) {
+  return (
+    <article className="grid gap-2 rounded-[1.25rem] border border-[var(--ui-border)] bg-[var(--ui-control)] p-3 ring-1 ring-[var(--ui-ring)]">
+      <div className="flex items-center gap-2 text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-[var(--ui-text-muted)]">
+        {Icon ? <Icon size={14} strokeWidth={2.35} aria-hidden="true" /> : null}
+        {label}
+      </div>
+
+      <strong className="text-base font-semibold tracking-[-0.03em] text-[var(--ui-text-strong)]">
+        {value}
+      </strong>
+
+      {helper ? (
+        <span className="text-xs font-medium leading-5 text-[var(--ui-text-muted)]">
+          {helper}
+        </span>
+      ) : null}
+    </article>
+  );
+}
+
+function BookingDetailModal({
+  booking,
+  onClose,
+}) {
+  if (!booking) return null;
+
+  const duration = getClampedBookingDuration(booking);
+  const startHour = getHourFromTimeKey(booking.time);
+  const endTime = padNumber(startHour + duration) + ':00';
+  const bookingDate = parseDateInputToDate(booking.dateKey, createDate(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()));
+  const paidAmount = booking.status === 'paid' ? booking.totalPrice : booking.dpAmount;
+  const displayName = booking.customerName || booking.title;
+  const sessionLabel = booking.sessionType || booking.title || 'Booking';
+  const paymentLabel = getStatusLabel(booking.status);
+  let statusDotClass = 'bg-studio-accent';
+
+  if (booking.status === 'dp') {
+    statusDotClass = 'bg-studio-purple';
+  }
+
+  if (booking.status === 'paid') {
+    statusDotClass = 'bg-studio-cyan';
+  }
+
+  return (
+    <div
+      className="fixed inset-0 z-50 grid place-items-center p-4 [background:color-mix(in_srgb,var(--ui-bg-base)_62%,transparent)] backdrop-blur-xl"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="booking-detail-title"
+    >
+      <div className="grid max-h-[calc(100vh-32px)] w-[min(720px,calc(100vw-32px))] gap-5 overflow-auto rounded-[2rem] border border-[var(--ui-border-strong)] bg-[var(--ui-bg-base)] p-5 shadow-[var(--ui-shadow-soft)] ring-1 ring-[var(--ui-ring)] sm:p-6">
+        <div className="flex items-start justify-between gap-4">
+          <div className="grid gap-2">
+            <span className="inline-flex w-fit items-center gap-2 rounded-full border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 py-1.5 text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-studio-accent ring-1 ring-[var(--ui-ring)]">
+              <ReceiptText size={14} strokeWidth={2.35} aria-hidden="true" />
+              Detail booking
+            </span>
+
+            <div className="grid gap-1">
+              <h2
+                className="m-0 text-3xl font-semibold tracking-[-0.06em] text-[var(--ui-text-strong)]"
+                id="booking-detail-title"
+              >
+                {displayName}
+              </h2>
+
+              <p className="m-0 text-sm leading-6 text-[var(--ui-text-muted)]">
+                {sessionLabel} pada {formatFullDateLabel(bookingDate)}, pukul {booking.time} sampai {endTime}.
+              </p>
+            </div>
+          </div>
+
+          <button
+            aria-label="Close booking detail"
+            className="grid size-10 shrink-0 place-items-center rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] text-[var(--ui-secondary-text)] shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/25"
+            type="button"
+            onClick={onClose}
+          >
+            <X size={17} strokeWidth={2.35} aria-hidden="true" />
+          </button>
+        </div>
+
+        <section className="grid gap-3 rounded-[1.5rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-4 ring-1 ring-[var(--ui-ring)]" aria-label="Ringkasan booking">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="grid gap-1">
+              <span className="text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-[var(--ui-text-muted)]">
+                Status pembayaran
+              </span>
+
+              <strong className="text-xl font-semibold tracking-[-0.04em] text-[var(--ui-text-strong)]">
+                {paymentLabel}
+              </strong>
+            </div>
+
+            <span className="inline-flex items-center gap-2 rounded-full border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 py-2 text-xs font-semibold uppercase tracking-[0.14em] text-[var(--ui-text-main)] ring-1 ring-[var(--ui-ring)]">
+              <span className={cn('size-2 rounded-full', statusDotClass)} aria-hidden="true" />
+              {sessionLabel}
+            </span>
+          </div>
+
+          <div className="grid gap-2 sm:grid-cols-3">
+            <DetailMetric
+              icon={WalletCards}
+              label="Total"
+              value={formatCurrency(booking.totalPrice)}
+              helper={duration + ' jam x ' + formatCurrency(PRICE_PER_HOUR)}
+            />
+
+            <DetailMetric
+              icon={Banknote}
+              label="Terbayar"
+              value={formatCurrency(paidAmount)}
+              helper={booking.status === 'dp' ? 'Nominal DP' : paymentLabel}
+            />
+
+            <DetailMetric
+              icon={ReceiptText}
+              label="Sisa"
+              value={formatCurrency(booking.remainingPayment)}
+              helper={booking.remainingPayment > 0 ? 'Belum lunas' : 'Tidak ada sisa'}
+            />
+          </div>
+        </section>
+
+        <section className="grid gap-2 sm:grid-cols-2" aria-label="Data booking">
+          <DetailMetric
+            icon={UserRound}
+            label="Customer"
+            value={displayName}
+            helper={booking.phone || 'Nomor telepon belum diisi'}
+          />
+
+          <DetailMetric
+            icon={Phone}
+            label="Nomor telepon"
+            value={booking.phone || '-'}
+            helper="Kontak customer"
+          />
+
+          <DetailMetric
+            icon={CalendarDays}
+            label="Tanggal"
+            value={formatFullDateLabel(bookingDate)}
+            helper={booking.dateKey}
+          />
+
+          <DetailMetric
+            icon={Clock3}
+            label="Waktu"
+            value={booking.time + ' - ' + endTime}
+            helper={'Durasi ' + duration + ' jam'}
+          />
+        </section>
+
+        <section className="grid gap-2 rounded-[1.5rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-4 ring-1 ring-[var(--ui-ring)]" aria-label="Catatan booking">
+          <span className="text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-[var(--ui-text-muted)]">
+            Catatan
+          </span>
+
+          <p className="m-0 text-sm leading-7 text-[var(--ui-text-main)]">
+            {booking.notes || 'Belum ada catatan tambahan untuk booking ini.'}
+          </p>
+        </section>
+
+        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[var(--ui-border)] pt-4">
+          <span className="text-sm font-semibold text-[var(--ui-text-muted)]">
+            Detail ini masih read-only. Edit booking bisa dibuat di phase berikutnya.
+          </span>
+
+          <button
+            className="inline-flex min-h-11 items-center justify-center rounded-full [background:var(--ui-primary-bg)] px-5 text-sm font-semibold text-[var(--ui-primary-text)] shadow-[var(--ui-shadow-soft)] transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
+            type="button"
+            onClick={onClose}
+          >
+            Tutup detail
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function CalendarCell({
   booking,
   day,
@@ -1307,6 +1496,7 @@ export function BookingAdmin() {
   });
   const [manualBookings, setManualBookings] = useState([]);
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
+  const [detailBooking, setDetailBooking] = useState(null);
   const [bookingForm, setBookingForm] = useState(() => {
     const now = new Date();
     return createInitialBookingForm(createDate(now.getFullYear(), now.getMonth(), now.getDate()));
@@ -1371,6 +1561,10 @@ export function BookingAdmin() {
 
   const closeBookingModal = () => {
     setIsBookingModalOpen(false);
+  };
+
+  const closeBookingDetailModal = () => {
+    setDetailBooking(null);
   };
 
   const handleFormChange = (event) => {
@@ -1465,9 +1659,12 @@ export function BookingAdmin() {
       timeKey: slot.key,
     });
 
-    if (!booking) {
-      openBookingModal(day.date, slot.key);
+    if (booking) {
+      setDetailBooking(booking);
+      return;
     }
+
+    openBookingModal(day.date, slot.key);
   };
 
   return (
@@ -1518,6 +1715,11 @@ export function BookingAdmin() {
         onChange={handleFormChange}
         onClose={closeBookingModal}
         onSubmit={handleBookingSubmit}
+      />
+
+      <BookingDetailModal
+        booking={detailBooking}
+        onClose={closeBookingDetailModal}
       />
     </section>
   );
