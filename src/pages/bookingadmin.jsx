@@ -899,7 +899,7 @@ function PaymentMini({
   value,
 }) {
   return (
-    <div className="grid min-w-0 gap-0.5 border-l border-[var(--ui-border)] px-2 py-2 first:border-l-0 sm:px-4 sm:py-3">
+    <div className="grid min-w-0 gap-0.5 border-l border-[var(--ui-border)] px-2 py-2.5 first:border-l-0 sm:px-4 sm:py-3.5">
       <div className="flex min-w-0 items-center gap-1.5 text-[0.52rem] font-semibold uppercase tracking-[0.11em] text-[var(--ui-text-muted)] sm:text-[0.68rem] sm:tracking-[0.16em]">
         {Icon ? <Icon className="shrink-0" size={12} strokeWidth={2.35} aria-hidden="true" /> : null}
         <span className="truncate">{label}</span>
@@ -982,8 +982,8 @@ function BookingDetailModal({
         </header>
 
         <div className="grid gap-4 overflow-y-auto px-4 py-4 sm:px-6 sm:py-5">
-          <section className="grid gap-3" aria-label="Ringkasan booking">
-            <div className="flex items-center justify-between gap-3">
+          <section className="grid gap-3.5 sm:gap-4" aria-label="Ringkasan booking">
+            <div className="flex items-center justify-between gap-3 pb-1 sm:pb-1.5">
               <div className="grid min-w-0 gap-0.5">
                 <span className="text-[0.58rem] font-semibold uppercase tracking-[0.14em] text-[var(--ui-text-muted)] sm:text-[0.68rem] sm:tracking-[0.16em]">
                   Status pembayaran
@@ -1001,7 +1001,7 @@ function BookingDetailModal({
               </span>
             </div>
 
-            <div className="grid grid-cols-3 gap-0 border-y border-[var(--ui-border)]">
+            <div className="grid grid-cols-3 gap-0 border-y border-[var(--ui-border)] py-1">
               <PaymentMini
                 icon={WalletCards}
                 label="Total"
