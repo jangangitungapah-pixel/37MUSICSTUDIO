@@ -143,6 +143,19 @@
     font: inherit;
   }
 
+  /* 37-login-autofill:start */
+  .studio-login-input:-webkit-autofill,
+  .studio-login-input:-webkit-autofill:hover,
+  .studio-login-input:-webkit-autofill:focus,
+  .studio-login-input:-webkit-autofill:active {
+    box-shadow: 0 0 0 1000px var(--ui-control) inset;
+    -webkit-text-fill-color: var(--ui-text-strong);
+    caret-color: var(--ui-text-strong);
+    transition: background-color 9999s ease-out;
+  }
+  /* 37-login-autofill:end */
+
+
   button {
     cursor: pointer;
   }
