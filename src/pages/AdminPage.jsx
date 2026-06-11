@@ -13,6 +13,7 @@ import {
   ArrowRight,
   LockKeyhole,
   Radio,
+  UsersRound,
   SlidersHorizontal,
   Moon,
   Sun,
@@ -46,6 +47,13 @@ const adminNavItems = [
     helper: 'Incoming sessions',
     icon: Radio,
     path: '/admin/bookings',
+  },
+  {
+    key: 'customers',
+    label: 'Customers',
+    helper: 'Client directory',
+    icon: UsersRound,
+    path: '/admin/customers',
   },
 ];
 

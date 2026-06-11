@@ -1,6 +1,7 @@
 import {
   useMemo,
-  useState } from 'react';
+  useState,
+} from 'react';
 import {
   Banknote,
   CalendarDays,
@@ -16,6 +17,7 @@ import {
   X,
   ChevronDown,
 } from 'lucide-react';
+import { Link, useSearchParams } from 'react-router';
 import { cn } from '../lib/cn.js';
 
 const PRICE_PER_HOUR = 120000;
@@ -381,6 +383,12 @@ function createDemoBookingsForMonth(cursorDate) {
     }));
 }
 
+export function createAdminBookingSnapshot(date = new Date()) {
+  const cursorDate = createDate(date.getFullYear(), date.getMonth(), date.getDate());
+
+  return createDemoBookingsForMonth(cursorDate);
+}
+
 function createInitialBookingForm(date, timeKey = '10:00') {
   return {
     bookingDate: formatDateKey(date),
@@ -449,6 +457,28 @@ function getVisibleBookings(bookings, visibleDays) {
   const visibleKeys = new Set(visibleDays.map((day) => day.key));
 
   return bookings.filter((booking) => visibleKeys.has(booking.dateKey));
+}
+
+function normalizeCustomerQuery(value) {
+  return String(value || '')
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, '');
+}
+
+function bookingMatchesCustomerQuery(booking, customerQuery) {
+  if (!customerQuery) return true;
+
+  const searchable = [
+    booking.customerName,
+    booking.phone,
+    booking.sessionType,
+    booking.title,
+  ]
+    .map(normalizeCustomerQuery)
+    .join(' ');
+
+  return searchable.includes(customerQuery);
 }
 
 function getBookingStatusCounts(visibleBookings) {
@@ -1542,6 +1572,7 @@ function SelectedSlotPanel({
 }
 
 export function BookingAdmin() {
+  const [searchParams] = useSearchParams();
   const [viewMode, setViewMode] = useState(getInitialViewMode);
   const [cursorDate, setCursorDate] = useState(() => {
     const now = new Date();
@@ -1573,9 +1604,19 @@ export function BookingAdmin() {
     () => [...baseBookings, ...manualBookings],
     [baseBookings, manualBookings],
   );
+  const customerFilter = searchParams.get('customer') || '';
+  const normalizedCustomerFilter = useMemo(
+    () => normalizeCustomerQuery(customerFilter),
+    [customerFilter],
+  );
+  const filteredBookings = useMemo(
+    () => bookings.filter((booking) => bookingMatchesCustomerQuery(booking, normalizedCustomerFilter)),
+    [bookings, normalizedCustomerFilter],
+  );
+  const boardBookings = normalizedCustomerFilter ? filteredBookings : bookings;
   const visibleBookings = useMemo(
-    () => getVisibleBookings(bookings, visibleDays),
-    [bookings, visibleDays],
+    () => getVisibleBookings(boardBookings, visibleDays),
+    [boardBookings, visibleDays],
   );
   const statusCounts = useMemo(
     () => getBookingStatusCounts(visibleBookings),
@@ -1739,6 +1780,21 @@ export function BookingAdmin() {
           onViewChange={setViewMode}
         />
 
+        {normalizedCustomerFilter ? (
+          <div className="flex flex-wrap items-center justify-between gap-3 rounded-[1.25rem] border border-studio-accent/30 bg-studio-accent/10 px-4 py-3 text-sm font-semibold text-[var(--ui-text-main)] ring-1 ring-studio-accent/15">
+            <span>
+              Booking board difilter untuk customer: <span className="text-[var(--ui-text-strong)]">{customerFilter}</span>
+            </span>
+
+            <Link
+              className="inline-flex min-h-9 items-center justify-center rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] px-4 text-xs font-semibold uppercase tracking-[0.12em] text-[var(--ui-secondary-text)] shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/25"
+              to="/admin/bookings"
+            >
+              Clear filter
+            </Link>
+          </div>
+        ) : null}
+
         <BookingSlotCounters
           summary={summary}
           timeSlots={timeSlots}
@@ -1746,7 +1802,7 @@ export function BookingAdmin() {
         />
 
         <CalendarGrid
-          bookings={bookings}
+          bookings={boardBookings}
           cursorDate={cursorDate}
           selectedSlot={selectedSlot}
           timeSlots={timeSlots}
@@ -1758,7 +1814,7 @@ export function BookingAdmin() {
       </div>
 
       <SelectedSlotPanel
-        bookings={bookings}
+        bookings={boardBookings}
         selectedSlot={selectedSlot}
       />
 
