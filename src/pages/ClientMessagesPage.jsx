@@ -125,6 +125,7 @@ const ClientMessagesPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedMessageId, setSelectedMessageId] = useState(null);
   const [replyDrafts, setReplyDrafts] = useState({});
+  const [isMobileActionMenuOpen, setMobileActionMenuOpen] = useState(false);
 
   const addNotification = useNotificationStore((state) => state.addNotification);
 
@@ -191,6 +192,10 @@ const ClientMessagesPage = () => {
 
     return filteredMessages.find((message) => message.id === selectedMessageId) || null;
   }, [filteredMessages, selectedMessageId]);
+
+  useEffect(() => {
+    setMobileActionMenuOpen(false);
+  }, [selectedMessageId]);
 
   const copyText = async (value, label) => {
     const text = String(value || '').trim();
@@ -589,6 +594,17 @@ const ClientMessagesPage = () => {
                     Kirim
                   </button>
 
+                  <button
+                    type="button"
+                    className={'inbox-mobile-action-menu-toggle' + (isMobileActionMenuOpen ? ' is-open' : '')}
+                    onClick={() => setMobileActionMenuOpen((current) => !current)}
+                    aria-label="Buka menu aksi pesan"
+                    aria-expanded={isMobileActionMenuOpen}
+                    aria-controls={'mobile-actions-' + selectedMessage.id}
+                  >
+                    <span aria-hidden="true">⋯</span>
+                  </button>
+
                   <button type="button" className="inbox-action" onClick={() => saveReplyNote(selectedMessage)}>
                     <Reply size={15} />
                     Catatan
@@ -634,6 +650,85 @@ const ClientMessagesPage = () => {
                     <CheckCircle2 size={15} />
                     Selesai
                   </button>
+
+                  <div
+                    id={'mobile-actions-' + selectedMessage.id}
+                    className={'inbox-mobile-action-sheet' + (isMobileActionMenuOpen ? ' is-open' : '')}
+                    aria-hidden={!isMobileActionMenuOpen}
+                  >
+                    <button
+                      type="button"
+                      className="inbox-mobile-sheet-action"
+                      onClick={async () => {
+                        await saveReplyNote(selectedMessage);
+                        setMobileActionMenuOpen(false);
+                      }}
+                    >
+                      <Reply size={15} />
+                      <span>
+                        <strong>Catatan Internal</strong>
+                        <small>Simpan sebagai follow up admin</small>
+                      </span>
+                    </button>
+
+                    <a
+                      className={'inbox-mobile-sheet-action whatsapp' + (!selectedWaHref ? ' is-disabled' : '')}
+                      href={selectedWaHref || undefined}
+                      target="_blank"
+                      rel="noreferrer"
+                      aria-disabled={!selectedWaHref}
+                      onClick={(event) => {
+                        if (!selectedWaHref) {
+                          event.preventDefault();
+                          addNotification({
+                            type: 'warning',
+                            title: 'Nomor WhatsApp kosong',
+                            message: 'Client belum menyimpan nomor WhatsApp.',
+                          });
+                        }
+
+                        setMobileActionMenuOpen(false);
+                      }}
+                    >
+                      <MessageCircle size={15} />
+                      <span>
+                        <strong>Balas WhatsApp</strong>
+                        <small>Buka chat WhatsApp client</small>
+                      </span>
+                    </a>
+
+                    <button
+                      type="button"
+                      className="inbox-mobile-sheet-action"
+                      onClick={async () => {
+                        await markReplied(selectedMessage);
+                        setMobileActionMenuOpen(false);
+                      }}
+                      disabled={selectedMessage.status === 'replied' || selectedMessage.status === 'done'}
+                    >
+                      <Reply size={15} />
+                      <span>
+                        <strong>Tandai Dibalas</strong>
+                        <small>Ubah status menjadi dibalas</small>
+                      </span>
+                    </button>
+
+                    <button
+                      type="button"
+                      className="inbox-mobile-sheet-action success"
+                      onClick={async () => {
+                        await markDone(selectedMessage);
+                        setMobileActionMenuOpen(false);
+                      }}
+                      disabled={selectedMessage.status === 'done'}
+                    >
+                      <CheckCircle2 size={15} />
+                      <span>
+                        <strong>Tandai Selesai</strong>
+                        <small>Tutup percakapan client</small>
+                      </span>
+                    </button>
+                  </div>
                 </div>
               </section>
             </>
