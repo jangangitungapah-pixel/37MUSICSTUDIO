@@ -1,8 +1,9 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   CheckCircle2,
   Clock3,
   Copy,
+  Inbox,
   Mail,
   MessageCircle,
   Phone,
@@ -40,6 +41,21 @@ const formatDateTime = (value) => {
   }
 };
 
+const formatShortTime = (value) => {
+  if (!value) return '—';
+
+  try {
+    return new Intl.DateTimeFormat('id-ID', {
+      day: '2-digit',
+      month: 'short',
+      hour: '2-digit',
+      minute: '2-digit',
+    }).format(new Date(value));
+  } catch {
+    return value;
+  }
+};
+
 const statusLabel = (status) => {
   const normalized = clean(status);
   if (normalized === 'done') return 'Selesai';
@@ -54,17 +70,34 @@ const statusTone = (status) => {
   return 'cyan';
 };
 
-const filterOptions = [
-  { key: 'all', label: 'Semua' },
-  { key: 'open', label: 'Open' },
-  { key: 'replied', label: 'Dibalas' },
-  { key: 'done', label: 'Selesai' },
+const getMessageStatus = (message) => clean(message?.status || 'open');
+
+const isOpenMessage = (message) => {
+  const status = getMessageStatus(message);
+  return status !== 'done' && status !== 'replied';
+};
+
+const getInitial = (message) => String(message?.clientName || message?.clientEmail || 'C').charAt(0).toUpperCase();
+
+const getDisplayName = (message) => message?.clientName || message?.clientEmail || 'Client';
+
+const getMessagePreview = (message) => {
+  const text = String(message?.message || 'Tidak ada isi pesan.').replace(/\s+/g, ' ').trim();
+  return text.length > 120 ? text.slice(0, 120) + '…' : text;
+};
+
+const folderOptions = [
+  { key: 'open', label: 'Inbox', description: 'Belum selesai', icon: Inbox },
+  { key: 'replied', label: 'Dibalas', description: 'Sudah difollow up', icon: Reply },
+  { key: 'done', label: 'Selesai', description: 'Closed thread', icon: CheckCircle2 },
+  { key: 'all', label: 'Semua Pesan', description: 'Arsip operasional', icon: Mail },
 ];
 
 const ClientMessagesPage = () => {
   const { messages, isLoaded, error, updateMessageStatus } = useClientMessageStore();
   const [activeFilter, setActiveFilter] = useState('open');
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedMessageId, setSelectedMessageId] = useState(null);
   const [replyDrafts, setReplyDrafts] = useState({});
 
   const addNotification = useNotificationStore((state) => state.addNotification);
@@ -73,11 +106,24 @@ const ClientMessagesPage = () => {
     return [...(messages || [])].sort((a, b) => String(b.updatedAt || b.createdAt || '').localeCompare(String(a.updatedAt || a.createdAt || '')));
   }, [messages]);
 
+  const mailboxCounts = useMemo(() => {
+    const open = sortedMessages.filter(isOpenMessage).length;
+    const replied = sortedMessages.filter((message) => getMessageStatus(message) === 'replied').length;
+    const done = sortedMessages.filter((message) => getMessageStatus(message) === 'done').length;
+
+    return {
+      all: sortedMessages.length,
+      open,
+      replied,
+      done,
+    };
+  }, [sortedMessages]);
+
   const filteredMessages = useMemo(() => {
     const query = clean(searchTerm);
 
     return sortedMessages.filter((message) => {
-      const normalizedStatus = clean(message.status || 'open');
+      const normalizedStatus = getMessageStatus(message);
       const passFilter = activeFilter === 'all'
         ? true
         : activeFilter === 'open'
@@ -91,17 +137,29 @@ const ClientMessagesPage = () => {
         message.message,
         message.subject,
         message.clientUid,
+        message.adminReplyNote,
+        message.source,
       ].filter(Boolean).join(' '));
 
-      const passSearch = !query || haystack.includes(query);
-
-      return passFilter && passSearch;
+      return passFilter && (!query || haystack.includes(query));
     });
   }, [sortedMessages, activeFilter, searchTerm]);
 
-  const openCount = sortedMessages.filter((message) => clean(message.status) !== 'done').length;
-  const repliedCount = sortedMessages.filter((message) => clean(message.status) === 'replied').length;
-  const doneCount = sortedMessages.filter((message) => clean(message.status) === 'done').length;
+  useEffect(() => {
+    if (filteredMessages.length === 0) {
+      setSelectedMessageId(null);
+      return;
+    }
+
+    const selectedStillVisible = filteredMessages.some((message) => message.id === selectedMessageId);
+    if (!selectedStillVisible) {
+      setSelectedMessageId(filteredMessages[0].id);
+    }
+  }, [filteredMessages, selectedMessageId]);
+
+  const selectedMessage = useMemo(() => {
+    return filteredMessages.find((message) => message.id === selectedMessageId) || filteredMessages[0] || null;
+  }, [filteredMessages, selectedMessageId]);
 
   const copyText = async (value, label) => {
     const text = String(value || '').trim();
@@ -158,75 +216,63 @@ const ClientMessagesPage = () => {
     });
   };
 
+  const markReplied = async (message) => {
+    await updateMessageStatus(message.id, 'replied', {
+      isReadByAdmin: true,
+      repliedAt: new Date().toISOString(),
+    });
+  };
+
+  const markDone = async (message) => {
+    await updateMessageStatus(message.id, 'done', {
+      isReadByAdmin: true,
+      doneAt: new Date().toISOString(),
+    });
+  };
+
+  const getWhatsAppHref = (message) => {
+    const waNumber = normalizeWaNumber(message?.clientPhone);
+    const waText = encodeURIComponent(
+      'Halo ' + (message?.clientName || 'kak') + ', kami dari 37 Music Studio mau follow up pesan kamu di Client Portal: "' + (message?.message || '') + '"'
+    );
+
+    return waNumber ? 'https://wa.me/' + waNumber + '?text=' + waText : '';
+  };
+
+  const activeFolder = folderOptions.find((folder) => folder.key === activeFilter) || folderOptions[0];
+  const selectedWaHref = selectedMessage ? getWhatsAppHref(selectedMessage) : '';
+
   return (
-    <div className="messages-page">
-      <header className="messages-hero" aria-labelledby="messagesHeroTitle">
-        {/* === START 37 ADMIN MESSAGES PHASE 2 HERO COMMAND CENTER === */}
-        <div className="messages-hero-main">
+    <div className="messages-page messages-inbox-page">
+      <header className="messages-inbox-hero" aria-labelledby="messagesHeroTitle">
+        <div className="messages-inbox-titleblock">
           <span className="messages-kicker">
             <MessageCircle size={16} />
             37 Admin Inbox
           </span>
-
-          <h1 id="messagesHeroTitle">Pesan dari client.</h1>
-
+          <h1 id="messagesHeroTitle">Client Inbox</h1>
           <p>
-            Semua pesan dari client portal masuk ke sini. Admin bisa follow up via WhatsApp,
-            menyalin kontak, memberi catatan, dan menandai status tindak lanjut.
+            Kelola pesan client dengan workflow inbox profesional: baca, cari, follow up, beri catatan, dan tutup percakapan dari satu layar.
           </p>
-
-          <div className="messages-command-strip" aria-label="Status operasional inbox">
-            <span>
-              <Clock3 size={14} />
-              <strong>{isLoaded ? filteredMessages.length : '...'}</strong>
-              <small>pesan tampil</small>
-            </span>
-            <span>
-              <RefreshCw size={14} />
-              <strong>{activeFilter === 'all' ? 'Semua' : statusLabel(activeFilter)}</strong>
-              <small>filter aktif</small>
-            </span>
-            <span>
-              <Search size={14} />
-              <strong>{searchTerm ? 'Search on' : 'Ready'}</strong>
-              <small>client lookup</small>
-            </span>
-          </div>
         </div>
 
-        <div className="messages-hero-orbit" aria-hidden="true">
-          <span />
-          <span />
-          <span />
+        <div className="messages-inbox-metrics" aria-label="Ringkasan pesan client">
+          <article className="messages-metric-card is-open">
+            <span>Open</span>
+            <strong>{isLoaded ? mailboxCounts.open : '...'}</strong>
+            <small>Butuh follow up</small>
+          </article>
+          <article className="messages-metric-card is-replied">
+            <span>Dibalas</span>
+            <strong>{isLoaded ? mailboxCounts.replied : '...'}</strong>
+            <small>Sudah direspons</small>
+          </article>
+          <article className="messages-metric-card is-done">
+            <span>Selesai</span>
+            <strong>{isLoaded ? mailboxCounts.done : '...'}</strong>
+            <small>Closed</small>
+          </article>
         </div>
-
-        <div className="messages-summary-grid" aria-label="Ringkasan pesan client">
-          <div className="messages-summary-card is-open">
-            <span>
-              <Clock3 size={14} />
-              Open
-            </span>
-            <strong>{isLoaded ? openCount : '...'}</strong>
-            <small>Belum selesai.</small>
-          </div>
-          <div className="messages-summary-card compact is-replied">
-            <span>
-              <Reply size={14} />
-              Dibalas
-            </span>
-            <strong>{isLoaded ? repliedCount : '...'}</strong>
-            <small>Sudah follow up.</small>
-          </div>
-          <div className="messages-summary-card compact is-done">
-            <span>
-              <CheckCircle2 size={14} />
-              Selesai
-            </span>
-            <strong>{isLoaded ? doneCount : '...'}</strong>
-            <small>Closed.</small>
-          </div>
-        </div>
-        {/* === END 37 ADMIN MESSAGES PHASE 2 HERO COMMAND CENTER === */}
       </header>
 
       {error && (
@@ -236,219 +282,227 @@ const ClientMessagesPage = () => {
         </div>
       )}
 
-      <section className="messages-toolbar messages-control-deck" aria-label="Client message control deck">
-        {/* === START 37 ADMIN MESSAGES PHASE 4 CONTROL DECK STATES === */}
-        <div className="messages-toolbar-copy">
-          <span>Control deck</span>
-          <strong>Inbox operations</strong>
-          <small>Filter status, cari client, lalu eksekusi follow up dari ticket card.</small>
-        </div>
-
-        <div className="messages-toolbar-controls">
-          <div className="messages-filter-tabs" aria-label="Filter pesan client">
-            {filterOptions.map((option) => (
-              <button
-                key={option.key}
-                type="button"
-                className={activeFilter === option.key ? 'active' : ''}
-                onClick={() => setActiveFilter(option.key)}
-              >
-                {option.label}
-              </button>
-            ))}
+      <section className="messages-inbox-shell" aria-label="Professional client inbox">
+        <aside className="inbox-sidebar" aria-label="Mailbox navigation">
+          <div className="inbox-sidebar-header">
+            <span>Mailbox</span>
+            <strong>{mailboxCounts.all}</strong>
           </div>
 
-          <label className="messages-search">
-            <Search size={16} />
-            <input
-              type="search"
-              value={searchTerm}
-              onChange={(event) => setSearchTerm(event.target.value)}
-              placeholder="Cari nama, email, nomor, isi pesan..."
-            />
-          </label>
-        </div>
-        {/* === END 37 ADMIN MESSAGES PHASE 4 CONTROL DECK STATES === */}
-      </section>
-
-      <section className="messages-board">
-        {!isLoaded ? (
-          <div className="messages-empty messages-state-card is-loading" role="status">
-            <div className="messages-empty-orbit" aria-hidden="true">
-              <span />
-              <span />
-            </div>
-            <Clock3 size={24} />
-            <strong>Memuat pesan client...</strong>
-            <p>Sebentar ya, inbox sedang disinkronkan dari Firestore.</p>
-          </div>
-        ) : sortedMessages.length === 0 ? (
-          <div className="messages-empty messages-state-card is-empty">
-            <div className="messages-empty-orbit" aria-hidden="true">
-              <span />
-              <span />
-            </div>
-            <Mail size={24} />
-            <strong>Belum ada pesan client.</strong>
-            <p>Pesan yang dikirim dari client portal akan muncul di halaman ini.</p>
-          </div>
-        ) : filteredMessages.length === 0 ? (
-          <div className="messages-empty messages-state-card is-search-empty">
-            <div className="messages-empty-orbit" aria-hidden="true">
-              <span />
-              <span />
-            </div>
-            <Search size={24} />
-            <strong>Tidak ada pesan yang cocok.</strong>
-            <p>Coba ganti filter atau kata kunci pencarian.</p>
-          </div>
-        ) : (
-          <div className="messages-list">
-            {filteredMessages.map((message) => {
-              const waNumber = normalizeWaNumber(message.clientPhone);
-              const waText = encodeURIComponent(
-                'Halo ' + (message.clientName || 'kak') + ', kami dari 37 Music Studio mau follow up pesan kamu di Client Portal: "' + (message.message || '') + '"'
-              );
-              const waHref = waNumber ? 'https://wa.me/' + waNumber + '?text=' + waText : '';
-
+          <nav className="inbox-folder-list" aria-label="Folder pesan">
+            {folderOptions.map(({ key, label, description, icon: Icon }) => {
+              const isActive = activeFilter === key;
               return (
-                <article className={'message-card message-ticket tone-' + statusTone(message.status)} key={message.id}>
-                  {/* === START 37 ADMIN MESSAGES PHASE 3 OPERATIONAL MESSAGE CARD === */}
-                  <div className="message-card-shell">
-                    <div className="message-card-header">
-                      <div className="message-card-top">
-                        <div className="message-client-avatar" aria-hidden="true">
-                          {(message.clientName || message.clientEmail || 'C').charAt(0).toUpperCase()}
-                        </div>
-
-                        <div className="message-client-copy">
-                          <span className="message-ticket-label">Client message</span>
-                          <strong>{message.clientName || 'Client'}</strong>
-                          <span>{formatDateTime(message.createdAt)}</span>
-                        </div>
-
-                        <span className={'message-status-pill status-' + statusTone(message.status)}>
-                          {statusLabel(message.status)}
-                        </span>
-                      </div>
-
-                      <div className="message-ticket-id">
-                        <span>Client UID</span>
-                        <strong>{message.clientUid || 'Belum tersedia'}</strong>
-                      </div>
-                    </div>
-
-                    {message.subject && (
-                      <div className="message-subject-line">
-                        <span>Subject</span>
-                        <strong>{message.subject}</strong>
-                      </div>
-                    )}
-
-                    <div className="message-content-zone">
-                      <span className="message-section-label">Isi pesan</span>
-                      <p className="message-body">{message.message}</p>
-                    </div>
-
-                    <div className="message-card-contact-row">
-                      <span className="message-section-label">Contact kit</span>
-                      <div className="message-meta-grid">
-                        <button type="button" onClick={() => copyText(message.clientEmail, 'Email client')}>
-                          <Mail size={14} />
-                          <span>{message.clientEmail || 'Email belum ada'}</span>
-                          <Copy size={13} />
-                        </button>
-                        <button type="button" onClick={() => copyText(message.clientPhone, 'Nomor WhatsApp')}>
-                          <Phone size={14} />
-                          <span>{message.clientPhone || 'Nomor belum ada'}</span>
-                          <Copy size={13} />
-                        </button>
-                        <button type="button" onClick={() => copyText(message.clientUid, 'UID client')}>
-                          <UserRound size={14} />
-                          <span>{message.clientUid || 'UID belum ada'}</span>
-                          <Copy size={13} />
-                        </button>
-                      </div>
-                    </div>
-
-                    {message.adminReplyNote && (
-                      <div className="message-reply-note">
-                        <Reply size={15} />
-                        <div>
-                          <strong>Catatan admin</strong>
-                          <p>{message.adminReplyNote}</p>
-                        </div>
-                      </div>
-                    )}
-
-                    <div className="message-card-actions-zone">
-                      <div className="message-reply-box message-card-compose">
-                        <textarea
-                          value={replyDrafts[message.id] || ''}
-                          onChange={(event) => setReplyDrafts((current) => ({
-                            ...current,
-                            [message.id]: event.target.value,
-                          }))}
-                          placeholder="Tulis catatan follow up internal, misalnya: Sudah dibalas via WA, client minta Sabtu malam."
-                          rows={3}
-                        />
-
-                        <button type="button" onClick={() => saveReplyNote(message)}>
-                          <Send size={15} />
-                          Simpan Catatan
-                        </button>
-                      </div>
-
-                      <div className="message-actions">
-                        <a
-                          className={'message-action-btn whatsapp' + (!waHref ? ' disabled' : '')}
-                          href={waHref || undefined}
-                          target="_blank"
-                          rel="noreferrer"
-                          aria-disabled={!waHref}
-                          onClick={(event) => {
-                            if (!waHref) {
-                              event.preventDefault();
-                              addNotification({
-                                type: 'warning',
-                                title: 'Nomor WhatsApp kosong',
-                                message: 'Client belum menyimpan nomor WhatsApp.',
-                              });
-                            }
-                          }}
-                        >
-                          <MessageCircle size={15} />
-                          Balas via WhatsApp
-                        </a>
-
-                        <button
-                          type="button"
-                          className="message-action-btn"
-                          onClick={() => updateMessageStatus(message.id, 'replied', { isReadByAdmin: true, repliedAt: new Date().toISOString() })}
-                          disabled={message.status === 'replied' || message.status === 'done'}
-                        >
-                          <MessageCircle size={15} />
-                          Tandai Dibalas
-                        </button>
-
-                        <button
-                          type="button"
-                          className="message-action-btn primary"
-                          onClick={() => updateMessageStatus(message.id, 'done', { isReadByAdmin: true, doneAt: new Date().toISOString() })}
-                          disabled={message.status === 'done'}
-                        >
-                          <CheckCircle2 size={15} />
-                          Selesai
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                  {/* === END 37 ADMIN MESSAGES PHASE 3 OPERATIONAL MESSAGE CARD === */}
-                </article>
+                <button
+                  key={key}
+                  type="button"
+                  className={'inbox-folder-btn ' + (isActive ? 'is-active' : '')}
+                  onClick={() => setActiveFilter(key)}
+                  aria-pressed={isActive}
+                >
+                  <span className="inbox-folder-icon"><Icon size={16} /></span>
+                  <span className="inbox-folder-copy">
+                    <strong>{label}</strong>
+                    <small>{description}</small>
+                  </span>
+                  <em>{mailboxCounts[key]}</em>
+                </button>
               );
             })}
+          </nav>
+
+          <div className="inbox-sidebar-note">
+            <Clock3 size={15} />
+            <span>Pesan terbaru selalu muncul paling atas.</span>
           </div>
-        )}
+        </aside>
+
+        <section className="inbox-list-panel" aria-label="Daftar pesan client">
+          <div className="inbox-list-toolbar">
+            <div>
+              <span>{activeFolder.label}</span>
+              <strong>{isLoaded ? filteredMessages.length : '...'} pesan</strong>
+            </div>
+            <label className="inbox-search">
+              <Search size={16} />
+              <input
+                type="search"
+                value={searchTerm}
+                onChange={(event) => setSearchTerm(event.target.value)}
+                placeholder="Cari nama, email, nomor, isi pesan..."
+                aria-label="Cari pesan client"
+              />
+            </label>
+          </div>
+
+          <div className="inbox-message-list" role="listbox" aria-label="Daftar percakapan client">
+            {!isLoaded ? (
+              <div className="inbox-state-card" role="status">
+                <RefreshCw className="spinner" size={22} />
+                <strong>Memuat inbox...</strong>
+                <p>Sinkronisasi pesan dari Firestore sedang berjalan.</p>
+              </div>
+            ) : sortedMessages.length === 0 ? (
+              <div className="inbox-state-card">
+                <Mail size={22} />
+                <strong>Belum ada pesan client.</strong>
+                <p>Pesan yang dikirim dari client portal akan muncul di sini.</p>
+              </div>
+            ) : filteredMessages.length === 0 ? (
+              <div className="inbox-state-card">
+                <Search size={22} />
+                <strong>Tidak ada pesan cocok.</strong>
+                <p>Coba ubah folder atau kata kunci pencarian.</p>
+              </div>
+            ) : (
+              filteredMessages.map((message) => {
+                const isSelected = selectedMessage?.id === message.id;
+                const tone = statusTone(message.status);
+
+                return (
+                  <button
+                    key={message.id}
+                    type="button"
+                    className={'inbox-message-row tone-' + tone + (isSelected ? ' is-selected' : '')}
+                    onClick={() => setSelectedMessageId(message.id)}
+                    role="option"
+                    aria-selected={isSelected}
+                  >
+                    <span className="inbox-row-avatar" aria-hidden="true">{getInitial(message)}</span>
+                    <span className="inbox-row-main">
+                      <span className="inbox-row-topline">
+                        <strong>{getDisplayName(message)}</strong>
+                        <time>{formatShortTime(message.updatedAt || message.createdAt)}</time>
+                      </span>
+                      <span className="inbox-row-subject">{message.subject || 'Pesan Client Portal'}</span>
+                      <span className="inbox-row-preview">{getMessagePreview(message)}</span>
+                    </span>
+                    <span className={'inbox-status-dot status-' + tone}>{statusLabel(message.status)}</span>
+                  </button>
+                );
+              })
+            )}
+          </div>
+        </section>
+
+        <article className="inbox-detail-panel" aria-label="Detail pesan client">
+          {!selectedMessage ? (
+            <div className="inbox-detail-empty">
+              <Inbox size={28} />
+              <strong>Pilih pesan untuk dibaca.</strong>
+              <p>Detail percakapan, kontak client, catatan admin, dan aksi follow up akan tampil di panel ini.</p>
+            </div>
+          ) : (
+            <>
+              <header className="inbox-detail-header">
+                <div className="inbox-detail-identity">
+                  <span className="inbox-detail-avatar">{getInitial(selectedMessage)}</span>
+                  <div>
+                    <span className="inbox-detail-label">Client message</span>
+                    <h2>{selectedMessage.subject || 'Pesan Client Portal'}</h2>
+                    <p>
+                      Dari <strong>{getDisplayName(selectedMessage)}</strong> • {formatDateTime(selectedMessage.createdAt)}
+                    </p>
+                  </div>
+                </div>
+                <span className={'inbox-detail-status status-' + statusTone(selectedMessage.status)}>
+                  {statusLabel(selectedMessage.status)}
+                </span>
+              </header>
+
+              <section className="inbox-contact-strip" aria-label="Kontak client">
+                <button type="button" onClick={() => copyText(selectedMessage.clientEmail, 'Email client')}>
+                  <Mail size={14} />
+                  <span>{selectedMessage.clientEmail || 'Email belum ada'}</span>
+                  <Copy size={13} />
+                </button>
+                <button type="button" onClick={() => copyText(selectedMessage.clientPhone, 'Nomor WhatsApp')}>
+                  <Phone size={14} />
+                  <span>{selectedMessage.clientPhone || 'Nomor belum ada'}</span>
+                  <Copy size={13} />
+                </button>
+                <button type="button" onClick={() => copyText(selectedMessage.clientUid, 'UID client')}>
+                  <UserRound size={14} />
+                  <span>{selectedMessage.clientUid || 'UID belum ada'}</span>
+                  <Copy size={13} />
+                </button>
+              </section>
+
+              <section className="inbox-message-reader">
+                <span>Isi Pesan</span>
+                <p>{selectedMessage.message || 'Tidak ada isi pesan.'}</p>
+              </section>
+
+              {selectedMessage.adminReplyNote && (
+                <section className="inbox-reply-note">
+                  <Reply size={16} />
+                  <div>
+                    <strong>Catatan admin</strong>
+                    <p>{selectedMessage.adminReplyNote}</p>
+                  </div>
+                </section>
+              )}
+
+              <section className="inbox-reply-composer" aria-label="Catatan follow up admin">
+                <label htmlFor={'reply-note-' + selectedMessage.id}>Catatan follow up</label>
+                <textarea
+                  id={'reply-note-' + selectedMessage.id}
+                  value={replyDrafts[selectedMessage.id] || ''}
+                  onChange={(event) => setReplyDrafts((current) => ({
+                    ...current,
+                    [selectedMessage.id]: event.target.value,
+                  }))}
+                  placeholder="Tulis catatan internal. Contoh: Sudah dibalas via WA, client minta Sabtu malam."
+                  rows={5}
+                />
+                <div className="inbox-detail-actions">
+                  <button type="button" className="inbox-action primary" onClick={() => saveReplyNote(selectedMessage)}>
+                    <Send size={15} />
+                    Simpan Catatan
+                  </button>
+                  <a
+                    className={'inbox-action whatsapp' + (!selectedWaHref ? ' is-disabled' : '')}
+                    href={selectedWaHref || undefined}
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-disabled={!selectedWaHref}
+                    onClick={(event) => {
+                      if (!selectedWaHref) {
+                        event.preventDefault();
+                        addNotification({
+                          type: 'warning',
+                          title: 'Nomor WhatsApp kosong',
+                          message: 'Client belum menyimpan nomor WhatsApp.',
+                        });
+                      }
+                    }}
+                  >
+                    <MessageCircle size={15} />
+                    Balas WhatsApp
+                  </a>
+                  <button
+                    type="button"
+                    className="inbox-action"
+                    onClick={() => markReplied(selectedMessage)}
+                    disabled={selectedMessage.status === 'replied' || selectedMessage.status === 'done'}
+                  >
+                    <Reply size={15} />
+                    Tandai Dibalas
+                  </button>
+                  <button
+                    type="button"
+                    className="inbox-action success"
+                    onClick={() => markDone(selectedMessage)}
+                    disabled={selectedMessage.status === 'done'}
+                  >
+                    <CheckCircle2 size={15} />
+                    Selesai
+                  </button>
+                </div>
+              </section>
+            </>
+          )}
+        </article>
       </section>
     </div>
   );
