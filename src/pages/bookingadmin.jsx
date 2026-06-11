@@ -1,340 +1,283 @@
 import { useMemo, useState } from 'react';
 import {
-  ArrowRight,
-  Calendar,
-  CheckCircle2,
+  CalendarDays,
+  ChevronLeft,
+  ChevronRight,
   Clock3,
-  Filter,
-  MessageCircle,
-  Mic,
-  Phone,
-  Search,
-  SlidersHorizontal,
+  Grid3X3,
+  Music2,
+  Plus,
   Sparkles,
-  UserRound,
 } from 'lucide-react';
 import { cn } from '../lib/cn.js';
 
-const bookingFilters = [
-  {
-    key: 'all',
-    label: 'Semua',
-  },
-  {
-    key: 'new',
-    label: 'Baru',
-  },
-  {
-    key: 'pending',
-    label: 'Pending',
-  },
-  {
-    key: 'confirmed',
-    label: 'Confirmed',
-  },
-];
+const monthMeta = {
+  label: 'Booking Calendar',
+  month: 'January',
+  year: '2026',
+  openHour: '10:00',
+  closeHour: '23:00',
+};
 
-const bookingRequests = [
-  {
-    id: 'BK-037-001',
-    name: 'Raka Pradana',
-    band: 'Northline Kids',
-    type: 'Latihan Band',
-    date: 'Hari ini',
-    time: '19:00',
-    status: 'new',
-    channel: 'WhatsApp',
-    note: 'Butuh slot latihan 2 jam, full band, request drum dan 2 gitar.',
-  },
-  {
-    id: 'BK-037-002',
-    name: 'Mira Ayu',
-    band: 'Solo Vocal',
-    type: 'Vocal Recording',
-    date: 'Besok',
-    time: '14:00',
-    status: 'pending',
-    channel: 'Instagram',
-    note: 'Mau rekam vocal guide dan tanya paket tracking ringan.',
-  },
-  {
-    id: 'BK-037-003',
-    name: 'Dimas Wicak',
-    band: 'The Velvet Room',
-    type: 'Live Recording',
-    date: 'Jumat',
-    time: '20:00',
-    status: 'confirmed',
-    channel: 'Admin Manual',
-    note: 'Sesi live recording sudah dikonfirmasi, tinggal follow up kebutuhan mic.',
-  },
-];
+const dayNames = ['Thu', 'Fri', 'Sat', 'Sun', 'Mon', 'Tue', 'Wed'];
 
-const bookingMetrics = [
-  {
-    label: 'Request baru',
-    value: '3',
-    helper: 'Dummy queue',
-  },
-  {
-    label: 'Slot aktif',
-    value: '6',
-    helper: 'Placeholder',
-  },
-  {
-    label: 'Follow up',
-    value: '2',
-    helper: 'Belum final',
-  },
-];
+const calendarDays = Array.from({ length: 31 }, (_, index) => {
+  const dayNumber = index + 1;
+  const dayName = dayNames[index % dayNames.length];
 
-const bookingChecklist = [
-  'Validasi nama customer dan kontak',
-  'Cek kebutuhan sesi, durasi, dan format recording',
-  'Pastikan slot jadwal tersedia',
-  'Konfirmasi pembayaran atau DP nanti saat fitur final dibuat',
-];
-
-function getStatusLabel(status) {
-  const labels = {
-    new: 'Baru',
-    pending: 'Pending',
-    confirmed: 'Confirmed',
+  return {
+    key: String(dayNumber).padStart(2, '0'),
+    label: `${dayName} ${String(dayNumber).padStart(2, '0')}`,
+    dayName,
+    dayNumber,
+    isWeekend: dayName === 'Sat' || dayName === 'Sun',
   };
+});
 
-  return labels[status] || 'Draft';
+const timeSlots = Array.from({ length: 13 }, (_, index) => {
+  const startHour = 10 + index;
+  const endHour = startHour + 1;
+
+  return {
+    key: `${String(startHour).padStart(2, '0')}:00`,
+    label: `${String(startHour).padStart(2, '0')}:00 - ${String(endHour).padStart(2, '0')}:00`,
+    compactLabel: `${String(startHour).padStart(2, '0')} - ${String(endHour).padStart(2, '0')}`,
+  };
+});
+
+const bookingBlocks = [
+  {
+    id: 'booking-01',
+    day: '03',
+    time: '10:00',
+    title: 'Band rehearsal',
+    tone: 'accent',
+  },
+  {
+    id: 'booking-02',
+    day: '07',
+    time: '14:00',
+    title: 'Vocal take',
+    tone: 'cyan',
+  },
+  {
+    id: 'booking-03',
+    day: '12',
+    time: '19:00',
+    title: 'Live session',
+    tone: 'purple',
+  },
+  {
+    id: 'booking-04',
+    day: '19',
+    time: '20:00',
+    title: 'Tracking',
+    tone: 'accent',
+  },
+  {
+    id: 'booking-05',
+    day: '25',
+    time: '16:00',
+    title: 'Mix review',
+    tone: 'cyan',
+  },
+];
+
+const toneClasses = {
+  accent: 'border-studio-accent/35 bg-studio-accent/12 text-[var(--ui-text-strong)]',
+  cyan: 'border-studio-cyan/35 bg-studio-cyan/12 text-[var(--ui-text-strong)]',
+  purple: 'border-studio-purple/35 bg-studio-purple/12 text-[var(--ui-text-strong)]',
+};
+
+function getBooking(dayKey, timeKey) {
+  return bookingBlocks.find((booking) => booking.day === dayKey && booking.time === timeKey);
 }
 
-function getStatusClassName(status) {
-  return cn(
-    'rounded-full border px-2.5 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.14em]',
-    status === 'new' && 'border-studio-accent/35 bg-studio-accent/10 text-studio-accent',
-    status === 'pending' && 'border-studio-purple/35 bg-studio-purple/10 text-[var(--ui-text-strong)]',
-    status === 'confirmed' && 'border-studio-cyan/35 bg-studio-cyan/10 text-[var(--ui-text-strong)]',
-  );
-}
-
-function BookingMetric({ helper, label, value }) {
-  return (
-    <article className="grid gap-1 border-y border-[var(--ui-border)] py-4 sm:border-y-0 sm:border-l sm:px-5 sm:first:border-l-0">
-      <span className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--ui-text-muted)]">
-        {label}
-      </span>
-      <strong className="text-3xl font-semibold tracking-[-0.06em] text-[var(--ui-text-strong)]">
-        {value}
-      </strong>
-      <span className="text-sm leading-6 text-[var(--ui-text-muted)]">
-        {helper}
-      </span>
-    </article>
-  );
-}
-
-function BookingFilterButton({
-  isActive,
-  label,
-  onClick,
+function CalendarCell({
+  day,
+  time,
 }) {
+  const booking = getBooking(day.key, time.key);
+
   return (
     <button
-      aria-pressed={isActive}
+      aria-label={booking ? `${booking.title}, ${day.label}, ${time.label}` : `Empty slot, ${day.label}, ${time.label}`}
       className={cn(
-        'inline-flex min-h-10 items-center justify-center rounded-full border px-4 text-sm font-semibold tracking-[-0.01em] transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/25',
-        isActive
-          ? 'border-studio-accent/35 bg-[var(--ui-control-hover)] text-studio-accent shadow-[var(--ui-shadow-control)] ring-1 ring-studio-accent/15'
-          : 'border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] text-[var(--ui-secondary-text)] shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)]',
+        'group min-h-[58px] w-[116px] border-b border-r border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-1.5 text-left transition focus-visible:relative focus-visible:z-20 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/25',
+        day.isWeekend ? 'bg-[var(--ui-control)]/55' : '',
+        booking ? 'hover:bg-[var(--ui-control-hover)]' : 'hover:bg-[var(--ui-control)]',
       )}
       type="button"
-      onClick={onClick}
     >
-      {label}
+      {booking ? (
+        <span
+          className={cn(
+            'grid min-h-[44px] content-center rounded-[1rem] border px-2 py-1.5 shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)]',
+            toneClasses[booking.tone],
+          )}
+        >
+          <span className="truncate text-[0.72rem] font-semibold tracking-[-0.02em]">
+            {booking.title}
+          </span>
+          <span className="mt-0.5 text-[0.65rem] font-semibold uppercase tracking-[0.12em] text-[var(--ui-text-muted)]">
+            {time.key}
+          </span>
+        </span>
+      ) : (
+        <span className="grid min-h-[44px] place-items-center rounded-[1rem] border border-transparent text-[var(--ui-text-soft)] opacity-0 transition group-hover:border-[var(--ui-border)] group-hover:bg-[var(--ui-glass-soft)] group-hover:opacity-100">
+          <Plus size={15} strokeWidth={2.35} aria-hidden="true" />
+        </span>
+      )}
     </button>
   );
 }
 
-function BookingRequestCard({ request }) {
+function CalendarHeaderCell({ day }) {
   return (
-    <article className="grid gap-4 rounded-[1.6rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-4 ring-1 ring-[var(--ui-ring)] transition hover:border-studio-accent/35 hover:bg-[var(--ui-control)] sm:p-5">
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div className="grid min-w-0 gap-1">
-          <span className="text-xs font-semibold uppercase tracking-[0.18em] text-studio-accent">
-            {request.id}
-          </span>
-          <h3 className="m-0 text-xl font-semibold tracking-[-0.045em] text-[var(--ui-text-strong)]">
-            {request.name}
-          </h3>
-          <p className="m-0 text-sm leading-6 text-[var(--ui-text-muted)]">
-            {request.band} • {request.channel}
-          </p>
-        </div>
-
-        <span className={getStatusClassName(request.status)}>
-          {getStatusLabel(request.status)}
+    <div
+      className={cn(
+        'grid h-14 w-[116px] place-items-center border-b border-r border-[var(--ui-border)] bg-[var(--ui-control)] px-2 text-center',
+        day.isWeekend ? 'text-studio-accent' : 'text-[var(--ui-text-main)]',
+      )}
+    >
+      <span className="grid gap-0.5">
+        <span className="text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-[var(--ui-text-muted)]">
+          {day.dayName}
         </span>
-      </div>
-
-      <p className="m-0 text-sm leading-7 text-[var(--ui-text-main)]">
-        {request.note}
-      </p>
-
-      <div className="grid gap-2 rounded-[1.25rem] border border-[var(--ui-border)] bg-[var(--ui-control)] p-3 text-sm ring-1 ring-[var(--ui-ring)] sm:grid-cols-3">
-        <span className="inline-flex items-center gap-2 text-[var(--ui-text-main)]">
-          <Mic size={15} strokeWidth={2.3} aria-hidden="true" />
-          {request.type}
+        <span className="text-sm font-semibold tracking-[-0.02em] text-[var(--ui-text-strong)]">
+          {String(day.dayNumber).padStart(2, '0')}
         </span>
-        <span className="inline-flex items-center gap-2 text-[var(--ui-text-main)]">
-          <Calendar size={15} strokeWidth={2.3} aria-hidden="true" />
-          {request.date}
-        </span>
-        <span className="inline-flex items-center gap-2 text-[var(--ui-text-main)]">
-          <Clock3 size={15} strokeWidth={2.3} aria-hidden="true" />
-          {request.time}
-        </span>
-      </div>
-
-      <div className="flex flex-wrap gap-2">
-        <button
-          className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full [background:var(--ui-primary-bg)] px-4 text-sm font-semibold text-[var(--ui-primary-text)] shadow-[var(--ui-shadow-soft)] transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
-          type="button"
-        >
-          Lihat detail
-          <ArrowRight size={15} strokeWidth={2.35} aria-hidden="true" />
-        </button>
-
-        <button
-          className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] px-4 text-sm font-semibold text-[var(--ui-secondary-text)] shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/25"
-          type="button"
-        >
-          <MessageCircle size={15} strokeWidth={2.35} aria-hidden="true" />
-          Follow up
-        </button>
-      </div>
-    </article>
+      </span>
+    </div>
   );
 }
 
-function BookingComposer() {
-  const handleSubmit = (event) => {
-    event.preventDefault();
-  };
-
+function TimeCell({ slot }) {
   return (
-    <form
-      className="grid gap-4 rounded-[1.75rem] border border-[var(--ui-border-strong)] bg-[linear-gradient(145deg,var(--ui-glass),var(--ui-glass-soft))] p-5 shadow-[var(--ui-shadow-soft)] ring-1 ring-[var(--ui-ring)] backdrop-blur-2xl"
-      onSubmit={handleSubmit}
-    >
-      <div className="grid gap-2">
-        <div className="grid size-11 place-items-center rounded-2xl border border-[var(--ui-border)] bg-[var(--ui-control)] text-studio-accent shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)]">
-          <SlidersHorizontal size={20} strokeWidth={2.35} aria-hidden="true" />
+    <div className="sticky left-0 z-10 grid min-h-[58px] w-[168px] place-items-center border-b border-r border-[var(--ui-border-strong)] bg-[var(--ui-control)] px-3 text-center shadow-[12px_0_22px_rgb(0_0_0/0.04)]">
+      <span className="text-xs font-semibold tracking-[-0.015em] text-[var(--ui-text-main)]">
+        {slot.label}
+      </span>
+    </div>
+  );
+}
+
+function CalendarGrid() {
+  return (
+    <div className="overflow-hidden rounded-[1.75rem] border border-[var(--ui-border-strong)] bg-[linear-gradient(145deg,var(--ui-glass),var(--ui-glass-soft))] shadow-[var(--ui-shadow-soft)] ring-1 ring-[var(--ui-ring)] backdrop-blur-2xl">
+      <div className="flex items-center justify-between gap-3 border-b border-[var(--ui-border)] bg-[var(--ui-glass-soft)] px-4 py-3">
+        <div className="flex min-w-0 items-center gap-3">
+          <div className="grid size-10 shrink-0 place-items-center rounded-2xl border border-[var(--ui-border)] bg-[var(--ui-control)] text-studio-accent shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)]">
+            <Grid3X3 size={18} strokeWidth={2.35} aria-hidden="true" />
+          </div>
+
+          <div className="grid min-w-0 gap-0.5">
+            <strong className="truncate text-sm font-semibold tracking-[-0.02em] text-[var(--ui-text-strong)]">
+              Monthly booking board
+            </strong>
+            <span className="truncate text-xs font-medium text-[var(--ui-text-muted)]">
+              Scroll horizontal untuk melihat tanggal 01 sampai 31
+            </span>
+          </div>
         </div>
 
-        <div className="grid gap-1">
-          <h3 className="m-0 text-2xl font-semibold tracking-[-0.055em] text-[var(--ui-text-strong)]">
-            Quick booking draft
-          </h3>
-          <p className="m-0 text-sm leading-6 text-[var(--ui-text-muted)]">
-            Form ini masih placeholder UI. Belum menyimpan data dan belum terhubung ke backend.
-          </p>
+        <div className="hidden items-center gap-2 text-xs font-semibold text-[var(--ui-text-muted)] sm:flex">
+          <span className="size-2 rounded-full bg-studio-accent" />
+          Booked
+          <span className="ml-2 size-2 rounded-full bg-studio-cyan" />
+          Recording
         </div>
       </div>
 
-      <label className="grid gap-2 text-sm font-semibold text-[var(--ui-text-main)]" htmlFor="booking-customer-name">
-        Nama customer
-        <span className="flex min-h-12 items-center gap-3 rounded-[1.25rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 ring-1 ring-[var(--ui-ring)] focus-within:border-studio-accent/55 focus-within:ring-4 focus-within:ring-studio-accent/20">
-          <UserRound size={16} strokeWidth={2.25} aria-hidden="true" />
-          <input
-            className="w-full border-0 bg-transparent text-sm font-semibold text-[var(--ui-text-strong)] outline-none placeholder:text-[var(--ui-text-soft)]"
-            id="booking-customer-name"
-            placeholder="Nama customer"
-            type="text"
-          />
-        </span>
-      </label>
+      <div className="overflow-x-auto">
+        <div className="min-w-max">
+          <div className="grid grid-cols-[168px_repeat(31,116px)]">
+            <div className="sticky left-0 z-20 grid h-14 w-[168px] place-items-center border-b border-r border-[var(--ui-border-strong)] bg-[var(--ui-control-hover)] px-3 text-center shadow-[12px_0_22px_rgb(0_0_0/0.04)]">
+              <span className="grid gap-0.5">
+                <span className="text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-studio-accent">
+                  Booking
+                </span>
+                <span className="text-xs font-semibold text-[var(--ui-text-muted)]">
+                  {monthMeta.openHour} - {monthMeta.closeHour}
+                </span>
+              </span>
+            </div>
 
-      <label className="grid gap-2 text-sm font-semibold text-[var(--ui-text-main)]" htmlFor="booking-session-type">
-        Tipe sesi
-        <select
-          className="min-h-12 rounded-[1.25rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 text-sm font-semibold text-[var(--ui-text-strong)] shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] outline-none focus:border-studio-accent/55 focus:ring-4 focus:ring-studio-accent/20"
-          id="booking-session-type"
+            {calendarDays.map((day) => (
+              <CalendarHeaderCell day={day} key={day.key} />
+            ))}
+          </div>
+
+          {timeSlots.map((slot) => (
+            <div className="grid grid-cols-[168px_repeat(31,116px)]" key={slot.key}>
+              <TimeCell slot={slot} />
+
+              {calendarDays.map((day) => (
+                <CalendarCell
+                  day={day}
+                  key={`${day.key}-${slot.key}`}
+                  time={slot}
+                />
+              ))}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CalendarToolbar() {
+  return (
+    <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className="flex flex-wrap items-center gap-2">
+        <button
+          aria-label="Previous month placeholder"
+          className="grid size-10 place-items-center rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] text-[var(--ui-secondary-text)] shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/25"
+          type="button"
         >
-          <option>Latihan Band</option>
-          <option>Live Recording</option>
-          <option>Tracking Recording</option>
-          <option>Vocal Session</option>
-        </select>
-      </label>
+          <ChevronLeft size={17} strokeWidth={2.35} aria-hidden="true" />
+        </button>
 
-      <label className="grid gap-2 text-sm font-semibold text-[var(--ui-text-main)]" htmlFor="booking-note">
-        Catatan kebutuhan
-        <textarea
-          className="min-h-28 resize-y rounded-[1.25rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 py-3 text-sm font-semibold leading-6 text-[var(--ui-text-strong)] shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] outline-none placeholder:text-[var(--ui-text-soft)] focus:border-studio-accent/55 focus:ring-4 focus:ring-studio-accent/20"
-          id="booking-note"
-          placeholder="Contoh: latihan 2 jam, full band, butuh ampli gitar tambahan..."
-        />
-      </label>
+        <div className="inline-flex min-h-10 items-center gap-2 rounded-full border border-[var(--ui-border)] bg-[var(--ui-control)] px-4 text-sm font-semibold text-[var(--ui-text-strong)] shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)]">
+          <CalendarDays size={16} strokeWidth={2.35} aria-hidden="true" />
+          {monthMeta.month} {monthMeta.year}
+        </div>
+
+        <button
+          aria-label="Next month placeholder"
+          className="grid size-10 place-items-center rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] text-[var(--ui-secondary-text)] shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/25"
+          type="button"
+        >
+          <ChevronRight size={17} strokeWidth={2.35} aria-hidden="true" />
+        </button>
+      </div>
 
       <button
-        className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full [background:var(--ui-primary-bg)] px-5 text-sm font-semibold text-[var(--ui-primary-text)] shadow-[var(--ui-shadow-soft)] transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
-        type="submit"
+        className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full [background:var(--ui-primary-bg)] px-4 text-sm font-semibold text-[var(--ui-primary-text)] shadow-[var(--ui-shadow-soft)] transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
+        type="button"
       >
-        Simpan draft placeholder
-        <ArrowRight size={15} strokeWidth={2.35} aria-hidden="true" />
+        <Plus size={16} strokeWidth={2.35} aria-hidden="true" />
+        Add booking
       </button>
-    </form>
-  );
-}
-
-function BookingChecklist() {
-  return (
-    <aside className="grid gap-4 rounded-[1.75rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-5 ring-1 ring-[var(--ui-ring)]">
-      <div className="grid gap-1">
-        <span className="text-xs font-semibold uppercase tracking-[0.18em] text-studio-accent">
-          Admin flow
-        </span>
-        <h3 className="m-0 text-2xl font-semibold tracking-[-0.055em] text-[var(--ui-text-strong)]">
-          Checklist booking
-        </h3>
-      </div>
-
-      <div className="grid gap-3">
-        {bookingChecklist.map((item) => (
-          <div
-            className="grid grid-cols-[2rem_minmax(0,1fr)] items-start gap-3"
-            key={item}
-          >
-            <span className="grid size-8 place-items-center rounded-full border border-[var(--ui-border)] bg-[var(--ui-control)] text-studio-cyan ring-1 ring-[var(--ui-ring)]">
-              <CheckCircle2 size={16} strokeWidth={2.35} aria-hidden="true" />
-            </span>
-            <p className="m-0 text-sm leading-6 text-[var(--ui-text-main)]">
-              {item}
-            </p>
-          </div>
-        ))}
-      </div>
-
-      <a
-        className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] px-4 text-sm font-semibold text-[var(--ui-secondary-text)] shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/25"
-        href="tel:+620000000000"
-      >
-        <Phone size={15} strokeWidth={2.35} aria-hidden="true" />
-        Placeholder call admin
-      </a>
-    </aside>
+    </div>
   );
 }
 
 export function BookingAdmin({ activeItem }) {
-  const [activeFilter, setActiveFilter] = useState('all');
-
-  const filteredBookings = useMemo(() => {
-    if (activeFilter === 'all') {
-      return bookingRequests;
-    }
-
-    return bookingRequests.filter((request) => request.status === activeFilter);
-  }, [activeFilter]);
-
   const activeTitle = activeItem?.label || 'Booking';
+
+  const summary = useMemo(() => {
+    const bookedSlots = bookingBlocks.length;
+    const totalSlots = calendarDays.length * timeSlots.length;
+    const emptySlots = totalSlots - bookedSlots;
+
+    return {
+      bookedSlots,
+      emptySlots,
+      totalSlots,
+    };
+  }, []);
 
   return (
     <section className="grid gap-6 py-6" aria-labelledby="booking-admin-title">
@@ -342,83 +285,75 @@ export function BookingAdmin({ activeItem }) {
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="inline-flex w-fit items-center gap-2 rounded-full border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] px-3 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-studio-accent ring-1 ring-[var(--ui-ring)]">
             <Sparkles size={14} strokeWidth={2.35} aria-hidden="true" />
-            {activeTitle} Workspace
+            {activeTitle} Calendar
           </div>
 
           <div className="inline-flex min-h-10 items-center gap-2 rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] px-4 text-sm font-semibold text-[var(--ui-secondary-text)] shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)]">
-            <Calendar size={15} strokeWidth={2.35} aria-hidden="true" />
-            Placeholder data
+            <Clock3 size={15} strokeWidth={2.35} aria-hidden="true" />
+            {monthMeta.openHour} sampai {monthMeta.closeHour}
           </div>
         </div>
 
         <div className="grid gap-3">
           <h2
-            className="m-0 max-w-[760px] text-[clamp(2.35rem,5vw,5rem)] font-semibold leading-[0.94] tracking-[-0.075em] text-[var(--ui-text-strong)]"
+            className="m-0 max-w-[820px] text-[clamp(2.35rem,5vw,5rem)] font-semibold leading-[0.94] tracking-[-0.075em] text-[var(--ui-text-strong)]"
             id="booking-admin-title"
           >
-            Kelola booking studio dari satu meja kerja.
+            Calendar grid booking studio.
           </h2>
 
           <p className="m-0 max-w-2xl text-[clamp(0.98rem,1.25vw,1.12rem)] leading-8 text-[var(--ui-text-main)]">
-            Halaman ini masih UI awal untuk modul booking. Isinya dummy dan placeholder dulu, supaya nanti alur request, konfirmasi, jadwal, dan follow up bisa dibangun bertahap.
+            Format awal mengikuti tabel booking bulanan: tanggal 01 sampai 31 di bagian atas, jam booking di sisi kiri, lalu slot kosong atau booked di area grid.
           </p>
         </div>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-3">
-        {bookingMetrics.map((item) => (
-          <BookingMetric
-            helper={item.helper}
-            key={item.label}
-            label={item.label}
-            value={item.value}
-          />
-        ))}
+        <article className="grid gap-1 border-y border-[var(--ui-border)] py-4 sm:border-y-0 sm:border-l sm:px-5 sm:first:border-l-0">
+          <span className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--ui-text-muted)]">
+            Total slot
+          </span>
+          <strong className="text-3xl font-semibold tracking-[-0.06em] text-[var(--ui-text-strong)]">
+            {summary.totalSlots}
+          </strong>
+          <span className="text-sm leading-6 text-[var(--ui-text-muted)]">
+            31 hari x 13 jam
+          </span>
+        </article>
+
+        <article className="grid gap-1 border-y border-[var(--ui-border)] py-4 sm:border-y-0 sm:border-l sm:px-5 sm:first:border-l-0">
+          <span className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--ui-text-muted)]">
+            Booked
+          </span>
+          <strong className="text-3xl font-semibold tracking-[-0.06em] text-[var(--ui-text-strong)]">
+            {summary.bookedSlots}
+          </strong>
+          <span className="text-sm leading-6 text-[var(--ui-text-muted)]">
+            Dummy event
+          </span>
+        </article>
+
+        <article className="grid gap-1 border-y border-[var(--ui-border)] py-4 sm:border-y-0 sm:border-l sm:px-5 sm:first:border-l-0">
+          <span className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--ui-text-muted)]">
+            Available
+          </span>
+          <strong className="text-3xl font-semibold tracking-[-0.06em] text-[var(--ui-text-strong)]">
+            {summary.emptySlots}
+          </strong>
+          <span className="text-sm leading-6 text-[var(--ui-text-muted)]">
+            Slot kosong
+          </span>
+        </article>
       </div>
 
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_360px]">
-        <div className="grid gap-4">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="inline-flex min-h-10 items-center gap-2 rounded-full border border-[var(--ui-border)] bg-[var(--ui-control)] px-4 text-sm font-semibold text-[var(--ui-text-main)] ring-1 ring-[var(--ui-ring)]">
-                <Filter size={15} strokeWidth={2.35} aria-hidden="true" />
-                Filter
-              </span>
+      <div className="grid gap-4">
+        <CalendarToolbar />
+        <CalendarGrid />
+      </div>
 
-              {bookingFilters.map((filter) => (
-                <BookingFilterButton
-                  isActive={activeFilter === filter.key}
-                  key={filter.key}
-                  label={filter.label}
-                  onClick={() => setActiveFilter(filter.key)}
-                />
-              ))}
-            </div>
-
-            <label className="flex min-h-10 min-w-[220px] items-center gap-2 rounded-full border border-[var(--ui-border)] bg-[var(--ui-control)] px-4 text-sm font-semibold text-[var(--ui-text-main)] shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] focus-within:border-studio-accent/55 focus-within:ring-4 focus-within:ring-studio-accent/20">
-              <Search size={15} strokeWidth={2.35} aria-hidden="true" />
-              <input
-                className="w-full border-0 bg-transparent text-sm font-semibold text-[var(--ui-text-strong)] outline-none placeholder:text-[var(--ui-text-soft)]"
-                placeholder="Search dummy"
-                type="search"
-              />
-            </label>
-          </div>
-
-          <div className="grid gap-3">
-            {filteredBookings.map((request) => (
-              <BookingRequestCard
-                key={request.id}
-                request={request}
-              />
-            ))}
-          </div>
-        </div>
-
-        <div className="grid content-start gap-4">
-          <BookingComposer />
-          <BookingChecklist />
-        </div>
+      <div className="rounded-[1.5rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-4 text-sm leading-7 text-[var(--ui-text-main)] ring-1 ring-[var(--ui-ring)]">
+        <span className="font-semibold text-[var(--ui-text-strong)]">Catatan phase ini:</span>{' '}
+        tombol slot dan tombol add booking masih placeholder UI. Phase berikutnya baru kita bisa bikin interaksi detail, modal booking, status, atau input customer.
       </div>
     </section>
   );
