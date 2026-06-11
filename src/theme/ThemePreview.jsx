@@ -1,3 +1,6 @@
+import { Check, ChevronDown } from 'lucide-react';
+import { useState } from 'react';
+
 const foundationNotes = [
   {
     label: 'Layout',
@@ -15,6 +18,100 @@ const foundationNotes = [
     text: 'Visual dibuat modern, ringan, dan tidak terlalu berat supaya enak dipakai harian.',
   },
 ];
+
+const statusOptions = [
+  {
+    value: 'cardless',
+    label: 'Cardless Hero Ready',
+    description: 'Landing lebih lega dan minim card.',
+  },
+  {
+    value: 'design',
+    label: 'Design Phase',
+    description: 'Eksplorasi visual dan component style.',
+  },
+  {
+    value: 'feature',
+    label: 'Feature Phase',
+    description: 'Siap masuk modul aplikasi inti.',
+  },
+];
+
+function StatusDropdown() {
+  const [isOpen, setIsOpen] = useState(false);
+  const [selectedValue, setSelectedValue] = useState('cardless');
+
+  const selectedOption = statusOptions.find((option) => option.value === selectedValue) || statusOptions[0];
+
+  const selectOption = (value) => {
+    setSelectedValue(value);
+    setIsOpen(false);
+  };
+
+  return (
+    <div className="relative grid gap-2 text-sm font-medium text-studio-600 dark:text-studio-300">
+      <span>Status</span>
+
+      <button
+        aria-expanded={isOpen}
+        aria-haspopup="listbox"
+        className="group flex min-h-12 w-full items-center justify-between gap-3 rounded-2xl border border-studio-950/10 bg-white/70 px-4 text-left text-sm font-medium text-studio-950 outline-none transition hover:border-studio-accent/30 hover:bg-white focus-visible:border-studio-accent/40 focus-visible:ring-4 focus-visible:ring-studio-accent/15 dark:border-white/10 dark:bg-white/[0.06] dark:text-white dark:hover:border-studio-accent/35 dark:hover:bg-white/[0.09]"
+        type="button"
+        onClick={() => setIsOpen((current) => !current)}
+      >
+        <span className="grid gap-0.5">
+          <span>{selectedOption.label}</span>
+          <span className="hidden text-xs font-normal text-studio-500 dark:text-studio-400 sm:block">
+            {selectedOption.description}
+          </span>
+        </span>
+
+        <ChevronDown
+          className={isOpen ? 'shrink-0 rotate-180 text-studio-accent transition' : 'shrink-0 text-studio-500 transition group-hover:text-studio-accent dark:text-studio-400'}
+          size={18}
+          aria-hidden="true"
+        />
+      </button>
+
+      {isOpen && (
+        <div
+          className="absolute left-0 right-0 top-[calc(100%+8px)] z-30 overflow-hidden rounded-2xl border border-studio-950/10 bg-white/95 p-1.5 shadow-studio-soft ring-1 ring-black/5 backdrop-blur-xl dark:border-white/10 dark:bg-[#12121a]/95 dark:ring-white/10"
+          role="listbox"
+          aria-label="Status options"
+        >
+          {statusOptions.map((option) => {
+            const isSelected = option.value === selectedValue;
+
+            return (
+              <button
+                className={isSelected
+                  ? 'flex w-full items-start justify-between gap-3 rounded-xl bg-studio-accent/12 px-3 py-3 text-left text-studio-950 dark:bg-studio-accent/18 dark:text-white'
+                  : 'flex w-full items-start justify-between gap-3 rounded-xl px-3 py-3 text-left text-studio-700 transition hover:bg-studio-950/[0.045] dark:text-studio-200 dark:hover:bg-white/[0.07]'
+                }
+                key={option.value}
+                type="button"
+                role="option"
+                aria-selected={isSelected}
+                onClick={() => selectOption(option.value)}
+              >
+                <span className="grid gap-1">
+                  <span className="text-sm font-semibold">{option.label}</span>
+                  <span className="text-xs font-normal leading-5 text-studio-500 dark:text-studio-400">
+                    {option.description}
+                  </span>
+                </span>
+
+                {isSelected && (
+                  <Check className="mt-0.5 shrink-0 text-studio-accent" size={16} aria-hidden="true" />
+                )}
+              </button>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
 
 export function ThemePreview() {
   return (
@@ -151,17 +248,7 @@ export function ThemePreview() {
             />
           </label>
 
-          <label className="grid gap-2 text-sm font-medium text-studio-600 dark:text-studio-300">
-            <span>Status</span>
-            <select
-              className="min-h-12 w-full rounded-2xl border border-studio-950/10 bg-white/70 px-4 text-sm font-medium text-studio-950 outline-none transition focus:border-studio-accent/40 focus:ring-4 focus:ring-studio-accent/15 dark:border-white/10 dark:bg-white/[0.06] dark:text-white"
-              defaultValue="cardless"
-            >
-              <option value="cardless">Cardless Hero Ready</option>
-              <option value="design">Design Phase</option>
-              <option value="feature">Feature Phase</option>
-            </select>
-          </label>
+          <StatusDropdown />
         </form>
       </section>
     </div>
