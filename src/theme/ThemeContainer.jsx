@@ -26,7 +26,7 @@ export function ThemeContainer({ children, currentPath = '/' }) {
   const themeSwitch = themeSwitchStates[mode] || themeSwitchStates.dark;
   const ThemeSwitchIcon = themeSwitch.knobIcon;
   const isLoginPage = currentPath === '/login';
-  const isAdminPage = currentPath === '/admin';
+  const isAdminPage = currentPath === '/admin' || currentPath.startsWith('/admin/');
 
   return (
     <div className="relative isolate min-h-screen overflow-x-clip bg-[var(--ui-bg-base)] text-[var(--ui-text-main)] transition-colors duration-300">

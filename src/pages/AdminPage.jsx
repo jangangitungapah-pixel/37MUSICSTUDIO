@@ -1,30 +1,36 @@
 import {
   useMemo,
-  useState } from 'react';
+  useState,
+} from 'react';
+import {
+  Link,
+  NavLink,
+  Outlet,
+  useLocation,
+  useNavigate,
+} from 'react-router';
 import {
   ArrowRight,
   LockKeyhole,
   Radio,
   SlidersHorizontal,
-  Sparkles,
   Moon,
   Sun,
 } from 'lucide-react';
 import { cn } from '../lib/cn.js';
 import { useTheme } from '../theme/ThemeProvider.jsx';
-import { BookingAdmin } from './bookingadmin.jsx';
 
 const DEV_AUTH_STORAGE_KEY = 'thirty-seven-dev-auth';
 
 const adminThemeSwitchStates = {
-  'dark': {
+  dark: {
     ariaLabel: 'Switch to light mode',
     checked: true,
     knobClass: 'translate-x-8',
     knobIcon: Moon,
     trackHintClass: 'bg-studio-cyan/16',
   },
-  'light': {
+  light: {
     ariaLabel: 'Switch to dark mode',
     checked: false,
     knobClass: 'translate-x-0',
@@ -35,40 +41,28 @@ const adminThemeSwitchStates = {
 
 const adminNavItems = [
   {
-    key: 'booking',
+    key: 'bookings',
     label: 'Booking',
     helper: 'Incoming sessions',
     icon: Radio,
+    path: '/admin/bookings',
   },
 ];
 
-const shellStats = [
-  {
-    label: 'Portal status',
-    value: 'Shell only',
-  },
-  {
-    label: 'Navigation',
-    value: '1 module',
-  },
-  {
-    label: 'Theme system',
-    value: 'Token based',
-  },
-];
+function clearDevAccess(navigate) {
+  if (typeof window !== 'undefined') {
+    window.sessionStorage.removeItem(DEV_AUTH_STORAGE_KEY);
+  }
 
-function navigateTo(pathname) {
-  if (typeof window === 'undefined') return;
-
-  window.history.pushState({}, '', pathname);
-  window.dispatchEvent(new Event('popstate'));
+  navigate('/login');
 }
 
-function clearDevAccess() {
-  if (typeof window === 'undefined') return;
-
-  window.sessionStorage.removeItem(DEV_AUTH_STORAGE_KEY);
-  navigateTo('/login');
+function getActiveAdminItem(pathname) {
+  return (
+    adminNavItems.find((item) => (
+      pathname === item.path || pathname.startsWith(item.path + '/')
+    )) || adminNavItems[0]
+  );
 }
 
 function AdminLockedState() {
@@ -93,12 +87,12 @@ function AdminLockedState() {
           Halaman admin masih mode developing. Gunakan akses dev dari halaman login untuk membuka portal admin awal.
         </p>
 
-        <a
+        <Link
           className="inline-flex min-h-12 w-fit items-center justify-center rounded-full [background:var(--ui-primary-bg)] px-6 text-sm font-semibold tracking-[-0.01em] text-[var(--ui-primary-text)] shadow-[var(--ui-shadow-soft)] transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
-          href="/login"
+          to="/login"
         >
           Ke halaman login
-        </a>
+        </Link>
       </div>
     </section>
   );
@@ -108,38 +102,36 @@ function NavButton({
   collapsed = false,
   icon: Icon,
   isActive,
-  itemKey,
   label,
   helper,
-  onSelect,
+  to,
   variant = 'sidebar',
 }) {
   const isBottomBar = variant === 'bottom';
 
   if (isBottomBar) {
     return (
-      <button
+      <NavLink
         aria-label={label}
-        aria-pressed={isActive}
+        aria-current={isActive ? 'page' : undefined}
         className={cn(
           'grid min-w-0 flex-1 place-items-center gap-1 rounded-2xl px-2 py-2 text-[0.66rem] font-semibold tracking-[-0.015em] transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/25',
           isActive
             ? 'bg-[var(--ui-control-hover)] text-studio-accent shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)]'
             : 'text-[var(--ui-text-muted)] hover:bg-[var(--ui-control)] hover:text-[var(--ui-text-strong)]',
         )}
-        type="button"
-        onClick={() => onSelect(itemKey)}
+        to={to}
       >
         <Icon size={18} strokeWidth={2.25} aria-hidden="true" />
         <span className="max-w-full truncate">{label}</span>
-      </button>
+      </NavLink>
     );
   }
 
   return (
-    <button
+    <NavLink
       aria-label={collapsed ? label : undefined}
-      aria-pressed={isActive}
+      aria-current={isActive ? 'page' : undefined}
       className={cn(
         'group grid min-h-12 w-full items-center gap-3 rounded-2xl border px-3 text-left transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/25',
         collapsed ? 'grid-cols-1 justify-items-center' : 'grid-cols-[2.25rem_minmax(0,1fr)]',
@@ -148,8 +140,7 @@ function NavButton({
           : 'border-transparent bg-transparent text-[var(--ui-text-main)] hover:border-[var(--ui-border)] hover:bg-[var(--ui-control)] hover:text-[var(--ui-text-strong)]',
       )}
       title={collapsed ? label : undefined}
-      type="button"
-      onClick={() => onSelect(itemKey)}
+      to={to}
     >
       <span
         className={cn(
@@ -166,13 +157,13 @@ function NavButton({
           <span className="truncate text-xs font-medium text-[var(--ui-text-muted)]">{helper}</span>
         </span>
       ) : null}
-    </button>
+    </NavLink>
   );
 }
 
 function AdminThemeControls({ collapsed = false }) {
   const { density, mode, toggleDensity, toggleMode } = useTheme();
-  const themeSwitch = adminThemeSwitchStates[mode] || adminThemeSwitchStates['dark'];
+  const themeSwitch = adminThemeSwitchStates[mode] || adminThemeSwitchStates.dark;
   const ThemeSwitchIcon = themeSwitch.knobIcon;
 
   return (
@@ -241,9 +232,9 @@ function AdminThemeControls({ collapsed = false }) {
 }
 
 function AdminSidebar({
-  activeNav,
+  activePath,
   collapsed,
-  onSelectNav,
+  onLogout,
   onToggleCollapse,
 }) {
   return (
@@ -261,9 +252,9 @@ function AdminSidebar({
             collapsed ? 'justify-center' : 'justify-between',
           )}
         >
-          <a
+          <Link
             className={cn('min-w-0 items-center gap-3', collapsed ? 'hidden' : 'flex')}
-            href="/"
+            to="/"
             aria-label="Back to 37 Music Studio landing"
           >
             <span className="grid size-10 shrink-0 place-items-center rounded-2xl [background:var(--ui-primary-bg)] text-sm font-semibold tracking-[-0.04em] text-[var(--ui-primary-text)]">
@@ -275,10 +266,10 @@ function AdminSidebar({
                 Admin Studio
               </strong>
               <small className="truncate text-xs font-medium text-[var(--ui-text-muted)]">
-                Portal shell
+                Routed portal shell
               </small>
             </span>
-          </a>
+          </Link>
 
           <button
             aria-label={collapsed ? 'Expand admin sidebar' : 'Collapse admin sidebar'}
@@ -304,11 +295,10 @@ function AdminSidebar({
               collapsed={collapsed}
               helper={item.helper}
               icon={item.icon}
-              isActive={activeNav === item.key}
-              itemKey={item.key}
+              isActive={activePath === item.path || activePath.startsWith(item.path + '/')}
               key={item.key}
               label={item.label}
-              onSelect={onSelectNav}
+              to={item.path}
             />
           ))}
         </nav>
@@ -323,7 +313,7 @@ function AdminSidebar({
               collapsed ? 'w-11 grid-cols-1 justify-items-center px-0' : 'w-full grid-cols-[2rem_minmax(0,1fr)] text-left',
             )}
             type="button"
-            onClick={clearDevAccess}
+            onClick={onLogout}
           >
             <LockKeyhole size={16} strokeWidth={2.25} aria-hidden="true" />
             {!collapsed ? <span>Logout dev</span> : null}
@@ -335,8 +325,7 @@ function AdminSidebar({
 }
 
 function AdminBottomBar({
-  activeNav,
-  onSelectNav,
+  activePath,
 }) {
   const mobileItems = adminNavItems.slice(0, 5);
 
@@ -349,11 +338,10 @@ function AdminBottomBar({
         {mobileItems.map((item) => (
           <NavButton
             icon={item.icon}
-            isActive={activeNav === item.key}
-            itemKey={item.key}
+            isActive={activePath === item.path || activePath.startsWith(item.path + '/')}
             key={item.key}
             label={item.label}
-            onSelect={onSelectNav}
+            to={item.path}
             variant="bottom"
           />
         ))}
@@ -362,139 +350,18 @@ function AdminBottomBar({
   );
 }
 
-function AdminHeader({
-  activeItem,
-}) {
-  return (
-    <header className="grid gap-5 border-b border-[var(--ui-border-strong)] pb-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="inline-flex w-fit items-center gap-2 rounded-full border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] px-3 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-studio-accent ring-1 ring-[var(--ui-ring)]">
-          <Sparkles size={14} strokeWidth={2.35} aria-hidden="true" />
-          Admin Portal
-        </div>
-
-        <div className="flex flex-wrap items-center gap-2">
-          <a
-            className="inline-flex min-h-10 items-center justify-center rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] px-4 text-sm font-semibold text-[var(--ui-secondary-text)] shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/25"
-            href="/"
-          >
-            Kembali
-          </a>
-
-          <button
-            className="inline-flex min-h-10 items-center justify-center rounded-full [background:var(--ui-primary-bg)] px-4 text-sm font-semibold text-[var(--ui-primary-text)] shadow-[var(--ui-shadow-soft)] transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
-            type="button"
-            onClick={clearDevAccess}
-          >
-            Logout dev
-          </button>
-        </div>
-      </div>
-
-      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(240px,340px)] lg:items-end">
-        <div className="grid gap-3">
-          <h1 className="m-0 max-w-[760px] text-[clamp(2.5rem,6vw,5.7rem)] font-semibold leading-[0.94] tracking-[-0.075em] text-[var(--ui-text-strong)]">
-            Portal admin studio, siap diisi modul.
-          </h1>
-
-          <p className="m-0 max-w-2xl text-[clamp(0.98rem,1.25vw,1.12rem)] leading-8 text-[var(--ui-text-main)]">
-            Ini cangkang dashboard awal untuk 37 Music Studio. Navigasi sudah disiapkan, konten masih placeholder ringan, dan semua warna mengikuti token theme yang sudah ada.
-          </p>
-        </div>
-
-        <div className="grid gap-2 rounded-[1.5rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-4 ring-1 ring-[var(--ui-ring)]">
-          <span className="text-xs font-semibold uppercase tracking-[0.18em] text-studio-accent">
-            Active module
-          </span>
-          <strong className="text-2xl font-semibold tracking-[-0.05em] text-[var(--ui-text-strong)]">
-            {activeItem.label}
-          </strong>
-          <span className="text-sm leading-6 text-[var(--ui-text-muted)]">
-            {activeItem.helper}. Modul ini belum punya fitur final, baru penanda area kerja.
-          </span>
-        </div>
-      </div>
-    </header>
-  );
-}
-
-function AdminContent({
-  activeItem,
-}) {
-  if (activeItem.key === 'booking') {
-    return <BookingAdmin activeItem={activeItem} />;
-  }
-
-  const ActiveIcon = activeItem.icon;
-
-  return (
-    <section className="grid gap-6 py-6" aria-labelledby="admin-shell-content-title">
-      <div className="grid gap-4 lg:grid-cols-3">
-        {shellStats.map((item) => (
-          <div
-            className="grid gap-1 border-y border-[var(--ui-border)] py-4 lg:border-y-0 lg:border-l lg:px-5 lg:first:border-l-0"
-            key={item.label}
-          >
-            <span className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--ui-text-muted)]">
-              {item.label}
-            </span>
-            <strong className="text-xl font-semibold tracking-[-0.045em] text-[var(--ui-text-strong)]">
-              {item.value}
-            </strong>
-          </div>
-        ))}
-      </div>
-
-      <div className="relative overflow-hidden rounded-[2rem] border border-[var(--ui-border-strong)] bg-[linear-gradient(145deg,var(--ui-glass),var(--ui-glass-soft))] p-5 shadow-[var(--ui-shadow-soft)] ring-1 ring-[var(--ui-ring)] backdrop-blur-2xl sm:p-7">
-        <div className="pointer-events-none absolute -right-24 -top-28 size-60 rounded-full bg-studio-accent/16 blur-3xl" aria-hidden="true" />
-        <div className="pointer-events-none absolute -bottom-28 -left-20 size-64 rounded-full bg-studio-cyan/14 blur-3xl" aria-hidden="true" />
-
-        <div className="relative z-10 grid min-h-[360px] content-center justify-items-center gap-5 text-center">
-          <div className="grid size-16 place-items-center rounded-[1.35rem] border border-[var(--ui-border)] bg-[var(--ui-control)] text-studio-accent shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)]">
-            <ActiveIcon size={28} strokeWidth={2.1} aria-hidden="true" />
-          </div>
-
-          <div className="grid max-w-xl gap-3">
-            <h2
-              className="m-0 text-[clamp(2rem,5vw,4.4rem)] font-semibold leading-[0.95] tracking-[-0.07em] text-[var(--ui-text-strong)]"
-              id="admin-shell-content-title"
-            >
-              {activeItem.label} belum diisi.
-            </h2>
-
-            <p className="m-0 text-base leading-8 text-[var(--ui-text-main)]">
-              Area ini sengaja kosong dulu supaya tiap halaman admin bisa dibangun bertahap tanpa merusak landing page, login page, routing, atau theme system.
-            </p>
-          </div>
-
-          <div className="flex flex-wrap justify-center gap-2.5">
-            <span className="rounded-full border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 py-2 text-xs font-semibold text-[var(--ui-text-main)] ring-1 ring-[var(--ui-ring)]">
-              Desktop sidebar ready
-            </span>
-            <span className="rounded-full border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 py-2 text-xs font-semibold text-[var(--ui-text-main)] ring-1 ring-[var(--ui-ring)]">
-              Mobile bottom bar ready
-            </span>
-            <span className="rounded-full border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 py-2 text-xs font-semibold text-[var(--ui-text-main)] ring-1 ring-[var(--ui-ring)]">
-              Theme token ready
-            </span>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
 export function AdminPage() {
-  const [activeNav, setActiveNav] = useState('booking');
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const hasDevAccess =
     typeof window !== 'undefined' &&
     window.sessionStorage.getItem(DEV_AUTH_STORAGE_KEY) === 'true';
 
   const activeItem = useMemo(
-    () => adminNavItems.find((item) => item.key === activeNav) || adminNavItems[0],
-    [activeNav],
+    () => getActiveAdminItem(location.pathname),
+    [location.pathname],
   );
 
   if (!hasDevAccess) {
@@ -507,26 +374,21 @@ export function AdminPage() {
       aria-labelledby="admin-shell-title"
     >
       <AdminSidebar
-        activeNav={activeNav}
+        activePath={location.pathname}
         collapsed={isSidebarCollapsed}
-        onSelectNav={setActiveNav}
+        onLogout={() => clearDevAccess(navigate)}
         onToggleCollapse={() => setIsSidebarCollapsed((current) => !current)}
       />
 
       <div className="grid min-w-0 gap-0">
-        {activeItem.key !== 'booking' ? <AdminHeader activeItem={activeItem} /> : null}
-
         <div className="sr-only" id="admin-shell-title">
           37 Music Studio Admin Shell
         </div>
 
-        <AdminContent activeItem={activeItem} />
+        <Outlet context={{ activeItem }} />
       </div>
 
-      <AdminBottomBar
-        activeNav={activeNav}
-        onSelectNav={setActiveNav}
-      />
+      <AdminBottomBar activePath={location.pathname} />
     </section>
   );
 }

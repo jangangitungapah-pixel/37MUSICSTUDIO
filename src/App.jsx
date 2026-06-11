@@ -1,49 +1,27 @@
-import { useEffect, useState } from 'react';
+import { Navigate, Route, Routes, useLocation } from 'react-router';
 import { AdminPage } from './pages/AdminPage.jsx';
+import { BookingAdmin } from './pages/bookingadmin.jsx';
 import { LoginPage } from './pages/LoginPage.jsx';
 import { ThemeContainer } from './theme/ThemeContainer.jsx';
 import { ThemePreview } from './theme/ThemePreview.jsx';
 
-function getCurrentPathname() {
-  if (typeof window === 'undefined') {
-    return '/';
-  }
-
-  return window.location.pathname || '/';
-}
-
-function resolvePage(pathname) {
-  if (pathname === '/admin') {
-    return <AdminPage />;
-  }
-
-  if (pathname === '/login') {
-    return <LoginPage />;
-  }
-
-  return <ThemePreview />;
-}
-
 function App() {
-  const [pathname, setPathname] = useState(getCurrentPathname);
-
-  useEffect(() => {
-    const handleLocationChange = () => {
-      setPathname(getCurrentPathname());
-    };
-
-    window.addEventListener('popstate', handleLocationChange);
-
-    return () => {
-      window.removeEventListener('popstate', handleLocationChange);
-    };
-  }, []);
-
-  const page = resolvePage(pathname);
+  const location = useLocation();
 
   return (
-    <ThemeContainer currentPath={pathname}>
-      {page}
+    <ThemeContainer currentPath={location.pathname}>
+      <Routes>
+        <Route path="/" element={<ThemePreview />} />
+        <Route path="/login" element={<LoginPage />} />
+
+        <Route path="/admin" element={<AdminPage />}>
+          <Route index element={<Navigate replace to="bookings" />} />
+          <Route path="bookings" element={<BookingAdmin />} />
+          <Route path="*" element={<Navigate replace to="/admin/bookings" />} />
+        </Route>
+
+        <Route path="*" element={<ThemePreview />} />
+      </Routes>
     </ThemeContainer>
   );
 }
