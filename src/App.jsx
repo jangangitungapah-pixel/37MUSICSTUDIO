@@ -1,5 +1,6 @@
 import { Navigate, Route, Routes, useLocation } from 'react-router';
 import { AdminPage } from './pages/AdminPage.jsx';
+import { AuditAdmin } from './pages/auditadmin.jsx';
 import { BookingAdmin } from './pages/bookingadmin.jsx';
 import { CustomerAdmin } from './pages/customeradmin.jsx';
 import { LoginPage } from './pages/LoginPage.jsx';
@@ -19,6 +20,7 @@ function App() {
           <Route index element={<Navigate replace to="bookings" />} />
           <Route path="bookings" element={<BookingAdmin />} />
           <Route path="customers" element={<CustomerAdmin />} />
+          <Route path="audit" element={<AuditAdmin />} />
           <Route path="*" element={<Navigate replace to="/admin/bookings" />} />
         </Route>
 

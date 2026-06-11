@@ -2,14 +2,14 @@ import {
   useEffect,
   useMemo,
   useState,
-} from 'react';
+  } from 'react';
 import {
   Link,
   NavLink,
   Outlet,
   useLocation,
   useNavigate,
-} from 'react-router';
+  } from 'react-router';
 import {
   ArrowRight,
   LockKeyhole,
@@ -18,6 +18,7 @@ import {
   SlidersHorizontal,
   Moon,
   Sun,
+  History,
 } from 'lucide-react';
 import { cn } from '../lib/cn.js';
 import { useTheme } from '../theme/ThemeProvider.jsx';
@@ -62,6 +63,13 @@ const adminNavItems = [
     helper: 'Client directory',
     icon: UsersRound,
     path: '/admin/customers',
+  },
+  {
+    key: 'audit',
+    label: 'Audit',
+    helper: 'Action history',
+    icon: History,
+    path: '/admin/audit',
   },
 ];
 

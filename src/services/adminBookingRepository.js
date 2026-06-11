@@ -9,6 +9,8 @@ import {
   serverTimestamp,
   setDoc,
   where,
+  limit,
+  orderBy,
 } from 'firebase/firestore';
 import {
   firestoreDb,
@@ -133,6 +135,7 @@ function normalizeBookingAuditLog(entry) {
     action,
     at: normalizeTimestampValue(entry.at, nowIso),
     bookingId,
+    id: safeString(entry.id, 'audit-log-' + Date.now()),
     bookingSnapshot: {
       customerName: safeString(snapshot.customerName),
       dateKey: safeString(snapshot.dateKey),
@@ -144,6 +147,7 @@ function normalizeBookingAuditLog(entry) {
     },
     by: normalizeAuditActor(entry.by),
     label: safeString(entry.label, action),
+    recordedAt: normalizeTimestampValue(entry.recordedAt, normalizeTimestampValue(entry.at, nowIso)),
     source: safeString(entry.source, 'admin'),
     studioId: safeString(entry.studioId, DEFAULT_STUDIO_ID),
   };
@@ -164,6 +168,14 @@ function getBookingAuditLogsCollection() {
   return collection(firestoreDb, BOOKING_AUDIT_LOGS_COLLECTION);
 }
 
+function getBookingAuditLogsQuery() {
+  return query(
+    getBookingAuditLogsCollection(),
+    orderBy('at', 'desc'),
+    limit(120),
+  );
+}
+
 function getStudioBookingsQuery() {
   return query(
     getBookingsCollection(),
@@ -179,6 +191,17 @@ function compareBookings(a, b) {
   }
 
   return String(a.time || '').localeCompare(String(b.time || ''));
+}
+
+function compareAuditLogs(a, b) {
+  const firstTime = new Date(a.at || a.recordedAt || 0).getTime();
+  const secondTime = new Date(b.at || b.recordedAt || 0).getTime();
+
+  if (firstTime !== secondTime) {
+    return secondTime - firstTime;
+  }
+
+  return String(b.id || '').localeCompare(String(a.id || ''));
 }
 
 function createFirestorePayload(booking) {
@@ -429,6 +452,36 @@ export async function deleteManualBooking(bookingId) {
   return true;
 }
 
+export function subscribeBookingAuditLogs(callback, onError = () => {}) {
+  if (!canUseFirestore()) {
+    callback([]);
+
+    return () => {};
+  }
+
+  const unsubscribe = onSnapshot(
+    getBookingAuditLogsQuery(),
+    (snapshot) => {
+      const auditLogs = snapshot.docs
+        .map((documentSnapshot) => normalizeBookingAuditLog({
+          id: documentSnapshot.id,
+          ...documentSnapshot.data(),
+        }))
+        .filter(Boolean)
+        .sort(compareAuditLogs);
+
+      callback(auditLogs);
+    },
+    (error) => {
+      console.error('Firestore booking audit log subscription failed.', error);
+      onError(error);
+      callback([]);
+    },
+  );
+
+  return unsubscribe;
+}
+
 export async function recordBookingAuditLog(entry) {
   const normalizedLog = normalizeBookingAuditLog(entry);
 
@@ -470,6 +523,7 @@ export const adminBookingRepository = {
   deleteManualBooking,
   normalizeAdminBooking,
   recordBookingAuditLog,
+  subscribeBookingAuditLogs,
   subscribeManualBookings,
   updateManualBooking,
 };
