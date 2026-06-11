@@ -398,6 +398,52 @@ function getBookingForSlot(bookings, dayKey, timeKey) {
   return bookings.find((booking) => booking.dateKey === dayKey && booking.time === timeKey);
 }
 
+function getHourFromTimeKey(timeKey) {
+  return Number(String(timeKey).split(':')[0]) || 0;
+}
+
+function getClampedBookingDuration(booking) {
+  const startHour = getHourFromTimeKey(booking.time);
+  const maxDuration = Math.max(1, studioHours.closeHour - startHour);
+  const duration = Number(booking.durationHours) || 1;
+
+  return Math.min(Math.max(1, duration), maxDuration);
+}
+
+function isSlotCoveredByBooking(booking, dayKey, timeKey) {
+  if (!booking || booking.dateKey !== dayKey) {
+    return false;
+  }
+
+  const slotHour = getHourFromTimeKey(timeKey);
+  const startHour = getHourFromTimeKey(booking.time);
+  const endHour = startHour + getClampedBookingDuration(booking);
+
+  return slotHour >= startHour && slotHour < endHour;
+}
+
+function getBookingSpanForSlot(bookings, dayKey, timeKey) {
+  const booking = bookings.find((item) => isSlotCoveredByBooking(item, dayKey, timeKey));
+
+  if (!booking) {
+    return {
+      booking: null,
+      isStart: false,
+    };
+  }
+
+  return {
+    booking,
+    isStart: booking.time === timeKey,
+  };
+}
+
+function getBookingDurationHeight(booking) {
+  const duration = getClampedBookingDuration(booking);
+
+  return Math.max(44, duration * 58 - 12);
+}
+
 function getVisibleBookings(bookings, visibleDays) {
   const visibleKeys = new Set(visibleDays.map((day) => day.key));
 
@@ -814,39 +860,58 @@ function BookingModal({
 function CalendarCell({
   booking,
   day,
+  durationHeight = 0,
+  isBookingSpan = false,
+  isBookingStart = false,
   isSelected,
   onSelect,
   time,
 }) {
   return (
     <button
-      aria-label={booking ? booking.title + ', ' + day.fullLabel + ', ' + time.label : 'Empty slot, ' + day.fullLabel + ', ' + time.label}
+      aria-label={booking ? booking.customerName + ', ' + day.fullLabel + ', ' + time.label + ', durasi ' + getClampedBookingDuration(booking) + ' jam' : 'Empty slot, ' + day.fullLabel + ', ' + time.label}
       className={cn(
-        'group min-h-[58px] border-b border-r border-[var(--ui-border)] p-1.5 text-left transition focus-visible:relative focus-visible:z-20 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/25',
+        'group relative min-h-[58px] overflow-visible border-b border-r border-[var(--ui-border)] p-1.5 text-left transition focus-visible:relative focus-visible:z-30 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/25',
         solidSurfaces.gridCell,
         day.isWeekend ? solidSurfaces.gridCellWeekend : '',
         isSelected ? 'ring-2 ring-studio-accent/30 [background:color-mix(in_srgb,var(--ui-bg-base)_72%,var(--ui-control-hover))]' : '',
-        booking ? 'hover:[background:color-mix(in_srgb,var(--ui-bg-base)_72%,var(--ui-control-hover))]' : 'hover:[background:color-mix(in_srgb,var(--ui-bg-base)_78%,var(--ui-control))]',
+        isBookingSpan ? '[background:color-mix(in_srgb,var(--ui-bg-base)_80%,var(--ui-control))]' : '',
+        isBookingStart ? 'z-20' : 'z-0',
+        !isBookingSpan ? 'hover:[background:color-mix(in_srgb,var(--ui-bg-base)_78%,var(--ui-control))]' : '',
       )}
       type="button"
       onClick={onSelect}
     >
-      {booking ? (
+      {booking && isBookingStart ? (
         <span
           className={cn(
-            'grid min-h-[44px] content-center rounded-[1rem] border px-2 py-1.5 shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)]',
+            'absolute left-1.5 right-1.5 top-1.5 z-20 grid content-start overflow-hidden rounded-[1rem] border px-2.5 py-2 shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)]',
             toneClasses[booking.tone],
           )}
+          style={{ height: durationHeight }}
         >
           <span className="truncate text-[0.72rem] font-semibold tracking-[-0.02em]">
             {booking.customerName || booking.title}
           </span>
-          <span className="mt-0.5 flex items-center justify-between gap-2 text-[0.65rem] font-semibold uppercase tracking-[0.12em] text-[var(--ui-text-muted)]">
-            <span>{time.key}</span>
+
+          <span className="mt-0.5 truncate text-[0.65rem] font-semibold uppercase tracking-[0.12em] text-[var(--ui-text-muted)]">
+            {time.key} • {getClampedBookingDuration(booking)} jam
+          </span>
+
+          <span className="mt-auto flex items-center justify-between gap-2 pt-2 text-[0.65rem] font-semibold uppercase tracking-[0.12em] text-[var(--ui-text-muted)]">
             <span>{getStatusLabel(booking.status)}</span>
+            <span>{formatCurrency(booking.totalPrice)}</span>
           </span>
         </span>
-      ) : (
+      ) : null}
+
+      {booking && !isBookingStart ? (
+        <span className="sr-only">
+          Slot lanjutan dari booking {booking.customerName || booking.title}
+        </span>
+      ) : null}
+
+      {!booking ? (
         <span
           className={cn(
             'grid min-h-[44px] place-items-center rounded-[1rem] border text-[var(--ui-text-soft)] transition',
@@ -857,7 +922,7 @@ function CalendarCell({
         >
           <Plus size={15} strokeWidth={2.35} aria-hidden="true" />
         </span>
-      )}
+      ) : null}
     </button>
   );
 }
@@ -1159,13 +1224,17 @@ function CalendarGrid({
               <TimeCell slot={slot} />
 
               {visibleDays.map((day) => {
-                const booking = getBookingForSlot(bookings, day.key, slot.key);
+                const bookingSpan = getBookingSpanForSlot(bookings, day.key, slot.key);
+                const booking = bookingSpan.booking;
                 const isSelected = selectedSlot.dateKey === day.key && selectedSlot.timeKey === slot.key;
 
                 return (
                   <CalendarCell
                     booking={booking}
                     day={day}
+                    durationHeight={bookingSpan.isStart ? getBookingDurationHeight(booking) : 0}
+                    isBookingSpan={Boolean(booking)}
+                    isBookingStart={bookingSpan.isStart}
                     isSelected={isSelected}
                     key={day.key + '-' + slot.key}
                     time={slot}
