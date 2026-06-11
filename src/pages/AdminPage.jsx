@@ -3,14 +3,10 @@ import {
   useState } from 'react';
 import {
   ArrowRight,
-  Calendar,
-  Headphones,
   LockKeyhole,
-  Mic,
   Radio,
   SlidersHorizontal,
   Sparkles,
-  Users,
   Moon,
   Sun,
 } from 'lucide-react';
@@ -39,40 +35,10 @@ const adminThemeSwitchStates = {
 
 const adminNavItems = [
   {
-    key: 'overview',
-    label: 'Overview',
-    helper: 'Studio pulse',
-    icon: Headphones,
-  },
-  {
     key: 'booking',
     label: 'Booking',
     helper: 'Incoming sessions',
     icon: Radio,
-  },
-  {
-    key: 'schedule',
-    label: 'Schedule',
-    helper: 'Calendar board',
-    icon: Calendar,
-  },
-  {
-    key: 'recording',
-    label: 'Recording',
-    helper: 'Session tracker',
-    icon: Mic,
-  },
-  {
-    key: 'clients',
-    label: 'Clients',
-    helper: 'Musician list',
-    icon: Users,
-  },
-  {
-    key: 'settings',
-    label: 'Settings',
-    helper: 'Studio controls',
-    icon: SlidersHorizontal,
   },
 ];
 
@@ -83,7 +49,7 @@ const shellStats = [
   },
   {
     label: 'Navigation',
-    value: '6 modules',
+    value: '1 module',
   },
   {
     label: 'Theme system',
@@ -519,7 +485,7 @@ function AdminContent({
 }
 
 export function AdminPage() {
-  const [activeNav, setActiveNav] = useState('overview');
+  const [activeNav, setActiveNav] = useState('booking');
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
   const hasDevAccess =
