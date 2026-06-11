@@ -7,6 +7,7 @@ import {
   ArrowUpRight,
   CalendarClock,
   CalendarDays,
+  ChevronDown,
   CheckCircle2,
   Clock3,
   CreditCard,
@@ -360,6 +361,95 @@ function MetricStrip({
   );
 }
 
+function ToolbarSelect({
+  icon: Icon,
+  label,
+  options,
+  value,
+  onChange,
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+  const selectedOption = options.find((item) => item.key === value) || options[0];
+
+  const handleSelect = (nextValue) => {
+    onChange(nextValue);
+    setIsOpen(false);
+  };
+
+  return (
+    <label
+      className="relative grid gap-1.5 text-sm font-semibold text-[var(--ui-text-main)]"
+      onBlur={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget)) {
+          setIsOpen(false);
+        }
+      }}
+    >
+      {label}
+      <button
+        aria-expanded={isOpen}
+        aria-haspopup="listbox"
+        className="flex min-h-12 w-full items-center gap-3 rounded-[1.25rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 text-left text-sm font-semibold text-[var(--ui-text-strong)] ring-1 ring-[var(--ui-ring)] transition hover:bg-[var(--ui-control-hover)] focus-visible:border-studio-accent/55 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
+        type="button"
+        onClick={() => setIsOpen((currentOpen) => !currentOpen)}
+      >
+        {Icon ? (
+          <Icon className="shrink-0 text-[var(--ui-text-muted)]" size={17} strokeWidth={2.35} aria-hidden="true" />
+        ) : null}
+
+        <span className="min-w-0 flex-1 truncate">
+          {selectedOption.label}
+        </span>
+
+        <ChevronDown
+          className={cn(
+            'shrink-0 text-[var(--ui-text-muted)] transition-transform',
+            isOpen ? 'rotate-180' : '',
+          )}
+          size={16}
+          strokeWidth={2.35}
+          aria-hidden="true"
+        />
+      </button>
+
+      {isOpen ? (
+        <div
+          className="absolute left-0 right-0 top-[calc(100%+0.5rem)] z-50 max-h-64 overflow-auto rounded-[1.25rem] border border-[var(--ui-border-strong)] bg-[var(--ui-bg-base)] p-1.5 shadow-[var(--ui-shadow-soft)] ring-1 ring-[var(--ui-ring)] backdrop-blur-2xl"
+          role="listbox"
+        >
+          {options.map((option) => {
+            const isSelected = option.key === value;
+
+            return (
+              <button
+                aria-selected={isSelected}
+                className={cn(
+                  'flex min-h-10 w-full items-center justify-between gap-3 rounded-2xl px-3 text-left text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20',
+                  isSelected
+                    ? 'bg-[var(--ui-control-hover)] text-studio-accent'
+                    : 'text-[var(--ui-text-main)] hover:bg-[var(--ui-control)] hover:text-[var(--ui-text-strong)]',
+                )}
+                key={option.key}
+                role="option"
+                type="button"
+                onClick={() => handleSelect(option.key)}
+              >
+                <span className="truncate">
+                  {option.label}
+                </span>
+
+                {isSelected ? (
+                  <span className="size-2 rounded-full bg-studio-accent" aria-hidden="true" />
+                ) : null}
+              </button>
+            );
+          })}
+        </div>
+      ) : null}
+    </label>
+  );
+}
+
 function CustomerToolbar({
   resultCount,
   searchTerm,
@@ -395,41 +485,21 @@ function CustomerToolbar({
         </span>
       </label>
 
-      <label className="grid gap-1.5 text-sm font-semibold text-[var(--ui-text-main)]">
-        Status
-        <span className="flex min-h-12 items-center gap-3 rounded-[1.25rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 ring-1 ring-[var(--ui-ring)]">
-          <ListFilter className="shrink-0 text-[var(--ui-text-muted)]" size={17} strokeWidth={2.35} aria-hidden="true" />
-          <select
-            className="w-full min-w-[150px] border-0 bg-transparent text-sm font-semibold text-[var(--ui-text-strong)] outline-none"
-            value={statusFilter}
-            onChange={(event) => onStatusFilterChange(event.target.value)}
-          >
-            {customerStatusFilters.map((item) => (
-              <option key={item.key} value={item.key}>
-                {item.label}
-              </option>
-            ))}
-          </select>
-        </span>
-      </label>
+      <ToolbarSelect
+        icon={ListFilter}
+        label="Status"
+        options={customerStatusFilters}
+        value={statusFilter}
+        onChange={onStatusFilterChange}
+      />
 
-      <label className="grid gap-1.5 text-sm font-semibold text-[var(--ui-text-main)]">
-        Sort
-        <span className="flex min-h-12 items-center gap-3 rounded-[1.25rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 ring-1 ring-[var(--ui-ring)]">
-          <History className="shrink-0 text-[var(--ui-text-muted)]" size={17} strokeWidth={2.35} aria-hidden="true" />
-          <select
-            className="w-full min-w-[160px] border-0 bg-transparent text-sm font-semibold text-[var(--ui-text-strong)] outline-none"
-            value={sortMode}
-            onChange={(event) => onSortChange(event.target.value)}
-          >
-            {customerSortOptions.map((item) => (
-              <option key={item.key} value={item.key}>
-                {item.label}
-              </option>
-            ))}
-          </select>
-        </span>
-      </label>
+      <ToolbarSelect
+        icon={History}
+        label="Sort"
+        options={customerSortOptions}
+        value={sortMode}
+        onChange={onSortChange}
+      />
 
       <div className="text-sm font-semibold text-[var(--ui-text-muted)] lg:col-span-3">
         Menampilkan <span className="text-[var(--ui-text-strong)]">{resultCount}</span> customer.
