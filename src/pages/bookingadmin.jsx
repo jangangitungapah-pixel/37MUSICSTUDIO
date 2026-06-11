@@ -433,6 +433,46 @@ function getClampedBookingDuration(booking) {
   return Math.min(Math.max(1, duration), maxDuration);
 }
 
+function getBookingEndHour(booking) {
+  return getHourFromTimeKey(booking.time) + getClampedBookingDuration(booking);
+}
+
+function hasBookingTimeOverlap(firstBooking, secondBooking) {
+  if (!firstBooking || !secondBooking || firstBooking.dateKey !== secondBooking.dateKey) {
+    return false;
+  }
+
+  const firstStart = getHourFromTimeKey(firstBooking.time);
+  const firstEnd = getBookingEndHour(firstBooking);
+  const secondStart = getHourFromTimeKey(secondBooking.time);
+  const secondEnd = getBookingEndHour(secondBooking);
+
+  return firstStart < secondEnd && firstEnd > secondStart;
+}
+
+function getBookingConflict(bookings, candidateBooking, ignoredBookingId = '') {
+  if (!candidateBooking) {
+    return null;
+  }
+
+  return bookings.find((booking) => (
+    booking
+      && booking.id !== ignoredBookingId
+      && hasBookingTimeOverlap(booking, candidateBooking)
+  )) || null;
+}
+
+function getBookingConflictMessage(conflictBooking) {
+  const conflictDate = parseDateInputToDate(
+    conflictBooking.dateKey,
+    createDate(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()),
+  );
+  const conflictEndTime = padNumber(getBookingEndHour(conflictBooking)) + ':00';
+  const conflictName = conflictBooking.customerName || conflictBooking.title || 'booking lain';
+
+  return 'Jadwal bentrok dengan ' + conflictName + ' pada ' + formatFullDateLabel(conflictDate) + ', jam ' + conflictBooking.time + ' - ' + conflictEndTime + '. Pilih jam atau durasi lain.';
+}
+
 function isSlotCoveredByBooking(booking, dayKey, timeKey) {
   if (!booking || booking.dateKey !== dayKey) {
     return false;
@@ -1834,6 +1874,10 @@ export function BookingAdmin() {
   const handleFormChange = (event) => {
     const { name, value } = event.target;
 
+    if (bookingSaveError) {
+      setBookingSaveError('');
+    }
+
     setBookingForm((current) => {
       const next = {
         ...current,
@@ -1850,6 +1894,10 @@ export function BookingAdmin() {
 
   const handleEditFormChange = (event) => {
     const { name, value } = event.target;
+
+    if (editSaveError) {
+      setEditSaveError('');
+    }
 
     setEditBookingForm((current) => {
       const nextForm = {
@@ -1894,6 +1942,13 @@ export function BookingAdmin() {
       totalPrice: payment.totalPrice,
       updatedAt: new Date().toISOString(),
     };
+
+    const editBookingConflict = getBookingConflict(bookings, nextBooking, editingBooking.id);
+
+    if (editBookingConflict) {
+      setEditSaveError(getBookingConflictMessage(editBookingConflict));
+      return;
+    }
 
     setIsBookingUpdating(true);
 
@@ -1943,6 +1998,13 @@ export function BookingAdmin() {
       totalPrice: payment.totalPrice,
       updatedAt: new Date().toISOString(),
     };
+
+    const bookingConflict = getBookingConflict(bookings, nextBooking);
+
+    if (bookingConflict) {
+      setBookingSaveError(getBookingConflictMessage(bookingConflict));
+      return;
+    }
 
     setIsBookingSaving(true);
 
