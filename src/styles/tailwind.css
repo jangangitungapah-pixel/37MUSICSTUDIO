@@ -1343,3 +1343,107 @@
   }
 }
 /* 37-customer-mini-crm:end */
+
+/* 37-customer-activity-timeline:start */
+.customer-activity-filter,
+.customer-activity-list {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--ui-text-muted) 34%, transparent) transparent;
+}
+
+.customer-activity-filter::-webkit-scrollbar,
+.customer-activity-list::-webkit-scrollbar {
+  width: 0.42rem;
+  height: 0.42rem;
+}
+
+.customer-activity-filter::-webkit-scrollbar-thumb,
+.customer-activity-list::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--ui-text-muted) 28%, transparent);
+}
+
+.customer-activity-item:last-child .customer-activity-line {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .customer-activity-timeline {
+    gap: 0.48rem !important;
+  }
+
+  .customer-activity-timeline > div:first-child span:first-child {
+    font-size: 0.58rem !important;
+  }
+
+  .customer-activity-timeline > div:first-child span:last-child {
+    display: none !important;
+  }
+
+  .customer-activity-summary {
+    gap: 0.28rem !important;
+    padding: 0.38rem !important;
+    border-radius: 0.75rem !important;
+  }
+
+  .customer-activity-summary > div {
+    padding: 0.35rem 0.42rem !important;
+    border-radius: 0.58rem !important;
+  }
+
+  .customer-activity-filter {
+    gap: 0.35rem !important;
+    padding-bottom: 0.15rem !important;
+  }
+
+  .customer-activity-filter button {
+    min-height: 1.85rem !important;
+    padding-inline: 0.52rem !important;
+    font-size: 0.52rem !important;
+  }
+
+  .customer-activity-list {
+    max-height: 22rem !important;
+    gap: 0.45rem !important;
+  }
+
+  .customer-activity-item {
+    gap: 0.45rem !important;
+  }
+
+  .customer-activity-rail > span:first-child {
+    width: 1.72rem !important;
+    height: 1.72rem !important;
+  }
+
+  .customer-activity-item article,
+  .customer-activity-item > div:last-child {
+    padding: 0.48rem !important;
+    border-radius: 0.75rem !important;
+  }
+
+  .customer-activity-item strong {
+    font-size: 0.66rem !important;
+  }
+
+  .customer-activity-item p {
+    font-size: 0.58rem !important;
+    line-height: 1.35 !important;
+  }
+
+  .customer-activity-item span {
+    font-size: 0.5rem !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  .customer-activity-timeline {
+    border-top: 1px solid var(--ui-border);
+    padding-top: 0.65rem;
+  }
+
+  .customer-activity-list {
+    max-height: 30rem !important;
+  }
+}
+/* 37-customer-activity-timeline:end */

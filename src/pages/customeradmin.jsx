@@ -2610,6 +2610,234 @@ function CustomerHistoryCard({
   );
 }
 
+function getCustomerActivityToneClass(tone) {
+  if (tone === 'accent') {
+    return 'border-studio-accent/35 bg-studio-accent/10 text-studio-accent ring-studio-accent/15';
+  }
+
+  if (tone === 'cyan') {
+    return 'border-studio-cyan/35 bg-studio-cyan/10 text-studio-cyan ring-studio-cyan/15';
+  }
+
+  if (tone === 'purple') {
+    return 'border-studio-purple/35 bg-studio-purple/10 text-studio-purple ring-studio-purple/15';
+  }
+
+  return 'border-[var(--ui-border)] bg-[var(--ui-control)] text-[var(--ui-text-muted)] ring-[var(--ui-ring)]';
+}
+
+function createBookingActivityItem(booking) {
+  const hasRemainingPayment = Number(booking.remainingPayment) > 0;
+  const paymentLabel = getPaymentLabel(booking.status);
+  const tone = hasRemainingPayment
+    ? 'accent'
+    : booking.status === 'paid'
+      ? 'cyan'
+      : booking.status === 'dp'
+        ? 'purple'
+        : 'neutral';
+
+  return {
+    chips: [
+      (booking.durationHours || 1) + ' jam',
+      paymentLabel,
+      hasRemainingPayment ? 'Sisa ' + formatCurrency(booking.remainingPayment) : '',
+    ].filter(Boolean),
+    helper: 'Total ' + formatCurrency(booking.totalPrice) + ' • Paid ' + formatCurrency(booking.dpAmount),
+    icon: ReceiptText,
+    id: 'booking-' + booking.id,
+    sortTime: booking.parsedDate?.getTime?.() || parseDateKey(booking.dateKey).getTime(),
+    timeLabel: formatDateLabel(booking.dateKey) + ' • ' + (booking.time || '-'),
+    title: booking.sessionType || booking.title || 'Studio session',
+    tone,
+    typeLabel: paymentLabel,
+  };
+}
+
+function createCustomerActivityItems(customer, filteredHistoryBookings, noteDraft) {
+  const items = [];
+  const quality = customer?.dataQuality || getCustomerDataQuality(customer, new Map());
+  const noteText = String(noteDraft?.note || '').trim();
+  const tagLabels = (Array.isArray(noteDraft?.tags) ? noteDraft.tags : [])
+    .map((tagKey) => customerTagOptions.find((tag) => tag.key === tagKey)?.label || tagKey)
+    .filter(Boolean);
+
+  if (noteText || tagLabels.length > 0) {
+    items.push({
+      chips: tagLabels.slice(0, 4),
+      helper: noteText || 'Customer punya tag CRM lokal.',
+      icon: Tags,
+      id: 'crm-note',
+      sortTime: Number.MAX_SAFE_INTEGER,
+      timeLabel: 'Local CRM',
+      title: tagLabels.length ? tagLabels.join(', ') : 'Internal note',
+      tone: 'purple',
+      typeLabel: 'Note',
+    });
+  }
+
+  if (quality?.level && quality.level !== 'clean') {
+    items.push({
+      chips: (quality.issues || []).slice(0, 3).map((issue) => issue.label),
+      helper: quality.helper || 'Data customer perlu dicek.',
+      icon: AlertTriangle,
+      id: 'quality-check',
+      sortTime: Number.MAX_SAFE_INTEGER - 1,
+      timeLabel: 'Data quality',
+      title: quality.label || 'Needs review',
+      tone: 'accent',
+      typeLabel: 'Review',
+    });
+  }
+
+  const bookingItems = (Array.isArray(filteredHistoryBookings) ? filteredHistoryBookings : [])
+    .map(createBookingActivityItem)
+    .sort((firstItem, secondItem) => secondItem.sortTime - firstItem.sortTime);
+
+  return [...items, ...bookingItems];
+}
+
+function CustomerActivityTimelineCard({
+  item,
+}) {
+  const Icon = item.icon;
+
+  return (
+    <article className="customer-activity-item grid grid-cols-[auto_minmax(0,1fr)] gap-2">
+      <div className="customer-activity-rail grid justify-items-center">
+        <span className={cn('grid size-8 place-items-center rounded-full border ring-1', getCustomerActivityToneClass(item.tone))}>
+          <Icon size={14} strokeWidth={2.35} aria-hidden="true" />
+        </span>
+        <span className="customer-activity-line mt-1 h-full w-px bg-[var(--ui-border)]" aria-hidden="true" />
+      </div>
+
+      <div className="grid gap-1 rounded-[0.95rem] border border-[var(--ui-border)] bg-[var(--ui-control)] p-2 ring-1 ring-[var(--ui-ring)]">
+        <div className="flex items-start justify-between gap-2">
+          <div className="grid min-w-0 gap-0.5">
+            <span className="text-[0.54rem] font-semibold uppercase tracking-[0.11em] text-[var(--ui-text-muted)]">
+              {item.typeLabel}
+            </span>
+
+            <strong className="truncate text-xs font-semibold text-[var(--ui-text-strong)]">
+              {item.title}
+            </strong>
+          </div>
+
+          <span className="shrink-0 rounded-full border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] px-2 py-0.5 text-[0.55rem] font-semibold text-[var(--ui-text-muted)]">
+            {item.timeLabel}
+          </span>
+        </div>
+
+        <p className="m-0 text-[0.66rem] font-medium leading-4 text-[var(--ui-text-muted)]">
+          {item.helper}
+        </p>
+
+        {item.chips.length ? (
+          <div className="flex flex-wrap gap-1">
+            {item.chips.map((chip) => (
+              <span className="rounded-full border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] px-2 py-0.5 text-[0.52rem] font-semibold uppercase tracking-[0.08em] text-[var(--ui-text-main)]" key={chip}>
+                {chip}
+              </span>
+            ))}
+          </div>
+        ) : null}
+      </div>
+    </article>
+  );
+}
+
+function CustomerActivityTimeline({
+  customer,
+  filteredHistoryBookings,
+  historyFilter,
+  historyFilterOptions,
+  historyStats,
+  noteDraft,
+  onHistoryFilterChange,
+}) {
+  const activityItems = createCustomerActivityItems(customer, filteredHistoryBookings, noteDraft);
+
+  return (
+    <section className="customer-activity-timeline grid gap-2" aria-label="Customer activity timeline">
+      <div className="flex items-center justify-between gap-3">
+        <div className="grid gap-0.5">
+          <span className="text-xs font-semibold uppercase tracking-[0.16em] text-studio-accent">
+            Activity timeline
+          </span>
+
+          <span className="text-[0.68rem] font-medium text-[var(--ui-text-muted)]">
+            Booking, payment, notes, dan quality signal.
+          </span>
+        </div>
+
+        <span className="rounded-full border border-[var(--ui-border)] bg-[var(--ui-control)] px-2.5 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.11em] text-[var(--ui-text-muted)] ring-1 ring-[var(--ui-ring)]">
+          {activityItems.length} item
+        </span>
+      </div>
+
+      <div className="customer-activity-summary grid grid-cols-2 gap-1 rounded-[0.95rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-1.5 ring-1 ring-[var(--ui-ring)]">
+        <div className="grid gap-0.5 rounded-[0.75rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-2 py-1.5">
+          <span className="text-[0.5rem] font-semibold uppercase tracking-[0.1em] text-[var(--ui-text-muted)]">
+            Unpaid
+          </span>
+          <strong className="text-[0.64rem] font-semibold text-studio-accent">
+            {historyStats.unpaid} • {formatCurrency(historyStats.unpaidAmount)}
+          </strong>
+        </div>
+
+        <div className="grid gap-0.5 rounded-[0.75rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-2 py-1.5">
+          <span className="text-[0.5rem] font-semibold uppercase tracking-[0.1em] text-[var(--ui-text-muted)]">
+            Paid
+          </span>
+          <strong className="text-[0.64rem] font-semibold text-[var(--ui-text-strong)]">
+            {historyStats.paid}/{historyStats.total} sesi
+          </strong>
+        </div>
+      </div>
+
+      <div className="customer-activity-filter -mx-1 flex snap-x gap-1.5 overflow-x-auto px-1 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0">
+        {historyFilterOptions.map((option) => {
+          const isActive = historyFilter === option.key;
+
+          return (
+            <button
+              aria-pressed={isActive}
+              className={cn(
+                'inline-flex min-h-8 shrink-0 snap-start items-center justify-center gap-1.5 rounded-full border px-2.5 text-[0.58rem] font-semibold uppercase tracking-[0.09em] ring-1 transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20',
+                isActive
+                  ? 'border-studio-accent/45 bg-studio-accent/10 text-studio-accent ring-studio-accent/20'
+                  : 'border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] text-[var(--ui-secondary-text)] ring-[var(--ui-ring)] hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)]',
+              )}
+              key={option.key}
+              type="button"
+              onClick={() => onHistoryFilterChange(option.key)}
+            >
+              {option.label}
+              <span className="rounded-full bg-[var(--ui-control)] px-1.5 py-0.5 text-[0.62rem]">
+                {option.count}
+              </span>
+            </button>
+          );
+        })}
+      </div>
+
+      <div className="customer-activity-list grid max-h-[28rem] gap-2 overflow-auto pr-0 sm:pr-1">
+        {activityItems.length > 0 ? (
+          activityItems.map((item) => (
+            <CustomerActivityTimelineCard item={item} key={item.id} />
+          ))
+        ) : (
+          <div className="grid min-h-28 place-items-center rounded-[1.15rem] border border-dashed border-[var(--ui-border-strong)] bg-[var(--ui-glass-soft)] p-4 text-center ring-1 ring-[var(--ui-ring)]">
+            <p className="m-0 text-sm font-medium leading-6 text-[var(--ui-text-muted)]">
+              Tidak ada activity pada filter timeline ini.
+            </p>
+          </div>
+        )}
+      </div>
+    </section>
+  );
+}
+
 function CustomerDetailPanel({
   customer,
   onClose,
@@ -3036,84 +3264,15 @@ function CustomerDetailPanel({
         />
       </div>
 
-      <div className="customer-history-compact grid gap-3">
-        <div className="grid gap-2">
-          <div className="flex items-center justify-between gap-3">
-            <span className="text-xs font-semibold uppercase tracking-[0.16em] text-studio-accent">
-              Booking history
-            </span>
-
-            <span className="rounded-full border border-[var(--ui-border)] bg-[var(--ui-control)] px-2.5 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.11em] text-[var(--ui-text-muted)] ring-1 ring-[var(--ui-ring)]">
-              {filteredHistoryBookings.length} / {customer.bookings.length} sesi
-            </span>
-          </div>
-
-          <div className="customer-history-summary-compact grid gap-1.5 rounded-[0.95rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-1.5 ring-1 ring-[var(--ui-ring)]">
-            <div className="grid grid-cols-2 gap-1">
-              <div className="grid gap-0.5 rounded-[0.75rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-2 py-1.5">
-                <span className="text-[0.5rem] font-semibold uppercase tracking-[0.1em] text-[var(--ui-text-muted)]">
-                  Unpaid
-                </span>
-                <strong className="text-[0.64rem] font-semibold text-studio-accent">
-                  {historyStats.unpaid} • {formatCurrency(historyStats.unpaidAmount)}
-                </strong>
-              </div>
-
-              <div className="grid gap-0.5 rounded-[0.75rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-2 py-1.5">
-                <span className="text-[0.5rem] font-semibold uppercase tracking-[0.1em] text-[var(--ui-text-muted)]">
-                  Paid
-                </span>
-                <strong className="text-[0.64rem] font-semibold text-[var(--ui-text-strong)]">
-                  {historyStats.paid}/{historyStats.total} sesi
-                </strong>
-              </div>
-            </div>
-
-            <div className="-mx-1 flex snap-x gap-1.5 overflow-x-auto px-1 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0">
-              {historyFilterOptions.map((option) => {
-                const isActive = historyFilter === option.key;
-
-                return (
-                  <button
-                    aria-pressed={isActive}
-                    className={cn(
-                      'inline-flex min-h-8 shrink-0 snap-start items-center justify-center gap-1.5 rounded-full border px-2.5 text-[0.58rem] font-semibold uppercase tracking-[0.09em] ring-1 transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20',
-                      isActive
-                        ? 'border-studio-accent/45 bg-studio-accent/10 text-studio-accent ring-studio-accent/20'
-                        : 'border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] text-[var(--ui-secondary-text)] ring-[var(--ui-ring)] hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)]',
-                    )}
-                    key={option.key}
-                    type="button"
-                    onClick={() => setHistoryFilter(option.key)}
-                  >
-                    {option.label}
-                    <span className="rounded-full bg-[var(--ui-control)] px-1.5 py-0.5 text-[0.62rem]">
-                      {option.count}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-
-        <div className="grid max-h-[28rem] gap-2 overflow-auto pr-0 sm:pr-1">
-          {filteredHistoryBookings.length > 0 ? (
-            filteredHistoryBookings.map((booking) => (
-              <CustomerHistoryCard
-                booking={booking}
-                key={booking.id}
-              />
-            ))
-          ) : (
-            <div className="grid min-h-28 place-items-center rounded-[1.15rem] border border-dashed border-[var(--ui-border-strong)] bg-[var(--ui-glass-soft)] p-4 text-center ring-1 ring-[var(--ui-ring)]">
-              <p className="m-0 text-sm font-medium leading-6 text-[var(--ui-text-muted)]">
-                Tidak ada booking pada filter history ini.
-              </p>
-            </div>
-          )}
-        </div>
-      </div>
+      <CustomerActivityTimeline
+        customer={customer}
+        filteredHistoryBookings={filteredHistoryBookings}
+        historyFilter={historyFilter}
+        historyFilterOptions={historyFilterOptions}
+        historyStats={historyStats}
+        noteDraft={customerNoteDraft}
+        onHistoryFilterChange={setHistoryFilter}
+      />
     </aside>
   );
 }
