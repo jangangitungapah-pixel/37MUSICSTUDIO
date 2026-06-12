@@ -2,18 +2,18 @@ import {
   useMemo,
   useState,
   } from 'react';
-import { Link,
+import {
+  Link,
   useNavigate,
   useOutletContext,
   useParams,
-  useSearchParams } from 'react-router';
+  useSearchParams,
+} from 'react-router';
 import {
   ArrowUpRight,
   CalendarClock,
-  CalendarDays,
   ChevronDown,
   CheckCircle2,
-  Clock3,
   CreditCard,
   Download,
   History,
@@ -21,7 +21,6 @@ import {
   Phone,
   Printer,
   Search,
-  Sparkles,
   Tags,
   UserRound,
   UsersRound,
@@ -301,7 +300,7 @@ function readCustomerNotesStore() {
     const parsed = JSON.parse(window.localStorage.getItem(CUSTOMER_NOTES_STORAGE_KEY) || '{}');
 
     return parsed && typeof parsed === 'object' ? parsed : {};
-  } catch (_error) {
+  } catch {
     return {};
   }
 }
@@ -2015,43 +2014,7 @@ function CustomerInsightPanel({
   );
 }
 
-function CustomerSelectionEmptyState({
-  hasCustomers,
-  onSelectFirst,
-}) {
-  if (!hasCustomers) {
-    return null;
-  }
 
-  return (
-    <aside className="customer-selection-empty hidden rounded-[1.5rem] border border-[var(--ui-border-strong)] bg-[linear-gradient(145deg,var(--ui-glass),var(--ui-glass-soft))] p-5 shadow-[var(--ui-shadow-soft)] ring-1 ring-[var(--ui-ring)] backdrop-blur-2xl xl:grid xl:sticky xl:top-4">
-      <div className="grid gap-4">
-        <span className="grid size-12 place-items-center rounded-[1rem] border border-[var(--ui-border)] bg-[var(--ui-control)] text-studio-accent">
-          <UsersRound size={22} strokeWidth={2.35} aria-hidden="true" />
-        </span>
-
-        <div className="grid gap-2">
-          <h2 className="m-0 text-xl font-semibold tracking-[-0.045em] text-[var(--ui-text-strong)]">
-            Pilih customer.
-          </h2>
-
-          <p className="m-0 text-sm font-medium leading-6 text-[var(--ui-text-muted)]">
-            Detail customer akan muncul di sini. Klik salah satu row di kiri untuk melihat kontak, payment, dan histori booking.
-          </p>
-        </div>
-
-        <button
-          className="inline-flex min-h-10 w-fit items-center justify-center gap-2 rounded-full [background:var(--ui-primary-bg)] px-4 text-sm font-semibold text-[var(--ui-primary-text)] shadow-[var(--ui-shadow-soft)] transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
-          type="button"
-          onClick={onSelectFirst}
-        >
-          Pilih teratas
-          <ArrowUpRight size={14} strokeWidth={2.35} aria-hidden="true" />
-        </button>
-      </div>
-    </aside>
-  );
-}
 
 function CustomerStatePanel({
   actionHref = '',
@@ -2332,24 +2295,7 @@ function CustomerList({
   );
 }
 
-function DetailMetric({
-  icon: Icon,
-  label,
-  value,
-}) {
-  return (
-    <div className="grid gap-1 border-t border-[var(--ui-border)] py-3 first:border-t-0">
-      <span className="inline-flex items-center gap-2 text-[0.68rem] font-semibold uppercase tracking-[0.13em] text-[var(--ui-text-muted)]">
-        <Icon size={13} strokeWidth={2.35} aria-hidden="true" />
-        {label}
-      </span>
 
-      <strong className="text-base font-semibold tracking-[-0.035em] text-[var(--ui-text-strong)]">
-        {value}
-      </strong>
-    </div>
-  );
-}
 
 function BookingSummaryCard({
   actionHref = '',
@@ -2554,73 +2500,7 @@ function getBookingStatusTone(status) {
   return 'border-studio-accent/35 bg-studio-accent/10 text-studio-accent ring-studio-accent/15';
 }
 
-function CustomerHistoryCard({
-  booking,
-}) {
-  const hasRemainingPayment = Number(booking.remainingPayment) > 0;
 
-  return (
-    <article
-      className={cn(
-        'customer-history-card-compact grid gap-2 rounded-[0.95rem] border p-2 ring-1',
-        hasRemainingPayment
-          ? 'border-studio-accent/35 bg-studio-accent/10 ring-studio-accent/15'
-          : 'border-[var(--ui-border)] bg-[var(--ui-control)] ring-[var(--ui-ring)]',
-      )}
-    >
-      <div className="flex items-start justify-between gap-2">
-        <div className="grid min-w-0 gap-0.5">
-          <strong className="truncate text-xs font-semibold text-[var(--ui-text-strong)]">
-            {booking.sessionType || booking.title || 'Studio session'}
-          </strong>
-
-          <span className="text-[0.68rem] font-medium leading-4 text-[var(--ui-text-muted)]">
-            {formatDateLabel(booking.dateKey)} • {booking.time || '-'} • {booking.durationHours || 1} jam
-          </span>
-        </div>
-
-        <span className={cn('rounded-full border px-2 py-0.5 text-[0.56rem] font-semibold uppercase tracking-[0.09em] ring-1', getBookingStatusTone(booking.status))}>
-          {getPaymentLabel(booking.status)}
-        </span>
-      </div>
-
-      <div className="customer-history-money-grid grid grid-cols-3 gap-1">
-        <div className="grid gap-0.5 rounded-[0.65rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-1.5">
-          <span className="text-[0.48rem] font-semibold uppercase tracking-[0.09em] text-[var(--ui-text-muted)]">
-            Total
-          </span>
-          <strong className="text-[0.58rem] font-semibold text-[var(--ui-text-strong)]">
-            {formatCurrency(booking.totalPrice)}
-          </strong>
-        </div>
-
-        <div className="grid gap-0.5 rounded-[0.65rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-1.5">
-          <span className="text-[0.48rem] font-semibold uppercase tracking-[0.09em] text-[var(--ui-text-muted)]">
-            Paid
-          </span>
-          <strong className="text-[0.58rem] font-semibold text-[var(--ui-text-strong)]">
-            {formatCurrency(booking.dpAmount)}
-          </strong>
-        </div>
-
-        <div className="grid gap-0.5 rounded-[0.65rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-1.5">
-          <span className="text-[0.48rem] font-semibold uppercase tracking-[0.09em] text-[var(--ui-text-muted)]">
-            Sisa
-          </span>
-          <strong className={cn('text-[0.58rem] font-semibold', hasRemainingPayment ? 'text-studio-accent' : 'text-[var(--ui-text-strong)]')}>
-            {formatCurrency(booking.remainingPayment)}
-          </strong>
-        </div>
-      </div>
-
-      {booking.notes ? (
-        <p className="m-0 rounded-[0.7rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-1.5 text-[0.64rem] font-medium leading-4 text-[var(--ui-text-muted)]">
-          {booking.notes}
-        </p>
-      ) : null}
-    </article>
-  );
-}
 
 function getCustomerActivityToneClass(tone) {
   if (tone === 'accent') {
@@ -2869,7 +2749,6 @@ function CustomerDetailPanel({
   const boardHref = '/admin/bookings?customer=' + encodeURIComponent(boardQuery);
   const phoneHref = phoneDigits ? 'tel:' + phoneDigits : '';
   const primaryBooking = getCustomerPrimaryBooking(customer);
-  const primaryBookingLabel = getCustomerPrimaryBookingLabel(customer);
   const primaryBookingShortLabel = customer?.nextBooking ? 'Next' : customer?.lastBooking ? 'Last' : 'Booking';
   const customerSummaryText = createCustomerSummaryText(customer);
   const templateMeta = getCustomerCommunicationTemplateMeta(selectedTemplate);
@@ -2921,7 +2800,7 @@ function CustomerDetailPanel({
       onCrmChange();
       setNoteSaveStatus('saved');
       resetNoteSaveStatus();
-    } catch (_error) {
+    } catch {
       setNoteSaveStatus('error');
       resetNoteSaveStatus();
     }
@@ -2936,7 +2815,7 @@ function CustomerDetailPanel({
       onCrmChange();
       setNoteSaveStatus('cleared');
       resetNoteSaveStatus();
-    } catch (_error) {
+    } catch {
       setNoteSaveStatus('error');
       resetNoteSaveStatus();
     }
@@ -2953,7 +2832,7 @@ function CustomerDetailPanel({
       await navigator.clipboard.writeText(phoneValue);
       setCopyStatus('copied');
       resetActionStatus(setCopyStatus);
-    } catch (_error) {
+    } catch {
       setCopyStatus('error');
       resetActionStatus(setCopyStatus);
     }
@@ -2970,7 +2849,7 @@ function CustomerDetailPanel({
       await navigator.clipboard.writeText(customerSummaryText);
       setSummaryCopyStatus('copied');
       resetActionStatus(setSummaryCopyStatus);
-    } catch (_error) {
+    } catch {
       setSummaryCopyStatus('error');
       resetActionStatus(setSummaryCopyStatus);
     }
@@ -2987,7 +2866,7 @@ function CustomerDetailPanel({
       await navigator.clipboard.writeText(whatsappMessage);
       setTemplateCopyStatus('copied');
       resetActionStatus(setTemplateCopyStatus);
-    } catch (_error) {
+    } catch {
       setTemplateCopyStatus('error');
       resetActionStatus(setTemplateCopyStatus);
     }
@@ -3394,6 +3273,7 @@ export function CustomerAdmin() {
     manualBookings = [],
   } = adminContext;
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState(searchParams.get('q') || '');
   const [statusFilter, setStatusFilter] = useState('all');
   const [tagFilter, setTagFilter] = useState('all');
@@ -3424,7 +3304,7 @@ export function CustomerAdmin() {
       : null,
     [customers, selectedCustomerId],
   );
-  const hasActiveCustomerFilters = Boolean(String(searchTerm || '').trim()) || statusFilter !== 'all' || sortMode !== 'attention';
+  const hasActiveCustomerFilters = Boolean(String(searchTerm || '').trim()) || statusFilter !== 'all' || tagFilter !== 'all' || sortMode !== 'attention';
 
   const resetCustomerFilters = () => {
     setSearchTerm('');
@@ -3439,18 +3319,6 @@ export function CustomerAdmin() {
   const handleSelectCustomer = (customer) => {
     setSelectedCustomerId(customer.id);
     navigate(getCustomerDetailPath(customer));
-  };
-
-  const handleSelectFirstCustomer = () => {
-    const firstCustomer = filteredCustomers[0];
-
-    if (firstCustomer) {
-      setSelectedCustomerId(firstCustomer.id);
-    }
-  };
-
-  const handleCustomerCrmChange = () => {
-    setCrmRefreshKey((currentKey) => currentKey + 1);
   };
 
   return (

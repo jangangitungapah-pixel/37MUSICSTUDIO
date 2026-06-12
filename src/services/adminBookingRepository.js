@@ -279,7 +279,7 @@ function readManualBookingsFromStorage() {
       .map((booking) => normalizeAdminBooking(booking))
       .filter(Boolean)
       .sort(compareBookings);
-  } catch (_error) {
+  } catch {
     return [];
   }
 }
@@ -294,7 +294,7 @@ function writeManualBookingsToStorage(bookings) {
       ADMIN_MANUAL_BOOKINGS_STORAGE_KEY,
       JSON.stringify(bookings),
     );
-  } catch (_error) {
+  } catch {
     // Local persistence is best-effort when Firestore is not configured.
   }
 }
