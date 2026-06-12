@@ -1288,7 +1288,7 @@ function CustomerList({
   }
 
   return (
-    <section className="customer-list-shell overflow-hidden rounded-[1.5rem] border border-[var(--ui-border-strong)] bg-[color-mix(in_srgb,var(--ui-glass)_72%,transparent)] ring-1 ring-[var(--ui-ring)] backdrop-blur-xl sm:rounded-[1.75rem]">
+    <section className="customer-list-shell customer-desktop-list overflow-hidden rounded-[1.5rem] border border-[var(--ui-border-strong)] bg-[color-mix(in_srgb,var(--ui-glass)_72%,transparent)] ring-1 ring-[var(--ui-ring)] backdrop-blur-xl sm:rounded-[1.75rem]">
       <div className="hidden grid-cols-[minmax(230px,1.35fr)_minmax(138px,0.75fr)_minmax(116px,0.58fr)_minmax(116px,0.58fr)_minmax(122px,0.58fr)_minmax(156px,0.68fr)] border-b border-[var(--ui-border-strong)] px-4 py-3 text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-[var(--ui-text-muted)] lg:grid">
         <span>Customer</span>
         <span>Contact</span>
@@ -1308,7 +1308,7 @@ function CustomerList({
           return (
             <article
               className={cn(
-                'customer-card-row grid gap-2 border-b border-[var(--ui-border)] px-3 py-3 last:border-b-0 sm:px-4 sm:py-3.5 lg:grid-cols-[minmax(230px,1.35fr)_minmax(138px,0.75fr)_minmax(116px,0.58fr)_minmax(116px,0.58fr)_minmax(122px,0.58fr)_minmax(156px,0.68fr)] lg:items-center',
+                'customer-card-row customer-desktop-row grid gap-2 border-b border-[var(--ui-border)] px-3 py-3 last:border-b-0 sm:px-4 sm:py-3.5 lg:grid-cols-[minmax(245px,1.38fr)_minmax(145px,0.74fr)_minmax(112px,0.54fr)_minmax(112px,0.54fr)_minmax(118px,0.58fr)_minmax(142px,0.62fr)] lg:items-center',
                 isSelected
                   ? 'customer-card-row-selected border-studio-accent/35 bg-studio-accent/10 ring-1 ring-studio-accent/20'
                   : 'bg-transparent hover:bg-[var(--ui-glass-soft)]',
@@ -1316,11 +1316,6 @@ function CustomerList({
               key={customer.id}
             >
               <div className="customer-card-head flex min-w-0 items-start justify-between gap-2 lg:contents">
-                {isSelected ? (
-                  <span className="customer-selected-indicator hidden rounded-full border border-studio-accent/35 bg-studio-accent/10 px-2 py-0.5 text-[0.58rem] font-semibold uppercase tracking-[0.1em] text-studio-accent ring-1 ring-studio-accent/15 lg:inline-flex">
-                    Selected
-                  </span>
-                ) : null}
                 <button
                   className="customer-card-person flex min-w-0 flex-1 items-center gap-2.5 rounded-[1.1rem] text-left transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20 sm:gap-3"
                   type="button"
@@ -2146,7 +2141,7 @@ export function CustomerAdmin() {
           title="Belum ada customer."
         />
       ) : (
-        <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(320px,390px)] xl:items-start">
+        <div className="customer-desktop-content-grid grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(320px,390px)] xl:items-start">
           <CustomerList
             customers={filteredCustomers}
             hasActiveFilters={hasActiveCustomerFilters}
