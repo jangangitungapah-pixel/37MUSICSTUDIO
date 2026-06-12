@@ -447,7 +447,7 @@ function getFilteredCustomers(customers, searchTerm, statusFilter, sortMode) {
       const issues = Array.isArray(quality.issues) ? quality.issues : [];
       const hasIssue = (issueKey) => issues.some((issue) => issue.key === issueKey);
       const hasUnpaid = Math.max(0, Number(customer.pendingRevenue) || 0) > 0;
-      const matchesStatus = (() => {
+      const matchesSegment = (() => {
         if (statusFilter === 'all') return true;
         if (statusFilter === 'needsReview') return quality.level !== 'clean';
         if (statusFilter === 'unpaid') return hasUnpaid;
@@ -457,7 +457,7 @@ function getFilteredCustomers(customers, searchTerm, statusFilter, sortMode) {
         return customer.status === statusFilter;
       })();
 
-      return matchesSearch && matchesStatus;
+      return matchesSearch && matchesSegment;
     })
     .sort((a, b) => {
       if (sortMode === 'name') {
