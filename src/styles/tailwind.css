@@ -646,3 +646,41 @@
   }
 }
 /* 37-customer-data-states:end */
+
+/* 37-customer-search-ux:start */
+@media (max-width: 767px) {
+  .customer-filter-summary {
+    gap: 0.45rem !important;
+    padding: 0.45rem !important;
+    border-radius: 0.85rem !important;
+  }
+
+  .customer-filter-summary > div:first-child {
+    gap: 0.35rem !important;
+  }
+
+  .customer-filter-summary > div:first-child > span {
+    min-height: 1.85rem !important;
+    padding-inline: 0.5rem !important;
+    font-size: 0.58rem !important;
+  }
+
+  .customer-filter-summary strong {
+    max-width: 7rem !important;
+  }
+
+  .customer-filter-summary > div:last-child {
+    margin-left: auto !important;
+  }
+
+  .customer-filter-summary > div:last-child > span {
+    display: none !important;
+  }
+
+  .customer-filter-summary button {
+    min-height: 1.8rem !important;
+    padding-inline: 0.65rem !important;
+    font-size: 0.58rem !important;
+  }
+}
+/* 37-customer-search-ux:end */

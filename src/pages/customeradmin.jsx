@@ -946,6 +946,95 @@ function CustomerToolbar({
   );
 }
 
+function CustomerFilterSummary({
+  resultCount,
+  searchTerm,
+  sortMode,
+  statusFilter,
+  onResetFilters,
+  onSearchChange,
+  onSortChange,
+  onStatusFilterChange,
+}) {
+  const cleanSearchTerm = String(searchTerm || '').trim();
+  const statusLabel = customerStatusFilters.find((item) => item.key === statusFilter)?.label || statusFilter;
+  const sortLabel = customerSortOptions.find((item) => item.key === sortMode)?.label || sortMode;
+  const activeItems = [
+    cleanSearchTerm
+      ? {
+        key: 'search',
+        label: 'Search',
+        value: cleanSearchTerm,
+        onClear: () => onSearchChange(''),
+      }
+      : null,
+    statusFilter !== 'all'
+      ? {
+        key: 'segment',
+        label: 'Segment',
+        value: statusLabel,
+        onClear: () => onStatusFilterChange('all'),
+      }
+      : null,
+    sortMode !== 'attention'
+      ? {
+        key: 'sort',
+        label: 'Sort',
+        value: sortLabel,
+        onClear: () => onSortChange('attention'),
+      }
+      : null,
+  ].filter(Boolean);
+
+  if (!activeItems.length) {
+    return null;
+  }
+
+  return (
+    <section className="customer-filter-summary flex flex-wrap items-center justify-between gap-2 rounded-[1rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-2 ring-1 ring-[var(--ui-ring)]" aria-label="Active customer filters">
+      <div className="flex min-w-0 flex-wrap gap-1.5">
+        {activeItems.map((item) => (
+          <span
+            className="inline-flex min-h-8 max-w-full items-center gap-1.5 rounded-full border border-[var(--ui-border)] bg-[var(--ui-control)] px-2.5 text-xs font-semibold text-[var(--ui-text-main)] ring-1 ring-[var(--ui-ring)]"
+            key={item.key}
+          >
+            <span className="text-[var(--ui-text-muted)]">
+              {item.label}
+            </span>
+
+            <strong className="max-w-[9.5rem] truncate text-[var(--ui-text-strong)]">
+              {item.value}
+            </strong>
+
+            <button
+              aria-label={'Clear ' + item.label}
+              className="grid size-5 place-items-center rounded-full bg-[var(--ui-secondary-bg)] text-[var(--ui-secondary-text)] transition hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
+              type="button"
+              onClick={item.onClear}
+            >
+              <X size={11} strokeWidth={2.35} aria-hidden="true" />
+            </button>
+          </span>
+        ))}
+      </div>
+
+      <div className="flex items-center gap-2">
+        <span className="text-xs font-semibold text-[var(--ui-text-muted)]">
+          <span className="text-[var(--ui-text-strong)]">{resultCount}</span> hasil
+        </span>
+
+        <button
+          className="inline-flex min-h-8 items-center justify-center rounded-full border border-studio-accent/35 bg-studio-accent/10 px-3 text-xs font-semibold text-studio-accent ring-1 ring-studio-accent/15 transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
+          type="button"
+          onClick={onResetFilters}
+        >
+          Reset
+        </button>
+      </div>
+    </section>
+  );
+}
+
 function CustomerStatusBadge({ status }) {
   return (
     <span
@@ -1123,7 +1212,9 @@ function CustomerLoadingState() {
 
 function CustomerList({
   customers,
+  hasActiveFilters = false,
   selectedCustomerId,
+  onResetFilters = () => {},
   onSelectCustomer,
 }) {
   if (!customers.length) {
@@ -1139,8 +1230,20 @@ function CustomerList({
           </h2>
 
           <p className="m-0 text-sm leading-7 text-[var(--ui-text-muted)]">
-            Coba ubah keyword pencarian atau reset filter status.
+            {hasActiveFilters
+              ? 'Tidak ada customer yang cocok dengan filter aktif. Reset filter untuk melihat semua customer.'
+              : 'Customer belum tersedia dari data booking real.'}
           </p>
+
+          {hasActiveFilters ? (
+            <button
+              className="inline-flex min-h-10 items-center justify-center rounded-full border border-studio-accent/35 bg-studio-accent/10 px-4 text-sm font-semibold text-studio-accent ring-1 ring-studio-accent/15 transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
+              type="button"
+              onClick={onResetFilters}
+            >
+              Reset filter
+            </button>
+          ) : null}
         </div>
       </section>
     );
@@ -1927,6 +2030,13 @@ export function CustomerAdmin() {
       : null,
     [customers, selectedCustomerId],
   );
+  const hasActiveCustomerFilters = Boolean(String(searchTerm || '').trim()) || statusFilter !== 'all' || sortMode !== 'attention';
+
+  const resetCustomerFilters = () => {
+    setSearchTerm('');
+    setStatusFilter('all');
+    setSortMode('attention');
+  };
   const hasBookingData = bookings.length > 0;
   const shouldShowEmptyBookings = isBookingsReady && !hasBookingData;
   const shouldShowLoading = !isBookingsReady;
@@ -1961,6 +2071,17 @@ export function CustomerAdmin() {
         onStatusFilterChange={setStatusFilter}
       />
 
+      <CustomerFilterSummary
+        resultCount={filteredCustomers.length}
+        searchTerm={searchTerm}
+        sortMode={sortMode}
+        statusFilter={statusFilter}
+        onResetFilters={resetCustomerFilters}
+        onSearchChange={setSearchTerm}
+        onSortChange={setSortMode}
+        onStatusFilterChange={setStatusFilter}
+      />
+
       <CustomerErrorNotice message={bookingLoadError} />
 
       {shouldShowLoading ? (
@@ -1977,7 +2098,9 @@ export function CustomerAdmin() {
         <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(320px,390px)] xl:items-start">
           <CustomerList
             customers={filteredCustomers}
+            hasActiveFilters={hasActiveCustomerFilters}
             selectedCustomerId={selectedCustomer?.id || ''}
+            onResetFilters={resetCustomerFilters}
             onSelectCustomer={handleSelectCustomer}
           />
 
