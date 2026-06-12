@@ -3,7 +3,9 @@ import {
   useState,
   } from 'react';
 import { Link,
+  useNavigate,
   useOutletContext,
+  useParams,
   useSearchParams } from 'react-router';
 import {
   ArrowUpRight,
@@ -265,6 +267,16 @@ function getCustomerPhoneValue(customer) {
 
 function getCustomerBoardQuery(customer) {
   return getCustomerPhoneValue(customer) || customer?.name || '';
+}
+
+function getCustomerDetailPath(customer) {
+  return '/admin/customers/' + encodeURIComponent(customer?.id || '');
+}
+
+function findCustomerByRouteId(customers, routeCustomerId) {
+  const decodedId = decodeURIComponent(String(routeCustomerId || ''));
+
+  return (Array.isArray(customers) ? customers : []).find((customer) => customer.id === decodedId) || null;
 }
 
 function normalizeCustomerNoteDraft(value) {
@@ -3277,6 +3289,103 @@ function CustomerDetailPanel({
   );
 }
 
+export function CustomerDetailAdmin() {
+  const adminContext = useOutletContext() || {};
+  const {
+    bookingLoadError = '',
+    isBookingsReady = true,
+    manualBookings = [],
+  } = adminContext;
+  const {
+    customerId = '',
+  } = useParams();
+  const navigate = useNavigate();
+  const [crmRefreshKey, setCrmRefreshKey] = useState(0);
+
+  const bookings = useMemo(
+    () => manualBookings,
+    [manualBookings],
+  );
+  const baseCustomers = useMemo(() => buildCustomersFromBookings(bookings), [bookings]);
+  const customers = useMemo(
+    () => attachCustomerCrmMeta(baseCustomers),
+    [baseCustomers, crmRefreshKey],
+  );
+  const selectedCustomer = useMemo(
+    () => findCustomerByRouteId(customers, customerId),
+    [customerId, customers],
+  );
+  const hasBookingData = bookings.length > 0;
+  const shouldShowEmptyBookings = isBookingsReady && !hasBookingData;
+  const shouldShowLoading = !isBookingsReady;
+
+  const handleCustomerCrmChange = () => {
+    setCrmRefreshKey((currentKey) => currentKey + 1);
+  };
+
+  const handleBackToCustomers = () => {
+    navigate('/admin/customers');
+  };
+
+  return (
+    <section className="customer-detail-route-shell grid gap-3 pb-[calc(8.5rem+env(safe-area-inset-bottom))] pt-1 sm:gap-4 md:pb-4 md:pt-2" aria-labelledby="customer-detail-route-title">
+      <div className="customer-detail-route-header flex flex-wrap items-center justify-between gap-3">
+        <div className="grid gap-1">
+          <span className="text-[0.66rem] font-semibold uppercase tracking-[0.16em] text-studio-accent">
+            Customer profile
+          </span>
+
+          <h1 className="m-0 text-2xl font-semibold tracking-[-0.055em] text-[var(--ui-text-strong)] sm:text-3xl" id="customer-detail-route-title">
+            {selectedCustomer ? selectedCustomer.name : 'Detail customer'}
+          </h1>
+
+          <p className="m-0 text-xs font-medium leading-5 text-[var(--ui-text-muted)] sm:text-sm">
+            Halaman detail khusus untuk CRM, notes, payment, template, dan timeline.
+          </p>
+        </div>
+
+        <button
+          className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] px-4 text-sm font-semibold text-[var(--ui-secondary-text)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
+          type="button"
+          onClick={handleBackToCustomers}
+        >
+          Kembali ke list
+        </button>
+      </div>
+
+      <CustomerErrorNotice message={bookingLoadError} />
+
+      {shouldShowLoading ? (
+        <CustomerLoadingState />
+      ) : shouldShowEmptyBookings ? (
+        <CustomerStatePanel
+          actionHref="/admin/bookings"
+          actionLabel="Buat booking"
+          icon={UsersRound}
+          message="Customer akan otomatis muncul setelah ada booking real dari Firestore. Buat booking pertama dari halaman booking board."
+          title="Belum ada customer."
+        />
+      ) : selectedCustomer ? (
+        <CustomerDetailPanel
+          key={selectedCustomer.id}
+          customer={selectedCustomer}
+          onClose={handleBackToCustomers}
+          onCrmChange={handleCustomerCrmChange}
+        />
+      ) : (
+        <CustomerStatePanel
+          actionHref="/admin/customers"
+          actionLabel="Kembali ke customers"
+          icon={UsersRound}
+          message="Customer ini tidak ditemukan di data booking yang sedang aktif. Bisa jadi filter data berubah atau booking asalnya sudah dihapus."
+          title="Customer tidak ditemukan."
+          tone="warning"
+        />
+      )}
+    </section>
+  );
+}
+
 export function CustomerAdmin() {
   const adminContext = useOutletContext() || {};
   const {
@@ -3329,6 +3438,7 @@ export function CustomerAdmin() {
 
   const handleSelectCustomer = (customer) => {
     setSelectedCustomerId(customer.id);
+    navigate(getCustomerDetailPath(customer));
   };
 
   const handleSelectFirstCustomer = () => {
@@ -3406,38 +3516,22 @@ export function CustomerAdmin() {
           title="Belum ada customer."
         />
       ) : (
-        <div className="customer-desktop-content-grid grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(320px,390px)] xl:items-start">
-          <div className="customer-desktop-left-column grid gap-3">
-            <CustomerList
-              customers={filteredCustomers}
-              hasActiveFilters={hasActiveCustomerFilters}
-              selectedCustomerId={selectedCustomer?.id || ''}
-              onResetFilters={resetCustomerFilters}
-              onSelectCustomer={handleSelectCustomer}
-            />
+        <div className="customer-directory-content-grid grid gap-3">
+          <CustomerList
+            customers={filteredCustomers}
+            hasActiveFilters={hasActiveCustomerFilters}
+            selectedCustomerId={selectedCustomer?.id || ''}
+            onResetFilters={resetCustomerFilters}
+            onSelectCustomer={handleSelectCustomer}
+          />
 
-            <CustomerInsightPanel
-              customers={customers}
-              filteredCustomers={filteredCustomers}
-              qualityStats={qualityStats}
-              stats={stats}
-              onSelectCustomer={handleSelectCustomer}
-            />
-          </div>
-
-          {selectedCustomer ? (
-            <CustomerDetailPanel
-              key={selectedCustomer.id}
-              customer={selectedCustomer}
-              onClose={() => setSelectedCustomerId(null)}
-              onCrmChange={handleCustomerCrmChange}
-            />
-          ) : (
-            <CustomerSelectionEmptyState
-              hasCustomers={filteredCustomers.length > 0}
-              onSelectFirst={handleSelectFirstCustomer}
-            />
-          )}
+          <CustomerInsightPanel
+            customers={customers}
+            filteredCustomers={filteredCustomers}
+            qualityStats={qualityStats}
+            stats={stats}
+            onSelectCustomer={handleSelectCustomer}
+          />
         </div>
       )}
     </section>
