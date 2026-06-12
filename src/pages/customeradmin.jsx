@@ -2023,9 +2023,14 @@ function CustomerDetailPanel({
           })}
         </div>
 
-        <p className="m-0 line-clamp-4 whitespace-pre-line rounded-[0.9rem] border border-[var(--ui-border)] bg-[var(--ui-control)] p-2 text-xs font-medium leading-5 text-[var(--ui-text-main)]">
+        <div
+          aria-label="Preview template WhatsApp"
+          className="customer-template-preview m-0 whitespace-pre-line rounded-[0.9rem] border border-[var(--ui-border)] bg-[var(--ui-control)] p-2 pr-3 text-xs font-medium leading-5 text-[var(--ui-text-main)]"
+          role="region"
+          tabIndex={0}
+        >
           {whatsappMessage}
-        </p>
+        </div>
 
         <button
           className="inline-flex min-h-9 items-center justify-center gap-2 rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] px-3 text-xs font-semibold text-[var(--ui-secondary-text)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"

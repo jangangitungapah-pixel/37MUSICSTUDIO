@@ -1074,3 +1074,46 @@
   }
 }
 /* 37-customer-communication-templates:end */
+
+/* 37-customer-template-scroll:start */
+.customer-template-preview {
+  display: block;
+  max-height: 7rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--ui-text-muted) 42%, transparent) transparent;
+}
+
+.customer-template-preview::-webkit-scrollbar {
+  width: 0.42rem;
+}
+
+.customer-template-preview::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.customer-template-preview::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--ui-text-muted) 34%, transparent);
+}
+
+.customer-template-preview:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 0.18rem color-mix(in srgb, var(--ui-primary-bg) 22%, transparent);
+}
+
+@media (max-width: 767px) {
+  .customer-template-preview {
+    max-height: 5.6rem !important;
+    font-size: 0.62rem !important;
+    line-height: 1.35 !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  .customer-template-preview {
+    max-height: 6.4rem !important;
+  }
+}
+/* 37-customer-template-scroll:end */
