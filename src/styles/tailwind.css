@@ -857,3 +857,166 @@
   }
 }
 /* 37-customer-desktop-polish:end */
+
+/* 37-customer-desktop-frameless:start */
+@media (min-width: 1024px) {
+  .customer-mobile-workspace {
+    gap: 0.9rem !important;
+  }
+
+  .customer-page-header {
+    align-items: center !important;
+    border-color: transparent !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+  }
+
+  .customer-page-header > div:first-child {
+    gap: 0.22rem !important;
+  }
+
+  .customer-page-header h1 {
+    font-size: 1.85rem !important;
+    line-height: 1.02 !important;
+    letter-spacing: -0.055em !important;
+  }
+
+  .customer-page-header p {
+    font-size: 0.84rem !important;
+    line-height: 1.35 !important;
+    color: var(--ui-text-muted) !important;
+  }
+
+  .customer-page-active {
+    min-width: 10.5rem !important;
+    border-radius: 0.95rem !important;
+    background: color-mix(in srgb, var(--ui-control) 72%, transparent) !important;
+    box-shadow: none !important;
+    padding: 0.62rem 0.85rem !important;
+  }
+
+  .customer-page-active span {
+    font-size: 0.6rem !important;
+  }
+
+  .customer-page-active strong {
+    font-size: 0.86rem !important;
+  }
+
+  .customer-summary-strip {
+    gap: 0 !important;
+    border-block: 1px solid var(--ui-border) !important;
+    padding-block: 0.35rem !important;
+  }
+
+  .customer-summary-strip article {
+    min-height: 2.35rem !important;
+    border-color: transparent !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    padding: 0.35rem 1rem !important;
+  }
+
+  .customer-summary-strip article:first-child {
+    padding-left: 0 !important;
+  }
+
+  .customer-summary-strip article:last-child {
+    padding-right: 0 !important;
+  }
+
+  .customer-summary-strip article:not(:last-child) {
+    border-right: 1px solid var(--ui-border) !important;
+  }
+
+  .customer-summary-strip article > span {
+    font-size: 0.64rem !important;
+  }
+
+  .customer-summary-strip article strong {
+    font-size: 0.86rem !important;
+  }
+
+  .customer-attention-strip {
+    margin-inline: 0 !important;
+    padding: 0 !important;
+    gap: 0.45rem !important;
+  }
+
+  .customer-attention-strip button {
+    min-height: 2.05rem !important;
+    border-radius: 999px !important;
+    padding-inline: 0.78rem !important;
+    box-shadow: none !important;
+  }
+
+  .customer-toolbar-slim {
+    grid-template-columns: minmax(360px, 1fr) minmax(430px, 0.8fr) auto !important;
+    align-items: end !important;
+    gap: 0.75rem !important;
+    border-color: transparent !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+  }
+
+  .customer-toolbar-slim > label {
+    min-width: 0 !important;
+  }
+
+  .customer-toolbar-slim > label > span {
+    min-height: 2.45rem !important;
+    border-radius: 0.9rem !important;
+    background: color-mix(in srgb, var(--ui-control) 78%, transparent) !important;
+  }
+
+  .customer-toolbar-slim > div:nth-child(2) {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 0.55rem !important;
+    min-width: 0 !important;
+  }
+
+  .customer-toolbar-slim .relative.grid {
+    gap: 0.25rem !important;
+  }
+
+  .customer-toolbar-slim .relative.grid > button {
+    min-height: 2.45rem !important;
+    border-radius: 0.9rem !important;
+    background: color-mix(in srgb, var(--ui-control) 78%, transparent) !important;
+  }
+
+  .customer-toolbar-slim > div:last-child {
+    justify-self: end !important;
+    align-self: center !important;
+    border: 1px solid var(--ui-border) !important;
+    border-radius: 999px !important;
+    background: color-mix(in srgb, var(--ui-control) 58%, transparent) !important;
+    padding: 0.48rem 0.75rem !important;
+    white-space: nowrap !important;
+  }
+
+  .customer-filter-summary {
+    border-color: transparent !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+  }
+}
+
+@media (min-width: 1280px) {
+  .customer-desktop-content-grid {
+    gap: 0.95rem !important;
+  }
+
+  .customer-desktop-list {
+    background: color-mix(in srgb, var(--ui-glass) 54%, transparent) !important;
+  }
+}
+/* 37-customer-desktop-frameless:end */
