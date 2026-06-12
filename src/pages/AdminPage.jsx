@@ -378,7 +378,7 @@ function AdminBottomBar({
 
   return (
     <nav
-      className="fixed inset-x-3 bottom-3 z-40 grid rounded-[1.5rem] border border-[var(--ui-border-strong)] bg-[linear-gradient(145deg,var(--ui-glass),var(--ui-glass-soft))] p-1.5 shadow-[var(--ui-shadow-soft)] ring-1 ring-[var(--ui-ring)] backdrop-blur-2xl md:hidden"
+      className="admin-mobile-bottom-bar fixed inset-x-3 bottom-3 z-40 grid rounded-[1.5rem] border border-[var(--ui-border-strong)] bg-[linear-gradient(145deg,var(--ui-glass),var(--ui-glass-soft))] p-1.5 shadow-[var(--ui-shadow-soft)] ring-1 ring-[var(--ui-ring)] backdrop-blur-2xl md:hidden"
       aria-label="Admin mobile navigation"
     >
       <div className="flex items-stretch gap-1">
@@ -472,7 +472,7 @@ export function AdminPage() {
 
   return (
     <section
-      className="grid gap-4 pb-24 pt-0 md:grid-cols-[auto_minmax(0,1fr)] md:gap-5 md:pb-4"
+      className="admin-mobile-shell grid gap-4 pb-24 pt-0 md:grid-cols-[auto_minmax(0,1fr)] md:gap-5 md:pb-4"
       aria-labelledby="admin-shell-title"
     >
       <AdminSidebar

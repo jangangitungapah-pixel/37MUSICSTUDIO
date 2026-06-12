@@ -1842,7 +1842,7 @@ export function CustomerAdmin() {
   };
 
   return (
-    <section className="grid gap-3 pb-[calc(8.5rem+env(safe-area-inset-bottom))] pt-1 sm:gap-4 md:pb-4 md:pt-2" aria-labelledby="customer-admin-title">
+    <section className="customer-mobile-workspace grid gap-3 pb-[calc(8.5rem+env(safe-area-inset-bottom))] pt-1 sm:gap-4 md:pb-4 md:pt-2" aria-labelledby="customer-admin-title">
       <div className="sr-only" id="customer-admin-title">
         Customer admin workspace
       </div>
