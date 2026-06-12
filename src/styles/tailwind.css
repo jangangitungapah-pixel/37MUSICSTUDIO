@@ -467,3 +467,247 @@
   }
 }
 /* 37-customer-detail-route-overhaul:end */
+
+/* 37-customer-detail-workspace-refine:start */
+.customer-detail-route-shell {
+  max-width: min(100%, 90rem) !important;
+}
+
+.customer-detail-route-header {
+  max-width: min(100%, 90rem) !important;
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto !important;
+  align-items: end !important;
+  gap: 1rem !important;
+}
+
+.customer-detail-route-header h1 {
+  letter-spacing: -0.065em !important;
+}
+
+@media (min-width: 1024px) {
+  .customer-detail-route-shell .customer-detail-compact {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+    grid-template-areas:
+      "hero actions"
+      "summary payment"
+      "quality quality"
+      "notes template"
+      "sessions sessions"
+      "timeline timeline" !important;
+    gap: 0.85rem !important;
+  }
+
+  .customer-detail-route-shell .customer-detail-compact > div:first-child {
+    min-height: 7.4rem !important;
+    border-radius: 1.45rem !important;
+    padding: 1rem !important;
+  }
+
+  .customer-detail-route-shell .customer-detail-compact > div:first-child h2 {
+    font-size: 1.55rem !important;
+    line-height: 1.05 !important;
+  }
+
+  .customer-detail-route-shell .customer-detail-compact > div:first-child .size-13 {
+    width: 3.15rem !important;
+    height: 3.15rem !important;
+    border-radius: 1rem !important;
+  }
+
+  .customer-detail-route-shell .customer-quick-actions-panel {
+    align-self: start !important;
+    position: static !important;
+    top: auto !important;
+    min-height: 7.4rem !important;
+    border-radius: 1.45rem !important;
+    padding: 0.8rem !important;
+  }
+
+  .customer-detail-route-shell .customer-quick-actions-panel > p {
+    min-height: 2.45rem !important;
+    padding: 0.58rem 0.7rem !important;
+    line-height: 1.45 !important;
+  }
+
+  .customer-detail-route-shell .customer-quick-primary > * {
+    min-height: 2.45rem !important;
+    border-radius: 0.9rem !important;
+  }
+
+  .customer-detail-route-shell .customer-quick-secondary-action {
+    min-height: 2.05rem !important;
+  }
+
+  .customer-detail-route-shell .customer-detail-summary-compact,
+  .customer-detail-route-shell .customer-payment-compact {
+    min-height: 4.75rem !important;
+    border-radius: 1.15rem !important;
+  }
+
+  .customer-detail-route-shell .customer-detail-summary-compact > div,
+  .customer-detail-route-shell .customer-payment-mini-grid > div {
+    padding: 0.62rem 0.72rem !important;
+  }
+
+  .customer-detail-route-shell .customer-quality-compact {
+    display: grid !important;
+    grid-template-columns: minmax(14rem, 0.35fr) minmax(0, 1fr) !important;
+    align-items: stretch !important;
+    gap: 0.75rem !important;
+    min-height: auto !important;
+    border-radius: 1.15rem !important;
+    padding: 0.75rem !important;
+  }
+
+  .customer-detail-route-shell .customer-quality-compact > div:first-child {
+    align-content: center !important;
+    border-right: 1px solid var(--customer-profile-line) !important;
+    padding-right: 0.75rem !important;
+  }
+
+  .customer-detail-route-shell .customer-quality-compact > div:last-child {
+    align-content: stretch !important;
+  }
+
+  .customer-detail-route-shell .customer-quality-compact > div:last-child > div {
+    min-height: 100% !important;
+    border-color: var(--customer-profile-line) !important;
+    border-radius: 0.95rem !important;
+    padding: 0.75rem !important;
+  }
+
+  .customer-detail-route-shell .customer-notes-panel,
+  .customer-detail-route-shell .customer-template-panel {
+    min-height: auto !important;
+    border-radius: 1.25rem !important;
+    padding: 0.85rem !important;
+  }
+
+  .customer-detail-route-shell .customer-notes-panel textarea {
+    min-height: 6.35rem !important;
+    max-height: 8rem !important;
+  }
+
+  .customer-detail-route-shell .customer-template-preview {
+    min-height: 6.35rem !important;
+    max-height: 8rem !important;
+  }
+
+  .customer-detail-route-shell .customer-notes-tags button,
+  .customer-detail-route-shell .customer-template-options button,
+  .customer-detail-route-shell .customer-activity-filter button {
+    min-height: 1.75rem !important;
+    padding-inline: 0.65rem !important;
+  }
+
+  .customer-detail-route-shell .customer-session-grid-compact {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 0.75rem !important;
+  }
+
+  .customer-detail-route-shell .customer-session-card-compact {
+    min-height: 6.6rem !important;
+    border-radius: 1.15rem !important;
+    padding: 0.75rem !important;
+  }
+
+  .customer-detail-route-shell .customer-activity-timeline {
+    border-radius: 1.45rem !important;
+    padding: 0.9rem !important;
+  }
+
+  .customer-detail-route-shell .customer-activity-timeline > div:first-child {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    align-items: end !important;
+  }
+
+  .customer-detail-route-shell .customer-activity-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    max-width: 34rem !important;
+  }
+
+  .customer-detail-route-shell .customer-activity-list {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 0.72rem !important;
+  }
+
+  .customer-detail-route-shell .customer-activity-item {
+    align-self: stretch !important;
+  }
+
+  .customer-detail-route-shell .customer-activity-item > div:last-child {
+    min-height: 8.2rem !important;
+    border-radius: 1rem !important;
+    padding: 0.78rem !important;
+  }
+
+  .customer-detail-route-shell .customer-activity-item p {
+    line-height: 1.45 !important;
+  }
+}
+
+@media (min-width: 1280px) {
+  .customer-detail-route-shell {
+    max-width: min(100%, 92rem) !important;
+  }
+
+  .customer-detail-route-header {
+    max-width: min(100%, 92rem) !important;
+  }
+
+  .customer-detail-route-shell .customer-detail-compact {
+    grid-template-columns: minmax(0, 1.08fr) minmax(0, 1.08fr) minmax(20rem, 0.72fr) !important;
+    grid-template-areas:
+      "hero hero actions"
+      "summary payment actions"
+      "quality quality actions"
+      "notes template actions"
+      "sessions sessions sessions"
+      "timeline timeline timeline" !important;
+    gap: 0.9rem !important;
+  }
+
+  .customer-detail-route-shell .customer-quick-actions-panel {
+    position: sticky !important;
+    top: 1rem !important;
+  }
+
+  .customer-detail-route-shell .customer-session-grid-compact {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    max-width: none !important;
+  }
+
+  .customer-detail-route-shell .customer-activity-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (min-width: 1536px) {
+  .customer-detail-route-shell {
+    max-width: min(100%, 96rem) !important;
+  }
+
+  .customer-detail-route-header {
+    max-width: min(100%, 96rem) !important;
+  }
+
+  .customer-detail-route-shell .customer-detail-compact {
+    grid-template-columns: minmax(0, 1.12fr) minmax(0, 1.12fr) minmax(21rem, 0.68fr) !important;
+  }
+}
+
+@media (max-width: 1023px) {
+  .customer-detail-route-header {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    align-items: start !important;
+  }
+
+  .customer-detail-route-header button {
+    width: fit-content !important;
+  }
+}
+/* 37-customer-detail-workspace-refine:end */
