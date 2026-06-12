@@ -643,7 +643,7 @@ function CustomerHero({
   stats,
 }) {
   return (
-    <header className="grid gap-5 py-2 sm:py-3 lg:grid-cols-[minmax(0,1fr)_minmax(260px,360px)] lg:items-end">
+    <header className="customer-hero-compact grid gap-5 py-2 sm:py-3 lg:grid-cols-[minmax(0,1fr)_minmax(260px,360px)] lg:items-end">
       <div className="grid gap-3">
         <div className="inline-flex w-fit items-center gap-2 rounded-full border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] px-3 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-studio-accent ring-1 ring-[var(--ui-ring)]">
           <Sparkles size={14} strokeWidth={2.35} aria-hidden="true" />
@@ -711,7 +711,7 @@ function MetricStrip({
   ];
 
   return (
-    <section className="grid gap-0 overflow-hidden rounded-[1.75rem] border-y border-[var(--ui-border)] sm:grid-cols-2 xl:grid-cols-4 xl:rounded-none xl:border-x-0">
+    <section className="customer-metrics-compact grid gap-0 overflow-hidden rounded-[1.75rem] border-y border-[var(--ui-border)] sm:grid-cols-2 xl:grid-cols-4 xl:rounded-none xl:border-x-0">
       {items.map((item) => {
         const Icon = item.icon;
 
@@ -872,7 +872,7 @@ function CustomerAttentionStrip({
   ];
 
   return (
-    <section className="grid gap-2 rounded-[1.5rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-2 ring-1 ring-[var(--ui-ring)] sm:p-3" aria-label="Customer attention filters">
+    <section className="customer-attention-compact grid gap-2 rounded-[1.5rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-2 ring-1 ring-[var(--ui-ring)] sm:p-3" aria-label="Customer attention filters">
       <div className="flex flex-wrap items-center justify-between gap-2 px-1">
         <span className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--ui-text-muted)]">
           Attention filters
@@ -934,7 +934,7 @@ function CustomerToolbar({
   onStatusFilterChange,
 }) {
   return (
-    <section className="grid gap-2.5 rounded-[1.5rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-2.5 ring-1 ring-[var(--ui-ring)] sm:gap-3 sm:p-3 lg:grid-cols-[minmax(0,1fr)_auto_auto] lg:items-end">
+    <section className="customer-toolbar-compact grid gap-2.5 rounded-[1.5rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-2.5 ring-1 ring-[var(--ui-ring)] sm:gap-3 sm:p-3 lg:grid-cols-[minmax(0,1fr)_auto_auto] lg:items-end">
       <label className="grid gap-1.5 text-sm font-semibold text-[var(--ui-text-main)]">
         Search customer
         <span className="flex min-h-12 items-center gap-3 rounded-[1.25rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 ring-1 ring-[var(--ui-ring)] focus-within:border-studio-accent/55 focus-within:ring-4 focus-within:ring-studio-accent/20">
@@ -1024,7 +1024,7 @@ function CustomerQualityPanel({
   const issues = Array.isArray(quality.issues) ? quality.issues : [];
 
   return (
-    <section className={cn('grid gap-3 rounded-[1.35rem] border p-3 ring-1', getCustomerQualityClass(quality.level))} aria-label="Customer data quality">
+    <section className={cn('customer-quality-compact grid gap-3 rounded-[1.35rem] border p-3 ring-1', getCustomerQualityClass(quality.level))} aria-label="Customer data quality">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="grid gap-1">
           <span className="text-xs font-semibold uppercase tracking-[0.16em]">
@@ -1237,7 +1237,7 @@ function BookingSummaryCard({
 }) {
   if (!booking) {
     return (
-      <div className="grid gap-2 rounded-[1.25rem] border border-dashed border-[var(--ui-border-strong)] bg-[var(--ui-glass-soft)] p-3 ring-1 ring-[var(--ui-ring)]">
+      <div className="customer-session-card-compact grid gap-2 rounded-[1.25rem] border border-dashed border-[var(--ui-border-strong)] bg-[var(--ui-glass-soft)] p-3 ring-1 ring-[var(--ui-ring)]">
         <span className="text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-[var(--ui-text-muted)]">
           {label}
         </span>
@@ -1250,7 +1250,7 @@ function BookingSummaryCard({
   }
 
   return (
-    <div className="grid gap-3 rounded-[1.25rem] border border-[var(--ui-border)] bg-[var(--ui-control)] p-3 ring-1 ring-[var(--ui-ring)]">
+    <div className="customer-session-card-compact grid gap-3 rounded-[1.25rem] border border-[var(--ui-border)] bg-[var(--ui-control)] p-3 ring-1 ring-[var(--ui-ring)]">
       <span className="text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-[var(--ui-text-muted)]">
         {label}
       </span>
@@ -1290,7 +1290,7 @@ function CustomerPaymentSummary({
   const paymentProgress = getPaymentProgress(customer);
 
   return (
-    <section className="grid gap-3 rounded-[1.35rem] border border-[var(--ui-border)] bg-[var(--ui-control)] p-3 ring-1 ring-[var(--ui-ring)]" aria-label="Customer payment summary">
+    <section className="customer-payment-compact grid gap-3 rounded-[1.35rem] border border-[var(--ui-border)] bg-[var(--ui-control)] p-3 ring-1 ring-[var(--ui-ring)]" aria-label="Customer payment summary">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <span className="text-xs font-semibold uppercase tracking-[0.16em] text-studio-accent">
           Payment summary
@@ -1451,7 +1451,7 @@ function CustomerHistoryCard({
           : 'border-[var(--ui-border)] bg-[var(--ui-control)] ring-[var(--ui-ring)]',
       )}
     >
-      <div className="flex flex-wrap items-start justify-between gap-2">
+      <div className="customer-history-card-compact flex flex-wrap items-start justify-between gap-2">
         <div className="grid min-w-0 gap-1">
           <strong className="truncate text-sm font-semibold text-[var(--ui-text-strong)]">
             {booking.sessionType || booking.title || 'Studio session'}
@@ -1572,7 +1572,7 @@ function CustomerDetailPanel({
 
   if (!customer) {
     return (
-      <aside className="grid min-h-[360px] content-center justify-items-center gap-4 rounded-[2rem] border border-[var(--ui-border-strong)] bg-[linear-gradient(145deg,var(--ui-glass),var(--ui-glass-soft))] p-6 text-center shadow-[var(--ui-shadow-soft)] ring-1 ring-[var(--ui-ring)] backdrop-blur-2xl">
+      <aside className="customer-detail-compact grid min-h-[360px] content-center justify-items-center gap-4 rounded-[2rem] border border-[var(--ui-border-strong)] bg-[linear-gradient(145deg,var(--ui-glass),var(--ui-glass-soft))] p-6 text-center shadow-[var(--ui-shadow-soft)] ring-1 ring-[var(--ui-ring)] backdrop-blur-2xl">
         <span className="grid size-14 place-items-center rounded-[1.25rem] border border-[var(--ui-border)] bg-[var(--ui-control)] text-studio-accent">
           <UserRound size={24} strokeWidth={2.2} aria-hidden="true" />
         </span>
@@ -1591,7 +1591,7 @@ function CustomerDetailPanel({
   }
 
   return (
-    <aside className="grid gap-3 rounded-[1.65rem] border border-[var(--ui-border-strong)] bg-[linear-gradient(145deg,var(--ui-glass),var(--ui-glass-soft))] p-3 shadow-[var(--ui-shadow-soft)] ring-1 ring-[var(--ui-ring)] backdrop-blur-2xl sm:gap-4 sm:rounded-[2rem] sm:p-5 xl:sticky xl:top-4">
+    <aside className="customer-detail-compact grid gap-3 rounded-[1.65rem] border border-[var(--ui-border-strong)] bg-[linear-gradient(145deg,var(--ui-glass),var(--ui-glass-soft))] p-3 shadow-[var(--ui-shadow-soft)] ring-1 ring-[var(--ui-ring)] backdrop-blur-2xl sm:gap-4 sm:rounded-[2rem] sm:p-5 xl:sticky xl:top-4">
       <div className="flex items-start justify-between gap-3">
         <div className="flex min-w-0 items-center gap-3">
           <span className="grid size-13 shrink-0 place-items-center rounded-[1.15rem] [background:var(--ui-primary-bg)] text-sm font-semibold tracking-[-0.03em] text-[var(--ui-primary-text)] shadow-[var(--ui-shadow-control)]">
@@ -1621,7 +1621,7 @@ function CustomerDetailPanel({
 
       <CustomerQualityPanel customer={customer} />
 
-      <div className="grid gap-2 sm:grid-cols-2">
+      <div className="customer-actions-compact grid gap-2 sm:grid-cols-2">
         {phoneHref ? (
           <a
             className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] px-4 text-sm font-semibold text-[var(--ui-secondary-text)] shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
@@ -1700,7 +1700,7 @@ function CustomerDetailPanel({
         </Link>
       </div>
 
-      <div className="rounded-[1.25rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-3 ring-1 ring-[var(--ui-ring)]">
+      <div className="customer-whatsapp-template rounded-[1.25rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-3 ring-1 ring-[var(--ui-ring)]">
         <span className="text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-[var(--ui-text-muted)]">
           WhatsApp template
         </span>
@@ -1710,7 +1710,7 @@ function CustomerDetailPanel({
         </p>
       </div>
 
-      <div className="grid gap-0 border-y border-[var(--ui-border)]">
+      <div className="customer-detail-metrics grid gap-0 border-y border-[var(--ui-border)]">
         <DetailMetric
           icon={CalendarDays}
           label="Total booking"
@@ -1735,7 +1735,7 @@ function CustomerDetailPanel({
 
       <CustomerPaymentSummary customer={customer} />
 
-      <div className="grid gap-3 sm:grid-cols-2">
+      <div className="customer-session-grid-compact grid gap-3 sm:grid-cols-2">
         <BookingSummaryCard
           actionHref={boardHref}
           actionLabel="Open"
@@ -1753,7 +1753,7 @@ function CustomerDetailPanel({
         />
       </div>
 
-      <div className="grid gap-3">
+      <div className="customer-history-compact grid gap-3">
         <div className="grid gap-2">
           <div className="flex items-center justify-between gap-3">
             <span className="text-xs font-semibold uppercase tracking-[0.16em] text-studio-accent">

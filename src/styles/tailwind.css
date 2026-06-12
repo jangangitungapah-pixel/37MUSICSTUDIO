@@ -341,3 +341,373 @@
   }
 }
 /* 37-customer-mobile-list-final:end */
+
+/* 37-customer-mobile-safe-density:start */
+@media (max-width: 767px) {
+  .customer-mobile-workspace {
+    gap: 0.55rem !important;
+    padding-bottom: calc(8.75rem + env(safe-area-inset-bottom)) !important;
+  }
+
+  .customer-hero-compact {
+    gap: 0.48rem !important;
+    padding-block: 0 !important;
+  }
+
+  .customer-hero-compact > div:first-child {
+    gap: 0.45rem !important;
+  }
+
+  .customer-hero-compact > div:first-child > div:first-child {
+    padding: 0.32rem 0.55rem !important;
+    font-size: 0.54rem !important;
+    letter-spacing: 0.13em !important;
+  }
+
+  .customer-hero-compact h1 {
+    max-width: 15.8rem !important;
+    font-size: clamp(1.5rem, 8.2vw, 1.95rem) !important;
+    line-height: 0.94 !important;
+    letter-spacing: -0.075em !important;
+  }
+
+  .customer-hero-compact p {
+    max-width: 18rem !important;
+    display: -webkit-box !important;
+    overflow: hidden !important;
+    font-size: 0.68rem !important;
+    line-height: 1.28 !important;
+    -webkit-box-orient: vertical !important;
+    -webkit-line-clamp: 1 !important;
+  }
+
+  .customer-hero-compact > div:last-child {
+    gap: 0.16rem !important;
+    padding-block: 0.42rem !important;
+  }
+
+  .customer-hero-compact > div:last-child strong {
+    font-size: 0.92rem !important;
+  }
+
+  .customer-hero-compact > div:last-child span:last-child {
+    display: none !important;
+  }
+
+  .customer-metrics-compact {
+    border-radius: 0.95rem !important;
+  }
+
+  .customer-metrics-compact article {
+    gap: 0.22rem !important;
+    padding: 0.46rem 0.56rem !important;
+  }
+
+  .customer-metrics-compact article > div {
+    font-size: 0.48rem !important;
+    letter-spacing: 0.08em !important;
+  }
+
+  .customer-metrics-compact article svg {
+    width: 0.66rem !important;
+    height: 0.66rem !important;
+  }
+
+  .customer-metrics-compact strong {
+    font-size: 0.78rem !important;
+    line-height: 1.05 !important;
+  }
+
+  .customer-metrics-compact article > span {
+    font-size: 0.55rem !important;
+    line-height: 1.15 !important;
+  }
+
+  .customer-attention-compact {
+    gap: 0.34rem !important;
+    padding: 0.38rem !important;
+    border-radius: 0.95rem !important;
+  }
+
+  .customer-attention-compact > div:first-child {
+    display: none !important;
+  }
+
+  .customer-attention-compact > div:last-child {
+    gap: 0.36rem !important;
+  }
+
+  .customer-attention-compact button {
+    min-width: 6.9rem !important;
+    min-height: 2.32rem !important;
+    gap: 0.28rem !important;
+    padding: 0.32rem 0.42rem !important;
+    border-radius: 0.72rem !important;
+  }
+
+  .customer-attention-compact button svg {
+    width: 0.68rem !important;
+    height: 0.68rem !important;
+  }
+
+  .customer-attention-compact button strong {
+    font-size: 0.76rem !important;
+  }
+
+  .customer-attention-compact button > span:nth-child(2) > span:first-child {
+    font-size: 0.48rem !important;
+  }
+
+  .customer-attention-compact button > span:nth-child(2) > span:last-child {
+    display: none !important;
+  }
+
+  .customer-toolbar-compact {
+    gap: 0.36rem !important;
+    padding: 0.44rem !important;
+    border-radius: 0.95rem !important;
+  }
+
+  .customer-toolbar-compact label {
+    gap: 0.2rem !important;
+    font-size: 0 !important;
+  }
+
+  .customer-toolbar-compact label > span,
+  .customer-toolbar-compact label > button {
+    min-height: 2.18rem !important;
+    border-radius: 0.76rem !important;
+    font-size: 0.68rem !important;
+  }
+
+  .customer-toolbar-compact input {
+    font-size: 0.68rem !important;
+  }
+
+  .customer-toolbar-compact > div:last-child {
+    display: none !important;
+  }
+
+  .customer-detail-compact {
+    gap: 0.48rem !important;
+    padding: 0.52rem !important;
+    border-radius: 1rem !important;
+  }
+
+  .customer-detail-compact > div:first-child {
+    gap: 0.42rem !important;
+  }
+
+  .customer-detail-compact > div:first-child > div:first-child > span:first-child {
+    width: 2.45rem !important;
+    height: 2.45rem !important;
+    border-radius: 0.82rem !important;
+  }
+
+  .customer-detail-compact > div:first-child h2 {
+    font-size: 0.98rem !important;
+    line-height: 1.04 !important;
+  }
+
+  .customer-detail-compact > div:first-child span {
+    font-size: 0.66rem !important;
+  }
+
+  .customer-detail-compact > div:first-child button {
+    width: 2.35rem !important;
+    height: 2.35rem !important;
+  }
+
+  .customer-quality-compact {
+    gap: 0.2rem !important;
+    padding: 0.48rem !important;
+    border-radius: 0.8rem !important;
+  }
+
+  .customer-quality-compact span {
+    font-size: 0.5rem !important;
+  }
+
+  .customer-quality-compact strong {
+    font-size: 0.72rem !important;
+  }
+
+  .customer-quality-compact p,
+  .customer-quality-compact > div:nth-child(2) {
+    display: none !important;
+  }
+
+  .customer-actions-compact {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 0.28rem !important;
+  }
+
+  .customer-actions-compact > * {
+    min-height: 1.92rem !important;
+    padding-inline: 0.36rem !important;
+    border-radius: 999px !important;
+    font-size: 0.56rem !important;
+  }
+
+  .customer-actions-compact svg {
+    width: 0.68rem !important;
+    height: 0.68rem !important;
+  }
+
+  .customer-actions-compact > a:last-child {
+    grid-column: 1 / -1 !important;
+  }
+
+  .customer-whatsapp-template,
+  .customer-detail-metrics {
+    display: none !important;
+  }
+
+  .customer-payment-compact {
+    gap: 0.38rem !important;
+    padding: 0.5rem !important;
+    border-radius: 0.82rem !important;
+  }
+
+  .customer-payment-compact > div:first-child span:first-child {
+    font-size: 0.5rem !important;
+  }
+
+  .customer-payment-compact > div:nth-child(2) span {
+    display: none !important;
+  }
+
+  .customer-payment-compact .grid.sm\:grid-cols-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 0.26rem !important;
+  }
+
+  .customer-payment-compact .grid.sm\:grid-cols-3 > div {
+    padding: 0.34rem !important;
+    border-radius: 0.6rem !important;
+  }
+
+  .customer-payment-compact .grid.sm\:grid-cols-3 span {
+    font-size: 0.42rem !important;
+  }
+
+  .customer-payment-compact .grid.sm\:grid-cols-3 strong {
+    font-size: 0.54rem !important;
+  }
+
+  .customer-session-grid-compact {
+    gap: 0.35rem !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .customer-session-card-compact {
+    gap: 0.32rem !important;
+    padding: 0.48rem !important;
+    border-radius: 0.78rem !important;
+  }
+
+  .customer-session-card-compact span,
+  .customer-session-card-compact strong {
+    font-size: 0.62rem !important;
+  }
+
+  .customer-session-card-compact a {
+    min-height: 1.7rem !important;
+    padding-inline: 0.5rem !important;
+    font-size: 0.54rem !important;
+  }
+
+  .customer-history-compact {
+    gap: 0.45rem !important;
+  }
+
+  .customer-history-compact > div:first-child {
+    gap: 0.4rem !important;
+  }
+
+  .customer-history-compact > div:first-child > div:first-child span:first-child {
+    font-size: 0.54rem !important;
+  }
+
+  .customer-history-compact > div:first-child > div:first-child span:last-child {
+    padding: 0.2rem 0.42rem !important;
+    font-size: 0.5rem !important;
+  }
+
+  .customer-history-compact > div:first-child > div:nth-child(2) {
+    gap: 0.32rem !important;
+    padding: 0.42rem !important;
+    border-radius: 0.74rem !important;
+  }
+
+  .customer-history-compact > div:first-child > div:nth-child(2) > div:first-child {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 0.28rem !important;
+  }
+
+  .customer-history-compact > div:first-child > div:nth-child(2) > div:first-child > div {
+    padding: 0.34rem !important;
+    border-radius: 0.58rem !important;
+  }
+
+  .customer-history-compact > div:first-child > div:nth-child(2) span {
+    font-size: 0.44rem !important;
+  }
+
+  .customer-history-compact > div:first-child > div:nth-child(2) strong {
+    font-size: 0.56rem !important;
+  }
+
+  .customer-history-compact button {
+    min-height: 1.72rem !important;
+    padding-inline: 0.48rem !important;
+    font-size: 0.5rem !important;
+  }
+
+  .customer-history-card-compact {
+    gap: 0.42rem !important;
+    padding: 0.48rem !important;
+    border-radius: 0.78rem !important;
+  }
+
+  .customer-history-card-compact strong {
+    font-size: 0.66rem !important;
+  }
+
+  .customer-history-card-compact span {
+    font-size: 0.52rem !important;
+  }
+
+  .customer-history-card-compact .grid.sm\:grid-cols-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 0.22rem !important;
+  }
+
+  .customer-history-card-compact .grid.sm\:grid-cols-3 > div {
+    padding: 0.28rem !important;
+    border-radius: 0.55rem !important;
+  }
+
+  .customer-history-card-compact .grid.sm\:grid-cols-3 span {
+    font-size: 0.4rem !important;
+  }
+
+  .customer-history-card-compact .grid.sm\:grid-cols-3 strong {
+    font-size: 0.5rem !important;
+  }
+}
+
+@media (max-width: 430px) {
+  .customer-actions-compact {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .customer-actions-compact > a:last-child {
+    grid-column: 1 / -1 !important;
+  }
+
+  .customer-session-grid-compact {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+}
+/* 37-customer-mobile-safe-density:end */
