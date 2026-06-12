@@ -684,3 +684,32 @@
   }
 }
 /* 37-customer-search-ux:end */
+
+/* 37-customer-selection-ux:start */
+@media (max-width: 767px) {
+  .customer-card-row-selected {
+    box-shadow: inset 3px 0 0 color-mix(in srgb, var(--ui-primary-bg) 70%, transparent) !important;
+  }
+}
+
+@media (min-width: 1280px) {
+  .customer-card-row-selected {
+    position: relative !important;
+  }
+
+  .customer-card-row-selected::before {
+    content: '' !important;
+    position: absolute !important;
+    inset-block: 0.75rem !important;
+    left: 0 !important;
+    width: 0.2rem !important;
+    border-radius: 999px !important;
+    background: var(--ui-primary-bg) !important;
+    box-shadow: 0 0 20px color-mix(in srgb, var(--ui-primary-bg) 45%, transparent) !important;
+  }
+
+  .customer-selection-empty {
+    min-height: 22rem !important;
+  }
+}
+/* 37-customer-selection-ux:end */

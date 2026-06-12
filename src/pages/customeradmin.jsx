@@ -1119,6 +1119,44 @@ function CustomerQualityPanel({
   );
 }
 
+function CustomerSelectionEmptyState({
+  hasCustomers,
+  onSelectFirst,
+}) {
+  if (!hasCustomers) {
+    return null;
+  }
+
+  return (
+    <aside className="customer-selection-empty hidden rounded-[1.5rem] border border-[var(--ui-border-strong)] bg-[linear-gradient(145deg,var(--ui-glass),var(--ui-glass-soft))] p-5 shadow-[var(--ui-shadow-soft)] ring-1 ring-[var(--ui-ring)] backdrop-blur-2xl xl:grid xl:sticky xl:top-4">
+      <div className="grid gap-4">
+        <span className="grid size-12 place-items-center rounded-[1rem] border border-[var(--ui-border)] bg-[var(--ui-control)] text-studio-accent">
+          <UsersRound size={22} strokeWidth={2.35} aria-hidden="true" />
+        </span>
+
+        <div className="grid gap-2">
+          <h2 className="m-0 text-xl font-semibold tracking-[-0.045em] text-[var(--ui-text-strong)]">
+            Pilih customer.
+          </h2>
+
+          <p className="m-0 text-sm font-medium leading-6 text-[var(--ui-text-muted)]">
+            Detail customer akan muncul di sini. Klik salah satu row di kiri untuk melihat kontak, payment, dan histori booking.
+          </p>
+        </div>
+
+        <button
+          className="inline-flex min-h-10 w-fit items-center justify-center gap-2 rounded-full [background:var(--ui-primary-bg)] px-4 text-sm font-semibold text-[var(--ui-primary-text)] shadow-[var(--ui-shadow-soft)] transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
+          type="button"
+          onClick={onSelectFirst}
+        >
+          Pilih teratas
+          <ArrowUpRight size={14} strokeWidth={2.35} aria-hidden="true" />
+        </button>
+      </div>
+    </aside>
+  );
+}
+
 function CustomerStatePanel({
   actionHref = '',
   actionLabel = '',
@@ -1272,12 +1310,17 @@ function CustomerList({
               className={cn(
                 'customer-card-row grid gap-2 border-b border-[var(--ui-border)] px-3 py-3 last:border-b-0 sm:px-4 sm:py-3.5 lg:grid-cols-[minmax(230px,1.35fr)_minmax(138px,0.75fr)_minmax(116px,0.58fr)_minmax(116px,0.58fr)_minmax(122px,0.58fr)_minmax(156px,0.68fr)] lg:items-center',
                 isSelected
-                  ? 'bg-[color-mix(in_srgb,var(--ui-control-hover)_72%,transparent)]'
+                  ? 'customer-card-row-selected border-studio-accent/35 bg-studio-accent/10 ring-1 ring-studio-accent/20'
                   : 'bg-transparent hover:bg-[var(--ui-glass-soft)]',
               )}
               key={customer.id}
             >
               <div className="customer-card-head flex min-w-0 items-start justify-between gap-2 lg:contents">
+                {isSelected ? (
+                  <span className="customer-selected-indicator hidden rounded-full border border-studio-accent/35 bg-studio-accent/10 px-2 py-0.5 text-[0.58rem] font-semibold uppercase tracking-[0.1em] text-studio-accent ring-1 ring-studio-accent/15 lg:inline-flex">
+                    Selected
+                  </span>
+                ) : null}
                 <button
                   className="customer-card-person flex min-w-0 flex-1 items-center gap-2.5 rounded-[1.1rem] text-left transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20 sm:gap-3"
                   type="button"
@@ -2045,6 +2088,14 @@ export function CustomerAdmin() {
     setSelectedCustomerId(customer.id);
   };
 
+  const handleSelectFirstCustomer = () => {
+    const firstCustomer = filteredCustomers[0];
+
+    if (firstCustomer) {
+      setSelectedCustomerId(firstCustomer.id);
+    }
+  };
+
   return (
     <section className="customer-mobile-workspace grid gap-3 pb-[calc(8.5rem+env(safe-area-inset-bottom))] pt-1 sm:gap-4 md:pb-4 md:pt-2" aria-labelledby="customer-admin-title">
       <div className="sr-only" id="customer-admin-title">
@@ -2109,7 +2160,12 @@ export function CustomerAdmin() {
               customer={selectedCustomer}
               onClose={() => setSelectedCustomerId(null)}
             />
-          ) : null}
+          ) : (
+            <CustomerSelectionEmptyState
+              hasCustomers={filteredCustomers.length > 0}
+              onSelectFirst={handleSelectFirstCustomer}
+            />
+          )}
         </div>
       )}
     </section>
