@@ -912,69 +912,126 @@
 }
 /* 37-customer-mobile-density:end */
 
-/* 37-customer-mobile-badges:start */
+/* 37-customer-mobile-row-layout:start */
 @media (max-width: 767px) {
-  .customer-mobile-card-head {
+  .customer-list-shell {
+    border-radius: 1.1rem !important;
+  }
+
+  .customer-mobile-workspace .customer-card-row {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 0.55rem !important;
+    padding: 0.72rem !important;
+  }
+
+  .customer-mobile-workspace .customer-card-head {
+    display: flex !important;
     grid-column: 1 / -1 !important;
     align-items: flex-start !important;
     min-width: 0 !important;
   }
 
-  .customer-mobile-card-head > button {
+  .customer-mobile-workspace .customer-card-person {
+    display: flex !important;
     min-width: 0 !important;
+    flex: 1 1 auto !important;
   }
 
-  .customer-mobile-card-badges {
-    max-width: 9.75rem !important;
-    padding-top: 0.05rem !important;
+  .customer-mobile-workspace .customer-card-person > span:first-child {
+    width: 2.45rem !important;
+    height: 2.45rem !important;
+    border-radius: 0.86rem !important;
   }
 
-  .customer-mobile-card-badges > span {
-    min-height: 1.55rem !important;
+  .customer-mobile-workspace .customer-card-person strong {
+    font-size: 0.92rem !important;
+    line-height: 1.12 !important;
+  }
+
+  .customer-mobile-workspace .customer-card-person span span {
+    font-size: 0.72rem !important;
+    line-height: 1.22 !important;
+  }
+
+  .customer-mobile-workspace .customer-card-badges {
+    display: flex !important;
+    max-width: 9.6rem !important;
+    flex: 0 0 auto !important;
+    justify-content: flex-end !important;
+    gap: 0.32rem !important;
+    padding-top: 0.04rem !important;
+  }
+
+  .customer-mobile-workspace .customer-card-badges > span {
+    min-height: 1.42rem !important;
     max-width: 100% !important;
-    padding: 0.28rem 0.55rem !important;
+    padding: 0.25rem 0.48rem !important;
     border-radius: 999px !important;
-    font-size: 0.56rem !important;
+    font-size: 0.5rem !important;
     line-height: 1 !important;
-    letter-spacing: 0.12em !important;
+    letter-spacing: 0.1em !important;
     white-space: nowrap !important;
   }
 
-  .customer-mobile-card-badges svg {
-    width: 0.72rem !important;
-    height: 0.72rem !important;
+  .customer-mobile-workspace .customer-card-badges svg {
+    width: 0.66rem !important;
+    height: 0.66rem !important;
   }
 
-  .customer-mobile-contact,
-  .customer-mobile-total,
-  .customer-mobile-last {
-    display: none !important;
-  }
-
-  .customer-desktop-status {
-    display: none !important;
-  }
-
-  .customer-mobile-workspace > div:last-child > section article {
-    grid-template-columns: minmax(0, 1fr) !important;
-  }
-
-  .customer-mobile-workspace > div:last-child > section article > div:last-child {
+  .customer-mobile-workspace .customer-card-mobile-meta {
+    display: flex !important;
     grid-column: 1 / -1 !important;
-    margin-top: 0.15rem !important;
+    margin-left: 3rem !important;
+    margin-top: -0.15rem !important;
+    gap: 0.3rem !important;
+  }
+
+  .customer-mobile-workspace .customer-card-mobile-meta span {
+    max-width: 100% !important;
+    padding: 0.2rem 0.44rem !important;
+    border-radius: 999px !important;
+    font-size: 0.56rem !important;
+    line-height: 1.1 !important;
+  }
+
+  .customer-mobile-workspace .customer-card-contact,
+  .customer-mobile-workspace .customer-card-total,
+  .customer-mobile-workspace .customer-card-last,
+  .customer-mobile-workspace .customer-card-desktop-status {
+    display: none !important;
+  }
+
+  .customer-mobile-workspace .customer-card-actions {
+    display: flex !important;
+    grid-column: 1 / -1 !important;
+    margin-left: 3rem !important;
+    margin-top: 0.1rem !important;
+    align-items: center !important;
     justify-content: space-between !important;
+  }
+
+  .customer-mobile-workspace .customer-card-actions button,
+  .customer-mobile-workspace .customer-card-actions a {
+    min-height: 1.95rem !important;
+    padding-inline: 0.62rem !important;
+    font-size: 0.66rem !important;
   }
 }
 
 @media (max-width: 430px) {
-  .customer-mobile-card-badges {
+  .customer-mobile-workspace .customer-card-badges {
     max-width: 8.45rem !important;
-    gap: 0.32rem !important;
   }
 
-  .customer-mobile-card-badges > span {
-    font-size: 0.5rem !important;
-    padding-inline: 0.45rem !important;
+  .customer-mobile-workspace .customer-card-badges > span {
+    font-size: 0.46rem !important;
+    padding-inline: 0.4rem !important;
+  }
+
+  .customer-mobile-workspace .customer-card-mobile-meta,
+  .customer-mobile-workspace .customer-card-actions {
+    margin-left: 2.85rem !important;
   }
 }
-/* 37-customer-mobile-badges:end */
+/* 37-customer-mobile-row-layout:end */

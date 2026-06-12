@@ -1092,7 +1092,7 @@ function CustomerList({
   }
 
   return (
-    <section className="overflow-hidden rounded-[1.5rem] border border-[var(--ui-border-strong)] bg-[color-mix(in_srgb,var(--ui-glass)_72%,transparent)] ring-1 ring-[var(--ui-ring)] backdrop-blur-xl sm:rounded-[1.75rem]">
+    <section className="customer-list-shell overflow-hidden rounded-[1.5rem] border border-[var(--ui-border-strong)] bg-[color-mix(in_srgb,var(--ui-glass)_72%,transparent)] ring-1 ring-[var(--ui-ring)] backdrop-blur-xl sm:rounded-[1.75rem]">
       <div className="hidden grid-cols-[minmax(230px,1.35fr)_minmax(138px,0.75fr)_minmax(116px,0.58fr)_minmax(116px,0.58fr)_minmax(122px,0.58fr)_minmax(156px,0.68fr)] border-b border-[var(--ui-border-strong)] px-4 py-3 text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-[var(--ui-text-muted)] lg:grid">
         <span>Customer</span>
         <span>Contact</span>
@@ -1105,20 +1105,23 @@ function CustomerList({
       <div className="grid">
         {customers.map((customer) => {
           const isSelected = selectedCustomerId === customer.id;
+          const lastBookingLabel = customer.lastBooking
+            ? formatDateLabel(customer.lastBooking.dateKey)
+            : '-';
 
           return (
             <article
               className={cn(
-                'grid gap-3 border-b border-[var(--ui-border)] px-3 py-3 last:border-b-0 sm:px-4 sm:py-3.5 lg:grid-cols-[minmax(230px,1.35fr)_minmax(138px,0.75fr)_minmax(116px,0.58fr)_minmax(116px,0.58fr)_minmax(122px,0.58fr)_minmax(156px,0.68fr)] lg:items-center',
+                'customer-card-row grid gap-2 border-b border-[var(--ui-border)] px-3 py-3 last:border-b-0 sm:px-4 sm:py-3.5 lg:grid-cols-[minmax(230px,1.35fr)_minmax(138px,0.75fr)_minmax(116px,0.58fr)_minmax(116px,0.58fr)_minmax(122px,0.58fr)_minmax(156px,0.68fr)] lg:items-center',
                 isSelected
                   ? 'bg-[color-mix(in_srgb,var(--ui-control-hover)_72%,transparent)]'
                   : 'bg-transparent hover:bg-[var(--ui-glass-soft)]',
               )}
               key={customer.id}
             >
-              <div className="customer-mobile-card-head flex min-w-0 items-start justify-between gap-2 lg:contents">
+              <div className="customer-card-head flex min-w-0 items-start justify-between gap-2 lg:contents">
                 <button
-                  className="flex min-w-0 flex-1 items-center gap-2.5 rounded-[1.1rem] text-left transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20 sm:gap-3"
+                  className="customer-card-person flex min-w-0 flex-1 items-center gap-2.5 rounded-[1.1rem] text-left transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20 sm:gap-3"
                   type="button"
                   onClick={() => onSelectCustomer(customer)}
                 >
@@ -1136,18 +1139,30 @@ function CustomerList({
                   </span>
                 </button>
 
-                <div className="customer-mobile-card-badges flex shrink-0 flex-wrap justify-end gap-1.5 lg:hidden">
+                <div className="customer-card-badges flex shrink-0 flex-wrap justify-end gap-1.5 lg:hidden">
                   <CustomerQualityBadge quality={customer.dataQuality} />
                   <CustomerStatusBadge status={customer.status} />
                 </div>
               </div>
 
-              <div className="customer-mobile-contact flex items-center gap-2 text-sm font-semibold text-[var(--ui-text-main)]">
+              <div className="customer-card-mobile-meta flex flex-wrap gap-1.5 text-xs font-semibold text-[var(--ui-text-muted)] lg:hidden">
+                <span className="rounded-full border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] px-2 py-1">
+                  {customer.phone}
+                </span>
+                <span className="rounded-full border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] px-2 py-1">
+                  {customer.totalBookings} sesi
+                </span>
+                <span className="rounded-full border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] px-2 py-1">
+                  Last {lastBookingLabel}
+                </span>
+              </div>
+
+              <div className="customer-card-contact hidden items-center gap-2 text-sm font-semibold text-[var(--ui-text-main)] lg:flex">
                 <Phone className="shrink-0 text-[var(--ui-text-muted)]" size={14} strokeWidth={2.35} aria-hidden="true" />
                 <span className="truncate">{customer.phone}</span>
               </div>
 
-              <div className="customer-mobile-total grid gap-0.5">
+              <div className="customer-card-total hidden gap-0.5 lg:grid">
                 <strong className="text-sm font-semibold text-[var(--ui-text-strong)]">
                   {customer.totalBookings} sesi
                 </strong>
@@ -1156,20 +1171,20 @@ function CustomerList({
                 </span>
               </div>
 
-              <div className="customer-mobile-last grid gap-0.5">
+              <div className="customer-card-last hidden gap-0.5 lg:grid">
                 <strong className="text-sm font-semibold text-[var(--ui-text-strong)]">
-                  {customer.lastBooking ? formatDateLabel(customer.lastBooking.dateKey) : '-'}
+                  {lastBookingLabel}
                 </strong>
                 <span className="text-xs font-medium text-[var(--ui-text-muted)]">
                   {customer.lastBooking?.time || '-'}
                 </span>
               </div>
 
-              <div className="customer-desktop-status hidden lg:block">
+              <div className="customer-card-desktop-status hidden lg:block">
                 <CustomerStatusBadge status={customer.status} />
               </div>
 
-              <div className="flex items-center gap-2 lg:justify-end">
+              <div className="customer-card-actions flex items-center justify-between gap-2 lg:justify-end">
                 <button
                   className="inline-flex min-h-9 items-center justify-center rounded-full border border-transparent px-2.5 text-sm font-semibold text-[var(--ui-text-muted)] transition hover:bg-[var(--ui-control)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
                   type="button"
