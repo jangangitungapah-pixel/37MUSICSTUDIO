@@ -1487,6 +1487,7 @@ function CustomerDetailPanel({
   const phoneHref = phoneDigits ? 'tel:' + phoneDigits : '';
   const primaryBooking = getCustomerPrimaryBooking(customer);
   const primaryBookingLabel = getCustomerPrimaryBookingLabel(customer);
+  const primaryBookingShortLabel = customer?.nextBooking ? 'Next' : customer?.lastBooking ? 'Last' : 'Booking';
   const customerSummaryText = createCustomerSummaryText(customer);
   const whatsappMessage = createCustomerWhatsappMessage(customer);
   const whatsappHref = whatsappNumber ? 'https://wa.me/' + whatsappNumber + '?text=' + encodeURIComponent(whatsappMessage) : '';
@@ -1585,7 +1586,7 @@ function CustomerDetailPanel({
 
       <CustomerQualityPanel customer={customer} />
 
-      <div className="customer-actions-compact grid gap-2 sm:grid-cols-2">
+      <div className="customer-actions-compact grid grid-cols-3 gap-1.5 sm:grid-cols-3">
         {phoneHref ? (
           <a
             className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] px-4 text-sm font-semibold text-[var(--ui-secondary-text)] shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
@@ -1633,7 +1634,7 @@ function CustomerDetailPanel({
           onClick={handleCopyPhone}
         >
           <Copy size={15} strokeWidth={2.35} aria-hidden="true" />
-          {copyStatus === 'copied' ? 'Copied' : copyStatus === 'error' ? 'Copy gagal' : 'Copy phone'}
+          {copyStatus === 'copied' ? 'Copied' : copyStatus === 'error' ? 'Gagal' : 'Copy HP'}
         </button>
 
         <button
@@ -1642,7 +1643,7 @@ function CustomerDetailPanel({
           onClick={handleCopySummary}
         >
           <Copy size={15} strokeWidth={2.35} aria-hidden="true" />
-          {summaryCopyStatus === 'copied' ? 'Summary copied' : summaryCopyStatus === 'error' ? 'Copy gagal' : 'Copy summary'}
+          {summaryCopyStatus === 'copied' ? 'Copied' : summaryCopyStatus === 'error' ? 'Gagal' : 'Summary'}
         </button>
 
         {primaryBooking ? (
@@ -1651,7 +1652,7 @@ function CustomerDetailPanel({
             to={boardHref}
           >
             <CalendarClock size={15} strokeWidth={2.35} aria-hidden="true" />
-            {primaryBookingLabel}
+            {primaryBookingShortLabel}
           </Link>
         ) : null}
 
@@ -1820,8 +1821,10 @@ export function CustomerAdmin() {
     [customers, searchTerm, sortMode, statusFilter],
   );
   const selectedCustomer = useMemo(
-    () => customers.find((customer) => customer.id === selectedCustomerId) || filteredCustomers[0] || null,
-    [customers, filteredCustomers, selectedCustomerId],
+    () => selectedCustomerId
+      ? customers.find((customer) => customer.id === selectedCustomerId) || null
+      : null,
+    [customers, selectedCustomerId],
   );
 
   const handleSelectCustomer = (customer) => {
@@ -1861,10 +1864,12 @@ export function CustomerAdmin() {
           onSelectCustomer={handleSelectCustomer}
         />
 
-        <CustomerDetailPanel
-          customer={selectedCustomer}
-          onClose={() => setSelectedCustomerId(null)}
-        />
+        {selectedCustomer ? (
+          <CustomerDetailPanel
+            customer={selectedCustomer}
+            onClose={() => setSelectedCustomerId(null)}
+          />
+        ) : null}
       </div>
     </section>
   );

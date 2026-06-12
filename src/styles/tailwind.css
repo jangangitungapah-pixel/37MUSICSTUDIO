@@ -469,3 +469,50 @@
   }
 }
 /* 37-customer-mobile-header-simple:end */
+
+/* 37-customer-detail-actions:start */
+@media (max-width: 767px) {
+  .customer-actions-compact {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 0.38rem !important;
+  }
+
+  .customer-actions-compact > * {
+    min-height: 2.1rem !important;
+    justify-content: center !important;
+    gap: 0.28rem !important;
+    padding-inline: 0.42rem !important;
+    border-radius: 999px !important;
+    font-size: 0.62rem !important;
+    line-height: 1 !important;
+    white-space: nowrap !important;
+  }
+
+  .customer-actions-compact svg {
+    width: 0.78rem !important;
+    height: 0.78rem !important;
+  }
+
+  .customer-actions-compact > a:last-child {
+    grid-column: auto !important;
+  }
+
+  .customer-detail-compact > div:first-child button[aria-label="Close customer detail"] {
+    position: relative !important;
+    z-index: 5 !important;
+    width: 2.35rem !important;
+    height: 2.35rem !important;
+    pointer-events: auto !important;
+  }
+}
+
+@media (max-width: 380px) {
+  .customer-actions-compact {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .customer-actions-compact > * {
+    min-height: 2rem !important;
+  }
+}
+/* 37-customer-detail-actions:end */
