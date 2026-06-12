@@ -642,38 +642,34 @@ function CustomerHero({
   activeCustomer,
   stats,
 }) {
+  const activeLabel = activeCustomer ? activeCustomer.name : stats.totalCustomers + ' customers';
+  const activeHelper = activeCustomer
+    ? activeCustomer.totalBookings + ' booking • ' + activeCustomer.favoriteSession
+    : 'Data booking real Firestore';
+
   return (
-    <header className="customer-hero-compact grid gap-5 py-2 sm:py-3 lg:grid-cols-[minmax(0,1fr)_minmax(260px,360px)] lg:items-end">
-      <div className="grid gap-3">
-        <div className="inline-flex w-fit items-center gap-2 rounded-full border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] px-3 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-studio-accent ring-1 ring-[var(--ui-ring)]">
-          <Sparkles size={14} strokeWidth={2.35} aria-hidden="true" />
-          Customer Directory
-        </div>
+    <header className="customer-page-header flex flex-wrap items-end justify-between gap-3 rounded-[1.25rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] px-3 py-3 ring-1 ring-[var(--ui-ring)] sm:px-4">
+      <div className="grid gap-1">
+        <h1 className="m-0 text-2xl font-semibold tracking-[-0.055em] text-[var(--ui-text-strong)] sm:text-3xl">
+          Customer List
+        </h1>
 
-        <div className="grid gap-3">
-          <h1 className="m-0 max-w-4xl text-[clamp(2.35rem,5.4vw,5.15rem)] font-semibold leading-[0.95] tracking-[-0.075em] text-[var(--ui-text-strong)]">
-            Customer list dari booking real Firestore.
-          </h1>
-
-          <p className="m-0 max-w-2xl text-[clamp(0.95rem,1.12vw,1.05rem)] leading-8 text-[var(--ui-text-main)]">
-            Directory ringan untuk melihat kontak, status, dan shortcut ke booking board berdasarkan data booking real.
-          </p>
-        </div>
+        <p className="m-0 text-xs font-medium leading-5 text-[var(--ui-text-muted)] sm:text-sm">
+          Kontak, status, dan shortcut booking dari data real.
+        </p>
       </div>
 
-      <div className="grid gap-2 border-y border-[var(--ui-border)] py-4 lg:border-l lg:border-y-0 lg:py-0 lg:pl-6">
-        <span className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--ui-text-muted)]">
-          Active customer
+      <div className="customer-page-active grid min-w-[9.5rem] gap-0.5 rounded-[1rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 py-2 text-right ring-1 ring-[var(--ui-ring)]">
+        <span className="text-[0.58rem] font-semibold uppercase tracking-[0.14em] text-[var(--ui-text-muted)]">
+          Active
         </span>
 
-        <strong className="text-2xl font-semibold tracking-[-0.055em] text-[var(--ui-text-strong)]">
-          {activeCustomer ? activeCustomer.name : stats.totalCustomers + ' customers'}
+        <strong className="truncate text-sm font-semibold tracking-[-0.03em] text-[var(--ui-text-strong)]">
+          {activeLabel}
         </strong>
 
-        <span className="text-sm leading-6 text-[var(--ui-text-muted)]">
-          {activeCustomer
-            ? activeCustomer.totalBookings + ' booking tercatat, favorit sesi ' + activeCustomer.favoriteSession + '.'
-            : 'Pilih customer untuk membuka inspector di sisi kanan.'}
+        <span className="truncate text-[0.68rem] font-medium text-[var(--ui-text-muted)]">
+          {activeHelper}
         </span>
       </div>
     </header>
@@ -686,52 +682,44 @@ function MetricStrip({
   const items = [
     {
       icon: UsersRound,
-      label: 'Total customers',
+      label: 'Customers',
       value: stats.totalCustomers,
-      helper: 'Customer unik',
     },
     {
       icon: CheckCircle2,
       label: 'Returning',
       value: stats.returningCustomers,
-      helper: 'Lebih dari 1 booking',
     },
     {
       icon: CalendarClock,
       label: 'Upcoming',
       value: stats.upcomingCustomers,
-      helper: 'Punya jadwal mendatang',
     },
     {
       icon: CreditCard,
       label: 'Revenue',
       value: formatCurrency(stats.totalRevenue),
-      helper: 'Data booking real',
     },
   ];
 
   return (
-    <section className="customer-metrics-compact grid gap-0 overflow-hidden rounded-[1.75rem] border-y border-[var(--ui-border)] sm:grid-cols-2 xl:grid-cols-4 xl:rounded-none xl:border-x-0">
+    <section className="customer-summary-strip grid grid-cols-2 gap-2 sm:grid-cols-4" aria-label="Customer summary">
       {items.map((item) => {
         const Icon = item.icon;
 
         return (
           <article
-            className="grid gap-2 border-b border-[var(--ui-border)] px-1 py-4 last:border-b-0 sm:border-l sm:border-b-0 sm:px-5 sm:first:border-l-0 xl:px-6"
+            className="flex min-h-14 items-center justify-between gap-2 rounded-[1rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] px-3 py-2 ring-1 ring-[var(--ui-ring)]"
             key={item.label}
           >
-            <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.15em] text-[var(--ui-text-muted)]">
-              <Icon className="text-studio-accent" size={15} strokeWidth={2.35} aria-hidden="true" />
-              {item.label}
-            </div>
+            <span className="inline-flex min-w-0 items-center gap-1.5 text-[0.65rem] font-semibold uppercase tracking-[0.11em] text-[var(--ui-text-muted)]">
+              <Icon className="shrink-0 text-studio-accent" size={13} strokeWidth={2.35} aria-hidden="true" />
+              <span className="truncate">{item.label}</span>
+            </span>
 
-            <strong className="text-2xl font-semibold tracking-[-0.055em] text-[var(--ui-text-strong)]">
+            <strong className="shrink-0 text-sm font-semibold tracking-[-0.035em] text-[var(--ui-text-strong)]">
               {item.value}
             </strong>
-
-            <span className="text-sm leading-6 text-[var(--ui-text-muted)]">
-              {item.helper}
-            </span>
           </article>
         );
       })}
@@ -835,35 +823,30 @@ function CustomerAttentionStrip({
 }) {
   const items = [
     {
-      helper: 'Semua customer real',
       icon: UsersRound,
       key: 'all',
       label: 'All',
       value: stats.total,
     },
     {
-      helper: 'Perlu dicek',
       icon: AlertTriangle,
       key: 'needsReview',
-      label: 'Needs review',
+      label: 'Review',
       value: stats.needsReview,
     },
     {
-      helper: 'Ada sisa bayar',
       icon: CreditCard,
       key: 'unpaid',
       label: 'Unpaid',
       value: stats.unpaid,
     },
     {
-      helper: 'Nomor bermasalah',
       icon: Phone,
       key: 'missingPhone',
-      label: 'Missing phone',
+      label: 'No phone',
       value: stats.missingPhone,
     },
     {
-      helper: 'Data aman',
       icon: BadgeCheck,
       key: 'clean',
       label: 'Clean',
@@ -872,54 +855,32 @@ function CustomerAttentionStrip({
   ];
 
   return (
-    <section className="customer-attention-compact grid gap-2 rounded-[1.5rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-2 ring-1 ring-[var(--ui-ring)] sm:p-3" aria-label="Customer attention filters">
-      <div className="flex flex-wrap items-center justify-between gap-2 px-1">
-        <span className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--ui-text-muted)]">
-          Attention filters
-        </span>
+    <section className="customer-attention-strip -mx-1 flex snap-x gap-1.5 overflow-x-auto px-1 pb-1" aria-label="Customer attention filters">
+      {items.map((item) => {
+        const Icon = item.icon;
+        const isActive = activeFilter === item.key;
 
-        <span className="text-xs font-medium text-[var(--ui-text-muted)]">
-          Klik chip untuk fokus ke data yang perlu tindakan.
-        </span>
-      </div>
-
-      <div className="-mx-2 flex snap-x gap-2 overflow-x-auto px-2 pb-1 sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 sm:pb-0 xl:grid-cols-5">
-        {items.map((item) => {
-          const Icon = item.icon;
-          const isActive = activeFilter === item.key;
-
-          return (
-            <button
-              aria-pressed={isActive}
-              className={cn(
-                'grid min-h-[5.75rem] min-w-[9.75rem] snap-start gap-2 rounded-[1.25rem] border p-3 text-left ring-1 transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20 sm:min-h-[6.25rem] sm:min-w-0',
-                isActive
-                  ? 'border-studio-accent/45 bg-studio-accent/10 text-studio-accent ring-studio-accent/20'
-                  : 'border-[var(--ui-border)] bg-[var(--ui-control)] text-[var(--ui-text-main)] ring-[var(--ui-ring)] hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)]',
-              )}
-              key={item.key}
-              type="button"
-              onClick={() => onFilterChange(item.key)}
-            >
-              <span className="flex items-center justify-between gap-2">
-                <Icon size={16} strokeWidth={2.35} aria-hidden="true" />
-                <strong className="text-2xl font-semibold leading-none tracking-[-0.055em]">
-                  {item.value}
-                </strong>
-              </span>
-
-              <span className="grid gap-0.5">
-                <span className="text-xs font-semibold uppercase tracking-[0.13em]">
-                  {item.label}
-                </span>
-                <span className="text-xs font-medium leading-5 text-[var(--ui-text-muted)]">
-                  {item.helper}
-                </span>
-              </span>
-            </button>
-          );
-        })}
-      </div>
+        return (
+          <button
+            aria-pressed={isActive}
+            className={cn(
+              'inline-flex min-h-9 shrink-0 snap-start items-center gap-1.5 rounded-full border px-3 text-xs font-semibold ring-1 transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20',
+              isActive
+                ? 'border-studio-accent/45 bg-studio-accent/12 text-studio-accent ring-studio-accent/20'
+                : 'border-[var(--ui-border)] bg-[var(--ui-control)] text-[var(--ui-text-main)] ring-[var(--ui-ring)] hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)]',
+            )}
+            key={item.key}
+            type="button"
+            onClick={() => onFilterChange(item.key)}
+          >
+            <Icon size={13} strokeWidth={2.35} aria-hidden="true" />
+            <span>{item.label}</span>
+            <strong className="rounded-full bg-[var(--ui-glass-soft)] px-1.5 py-0.5 text-[0.68rem] leading-none text-[var(--ui-text-strong)]">
+              {item.value}
+            </strong>
+          </button>
+        );
+      })}
     </section>
   );
 }
@@ -934,13 +895,14 @@ function CustomerToolbar({
   onStatusFilterChange,
 }) {
   return (
-    <section className="customer-toolbar-compact grid gap-2.5 rounded-[1.5rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-2.5 ring-1 ring-[var(--ui-ring)] sm:gap-3 sm:p-3 lg:grid-cols-[minmax(0,1fr)_auto_auto] lg:items-end">
-      <label className="grid gap-1.5 text-sm font-semibold text-[var(--ui-text-main)]">
-        Search customer
-        <span className="flex min-h-12 items-center gap-3 rounded-[1.25rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 ring-1 ring-[var(--ui-ring)] focus-within:border-studio-accent/55 focus-within:ring-4 focus-within:ring-studio-accent/20">
-          <Search className="shrink-0 text-[var(--ui-text-muted)]" size={17} strokeWidth={2.35} aria-hidden="true" />
+    <section className="customer-toolbar-slim grid gap-2 rounded-[1.15rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-2 ring-1 ring-[var(--ui-ring)]">
+      <label className="grid gap-1 text-xs font-semibold text-[var(--ui-text-main)]">
+        <span className="sr-only">Search customer</span>
+
+        <span className="flex min-h-10 items-center gap-2 rounded-[0.95rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 ring-1 ring-[var(--ui-ring)] focus-within:border-studio-accent/55 focus-within:ring-4 focus-within:ring-studio-accent/20">
+          <Search className="shrink-0 text-[var(--ui-text-muted)]" size={15} strokeWidth={2.35} aria-hidden="true" />
           <input
-            className="w-full border-0 bg-transparent text-sm font-semibold text-[var(--ui-text-strong)] outline-none placeholder:text-[var(--ui-text-soft)]"
+            className="w-full border-0 bg-transparent text-xs font-semibold text-[var(--ui-text-strong)] outline-none placeholder:text-[var(--ui-text-soft)]"
             placeholder="Cari nama, nomor HP, atau tipe sesi..."
             type="search"
             value={searchTerm}
@@ -949,34 +911,36 @@ function CustomerToolbar({
           {searchTerm ? (
             <button
               aria-label="Clear customer search"
-              className="grid size-8 shrink-0 place-items-center rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] text-[var(--ui-secondary-text)] transition hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)]"
+              className="grid size-7 shrink-0 place-items-center rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] text-[var(--ui-secondary-text)] transition hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)]"
               type="button"
               onClick={() => onSearchChange('')}
             >
-              <X size={14} strokeWidth={2.35} aria-hidden="true" />
+              <X size={13} strokeWidth={2.35} aria-hidden="true" />
             </button>
           ) : null}
         </span>
       </label>
 
-      <ToolbarSelect
-        icon={ListFilter}
-        label="Segment"
-        options={customerStatusFilters}
-        value={statusFilter}
-        onChange={onStatusFilterChange}
-      />
+      <div className="grid grid-cols-2 gap-2">
+        <ToolbarSelect
+          icon={ListFilter}
+          label="Segment"
+          options={customerStatusFilters}
+          value={statusFilter}
+          onChange={onStatusFilterChange}
+        />
 
-      <ToolbarSelect
-        icon={History}
-        label="Sort"
-        options={customerSortOptions}
-        value={sortMode}
-        onChange={onSortChange}
-      />
+        <ToolbarSelect
+          icon={History}
+          label="Sort"
+          options={customerSortOptions}
+          value={sortMode}
+          onChange={onSortChange}
+        />
+      </div>
 
-      <div className="text-sm font-semibold text-[var(--ui-text-muted)] lg:col-span-3">
-        Menampilkan <span className="text-[var(--ui-text-strong)]">{resultCount}</span> customer.
+      <div className="text-xs font-semibold text-[var(--ui-text-muted)]">
+        <span className="text-[var(--ui-text-strong)]">{resultCount}</span> customer
       </div>
     </section>
   );
