@@ -504,6 +504,71 @@ function getPaymentHealthClass(customer) {
   return 'border-studio-accent/35 bg-studio-accent/10 text-studio-accent';
 }
 
+function getCustomerQuickActionIntent(customer, templateMeta) {
+  const pendingRevenue = Math.max(0, Number(customer?.pendingRevenue) || 0);
+  const hasPhone = Boolean(getCustomerPhoneValue(customer));
+  const templateLabel = templateMeta?.label || 'Message';
+
+  if (!hasPhone) {
+    return {
+      helper: 'Nomor customer belum tersedia. Simpan nomor dulu agar WhatsApp dan call bisa dipakai.',
+      label: 'Need phone',
+      tone: 'warning',
+    };
+  }
+
+  if (pendingRevenue > 0) {
+    return {
+      helper: 'Sisa bayar ' + formatCurrency(pendingRevenue) + '. Prioritaskan WhatsApp follow-up payment.',
+      label: 'Payment follow-up',
+      tone: 'accent',
+    };
+  }
+
+  if (customer?.nextBooking) {
+    return {
+      helper: 'Customer punya jadwal mendatang. Kirim reminder atau cek booking board.',
+      label: 'Booking reminder',
+      tone: 'cyan',
+    };
+  }
+
+  if ((Number(customer?.totalBookings) || 0) > 1) {
+    return {
+      helper: 'Customer returning. Gunakan template ' + templateLabel + ' untuk jaga relasi dan dorong booking ulang.',
+      label: 'Retention',
+      tone: 'purple',
+    };
+  }
+
+  return {
+    helper: 'Customer baru atau riwayat masih ringan. Kirim pesan singkat atau buka board untuk follow-up.',
+    label: templateLabel,
+    tone: 'neutral',
+  };
+}
+
+function getCustomerQuickActionToneClass(tone) {
+  if (tone === 'warning') {
+    return 'border-studio-purple/35 bg-studio-purple/10 text-studio-purple';
+  }
+
+  if (tone === 'accent') {
+    return 'border-studio-accent/35 bg-studio-accent/10 text-studio-accent';
+  }
+
+  if (tone === 'cyan') {
+    return 'border-studio-cyan/35 bg-studio-cyan/10 text-studio-cyan';
+  }
+
+  if (tone === 'purple') {
+    return 'border-studio-purple/35 bg-studio-purple/10 text-studio-purple';
+  }
+
+  return 'border-[var(--ui-border)] bg-[var(--ui-control)] text-[var(--ui-text-muted)]';
+}
+
+
 function normalizeCustomerNameKey(name) {
   return normalizeCustomerValue(prettifyCustomerName(name));
 }
@@ -1969,6 +2034,7 @@ function CustomerDetailPanel({
   const primaryBookingShortLabel = customer?.nextBooking ? 'Next' : customer?.lastBooking ? 'Last' : 'Booking';
   const customerSummaryText = createCustomerSummaryText(customer);
   const templateMeta = getCustomerCommunicationTemplateMeta(selectedTemplate);
+  const quickActionIntent = getCustomerQuickActionIntent(customer, templateMeta);
   const whatsappMessage = createCustomerWhatsappMessage(customer, selectedTemplate);
   const whatsappHref = whatsappNumber ? 'https://wa.me/' + whatsappNumber + '?text=' + encodeURIComponent(whatsappMessage) : '';
   const historyStats = getCustomerHistoryStats(customer);
@@ -2146,84 +2212,117 @@ function CustomerDetailPanel({
         onToggleTag={handleCustomerTagToggle}
       />
 
-      <div className="customer-actions-compact grid grid-cols-3 gap-1.5 sm:grid-cols-3">
-        {phoneHref ? (
-          <a
-            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] px-4 text-sm font-semibold text-[var(--ui-secondary-text)] shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
-            href={phoneHref}
-          >
-            <Phone size={15} strokeWidth={2.35} aria-hidden="true" />
-            Call
-          </a>
-        ) : (
-          <button
-            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] px-4 text-sm font-semibold text-[var(--ui-text-muted)] opacity-60"
-            disabled
-            type="button"
-          >
-            <Phone size={15} strokeWidth={2.35} aria-hidden="true" />
-            Call
-          </button>
-        )}
+      <section className="customer-quick-actions-panel grid gap-2 rounded-[1.1rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-2 ring-1 ring-[var(--ui-ring)]" aria-label="Customer quick actions">
+        <div className="flex items-start justify-between gap-2">
+          <div className="grid gap-0.5">
+            <span className="text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-[var(--ui-text-muted)]">
+              Quick action
+            </span>
 
-        {whatsappHref ? (
-          <a
-            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-studio-cyan/35 bg-studio-cyan/10 px-4 text-sm font-semibold text-studio-cyan ring-1 ring-studio-cyan/15 transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-cyan/20"
-            href={whatsappHref}
-            rel="noreferrer"
-            target="_blank"
-          >
-            <MessageCircle size={15} strokeWidth={2.35} aria-hidden="true" />
-            WhatsApp
-          </a>
-        ) : (
-          <button
-            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] px-4 text-sm font-semibold text-[var(--ui-text-muted)] opacity-60"
-            disabled
-            type="button"
-          >
-            <MessageCircle size={15} strokeWidth={2.35} aria-hidden="true" />
-            WhatsApp
-          </button>
-        )}
+            <strong className="text-sm font-semibold tracking-[-0.035em] text-[var(--ui-text-strong)]">
+              {quickActionIntent.label}
+            </strong>
+          </div>
 
-        <button
-          className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] px-4 text-sm font-semibold text-[var(--ui-secondary-text)] shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20 disabled:cursor-not-allowed disabled:opacity-60"
-          disabled={!phoneValue}
-          type="button"
-          onClick={handleCopyPhone}
-        >
-          <Copy size={15} strokeWidth={2.35} aria-hidden="true" />
-          {copyStatus === 'copied' ? 'Copied' : copyStatus === 'error' ? 'Gagal' : 'Copy HP'}
-        </button>
+          <span className={cn('rounded-full border px-2 py-0.5 text-[0.54rem] font-semibold uppercase tracking-[0.1em]', getCustomerQuickActionToneClass(quickActionIntent.tone))}>
+            {templateMeta.label}
+          </span>
+        </div>
 
-        <button
-          className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] px-4 text-sm font-semibold text-[var(--ui-secondary-text)] shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
-          type="button"
-          onClick={handleCopySummary}
-        >
-          <Copy size={15} strokeWidth={2.35} aria-hidden="true" />
-          {summaryCopyStatus === 'copied' ? 'Copied' : summaryCopyStatus === 'error' ? 'Gagal' : 'Summary'}
-        </button>
+        <p className="m-0 rounded-[0.85rem] border border-[var(--ui-border)] bg-[var(--ui-control)] p-2 text-[0.68rem] font-medium leading-5 text-[var(--ui-text-muted)]">
+          {quickActionIntent.helper}
+        </p>
 
-        {primaryBooking ? (
+        <div className="customer-quick-primary grid grid-cols-2 gap-1.5">
+          {whatsappHref ? (
+            <a
+              className="inline-flex min-h-10 items-center justify-center gap-2 rounded-[0.9rem] border border-studio-cyan/35 bg-studio-cyan/10 px-3 text-sm font-semibold text-studio-cyan ring-1 ring-studio-cyan/15 transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-cyan/20"
+              href={whatsappHref}
+              rel="noreferrer"
+              target="_blank"
+            >
+              <MessageCircle size={15} strokeWidth={2.35} aria-hidden="true" />
+              WhatsApp
+            </a>
+          ) : (
+            <button
+              className="inline-flex min-h-10 items-center justify-center gap-2 rounded-[0.9rem] border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] px-3 text-sm font-semibold text-[var(--ui-text-muted)] opacity-60"
+              disabled
+              type="button"
+            >
+              <MessageCircle size={15} strokeWidth={2.35} aria-hidden="true" />
+              No phone
+            </button>
+          )}
+
           <Link
-            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] px-4 text-sm font-semibold text-[var(--ui-secondary-text)] shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
+            className="inline-flex min-h-10 items-center justify-center gap-2 rounded-[0.9rem] [background:var(--ui-primary-bg)] px-3 text-sm font-semibold text-[var(--ui-primary-text)] shadow-[var(--ui-shadow-soft)] transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
             to={boardHref}
           >
-            <CalendarClock size={15} strokeWidth={2.35} aria-hidden="true" />
-            {primaryBookingShortLabel}
+            Board
+            <ArrowUpRight size={15} strokeWidth={2.35} aria-hidden="true" />
           </Link>
-        ) : null}
+        </div>
 
-        <Link
-          className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full [background:var(--ui-primary-bg)] px-4 text-sm font-semibold text-[var(--ui-primary-text)] shadow-[var(--ui-shadow-soft)] transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
-          to={boardHref}
-        >
-          Board
-          <ArrowUpRight size={15} strokeWidth={2.35} aria-hidden="true" />
-        </Link>
-      </div>
+        <div className="customer-quick-secondary grid grid-cols-2 gap-1.5 sm:grid-cols-4">
+          {phoneHref ? (
+            <a
+              className="customer-quick-secondary-action inline-flex min-h-9 items-center justify-center gap-1.5 rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] px-3 text-xs font-semibold text-[var(--ui-secondary-text)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
+              href={phoneHref}
+            >
+              <Phone size={13} strokeWidth={2.35} aria-hidden="true" />
+              Call
+            </a>
+          ) : (
+            <button
+              className="customer-quick-secondary-action inline-flex min-h-9 items-center justify-center gap-1.5 rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] px-3 text-xs font-semibold text-[var(--ui-text-muted)] opacity-60"
+              disabled
+              type="button"
+            >
+              <Phone size={13} strokeWidth={2.35} aria-hidden="true" />
+              Call
+            </button>
+          )}
+
+          <button
+            className="customer-quick-secondary-action inline-flex min-h-9 items-center justify-center gap-1.5 rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] px-3 text-xs font-semibold text-[var(--ui-secondary-text)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20 disabled:cursor-not-allowed disabled:opacity-60"
+            disabled={!phoneValue}
+            type="button"
+            onClick={handleCopyPhone}
+          >
+            <Copy size={13} strokeWidth={2.35} aria-hidden="true" />
+            {copyStatus === 'copied' ? 'Copied' : copyStatus === 'error' ? 'Gagal' : 'Copy HP'}
+          </button>
+
+          <button
+            className="customer-quick-secondary-action inline-flex min-h-9 items-center justify-center gap-1.5 rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] px-3 text-xs font-semibold text-[var(--ui-secondary-text)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
+            type="button"
+            onClick={handleCopySummary}
+          >
+            <Copy size={13} strokeWidth={2.35} aria-hidden="true" />
+            {summaryCopyStatus === 'copied' ? 'Copied' : summaryCopyStatus === 'error' ? 'Gagal' : 'Summary'}
+          </button>
+
+          {primaryBooking ? (
+            <Link
+              className="customer-quick-secondary-action inline-flex min-h-9 items-center justify-center gap-1.5 rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] px-3 text-xs font-semibold text-[var(--ui-secondary-text)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
+              to={boardHref}
+            >
+              <CalendarClock size={13} strokeWidth={2.35} aria-hidden="true" />
+              {primaryBookingShortLabel}
+            </Link>
+          ) : (
+            <button
+              className="customer-quick-secondary-action inline-flex min-h-9 items-center justify-center gap-1.5 rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] px-3 text-xs font-semibold text-[var(--ui-text-muted)] opacity-60"
+              disabled
+              type="button"
+            >
+              <CalendarClock size={13} strokeWidth={2.35} aria-hidden="true" />
+              Booking
+            </button>
+          )}
+        </div>
+      </section>
 
       <div className="customer-whatsapp-template customer-template-panel grid gap-2 rounded-[1.25rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-3 ring-1 ring-[var(--ui-ring)]">
         <div className="flex items-center justify-between gap-2">
