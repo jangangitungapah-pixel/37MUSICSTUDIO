@@ -25,6 +25,8 @@ import {
   MessageCircle,
   AlertTriangle,
   BadgeCheck,
+  Banknote,
+  ReceiptText,
 } from 'lucide-react';
 import { cn } from '../lib/cn.js';
 
@@ -1321,12 +1323,175 @@ function CustomerPaymentSummary({
   );
 }
 
+function getCustomerHistoryStats(customer) {
+  const bookings = Array.isArray(customer?.bookings) ? customer.bookings : [];
+
+  return bookings.reduce(
+    (stats, booking) => {
+      stats.total += 1;
+
+      if (booking.status === 'paid') {
+        stats.paid += 1;
+      } else if (booking.status === 'dp') {
+        stats.dp += 1;
+      } else {
+        stats.pending += 1;
+      }
+
+      if (Number(booking.remainingPayment) > 0) {
+        stats.unpaid += 1;
+        stats.unpaidAmount += Number(booking.remainingPayment) || 0;
+      }
+
+      return stats;
+    },
+    {
+      dp: 0,
+      paid: 0,
+      pending: 0,
+      total: 0,
+      unpaid: 0,
+      unpaidAmount: 0,
+    },
+  );
+}
+
+function getHistoryFilterOptions(customer) {
+  const stats = getCustomerHistoryStats(customer);
+
+  return [
+    {
+      count: stats.total,
+      key: 'all',
+      label: 'All',
+    },
+    {
+      count: stats.unpaid,
+      key: 'unpaid',
+      label: 'Unpaid',
+    },
+    {
+      count: stats.pending,
+      key: 'pending',
+      label: 'Pending',
+    },
+    {
+      count: stats.dp,
+      key: 'dp',
+      label: 'DP',
+    },
+    {
+      count: stats.paid,
+      key: 'paid',
+      label: 'Lunas',
+    },
+  ];
+}
+
+function getFilteredCustomerBookings(customer, filter) {
+  const bookings = Array.isArray(customer?.bookings) ? customer.bookings : [];
+
+  if (filter === 'unpaid') {
+    return bookings.filter((booking) => Number(booking.remainingPayment) > 0);
+  }
+
+  if (filter === 'pending' || filter === 'dp' || filter === 'paid') {
+    return bookings.filter((booking) => booking.status === filter);
+  }
+
+  return bookings;
+}
+
+function getBookingStatusTone(status) {
+  if (status === 'paid') {
+    return 'border-studio-cyan/35 bg-studio-cyan/10 text-studio-cyan ring-studio-cyan/15';
+  }
+
+  if (status === 'dp') {
+    return 'border-studio-purple/35 bg-studio-purple/10 text-studio-purple ring-studio-purple/15';
+  }
+
+  return 'border-studio-accent/35 bg-studio-accent/10 text-studio-accent ring-studio-accent/15';
+}
+
+function CustomerHistoryCard({
+  booking,
+}) {
+  const hasRemainingPayment = Number(booking.remainingPayment) > 0;
+
+  return (
+    <article
+      className={cn(
+        'grid gap-3 rounded-[1.15rem] border p-3 ring-1',
+        hasRemainingPayment
+          ? 'border-studio-accent/35 bg-studio-accent/10 ring-studio-accent/15'
+          : 'border-[var(--ui-border)] bg-[var(--ui-control)] ring-[var(--ui-ring)]',
+      )}
+    >
+      <div className="flex flex-wrap items-start justify-between gap-2">
+        <div className="grid min-w-0 gap-1">
+          <strong className="truncate text-sm font-semibold text-[var(--ui-text-strong)]">
+            {booking.sessionType || booking.title || 'Studio session'}
+          </strong>
+
+          <span className="text-xs font-medium leading-5 text-[var(--ui-text-muted)]">
+            {formatDateLabel(booking.dateKey)} • {booking.time || '-'} • {booking.durationHours || 1} jam
+          </span>
+        </div>
+
+        <span className={cn('rounded-full border px-2 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.1em] ring-1', getBookingStatusTone(booking.status))}>
+          {getPaymentLabel(booking.status)}
+        </span>
+      </div>
+
+      <div className="grid gap-2 sm:grid-cols-3">
+        <div className="grid gap-0.5 rounded-[0.95rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-2.5">
+          <span className="inline-flex items-center gap-1.5 text-[0.66rem] font-semibold uppercase tracking-[0.12em] text-[var(--ui-text-muted)]">
+            <ReceiptText size={12} strokeWidth={2.35} aria-hidden="true" />
+            Total
+          </span>
+          <strong className="text-xs font-semibold text-[var(--ui-text-strong)]">
+            {formatCurrency(booking.totalPrice)}
+          </strong>
+        </div>
+
+        <div className="grid gap-0.5 rounded-[0.95rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-2.5">
+          <span className="inline-flex items-center gap-1.5 text-[0.66rem] font-semibold uppercase tracking-[0.12em] text-[var(--ui-text-muted)]">
+            <Banknote size={12} strokeWidth={2.35} aria-hidden="true" />
+            Paid
+          </span>
+          <strong className="text-xs font-semibold text-[var(--ui-text-strong)]">
+            {formatCurrency(booking.dpAmount)}
+          </strong>
+        </div>
+
+        <div className="grid gap-0.5 rounded-[0.95rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-2.5">
+          <span className="inline-flex items-center gap-1.5 text-[0.66rem] font-semibold uppercase tracking-[0.12em] text-[var(--ui-text-muted)]">
+            <CreditCard size={12} strokeWidth={2.35} aria-hidden="true" />
+            Sisa
+          </span>
+          <strong className={cn('text-xs font-semibold', hasRemainingPayment ? 'text-studio-accent' : 'text-[var(--ui-text-strong)]')}>
+            {formatCurrency(booking.remainingPayment)}
+          </strong>
+        </div>
+      </div>
+
+      {booking.notes ? (
+        <p className="m-0 rounded-[0.95rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-2.5 text-xs font-medium leading-5 text-[var(--ui-text-muted)]">
+          {booking.notes}
+        </p>
+      ) : null}
+    </article>
+  );
+}
+
 function CustomerDetailPanel({
   customer,
   onClose,
 }) {
   const [copyStatus, setCopyStatus] = useState('idle');
   const [summaryCopyStatus, setSummaryCopyStatus] = useState('idle');
+  const [historyFilter, setHistoryFilter] = useState('all');
   const phoneValue = getCustomerPhoneValue(customer);
   const phoneDigits = normalizePhoneDigits(phoneValue);
   const whatsappNumber = normalizeWhatsappNumber(phoneValue);
@@ -1338,6 +1503,9 @@ function CustomerDetailPanel({
   const customerSummaryText = createCustomerSummaryText(customer);
   const whatsappMessage = createCustomerWhatsappMessage(customer);
   const whatsappHref = whatsappNumber ? 'https://wa.me/' + whatsappNumber + '?text=' + encodeURIComponent(whatsappMessage) : '';
+  const historyStats = getCustomerHistoryStats(customer);
+  const historyFilterOptions = getHistoryFilterOptions(customer);
+  const filteredHistoryBookings = getFilteredCustomerBookings(customer, historyFilter);
 
   const resetActionStatus = (setter) => {
     if (typeof window !== 'undefined') {
@@ -1498,16 +1666,7 @@ function CustomerDetailPanel({
             <CalendarClock size={15} strokeWidth={2.35} aria-hidden="true" />
             {primaryBookingLabel}
           </Link>
-        ) : (
-          <button
-            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] px-4 text-sm font-semibold text-[var(--ui-text-muted)] opacity-60"
-            disabled
-            type="button"
-          >
-            <CalendarClock size={15} strokeWidth={2.35} aria-hidden="true" />
-            Booking
-          </button>
-        )}
+        ) : null}
 
         <Link
           className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full [background:var(--ui-primary-bg)] px-4 text-sm font-semibold text-[var(--ui-primary-text)] shadow-[var(--ui-shadow-soft)] transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
@@ -1572,45 +1731,81 @@ function CustomerDetailPanel({
       </div>
 
       <div className="grid gap-3">
-        <div className="flex items-center justify-between gap-3">
-          <span className="text-xs font-semibold uppercase tracking-[0.16em] text-studio-accent">
-            Booking history
-          </span>
+        <div className="grid gap-2">
+          <div className="flex items-center justify-between gap-3">
+            <span className="text-xs font-semibold uppercase tracking-[0.16em] text-studio-accent">
+              Booking history
+            </span>
 
-          <span className="rounded-full border border-[var(--ui-border)] bg-[var(--ui-control)] px-2.5 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.11em] text-[var(--ui-text-muted)] ring-1 ring-[var(--ui-ring)]">
-            {customer.bookings.length} sesi
-          </span>
+            <span className="rounded-full border border-[var(--ui-border)] bg-[var(--ui-control)] px-2.5 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.11em] text-[var(--ui-text-muted)] ring-1 ring-[var(--ui-ring)]">
+              {filteredHistoryBookings.length} / {customer.bookings.length} sesi
+            </span>
+          </div>
+
+          <div className="grid gap-2 rounded-[1.15rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-2 ring-1 ring-[var(--ui-ring)]">
+            <div className="grid gap-2 sm:grid-cols-2">
+              <div className="grid gap-0.5 rounded-[0.95rem] border border-[var(--ui-border)] bg-[var(--ui-control)] p-2.5">
+                <span className="text-[0.66rem] font-semibold uppercase tracking-[0.13em] text-[var(--ui-text-muted)]">
+                  Unpaid sessions
+                </span>
+                <strong className="text-sm font-semibold text-studio-accent">
+                  {historyStats.unpaid} sesi • {formatCurrency(historyStats.unpaidAmount)}
+                </strong>
+              </div>
+
+              <div className="grid gap-0.5 rounded-[0.95rem] border border-[var(--ui-border)] bg-[var(--ui-control)] p-2.5">
+                <span className="text-[0.66rem] font-semibold uppercase tracking-[0.13em] text-[var(--ui-text-muted)]">
+                  Paid ratio
+                </span>
+                <strong className="text-sm font-semibold text-[var(--ui-text-strong)]">
+                  {historyStats.paid} lunas / {historyStats.total} sesi
+                </strong>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap gap-2">
+              {historyFilterOptions.map((option) => {
+                const isActive = historyFilter === option.key;
+
+                return (
+                  <button
+                    aria-pressed={isActive}
+                    className={cn(
+                      'inline-flex min-h-9 items-center justify-center gap-2 rounded-full border px-3 text-xs font-semibold uppercase tracking-[0.11em] ring-1 transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20',
+                      isActive
+                        ? 'border-studio-accent/45 bg-studio-accent/10 text-studio-accent ring-studio-accent/20'
+                        : 'border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] text-[var(--ui-secondary-text)] ring-[var(--ui-ring)] hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)]',
+                    )}
+                    key={option.key}
+                    type="button"
+                    onClick={() => setHistoryFilter(option.key)}
+                  >
+                    {option.label}
+                    <span className="rounded-full bg-[var(--ui-control)] px-1.5 py-0.5 text-[0.62rem]">
+                      {option.count}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
         </div>
 
         <div className="grid max-h-[25rem] gap-2 overflow-auto pr-1">
-          {customer.bookings.map((booking) => (
-            <div
-              className="grid gap-2 rounded-[1.15rem] border border-[var(--ui-border)] bg-[var(--ui-control)] p-3 ring-1 ring-[var(--ui-ring)]"
-              key={booking.id}
-            >
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <strong className="text-sm font-semibold text-[var(--ui-text-strong)]">
-                  {booking.sessionType || booking.title}
-                </strong>
-
-                <span className="rounded-full border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] px-2 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.1em] text-[var(--ui-text-main)]">
-                  {getPaymentLabel(booking.status)}
-                </span>
-              </div>
-
-              <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs font-medium text-[var(--ui-text-muted)]">
-                <span>{formatDateLabel(booking.dateKey)}</span>
-                <span>{booking.time}</span>
-                <span>{booking.durationHours} jam</span>
-                <span>{formatCurrency(booking.totalPrice)}</span>
-                {Number(booking.remainingPayment) > 0 ? (
-                  <span className="text-studio-accent">
-                    Sisa {formatCurrency(booking.remainingPayment)}
-                  </span>
-                ) : null}
-              </div>
+          {filteredHistoryBookings.length > 0 ? (
+            filteredHistoryBookings.map((booking) => (
+              <CustomerHistoryCard
+                booking={booking}
+                key={booking.id}
+              />
+            ))
+          ) : (
+            <div className="grid min-h-28 place-items-center rounded-[1.15rem] border border-dashed border-[var(--ui-border-strong)] bg-[var(--ui-glass-soft)] p-4 text-center ring-1 ring-[var(--ui-ring)]">
+              <p className="m-0 text-sm font-medium leading-6 text-[var(--ui-text-muted)]">
+                Tidak ada booking pada filter history ini.
+              </p>
             </div>
-          ))}
+          )}
         </div>
       </div>
     </aside>
