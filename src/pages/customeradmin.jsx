@@ -883,7 +883,7 @@ function CustomerAttentionStrip({
         </span>
       </div>
 
-      <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-5">
+      <div className="-mx-2 flex snap-x gap-2 overflow-x-auto px-2 pb-1 sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 sm:pb-0 xl:grid-cols-5">
         {items.map((item) => {
           const Icon = item.icon;
           const isActive = activeFilter === item.key;
@@ -892,7 +892,7 @@ function CustomerAttentionStrip({
             <button
               aria-pressed={isActive}
               className={cn(
-                'grid min-h-[6.25rem] gap-2 rounded-[1.25rem] border p-3 text-left ring-1 transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20',
+                'grid min-h-[5.75rem] min-w-[9.75rem] snap-start gap-2 rounded-[1.25rem] border p-3 text-left ring-1 transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20 sm:min-h-[6.25rem] sm:min-w-0',
                 isActive
                   ? 'border-studio-accent/45 bg-studio-accent/10 text-studio-accent ring-studio-accent/20'
                   : 'border-[var(--ui-border)] bg-[var(--ui-control)] text-[var(--ui-text-main)] ring-[var(--ui-ring)] hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)]',
@@ -934,7 +934,7 @@ function CustomerToolbar({
   onStatusFilterChange,
 }) {
   return (
-    <section className="grid gap-3 rounded-[1.5rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-3 ring-1 ring-[var(--ui-ring)] lg:grid-cols-[minmax(0,1fr)_auto_auto] lg:items-end">
+    <section className="grid gap-2.5 rounded-[1.5rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-2.5 ring-1 ring-[var(--ui-ring)] sm:gap-3 sm:p-3 lg:grid-cols-[minmax(0,1fr)_auto_auto] lg:items-end">
       <label className="grid gap-1.5 text-sm font-semibold text-[var(--ui-text-main)]">
         Search customer
         <span className="flex min-h-12 items-center gap-3 rounded-[1.25rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 ring-1 ring-[var(--ui-ring)] focus-within:border-studio-accent/55 focus-within:ring-4 focus-within:ring-studio-accent/20">
@@ -1092,7 +1092,7 @@ function CustomerList({
   }
 
   return (
-    <section className="overflow-hidden rounded-[1.75rem] border border-[var(--ui-border-strong)] bg-[color-mix(in_srgb,var(--ui-glass)_72%,transparent)] ring-1 ring-[var(--ui-ring)] backdrop-blur-xl">
+    <section className="overflow-hidden rounded-[1.5rem] border border-[var(--ui-border-strong)] bg-[color-mix(in_srgb,var(--ui-glass)_72%,transparent)] ring-1 ring-[var(--ui-ring)] backdrop-blur-xl sm:rounded-[1.75rem]">
       <div className="hidden grid-cols-[minmax(230px,1.35fr)_minmax(138px,0.75fr)_minmax(116px,0.58fr)_minmax(116px,0.58fr)_minmax(122px,0.58fr)_minmax(156px,0.68fr)] border-b border-[var(--ui-border-strong)] px-4 py-3 text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-[var(--ui-text-muted)] lg:grid">
         <span>Customer</span>
         <span>Contact</span>
@@ -1109,7 +1109,7 @@ function CustomerList({
           return (
             <article
               className={cn(
-                'grid gap-3 border-b border-[var(--ui-border)] px-4 py-3.5 last:border-b-0 lg:grid-cols-[minmax(230px,1.35fr)_minmax(138px,0.75fr)_minmax(116px,0.58fr)_minmax(116px,0.58fr)_minmax(122px,0.58fr)_minmax(156px,0.68fr)] lg:items-center',
+                'grid gap-3 border-b border-[var(--ui-border)] px-3 py-3 last:border-b-0 sm:px-4 sm:py-3.5 lg:grid-cols-[minmax(230px,1.35fr)_minmax(138px,0.75fr)_minmax(116px,0.58fr)_minmax(116px,0.58fr)_minmax(122px,0.58fr)_minmax(156px,0.68fr)] lg:items-center',
                 isSelected
                   ? 'bg-[color-mix(in_srgb,var(--ui-control-hover)_72%,transparent)]'
                   : 'bg-transparent hover:bg-[var(--ui-glass-soft)]',
@@ -1117,11 +1117,11 @@ function CustomerList({
               key={customer.id}
             >
               <button
-                className="flex min-w-0 items-center gap-3 rounded-[1.1rem] text-left transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
+                className="flex min-w-0 items-center gap-2.5 rounded-[1.1rem] text-left transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20 sm:gap-3"
                 type="button"
                 onClick={() => onSelectCustomer(customer)}
               >
-                <span className="grid size-11 shrink-0 place-items-center rounded-[1rem] [background:var(--ui-primary-bg)] text-xs font-semibold tracking-[-0.03em] text-[var(--ui-primary-text)] shadow-[var(--ui-shadow-control)]">
+                <span className="grid size-10 shrink-0 place-items-center rounded-[1rem] [background:var(--ui-primary-bg)] text-xs font-semibold tracking-[-0.03em] text-[var(--ui-primary-text)] shadow-[var(--ui-shadow-control)] sm:size-11">
                   {customer.initials}
                 </span>
 
@@ -1568,7 +1568,7 @@ function CustomerDetailPanel({
   }
 
   return (
-    <aside className="grid gap-4 rounded-[2rem] border border-[var(--ui-border-strong)] bg-[linear-gradient(145deg,var(--ui-glass),var(--ui-glass-soft))] p-4 shadow-[var(--ui-shadow-soft)] ring-1 ring-[var(--ui-ring)] backdrop-blur-2xl sm:p-5 xl:sticky xl:top-4">
+    <aside className="grid gap-3 rounded-[1.65rem] border border-[var(--ui-border-strong)] bg-[linear-gradient(145deg,var(--ui-glass),var(--ui-glass-soft))] p-3 shadow-[var(--ui-shadow-soft)] ring-1 ring-[var(--ui-ring)] backdrop-blur-2xl sm:gap-4 sm:rounded-[2rem] sm:p-5 xl:sticky xl:top-4">
       <div className="flex items-start justify-between gap-3">
         <div className="flex min-w-0 items-center gap-3">
           <span className="grid size-13 shrink-0 place-items-center rounded-[1.15rem] [background:var(--ui-primary-bg)] text-sm font-semibold tracking-[-0.03em] text-[var(--ui-primary-text)] shadow-[var(--ui-shadow-control)]">
@@ -1763,7 +1763,7 @@ function CustomerDetailPanel({
               </div>
             </div>
 
-            <div className="flex flex-wrap gap-2">
+            <div className="-mx-1 flex snap-x gap-2 overflow-x-auto px-1 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0">
               {historyFilterOptions.map((option) => {
                 const isActive = historyFilter === option.key;
 
@@ -1771,7 +1771,7 @@ function CustomerDetailPanel({
                   <button
                     aria-pressed={isActive}
                     className={cn(
-                      'inline-flex min-h-9 items-center justify-center gap-2 rounded-full border px-3 text-xs font-semibold uppercase tracking-[0.11em] ring-1 transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20',
+                      'inline-flex min-h-9 shrink-0 snap-start items-center justify-center gap-2 rounded-full border px-3 text-xs font-semibold uppercase tracking-[0.11em] ring-1 transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20',
                       isActive
                         ? 'border-studio-accent/45 bg-studio-accent/10 text-studio-accent ring-studio-accent/20'
                         : 'border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] text-[var(--ui-secondary-text)] ring-[var(--ui-ring)] hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)]',
@@ -1791,7 +1791,7 @@ function CustomerDetailPanel({
           </div>
         </div>
 
-        <div className="grid max-h-[25rem] gap-2 overflow-auto pr-1">
+        <div className="grid max-h-[28rem] gap-2 overflow-auto pr-0 sm:pr-1">
           {filteredHistoryBookings.length > 0 ? (
             filteredHistoryBookings.map((booking) => (
               <CustomerHistoryCard
@@ -1842,7 +1842,7 @@ export function CustomerAdmin() {
   };
 
   return (
-    <section className="grid gap-4 pb-[calc(7rem+env(safe-area-inset-bottom))] pt-1 md:pb-4 md:pt-2" aria-labelledby="customer-admin-title">
+    <section className="grid gap-3 pb-[calc(8.5rem+env(safe-area-inset-bottom))] pt-1 sm:gap-4 md:pb-4 md:pt-2" aria-labelledby="customer-admin-title">
       <div className="sr-only" id="customer-admin-title">
         Customer admin workspace
       </div>
