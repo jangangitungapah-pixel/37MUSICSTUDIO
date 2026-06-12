@@ -1116,32 +1116,38 @@ function CustomerList({
               )}
               key={customer.id}
             >
-              <button
-                className="flex min-w-0 items-center gap-2.5 rounded-[1.1rem] text-left transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20 sm:gap-3"
-                type="button"
-                onClick={() => onSelectCustomer(customer)}
-              >
-                <span className="grid size-10 shrink-0 place-items-center rounded-[1rem] [background:var(--ui-primary-bg)] text-xs font-semibold tracking-[-0.03em] text-[var(--ui-primary-text)] shadow-[var(--ui-shadow-control)] sm:size-11">
-                  {customer.initials}
-                </span>
-
-                <span className="grid min-w-0 gap-0.5">
-                  <strong className="truncate text-[0.95rem] font-semibold tracking-[-0.035em] text-[var(--ui-text-strong)]">
-                    {customer.name}
-                  </strong>
-                  <span className="truncate text-xs font-medium text-[var(--ui-text-muted)]">
-                    Favorit: {customer.favoriteSession}
+              <div className="customer-mobile-card-head flex min-w-0 items-start justify-between gap-2 lg:contents">
+                <button
+                  className="flex min-w-0 flex-1 items-center gap-2.5 rounded-[1.1rem] text-left transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20 sm:gap-3"
+                  type="button"
+                  onClick={() => onSelectCustomer(customer)}
+                >
+                  <span className="grid size-10 shrink-0 place-items-center rounded-[1rem] [background:var(--ui-primary-bg)] text-xs font-semibold tracking-[-0.03em] text-[var(--ui-primary-text)] shadow-[var(--ui-shadow-control)] sm:size-11">
+                    {customer.initials}
                   </span>
-                  <CustomerQualityBadge quality={customer.dataQuality} />
-                </span>
-              </button>
 
-              <div className="flex items-center gap-2 text-sm font-semibold text-[var(--ui-text-main)]">
+                  <span className="grid min-w-0 gap-0.5">
+                    <strong className="truncate text-[0.95rem] font-semibold tracking-[-0.035em] text-[var(--ui-text-strong)]">
+                      {customer.name}
+                    </strong>
+                    <span className="truncate text-xs font-medium text-[var(--ui-text-muted)]">
+                      Favorit: {customer.favoriteSession}
+                    </span>
+                  </span>
+                </button>
+
+                <div className="customer-mobile-card-badges flex shrink-0 flex-wrap justify-end gap-1.5 lg:hidden">
+                  <CustomerQualityBadge quality={customer.dataQuality} />
+                  <CustomerStatusBadge status={customer.status} />
+                </div>
+              </div>
+
+              <div className="customer-mobile-contact flex items-center gap-2 text-sm font-semibold text-[var(--ui-text-main)]">
                 <Phone className="shrink-0 text-[var(--ui-text-muted)]" size={14} strokeWidth={2.35} aria-hidden="true" />
                 <span className="truncate">{customer.phone}</span>
               </div>
 
-              <div className="grid gap-0.5">
+              <div className="customer-mobile-total grid gap-0.5">
                 <strong className="text-sm font-semibold text-[var(--ui-text-strong)]">
                   {customer.totalBookings} sesi
                 </strong>
@@ -1150,7 +1156,7 @@ function CustomerList({
                 </span>
               </div>
 
-              <div className="grid gap-0.5">
+              <div className="customer-mobile-last grid gap-0.5">
                 <strong className="text-sm font-semibold text-[var(--ui-text-strong)]">
                   {customer.lastBooking ? formatDateLabel(customer.lastBooking.dateKey) : '-'}
                 </strong>
@@ -1159,7 +1165,9 @@ function CustomerList({
                 </span>
               </div>
 
-              <CustomerStatusBadge status={customer.status} />
+              <div className="customer-desktop-status hidden lg:block">
+                <CustomerStatusBadge status={customer.status} />
+              </div>
 
               <div className="flex items-center gap-2 lg:justify-end">
                 <button
