@@ -1436,6 +1436,161 @@ function CustomerQualityPanel({
   );
 }
 
+function getCustomerInsightToneClass(tone) {
+  if (tone === 'accent') {
+    return 'border-studio-accent/35 bg-studio-accent/10 text-studio-accent ring-studio-accent/15';
+  }
+
+  if (tone === 'cyan') {
+    return 'border-studio-cyan/35 bg-studio-cyan/10 text-studio-cyan ring-studio-cyan/15';
+  }
+
+  if (tone === 'purple') {
+    return 'border-studio-purple/35 bg-studio-purple/10 text-studio-purple ring-studio-purple/15';
+  }
+
+  return 'border-[var(--ui-border)] bg-[var(--ui-control)] text-[var(--ui-text-muted)] ring-[var(--ui-ring)]';
+}
+
+function CustomerInsightCard({
+  actionLabel = 'Select',
+  customer = null,
+  helper,
+  icon: Icon,
+  label,
+  tone = 'neutral',
+  value,
+  onSelectCustomer,
+}) {
+  return (
+    <article className="customer-insight-card grid gap-2 rounded-[1rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-3 ring-1 ring-[var(--ui-ring)]">
+      <div className="flex items-start justify-between gap-3">
+        <div className="grid min-w-0 gap-1">
+          <span className="text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-[var(--ui-text-muted)]">
+            {label}
+          </span>
+
+          <strong className="truncate text-lg font-semibold tracking-[-0.055em] text-[var(--ui-text-strong)]">
+            {value}
+          </strong>
+        </div>
+
+        <span className={cn('grid size-9 shrink-0 place-items-center rounded-[0.85rem] border ring-1', getCustomerInsightToneClass(tone))}>
+          <Icon size={16} strokeWidth={2.35} aria-hidden="true" />
+        </span>
+      </div>
+
+      <p className="m-0 line-clamp-2 text-xs font-medium leading-5 text-[var(--ui-text-muted)]">
+        {helper}
+      </p>
+
+      {customer ? (
+        <button
+          className="inline-flex min-h-8 w-fit items-center justify-center gap-1.5 rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] px-3 text-xs font-semibold text-[var(--ui-secondary-text)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
+          type="button"
+          onClick={() => onSelectCustomer(customer)}
+        >
+          {actionLabel}
+          <ArrowUpRight size={12} strokeWidth={2.35} aria-hidden="true" />
+        </button>
+      ) : null}
+    </article>
+  );
+}
+
+function CustomerInsightPanel({
+  customers,
+  filteredCustomers,
+  qualityStats,
+  stats,
+  onSelectCustomer,
+}) {
+  const safeCustomers = Array.isArray(customers) ? customers : [];
+  const visibleCustomers = Array.isArray(filteredCustomers) ? filteredCustomers : safeCustomers;
+  const topRevenueCustomer = [...safeCustomers].sort((a, b) => b.totalRevenue - a.totalRevenue)[0] || null;
+  const unpaidCustomers = safeCustomers
+    .filter((customer) => Math.max(0, Number(customer.pendingRevenue) || 0) > 0)
+    .sort((a, b) => b.pendingRevenue - a.pendingRevenue);
+  const topUnpaidCustomer = unpaidCustomers[0] || null;
+  const upcomingCustomer = [...safeCustomers]
+    .filter((customer) => customer.nextBooking)
+    .sort((a, b) => {
+      const firstTime = a.nextBooking?.parsedDate?.getTime() || Number.MAX_SAFE_INTEGER;
+      const secondTime = b.nextBooking?.parsedDate?.getTime() || Number.MAX_SAFE_INTEGER;
+
+      return firstTime - secondTime;
+    })[0] || null;
+  const reviewCustomer = safeCustomers.find((customer) => customer.dataQuality?.level !== 'clean') || null;
+  const totalUnpaidAmount = unpaidCustomers.reduce((sum, customer) => sum + (Number(customer.pendingRevenue) || 0), 0);
+  const visibleLabel = visibleCustomers.length + ' visible dari ' + safeCustomers.length;
+
+  return (
+    <section className="customer-insight-panel hidden gap-3 xl:grid" aria-label="Customer desktop insights">
+      <div className="flex items-end justify-between gap-4">
+        <div className="grid gap-1">
+          <span className="text-[0.64rem] font-semibold uppercase tracking-[0.16em] text-studio-accent">
+            Customer insights
+          </span>
+
+          <h2 className="m-0 text-xl font-semibold tracking-[-0.055em] text-[var(--ui-text-strong)]">
+            Follow-up board
+          </h2>
+        </div>
+
+        <span className="rounded-full border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 py-1 text-xs font-semibold text-[var(--ui-text-muted)] ring-1 ring-[var(--ui-ring)]">
+          {visibleLabel}
+        </span>
+      </div>
+
+      <div className="customer-insight-grid grid gap-2 2xl:grid-cols-2">
+        <CustomerInsightCard
+          actionLabel="Open customer"
+          customer={topRevenueCustomer}
+          helper={topRevenueCustomer ? topRevenueCustomer.name + ' menyumbang revenue terbesar dari histori booking.' : 'Belum ada customer dengan revenue.'}
+          icon={Banknote}
+          label="Top revenue"
+          tone="cyan"
+          value={topRevenueCustomer ? formatCurrency(topRevenueCustomer.totalRevenue) : formatCurrency(stats.totalRevenue)}
+          onSelectCustomer={onSelectCustomer}
+        />
+
+        <CustomerInsightCard
+          actionLabel="Follow-up"
+          customer={topUnpaidCustomer}
+          helper={topUnpaidCustomer ? topUnpaidCustomer.name + ' punya sisa pembayaran terbesar.' : 'Tidak ada sisa pembayaran aktif.'}
+          icon={CreditCard}
+          label="Unpaid focus"
+          tone={topUnpaidCustomer ? 'accent' : 'cyan'}
+          value={formatCurrency(totalUnpaidAmount)}
+          onSelectCustomer={onSelectCustomer}
+        />
+
+        <CustomerInsightCard
+          actionLabel="Send reminder"
+          customer={upcomingCustomer}
+          helper={upcomingCustomer?.nextBooking ? upcomingCustomer.name + ' punya jadwal ' + formatDateLabel(upcomingCustomer.nextBooking.dateKey) + '.' : 'Belum ada upcoming booking.'}
+          icon={CalendarClock}
+          label="Next reminder"
+          tone={upcomingCustomer ? 'purple' : 'neutral'}
+          value={upcomingCustomer ? formatDateLabel(upcomingCustomer.nextBooking.dateKey) : 'No schedule'}
+          onSelectCustomer={onSelectCustomer}
+        />
+
+        <CustomerInsightCard
+          actionLabel="Review"
+          customer={reviewCustomer}
+          helper={reviewCustomer ? reviewCustomer.name + ': ' + (reviewCustomer.dataQuality?.helper || 'Data perlu dicek.') : 'Semua customer terlihat clean.'}
+          icon={reviewCustomer ? AlertTriangle : BadgeCheck}
+          label="Data quality"
+          tone={reviewCustomer ? 'accent' : 'cyan'}
+          value={(qualityStats.needsReview || 0) + ' review'}
+          onSelectCustomer={onSelectCustomer}
+        />
+      </div>
+    </section>
+  );
+}
+
 function CustomerSelectionEmptyState({
   hasCustomers,
   onSelectFirst,
@@ -2621,13 +2776,23 @@ export function CustomerAdmin() {
         />
       ) : (
         <div className="customer-desktop-content-grid grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(320px,390px)] xl:items-start">
-          <CustomerList
-            customers={filteredCustomers}
-            hasActiveFilters={hasActiveCustomerFilters}
-            selectedCustomerId={selectedCustomer?.id || ''}
-            onResetFilters={resetCustomerFilters}
-            onSelectCustomer={handleSelectCustomer}
-          />
+          <div className="customer-desktop-left-column grid gap-3">
+            <CustomerList
+              customers={filteredCustomers}
+              hasActiveFilters={hasActiveCustomerFilters}
+              selectedCustomerId={selectedCustomer?.id || ''}
+              onResetFilters={resetCustomerFilters}
+              onSelectCustomer={handleSelectCustomer}
+            />
+
+            <CustomerInsightPanel
+              customers={customers}
+              filteredCustomers={filteredCustomers}
+              qualityStats={qualityStats}
+              stats={stats}
+              onSelectCustomer={handleSelectCustomer}
+            />
+          </div>
 
           {selectedCustomer ? (
             <CustomerDetailPanel

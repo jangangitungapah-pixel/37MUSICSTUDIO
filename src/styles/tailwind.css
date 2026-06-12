@@ -1216,3 +1216,31 @@
   }
 }
 /* 37-customer-quick-actions:end */
+
+/* 37-customer-desktop-insights:start */
+@media (min-width: 1280px) {
+  .customer-desktop-left-column {
+    min-width: 0 !important;
+  }
+
+  .customer-insight-panel {
+    border-top: 1px solid var(--ui-border) !important;
+    padding-top: 0.9rem !important;
+  }
+
+  .customer-insight-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .customer-insight-card {
+    min-height: 8.4rem !important;
+    background: color-mix(in srgb, var(--ui-glass-soft) 68%, transparent) !important;
+  }
+}
+
+@media (min-width: 1536px) {
+  .customer-insight-card {
+    min-height: 7.8rem !important;
+  }
+}
+/* 37-customer-desktop-insights:end */
