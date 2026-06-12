@@ -210,6 +210,80 @@ function getCustomerBoardQuery(customer) {
   return getCustomerPhoneValue(customer) || customer?.name || '';
 }
 
+function getCustomerPrimaryBooking(customer) {
+  return customer?.nextBooking || customer?.lastBooking || null;
+}
+
+function getCustomerPrimaryBookingLabel(customer) {
+  if (customer?.nextBooking) {
+    return 'Next booking';
+  }
+
+  if (customer?.lastBooking) {
+    return 'Last booking';
+  }
+
+  return 'Booking';
+}
+
+function createBookingSummaryLine(booking, fallback = 'Belum ada booking tercatat') {
+  if (!booking) {
+    return fallback;
+  }
+
+  return [
+    booking.sessionType || booking.title || 'Studio session',
+    formatDateLabel(booking.dateKey),
+    booking.time || '-',
+    (booking.durationHours || 1) + ' jam',
+    formatCurrency(booking.totalPrice),
+    getPaymentLabel(booking.status),
+  ].join(' • ');
+}
+
+function createCustomerSummaryText(customer) {
+  if (!customer) {
+    return '';
+  }
+
+  const pendingRevenue = Math.max(0, Number(customer.pendingRevenue) || 0);
+  const lines = [
+    '37 Music Studio - Customer Summary',
+    'Nama: ' + customer.name,
+    'Telepon: ' + (getCustomerPhoneValue(customer) || 'Belum tersedia'),
+    'Total booking: ' + customer.totalBookings + ' sesi',
+    'Favorite session: ' + customer.favoriteSession,
+    'Revenue: ' + formatCurrency(customer.totalRevenue),
+    'Terkumpul: ' + formatCurrency(customer.paidRevenue),
+    'Sisa bayar: ' + formatCurrency(pendingRevenue),
+    'Last booking: ' + createBookingSummaryLine(customer.lastBooking),
+    'Next booking: ' + createBookingSummaryLine(customer.nextBooking, 'Belum ada jadwal mendatang'),
+    'Data quality: ' + (customer.dataQuality?.label || 'Clean'),
+  ];
+
+  return lines.join('\n');
+}
+
+function createCustomerWhatsappMessage(customer) {
+  if (!customer) {
+    return '';
+  }
+
+  const primaryBooking = getCustomerPrimaryBooking(customer);
+  const pendingRevenue = Math.max(0, Number(customer.pendingRevenue) || 0);
+  const greetingName = customer.name || 'Kak';
+
+  return [
+    'Halo ' + greetingName + ', kami dari 37 Music Studio.',
+    '',
+    'Kami ingin follow-up data booking studio.',
+    primaryBooking ? getCustomerPrimaryBookingLabel(customer) + ': ' + createBookingSummaryLine(primaryBooking) : 'Belum ada booking aktif yang tercatat.',
+    pendingRevenue > 0 ? 'Sisa pembayaran tercatat: ' + formatCurrency(pendingRevenue) + '.' : 'Status pembayaran terlihat aman.',
+    '',
+    'Terima kasih.',
+  ].join('\n');
+}
+
 function getPaymentProgress(customer) {
   const totalRevenue = Math.max(0, Number(customer?.totalRevenue) || 0);
   const paidRevenue = Math.max(0, Number(customer?.paidRevenue) || 0);
@@ -1130,6 +1204,8 @@ function DetailMetric({
 }
 
 function BookingSummaryCard({
+  actionHref = '',
+  actionLabel = 'Open board',
   booking,
   emptyLabel = 'Belum ada data',
   label,
@@ -1149,7 +1225,7 @@ function BookingSummaryCard({
   }
 
   return (
-    <div className="grid gap-2 rounded-[1.25rem] border border-[var(--ui-border)] bg-[var(--ui-control)] p-3 ring-1 ring-[var(--ui-ring)]">
+    <div className="grid gap-3 rounded-[1.25rem] border border-[var(--ui-border)] bg-[var(--ui-control)] p-3 ring-1 ring-[var(--ui-ring)]">
       <span className="text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-[var(--ui-text-muted)]">
         {label}
       </span>
@@ -1164,9 +1240,21 @@ function BookingSummaryCard({
         </span>
       </div>
 
-      <span className="w-fit rounded-full border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] px-2 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.1em] text-[var(--ui-text-main)]">
-        {getPaymentLabel(booking.status)}
-      </span>
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <span className="w-fit rounded-full border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] px-2 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.1em] text-[var(--ui-text-main)]">
+          {getPaymentLabel(booking.status)}
+        </span>
+
+        {actionHref ? (
+          <Link
+            className="inline-flex min-h-8 items-center justify-center gap-1.5 rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] px-3 text-xs font-semibold text-[var(--ui-secondary-text)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
+            to={actionHref}
+          >
+            {actionLabel}
+            <ArrowUpRight size={12} strokeWidth={2.35} aria-hidden="true" />
+          </Link>
+        ) : null}
+      </div>
     </div>
   );
 }
@@ -1238,33 +1326,56 @@ function CustomerDetailPanel({
   onClose,
 }) {
   const [copyStatus, setCopyStatus] = useState('idle');
+  const [summaryCopyStatus, setSummaryCopyStatus] = useState('idle');
   const phoneValue = getCustomerPhoneValue(customer);
   const phoneDigits = normalizePhoneDigits(phoneValue);
   const whatsappNumber = normalizeWhatsappNumber(phoneValue);
   const boardQuery = getCustomerBoardQuery(customer);
   const boardHref = '/admin/bookings?customer=' + encodeURIComponent(boardQuery);
   const phoneHref = phoneDigits ? 'tel:' + phoneDigits : '';
-  const whatsappHref = whatsappNumber ? 'https://wa.me/' + whatsappNumber : '';
+  const primaryBooking = getCustomerPrimaryBooking(customer);
+  const primaryBookingLabel = getCustomerPrimaryBookingLabel(customer);
+  const customerSummaryText = createCustomerSummaryText(customer);
+  const whatsappMessage = createCustomerWhatsappMessage(customer);
+  const whatsappHref = whatsappNumber ? 'https://wa.me/' + whatsappNumber + '?text=' + encodeURIComponent(whatsappMessage) : '';
+
+  const resetActionStatus = (setter) => {
+    if (typeof window !== 'undefined') {
+      window.setTimeout(() => setter('idle'), 2200);
+    }
+  };
 
   const handleCopyPhone = async () => {
     if (!phoneValue || typeof navigator === 'undefined' || !navigator.clipboard) {
       setCopyStatus('error');
+      resetActionStatus(setCopyStatus);
       return;
     }
 
     try {
       await navigator.clipboard.writeText(phoneValue);
       setCopyStatus('copied');
-
-      if (typeof window !== 'undefined') {
-        window.setTimeout(() => setCopyStatus('idle'), 2200);
-      }
+      resetActionStatus(setCopyStatus);
     } catch (_error) {
       setCopyStatus('error');
+      resetActionStatus(setCopyStatus);
+    }
+  };
 
-      if (typeof window !== 'undefined') {
-        window.setTimeout(() => setCopyStatus('idle'), 2200);
-      }
+  const handleCopySummary = async () => {
+    if (!customerSummaryText || typeof navigator === 'undefined' || !navigator.clipboard) {
+      setSummaryCopyStatus('error');
+      resetActionStatus(setSummaryCopyStatus);
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(customerSummaryText);
+      setSummaryCopyStatus('copied');
+      resetActionStatus(setSummaryCopyStatus);
+    } catch (_error) {
+      setSummaryCopyStatus('error');
+      resetActionStatus(setSummaryCopyStatus);
     }
   };
 
@@ -1370,6 +1481,34 @@ function CustomerDetailPanel({
           {copyStatus === 'copied' ? 'Copied' : copyStatus === 'error' ? 'Copy gagal' : 'Copy phone'}
         </button>
 
+        <button
+          className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] px-4 text-sm font-semibold text-[var(--ui-secondary-text)] shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
+          type="button"
+          onClick={handleCopySummary}
+        >
+          <Copy size={15} strokeWidth={2.35} aria-hidden="true" />
+          {summaryCopyStatus === 'copied' ? 'Summary copied' : summaryCopyStatus === 'error' ? 'Copy gagal' : 'Copy summary'}
+        </button>
+
+        {primaryBooking ? (
+          <Link
+            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] px-4 text-sm font-semibold text-[var(--ui-secondary-text)] shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
+            to={boardHref}
+          >
+            <CalendarClock size={15} strokeWidth={2.35} aria-hidden="true" />
+            {primaryBookingLabel}
+          </Link>
+        ) : (
+          <button
+            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] px-4 text-sm font-semibold text-[var(--ui-text-muted)] opacity-60"
+            disabled
+            type="button"
+          >
+            <CalendarClock size={15} strokeWidth={2.35} aria-hidden="true" />
+            Booking
+          </button>
+        )}
+
         <Link
           className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full [background:var(--ui-primary-bg)] px-4 text-sm font-semibold text-[var(--ui-primary-text)] shadow-[var(--ui-shadow-soft)] transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
           to={boardHref}
@@ -1377,6 +1516,16 @@ function CustomerDetailPanel({
           Board
           <ArrowUpRight size={15} strokeWidth={2.35} aria-hidden="true" />
         </Link>
+      </div>
+
+      <div className="rounded-[1.25rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-3 ring-1 ring-[var(--ui-ring)]">
+        <span className="text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-[var(--ui-text-muted)]">
+          WhatsApp template
+        </span>
+
+        <p className="m-0 mt-2 line-clamp-4 whitespace-pre-line text-xs font-medium leading-5 text-[var(--ui-text-main)]">
+          {whatsappMessage}
+        </p>
       </div>
 
       <div className="grid gap-0 border-y border-[var(--ui-border)]">
@@ -1406,12 +1555,16 @@ function CustomerDetailPanel({
 
       <div className="grid gap-3 sm:grid-cols-2">
         <BookingSummaryCard
+          actionHref={boardHref}
+          actionLabel="Open"
           booking={customer.lastBooking}
           emptyLabel="Belum ada booking terakhir"
           label="Last session"
         />
 
         <BookingSummaryCard
+          actionHref={boardHref}
+          actionLabel="Open"
           booking={customer.nextBooking}
           emptyLabel="Belum ada jadwal mendatang"
           label="Next session"
