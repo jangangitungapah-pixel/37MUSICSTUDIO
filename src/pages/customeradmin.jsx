@@ -96,6 +96,29 @@ const customerSortOptions = [
   },
 ];
 
+const customerCommunicationTemplates = [
+  {
+    helper: 'Follow-up sisa pembayaran customer.',
+    key: 'payment',
+    label: 'Payment',
+  },
+  {
+    helper: 'Reminder jadwal booking berikutnya.',
+    key: 'reminder',
+    label: 'Reminder',
+  },
+  {
+    helper: 'Ucapan terima kasih setelah sesi.',
+    key: 'thankYou',
+    label: 'Thank you',
+  },
+  {
+    helper: 'Ajak customer lama booking lagi.',
+    key: 'reactivation',
+    label: 'Reactivate',
+  },
+];
+
 function formatCurrency(value) {
   return new Intl.NumberFormat('id-ID', {
     currency: 'IDR',
@@ -266,23 +289,81 @@ function createCustomerSummaryText(customer) {
   return lines.join('\n');
 }
 
-function createCustomerWhatsappMessage(customer) {
+function getDefaultCustomerMessageTemplate(customer) {
+  const pendingRevenue = Math.max(0, Number(customer?.pendingRevenue) || 0);
+
+  if (pendingRevenue > 0) {
+    return 'payment';
+  }
+
+  if (customer?.nextBooking) {
+    return 'reminder';
+  }
+
+  if ((Number(customer?.totalBookings) || 0) > 1 && !customer?.nextBooking) {
+    return 'reactivation';
+  }
+
+  return 'thankYou';
+}
+
+function getCustomerCommunicationTemplateMeta(templateKey) {
+  return customerCommunicationTemplates.find((template) => template.key === templateKey) || customerCommunicationTemplates[0];
+}
+
+function createCustomerWhatsappMessage(customer, templateKey = getDefaultCustomerMessageTemplate(customer)) {
   if (!customer) {
     return '';
   }
 
-  const primaryBooking = getCustomerPrimaryBooking(customer);
-  const pendingRevenue = Math.max(0, Number(customer.pendingRevenue) || 0);
+  const selectedTemplate = getCustomerCommunicationTemplateMeta(templateKey).key;
   const greetingName = customer.name || 'Kak';
+  const lastBooking = customer.lastBooking;
+  const nextBooking = customer.nextBooking;
+  const pendingRevenue = Math.max(0, Number(customer.pendingRevenue) || 0);
+
+  if (selectedTemplate === 'payment') {
+    return [
+      'Halo ' + greetingName + ', kami dari 37 Music Studio.',
+      '',
+      'Kami ingin follow-up sisa pembayaran booking studio.',
+      lastBooking ? 'Booking terakhir: ' + createBookingSummaryLine(lastBooking) : 'Booking terakhir belum tercatat lengkap.',
+      'Sisa pembayaran tercatat: ' + formatCurrency(pendingRevenue) + '.',
+      '',
+      'Boleh kami bantu konfirmasi metode pelunasannya?',
+      'Terima kasih.',
+    ].join('\n');
+  }
+
+  if (selectedTemplate === 'reminder') {
+    return [
+      'Halo ' + greetingName + ', kami dari 37 Music Studio.',
+      '',
+      'Kami mau mengingatkan jadwal booking studio berikutnya.',
+      nextBooking ? 'Jadwal: ' + createBookingSummaryLine(nextBooking) : 'Jadwal berikutnya belum tercatat.',
+      '',
+      'Mohon konfirmasi kehadirannya ya. Terima kasih.',
+    ].join('\n');
+  }
+
+  if (selectedTemplate === 'thankYou') {
+    return [
+      'Halo ' + greetingName + ', kami dari 37 Music Studio.',
+      '',
+      'Terima kasih sudah booking studio bersama kami.',
+      lastBooking ? 'Sesi terakhir: ' + createBookingSummaryLine(lastBooking) : 'Semoga sesi kemarin berjalan lancar.',
+      '',
+      'Kalau butuh jadwal latihan atau recording lagi, kami siap bantu cek slot.',
+    ].join('\n');
+  }
 
   return [
     'Halo ' + greetingName + ', kami dari 37 Music Studio.',
     '',
-    'Kami ingin follow-up data booking studio.',
-    primaryBooking ? getCustomerPrimaryBookingLabel(customer) + ': ' + createBookingSummaryLine(primaryBooking) : 'Belum ada booking aktif yang tercatat.',
-    pendingRevenue > 0 ? 'Sisa pembayaran tercatat: ' + formatCurrency(pendingRevenue) + '.' : 'Status pembayaran terlihat aman.',
+    'Kami ingin menyapa kembali dan bantu cek slot studio untuk jadwal berikutnya.',
+    lastBooking ? 'Terakhir booking: ' + createBookingSummaryLine(lastBooking) : 'Belum ada booking terakhir yang tercatat.',
     '',
-    'Terima kasih.',
+    'Kalau ada rencana latihan, recording, atau review mix, kabari kami ya.',
   ].join('\n');
 }
 
@@ -1701,6 +1782,8 @@ function CustomerDetailPanel({
 }) {
   const [copyStatus, setCopyStatus] = useState('idle');
   const [summaryCopyStatus, setSummaryCopyStatus] = useState('idle');
+  const [templateCopyStatus, setTemplateCopyStatus] = useState('idle');
+  const [selectedTemplate, setSelectedTemplate] = useState(() => getDefaultCustomerMessageTemplate(customer));
   const [historyFilter, setHistoryFilter] = useState('all');
   const phoneValue = getCustomerPhoneValue(customer);
   const phoneDigits = normalizePhoneDigits(phoneValue);
@@ -1712,7 +1795,8 @@ function CustomerDetailPanel({
   const primaryBookingLabel = getCustomerPrimaryBookingLabel(customer);
   const primaryBookingShortLabel = customer?.nextBooking ? 'Next' : customer?.lastBooking ? 'Last' : 'Booking';
   const customerSummaryText = createCustomerSummaryText(customer);
-  const whatsappMessage = createCustomerWhatsappMessage(customer);
+  const templateMeta = getCustomerCommunicationTemplateMeta(selectedTemplate);
+  const whatsappMessage = createCustomerWhatsappMessage(customer, selectedTemplate);
   const whatsappHref = whatsappNumber ? 'https://wa.me/' + whatsappNumber + '?text=' + encodeURIComponent(whatsappMessage) : '';
   const historyStats = getCustomerHistoryStats(customer);
   const historyFilterOptions = getHistoryFilterOptions(customer);
@@ -1755,6 +1839,23 @@ function CustomerDetailPanel({
     } catch (_error) {
       setSummaryCopyStatus('error');
       resetActionStatus(setSummaryCopyStatus);
+    }
+  };
+
+  const handleCopyTemplate = async () => {
+    if (!whatsappMessage || typeof navigator === 'undefined' || !navigator.clipboard) {
+      setTemplateCopyStatus('error');
+      resetActionStatus(setTemplateCopyStatus);
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(whatsappMessage);
+      setTemplateCopyStatus('copied');
+      resetActionStatus(setTemplateCopyStatus);
+    } catch (_error) {
+      setTemplateCopyStatus('error');
+      resetActionStatus(setTemplateCopyStatus);
     }
   };
 
@@ -1888,14 +1989,52 @@ function CustomerDetailPanel({
         </Link>
       </div>
 
-      <div className="customer-whatsapp-template rounded-[1.25rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-3 ring-1 ring-[var(--ui-ring)]">
-        <span className="text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-[var(--ui-text-muted)]">
-          WhatsApp template
-        </span>
+      <div className="customer-whatsapp-template customer-template-panel grid gap-2 rounded-[1.25rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-3 ring-1 ring-[var(--ui-ring)]">
+        <div className="flex items-center justify-between gap-2">
+          <span className="text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-[var(--ui-text-muted)]">
+            Message template
+          </span>
 
-        <p className="m-0 mt-2 line-clamp-4 whitespace-pre-line text-xs font-medium leading-5 text-[var(--ui-text-main)]">
+          <span className="rounded-full border border-studio-cyan/35 bg-studio-cyan/10 px-2 py-0.5 text-[0.56rem] font-semibold uppercase tracking-[0.1em] text-studio-cyan">
+            {templateMeta.label}
+          </span>
+        </div>
+
+        <div className="customer-template-options -mx-1 flex snap-x gap-1.5 overflow-x-auto px-1 pb-1" role="tablist" aria-label="Customer message templates">
+          {customerCommunicationTemplates.map((template) => {
+            const isActive = selectedTemplate === template.key;
+
+            return (
+              <button
+                aria-pressed={isActive}
+                className={cn(
+                  'inline-flex min-h-8 shrink-0 snap-start items-center rounded-full border px-2.5 text-[0.58rem] font-semibold uppercase tracking-[0.09em] ring-1 transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20',
+                  isActive
+                    ? 'border-studio-accent/45 bg-studio-accent/10 text-studio-accent ring-studio-accent/20'
+                    : 'border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] text-[var(--ui-secondary-text)] ring-[var(--ui-ring)] hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)]',
+                )}
+                key={template.key}
+                type="button"
+                onClick={() => setSelectedTemplate(template.key)}
+              >
+                {template.label}
+              </button>
+            );
+          })}
+        </div>
+
+        <p className="m-0 line-clamp-4 whitespace-pre-line rounded-[0.9rem] border border-[var(--ui-border)] bg-[var(--ui-control)] p-2 text-xs font-medium leading-5 text-[var(--ui-text-main)]">
           {whatsappMessage}
         </p>
+
+        <button
+          className="inline-flex min-h-9 items-center justify-center gap-2 rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] px-3 text-xs font-semibold text-[var(--ui-secondary-text)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
+          type="button"
+          onClick={handleCopyTemplate}
+        >
+          <Copy size={13} strokeWidth={2.35} aria-hidden="true" />
+          {templateCopyStatus === 'copied' ? 'Template copied' : templateCopyStatus === 'error' ? 'Copy gagal' : 'Copy template'}
+        </button>
       </div>
 
       <div className="customer-detail-summary-compact grid grid-cols-2 gap-1.5 rounded-[0.95rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-1.5 ring-1 ring-[var(--ui-ring)]">
@@ -2152,6 +2291,7 @@ export function CustomerAdmin() {
 
           {selectedCustomer ? (
             <CustomerDetailPanel
+              key={selectedCustomer.id}
               customer={selectedCustomer}
               onClose={() => setSelectedCustomerId(null)}
             />

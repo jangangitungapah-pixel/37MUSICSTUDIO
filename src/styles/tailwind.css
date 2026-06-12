@@ -1020,3 +1020,57 @@
   }
 }
 /* 37-customer-desktop-frameless:end */
+
+/* 37-customer-communication-templates:start */
+.customer-template-options {
+  scrollbar-width: none;
+}
+
+.customer-template-options::-webkit-scrollbar {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .customer-template-panel {
+    gap: 0.42rem !important;
+    padding: 0.55rem !important;
+    border-radius: 0.85rem !important;
+  }
+
+  .customer-template-panel > div:first-child span:first-child {
+    font-size: 0.52rem !important;
+  }
+
+  .customer-template-panel > div:first-child span:last-child {
+    font-size: 0.48rem !important;
+  }
+
+  .customer-template-options button {
+    min-height: 1.75rem !important;
+    padding-inline: 0.5rem !important;
+    font-size: 0.5rem !important;
+  }
+
+  .customer-template-panel p {
+    max-height: 4.4rem !important;
+    padding: 0.48rem !important;
+    font-size: 0.62rem !important;
+    line-height: 1.35 !important;
+  }
+
+  .customer-template-panel > button {
+    min-height: 1.9rem !important;
+    font-size: 0.58rem !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  .customer-template-panel {
+    background: color-mix(in srgb, var(--ui-glass-soft) 72%, transparent) !important;
+  }
+
+  .customer-template-options button {
+    min-height: 1.85rem !important;
+  }
+}
+/* 37-customer-communication-templates:end */
