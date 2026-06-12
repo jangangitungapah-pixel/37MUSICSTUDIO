@@ -34,6 +34,22 @@ const customerStatusFilters = [
     label: 'All',
   },
   {
+    key: 'needsReview',
+    label: 'Needs review',
+  },
+  {
+    key: 'unpaid',
+    label: 'Unpaid',
+  },
+  {
+    key: 'missingPhone',
+    label: 'Missing phone',
+  },
+  {
+    key: 'clean',
+    label: 'Clean',
+  },
+  {
     key: 'upcoming',
     label: 'Upcoming',
   },
@@ -49,6 +65,10 @@ const customerStatusFilters = [
 
 const customerSortOptions = [
   {
+    key: 'attention',
+    label: 'Needs attention',
+  },
+  {
     key: 'lastBooking',
     label: 'Last booking',
   },
@@ -59,6 +79,14 @@ const customerSortOptions = [
   {
     key: 'totalBookings',
     label: 'Most booked',
+  },
+  {
+    key: 'unpaid',
+    label: 'Highest unpaid',
+  },
+  {
+    key: 'revenue',
+    label: 'Highest revenue',
   },
   {
     key: 'name',
@@ -412,7 +440,22 @@ function getFilteredCustomers(customers, searchTerm, statusFilter, sortMode) {
   return customers
     .filter((customer) => {
       const matchesSearch = !normalizedSearch || customer.searchable.includes(normalizedSearch);
-      const matchesStatus = statusFilter === 'all' || customer.status === statusFilter;
+      const quality = customer.dataQuality || {
+        issues: [],
+        level: 'clean',
+      };
+      const issues = Array.isArray(quality.issues) ? quality.issues : [];
+      const hasIssue = (issueKey) => issues.some((issue) => issue.key === issueKey);
+      const hasUnpaid = Math.max(0, Number(customer.pendingRevenue) || 0) > 0;
+      const matchesStatus = (() => {
+        if (statusFilter === 'all') return true;
+        if (statusFilter === 'needsReview') return quality.level !== 'clean';
+        if (statusFilter === 'unpaid') return hasUnpaid;
+        if (statusFilter === 'missingPhone') return hasIssue('missing-phone') || hasIssue('short-phone');
+        if (statusFilter === 'clean') return quality.level === 'clean';
+
+        return customer.status === statusFilter;
+      })();
 
       return matchesSearch && matchesStatus;
     })
@@ -423,6 +466,42 @@ function getFilteredCustomers(customers, searchTerm, statusFilter, sortMode) {
 
       if (sortMode === 'totalBookings') {
         return b.totalBookings - a.totalBookings;
+      }
+
+      if (sortMode === 'revenue') {
+        return b.totalRevenue - a.totalRevenue;
+      }
+
+      if (sortMode === 'unpaid') {
+        return b.pendingRevenue - a.pendingRevenue;
+      }
+
+      if (sortMode === 'attention') {
+        const severityRank = {
+          critical: 3,
+          warning: 2,
+          clean: 1,
+        };
+        const aQuality = a.dataQuality || {
+          issueCount: 0,
+          level: 'clean',
+        };
+        const bQuality = b.dataQuality || {
+          issueCount: 0,
+          level: 'clean',
+        };
+        const aRank = severityRank[aQuality.level] || 0;
+        const bRank = severityRank[bQuality.level] || 0;
+
+        if (aRank !== bRank) {
+          return bRank - aRank;
+        }
+
+        if ((aQuality.issueCount || 0) !== (bQuality.issueCount || 0)) {
+          return (bQuality.issueCount || 0) - (aQuality.issueCount || 0);
+        }
+
+        return b.pendingRevenue - a.pendingRevenue;
       }
 
       if (sortMode === 'nextBooking') {
@@ -443,6 +522,44 @@ function getCustomerStats(customers) {
     upcomingCustomers: customers.filter((customer) => Boolean(customer.nextBooking)).length,
     totalRevenue: customers.reduce((sum, customer) => sum + customer.totalRevenue, 0),
   };
+}
+
+function getCustomerQualityStats(customers) {
+  return customers.reduce(
+    (stats, customer) => {
+      const quality = customer.dataQuality || {
+        issues: [],
+        level: 'clean',
+      };
+      const issues = Array.isArray(quality.issues) ? quality.issues : [];
+      const hasIssue = (issueKey) => issues.some((issue) => issue.key === issueKey);
+
+      stats.total += 1;
+
+      if (quality.level === 'clean') {
+        stats.clean += 1;
+      } else {
+        stats.needsReview += 1;
+      }
+
+      if (Math.max(0, Number(customer.pendingRevenue) || 0) > 0) {
+        stats.unpaid += 1;
+      }
+
+      if (hasIssue('missing-phone') || hasIssue('short-phone')) {
+        stats.missingPhone += 1;
+      }
+
+      return stats;
+    },
+    {
+      clean: 0,
+      missingPhone: 0,
+      needsReview: 0,
+      total: 0,
+      unpaid: 0,
+    },
+  );
 }
 
 function CustomerHero({
@@ -635,6 +752,102 @@ function ToolbarSelect({
   );
 }
 
+function CustomerAttentionStrip({
+  activeFilter,
+  stats,
+  onFilterChange,
+}) {
+  const items = [
+    {
+      helper: 'Semua customer real',
+      icon: UsersRound,
+      key: 'all',
+      label: 'All',
+      value: stats.total,
+    },
+    {
+      helper: 'Perlu dicek',
+      icon: AlertTriangle,
+      key: 'needsReview',
+      label: 'Needs review',
+      value: stats.needsReview,
+    },
+    {
+      helper: 'Ada sisa bayar',
+      icon: CreditCard,
+      key: 'unpaid',
+      label: 'Unpaid',
+      value: stats.unpaid,
+    },
+    {
+      helper: 'Nomor bermasalah',
+      icon: Phone,
+      key: 'missingPhone',
+      label: 'Missing phone',
+      value: stats.missingPhone,
+    },
+    {
+      helper: 'Data aman',
+      icon: BadgeCheck,
+      key: 'clean',
+      label: 'Clean',
+      value: stats.clean,
+    },
+  ];
+
+  return (
+    <section className="grid gap-2 rounded-[1.5rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-2 ring-1 ring-[var(--ui-ring)] sm:p-3" aria-label="Customer attention filters">
+      <div className="flex flex-wrap items-center justify-between gap-2 px-1">
+        <span className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--ui-text-muted)]">
+          Attention filters
+        </span>
+
+        <span className="text-xs font-medium text-[var(--ui-text-muted)]">
+          Klik chip untuk fokus ke data yang perlu tindakan.
+        </span>
+      </div>
+
+      <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-5">
+        {items.map((item) => {
+          const Icon = item.icon;
+          const isActive = activeFilter === item.key;
+
+          return (
+            <button
+              aria-pressed={isActive}
+              className={cn(
+                'grid min-h-[6.25rem] gap-2 rounded-[1.25rem] border p-3 text-left ring-1 transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20',
+                isActive
+                  ? 'border-studio-accent/45 bg-studio-accent/10 text-studio-accent ring-studio-accent/20'
+                  : 'border-[var(--ui-border)] bg-[var(--ui-control)] text-[var(--ui-text-main)] ring-[var(--ui-ring)] hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)]',
+              )}
+              key={item.key}
+              type="button"
+              onClick={() => onFilterChange(item.key)}
+            >
+              <span className="flex items-center justify-between gap-2">
+                <Icon size={16} strokeWidth={2.35} aria-hidden="true" />
+                <strong className="text-2xl font-semibold leading-none tracking-[-0.055em]">
+                  {item.value}
+                </strong>
+              </span>
+
+              <span className="grid gap-0.5">
+                <span className="text-xs font-semibold uppercase tracking-[0.13em]">
+                  {item.label}
+                </span>
+                <span className="text-xs font-medium leading-5 text-[var(--ui-text-muted)]">
+                  {item.helper}
+                </span>
+              </span>
+            </button>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
 function CustomerToolbar({
   resultCount,
   searchTerm,
@@ -672,7 +885,7 @@ function CustomerToolbar({
 
       <ToolbarSelect
         icon={ListFilter}
-        label="Status"
+        label="Segment"
         options={customerStatusFilters}
         value={statusFilter}
         onChange={onStatusFilterChange}
@@ -1257,7 +1470,7 @@ export function CustomerAdmin() {
   const [searchParams] = useSearchParams();
   const [searchTerm, setSearchTerm] = useState(searchParams.get('q') || '');
   const [statusFilter, setStatusFilter] = useState('all');
-  const [sortMode, setSortMode] = useState('lastBooking');
+  const [sortMode, setSortMode] = useState('attention');
   const [selectedCustomerId, setSelectedCustomerId] = useState(null);
 
   const bookings = useMemo(
@@ -1266,6 +1479,7 @@ export function CustomerAdmin() {
   );
   const customers = useMemo(() => buildCustomersFromBookings(bookings), [bookings]);
   const stats = useMemo(() => getCustomerStats(customers), [customers]);
+  const qualityStats = useMemo(() => getCustomerQualityStats(customers), [customers]);
   const filteredCustomers = useMemo(
     () => getFilteredCustomers(customers, searchTerm, statusFilter, sortMode),
     [customers, searchTerm, sortMode, statusFilter],
@@ -1288,6 +1502,12 @@ export function CustomerAdmin() {
       <CustomerHero activeCustomer={selectedCustomer} stats={stats} />
 
       <MetricStrip stats={stats} />
+
+      <CustomerAttentionStrip
+        activeFilter={statusFilter}
+        stats={qualityStats}
+        onFilterChange={setStatusFilter}
+      />
 
       <CustomerToolbar
         resultCount={filteredCustomers.length}
