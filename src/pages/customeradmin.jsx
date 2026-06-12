@@ -20,6 +20,7 @@ import {
   Printer,
   Search,
   Sparkles,
+  Tags,
   UserRound,
   UsersRound,
   X,
@@ -877,6 +878,61 @@ function getCustomerQualityStats(customers) {
   );
 }
 
+function getCustomerCrmMeta(customer) {
+  const draft = getStoredCustomerNote(customer?.id);
+  const tags = Array.isArray(draft.tags) ? draft.tags : [];
+  const tagLabels = tags
+    .map((tagKey) => customerTagOptions.find((tag) => tag.key === tagKey)?.label || tagKey)
+    .filter(Boolean);
+  const note = String(draft.note || '').trim();
+
+  return {
+    crmHasNote: Boolean(note),
+    crmNote: note,
+    crmNotePreview: note ? note.replace(/\s+/g, ' ').slice(0, 90) : '',
+    crmTagLabels: tagLabels,
+    crmTags: tags,
+  };
+}
+
+function attachCustomerCrmMeta(customers) {
+  return (Array.isArray(customers) ? customers : []).map((customer) => {
+    const crmMeta = getCustomerCrmMeta(customer);
+    const crmSearch = [
+      crmMeta.crmNote,
+      crmMeta.crmTagLabels.join(' '),
+    ]
+      .map(normalizeCustomerValue)
+      .join(' ');
+
+    return {
+      ...customer,
+      ...crmMeta,
+      searchable: [customer.searchable, crmSearch].filter(Boolean).join(' '),
+    };
+  });
+}
+
+function getCustomerTagStats(customers) {
+  const counts = new Map();
+
+  (Array.isArray(customers) ? customers : []).forEach((customer) => {
+    const tags = Array.isArray(customer.crmTags) ? customer.crmTags : [];
+
+    tags.forEach((tagKey) => {
+      counts.set(tagKey, (counts.get(tagKey) || 0) + 1);
+    });
+  });
+
+  return customerTagOptions
+    .map((tag) => ({
+      ...tag,
+      count: counts.get(tag.key) || 0,
+    }))
+    .filter((tag) => tag.count > 0);
+}
+
+
 function escapeCsvValue(value) {
   const text = String(value ?? '');
 
@@ -1273,6 +1329,65 @@ function ToolbarSelect({
   );
 }
 
+function CustomerTagFilterStrip({
+  activeTagFilter,
+  stats,
+  onTagFilterChange,
+}) {
+  const tagItems = Array.isArray(stats) ? stats : [];
+  const totalTagged = tagItems.reduce((sum, tag) => sum + tag.count, 0);
+
+  if (!tagItems.length) {
+    return null;
+  }
+
+  return (
+    <section className="customer-tag-filter-strip -mx-1 flex snap-x gap-1.5 overflow-x-auto px-1 pb-1" aria-label="Customer CRM tag filters">
+      <button
+        aria-pressed={activeTagFilter === 'all'}
+        className={cn(
+          'inline-flex min-h-9 shrink-0 snap-start items-center gap-1.5 rounded-full border px-3 text-xs font-semibold ring-1 transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20',
+          activeTagFilter === 'all'
+            ? 'border-studio-accent/45 bg-studio-accent/12 text-studio-accent ring-studio-accent/20'
+            : 'border-[var(--ui-border)] bg-[var(--ui-control)] text-[var(--ui-text-main)] ring-[var(--ui-ring)] hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)]',
+        )}
+        type="button"
+        onClick={() => onTagFilterChange('all')}
+      >
+        <Tags size={13} strokeWidth={2.35} aria-hidden="true" />
+        <span>All tags</span>
+        <strong className="rounded-full bg-[var(--ui-glass-soft)] px-1.5 py-0.5 text-[0.68rem] leading-none text-[var(--ui-text-strong)]">
+          {totalTagged}
+        </strong>
+      </button>
+
+      {tagItems.map((tag) => {
+        const isActive = activeTagFilter === tag.key;
+
+        return (
+          <button
+            aria-pressed={isActive}
+            className={cn(
+              'inline-flex min-h-9 shrink-0 snap-start items-center gap-1.5 rounded-full border px-3 text-xs font-semibold ring-1 transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20',
+              isActive
+                ? 'border-studio-accent/45 bg-studio-accent/12 text-studio-accent ring-studio-accent/20'
+                : 'border-[var(--ui-border)] bg-[var(--ui-control)] text-[var(--ui-text-main)] ring-[var(--ui-ring)] hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)]',
+            )}
+            key={tag.key}
+            type="button"
+            onClick={() => onTagFilterChange(tag.key)}
+          >
+            <span>{tag.label}</span>
+            <strong className="rounded-full bg-[var(--ui-glass-soft)] px-1.5 py-0.5 text-[0.68rem] leading-none text-[var(--ui-text-strong)]">
+              {tag.count}
+            </strong>
+          </button>
+        );
+      })}
+    </section>
+  );
+}
+
 function CustomerAttentionStrip({
   activeFilter,
   stats,
@@ -1474,14 +1589,17 @@ function CustomerFilterSummary({
   searchTerm,
   sortMode,
   statusFilter,
+  tagFilter = 'all',
   onResetFilters,
   onSearchChange,
   onSortChange,
   onStatusFilterChange,
+  onTagFilterChange = () => {},
 }) {
   const cleanSearchTerm = String(searchTerm || '').trim();
   const statusLabel = customerStatusFilters.find((item) => item.key === statusFilter)?.label || statusFilter;
   const sortLabel = customerSortOptions.find((item) => item.key === sortMode)?.label || sortMode;
+  const tagLabel = customerTagOptions.find((item) => item.key === tagFilter)?.label || tagFilter;
   const activeItems = [
     cleanSearchTerm
       ? {
@@ -1497,6 +1615,14 @@ function CustomerFilterSummary({
         label: 'Segment',
         value: statusLabel,
         onClear: () => onStatusFilterChange('all'),
+      }
+      : null,
+    tagFilter !== 'all'
+      ? {
+        key: 'tag',
+        label: 'Tag',
+        value: tagLabel,
+        onClear: () => onTagFilterChange('all'),
       }
       : null,
     sortMode !== 'attention'
@@ -2062,6 +2188,10 @@ function CustomerList({
           const lastBookingLabel = customer.lastBooking
             ? formatDateLabel(customer.lastBooking.dateKey)
             : '-';
+          const crmTagLabels = Array.isArray(customer.crmTagLabels) ? customer.crmTagLabels : [];
+          const visibleCrmTags = crmTagLabels.slice(0, 2);
+          const hiddenCrmTagCount = Math.max(0, crmTagLabels.length - visibleCrmTags.length);
+          const hasCrmMeta = crmTagLabels.length > 0 || customer.crmHasNote;
 
           return (
             <article
@@ -2090,6 +2220,28 @@ function CustomerList({
                     <span className="truncate text-xs font-medium text-[var(--ui-text-muted)]">
                       Favorit: {customer.favoriteSession}
                     </span>
+
+                    {hasCrmMeta ? (
+                      <span className="customer-card-crm-meta flex min-w-0 flex-wrap gap-1">
+                        {visibleCrmTags.map((tagLabel) => (
+                          <span className="rounded-full border border-studio-cyan/30 bg-studio-cyan/10 px-1.5 py-0.5 text-[0.55rem] font-semibold uppercase tracking-[0.08em] text-studio-cyan" key={tagLabel}>
+                            {tagLabel}
+                          </span>
+                        ))}
+
+                        {hiddenCrmTagCount > 0 ? (
+                          <span className="rounded-full border border-[var(--ui-border)] bg-[var(--ui-control)] px-1.5 py-0.5 text-[0.55rem] font-semibold uppercase tracking-[0.08em] text-[var(--ui-text-muted)]">
+                            +{hiddenCrmTagCount}
+                          </span>
+                        ) : null}
+
+                        {customer.crmHasNote ? (
+                          <span className="rounded-full border border-studio-purple/30 bg-studio-purple/10 px-1.5 py-0.5 text-[0.55rem] font-semibold uppercase tracking-[0.08em] text-studio-purple">
+                            Note
+                          </span>
+                        ) : null}
+                      </span>
+                    ) : null}
                   </span>
                 </button>
 
@@ -2109,6 +2261,11 @@ function CustomerList({
                 <span className="rounded-full border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] px-2 py-1">
                   Last {lastBookingLabel}
                 </span>
+                {customer.crmHasNote ? (
+                  <span className="max-w-full truncate rounded-full border border-studio-purple/30 bg-studio-purple/10 px-2 py-1 text-studio-purple">
+                    Note {customer.crmNotePreview}
+                  </span>
+                ) : null}
               </div>
 
               <div className="customer-card-contact hidden items-center gap-2 text-sm font-semibold text-[var(--ui-text-main)] lg:flex">
@@ -2456,6 +2613,7 @@ function CustomerHistoryCard({
 function CustomerDetailPanel({
   customer,
   onClose,
+  onCrmChange = () => {},
 }) {
   const [copyStatus, setCopyStatus] = useState('idle');
   const [summaryCopyStatus, setSummaryCopyStatus] = useState('idle');
@@ -2520,6 +2678,7 @@ function CustomerDetailPanel({
   const handleSaveCustomerNote = () => {
     try {
       writeStoredCustomerNote(customer.id, customerNoteDraft);
+      onCrmChange();
       setNoteSaveStatus('saved');
       resetNoteSaveStatus();
     } catch (_error) {
@@ -2534,6 +2693,7 @@ function CustomerDetailPanel({
     try {
       setCustomerNoteDraft(emptyDraft);
       writeStoredCustomerNote(customer.id, emptyDraft);
+      onCrmChange();
       setNoteSaveStatus('cleared');
       resetNoteSaveStatus();
     } catch (_error) {
@@ -2968,19 +3128,27 @@ export function CustomerAdmin() {
   const [searchParams] = useSearchParams();
   const [searchTerm, setSearchTerm] = useState(searchParams.get('q') || '');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [tagFilter, setTagFilter] = useState('all');
   const [sortMode, setSortMode] = useState('attention');
   const [selectedCustomerId, setSelectedCustomerId] = useState(null);
+  const [crmRefreshKey, setCrmRefreshKey] = useState(0);
 
   const bookings = useMemo(
     () => manualBookings,
     [manualBookings],
   );
-  const customers = useMemo(() => buildCustomersFromBookings(bookings), [bookings]);
+  const baseCustomers = useMemo(() => buildCustomersFromBookings(bookings), [bookings]);
+  const customers = useMemo(
+    () => attachCustomerCrmMeta(baseCustomers),
+    [baseCustomers, crmRefreshKey],
+  );
   const stats = useMemo(() => getCustomerStats(customers), [customers]);
   const qualityStats = useMemo(() => getCustomerQualityStats(customers), [customers]);
+  const tagStats = useMemo(() => getCustomerTagStats(customers), [customers]);
   const filteredCustomers = useMemo(
-    () => getFilteredCustomers(customers, searchTerm, statusFilter, sortMode),
-    [customers, searchTerm, sortMode, statusFilter],
+    () => getFilteredCustomers(customers, searchTerm, statusFilter, sortMode)
+      .filter((customer) => tagFilter === 'all' || (Array.isArray(customer.crmTags) && customer.crmTags.includes(tagFilter))),
+    [customers, searchTerm, sortMode, statusFilter, tagFilter],
   );
   const selectedCustomer = useMemo(
     () => selectedCustomerId
@@ -2993,6 +3161,7 @@ export function CustomerAdmin() {
   const resetCustomerFilters = () => {
     setSearchTerm('');
     setStatusFilter('all');
+    setTagFilter('all');
     setSortMode('attention');
   };
   const hasBookingData = bookings.length > 0;
@@ -3011,6 +3180,10 @@ export function CustomerAdmin() {
     }
   };
 
+  const handleCustomerCrmChange = () => {
+    setCrmRefreshKey((currentKey) => currentKey + 1);
+  };
+
   return (
     <section className="customer-mobile-workspace grid gap-3 pb-[calc(8.5rem+env(safe-area-inset-bottom))] pt-1 sm:gap-4 md:pb-4 md:pt-2" aria-labelledby="customer-admin-title">
       <div className="sr-only" id="customer-admin-title">
@@ -3025,6 +3198,12 @@ export function CustomerAdmin() {
         activeFilter={statusFilter}
         stats={qualityStats}
         onFilterChange={setStatusFilter}
+      />
+
+      <CustomerTagFilterStrip
+        activeTagFilter={tagFilter}
+        stats={tagStats}
+        onTagFilterChange={setTagFilter}
       />
 
       <CustomerToolbar
@@ -3042,10 +3221,12 @@ export function CustomerAdmin() {
         searchTerm={searchTerm}
         sortMode={sortMode}
         statusFilter={statusFilter}
+        tagFilter={tagFilter}
         onResetFilters={resetCustomerFilters}
         onSearchChange={setSearchTerm}
         onSortChange={setSortMode}
         onStatusFilterChange={setStatusFilter}
+        onTagFilterChange={setTagFilter}
       />
 
       <CustomerExportPanel
@@ -3090,6 +3271,7 @@ export function CustomerAdmin() {
               key={selectedCustomer.id}
               customer={selectedCustomer}
               onClose={() => setSelectedCustomerId(null)}
+              onCrmChange={handleCustomerCrmChange}
             />
           ) : (
             <CustomerSelectionEmptyState
