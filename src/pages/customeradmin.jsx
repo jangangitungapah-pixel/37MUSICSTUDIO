@@ -23,6 +23,8 @@ import {
   X,
   Copy,
   MessageCircle,
+  AlertTriangle,
+  BadgeCheck,
 } from 'lucide-react';
 import { cn } from '../lib/cn.js';
 
@@ -226,6 +228,85 @@ function getPaymentHealthClass(customer) {
   return 'border-studio-accent/35 bg-studio-accent/10 text-studio-accent';
 }
 
+function normalizeCustomerNameKey(name) {
+  return normalizeCustomerValue(prettifyCustomerName(name));
+}
+
+function getCustomerPhoneDigits(value) {
+  return String(value || '').replace(/\D/g, '');
+}
+
+function getCustomerQualityClass(level) {
+  if (level === 'clean') {
+    return 'border-studio-cyan/35 bg-studio-cyan/10 text-studio-cyan ring-studio-cyan/15';
+  }
+
+  if (level === 'warning') {
+    return 'border-studio-purple/35 bg-studio-purple/10 text-studio-purple ring-studio-purple/15';
+  }
+
+  return 'border-studio-accent/35 bg-studio-accent/10 text-studio-accent ring-studio-accent/15';
+}
+
+function getCustomerDataQuality(customer, duplicateNameCounts = new Map()) {
+  const issues = [];
+  const phoneDigits = getCustomerPhoneDigits(customer?.phone);
+  const nameKey = normalizeCustomerNameKey(customer?.name);
+  const duplicateCount = nameKey ? duplicateNameCounts.get(nameKey) || 0 : 0;
+  const pendingRevenue = Math.max(0, Number(customer?.pendingRevenue) || 0);
+  const paidRevenue = Math.max(0, Number(customer?.paidRevenue) || 0);
+
+  if (!phoneDigits) {
+    issues.push({
+      helper: 'Nomor kontak belum tersedia, follow-up customer akan lebih sulit.',
+      key: 'missing-phone',
+      label: 'No phone',
+      severity: 'critical',
+    });
+  } else if (phoneDigits.length < 9) {
+    issues.push({
+      helper: 'Nomor terlihat terlalu pendek, sebaiknya dicek ulang.',
+      key: 'short-phone',
+      label: 'Phone check',
+      severity: 'critical',
+    });
+  }
+
+  if (duplicateCount > 1) {
+    issues.push({
+      helper: 'Ada customer lain dengan nama mirip. Pastikan ini bukan data dobel.',
+      key: 'duplicate-name',
+      label: 'Duplicate name',
+      severity: 'critical',
+    });
+  }
+
+  if (pendingRevenue > 0) {
+    issues.push({
+      helper: paidRevenue > 0
+        ? 'Customer masih punya sisa pembayaran dari histori booking.'
+        : 'Belum ada pembayaran terkumpul dari histori booking customer ini.',
+      key: 'unpaid-balance',
+      label: 'Unpaid',
+      severity: 'warning',
+    });
+  }
+
+  const hasCritical = issues.some((issue) => issue.severity === 'critical');
+  const hasWarning = issues.some((issue) => issue.severity === 'warning');
+  const level = hasCritical ? 'critical' : hasWarning ? 'warning' : 'clean';
+
+  return {
+    helper: level === 'clean'
+      ? 'Data kontak dan pembayaran terlihat aman.'
+      : issues[0]?.helper || 'Data customer perlu dicek.',
+    issueCount: issues.length,
+    issues,
+    label: level === 'clean' ? 'Clean' : level === 'warning' ? 'Attention' : 'Needs review',
+    level,
+  };
+}
+
 function buildCustomersFromBookings(bookings, today = new Date()) {
   const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
   const customerMap = new Map();
@@ -249,6 +330,13 @@ function buildCustomersFromBookings(bookings, today = new Date()) {
       favoriteSession: '-',
       status: 'new',
       searchable: '',
+      dataQuality: {
+        helper: 'Data belum dihitung.',
+        issueCount: 0,
+        issues: [],
+        label: 'Clean',
+        level: 'clean',
+      },
     };
 
     const normalizedBooking = {
@@ -274,7 +362,7 @@ function buildCustomersFromBookings(bookings, today = new Date()) {
     customerMap.set(key, current);
   });
 
-  return Array.from(customerMap.values()).map((customer) => {
+  const normalizedCustomers = Array.from(customerMap.values()).map((customer) => {
     const sessionCounts = customer.bookings.reduce((counts, booking) => {
       const session = booking.sessionType || booking.title || 'Session';
       counts[session] = (counts[session] || 0) + 1;
@@ -300,6 +388,22 @@ function buildCustomersFromBookings(bookings, today = new Date()) {
         .join(' '),
     };
   });
+
+  const duplicateNameCounts = normalizedCustomers.reduce((counts, customer) => {
+    const nameKey = normalizeCustomerNameKey(customer.name);
+
+    if (!nameKey) {
+      return counts;
+    }
+
+    counts.set(nameKey, (counts.get(nameKey) || 0) + 1);
+    return counts;
+  }, new Map());
+
+  return normalizedCustomers.map((customer) => ({
+    ...customer,
+    dataQuality: getCustomerDataQuality(customer, duplicateNameCounts),
+  }));
 }
 
 function getFilteredCustomers(customers, searchTerm, statusFilter, sortMode) {
@@ -603,6 +707,76 @@ function CustomerStatusBadge({ status }) {
   );
 }
 
+function CustomerQualityBadge({
+  quality,
+}) {
+  const safeQuality = quality || {
+    issueCount: 0,
+    label: 'Clean',
+    level: 'clean',
+  };
+
+  return (
+    <span className={cn('inline-flex w-fit items-center gap-1.5 rounded-full border px-2.5 py-1 text-[0.66rem] font-semibold uppercase tracking-[0.11em] ring-1', getCustomerQualityClass(safeQuality.level))}>
+      {safeQuality.level === 'clean' ? (
+        <BadgeCheck size={12} strokeWidth={2.35} aria-hidden="true" />
+      ) : (
+        <AlertTriangle size={12} strokeWidth={2.35} aria-hidden="true" />
+      )}
+      {safeQuality.issueCount > 0 ? safeQuality.issueCount + ' issue' : safeQuality.label}
+    </span>
+  );
+}
+
+function CustomerQualityPanel({
+  customer,
+}) {
+  const quality = customer?.dataQuality || getCustomerDataQuality(customer, new Map());
+  const issues = Array.isArray(quality.issues) ? quality.issues : [];
+
+  return (
+    <section className={cn('grid gap-3 rounded-[1.35rem] border p-3 ring-1', getCustomerQualityClass(quality.level))} aria-label="Customer data quality">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div className="grid gap-1">
+          <span className="text-xs font-semibold uppercase tracking-[0.16em]">
+            Data quality
+          </span>
+
+          <strong className="text-base font-semibold tracking-[-0.035em] text-[var(--ui-text-strong)]">
+            {quality.label}
+          </strong>
+        </div>
+
+        {quality.level === 'clean' ? (
+          <BadgeCheck size={20} strokeWidth={2.35} aria-hidden="true" />
+        ) : (
+          <AlertTriangle size={20} strokeWidth={2.35} aria-hidden="true" />
+        )}
+      </div>
+
+      {issues.length > 0 ? (
+        <div className="grid gap-2">
+          {issues.map((issue) => (
+            <div className="grid gap-0.5 rounded-[1rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-3" key={issue.key}>
+              <span className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--ui-text-strong)]">
+                {issue.label}
+              </span>
+
+              <span className="text-xs font-medium leading-5 text-[var(--ui-text-muted)]">
+                {issue.helper}
+              </span>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <p className="m-0 text-xs font-medium leading-5 text-[var(--ui-text-muted)]">
+          {quality.helper}
+        </p>
+      )}
+    </section>
+  );
+}
+
 function CustomerList({
   customers,
   selectedCustomerId,
@@ -669,6 +843,7 @@ function CustomerList({
                   <span className="truncate text-xs font-medium text-[var(--ui-text-muted)]">
                     Favorit: {customer.favoriteSession}
                   </span>
+                  <CustomerQualityBadge quality={customer.dataQuality} />
                 </span>
               </button>
 
@@ -928,6 +1103,8 @@ function CustomerDetailPanel({
           <X size={16} strokeWidth={2.35} aria-hidden="true" />
         </button>
       </div>
+
+      <CustomerQualityPanel customer={customer} />
 
       <div className="grid gap-2 sm:grid-cols-2">
         {phoneHref ? (
