@@ -1201,12 +1201,12 @@ function BookingSummaryCard({
 }) {
   if (!booking) {
     return (
-      <div className="customer-session-card-compact grid gap-2 rounded-[1.25rem] border border-dashed border-[var(--ui-border-strong)] bg-[var(--ui-glass-soft)] p-3 ring-1 ring-[var(--ui-ring)]">
-        <span className="text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-[var(--ui-text-muted)]">
+      <div className="customer-session-card-compact grid gap-1 rounded-[0.9rem] border border-dashed border-[var(--ui-border-strong)] bg-[var(--ui-glass-soft)] p-2 ring-1 ring-[var(--ui-ring)]">
+        <span className="text-[0.58rem] font-semibold uppercase tracking-[0.12em] text-[var(--ui-text-muted)]">
           {label}
         </span>
 
-        <strong className="text-sm font-semibold text-[var(--ui-text-muted)]">
+        <strong className="text-xs font-semibold text-[var(--ui-text-muted)]">
           {emptyLabel}
         </strong>
       </div>
@@ -1214,36 +1214,36 @@ function BookingSummaryCard({
   }
 
   return (
-    <div className="customer-session-card-compact grid gap-3 rounded-[1.25rem] border border-[var(--ui-border)] bg-[var(--ui-control)] p-3 ring-1 ring-[var(--ui-ring)]">
-      <span className="text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-[var(--ui-text-muted)]">
-        {label}
-      </span>
-
-      <div className="grid gap-0.5">
-        <strong className="text-sm font-semibold text-[var(--ui-text-strong)]">
-          {booking.sessionType || booking.title || 'Studio session'}
-        </strong>
-
-        <span className="text-xs font-medium leading-5 text-[var(--ui-text-muted)]">
-          {formatDateLabel(booking.dateKey)} • {booking.time || '-'} • {booking.durationHours || 1} jam
-        </span>
-      </div>
-
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <span className="w-fit rounded-full border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] px-2 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.1em] text-[var(--ui-text-main)]">
-          {getPaymentLabel(booking.status)}
+    <div className="customer-session-card-compact grid gap-2 rounded-[0.9rem] border border-[var(--ui-border)] bg-[var(--ui-control)] p-2 ring-1 ring-[var(--ui-ring)]">
+      <div className="flex items-start justify-between gap-2">
+        <span className="text-[0.58rem] font-semibold uppercase tracking-[0.12em] text-[var(--ui-text-muted)]">
+          {label}
         </span>
 
         {actionHref ? (
           <Link
-            className="inline-flex min-h-8 items-center justify-center gap-1.5 rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] px-3 text-xs font-semibold text-[var(--ui-secondary-text)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
+            className="inline-flex min-h-7 items-center justify-center gap-1 rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] px-2 text-[0.58rem] font-semibold text-[var(--ui-secondary-text)] ring-1 ring-[var(--ui-ring)] transition hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
             to={actionHref}
           >
             {actionLabel}
-            <ArrowUpRight size={12} strokeWidth={2.35} aria-hidden="true" />
+            <ArrowUpRight size={10} strokeWidth={2.35} aria-hidden="true" />
           </Link>
         ) : null}
       </div>
+
+      <div className="grid gap-0.5">
+        <strong className="text-xs font-semibold text-[var(--ui-text-strong)]">
+          {booking.sessionType || booking.title || 'Studio session'}
+        </strong>
+
+        <span className="text-[0.68rem] font-medium leading-4 text-[var(--ui-text-muted)]">
+          {formatDateLabel(booking.dateKey)} • {booking.time || '-'} • {booking.durationHours || 1} jam
+        </span>
+      </div>
+
+      <span className="w-fit rounded-full border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] px-2 py-0.5 text-[0.56rem] font-semibold uppercase tracking-[0.09em] text-[var(--ui-text-main)]">
+        {getPaymentLabel(booking.status)}
+      </span>
     </div>
   );
 }
@@ -1254,54 +1254,48 @@ function CustomerPaymentSummary({
   const paymentProgress = getPaymentProgress(customer);
 
   return (
-    <section className="customer-payment-compact grid gap-3 rounded-[1.35rem] border border-[var(--ui-border)] bg-[var(--ui-control)] p-3 ring-1 ring-[var(--ui-ring)]" aria-label="Customer payment summary">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <span className="text-xs font-semibold uppercase tracking-[0.16em] text-studio-accent">
-          Payment summary
+    <section className="customer-payment-compact grid gap-2 rounded-[1rem] border border-[var(--ui-border)] bg-[var(--ui-control)] p-2 ring-1 ring-[var(--ui-ring)]" aria-label="Customer payment summary">
+      <div className="flex items-center justify-between gap-2">
+        <span className="text-[0.66rem] font-semibold uppercase tracking-[0.14em] text-studio-accent">
+          Payment
         </span>
 
-        <span className={cn('rounded-full border px-2.5 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.11em]', getPaymentHealthClass(customer))}>
+        <span className={cn('rounded-full border px-2 py-0.5 text-[0.58rem] font-semibold uppercase tracking-[0.1em]', getPaymentHealthClass(customer))}>
           {getPaymentHealthLabel(customer)}
         </span>
       </div>
 
-      <div className="grid gap-1.5">
-        <div className="h-2 overflow-hidden rounded-full bg-[var(--ui-secondary-bg)] ring-1 ring-[var(--ui-ring)]">
-          <div
-            className="h-full rounded-full bg-studio-cyan"
-            style={{ width: paymentProgress + '%' }}
-          />
-        </div>
-
-        <span className="text-xs font-medium text-[var(--ui-text-muted)]">
-          {paymentProgress}% pembayaran terkumpul dari total revenue customer.
-        </span>
+      <div className="h-1.5 overflow-hidden rounded-full bg-[var(--ui-secondary-bg)] ring-1 ring-[var(--ui-ring)]">
+        <div
+          className="h-full rounded-full bg-studio-cyan"
+          style={{ width: paymentProgress + '%' }}
+        />
       </div>
 
-      <div className="grid gap-2 sm:grid-cols-3">
-        <div className="grid gap-0.5 rounded-[1rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-3">
-          <span className="text-[0.66rem] font-semibold uppercase tracking-[0.13em] text-[var(--ui-text-muted)]">
+      <div className="customer-payment-mini-grid grid grid-cols-3 gap-1">
+        <div className="grid gap-0.5 rounded-[0.7rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-2">
+          <span className="text-[0.52rem] font-semibold uppercase tracking-[0.1em] text-[var(--ui-text-muted)]">
             Total
           </span>
-          <strong className="text-sm font-semibold text-[var(--ui-text-strong)]">
+          <strong className="text-[0.68rem] font-semibold text-[var(--ui-text-strong)]">
             {formatCurrency(customer.totalRevenue)}
           </strong>
         </div>
 
-        <div className="grid gap-0.5 rounded-[1rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-3">
-          <span className="text-[0.66rem] font-semibold uppercase tracking-[0.13em] text-[var(--ui-text-muted)]">
-            Terkumpul
+        <div className="grid gap-0.5 rounded-[0.7rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-2">
+          <span className="text-[0.52rem] font-semibold uppercase tracking-[0.1em] text-[var(--ui-text-muted)]">
+            Paid
           </span>
-          <strong className="text-sm font-semibold text-[var(--ui-text-strong)]">
+          <strong className="text-[0.68rem] font-semibold text-[var(--ui-text-strong)]">
             {formatCurrency(customer.paidRevenue)}
           </strong>
         </div>
 
-        <div className="grid gap-0.5 rounded-[1rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-3">
-          <span className="text-[0.66rem] font-semibold uppercase tracking-[0.13em] text-[var(--ui-text-muted)]">
+        <div className="grid gap-0.5 rounded-[0.7rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-2">
+          <span className="text-[0.52rem] font-semibold uppercase tracking-[0.1em] text-[var(--ui-text-muted)]">
             Sisa
           </span>
-          <strong className="text-sm font-semibold text-[var(--ui-text-strong)]">
+          <strong className="text-[0.68rem] font-semibold text-[var(--ui-text-strong)]">
             {formatCurrency(customer.pendingRevenue)}
           </strong>
         </div>
@@ -1409,62 +1403,59 @@ function CustomerHistoryCard({
   return (
     <article
       className={cn(
-        'grid gap-3 rounded-[1.15rem] border p-3 ring-1',
+        'customer-history-card-compact grid gap-2 rounded-[0.95rem] border p-2 ring-1',
         hasRemainingPayment
           ? 'border-studio-accent/35 bg-studio-accent/10 ring-studio-accent/15'
           : 'border-[var(--ui-border)] bg-[var(--ui-control)] ring-[var(--ui-ring)]',
       )}
     >
-      <div className="customer-history-card-compact flex flex-wrap items-start justify-between gap-2">
-        <div className="grid min-w-0 gap-1">
-          <strong className="truncate text-sm font-semibold text-[var(--ui-text-strong)]">
+      <div className="flex items-start justify-between gap-2">
+        <div className="grid min-w-0 gap-0.5">
+          <strong className="truncate text-xs font-semibold text-[var(--ui-text-strong)]">
             {booking.sessionType || booking.title || 'Studio session'}
           </strong>
 
-          <span className="text-xs font-medium leading-5 text-[var(--ui-text-muted)]">
+          <span className="text-[0.68rem] font-medium leading-4 text-[var(--ui-text-muted)]">
             {formatDateLabel(booking.dateKey)} • {booking.time || '-'} • {booking.durationHours || 1} jam
           </span>
         </div>
 
-        <span className={cn('rounded-full border px-2 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.1em] ring-1', getBookingStatusTone(booking.status))}>
+        <span className={cn('rounded-full border px-2 py-0.5 text-[0.56rem] font-semibold uppercase tracking-[0.09em] ring-1', getBookingStatusTone(booking.status))}>
           {getPaymentLabel(booking.status)}
         </span>
       </div>
 
-      <div className="grid gap-2 sm:grid-cols-3">
-        <div className="grid gap-0.5 rounded-[0.95rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-2.5">
-          <span className="inline-flex items-center gap-1.5 text-[0.66rem] font-semibold uppercase tracking-[0.12em] text-[var(--ui-text-muted)]">
-            <ReceiptText size={12} strokeWidth={2.35} aria-hidden="true" />
+      <div className="customer-history-money-grid grid grid-cols-3 gap-1">
+        <div className="grid gap-0.5 rounded-[0.65rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-1.5">
+          <span className="text-[0.48rem] font-semibold uppercase tracking-[0.09em] text-[var(--ui-text-muted)]">
             Total
           </span>
-          <strong className="text-xs font-semibold text-[var(--ui-text-strong)]">
+          <strong className="text-[0.58rem] font-semibold text-[var(--ui-text-strong)]">
             {formatCurrency(booking.totalPrice)}
           </strong>
         </div>
 
-        <div className="grid gap-0.5 rounded-[0.95rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-2.5">
-          <span className="inline-flex items-center gap-1.5 text-[0.66rem] font-semibold uppercase tracking-[0.12em] text-[var(--ui-text-muted)]">
-            <Banknote size={12} strokeWidth={2.35} aria-hidden="true" />
+        <div className="grid gap-0.5 rounded-[0.65rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-1.5">
+          <span className="text-[0.48rem] font-semibold uppercase tracking-[0.09em] text-[var(--ui-text-muted)]">
             Paid
           </span>
-          <strong className="text-xs font-semibold text-[var(--ui-text-strong)]">
+          <strong className="text-[0.58rem] font-semibold text-[var(--ui-text-strong)]">
             {formatCurrency(booking.dpAmount)}
           </strong>
         </div>
 
-        <div className="grid gap-0.5 rounded-[0.95rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-2.5">
-          <span className="inline-flex items-center gap-1.5 text-[0.66rem] font-semibold uppercase tracking-[0.12em] text-[var(--ui-text-muted)]">
-            <CreditCard size={12} strokeWidth={2.35} aria-hidden="true" />
+        <div className="grid gap-0.5 rounded-[0.65rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-1.5">
+          <span className="text-[0.48rem] font-semibold uppercase tracking-[0.09em] text-[var(--ui-text-muted)]">
             Sisa
           </span>
-          <strong className={cn('text-xs font-semibold', hasRemainingPayment ? 'text-studio-accent' : 'text-[var(--ui-text-strong)]')}>
+          <strong className={cn('text-[0.58rem] font-semibold', hasRemainingPayment ? 'text-studio-accent' : 'text-[var(--ui-text-strong)]')}>
             {formatCurrency(booking.remainingPayment)}
           </strong>
         </div>
       </div>
 
       {booking.notes ? (
-        <p className="m-0 rounded-[0.95rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-2.5 text-xs font-medium leading-5 text-[var(--ui-text-muted)]">
+        <p className="m-0 rounded-[0.7rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-1.5 text-[0.64rem] font-medium leading-4 text-[var(--ui-text-muted)]">
           {booking.notes}
         </p>
       ) : null}
@@ -1675,27 +1666,42 @@ function CustomerDetailPanel({
         </p>
       </div>
 
-      <div className="customer-detail-metrics grid gap-0 border-y border-[var(--ui-border)]">
-        <DetailMetric
-          icon={CalendarDays}
-          label="Total booking"
-          value={customer.totalBookings + ' sesi'}
-        />
-        <DetailMetric
-          icon={History}
-          label="Favorite session"
-          value={customer.favoriteSession}
-        />
-        <DetailMetric
-          icon={Clock3}
-          label="Last booking"
-          value={customer.lastBooking ? formatDateLabel(customer.lastBooking.dateKey) : '-'}
-        />
-        <DetailMetric
-          icon={CalendarClock}
-          label="Next booking"
-          value={customer.nextBooking ? formatDateLabel(customer.nextBooking.dateKey) : 'Belum ada'}
-        />
+      <div className="customer-detail-summary-compact grid grid-cols-2 gap-1.5 rounded-[0.95rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-1.5 ring-1 ring-[var(--ui-ring)]">
+        <div className="grid gap-0.5 rounded-[0.75rem] bg-[var(--ui-control)] px-2 py-1.5">
+          <span className="text-[0.52rem] font-semibold uppercase tracking-[0.1em] text-[var(--ui-text-muted)]">
+            Total
+          </span>
+          <strong className="text-xs font-semibold text-[var(--ui-text-strong)]">
+            {customer.totalBookings} sesi
+          </strong>
+        </div>
+
+        <div className="grid gap-0.5 rounded-[0.75rem] bg-[var(--ui-control)] px-2 py-1.5">
+          <span className="text-[0.52rem] font-semibold uppercase tracking-[0.1em] text-[var(--ui-text-muted)]">
+            Favorite
+          </span>
+          <strong className="truncate text-xs font-semibold text-[var(--ui-text-strong)]">
+            {customer.favoriteSession}
+          </strong>
+        </div>
+
+        <div className="grid gap-0.5 rounded-[0.75rem] bg-[var(--ui-control)] px-2 py-1.5">
+          <span className="text-[0.52rem] font-semibold uppercase tracking-[0.1em] text-[var(--ui-text-muted)]">
+            Last
+          </span>
+          <strong className="text-xs font-semibold text-[var(--ui-text-strong)]">
+            {customer.lastBooking ? formatDateLabel(customer.lastBooking.dateKey) : '-'}
+          </strong>
+        </div>
+
+        <div className="grid gap-0.5 rounded-[0.75rem] bg-[var(--ui-control)] px-2 py-1.5">
+          <span className="text-[0.52rem] font-semibold uppercase tracking-[0.1em] text-[var(--ui-text-muted)]">
+            Next
+          </span>
+          <strong className="truncate text-xs font-semibold text-[var(--ui-text-strong)]">
+            {customer.nextBooking ? formatDateLabel(customer.nextBooking.dateKey) : 'Belum ada'}
+          </strong>
+        </div>
       </div>
 
       <CustomerPaymentSummary customer={customer} />
@@ -1730,28 +1736,28 @@ function CustomerDetailPanel({
             </span>
           </div>
 
-          <div className="grid gap-2 rounded-[1.15rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-2 ring-1 ring-[var(--ui-ring)]">
-            <div className="grid gap-2 sm:grid-cols-2">
-              <div className="grid gap-0.5 rounded-[0.95rem] border border-[var(--ui-border)] bg-[var(--ui-control)] p-2.5">
-                <span className="text-[0.66rem] font-semibold uppercase tracking-[0.13em] text-[var(--ui-text-muted)]">
-                  Unpaid sessions
+          <div className="customer-history-summary-compact grid gap-1.5 rounded-[0.95rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-1.5 ring-1 ring-[var(--ui-ring)]">
+            <div className="grid grid-cols-2 gap-1">
+              <div className="grid gap-0.5 rounded-[0.75rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-2 py-1.5">
+                <span className="text-[0.5rem] font-semibold uppercase tracking-[0.1em] text-[var(--ui-text-muted)]">
+                  Unpaid
                 </span>
-                <strong className="text-sm font-semibold text-studio-accent">
-                  {historyStats.unpaid} sesi • {formatCurrency(historyStats.unpaidAmount)}
+                <strong className="text-[0.64rem] font-semibold text-studio-accent">
+                  {historyStats.unpaid} • {formatCurrency(historyStats.unpaidAmount)}
                 </strong>
               </div>
 
-              <div className="grid gap-0.5 rounded-[0.95rem] border border-[var(--ui-border)] bg-[var(--ui-control)] p-2.5">
-                <span className="text-[0.66rem] font-semibold uppercase tracking-[0.13em] text-[var(--ui-text-muted)]">
-                  Paid ratio
+              <div className="grid gap-0.5 rounded-[0.75rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-2 py-1.5">
+                <span className="text-[0.5rem] font-semibold uppercase tracking-[0.1em] text-[var(--ui-text-muted)]">
+                  Paid
                 </span>
-                <strong className="text-sm font-semibold text-[var(--ui-text-strong)]">
-                  {historyStats.paid} lunas / {historyStats.total} sesi
+                <strong className="text-[0.64rem] font-semibold text-[var(--ui-text-strong)]">
+                  {historyStats.paid}/{historyStats.total} sesi
                 </strong>
               </div>
             </div>
 
-            <div className="-mx-1 flex snap-x gap-2 overflow-x-auto px-1 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0">
+            <div className="-mx-1 flex snap-x gap-1.5 overflow-x-auto px-1 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0">
               {historyFilterOptions.map((option) => {
                 const isActive = historyFilter === option.key;
 
@@ -1759,7 +1765,7 @@ function CustomerDetailPanel({
                   <button
                     aria-pressed={isActive}
                     className={cn(
-                      'inline-flex min-h-9 shrink-0 snap-start items-center justify-center gap-2 rounded-full border px-3 text-xs font-semibold uppercase tracking-[0.11em] ring-1 transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20',
+                      'inline-flex min-h-8 shrink-0 snap-start items-center justify-center gap-1.5 rounded-full border px-2.5 text-[0.58rem] font-semibold uppercase tracking-[0.09em] ring-1 transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20',
                       isActive
                         ? 'border-studio-accent/45 bg-studio-accent/10 text-studio-accent ring-studio-accent/20'
                         : 'border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] text-[var(--ui-secondary-text)] ring-[var(--ui-ring)] hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)]',
