@@ -119,6 +119,35 @@ const customerCommunicationTemplates = [
   },
 ];
 
+const customerTagOptions = [
+  {
+    key: 'vip',
+    label: 'VIP',
+  },
+  {
+    key: 'band',
+    label: 'Band',
+  },
+  {
+    key: 'recording',
+    label: 'Recording',
+  },
+  {
+    key: 'followUp',
+    label: 'Follow-up',
+  },
+  {
+    key: 'highValue',
+    label: 'High value',
+  },
+  {
+    key: 'watchlist',
+    label: 'Watchlist',
+  },
+];
+
+const CUSTOMER_NOTES_STORAGE_KEY = 'thirty-seven-customer-notes-v1';
+
 function formatCurrency(value) {
   return new Intl.NumberFormat('id-ID', {
     currency: 'IDR',
@@ -233,6 +262,68 @@ function getCustomerPhoneValue(customer) {
 
 function getCustomerBoardQuery(customer) {
   return getCustomerPhoneValue(customer) || customer?.name || '';
+}
+
+function normalizeCustomerNoteDraft(value) {
+  const source = value && typeof value === 'object' ? value : {};
+  const tags = Array.isArray(source.tags)
+    ? source.tags.filter((tag) => customerTagOptions.some((option) => option.key === tag))
+    : [];
+
+  return {
+    note: String(source.note || ''),
+    tags: Array.from(new Set(tags)),
+    updatedAt: String(source.updatedAt || ''),
+  };
+}
+
+function readCustomerNotesStore() {
+  if (typeof window === 'undefined' || !window.localStorage) {
+    return {};
+  }
+
+  try {
+    const parsed = JSON.parse(window.localStorage.getItem(CUSTOMER_NOTES_STORAGE_KEY) || '{}');
+
+    return parsed && typeof parsed === 'object' ? parsed : {};
+  } catch (_error) {
+    return {};
+  }
+}
+
+function getStoredCustomerNote(customerId) {
+  const store = readCustomerNotesStore();
+
+  return normalizeCustomerNoteDraft(store[String(customerId || '')]);
+}
+
+function writeStoredCustomerNote(customerId, draft) {
+  if (typeof window === 'undefined' || !window.localStorage) {
+    return;
+  }
+
+  const key = String(customerId || '').trim();
+
+  if (!key) {
+    return;
+  }
+
+  const normalizedDraft = normalizeCustomerNoteDraft(draft);
+  const shouldRemove = !normalizedDraft.note.trim() && normalizedDraft.tags.length === 0;
+  const nextStore = {
+    ...readCustomerNotesStore(),
+  };
+
+  if (shouldRemove) {
+    delete nextStore[key];
+  } else {
+    nextStore[key] = {
+      ...normalizedDraft,
+      updatedAt: new Date().toISOString(),
+    };
+  }
+
+  window.localStorage.setItem(CUSTOMER_NOTES_STORAGE_KEY, JSON.stringify(nextStore));
 }
 
 function getCustomerPrimaryBooking(customer) {
@@ -1151,6 +1242,86 @@ function CustomerQualityBadge({
   );
 }
 
+function CustomerNotesPanel({
+  noteDraft,
+  noteSaveStatus,
+  onClear,
+  onNoteChange,
+  onSave,
+  onToggleTag,
+}) {
+  const hasContent = Boolean(noteDraft.note.trim()) || noteDraft.tags.length > 0;
+
+  return (
+    <section className="customer-notes-panel grid gap-2 rounded-[1.1rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-3 ring-1 ring-[var(--ui-ring)]" aria-label="Customer internal notes">
+      <div className="flex items-center justify-between gap-2">
+        <span className="text-[0.66rem] font-semibold uppercase tracking-[0.14em] text-[var(--ui-text-muted)]">
+          Internal notes
+        </span>
+
+        <span className={cn(
+          'rounded-full border px-2 py-0.5 text-[0.54rem] font-semibold uppercase tracking-[0.1em]',
+          hasContent
+            ? 'border-studio-cyan/35 bg-studio-cyan/10 text-studio-cyan'
+            : 'border-[var(--ui-border)] bg-[var(--ui-control)] text-[var(--ui-text-muted)]',
+        )}>
+          {hasContent ? 'Local saved' : 'Optional'}
+        </span>
+      </div>
+
+      <div className="customer-notes-tags -mx-1 flex snap-x gap-1.5 overflow-x-auto px-1 pb-1" aria-label="Customer tags">
+        {customerTagOptions.map((tag) => {
+          const isActive = noteDraft.tags.includes(tag.key);
+
+          return (
+            <button
+              aria-pressed={isActive}
+              className={cn(
+                'inline-flex min-h-8 shrink-0 snap-start items-center rounded-full border px-2.5 text-[0.58rem] font-semibold uppercase tracking-[0.09em] ring-1 transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20',
+                isActive
+                  ? 'border-studio-accent/45 bg-studio-accent/10 text-studio-accent ring-studio-accent/20'
+                  : 'border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] text-[var(--ui-secondary-text)] ring-[var(--ui-ring)] hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)]',
+              )}
+              key={tag.key}
+              type="button"
+              onClick={() => onToggleTag(tag.key)}
+            >
+              {tag.label}
+            </button>
+          );
+        })}
+      </div>
+
+      <textarea
+        aria-label="Catatan internal customer"
+        className="min-h-20 resize-y rounded-[0.9rem] border border-[var(--ui-border)] bg-[var(--ui-control)] p-2 text-xs font-medium leading-5 text-[var(--ui-text-main)] outline-none ring-1 ring-[var(--ui-ring)] placeholder:text-[var(--ui-text-soft)] focus:border-studio-accent/55 focus:ring-4 focus:ring-studio-accent/20"
+        placeholder="Contoh: suka booking malam, prefer studio A, perlu follow-up DP..."
+        value={noteDraft.note}
+        onChange={(event) => onNoteChange(event.target.value)}
+      />
+
+      <div className="flex items-center justify-between gap-2">
+        <button
+          className="inline-flex min-h-8 items-center justify-center rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] px-3 text-xs font-semibold text-[var(--ui-secondary-text)] ring-1 ring-[var(--ui-ring)] transition hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20 disabled:cursor-not-allowed disabled:opacity-50"
+          disabled={!hasContent}
+          type="button"
+          onClick={onClear}
+        >
+          Clear
+        </button>
+
+        <button
+          className="inline-flex min-h-8 items-center justify-center rounded-full [background:var(--ui-primary-bg)] px-3 text-xs font-semibold text-[var(--ui-primary-text)] shadow-[var(--ui-shadow-soft)] transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
+          type="button"
+          onClick={onSave}
+        >
+          {noteSaveStatus === 'saved' ? 'Saved' : noteSaveStatus === 'cleared' ? 'Cleared' : noteSaveStatus === 'error' ? 'Save failed' : 'Save local'}
+        </button>
+      </div>
+    </section>
+  );
+}
+
 function CustomerQualityPanel({
   customer,
 }) {
@@ -1784,6 +1955,8 @@ function CustomerDetailPanel({
   const [summaryCopyStatus, setSummaryCopyStatus] = useState('idle');
   const [templateCopyStatus, setTemplateCopyStatus] = useState('idle');
   const [selectedTemplate, setSelectedTemplate] = useState(() => getDefaultCustomerMessageTemplate(customer));
+  const [customerNoteDraft, setCustomerNoteDraft] = useState(() => getStoredCustomerNote(customer.id));
+  const [noteSaveStatus, setNoteSaveStatus] = useState('idle');
   const [historyFilter, setHistoryFilter] = useState('all');
   const phoneValue = getCustomerPhoneValue(customer);
   const phoneDigits = normalizePhoneDigits(phoneValue);
@@ -1805,6 +1978,60 @@ function CustomerDetailPanel({
   const resetActionStatus = (setter) => {
     if (typeof window !== 'undefined') {
       window.setTimeout(() => setter('idle'), 2200);
+    }
+  };
+
+  const resetNoteSaveStatus = () => {
+    if (typeof window !== 'undefined') {
+      window.setTimeout(() => setNoteSaveStatus('idle'), 2200);
+    }
+  };
+
+  const handleCustomerNoteChange = (note) => {
+    setCustomerNoteDraft((current) => ({
+      ...current,
+      note,
+    }));
+    setNoteSaveStatus('idle');
+  };
+
+  const handleCustomerTagToggle = (tagKey) => {
+    setCustomerNoteDraft((current) => {
+      const tags = Array.isArray(current.tags) ? current.tags : [];
+      const nextTags = tags.includes(tagKey)
+        ? tags.filter((tag) => tag !== tagKey)
+        : [...tags, tagKey];
+
+      return {
+        ...current,
+        tags: nextTags,
+      };
+    });
+    setNoteSaveStatus('idle');
+  };
+
+  const handleSaveCustomerNote = () => {
+    try {
+      writeStoredCustomerNote(customer.id, customerNoteDraft);
+      setNoteSaveStatus('saved');
+      resetNoteSaveStatus();
+    } catch (_error) {
+      setNoteSaveStatus('error');
+      resetNoteSaveStatus();
+    }
+  };
+
+  const handleClearCustomerNote = () => {
+    const emptyDraft = normalizeCustomerNoteDraft({});
+
+    try {
+      setCustomerNoteDraft(emptyDraft);
+      writeStoredCustomerNote(customer.id, emptyDraft);
+      setNoteSaveStatus('cleared');
+      resetNoteSaveStatus();
+    } catch (_error) {
+      setNoteSaveStatus('error');
+      resetNoteSaveStatus();
     }
   };
 
@@ -1909,6 +2136,15 @@ function CustomerDetailPanel({
       </div>
 
       <CustomerQualityPanel customer={customer} />
+
+      <CustomerNotesPanel
+        noteDraft={customerNoteDraft}
+        noteSaveStatus={noteSaveStatus}
+        onClear={handleClearCustomerNote}
+        onNoteChange={handleCustomerNoteChange}
+        onSave={handleSaveCustomerNote}
+        onToggleTag={handleCustomerTagToggle}
+      />
 
       <div className="customer-actions-compact grid grid-cols-3 gap-1.5 sm:grid-cols-3">
         {phoneHref ? (
