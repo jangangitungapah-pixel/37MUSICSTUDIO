@@ -13,9 +13,11 @@ import {
   CheckCircle2,
   Clock3,
   CreditCard,
+  Download,
   History,
   ListFilter,
   Phone,
+  Printer,
   Search,
   Sparkles,
   UserRound,
@@ -875,6 +877,224 @@ function getCustomerQualityStats(customers) {
   );
 }
 
+function escapeCsvValue(value) {
+  const text = String(value ?? '');
+
+  if (/[",\n\r]/.test(text)) {
+    return '"' + text.replace(/"/g, '""') + '"';
+  }
+
+  return text;
+}
+
+function escapePrintHtml(value) {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+function getCustomerExportDateLabel(value) {
+  return value?.dateKey ? formatDateLabel(value.dateKey) : '';
+}
+
+function getCustomerExportRows(customers) {
+  return (Array.isArray(customers) ? customers : []).map((customer) => {
+    const localNote = getStoredCustomerNote(customer.id);
+    const tags = Array.isArray(localNote.tags) ? localNote.tags : [];
+    const tagLabels = tags
+      .map((tagKey) => customerTagOptions.find((tag) => tag.key === tagKey)?.label || tagKey)
+      .join(', ');
+
+    return {
+      favoriteSession: customer.favoriteSession || '',
+      lastBooking: getCustomerExportDateLabel(customer.lastBooking),
+      name: customer.name || '',
+      nextBooking: getCustomerExportDateLabel(customer.nextBooking),
+      note: localNote.note || '',
+      paidRevenue: formatCurrency(customer.paidRevenue),
+      pendingRevenue: formatCurrency(customer.pendingRevenue),
+      phone: getCustomerPhoneValue(customer) || '',
+      quality: customer.dataQuality?.label || 'Clean',
+      status: customer.status || '',
+      tags: tagLabels,
+      totalBookings: customer.totalBookings || 0,
+      totalRevenue: formatCurrency(customer.totalRevenue),
+    };
+  });
+}
+
+function createCustomersCsv(customers) {
+  const headers = [
+    'Name',
+    'Phone',
+    'Status',
+    'Quality',
+    'Total bookings',
+    'Total revenue',
+    'Paid revenue',
+    'Remaining',
+    'Favorite session',
+    'Last booking',
+    'Next booking',
+    'Tags',
+    'Local note',
+  ];
+
+  const rows = getCustomerExportRows(customers).map((customer) => [
+    customer.name,
+    customer.phone,
+    customer.status,
+    customer.quality,
+    customer.totalBookings,
+    customer.totalRevenue,
+    customer.paidRevenue,
+    customer.pendingRevenue,
+    customer.favoriteSession,
+    customer.lastBooking,
+    customer.nextBooking,
+    customer.tags,
+    customer.note,
+  ]);
+
+  return [
+    headers.map(escapeCsvValue).join(','),
+    ...rows.map((row) => row.map(escapeCsvValue).join(',')),
+  ].join('\n');
+}
+
+function createCustomerExportFilename() {
+  const stamp = new Date().toISOString().slice(0, 10);
+
+  return '37-music-customers-' + stamp + '.csv';
+}
+
+function downloadCustomerCsv(customers) {
+  if (typeof window === 'undefined' || typeof document === 'undefined') {
+    return false;
+  }
+
+  const csvContent = '\uFEFF' + createCustomersCsv(customers);
+  const blob = new Blob([csvContent], {
+    type: 'text/csv;charset=utf-8;',
+  });
+  const url = window.URL.createObjectURL(blob);
+  const anchor = document.createElement('a');
+
+  anchor.href = url;
+  anchor.download = createCustomerExportFilename();
+  anchor.style.display = 'none';
+
+  document.body.appendChild(anchor);
+  anchor.click();
+  document.body.removeChild(anchor);
+
+  window.URL.revokeObjectURL(url);
+
+  return true;
+}
+
+function createCustomerPrintRows(customers) {
+  return getCustomerExportRows(customers)
+    .map((customer) => (
+      '<tr>' +
+        '<td><strong>' + escapePrintHtml(customer.name) + '</strong><br /><span>' + escapePrintHtml(customer.favoriteSession) + '</span></td>' +
+        '<td>' + escapePrintHtml(customer.phone || '-') + '</td>' +
+        '<td>' + escapePrintHtml(customer.status) + '<br /><span>' + escapePrintHtml(customer.quality) + '</span></td>' +
+        '<td>' + escapePrintHtml(customer.totalBookings) + '</td>' +
+        '<td>' + escapePrintHtml(customer.totalRevenue) + '<br /><span>Sisa ' + escapePrintHtml(customer.pendingRevenue) + '</span></td>' +
+        '<td>' + escapePrintHtml(customer.lastBooking || '-') + '</td>' +
+        '<td>' + escapePrintHtml(customer.nextBooking || '-') + '</td>' +
+        '<td>' + escapePrintHtml(customer.tags || '-') + '</td>' +
+      '</tr>'
+    ))
+    .join('');
+}
+
+function createCustomerPrintDocument(customers) {
+  const generatedAt = new Date().toLocaleString('id-ID', {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+  });
+  const rows = createCustomerPrintRows(customers);
+  const totalCustomers = Array.isArray(customers) ? customers.length : 0;
+
+  return '<!doctype html>' +
+    '<html lang="id">' +
+    '<head>' +
+      '<meta charset="utf-8" />' +
+      '<meta name="viewport" content="width=device-width, initial-scale=1" />' +
+      '<title>37 Music Studio Customer List</title>' +
+      '<style>' +
+        '*{box-sizing:border-box}' +
+        'body{margin:0;background:#fff;color:#111827;font-family:Inter,Arial,sans-serif;font-size:12px;line-height:1.45}' +
+        '.page{padding:28px}' +
+        '.header{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;border-bottom:2px solid #111827;padding-bottom:16px;margin-bottom:18px}' +
+        'h1{margin:0;font-size:26px;letter-spacing:-.04em}' +
+        'p{margin:4px 0 0;color:#4b5563}' +
+        '.badge{border:1px solid #d1d5db;border-radius:999px;padding:8px 12px;font-weight:700;text-align:right}' +
+        'table{width:100%;border-collapse:collapse}' +
+        'th{background:#111827;color:#fff;text-align:left;font-size:10px;letter-spacing:.08em;text-transform:uppercase;padding:9px 8px}' +
+        'td{border-bottom:1px solid #e5e7eb;padding:9px 8px;vertical-align:top}' +
+        'td span{color:#6b7280;font-size:11px}' +
+        '@media print{.page{padding:14mm}.header{break-after:avoid}tr{break-inside:avoid}}' +
+      '</style>' +
+    '</head>' +
+    '<body>' +
+      '<main class="page">' +
+        '<section class="header">' +
+          '<div>' +
+            '<h1>37 Music Studio Customer List</h1>' +
+            '<p>Generated ' + escapePrintHtml(generatedAt) + '</p>' +
+          '</div>' +
+          '<div class="badge">' + escapePrintHtml(totalCustomers) + ' customers<br /><span>Filtered contact sheet</span></div>' +
+        '</section>' +
+        '<table>' +
+          '<thead>' +
+            '<tr>' +
+              '<th>Customer</th>' +
+              '<th>Phone</th>' +
+              '<th>Status</th>' +
+              '<th>Booking</th>' +
+              '<th>Revenue</th>' +
+              '<th>Last</th>' +
+              '<th>Next</th>' +
+              '<th>Tags</th>' +
+            '</tr>' +
+          '</thead>' +
+          '<tbody>' + rows + '</tbody>' +
+        '</table>' +
+      '</main>' +
+    '</body>' +
+    '</html>';
+}
+
+function printCustomerList(customers) {
+  if (typeof window === 'undefined') {
+    return false;
+  }
+
+  const printWindow = window.open('', '_blank', 'noopener,noreferrer,width=1100,height=800');
+
+  if (!printWindow) {
+    return false;
+  }
+
+  printWindow.document.open();
+  printWindow.document.write(createCustomerPrintDocument(customers));
+  printWindow.document.close();
+  printWindow.focus();
+
+  window.setTimeout(() => {
+    printWindow.print();
+  }, 250);
+
+  return true;
+}
+
+
 function CustomerHero({
   activeCustomer,
   stats,
@@ -1178,6 +1398,72 @@ function CustomerToolbar({
 
       <div className="text-xs font-semibold text-[var(--ui-text-muted)]">
         <span className="text-[var(--ui-text-strong)]">{resultCount}</span> customer
+      </div>
+    </section>
+  );
+}
+
+function CustomerExportPanel({
+  customers,
+  totalCustomers,
+}) {
+  const [exportStatus, setExportStatus] = useState('idle');
+  const [printStatus, setPrintStatus] = useState('idle');
+  const hasCustomers = Array.isArray(customers) && customers.length > 0;
+  const visibleLabel = (customers?.length || 0) + ' / ' + totalCustomers + ' customer';
+
+  const resetStatus = (setter) => {
+    if (typeof window !== 'undefined') {
+      window.setTimeout(() => setter('idle'), 2200);
+    }
+  };
+
+  const handleExportCsv = () => {
+    const didDownload = hasCustomers && downloadCustomerCsv(customers);
+
+    setExportStatus(didDownload ? 'done' : 'error');
+    resetStatus(setExportStatus);
+  };
+
+  const handlePrintList = () => {
+    const didPrint = hasCustomers && printCustomerList(customers);
+
+    setPrintStatus(didPrint ? 'done' : 'error');
+    resetStatus(setPrintStatus);
+  };
+
+  return (
+    <section className="customer-export-panel flex flex-wrap items-center justify-between gap-2 rounded-[1rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-2 ring-1 ring-[var(--ui-ring)]" aria-label="Customer export and print">
+      <div className="grid gap-0.5">
+        <span className="text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-[var(--ui-text-muted)]">
+          Export contact list
+        </span>
+
+        <strong className="text-xs font-semibold text-[var(--ui-text-strong)]">
+          {visibleLabel}
+        </strong>
+      </div>
+
+      <div className="flex flex-wrap items-center gap-1.5">
+        <button
+          className="inline-flex min-h-9 items-center justify-center gap-1.5 rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] px-3 text-xs font-semibold text-[var(--ui-secondary-text)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20 disabled:cursor-not-allowed disabled:opacity-50"
+          disabled={!hasCustomers}
+          type="button"
+          onClick={handleExportCsv}
+        >
+          <Download size={13} strokeWidth={2.35} aria-hidden="true" />
+          {exportStatus === 'done' ? 'CSV ready' : exportStatus === 'error' ? 'No data' : 'Export CSV'}
+        </button>
+
+        <button
+          className="inline-flex min-h-9 items-center justify-center gap-1.5 rounded-full border border-studio-cyan/35 bg-studio-cyan/10 px-3 text-xs font-semibold text-studio-cyan ring-1 ring-studio-cyan/15 transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-cyan/20 disabled:cursor-not-allowed disabled:opacity-50"
+          disabled={!hasCustomers}
+          type="button"
+          onClick={handlePrintList}
+        >
+          <Printer size={13} strokeWidth={2.35} aria-hidden="true" />
+          {printStatus === 'done' ? 'Print opened' : printStatus === 'error' ? 'Popup blocked' : 'Print list'}
+        </button>
       </div>
     </section>
   );
@@ -2760,6 +3046,11 @@ export function CustomerAdmin() {
         onSearchChange={setSearchTerm}
         onSortChange={setSortMode}
         onStatusFilterChange={setStatusFilter}
+      />
+
+      <CustomerExportPanel
+        customers={filteredCustomers}
+        totalCustomers={customers.length}
       />
 
       <CustomerErrorNotice message={bookingLoadError} />

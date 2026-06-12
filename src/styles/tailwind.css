@@ -1244,3 +1244,46 @@
   }
 }
 /* 37-customer-desktop-insights:end */
+
+/* 37-customer-export-print:start */
+@media (max-width: 767px) {
+  .customer-export-panel {
+    gap: 0.45rem !important;
+    padding: 0.5rem !important;
+    border-radius: 0.85rem !important;
+  }
+
+  .customer-export-panel > div:first-child span {
+    font-size: 0.52rem !important;
+  }
+
+  .customer-export-panel > div:first-child strong {
+    font-size: 0.66rem !important;
+  }
+
+  .customer-export-panel button {
+    min-height: 1.9rem !important;
+    padding-inline: 0.62rem !important;
+    font-size: 0.56rem !important;
+  }
+
+  .customer-export-panel svg {
+    width: 0.72rem !important;
+    height: 0.72rem !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  .customer-export-panel {
+    border-color: transparent !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+  }
+
+  .customer-export-panel > div:first-child {
+    display: none !important;
+  }
+}
+/* 37-customer-export-print:end */
