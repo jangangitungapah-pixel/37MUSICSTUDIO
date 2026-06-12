@@ -1030,6 +1030,97 @@ function CustomerQualityPanel({
   );
 }
 
+function CustomerStatePanel({
+  actionHref = '',
+  actionLabel = '',
+  icon: Icon = UsersRound,
+  message,
+  title,
+  tone = 'neutral',
+}) {
+  const isWarning = tone === 'warning';
+
+  return (
+    <section className={cn(
+      'customer-state-panel grid gap-4 rounded-[1.35rem] border p-5 text-center ring-1',
+      isWarning
+        ? 'border-studio-accent/35 bg-studio-accent/10 text-studio-accent ring-studio-accent/15'
+        : 'border-[var(--ui-border-strong)] bg-[linear-gradient(145deg,var(--ui-glass),var(--ui-glass-soft))] text-[var(--ui-text-main)] ring-[var(--ui-ring)]',
+    )}>
+      <span className="mx-auto grid size-12 place-items-center rounded-[1rem] border border-[var(--ui-border)] bg-[var(--ui-control)]">
+        <Icon size={22} strokeWidth={2.35} aria-hidden="true" />
+      </span>
+
+      <div className="mx-auto grid max-w-md gap-2">
+        <h2 className="m-0 text-xl font-semibold tracking-[-0.045em] text-[var(--ui-text-strong)]">
+          {title}
+        </h2>
+
+        <p className="m-0 text-sm font-medium leading-6 text-[var(--ui-text-muted)]">
+          {message}
+        </p>
+      </div>
+
+      {actionHref && actionLabel ? (
+        <Link
+          className="mx-auto inline-flex min-h-10 items-center justify-center gap-2 rounded-full [background:var(--ui-primary-bg)] px-4 text-sm font-semibold text-[var(--ui-primary-text)] shadow-[var(--ui-shadow-soft)] transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
+          to={actionHref}
+        >
+          {actionLabel}
+          <ArrowUpRight size={14} strokeWidth={2.35} aria-hidden="true" />
+        </Link>
+      ) : null}
+    </section>
+  );
+}
+
+function CustomerErrorNotice({
+  message,
+}) {
+  if (!message) {
+    return null;
+  }
+
+  return (
+    <section className="customer-error-notice flex items-start gap-3 rounded-[1.1rem] border border-studio-accent/35 bg-studio-accent/10 p-3 text-studio-accent ring-1 ring-studio-accent/15" role="status">
+      <AlertTriangle className="mt-0.5 shrink-0" size={17} strokeWidth={2.35} aria-hidden="true" />
+
+      <div className="grid gap-0.5">
+        <strong className="text-sm font-semibold tracking-[-0.025em]">
+          Data customer memakai fallback.
+        </strong>
+
+        <span className="text-xs font-medium leading-5 text-[var(--ui-text-muted)]">
+          {message}
+        </span>
+      </div>
+    </section>
+  );
+}
+
+function CustomerLoadingState() {
+  return (
+    <section className="customer-loading-state grid gap-3 rounded-[1.35rem] border border-[var(--ui-border-strong)] bg-[linear-gradient(145deg,var(--ui-glass),var(--ui-glass-soft))] p-4 ring-1 ring-[var(--ui-ring)]" aria-label="Loading customer data">
+      <div className="flex items-center gap-3">
+        <span className="grid size-10 animate-pulse place-items-center rounded-[0.95rem] bg-[var(--ui-control)]" />
+        <div className="grid flex-1 gap-2">
+          <span className="h-3 w-36 animate-pulse rounded-full bg-[var(--ui-control)]" />
+          <span className="h-2.5 w-52 max-w-full animate-pulse rounded-full bg-[var(--ui-control)]" />
+        </div>
+      </div>
+
+      <div className="grid gap-2">
+        {[0, 1, 2].map((item) => (
+          <div className="grid gap-2 rounded-[1rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-3" key={item}>
+            <span className="h-3 w-40 animate-pulse rounded-full bg-[var(--ui-control)]" />
+            <span className="h-2.5 w-full animate-pulse rounded-full bg-[var(--ui-control)]" />
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 function CustomerList({
   customers,
   selectedCustomerId,
@@ -1808,7 +1899,11 @@ function CustomerDetailPanel({
 
 export function CustomerAdmin() {
   const adminContext = useOutletContext() || {};
-  const { manualBookings = [] } = adminContext;
+  const {
+    bookingLoadError = '',
+    isBookingsReady = true,
+    manualBookings = [],
+  } = adminContext;
   const [searchParams] = useSearchParams();
   const [searchTerm, setSearchTerm] = useState(searchParams.get('q') || '');
   const [statusFilter, setStatusFilter] = useState('all');
@@ -1832,6 +1927,9 @@ export function CustomerAdmin() {
       : null,
     [customers, selectedCustomerId],
   );
+  const hasBookingData = bookings.length > 0;
+  const shouldShowEmptyBookings = isBookingsReady && !hasBookingData;
+  const shouldShowLoading = !isBookingsReady;
 
   const handleSelectCustomer = (customer) => {
     setSelectedCustomerId(customer.id);
@@ -1863,20 +1961,34 @@ export function CustomerAdmin() {
         onStatusFilterChange={setStatusFilter}
       />
 
-      <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(320px,390px)] xl:items-start">
-        <CustomerList
-          customers={filteredCustomers}
-          selectedCustomerId={selectedCustomer?.id || ''}
-          onSelectCustomer={handleSelectCustomer}
-        />
+      <CustomerErrorNotice message={bookingLoadError} />
 
-        {selectedCustomer ? (
-          <CustomerDetailPanel
-            customer={selectedCustomer}
-            onClose={() => setSelectedCustomerId(null)}
+      {shouldShowLoading ? (
+        <CustomerLoadingState />
+      ) : shouldShowEmptyBookings ? (
+        <CustomerStatePanel
+          actionHref="/admin/bookings"
+          actionLabel="Buat booking"
+          icon={UsersRound}
+          message="Customer akan otomatis muncul setelah ada booking real dari Firestore. Buat booking pertama dari halaman booking board."
+          title="Belum ada customer."
+        />
+      ) : (
+        <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(320px,390px)] xl:items-start">
+          <CustomerList
+            customers={filteredCustomers}
+            selectedCustomerId={selectedCustomer?.id || ''}
+            onSelectCustomer={handleSelectCustomer}
           />
-        ) : null}
-      </div>
+
+          {selectedCustomer ? (
+            <CustomerDetailPanel
+              customer={selectedCustomer}
+              onClose={() => setSelectedCustomerId(null)}
+            />
+          ) : null}
+        </div>
+      )}
     </section>
   );
 }

@@ -337,7 +337,7 @@ function subscribeLocalManualBookings(callback) {
   };
 }
 
-export function subscribeManualBookings(callback) {
+export function subscribeManualBookings(callback, onError = () => {}) {
   if (!canUseFirestore()) {
     return subscribeLocalManualBookings(callback);
   }
@@ -357,6 +357,7 @@ export function subscribeManualBookings(callback) {
     },
     (error) => {
       console.error('Firestore booking subscription failed.', error);
+      onError(error);
       callback(readManualBookingsFromStorage());
     },
   );

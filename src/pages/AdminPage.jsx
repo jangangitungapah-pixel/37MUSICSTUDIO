@@ -400,6 +400,10 @@ function AdminBottomBar({
 export function AdminPage() {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [manualBookings, setManualBookings] = useState([]);
+  const [adminBookingsState, setAdminBookingsState] = useState({
+    errorMessage: '',
+    isReady: false,
+  });
   const [adminAuthState, setAdminAuthState] = useState(initialAdminAuthState);
   const location = useLocation();
   const navigate = useNavigate();
@@ -409,11 +413,34 @@ export function AdminPage() {
   useEffect(() => {
     if (!adminAuthState.isAuthenticated) {
       setManualBookings([]);
+      setAdminBookingsState({
+        errorMessage: '',
+        isReady: false,
+      });
 
       return undefined;
     }
 
-    const unsubscribe = adminBookingRepository.subscribeManualBookings(setManualBookings);
+    setAdminBookingsState({
+      errorMessage: '',
+      isReady: false,
+    });
+
+    const unsubscribe = adminBookingRepository.subscribeManualBookings(
+      (bookings) => {
+        setManualBookings(bookings);
+        setAdminBookingsState((current) => ({
+          ...current,
+          isReady: true,
+        }));
+      },
+      () => {
+        setAdminBookingsState({
+          errorMessage: 'Firestore belum bisa dibaca penuh. Customer ditampilkan dari fallback lokal jika tersedia.',
+          isReady: true,
+        });
+      },
+    );
 
     return unsubscribe;
   }, [adminAuthState.isAuthenticated]);
@@ -442,6 +469,8 @@ export function AdminPage() {
           throw error;
         }
       },
+      bookingLoadError: adminBookingsState.errorMessage,
+      isBookingsReady: adminBookingsState.isReady,
       manualBookings,
       recordBookingAuditLog: async (entry) => {
         try {
@@ -459,7 +488,7 @@ export function AdminPage() {
         }
       },
     }),
-    [activeItem, adminAuthState.user, manualBookings],
+    [activeItem, adminAuthState.user, adminBookingsState, manualBookings],
   );
 
   if (!adminAuthState.isReady) {
