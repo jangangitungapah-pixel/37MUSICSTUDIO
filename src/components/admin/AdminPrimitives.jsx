@@ -44,7 +44,7 @@ export function AdminPageShell({
       : 'max-w-[1280px]';
 
   return (
-    <section className={cn('mx-auto grid w-full gap-4', widthClass, className)}>
+    <section className={cn('admin-page-shell mx-auto grid w-full gap-4', widthClass, className)}>
       {children}
     </section>
   );
@@ -59,7 +59,7 @@ export function AdminPageHeader({
   className = '',
 }) {
   return (
-    <header className={cn('grid gap-4 rounded-[1.45rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-4 ring-1 ring-[var(--ui-ring)] md:grid-cols-[minmax(0,1fr)_auto] md:items-end', className)}>
+    <header className={cn('admin-page-header grid gap-4 rounded-[1.45rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-4 ring-1 ring-[var(--ui-ring)] md:grid-cols-[minmax(0,1fr)_auto] md:items-end', className)}>
       <div className="grid min-w-0 gap-2">
         {eyebrow ? (
           <p className="m-0 text-xs font-semibold uppercase tracking-[0.18em] text-studio-accent">
@@ -100,7 +100,7 @@ export function AdminCommandBar({
   className = '',
 }) {
   return (
-    <section className={cn('grid gap-2 rounded-[1.3rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-2 ring-1 ring-[var(--ui-ring)]', className)}>
+    <section className={cn('admin-command-bar grid gap-2 rounded-[1.3rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-2 ring-1 ring-[var(--ui-ring)]', className)}>
       {children}
     </section>
   );
@@ -115,7 +115,7 @@ export function AdminPanel({
   return (
     <Component
       className={cn(
-        'rounded-[1.35rem] border p-4',
+        'admin-panel rounded-[1.35rem] border p-4',
         adminPanelVariantClasses[variant] || adminPanelVariantClasses.default,
         className,
       )}
@@ -142,7 +142,7 @@ export function AdminButton({
   return (
     <Component
       className={cn(
-        'inline-flex shrink-0 items-center justify-center gap-2 rounded-full border font-semibold tracking-[-0.01em] ring-1 transition focus-visible:outline-none focus-visible:ring-4',
+        'admin-button inline-flex shrink-0 items-center justify-center gap-2 rounded-full border font-semibold tracking-[-0.01em] ring-1 transition focus-visible:outline-none focus-visible:ring-4',
         adminButtonVariantClasses[variant] || adminButtonVariantClasses.secondary,
         adminButtonSizeClasses[size] || adminButtonSizeClasses.md,
         className,
@@ -166,7 +166,7 @@ export function AdminBadge({
   return (
     <span
       className={cn(
-        'inline-flex min-h-7 max-w-full items-center gap-1.5 rounded-full border px-2.5 text-[0.68rem] font-semibold ring-1',
+        'admin-badge inline-flex min-h-7 max-w-full items-center gap-1.5 rounded-full border px-2.5 text-[0.68rem] font-semibold ring-1',
         adminBadgeToneClasses[tone] || adminBadgeToneClasses.neutral,
         className,
       )}
@@ -193,7 +193,7 @@ export function AdminDrawer({
   }
 
   return (
-    <div className="fixed inset-0 z-[90] grid bg-black/60 p-3 backdrop-blur-md sm:justify-items-end" role="presentation">
+    <div className="admin-drawer-overlay fixed inset-0 z-[90] grid bg-black/60 p-3 backdrop-blur-md sm:justify-items-end" role="presentation">
       <button
         aria-label="Close drawer overlay"
         className="absolute inset-0 cursor-default"
@@ -203,7 +203,7 @@ export function AdminDrawer({
 
       <section
         aria-modal="true"
-        className={cn('relative z-10 grid max-h-[calc(100vh-1.5rem)] w-full grid-rows-[auto_minmax(0,1fr)_auto] overflow-hidden rounded-[1.45rem] border border-[var(--ui-border-strong)] bg-[var(--ui-bg-base)] shadow-[var(--ui-shadow-soft)] ring-1 ring-[var(--ui-ring)]', widthClass)}
+        className={cn('admin-drawer-panel relative z-10 grid max-h-[calc(100dvh-1.5rem)] w-full grid-rows-[auto_minmax(0,1fr)_auto] overflow-hidden rounded-[1.45rem] border border-[var(--ui-border-strong)] bg-[var(--ui-bg-base)] shadow-[var(--ui-shadow-soft)] ring-1 ring-[var(--ui-ring)]', widthClass)}
         role="dialog"
       >
         <header className="flex min-w-0 items-start justify-between gap-3 border-b border-[var(--ui-border)] p-4">
@@ -229,12 +229,12 @@ export function AdminDrawer({
           </button>
         </header>
 
-        <div className="min-h-0 overflow-y-auto p-4">
+        <div className="admin-drawer-body min-h-0 overflow-y-auto p-4">
           {children}
         </div>
 
         {actions ? (
-          <footer className="flex min-w-0 flex-wrap items-center justify-end gap-2 border-t border-[var(--ui-border)] p-4">
+          <footer className="admin-drawer-footer flex min-w-0 flex-wrap items-center justify-end gap-2 border-t border-[var(--ui-border)] p-4">
             {actions}
           </footer>
         ) : null}
@@ -271,7 +271,7 @@ export function AdminDropdown({
 
   return (
     <label
-      className={cn('relative grid min-w-0 gap-1.5 text-sm font-semibold text-[var(--ui-text-main)]', className)}
+      className={cn('admin-dropdown relative grid min-w-0 gap-1.5 text-sm font-semibold text-[var(--ui-text-main)]', className)}
       onBlur={(event) => {
         if (!event.currentTarget.contains(event.relatedTarget)) {
           setIsOpen(false);
@@ -288,7 +288,7 @@ export function AdminDropdown({
         aria-expanded={isOpen}
         aria-haspopup="listbox"
         className={cn(
-          'flex min-h-10 w-full min-w-0 items-center gap-3 rounded-full border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 text-left text-sm font-semibold text-[var(--ui-text-strong)] ring-1 ring-[var(--ui-ring)] transition hover:bg-[var(--ui-control-hover)] focus-visible:border-studio-accent/55 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20 disabled:cursor-not-allowed disabled:opacity-60',
+          'admin-dropdown-button flex min-h-10 w-full min-w-0 items-center gap-3 rounded-full border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 text-left text-sm font-semibold text-[var(--ui-text-strong)] ring-1 ring-[var(--ui-ring)] transition hover:bg-[var(--ui-control-hover)] focus-visible:border-studio-accent/55 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20 disabled:cursor-not-allowed disabled:opacity-60',
           buttonClassName,
         )}
         disabled={disabled}
@@ -313,7 +313,7 @@ export function AdminDropdown({
 
       {isOpen ? (
         <div
-          className="absolute left-0 right-0 top-[calc(100%+0.45rem)] z-[80] max-h-64 overflow-auto rounded-[1.15rem] border border-[var(--ui-border-strong)] bg-[var(--ui-bg-base)] p-1.5 shadow-[var(--ui-shadow-soft)] ring-1 ring-[var(--ui-ring)]"
+          className="admin-dropdown-listbox absolute left-0 right-0 top-[calc(100%+0.45rem)] z-[80] max-h-64 overflow-auto rounded-[1.15rem] border border-[var(--ui-border-strong)] bg-[var(--ui-bg-base)] p-1.5 shadow-[var(--ui-shadow-soft)] ring-1 ring-[var(--ui-ring)]"
           role="listbox"
         >
           {safeOptions.map((option) => {
