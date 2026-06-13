@@ -16,6 +16,14 @@ import {
 } from 'lucide-react';
 import { Link, useOutletContext, useSearchParams } from 'react-router';
 import { cn } from '../lib/cn.js';
+import {
+  AdminBadge,
+  AdminButton,
+  AdminCommandBar,
+  AdminPageHeader,
+  AdminPageShell,
+  AdminPanel,
+} from '../components/admin/AdminPrimitives.jsx';
 
 const PRICE_PER_HOUR = 120000;
 
@@ -722,7 +730,7 @@ function BookingModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 grid items-end p-2 pb-[max(0.75rem,env(safe-area-inset-bottom))] [background:color-mix(in_srgb,var(--ui-bg-base)_62%,transparent)] backdrop-blur-xl sm:place-items-center sm:p-4"
+      className="fixed inset-0 z-50 grid items-end p-2 pb-[max(0.75rem,env(safe-area-inset-bottom))] bg-black/60 backdrop-blur-md sm:place-items-center sm:p-4"
       role="dialog"
       aria-modal="true"
       aria-labelledby="booking-modal-title"
@@ -1037,7 +1045,7 @@ function BookingDetailModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end justify-center p-2 pb-[max(0.75rem,env(safe-area-inset-bottom))] [background:color-mix(in_srgb,var(--ui-bg-base)_62%,transparent)] backdrop-blur-xl sm:items-center sm:p-4"
+      className="fixed inset-0 z-50 flex items-end justify-center p-2 pb-[max(0.75rem,env(safe-area-inset-bottom))] bg-black/60 backdrop-blur-md sm:items-center sm:p-4"
       role="dialog"
       aria-modal="true"
       aria-labelledby="booking-detail-title"
@@ -1439,19 +1447,24 @@ function TimeCell({ slot }) {
 
 function BookingStatusCounters({ counts }) {
   return (
-    <div className="grid w-full grid-cols-3 gap-1 rounded-[1.25rem] border border-[var(--ui-border)] bg-[var(--ui-control)] p-1 shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] sm:w-auto sm:flex sm:flex-wrap sm:items-center sm:gap-2 sm:rounded-full sm:p-1.5">
-      {bookingStatusItems.map((item) => (
-        <div
-          className="inline-flex min-h-8 items-center justify-center gap-1.5 rounded-full border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] px-2 text-[0.64rem] font-semibold uppercase tracking-[0.1em] text-[var(--ui-text-main)] sm:min-h-9 sm:gap-2 sm:px-3 sm:text-xs sm:tracking-[0.13em]"
-          key={item.key}
-        >
-          <span className={cn('size-1.5 rounded-full sm:size-2', item.dotClass)} />
-          <span className="truncate">{item.label}</span>
-          <strong className="text-xs tracking-[-0.03em] text-[var(--ui-text-strong)] sm:text-sm">
-            {counts[item.key] || 0}
-          </strong>
-        </div>
-      ))}
+    <div className="flex min-w-0 flex-wrap items-center gap-1.5 rounded-[1.05rem] border border-[var(--ui-border)] bg-[var(--ui-control)] p-1 shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)]">
+      {bookingStatusItems.map((item) => {
+        const tone = item.key === 'paid' ? 'cyan' : item.key === 'dp' ? 'purple' : 'accent';
+
+        return (
+          <AdminBadge
+            className="min-h-8 justify-center px-2.5 text-[0.64rem] uppercase tracking-[0.1em] sm:min-h-9 sm:px-3 sm:text-xs sm:tracking-[0.13em]"
+            key={item.key}
+            tone={tone}
+          >
+            <span className={cn('size-1.5 shrink-0 rounded-full sm:size-2', item.dotClass)} aria-hidden="true" />
+            <span>{item.label}</span>
+            <strong className="text-xs tracking-[-0.03em] text-[var(--ui-text-strong)] sm:text-sm">
+              {counts[item.key] || 0}
+            </strong>
+          </AdminBadge>
+        );
+      })}
     </div>
   );
 }
@@ -1479,10 +1492,10 @@ function BookingSlotCounters({ summary, timeSlots, visibleDays }) {
   ];
 
   return (
-    <div className="grid grid-cols-3 gap-0 border-y border-[var(--ui-border)]">
+    <AdminPanel className="grid grid-cols-3 gap-0 overflow-hidden p-0" variant="flat">
       {items.map((item) => (
         <article
-          className="grid gap-0.5 border-l border-[var(--ui-border)] px-2 py-2 first:border-l-0 sm:px-5 sm:py-3"
+          className="grid gap-0.5 border-l border-[var(--ui-border)] px-2 py-2.5 first:border-l-0 sm:px-5 sm:py-3.5"
           key={item.key}
         >
           <span className="truncate text-[0.58rem] font-semibold uppercase tracking-[0.11em] text-[var(--ui-text-muted)] sm:text-[0.68rem] sm:tracking-[0.16em]">
@@ -1498,7 +1511,7 @@ function BookingSlotCounters({ summary, timeSlots, visibleDays }) {
           </span>
         </article>
       ))}
-    </div>
+    </AdminPanel>
   );
 }
 
@@ -1540,38 +1553,39 @@ function CalendarToolbar({
   viewMode,
 }) {
   return (
-    <div className="grid gap-2 rounded-[1.25rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-2 ring-1 ring-[var(--ui-ring)] sm:gap-3 sm:rounded-[1.5rem] sm:p-3 lg:grid-cols-[minmax(0,1fr)_auto_auto] lg:items-center xl:rounded-[1.75rem]">
+    <AdminCommandBar className="gap-2 p-2 sm:gap-3 sm:p-3 lg:grid-cols-[minmax(0,1fr)_auto_auto] lg:items-center">
       <div className="grid grid-cols-[auto_minmax(0,1fr)_auto_auto] items-center gap-1.5 sm:flex sm:flex-wrap sm:gap-2">
-        <button
+        <AdminButton
           aria-label="Previous period"
-          className="grid size-9 place-items-center rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] text-[var(--ui-secondary-text)] shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/25 sm:size-10"
-          type="button"
+          icon={ChevronLeft}
+          size="icon"
+          variant="secondary"
           onClick={onPrev}
+        />
+
+        <AdminBadge
+          className="min-h-9 flex-1 justify-start px-3 sm:min-h-10 sm:min-w-[220px] sm:flex-none sm:px-4"
+          icon={CalendarDays}
+          tone="strong"
         >
-          <ChevronLeft size={16} strokeWidth={2.35} aria-hidden="true" />
-        </button>
+          {rangeLabel}
+        </AdminBadge>
 
-        <div className="inline-flex min-h-9 min-w-0 items-center gap-2 rounded-full border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 text-xs font-semibold text-[var(--ui-text-strong)] shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] sm:min-h-10 sm:min-w-[220px] sm:px-4 sm:text-sm">
-          <CalendarDays size={14} strokeWidth={2.35} aria-hidden="true" />
-          <span className="truncate">{rangeLabel}</span>
-        </div>
-
-        <button
+        <AdminButton
           aria-label="Next period"
-          className="grid size-9 place-items-center rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] text-[var(--ui-secondary-text)] shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/25 sm:size-10"
-          type="button"
+          icon={ChevronRight}
+          size="icon"
+          variant="secondary"
           onClick={onNext}
-        >
-          <ChevronRight size={16} strokeWidth={2.35} aria-hidden="true" />
-        </button>
+        />
 
-        <button
-          className="inline-flex min-h-9 items-center justify-center rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] px-3 text-xs font-semibold text-[var(--ui-secondary-text)] shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/25 sm:min-h-10 sm:px-4 sm:text-sm"
-          type="button"
+        <AdminButton
+          size="sm"
+          variant="secondary"
           onClick={onToday}
         >
           Today
-        </button>
+        </AdminButton>
       </div>
 
       <BookingStatusCounters counts={statusCounts} />
@@ -1582,17 +1596,17 @@ function CalendarToolbar({
           value={viewMode}
         />
 
-        <button
-          className="inline-flex min-h-9 items-center justify-center gap-1.5 rounded-full [background:var(--ui-primary-bg)] px-3 text-sm font-semibold text-[var(--ui-primary-text)] shadow-[var(--ui-shadow-soft)] transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20 sm:min-h-10 sm:gap-2 sm:px-4"
-          type="button"
+        <AdminButton
+          icon={Plus}
+          size="md"
+          variant="primary"
           onClick={onAddBooking}
         >
-          <Plus size={15} strokeWidth={2.35} aria-hidden="true" />
           <span className="sm:hidden">Add</span>
           <span className="hidden sm:inline">Add booking</span>
-        </button>
+        </AdminButton>
       </div>
-    </div>
+    </AdminCommandBar>
   );
 }
 
@@ -1611,11 +1625,9 @@ function CalendarGrid({
   const gridMinWidth = getGridMinWidth(viewMode, visibleDays);
 
   return (
-    <div
-      className={cn(
-        'isolate overflow-hidden rounded-[1.35rem] border border-[var(--ui-border-strong)] shadow-[var(--ui-shadow-soft)] ring-1 ring-[var(--ui-ring)] sm:rounded-[1.75rem]',
-        solidSurfaces.gridShell,
-      )}
+    <AdminPanel
+      className={cn('isolate overflow-hidden p-0', solidSurfaces.gridShell)}
+      variant="solid"
     >
       <div
         className={cn(
@@ -1630,7 +1642,7 @@ function CalendarGrid({
 
           <div className="grid min-w-0 gap-0.5">
             <strong className="truncate text-sm font-semibold tracking-[-0.02em] text-[var(--ui-text-strong)]">
-              Dynamic booking board
+              Studio booking board
             </strong>
             <span className="truncate text-xs font-medium text-[var(--ui-text-muted)]">
               View {viewMode}: {visibleDays.length} hari terlihat
@@ -1714,7 +1726,7 @@ function CalendarGrid({
           ))}
         </div>
       </div>
-    </div>
+    </AdminPanel>
   );
 }
 
@@ -1725,7 +1737,10 @@ function SelectedSlotPanel({
   const booking = getBookingForSlot(bookings, selectedSlot.dateKey, selectedSlot.timeKey);
 
   return (
-    <div className="rounded-[1.25rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-3 text-sm leading-6 text-[var(--ui-text-main)] ring-1 ring-[var(--ui-ring)] sm:rounded-[1.5rem] sm:p-4 sm:leading-7">
+    <AdminPanel
+      className="text-sm font-medium leading-6 text-[var(--ui-text-main)] sm:leading-7"
+      variant={booking ? 'solid' : 'flat'}
+    >
       <span className="font-semibold text-[var(--ui-text-strong)]">Selected slot:</span>{' '}
       {selectedSlot.label} jam {selectedSlot.timeKey}.
       {booking ? (
@@ -1737,7 +1752,7 @@ function SelectedSlotPanel({
           {' '}Slot ini kosong. Klik slot kosong atau tombol Add booking untuk membuka form.
         </span>
       )}
-    </div>
+    </AdminPanel>
   );
 }
 
@@ -2179,7 +2194,7 @@ export function BookingAdmin() {
   };
 
   return (
-    <section className="grid gap-3 pb-[calc(7rem+env(safe-area-inset-bottom))] pt-1 md:gap-4 md:pb-4 md:pt-2" aria-labelledby="booking-admin-title">
+    <AdminPageShell className="gap-3 pb-[calc(7rem+env(safe-area-inset-bottom))] pt-1 md:gap-4 md:pb-4 md:pt-2" width="wide">
       <div className="sr-only" id="booking-admin-title">
         Booking calendar workspace
       </div>
@@ -2189,6 +2204,26 @@ export function BookingAdmin() {
         onClose={() => setBookingToast(null)}
       />
 
+      <AdminPageHeader
+        description="Kelola jadwal studio, status pembayaran, dan slot kosong dalam satu board operasional yang lebih solid."
+        eyebrow="Studio schedule"
+        meta={(
+          <>
+            <AdminBadge icon={CalendarDays} tone="strong">
+              {rangeLabel}
+            </AdminBadge>
+            <AdminBadge icon={Grid3X3} tone="cyan">
+              {summary.availableSlots} slot kosong
+            </AdminBadge>
+            {normalizedCustomerFilter ? (
+              <AdminBadge tone="accent">
+                Filter: {customerFilter}
+              </AdminBadge>
+            ) : null}
+          </>
+        )}
+        title="Booking board"
+      />
       <div className="grid gap-3 md:gap-4">
         <CalendarToolbar
           rangeLabel={rangeLabel}
@@ -2281,7 +2316,7 @@ export function BookingAdmin() {
         onClose={closeEditBookingModal}
         onSubmit={handleEditBookingSubmit}
       />
-    </section>
+    </AdminPageShell>
   );
 }
 
