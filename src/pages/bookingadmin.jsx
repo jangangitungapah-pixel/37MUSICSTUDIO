@@ -727,233 +727,273 @@ function BookingModal({
     label: item,
     value: item,
   }));
-  const formDescription = modalDescription || 'Harga otomatis ' + formatCurrency(PRICE_PER_HOUR) + ' per jam. Data tersimpan ke Firestore.';
-
+  const compactModalTitle = modalTitle
+    .replace('Tambah booking studio', 'Tambah booking')
+    .replace('Edit booking studio', 'Edit booking');
+  const compactDescription = modalDescription || 'Harga otomatis ' + formatCurrency(PRICE_PER_HOUR) + ' per jam. Data tersimpan ke Firestore.';
+  const compactFooterHint = footerHint
+    .replace('Simpan booking ke Firestore', 'Firestore')
+    .replace('Update booking di Firestore', 'Firestore')
+    .replace('Simpan ke Firestore', 'Firestore');
 
   return (
     <div
-      className="fixed inset-0 z-50 grid items-end p-2 pb-[max(0.75rem,env(safe-area-inset-bottom))] bg-black/60 backdrop-blur-md sm:place-items-center sm:p-4"
+      className="booking-form-overlay fixed inset-0 z-50 flex items-end justify-center bg-black/60 p-0 backdrop-blur-md sm:items-center sm:p-4"
       role="dialog"
       aria-modal="true"
       aria-labelledby="booking-modal-title"
     >
       <form
-        className="grid max-h-[calc(100dvh-16px)] w-full gap-4 overflow-auto rounded-t-[1.75rem] border border-[var(--ui-border-strong)] bg-[var(--ui-bg-base)] p-4 pb-[max(1rem,env(safe-area-inset-bottom))] shadow-[var(--ui-shadow-soft)] ring-1 ring-[var(--ui-ring)] sm:max-h-[calc(100dvh-32px)] sm:w-[min(760px,calc(100vw-32px))] sm:rounded-[2rem] sm:p-6"
+        className="booking-form-modal flex max-h-[min(92dvh,calc(100dvh-0.65rem))] w-full flex-col overflow-hidden rounded-t-[1.45rem] border border-[var(--ui-border-strong)] bg-[var(--ui-bg-base)] shadow-[var(--ui-shadow-soft)] ring-1 ring-[var(--ui-ring)] sm:max-h-[calc(100dvh-32px)] sm:w-[min(760px,calc(100vw-32px))] sm:rounded-[1.75rem]"
         onSubmit={onSubmit}
       >
-        <div className="flex items-start justify-between gap-4">
-          <div className="grid gap-1">
-            <span className="text-xs font-semibold uppercase tracking-[0.18em] text-studio-accent">
-              {modalEyebrow}
-            </span>
-            <h2
-              className="m-0 text-2xl font-semibold tracking-[-0.06em] text-[var(--ui-text-strong)] sm:text-3xl"
-              id="booking-modal-title"
-            >
-              {modalTitle}
-            </h2>
-            <p className="m-0 text-sm leading-6 text-[var(--ui-text-muted)]">
-              {formDescription}
-            </p>
-          </div>
+        <header className="booking-form-header shrink-0 border-b border-[var(--ui-border)] px-4 pb-3 pt-4 sm:px-5 sm:pb-4 sm:pt-5">
+          <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3">
+            <div className="grid min-w-0 gap-1.5">
+              <span className="booking-form-eyebrow inline-flex w-fit items-center rounded-full border border-studio-accent/25 bg-studio-accent/10 px-2.5 py-1 text-[0.58rem] font-semibold uppercase tracking-[0.18em] text-studio-accent ring-1 ring-studio-accent/10">
+                {modalEyebrow}
+              </span>
 
-          <button
-            aria-label="Close booking form"
-            className="grid size-10 shrink-0 place-items-center rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] text-[var(--ui-secondary-text)] shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/25"
-            type="button"
-            onClick={onClose}
-          >
-            <X size={17} strokeWidth={2.35} aria-hidden="true" />
-          </button>
-        </div>
-
-        <div className="grid gap-3 sm:grid-cols-2">
-          {saveError ? (
-            <div className="sm:col-span-2 rounded-[1.25rem] border border-studio-accent/35 bg-studio-accent/10 px-4 py-3 text-sm font-semibold leading-6 text-[var(--ui-text-main)] ring-1 ring-studio-accent/15">
-              {saveError}
-            </div>
-          ) : null}
-
-          <FieldShell icon={UserRound} label="Nama customer">
-            <input
-              className="w-full border-0 bg-transparent text-sm font-semibold text-[var(--ui-text-strong)] outline-none placeholder:text-[var(--ui-text-soft)]"
-              name="customerName"
-              placeholder="Contoh: Nama customer atau nama band"
-              required
-              type="text"
-              value={bookingForm.customerName}
-              onChange={onChange}
-            />
-          </FieldShell>
-
-          <FieldShell icon={Phone} label="Nomor telepon">
-            <input
-              className="w-full border-0 bg-transparent text-sm font-semibold text-[var(--ui-text-strong)] outline-none placeholder:text-[var(--ui-text-soft)]"
-              name="phone"
-              placeholder="08xxxxxxxxxx"
-              required
-              type="tel"
-              value={bookingForm.phone}
-              onChange={onChange}
-            />
-          </FieldShell>
-
-          <FieldShell icon={CalendarDays} label="Tanggal booking">
-            <input
-              className="w-full border-0 bg-transparent text-sm font-semibold text-[var(--ui-text-strong)] outline-none"
-              name="bookingDate"
-              required
-              type="date"
-              value={bookingForm.bookingDate}
-              onChange={onChange}
-            />
-          </FieldShell>
-
-          <ThemedSelect
-            icon={Clock3}
-            label="Jam mulai"
-            name="startTime"
-            options={timeSelectOptions}
-            value={bookingForm.startTime}
-            onChange={onChange}
-          />
-
-          <ThemedSelect
-            icon={Clock3}
-            label="Durasi booking"
-            name="durationHours"
-            options={durationSelectOptions}
-            value={bookingForm.durationHours}
-            onChange={onChange}
-          />
-
-          <ThemedSelect
-            icon={ReceiptText}
-            label="Tipe sesi"
-            name="sessionType"
-            options={sessionSelectOptions}
-            value={bookingForm.sessionType}
-            onChange={onChange}
-          />
-        </div>
-
-        <div className="grid gap-3 rounded-[1.35rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-3 ring-1 ring-[var(--ui-ring)] sm:rounded-[1.5rem] sm:p-4">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <span className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--ui-text-strong)]">
-              <WalletCards size={16} strokeWidth={2.35} aria-hidden="true" />
-              Status pembayaran
-            </span>
-
-            <span className="text-sm font-semibold text-[var(--ui-text-muted)]">
-              {formatCurrency(PRICE_PER_HOUR)} / jam
-            </span>
-          </div>
-
-          <div className="grid gap-2 sm:grid-cols-3">
-            {paymentOptions.map((item) => (
-              <button
-                aria-pressed={bookingForm.paymentStatus === item.key}
-                className={cn(
-                  'min-h-10 rounded-full border px-4 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/25 sm:min-h-11',
-                  bookingForm.paymentStatus === item.key
-                    ? 'border-studio-accent/35 bg-[var(--ui-control-hover)] text-studio-accent shadow-[var(--ui-shadow-control)] ring-1 ring-studio-accent/15'
-                    : 'border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] text-[var(--ui-secondary-text)] hover:bg-[var(--ui-control)] hover:text-[var(--ui-text-strong)]',
-                )}
-                key={item.key}
-                type="button"
-                onClick={() => onChange({
-                  target: {
-                    name: 'paymentStatus',
-                    value: item.key,
-                  },
-                })}
+              <h2
+                className="booking-form-title m-0 text-[clamp(1.6rem,7.2vw,2.35rem)] font-semibold leading-[0.98] tracking-[-0.025em] text-[var(--ui-text-strong)]"
+                id="booking-modal-title"
               >
-                {item.label}
-              </button>
-            ))}
-          </div>
+                {compactModalTitle}
+              </h2>
 
-          {bookingForm.paymentStatus === 'dp' ? (
-            <FieldShell icon={Banknote} label="Nominal DP">
-              <input
-                className="w-full border-0 bg-transparent text-sm font-semibold text-[var(--ui-text-strong)] outline-none placeholder:text-[var(--ui-text-soft)]"
-                min="0"
-                name="dpAmount"
-                placeholder="Contoh: 50000"
-                type="number"
-                value={bookingForm.dpAmount}
-                onChange={onChange}
-              />
-            </FieldShell>
-          ) : null}
-
-          <div className="grid gap-2 sm:grid-cols-3">
-            <div className="grid gap-1 border-y border-[var(--ui-border)] py-3 sm:border-y-0 sm:border-l sm:px-4 sm:first:border-l-0">
-              <span className="text-[0.6rem] font-semibold uppercase tracking-[0.12em] text-[var(--ui-text-muted)] sm:text-[0.68rem] sm:tracking-[0.16em]">
-                Total
-              </span>
-              <strong className="text-lg font-semibold text-[var(--ui-text-strong)]">
-                {formatCurrency(paymentPreview.totalPrice)}
-              </strong>
+              <p className="booking-form-description m-0 max-w-[34rem] text-sm leading-6 text-[var(--ui-text-muted)]">
+                {compactDescription}
+              </p>
             </div>
 
-            <div className="grid gap-1 border-y border-[var(--ui-border)] py-3 sm:border-y-0 sm:border-l sm:px-4 sm:first:border-l-0">
-              <span className="text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-[var(--ui-text-muted)]">
-                Terbayar
-              </span>
-              <strong className="text-lg font-semibold text-[var(--ui-text-strong)]">
-                {formatCurrency(paymentPreview.dpAmount)}
-              </strong>
-            </div>
-
-            <div className="grid gap-1 border-y border-[var(--ui-border)] py-3 sm:border-y-0 sm:border-l sm:px-4 sm:first:border-l-0">
-              <span className="text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-[var(--ui-text-muted)]">
-                Sisa
-              </span>
-              <strong className="text-lg font-semibold text-[var(--ui-text-strong)]">
-                {formatCurrency(paymentPreview.remainingPayment)}
-              </strong>
-            </div>
-          </div>
-        </div>
-
-        <label className="grid gap-2 text-sm font-semibold text-[var(--ui-text-main)]">
-          Catatan tambahan
-          <textarea
-            className="min-h-24 resize-y rounded-[1.25rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 py-3 text-sm font-semibold leading-6 text-[var(--ui-text-strong)] shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] outline-none placeholder:text-[var(--ui-text-soft)] focus:border-studio-accent/55 focus:ring-4 focus:ring-studio-accent/20"
-            name="notes"
-            placeholder="Contoh: butuh ampli gitar tambahan, request mic vocal, dll."
-            value={bookingForm.notes}
-            onChange={onChange}
-          />
-        </label>
-
-        <div className="sticky bottom-0 z-10 -mx-4 flex flex-wrap items-center justify-between gap-3 border-t border-[var(--ui-border)] bg-[var(--ui-bg-base)] px-4 pb-[max(0.25rem,env(safe-area-inset-bottom))] pt-3 sm:static sm:mx-0 sm:bg-transparent sm:px-0 sm:pb-0 sm:pt-4">
-          <span className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--ui-text-muted)]">
-            <ReceiptText size={16} strokeWidth={2.35} aria-hidden="true" />
-            {footerHint}
-          </span>
-
-          <div className="flex flex-wrap gap-2">
             <button
-              className="inline-flex min-h-11 items-center justify-center rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] px-5 text-sm font-semibold text-[var(--ui-secondary-text)] shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/25"
+              aria-label="Close booking form"
+              className="grid size-10 shrink-0 place-items-center rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] text-[var(--ui-secondary-text)] shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] transition hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/25"
               type="button"
               onClick={onClose}
             >
-              Batal
-            </button>
-
-            <button
-              aria-busy={isSaving}
-              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full [background:var(--ui-primary-bg)] px-5 text-sm font-semibold text-[var(--ui-primary-text)] shadow-[var(--ui-shadow-soft)] transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20 disabled:cursor-not-allowed disabled:opacity-60"
-              disabled={isSaving}
-              type="submit"
-            >
-              <Plus size={16} strokeWidth={2.35} aria-hidden="true" />
-              {isSaving ? submittingLabel : submitLabel}
+              <X size={17} strokeWidth={2.35} aria-hidden="true" />
             </button>
           </div>
+        </header>
+
+        <div className="booking-form-body min-h-0 flex-1 overflow-y-auto px-4 py-3 sm:px-5 sm:py-4">
+          <div className="grid gap-3">
+            {saveError ? (
+              <div className="rounded-[1rem] border border-studio-accent/35 bg-studio-accent/10 px-3 py-2.5 text-sm font-semibold leading-6 text-[var(--ui-text-main)] ring-1 ring-studio-accent/15">
+                {saveError}
+              </div>
+            ) : null}
+
+            <section className="booking-form-card grid gap-3 rounded-[1.15rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-3 ring-1 ring-[var(--ui-ring)] sm:rounded-[1.35rem] sm:p-4">
+              <div className="grid gap-0.5">
+                <h3 className="booking-form-section-title m-0 text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-studio-accent">
+                  Customer
+                </h3>
+                <p className="m-0 text-xs font-medium leading-5 text-[var(--ui-text-muted)]">
+                  Nama dan kontak utama booking.
+                </p>
+              </div>
+
+              <div className="grid gap-2 sm:grid-cols-2">
+                <FieldShell icon={UserRound} label="Nama customer">
+                  <input
+                    className="w-full border-0 bg-transparent text-sm font-semibold text-[var(--ui-text-strong)] outline-none placeholder:text-[var(--ui-text-soft)]"
+                    name="customerName"
+                    placeholder="Nama customer / band"
+                    required
+                    type="text"
+                    value={bookingForm.customerName}
+                    onChange={onChange}
+                  />
+                </FieldShell>
+
+                <FieldShell icon={Phone} label="Nomor telepon">
+                  <input
+                    className="w-full border-0 bg-transparent text-sm font-semibold text-[var(--ui-text-strong)] outline-none placeholder:text-[var(--ui-text-soft)]"
+                    name="phone"
+                    placeholder="08xxxxxxxxxx"
+                    required
+                    type="tel"
+                    value={bookingForm.phone}
+                    onChange={onChange}
+                  />
+                </FieldShell>
+              </div>
+            </section>
+
+            <section className="booking-form-card grid gap-3 rounded-[1.15rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-3 ring-1 ring-[var(--ui-ring)] sm:rounded-[1.35rem] sm:p-4">
+              <div className="grid gap-0.5">
+                <h3 className="booking-form-section-title m-0 text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-studio-cyan">
+                  Jadwal
+                </h3>
+                <p className="m-0 text-xs font-medium leading-5 text-[var(--ui-text-muted)]">
+                  Tanggal, jam mulai, durasi, dan tipe sesi.
+                </p>
+              </div>
+
+              <div className="grid gap-2 sm:grid-cols-2">
+                <FieldShell icon={CalendarDays} label="Tanggal booking">
+                  <input
+                    className="w-full border-0 bg-transparent text-sm font-semibold text-[var(--ui-text-strong)] outline-none"
+                    name="bookingDate"
+                    required
+                    type="date"
+                    value={bookingForm.bookingDate}
+                    onChange={onChange}
+                  />
+                </FieldShell>
+
+                <ThemedSelect
+                  icon={Clock3}
+                  label="Jam mulai"
+                  name="startTime"
+                  options={timeSelectOptions}
+                  value={bookingForm.startTime}
+                  onChange={onChange}
+                />
+
+                <ThemedSelect
+                  icon={Clock3}
+                  label="Durasi"
+                  name="durationHours"
+                  options={durationSelectOptions}
+                  value={bookingForm.durationHours}
+                  onChange={onChange}
+                />
+
+                <ThemedSelect
+                  icon={ReceiptText}
+                  label="Tipe sesi"
+                  name="sessionType"
+                  options={sessionSelectOptions}
+                  value={bookingForm.sessionType}
+                  onChange={onChange}
+                />
+              </div>
+            </section>
+
+            <section className="booking-payment-card grid gap-3 rounded-[1.15rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-3 ring-1 ring-[var(--ui-ring)] sm:rounded-[1.35rem] sm:p-4">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <span className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--ui-text-strong)]">
+                  <WalletCards size={16} strokeWidth={2.35} aria-hidden="true" />
+                  Pembayaran
+                </span>
+
+                <span className="rounded-full border border-[var(--ui-border)] bg-[var(--ui-control)] px-2.5 py-1 text-xs font-semibold text-[var(--ui-text-muted)] ring-1 ring-[var(--ui-ring)]">
+                  {formatCurrency(PRICE_PER_HOUR)} / jam
+                </span>
+              </div>
+
+              <div className="booking-payment-options grid grid-cols-3 gap-1.5">
+                {paymentOptions.map((item) => (
+                  <button
+                    aria-pressed={bookingForm.paymentStatus === item.key}
+                    className={cn(
+                      'min-h-9 rounded-full border px-2 text-xs font-semibold transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/25 sm:min-h-10 sm:px-4 sm:text-sm',
+                      bookingForm.paymentStatus === item.key
+                        ? 'border-studio-accent/35 bg-[var(--ui-control-hover)] text-studio-accent shadow-[var(--ui-shadow-control)] ring-1 ring-studio-accent/15'
+                        : 'border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] text-[var(--ui-secondary-text)] hover:bg-[var(--ui-control)] hover:text-[var(--ui-text-strong)]',
+                    )}
+                    key={item.key}
+                    type="button"
+                    onClick={() => onChange({
+                      target: {
+                        name: 'paymentStatus',
+                        value: item.key,
+                      },
+                    })}
+                  >
+                    {item.label}
+                  </button>
+                ))}
+              </div>
+
+              {bookingForm.paymentStatus === 'dp' ? (
+                <FieldShell icon={Banknote} label="Nominal DP">
+                  <input
+                    className="w-full border-0 bg-transparent text-sm font-semibold text-[var(--ui-text-strong)] outline-none placeholder:text-[var(--ui-text-soft)]"
+                    min="0"
+                    name="dpAmount"
+                    placeholder="Contoh: 50000"
+                    type="number"
+                    value={bookingForm.dpAmount}
+                    onChange={onChange}
+                  />
+                </FieldShell>
+              ) : null}
+
+              <div className="booking-payment-summary grid grid-cols-3 overflow-hidden rounded-[1rem] border border-[var(--ui-border)] bg-[var(--ui-bg-base)] ring-1 ring-[var(--ui-ring)]">
+                <div className="grid min-w-0 gap-1 border-l border-[var(--ui-border)] px-2 py-2 first:border-l-0">
+                  <span className="truncate text-[0.56rem] font-semibold uppercase tracking-[0.12em] text-[var(--ui-text-muted)]">
+                    Total
+                  </span>
+                  <strong className="truncate text-sm font-semibold tracking-[-0.04em] text-[var(--ui-text-strong)] sm:text-base">
+                    {formatCurrency(paymentPreview.totalPrice)}
+                  </strong>
+                </div>
+
+                <div className="grid min-w-0 gap-1 border-l border-[var(--ui-border)] px-2 py-2 first:border-l-0">
+                  <span className="truncate text-[0.56rem] font-semibold uppercase tracking-[0.12em] text-[var(--ui-text-muted)]">
+                    Bayar
+                  </span>
+                  <strong className="truncate text-sm font-semibold tracking-[-0.04em] text-[var(--ui-text-strong)] sm:text-base">
+                    {formatCurrency(paymentPreview.dpAmount)}
+                  </strong>
+                </div>
+
+                <div className="grid min-w-0 gap-1 border-l border-[var(--ui-border)] px-2 py-2 first:border-l-0">
+                  <span className="truncate text-[0.56rem] font-semibold uppercase tracking-[0.12em] text-[var(--ui-text-muted)]">
+                    Sisa
+                  </span>
+                  <strong className="truncate text-sm font-semibold tracking-[-0.04em] text-[var(--ui-text-strong)] sm:text-base">
+                    {formatCurrency(paymentPreview.remainingPayment)}
+                  </strong>
+                </div>
+              </div>
+            </section>
+
+            <label className="booking-form-notes grid gap-2 text-sm font-semibold text-[var(--ui-text-main)]">
+              Catatan
+              <textarea
+                className="min-h-20 resize-y rounded-[1.1rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 py-3 text-sm font-semibold leading-6 text-[var(--ui-text-strong)] shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] outline-none placeholder:text-[var(--ui-text-soft)] focus:border-studio-accent/55 focus:ring-4 focus:ring-studio-accent/20 sm:min-h-24"
+                name="notes"
+                placeholder="Request gear, mic, atau catatan lain."
+                value={bookingForm.notes}
+                onChange={onChange}
+              />
+            </label>
+          </div>
         </div>
+
+        <footer className="booking-form-footer shrink-0 border-t border-[var(--ui-border)] bg-[var(--ui-bg-base)] px-4 pb-[max(0.85rem,env(safe-area-inset-bottom))] pt-3 sm:px-5 sm:pb-4">
+          <div className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
+            <span className="inline-flex min-w-0 items-center gap-2 text-xs font-semibold text-[var(--ui-text-muted)]">
+              <ReceiptText size={15} strokeWidth={2.35} aria-hidden="true" />
+              <span className="truncate">{compactFooterHint}</span>
+            </span>
+
+            <div className="booking-form-actions grid grid-cols-[0.78fr_1.22fr] gap-2 sm:flex sm:flex-wrap sm:justify-end">
+              <button
+                className="booking-form-cancel inline-flex min-h-11 items-center justify-center rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] px-4 text-sm font-semibold text-[var(--ui-secondary-text)] shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] transition hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/25"
+                type="button"
+                onClick={onClose}
+              >
+                Batal
+              </button>
+
+              <button
+                aria-busy={isSaving}
+                className="booking-form-submit inline-flex min-h-11 items-center justify-center gap-2 rounded-full [background:var(--ui-primary-bg)] px-4 text-sm font-semibold text-[var(--ui-primary-text)] shadow-[var(--ui-shadow-soft)] transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20 disabled:cursor-not-allowed disabled:opacity-60"
+                disabled={isSaving}
+                type="submit"
+              >
+                <Plus size={16} strokeWidth={2.35} aria-hidden="true" />
+                {isSaving ? submittingLabel : submitLabel}
+              </button>
+            </div>
+          </div>
+        </footer>
       </form>
     </div>
   );

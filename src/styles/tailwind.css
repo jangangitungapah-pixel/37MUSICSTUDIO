@@ -2415,3 +2415,158 @@
   }
 }
 /* 37-booking-capsule-center-finetune:end */
+
+/* 37-booking-form-modal-overhaul:start */
+@layer components {
+  .booking-form-modal {
+    overscroll-behavior: contain;
+  }
+
+  .booking-form-body {
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .booking-form-title {
+    word-spacing: 0.08em;
+    text-wrap: balance;
+  }
+
+  .booking-form-description {
+    text-wrap: pretty;
+  }
+
+  .booking-form-modal input,
+  .booking-form-modal textarea,
+  .booking-form-modal button {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  @media (max-width: 767px) {
+    .booking-form-overlay {
+      align-items: end;
+    }
+
+    .booking-form-modal {
+      border-bottom: 0;
+    }
+
+    .booking-form-header {
+      padding-inline: 1rem;
+    }
+
+    .booking-form-title {
+      letter-spacing: -0.018em;
+      line-height: 1.02;
+      word-spacing: 0.1em;
+    }
+
+    .booking-form-description {
+      max-width: 21rem;
+      font-size: 0.82rem;
+      line-height: 1.55;
+    }
+
+    .booking-form-body {
+      padding: 0.75rem 1rem;
+    }
+
+    .booking-form-card,
+    .booking-payment-card {
+      border-radius: 1rem;
+      padding: 0.8rem;
+    }
+
+    .booking-form-card label,
+    .booking-payment-card label,
+    .booking-form-notes {
+      gap: 0.4rem;
+      font-size: 0.78rem;
+    }
+
+    .booking-form-card label > span,
+    .booking-payment-card label > span {
+      min-height: 2.65rem;
+      border-radius: 0.95rem;
+    }
+
+    .booking-form-card input,
+    .booking-payment-card input,
+    .booking-form-notes textarea {
+      font-size: 0.82rem;
+    }
+
+    .booking-payment-options {
+      gap: 0.45rem;
+    }
+
+    .booking-payment-options button {
+      min-height: 2.35rem;
+      padding-inline: 0.55rem;
+      font-size: 0.78rem;
+    }
+
+    .booking-payment-summary strong {
+      font-size: clamp(0.75rem, 3.25vw, 0.92rem);
+    }
+
+    .booking-form-notes textarea {
+      min-height: 5.25rem;
+      border-radius: 1rem;
+    }
+
+    .booking-form-footer {
+      box-shadow: 0 -1rem 2.5rem rgb(0 0 0 / 0.08);
+    }
+
+    .booking-form-actions {
+      width: 100%;
+    }
+
+    .booking-form-cancel,
+    .booking-form-submit {
+      min-height: 2.8rem;
+      padding-inline: 0.85rem;
+      font-size: 0.86rem;
+    }
+  }
+
+  @media (max-width: 420px) {
+    .booking-form-title {
+      font-size: clamp(1.45rem, 6.9vw, 2.05rem);
+    }
+
+    .booking-form-description {
+      font-size: 0.78rem;
+    }
+
+    .booking-form-card,
+    .booking-payment-card {
+      padding: 0.72rem;
+    }
+
+    .booking-payment-summary {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .booking-payment-summary > div {
+      border-left: 0;
+      border-top: 1px solid var(--ui-border);
+    }
+
+    .booking-payment-summary > div:first-child {
+      border-top: 0;
+    }
+
+    .booking-payment-summary strong {
+      font-size: 0.9rem;
+    }
+
+    .booking-form-cancel,
+    .booking-form-submit {
+      min-height: 2.65rem;
+      font-size: 0.8rem;
+    }
+  }
+}
+/* 37-booking-form-modal-overhaul:end */
