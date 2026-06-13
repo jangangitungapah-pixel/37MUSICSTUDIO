@@ -5940,3 +5940,220 @@
   }
 }
 /* 37-admin-mobile-more-menu-20260613:end */
+
+/* === 37 BOOKING FINAL POLISH OVERRIDES START === */
+
+/*
+  Final Booking polish.
+  Ditempel paling bawah supaya menang dari utility lama dan CSS page lama.
+  Tetap satu komponen, dua palet warna: tidak ada dark/light layout branching.
+*/
+
+.booking-calendar-toolbar {
+  gap: 0.4rem;
+  padding: 0.4rem;
+  border-radius: 1.2rem;
+}
+
+.booking-period-controls {
+  gap: 0.25rem;
+}
+
+.booking-action-controls {
+  gap: 0.35rem;
+}
+
+.booking-calendar-toolbar .booking-add-button {
+  min-height: 2rem;
+  padding-inline: 0.85rem;
+  font-size: 0.68rem;
+  letter-spacing: -0.01em;
+}
+
+.booking-status-counters {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.125rem;
+  padding: 0.125rem;
+  border-radius: 1rem;
+  background: color-mix(in srgb, var(--ui-control) 88%, var(--ui-bg-base));
+}
+
+.booking-status-counters > * {
+  min-height: 1.75rem;
+  justify-content: center;
+  padding-inline: 0.45rem;
+  border-radius: 0.85rem;
+  font-size: 0.56rem;
+  letter-spacing: 0.075em;
+}
+
+.booking-status-counters strong {
+  font-size: 0.72rem;
+}
+
+.booking-view-toggle {
+  padding: 0.125rem;
+  border-radius: 999px;
+}
+
+.booking-view-toggle button {
+  min-height: 1.75rem;
+  padding-inline: 0.55rem;
+  font-size: 0.56rem;
+  letter-spacing: 0.075em;
+}
+
+.booking-board-header {
+  padding: 0.5rem 0.65rem;
+}
+
+.booking-board-icon {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.95rem;
+}
+
+.booking-board-subtitle {
+  font-size: 0.68rem;
+}
+
+.booking-board-header > div:last-child {
+  gap: 0.35rem;
+  padding: 0.35rem 0.6rem;
+  border: 1px solid var(--ui-border);
+  border-radius: 999px;
+  background: var(--ui-control);
+  box-shadow: var(--ui-shadow-control);
+  ring-color: var(--ui-ring);
+}
+
+.booking-selected-slot-panel {
+  display: grid;
+  gap: 0.55rem;
+  padding: 0.65rem;
+  border-radius: 1.2rem;
+}
+
+.booking-selected-slot-panel > div:first-child {
+  min-width: 0;
+}
+
+.booking-selected-slot-panel > div:last-child > * {
+  min-height: 2rem;
+  justify-content: center;
+  padding-inline: 0.55rem;
+  border-radius: 999px;
+  font-size: 0.58rem;
+  letter-spacing: 0.075em;
+}
+
+.booking-selected-slot-panel strong {
+  letter-spacing: -0.025em;
+}
+
+.booking-calendar-grid {
+  border-radius: 1.25rem;
+}
+
+.booking-time-corner-cell,
+.booking-day-header-cell {
+  height: 3rem;
+}
+
+.booking-time-cell,
+.booking-calendar-grid button.group {
+  min-height: 3.25rem;
+}
+
+@media (max-width: 767px) {
+  .booking-calendar-toolbar {
+    gap: 0.35rem;
+    padding: 0.35rem;
+  }
+
+  .booking-period-controls {
+    grid-template-columns: auto minmax(0, 1fr) auto auto;
+  }
+
+  .booking-period-controls > * {
+    min-height: 2rem;
+  }
+
+  .booking-action-controls {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .booking-status-counters {
+    width: 100%;
+  }
+
+  .booking-board-header {
+    padding: 0.5rem 0.625rem;
+  }
+
+  .booking-board-header > div:last-child {
+    display: none;
+  }
+
+  .booking-selected-slot-panel {
+    padding: 0.625rem;
+  }
+}
+
+@media (min-width: 640px) {
+  .booking-calendar-toolbar {
+    gap: 0.5rem;
+    padding: 0.625rem;
+  }
+
+  .booking-status-counters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    padding: 0.25rem;
+  }
+
+  .booking-status-counters > * {
+    min-height: 2rem;
+    padding-inline: 0.65rem;
+    font-size: 0.68rem;
+    letter-spacing: 0.105em;
+  }
+
+  .booking-view-toggle {
+    padding: 0.25rem;
+  }
+
+  .booking-view-toggle button {
+    min-height: 2rem;
+    padding-inline: 0.65rem;
+    font-size: 0.68rem;
+    letter-spacing: 0.105em;
+  }
+
+  .booking-calendar-toolbar .booking-add-button {
+    min-height: 2.25rem;
+    padding-inline: 1rem;
+    font-size: 0.875rem;
+  }
+
+  .booking-board-header {
+    padding: 0.625rem 0.875rem;
+  }
+
+  .booking-board-icon {
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 1rem;
+  }
+
+  .booking-selected-slot-panel {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+  }
+}
+
+/* === 37 BOOKING FINAL POLISH OVERRIDES END === */
