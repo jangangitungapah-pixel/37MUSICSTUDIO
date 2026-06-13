@@ -1,5 +1,10 @@
-import { useMemo, useState } from 'react';
 import {
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
+import {
+  AlertTriangle,
   Banknote,
   CreditCard,
   Plus,
@@ -17,6 +22,7 @@ import {
   AdminPageShell,
   AdminPanel,
 } from '../components/admin/AdminPrimitives.jsx';
+import { adminBillingRepository } from '../services/adminBillingRepository.js';
 
 const billingStatusFilters = [
   {
@@ -24,7 +30,7 @@ const billingStatusFilters = [
     label: 'All',
   },
   {
-    key: 'pending',
+    key: 'unpaid',
     label: 'Pending',
   },
   {
@@ -43,6 +49,14 @@ function formatCurrency(value) {
     maximumFractionDigits: 0,
     style: 'currency',
   }).format(Math.max(0, Number(value) || 0));
+}
+
+function normalizeSearchValue(value) {
+  return String(value || '').trim().toLowerCase();
+}
+
+function getTodayDateKey() {
+  return new Date().toISOString().slice(0, 10);
 }
 
 function getBookingCustomerName(booking) {
@@ -76,44 +90,106 @@ function getBookingRemainingAmount(booking) {
 function getBillingStatusLabel(status) {
   if (status === 'paid') return 'Paid';
   if (status === 'dp') return 'DP active';
+
   return 'Pending';
 }
 
 function getBillingStatusTone(status) {
   if (status === 'paid') return 'cyan';
   if (status === 'dp') return 'purple';
+
   return 'accent';
 }
 
-function createBillingQueueFromBookings(bookings) {
-  return (Array.isArray(bookings) ? bookings : [])
-    .filter((booking) => booking?.status !== 'paid')
-    .map((booking) => ({
-      bookingId: booking.id || '',
-      customerName: getBookingCustomerName(booking),
-      dateKey: booking.dateKey || '',
-      invoiceNumber: 'DRAFT-' + String(booking.id || booking.dateKey || Date.now()).slice(-6).toUpperCase(),
-      paidAmount: getBookingPaidAmount(booking),
-      remainingAmount: getBookingRemainingAmount(booking),
-      sourceLabel: 'Booking',
-      status: booking.status || 'pending',
-      time: booking.time || '',
-      totalAmount: getBookingTotal(booking),
-    }));
+function getBillingSourceLabel(sourceType) {
+  if (sourceType === 'manual') {
+    return 'Manual POS';
+  }
+
+  return 'Booking';
 }
 
-function getBillingSummary(queue, bookings) {
-  const paidBookings = (Array.isArray(bookings) ? bookings : []).filter((booking) => booking?.status === 'paid');
-  const dpActive = queue.filter((item) => item.status === 'dp').length;
-  const pending = queue.filter((item) => item.status !== 'dp').length;
-  const paidToday = paidBookings.reduce((sum, booking) => sum + getBookingTotal(booking), 0);
-  const revenueToday = paidToday + queue.reduce((sum, item) => sum + item.paidAmount, 0);
+function createBillingQueueFromTransactions(transactions) {
+  return (Array.isArray(transactions) ? transactions : []).map((transaction) => ({
+    bookingId: transaction.bookingId || '',
+    createdAt: transaction.createdAt || '',
+    customerName: transaction.customerName || 'Walk-in customer',
+    dateKey: String(transaction.createdAt || '').slice(0, 10),
+    invoiceNumber: transaction.invoiceNumber || transaction.id || 'Invoice',
+    paidAmount: Number(transaction.paidAmount) || 0,
+    remainingAmount: Number(transaction.remainingAmount) || 0,
+    sourceLabel: getBillingSourceLabel(transaction.sourceType),
+    sourceType: transaction.sourceType || 'manual',
+    status: transaction.paymentStatus || 'unpaid',
+    time: String(transaction.createdAt || '').slice(11, 16),
+    totalAmount: Number(transaction.totalAmount) || 0,
+    type: 'transaction',
+  }));
+}
+
+function createDraftQueueFromBookings(bookings, transactions) {
+  const existingBookingIds = new Set(
+    (Array.isArray(transactions) ? transactions : [])
+      .map((transaction) => transaction.bookingId)
+      .filter(Boolean),
+  );
+
+  return (Array.isArray(bookings) ? bookings : [])
+    .filter((booking) => booking?.status !== 'paid')
+    .filter((booking) => !existingBookingIds.has(booking?.id))
+    .map((booking) => {
+      const status = booking.status === 'dp' ? 'dp' : 'unpaid';
+
+      return {
+        bookingId: booking.id || '',
+        createdAt: booking.createdAt || '',
+        customerName: getBookingCustomerName(booking),
+        dateKey: booking.dateKey || '',
+        invoiceNumber: 'DRAFT-' + String(booking.id || booking.dateKey || Date.now()).slice(-6).toUpperCase(),
+        paidAmount: getBookingPaidAmount(booking),
+        remainingAmount: getBookingRemainingAmount(booking),
+        sourceLabel: 'Booking draft',
+        sourceType: 'booking',
+        status,
+        time: booking.time || '',
+        totalAmount: getBookingTotal(booking),
+        type: 'draft',
+      };
+    });
+}
+
+function createBillingQueue(bookings, transactions) {
+  return [
+    ...createBillingQueueFromTransactions(transactions),
+    ...createDraftQueueFromBookings(bookings, transactions),
+  ].sort((firstItem, secondItem) => {
+    const firstTime = new Date(firstItem.createdAt || firstItem.dateKey || 0).getTime();
+    const secondTime = new Date(secondItem.createdAt || secondItem.dateKey || 0).getTime();
+
+    if (firstTime !== secondTime) {
+      return secondTime - firstTime;
+    }
+
+    return String(secondItem.invoiceNumber || '').localeCompare(String(firstItem.invoiceNumber || ''));
+  });
+}
+
+function getBillingSummary(queue) {
+  const todayKey = getTodayDateKey();
+  const transactions = queue.filter((item) => item.type === 'transaction');
+  const paidToday = transactions
+    .filter((item) => item.status === 'paid' && String(item.createdAt || '').startsWith(todayKey))
+    .reduce((sum, item) => sum + item.totalAmount, 0);
+  const revenueToday = transactions
+    .filter((item) => String(item.createdAt || '').startsWith(todayKey))
+    .reduce((sum, item) => sum + item.paidAmount, 0);
 
   return {
-    dpActive,
+    dpActive: queue.filter((item) => item.status === 'dp').length,
     paidToday,
-    pending,
+    pending: queue.filter((item) => item.status === 'unpaid').length,
     revenueToday,
+    transactions: transactions.length,
   };
 }
 
@@ -122,25 +198,21 @@ function BillingSummaryRail({ summary }) {
     {
       icon: Banknote,
       label: 'Paid today',
-      tone: 'cyan',
       value: formatCurrency(summary.paidToday),
     },
     {
       icon: ReceiptText,
       label: 'Pending',
-      tone: 'accent',
       value: summary.pending,
     },
     {
       icon: WalletCards,
       label: 'DP active',
-      tone: 'purple',
       value: summary.dpActive,
     },
     {
       icon: CreditCard,
       label: 'Revenue',
-      tone: 'neutral',
       value: formatCurrency(summary.revenueToday),
     },
   ];
@@ -215,30 +287,44 @@ function BillingCommandBar({
       </div>
 
       <AdminBadge className="min-h-10 justify-center px-3" icon={ReceiptText} tone="strong">
-        {visibleCount} draft
+        {visibleCount} item
       </AdminBadge>
     </AdminCommandBar>
+  );
+}
+
+function BillingStatePanel({
+  icon: Icon = ReceiptText,
+  message,
+  title,
+  tone = 'default',
+}) {
+  return (
+    <AdminPanel className="grid min-h-48 place-items-center p-6 text-center" variant="flat">
+      <div className="grid max-w-md gap-2">
+        <span className="mx-auto grid size-12 place-items-center rounded-full border border-[var(--ui-border)] bg-[var(--ui-control)] text-studio-accent ring-1 ring-[var(--ui-ring)]">
+          <Icon size={20} strokeWidth={2.35} aria-hidden="true" />
+        </span>
+
+        <h2 className="m-0 text-xl font-semibold tracking-[-0.045em] text-[var(--ui-text-strong)]">
+          {title}
+        </h2>
+
+        <p className={tone === 'warning' ? 'm-0 text-sm leading-6 text-studio-accent' : 'm-0 text-sm leading-6 text-[var(--ui-text-muted)]'}>
+          {message}
+        </p>
+      </div>
+    </AdminPanel>
   );
 }
 
 function BillingQueue({ queue }) {
   if (!queue.length) {
     return (
-      <AdminPanel className="grid min-h-48 place-items-center p-6 text-center" variant="flat">
-        <div className="grid max-w-md gap-2">
-          <span className="mx-auto grid size-12 place-items-center rounded-full border border-[var(--ui-border)] bg-[var(--ui-control)] text-studio-accent ring-1 ring-[var(--ui-ring)]">
-            <ReceiptText size={20} strokeWidth={2.35} aria-hidden="true" />
-          </span>
-
-          <h2 className="m-0 text-xl font-semibold tracking-[-0.045em] text-[var(--ui-text-strong)]">
-            Belum ada draft invoice.
-          </h2>
-
-          <p className="m-0 text-sm leading-6 text-[var(--ui-text-muted)]">
-            Booking pending atau DP akan muncul di sini sebagai draft billing pada fase berikutnya.
-          </p>
-        </div>
-      </AdminPanel>
+      <BillingStatePanel
+        message="Transaksi billing yang tersimpan dan booking pending / DP akan muncul di sini."
+        title="Belum ada invoice aktif."
+      />
     );
   }
 
@@ -247,12 +333,15 @@ function BillingQueue({ queue }) {
       {queue.map((item) => (
         <article
           className="grid gap-3 rounded-[1.15rem] border border-[var(--ui-border)] bg-[var(--ui-control)] p-3 ring-1 ring-[var(--ui-ring)] sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center"
-          key={item.bookingId || item.invoiceNumber}
+          key={item.type + '-' + (item.bookingId || item.invoiceNumber)}
         >
           <div className="grid min-w-0 gap-1">
             <div className="flex flex-wrap items-center gap-2">
               <AdminBadge tone={getBillingStatusTone(item.status)}>
                 {getBillingStatusLabel(item.status)}
+              </AdminBadge>
+              <AdminBadge tone={item.type === 'transaction' ? 'cyan' : 'neutral'}>
+                {item.type === 'transaction' ? 'Saved' : 'Draft'}
               </AdminBadge>
               <span className="text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-[var(--ui-text-muted)]">
                 {item.invoiceNumber}
@@ -288,33 +377,85 @@ function BillingQueue({ queue }) {
   );
 }
 
+function BillingNextPhasePanel({ transactionCount }) {
+  return (
+    <AdminPanel className="grid gap-3 p-4" variant="flat">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="grid gap-1">
+          <span className="text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-studio-accent">
+            Read model connected
+          </span>
+          <strong className="text-base font-semibold text-[var(--ui-text-strong)]">
+            {transactionCount} saved transaction
+          </strong>
+        </div>
+
+        <div className="flex flex-wrap gap-2">
+          <AdminButton disabled icon={Plus} size="sm" variant="primary">
+            New POS
+          </AdminButton>
+          <AdminButton disabled icon={Printer} size="sm" variant="secondary">
+            Print
+          </AdminButton>
+        </div>
+      </div>
+
+      <p className="m-0 text-sm leading-6 text-[var(--ui-text-muted)]">
+        BILLING.3 hanya membaca billingTransactions dari repository. Create invoice, mark paid, DP flow, sync booking, dan receipt print masuk fase berikutnya.
+      </p>
+    </AdminPanel>
+  );
+}
+
 export function BillingAdmin() {
   const adminContext = useOutletContext() || {};
   const { manualBookings = [] } = adminContext;
+  const [billingTransactions, setBillingTransactions] = useState([]);
+  const [billingLoadError, setBillingLoadError] = useState('');
+  const [isBillingReady, setIsBillingReady] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
 
+  useEffect(() => {
+    setIsBillingReady(false);
+    setBillingLoadError('');
+
+    const unsubscribe = adminBillingRepository.subscribeBillingTransactions(
+      (transactions) => {
+        setBillingTransactions(transactions);
+        setIsBillingReady(true);
+      },
+      (error) => {
+        setBillingLoadError(error?.message || 'Gagal membaca data billing.');
+        setIsBillingReady(true);
+      },
+    );
+
+    return unsubscribe;
+  }, []);
+
   const queue = useMemo(
-    () => createBillingQueueFromBookings(manualBookings),
-    [manualBookings],
+    () => createBillingQueue(manualBookings, billingTransactions),
+    [billingTransactions, manualBookings],
   );
 
   const filteredQueue = useMemo(() => {
-    const normalizedSearch = String(searchTerm || '').trim().toLowerCase();
+    const normalizedSearch = normalizeSearchValue(searchTerm);
 
     return queue.filter((item) => {
       const matchesStatus = statusFilter === 'all' || item.status === statusFilter;
       const matchesSearch = !normalizedSearch ||
-        item.customerName.toLowerCase().includes(normalizedSearch) ||
-        item.invoiceNumber.toLowerCase().includes(normalizedSearch);
+        normalizeSearchValue(item.customerName).includes(normalizedSearch) ||
+        normalizeSearchValue(item.invoiceNumber).includes(normalizedSearch) ||
+        normalizeSearchValue(item.sourceLabel).includes(normalizedSearch);
 
       return matchesStatus && matchesSearch;
     });
   }, [queue, searchTerm, statusFilter]);
 
   const summary = useMemo(
-    () => getBillingSummary(queue, manualBookings),
-    [manualBookings, queue],
+    () => getBillingSummary(queue),
+    [queue],
   );
 
   return (
@@ -329,10 +470,10 @@ export function BillingAdmin() {
         meta={(
           <>
             <AdminBadge icon={ReceiptText} tone="strong">
-              Draft shell
+              Read model
             </AdminBadge>
             <AdminBadge icon={WalletCards} tone="cyan">
-              Read only
+              {isBillingReady ? 'Live' : 'Loading'}
             </AdminBadge>
           </>
         )}
@@ -349,33 +490,23 @@ export function BillingAdmin() {
         onStatusFilterChange={setStatusFilter}
       />
 
-      <BillingQueue queue={filteredQueue} />
+      {billingLoadError ? (
+        <BillingStatePanel
+          icon={AlertTriangle}
+          message={billingLoadError}
+          title="Billing read model bermasalah."
+          tone="warning"
+        />
+      ) : !isBillingReady ? (
+        <BillingStatePanel
+          message="Membaca billingTransactions dari repository."
+          title="Memuat data billing."
+        />
+      ) : (
+        <BillingQueue queue={filteredQueue} />
+      )}
 
-      <AdminPanel className="grid gap-3 p-4" variant="flat">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="grid gap-1">
-            <span className="text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-studio-accent">
-              Next phase
-            </span>
-            <strong className="text-base font-semibold text-[var(--ui-text-strong)]">
-              Repository service + invoice draft
-            </strong>
-          </div>
-
-          <div className="flex flex-wrap gap-2">
-            <AdminButton disabled icon={Plus} size="sm" variant="primary">
-              New POS
-            </AdminButton>
-            <AdminButton disabled icon={Printer} size="sm" variant="secondary">
-              Print
-            </AdminButton>
-          </div>
-        </div>
-
-        <p className="m-0 text-sm leading-6 text-[var(--ui-text-muted)]">
-          BILLING.1 hanya menambahkan route, nav, dan read-only shell. Firestore write, create invoice, payment flow, dan receipt print masuk fase berikutnya.
-        </p>
-      </AdminPanel>
+      <BillingNextPhasePanel transactionCount={billingTransactions.length} />
     </AdminPageShell>
   );
 }
