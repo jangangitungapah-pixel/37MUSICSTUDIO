@@ -1351,7 +1351,7 @@ function CalendarCell({
       {booking && isBookingStart ? (
         <span
           className={cn(
-            'pointer-events-none absolute inset-x-1 top-1 z-10 grid max-w-[calc(100%-0.5rem)] content-start overflow-hidden rounded-[0.85rem] border px-1.5 py-1.5 text-left ring-1 ring-[var(--ui-ring)] backdrop-blur-xl sm:inset-x-1.5 sm:rounded-[0.95rem] sm:px-2',
+            'booking-block-card pointer-events-none absolute left-1/2 top-1 z-10 grid w-[calc(100%-0.7rem)] -translate-x-1/2 content-start overflow-hidden rounded-[0.85rem] border px-1.5 py-1.5 text-left ring-1 ring-[var(--ui-ring)] backdrop-blur-xl sm:top-1.5 sm:w-[calc(100%-0.9rem)] sm:rounded-[0.95rem] sm:px-2',
             blockToneClass,
           )}
           style={{ height: durationHeight }}

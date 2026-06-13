@@ -2333,3 +2333,27 @@
   }
 }
 /* 37-booking-calendar-time-column-align:end */
+
+/* 37-booking-block-center:start */
+@layer components {
+  .booking-block-card {
+    transform: translateX(-50%);
+    box-sizing: border-box;
+  }
+
+  @media (max-width: 767px) {
+    .booking-block-card {
+      width: calc(100% - 0.85rem) !important;
+      left: 50% !important;
+      right: auto !important;
+      transform: translateX(-50%) !important;
+    }
+  }
+
+  @media (max-width: 420px) {
+    .booking-block-card {
+      width: calc(100% - 0.7rem) !important;
+    }
+  }
+}
+/* 37-booking-block-center:end */
