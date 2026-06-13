@@ -1480,3 +1480,142 @@
   }
 }
 /* 37-booking-mobile-calendar-polish:end */
+
+/* 37-customer-mobile-copy-chip-polish:start */
+@layer components {
+  @media (max-width: 767px) {
+    .customer-summary-strip {
+      gap: 0.65rem;
+    }
+
+    .customer-summary-strip .admin-panel {
+      display: grid !important;
+      grid-template-columns: minmax(0, 1fr);
+      align-content: space-between;
+      min-height: 4.85rem;
+      padding: 0.85rem !important;
+    }
+
+    .customer-summary-strip .admin-panel > span {
+      width: 100%;
+      gap: 0.55rem;
+    }
+
+    .customer-summary-strip .admin-panel > span > span:last-child {
+      max-width: 100%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .customer-summary-strip .admin-panel > strong {
+      justify-self: end;
+      font-size: 1rem;
+    }
+
+    .customer-attention-strip,
+    .customer-tag-filter-strip {
+      gap: 0.45rem;
+    }
+
+    .customer-attention-strip button,
+    .customer-tag-filter-strip button {
+      max-width: 8.5rem;
+      padding-inline: 0.75rem;
+    }
+
+    .customer-attention-strip button > span,
+    .customer-tag-filter-strip button > span {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .customer-toolbar-slim {
+      gap: 0.75rem;
+    }
+
+    .customer-toolbar-slim label {
+      gap: 0.4rem;
+    }
+
+    .customer-toolbar-slim .admin-badge {
+      min-height: 2.75rem;
+      justify-content: center;
+    }
+
+    .customer-export-panel {
+      padding: 0.85rem !important;
+    }
+
+    .customer-export-panel > div:first-child {
+      min-width: 0;
+    }
+
+    .customer-export-panel > div:first-child strong {
+      font-size: 0.9rem;
+    }
+
+    .customer-export-panel .admin-button {
+      min-height: 2.65rem;
+    }
+
+    .customer-filter-summary {
+      gap: 0.65rem;
+      padding: 0.7rem !important;
+    }
+
+    .customer-filter-summary > div:first-child {
+      flex-wrap: nowrap;
+      max-width: 100%;
+      overflow-x: auto;
+      padding-bottom: 0.15rem;
+      scrollbar-width: none;
+    }
+
+    .customer-filter-summary > div:first-child::-webkit-scrollbar {
+      display: none;
+    }
+
+    .customer-filter-summary > div:first-child > span {
+      flex: 0 0 auto;
+      max-width: 11rem;
+    }
+
+    .customer-filter-summary > div:last-child {
+      width: 100%;
+      justify-content: space-between;
+    }
+  }
+
+  @media (max-width: 420px) {
+    .customer-summary-strip {
+      gap: 0.55rem;
+    }
+
+    .customer-summary-strip .admin-panel {
+      min-height: 4.55rem;
+      padding: 0.75rem !important;
+    }
+
+    .customer-summary-strip .admin-panel > strong {
+      font-size: 0.95rem;
+    }
+
+    .customer-attention-strip button,
+    .customer-tag-filter-strip button {
+      max-width: 7.6rem;
+      padding-inline: 0.65rem;
+    }
+
+    .customer-toolbar-slim .admin-badge {
+      min-height: 2.55rem;
+    }
+
+    .customer-export-panel .admin-button {
+      min-height: 2.55rem;
+    }
+  }
+}
+/* 37-customer-mobile-copy-chip-polish:end */

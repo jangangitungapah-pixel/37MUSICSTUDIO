@@ -80,7 +80,7 @@ const customerStatusFilters = [
 const customerSortOptions = [
   {
     key: 'attention',
-    label: 'Needs attention',
+    label: 'Attention',
   },
   {
     key: 'lastBooking',
@@ -623,7 +623,7 @@ function getCustomerDataQuality(customer, duplicateNameCounts = new Map()) {
     issues.push({
       helper: 'Nomor kontak belum tersedia, follow-up customer akan lebih sulit.',
       key: 'missing-phone',
-      label: 'No phone',
+      label: 'No HP',
       severity: 'critical',
     });
   } else if (phoneDigits.length < 9) {
@@ -1177,7 +1177,7 @@ function CustomerHero({
   const activeLabel = activeCustomer ? activeCustomer.name : stats.totalCustomers + ' customers';
   const activeHelper = activeCustomer
     ? activeCustomer.totalBookings + ' booking • ' + activeCustomer.favoriteSession
-    : 'Data booking real Firestore';
+    : 'Firestore';
 
   return (
     <AdminPageHeader
@@ -1186,15 +1186,15 @@ function CustomerHero({
           {activeLabel}
         </AdminBadge>
       )}
-      description="Kelola kontak, histori booking, follow-up pembayaran, tag CRM, dan shortcut komunikasi dari data booking real."
+      description="Kontak, histori booking, tag CRM, dan follow-up pembayaran."
       eyebrow="Studio CRM"
       meta={(
         <>
           <AdminBadge icon={CalendarClock} tone="cyan">
-            {stats.upcomingCustomers} upcoming
+            {stats.upcomingCustomers} next
           </AdminBadge>
           <AdminBadge icon={CheckCircle2} tone="purple">
-            {stats.returningCustomers} returning
+            {stats.returningCustomers} return
           </AdminBadge>
           <AdminBadge icon={CreditCard} tone="neutral">
             {formatCurrency(stats.totalRevenue)}
@@ -1383,7 +1383,7 @@ function CustomerTagFilterStrip({
         onClick={() => onTagFilterChange('all')}
       >
         <Tags size={13} strokeWidth={2.35} aria-hidden="true" />
-        <span>All tags</span>
+        <span>Tags</span>
         <strong className="rounded-full bg-[var(--ui-glass-soft)] px-1.5 py-0.5 text-[0.68rem] leading-none text-[var(--ui-text-strong)]">
           {totalTagged}
         </strong>
@@ -1443,7 +1443,7 @@ function CustomerAttentionStrip({
     {
       icon: Phone,
       key: 'missingPhone',
-      label: 'No phone',
+      label: 'No HP',
       value: stats.missingPhone,
     },
     {
@@ -1503,7 +1503,7 @@ function CustomerToolbar({
           <Search className="shrink-0 text-[var(--ui-text-muted)]" size={15} strokeWidth={2.35} aria-hidden="true" />
           <input
             className="w-full border-0 bg-transparent text-sm font-semibold text-[var(--ui-text-strong)] outline-none placeholder:text-[var(--ui-text-soft)]"
-            placeholder="Cari nama, nomor HP, tipe sesi, tag, atau notes..."
+            placeholder="Cari customer, HP, sesi..."
             type="search"
             value={searchTerm}
             onChange={(event) => onSearchChange(event.target.value)}
@@ -1577,7 +1577,7 @@ function CustomerExportPanel({
     <AdminPanel className="customer-export-panel flex flex-wrap items-center justify-between gap-3 p-3" aria-label="Customer export and print" variant="flat">
       <div className="grid gap-0.5">
         <span className="text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-[var(--ui-text-muted)]">
-          Export contact list
+          Export
         </span>
 
         <strong className="text-sm font-semibold text-[var(--ui-text-strong)]">
@@ -1593,7 +1593,7 @@ function CustomerExportPanel({
           variant="secondary"
           onClick={handleExportCsv}
         >
-          {exportStatus === 'done' ? 'CSV ready' : exportStatus === 'error' ? 'No data' : 'CSV'}
+          {exportStatus === 'done' ? 'Done' : exportStatus === 'error' ? 'Empty' : 'CSV'}
         </AdminButton>
 
         <AdminButton
@@ -1603,7 +1603,7 @@ function CustomerExportPanel({
           variant="secondary"
           onClick={handlePrintList}
         >
-          {printStatus === 'done' ? 'Print opened' : printStatus === 'error' ? 'No data' : 'Print'}
+          {printStatus === 'done' ? 'Opened' : printStatus === 'error' ? 'Empty' : 'Print'}
         </AdminButton>
       </div>
     </AdminPanel>
@@ -2986,7 +2986,7 @@ function CustomerDetailPanel({
               type="button"
             >
               <MessageCircle size={15} strokeWidth={2.35} aria-hidden="true" />
-              No phone
+              No HP
             </button>
           )}
 
