@@ -9,6 +9,8 @@ import {
   TrendingUp,
   WalletCards,
   Search,
+  Check,
+  Plus,
 } from 'lucide-react';
 import {
   AdminBadge,
@@ -158,17 +160,17 @@ function BookkeepingComingSoonPanel() {
     <AdminPanel className="grid gap-4 p-4 sm:p-5" variant="solid">
       <div className="grid gap-2">
         <AdminBadge tone="cyan">
-          BOOKKEEPING.4
+          BOOKKEEPING.5
         </AdminBadge>
 
         <h2 className="m-0 text-2xl font-semibold tracking-[-0.05em] text-[var(--ui-text-strong)]">
-          Pencatatan kas manual sudah aktif.
+          Saran impor billing terintegrasi.
         </h2>
 
         <p className="m-0 max-w-3xl text-sm leading-6 text-[var(--ui-text-main)]">
-          Fase ini telah mengaktifkan laci penambahan dan pengeditan transaksi kas secara manual.
-          Setiap aktivitas transaksi akan tercatat secara akurat di log audit. Catatan otomatis
-          dari Billing/POS terkunci demi integritas data.
+          Fase ini telah menghubungkan modul Billing/POS dengan Pembukuan. Transaksi invoice yang lunas
+          atau deposit (DP) akan dideteksi secara otomatis dan disajikan sebagai saran impor kas sekali klik
+          dengan proteksi anti-double-count.
         </p>
       </div>
 
@@ -178,7 +180,7 @@ function BookkeepingComingSoonPanel() {
             Berikutnya
           </span>
           <strong className="text-sm font-semibold text-[var(--ui-text-strong)]">
-            BOOKKEEPING.5 Billing import
+            BOOKKEEPING.6 Laporan bulanan
           </strong>
         </div>
 
@@ -196,7 +198,7 @@ function BookkeepingComingSoonPanel() {
             Guard
           </span>
           <strong className="text-sm font-semibold text-[var(--ui-text-strong)]">
-            Audit trail aktif
+            Anti-double-count
           </strong>
         </div>
       </div>
@@ -275,6 +277,86 @@ function LedgerEmptyState({ hasEntries }) {
   );
 }
 
+function BillingImportSuggestionsPanel({
+  suggestions = [],
+  onImport,
+}) {
+  return (
+    <AdminPanel className="grid gap-3" variant="flat">
+      <div className="flex items-center justify-between border-b border-[var(--ui-border)] pb-2.5">
+        <h3 className="m-0 text-xs font-bold uppercase tracking-[0.12em] text-[var(--ui-text-strong)] flex items-center gap-2">
+          <WalletCards size={15} className="text-studio-accent" />
+          Saran Impor Billing
+        </h3>
+        <AdminBadge tone="purple">
+          {suggestions.length} Baru
+        </AdminBadge>
+      </div>
+
+      {suggestions.length > 0 ? (
+        <div className="grid gap-2 max-h-[460px] overflow-y-auto pr-1">
+          {suggestions.map((item) => (
+            <div
+              className="grid gap-2 rounded-[1rem] border border-[var(--ui-border)] bg-[var(--ui-control)] p-3 ring-1 ring-[var(--ui-ring)]"
+              key={item.id}
+            >
+              <div className="grid gap-0.5">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-[0.58rem] font-bold uppercase tracking-[0.14em] text-[var(--ui-text-muted)] truncate">
+                    {item.invoiceNumber}
+                  </span>
+                  <span className="text-[0.58rem] font-semibold text-studio-cyan whitespace-nowrap bg-studio-cyan/10 border border-studio-cyan/20 rounded-md px-1.5 py-0.5">
+                    {formatPaymentMethod(item.paymentMethod)}
+                  </span>
+                </div>
+                <strong className="truncate text-xs font-semibold text-[var(--ui-text-strong)]">
+                  {item.customerName}
+                </strong>
+                <span className="text-[0.62rem] text-[var(--ui-text-muted)] font-medium">
+                  {formatBookkeepingDate(item.createdAt.slice(0, 10))}
+                </span>
+              </div>
+
+              <div className="flex items-center justify-between gap-3 pt-1.5 border-t border-[var(--ui-border)]">
+                <span className="text-[0.58rem] font-semibold uppercase tracking-[0.12em] text-[var(--ui-text-muted)]">
+                  Diterima
+                </span>
+                <strong className="text-xs font-bold text-studio-cyan">
+                  {formatBookkeepingCurrency(item.paidAmount)}
+                </strong>
+              </div>
+
+              <AdminButton
+                className="w-full min-h-8 text-xs mt-1"
+                icon={Plus}
+                size="sm"
+                variant="soft"
+                onClick={() => onImport(item)}
+              >
+                Impor Kas
+              </AdminButton>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="grid min-h-[8rem] place-items-center text-center p-3">
+          <div className="grid gap-1.5 justify-items-center">
+            <span className="grid size-8 place-items-center rounded-full border border-studio-cyan/22 bg-studio-cyan/10 text-studio-cyan">
+              <Check size={16} strokeWidth={2.5} />
+            </span>
+            <strong className="text-xs font-semibold text-[var(--ui-text-strong)]">
+              Billing Terintegrasi
+            </strong>
+            <p className="m-0 text-[0.65rem] leading-4 text-[var(--ui-text-muted)] max-w-[200px]">
+              Semua pembayaran invoice lunas/DP sudah masuk pembukuan.
+            </p>
+          </div>
+        </div>
+      )}
+    </AdminPanel>
+  );
+}
+
 export function BookkeepingAdmin() {
   const adminContext = useOutletContext() || {};
   const {
@@ -317,6 +399,20 @@ export function BookkeepingAdmin() {
     [billingTransactions],
   );
   const currentMonthLabel = useMemo(() => getCurrentMonthLabel(), []);
+
+  // Compute suggestion items for importing
+  const billingImportSuggestions = useMemo(() => {
+    const importedIds = new Set(
+      bookkeepingEntries
+        .filter((entry) => entry.sourceType === 'billing' && entry.sourceId)
+        .map((entry) => entry.sourceId)
+    );
+
+    return billingTransactions.filter((transaction) => {
+      const isPaidOrDp = transaction.paidAmount > 0;
+      return isPaidOrDp && !importedIds.has(transaction.id);
+    });
+  }, [bookkeepingEntries, billingTransactions]);
 
   const dynamicCategories = useMemo(() => {
     const categoriesMap = new Map();
@@ -405,7 +501,7 @@ export function BookkeepingAdmin() {
 
     const targetMatch = entry.notes.match(/Target Account: (.*)/);
     if (targetMatch && targetMatch[1]) {
-      const matchKey = standardAccounts.find((a) => a.label === targetMatch[1])?.key || 'transfer';
+      const matchKey = standardAccounts.find((a) => a.key === targetMatch[1])?.key || 'transfer';
       setFormTargetAccount(matchKey);
       setFormNotes(entry.notes.replace(/\nTarget Account: .*/, ''));
     } else {
@@ -537,6 +633,64 @@ export function BookkeepingAdmin() {
       } finally {
         setIsSaving(false);
       }
+    }
+  };
+
+  const handleImportBillingTransaction = async (transaction) => {
+    const actor = {
+      displayName: adminUser?.displayName || adminUser?.email || 'Admin',
+      email: adminUser?.email || '',
+      uid: adminUser?.uid || '',
+    };
+
+    const entryId = 'bookkeeping-billing-' + transaction.id;
+
+    let categoryId = 'studio_rent';
+    let categoryName = 'Sewa Studio';
+
+    if (transaction.items && transaction.items.length > 0) {
+      const firstItemCategory = transaction.items[0].category;
+      if (firstItemCategory === 'manual_pos' || firstItemCategory === 'service') {
+        categoryId = 'pos_sale';
+        categoryName = 'Penjualan POS';
+      }
+    }
+
+    const payload = {
+      amount: Number(transaction.paidAmount) || 0,
+      categoryId,
+      categoryName,
+      createdAt: new Date().toISOString(),
+      createdBy: actor,
+      date: transaction.createdAt.slice(0, 10),
+      description: `Pembayaran Invoice ${transaction.invoiceNumber} - ${transaction.customerName}`,
+      direction: 'in',
+      id: entryId,
+      notes: `Diimpor otomatis dari Invoice ${transaction.invoiceNumber}. Catatan invoice: ${transaction.notes || ''}`,
+      paymentMethod: transaction.paymentMethod || 'cash',
+      sourceId: transaction.id,
+      sourceLabel: transaction.invoiceNumber,
+      sourceType: 'billing',
+      studioId: 'main-studio',
+      transactionAt: transaction.createdAt,
+      type: 'income',
+      updatedAt: new Date().toISOString(),
+      updatedBy: actor,
+      accountId: transaction.paymentMethod || 'cash',
+      accountName: standardAccounts.find((a) => a.key === transaction.paymentMethod)?.label || 'Cash',
+    };
+
+    try {
+      await createBookkeepingEntry(payload);
+      await recordBookkeepingAuditLog({
+        action: 'bookkeeping.import_billing',
+        entryId: payload.id,
+        entrySnapshot: payload,
+        by: actor,
+      });
+    } catch (error) {
+      console.error('Failed to import billing transaction.', error);
+      alert('Gagal mengimpor transaksi billing.');
     }
   };
 
@@ -807,68 +961,77 @@ export function BookkeepingAdmin() {
         </AdminButton>
       </AdminCommandBar>
 
-      {entriesWithRunningBalance.length > 0 ? (
-        <AdminTableShell minWidth="min-w-[960px]">
-          <table className="w-full border-collapse text-left text-xs text-[var(--ui-text-main)]">
-            <thead>
-              <tr className="border-b border-[var(--ui-border-strong)] bg-[var(--ui-control)] text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-[var(--ui-text-muted)]">
-                <th className="p-3.5">Tanggal</th>
-                <th className="p-3.5">Tipe</th>
-                <th className="p-3.5">Kategori</th>
-                <th className="p-3.5">Deskripsi</th>
-                <th className="p-3.5">Akun</th>
-                <th className="p-3.5">Metode</th>
-                <th className="p-3.5 text-right">Masuk</th>
-                <th className="p-3.5 text-right">Keluar</th>
-                <th className="p-3.5 text-right">Saldo</th>
-                <th className="p-3.5">Sumber</th>
-              </tr>
-            </thead>
-            <tbody>
-              {entriesWithRunningBalance.map((entry) => (
-                <tr
-                  className="border-b border-[var(--ui-border)] hover:bg-[var(--ui-control)] cursor-pointer"
-                  key={entry.id}
-                  onClick={() => handleRowClick(entry)}
-                >
-                  <td className="p-3.5 font-medium whitespace-nowrap">
-                    {formatBookkeepingDateTime(entry)}
-                  </td>
-                  <td className="p-3.5 whitespace-nowrap">
-                    {renderTypeBadge(entry.type)}
-                  </td>
-                  <td className="p-3.5 font-semibold text-[var(--ui-text-strong)] whitespace-nowrap">
-                    {entry.categoryName}
-                  </td>
-                  <td className="p-3.5 max-w-[280px] truncate font-medium">
-                    {entry.description}
-                  </td>
-                  <td className="p-3.5 font-semibold whitespace-nowrap">
-                    {entry.accountName}
-                  </td>
-                  <td className="p-3.5 font-medium whitespace-nowrap">
-                    {formatPaymentMethod(entry.paymentMethod)}
-                  </td>
-                  <td className="p-3.5 text-right font-bold text-studio-cyan whitespace-nowrap">
-                    {entry.type === 'income' ? formatBookkeepingCurrency(entry.amount) : '-'}
-                  </td>
-                  <td className="p-3.5 text-right font-bold text-studio-accent whitespace-nowrap">
-                    {entry.type === 'expense' ? formatBookkeepingCurrency(entry.amount) : '-'}
-                  </td>
-                  <td className="p-3.5 text-right font-semibold text-[var(--ui-text-strong)] whitespace-nowrap">
-                    {formatBookkeepingCurrency(entry.runningBalance, true)}
-                  </td>
-                  <td className="p-3.5 font-medium text-[var(--ui-text-muted)] whitespace-nowrap">
-                    {formatSource(entry)}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </AdminTableShell>
-      ) : (
-        <LedgerEmptyState hasEntries={bookkeepingEntries.length > 0} />
-      )}
+      <div className="grid gap-3 lg:grid-cols-[1fr_340px] lg:items-start md:gap-3.5">
+        <div className="grid gap-2 min-w-0 md:gap-3">
+          {entriesWithRunningBalance.length > 0 ? (
+            <AdminTableShell minWidth="min-w-[960px]">
+              <table className="w-full border-collapse text-left text-xs text-[var(--ui-text-main)]">
+                <thead>
+                  <tr className="border-b border-[var(--ui-border-strong)] bg-[var(--ui-control)] text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-[var(--ui-text-muted)]">
+                    <th className="p-3.5">Tanggal</th>
+                    <th className="p-3.5">Tipe</th>
+                    <th className="p-3.5">Kategori</th>
+                    <th className="p-3.5">Deskripsi</th>
+                    <th className="p-3.5">Akun</th>
+                    <th className="p-3.5">Metode</th>
+                    <th className="p-3.5 text-right">Masuk</th>
+                    <th className="p-3.5 text-right">Keluar</th>
+                    <th className="p-3.5 text-right">Saldo</th>
+                    <th className="p-3.5">Sumber</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {entriesWithRunningBalance.map((entry) => (
+                    <tr
+                      className="border-b border-[var(--ui-border)] hover:bg-[var(--ui-control)] cursor-pointer"
+                      key={entry.id}
+                      onClick={() => handleRowClick(entry)}
+                    >
+                      <td className="p-3.5 font-medium whitespace-nowrap">
+                        {formatBookkeepingDateTime(entry)}
+                      </td>
+                      <td className="p-3.5 whitespace-nowrap">
+                        {renderTypeBadge(entry.type)}
+                      </td>
+                      <td className="p-3.5 font-semibold text-[var(--ui-text-strong)] whitespace-nowrap">
+                        {entry.categoryName}
+                      </td>
+                      <td className="p-3.5 max-w-[280px] truncate font-medium">
+                        {entry.description}
+                      </td>
+                      <td className="p-3.5 font-semibold whitespace-nowrap">
+                        {entry.accountName}
+                      </td>
+                      <td className="p-3.5 font-medium whitespace-nowrap">
+                        {formatPaymentMethod(entry.paymentMethod)}
+                      </td>
+                      <td className="p-3.5 text-right font-bold text-studio-cyan whitespace-nowrap">
+                        {entry.type === 'income' ? formatBookkeepingCurrency(entry.amount) : '-'}
+                      </td>
+                      <td className="p-3.5 text-right font-bold text-studio-accent whitespace-nowrap">
+                        {entry.type === 'expense' ? formatBookkeepingCurrency(entry.amount) : '-'}
+                      </td>
+                      <td className="p-3.5 text-right font-semibold text-[var(--ui-text-strong)] whitespace-nowrap">
+                        {formatBookkeepingCurrency(entry.runningBalance, true)}
+                      </td>
+                      <td className="p-3.5 font-medium text-[var(--ui-text-muted)] whitespace-nowrap">
+                        {formatSource(entry)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </AdminTableShell>
+          ) : (
+            <LedgerEmptyState hasEntries={bookkeepingEntries.length > 0} />
+          )}
+        </div>
+
+        <BillingImportSuggestionsPanel
+          suggestions={billingImportSuggestions}
+          onImport={handleImportBillingTransaction}
+        />
+      </div>
 
       <AdminDrawer
         actions={(
