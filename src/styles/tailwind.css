@@ -2622,3 +2622,97 @@
   }
 }
 /* 37-booking-time-duration-align:end */
+
+/* 37-customer-summary-compact:start */
+@layer components {
+  .customer-summary-compact {
+    width: 100%;
+  }
+
+  .customer-summary-revenue strong {
+    font-variant-numeric: tabular-nums;
+  }
+
+  @media (max-width: 767px) {
+    .customer-summary-rail {
+      border-radius: 1rem !important;
+      padding: 0.55rem !important;
+    }
+
+    .customer-summary-main {
+      gap: 0.4rem !important;
+    }
+
+    .customer-summary-pill {
+      min-height: 3.1rem !important;
+      border-radius: 0.85rem !important;
+      padding: 0.55rem 0.58rem !important;
+    }
+
+    .customer-summary-pill span {
+      gap: 0.35rem !important;
+      font-size: 0.48rem !important;
+      letter-spacing: 0.085em !important;
+    }
+
+    .customer-summary-pill strong {
+      font-size: 0.82rem !important;
+    }
+
+    .customer-summary-revenue {
+      min-height: 2.55rem !important;
+      border-radius: 0.85rem !important;
+      padding: 0.58rem 0.7rem !important;
+    }
+
+    .customer-summary-revenue span {
+      font-size: 0.52rem !important;
+      letter-spacing: 0.1em !important;
+    }
+
+    .customer-summary-revenue strong {
+      max-width: min(13rem, 62vw);
+      font-size: clamp(0.82rem, 3.35vw, 0.98rem) !important;
+    }
+  }
+
+  @media (max-width: 420px) {
+    .customer-summary-rail {
+      padding: 0.48rem !important;
+    }
+
+    .customer-summary-main {
+      gap: 0.35rem !important;
+    }
+
+    .customer-summary-pill {
+      min-height: 2.85rem !important;
+      padding: 0.48rem 0.5rem !important;
+    }
+
+    .customer-summary-pill span {
+      font-size: 0.45rem !important;
+      letter-spacing: 0.075em !important;
+    }
+
+    .customer-summary-pill svg {
+      width: 0.68rem !important;
+      height: 0.68rem !important;
+    }
+
+    .customer-summary-pill strong {
+      font-size: 0.78rem !important;
+    }
+
+    .customer-summary-revenue {
+      min-height: 2.4rem !important;
+      padding-inline: 0.62rem !important;
+    }
+
+    .customer-summary-revenue strong {
+      max-width: min(12.5rem, 62vw);
+      font-size: 0.9rem !important;
+    }
+  }
+}
+/* 37-customer-summary-compact:end */

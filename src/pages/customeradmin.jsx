@@ -1183,58 +1183,63 @@ function CustomerHero() {
 function MetricStrip({
   stats,
 }) {
-  const items = [
+  const compactItems = [
     {
       icon: UsersRound,
       label: 'Customers',
-      tone: 'strong',
+      toneClass: 'text-studio-accent',
       value: stats.totalCustomers,
     },
     {
       icon: CheckCircle2,
       label: 'Returning',
-      tone: 'purple',
+      toneClass: 'text-studio-purple',
       value: stats.returningCustomers,
     },
     {
       icon: CalendarClock,
       label: 'Upcoming',
-      tone: 'cyan',
+      toneClass: 'text-studio-cyan',
       value: stats.upcomingCustomers,
-    },
-    {
-      icon: CreditCard,
-      label: 'Revenue',
-      tone: 'neutral',
-      value: formatCurrency(stats.totalRevenue),
     },
   ];
 
   return (
-    <section className="customer-summary-strip grid grid-cols-2 gap-2 sm:grid-cols-4" aria-label="Customer summary">
-      {items.map((item) => {
-        const Icon = item.icon;
+    <section className="customer-summary-strip customer-summary-compact" aria-label="Customer summary">
+      <AdminPanel className="customer-summary-rail grid gap-2 p-2.5 sm:p-3" variant="flat">
+        <div className="customer-summary-main grid grid-cols-3 gap-1.5">
+          {compactItems.map((item) => {
+            const Icon = item.icon;
 
-        return (
-          <AdminPanel
-            as="article"
-            className="flex min-h-16 items-center justify-between gap-3 p-3"
-            key={item.label}
-            variant="flat"
-          >
-            <span className="inline-flex min-w-0 items-center gap-2 text-[0.65rem] font-semibold uppercase tracking-[0.11em] text-[var(--ui-text-muted)]">
-              <span className="grid size-8 shrink-0 place-items-center rounded-full border border-[var(--ui-border)] bg-[var(--ui-control)] text-studio-accent ring-1 ring-[var(--ui-ring)]">
-                <Icon size={14} strokeWidth={2.35} aria-hidden="true" />
-              </span>
-              <span className="truncate">{item.label}</span>
-            </span>
+            return (
+              <article
+                className="customer-summary-pill grid min-w-0 gap-1 rounded-[0.95rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-2.5 py-2 ring-1 ring-[var(--ui-ring)]"
+                key={item.label}
+              >
+                <span className="inline-flex min-w-0 items-center gap-1.5 text-[0.56rem] font-semibold uppercase tracking-[0.11em] text-[var(--ui-text-muted)]">
+                  <Icon className={cn('shrink-0', item.toneClass)} size={12} strokeWidth={2.35} aria-hidden="true" />
+                  <span className="truncate">{item.label}</span>
+                </span>
 
-            <strong className="shrink-0 text-sm font-semibold tracking-[-0.035em] text-[var(--ui-text-strong)] sm:text-base">
-              {item.value}
-            </strong>
-          </AdminPanel>
-        );
-      })}
+                <strong className="justify-self-end text-sm font-semibold leading-none tracking-[-0.04em] text-[var(--ui-text-strong)]">
+                  {item.value}
+                </strong>
+              </article>
+            );
+          })}
+        </div>
+
+        <article className="customer-summary-revenue flex min-w-0 items-center justify-between gap-3 rounded-[0.95rem] border border-[var(--ui-border)] bg-[var(--ui-bg-base)] px-3 py-2 ring-1 ring-[var(--ui-ring)]">
+          <span className="inline-flex min-w-0 items-center gap-2 text-[0.58rem] font-semibold uppercase tracking-[0.12em] text-[var(--ui-text-muted)]">
+            <CreditCard className="shrink-0 text-[var(--ui-text-muted)]" size={13} strokeWidth={2.35} aria-hidden="true" />
+            Revenue
+          </span>
+
+          <strong className="min-w-0 truncate text-right text-sm font-semibold leading-none tracking-[-0.04em] text-[var(--ui-text-strong)] sm:text-base">
+            {formatCurrency(stats.totalRevenue)}
+          </strong>
+        </article>
+      </AdminPanel>
     </section>
   );
 }
