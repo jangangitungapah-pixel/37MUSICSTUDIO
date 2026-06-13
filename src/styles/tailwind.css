@@ -2368,3 +2368,29 @@
   }
 }
 /* 37-booking-capsule-position-reset:end */
+
+/* 37-booking-capsule-vertical-gap:start */
+@layer components {
+  @media (max-width: 767px) {
+    .booking-calendar-grid .booking-block-card {
+      top: 0.2rem !important;
+      padding-top: 0.32rem !important;
+      padding-bottom: 0.32rem !important;
+      min-height: 0 !important;
+    }
+
+    .booking-calendar-grid .booking-block-card > span:last-child {
+      gap: 0 !important;
+    }
+  }
+
+  @media (max-width: 420px) {
+    .booking-calendar-grid .booking-block-card {
+      top: 0.18rem !important;
+      padding-top: 0.28rem !important;
+      padding-bottom: 0.28rem !important;
+      border-radius: 0.72rem !important;
+    }
+  }
+}
+/* 37-booking-capsule-vertical-gap:end */

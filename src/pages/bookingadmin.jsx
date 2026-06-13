@@ -493,7 +493,7 @@ function getBookingSpanForSlot(bookings, dayKey, timeKey) {
 function getBookingDurationHeight(booking) {
   const duration = getClampedBookingDuration(booking);
 
-  return Math.max(46, duration * 54 - 8);
+  return Math.max(38, duration * 54 - 18);
 }
 
 function getVisibleBookings(bookings, visibleDays) {
