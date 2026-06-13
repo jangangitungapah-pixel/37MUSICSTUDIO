@@ -311,6 +311,19 @@ function createInitialBookingForm(date, timeKey = '10:00') {
   };
 }
 
+function createEmptySelectedSlot() {
+  return {
+    dateKey: '',
+    label: '',
+    timeKey: '',
+  };
+}
+
+function hasSelectedSlot(selectedSlot) {
+  return Boolean(selectedSlot?.dateKey && selectedSlot?.timeKey);
+}
+
+
 function createBookingFormFromBooking(booking) {
   return {
     bookingDate: booking.dateKey || formatDateKey(new Date()),
@@ -1777,6 +1790,10 @@ function SelectedSlotPanel({
   bookings,
   selectedSlot,
 }) {
+  if (!hasSelectedSlot(selectedSlot)) {
+    return null;
+  }
+
   const booking = getBookingForSlot(bookings, selectedSlot.dateKey, selectedSlot.timeKey);
 
   return (
@@ -1922,7 +1939,9 @@ export function BookingAdmin() {
   };
 
   const openBookingModal = (date = cursorDate, timeKey = selectedSlot.timeKey) => {
-    setBookingForm(createInitialBookingForm(date, timeKey));
+    const safeTimeKey = timeKey || '10:00';
+
+    setBookingForm(createInitialBookingForm(date, safeTimeKey));
     setIsBookingModalOpen(true);
   };
 
@@ -1932,6 +1951,7 @@ export function BookingAdmin() {
     }
 
     setBookingSaveError('');
+    setSelectedSlot(createEmptySelectedSlot());
     setIsBookingModalOpen(false);
   };
 
