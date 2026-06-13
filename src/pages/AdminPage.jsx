@@ -13,6 +13,7 @@ import {
 import {
   ArrowRight,
   LockKeyhole,
+  Menu,
   Radio,
   ReceiptText,
   UsersRound,
@@ -263,7 +264,8 @@ function AdminThemeControls({ collapsed = false }) {
         aria-checked={themeSwitch.checked}
         aria-label={themeSwitch.ariaLabel}
         className={cn(
-          'group relative h-10 items-center rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] p-1 shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20',
+          'admin-theme-switch group relative h-10 items-center rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] p-1 shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20',
+          mode === 'dark' ? 'is-dark' : 'is-light',
           collapsed ? 'inline-flex w-[72px]' : 'inline-flex w-full',
         )}
         role="switch"
@@ -273,17 +275,17 @@ function AdminThemeControls({ collapsed = false }) {
       >
         <span className="sr-only">{themeSwitch.ariaLabel}</span>
 
-        <span className="absolute left-2 grid size-6 place-items-center text-[var(--ui-text-soft)] transition group-hover:text-studio-accent">
+        <span className="admin-theme-switch-icon admin-theme-switch-icon-sun absolute left-2 grid size-6 place-items-center text-[var(--ui-text-soft)] transition group-hover:text-studio-accent">
           <Sun size={13} aria-hidden="true" />
         </span>
 
-        <span className="absolute right-2 grid size-6 place-items-center text-[var(--ui-text-soft)] transition group-hover:text-studio-cyan">
+        <span className="admin-theme-switch-icon admin-theme-switch-icon-moon absolute right-2 grid size-6 place-items-center text-[var(--ui-text-soft)] transition group-hover:text-studio-cyan">
           <Moon size={13} aria-hidden="true" />
         </span>
 
         <span
           className={cn(
-            'relative z-10 grid size-8 place-items-center rounded-full [background:var(--ui-primary-bg)] text-[var(--ui-primary-text)] shadow-[var(--ui-shadow-soft)] transition-transform duration-300 ease-out',
+            'admin-theme-switch-knob relative z-10 grid size-8 place-items-center rounded-full [background:var(--ui-primary-bg)] text-[var(--ui-primary-text)] shadow-[var(--ui-shadow-soft)] transition-transform duration-300 ease-out',
             themeSwitch.knobClass,
           )}
           aria-hidden="true"
@@ -293,7 +295,7 @@ function AdminThemeControls({ collapsed = false }) {
 
         <span
           className={cn(
-            'pointer-events-none absolute inset-1 rounded-full blur-md transition-opacity duration-300',
+            'admin-theme-switch-glow pointer-events-none absolute inset-1 rounded-full blur-md transition-opacity duration-300',
             themeSwitch.trackHintClass,
           )}
           aria-hidden="true"
@@ -417,27 +419,148 @@ function AdminSidebar({
 
 function AdminBottomBar({
   activePath,
+  onLogout,
 }) {
-  const mobileItems = adminNavItems.slice(0, 5);
+  const [isMoreOpen, setIsMoreOpen] = useState(false);
+  const mobileItems = adminNavItems.filter((item) => item.key !== 'audit').slice(0, 4);
+  const isAuditActive = activePath === '/admin/audit' || activePath.startsWith('/admin/audit/');
+
+  useEffect(() => {
+    setIsMoreOpen(false);
+  }, [activePath]);
 
   return (
-    <nav
-      className="admin-mobile-bottom-bar fixed inset-x-3 bottom-3 z-40 grid rounded-lg border border-[var(--ui-border)] bg-[var(--ui-glass)] p-1.5 shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] backdrop-blur-xl md:hidden"
-      aria-label="Admin mobile navigation"
+    <>
+      <AdminMobileMoreMenu
+        activePath={activePath}
+        isOpen={isMoreOpen}
+        onClose={() => setIsMoreOpen(false)}
+        onLogout={onLogout}
+      />
+
+      <nav
+        className="admin-mobile-bottom-bar fixed inset-x-3 bottom-3 z-40 grid rounded-lg border border-[var(--ui-border)] bg-[var(--ui-glass)] p-1.5 shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] backdrop-blur-xl md:hidden"
+        aria-label="Admin mobile navigation"
+      >
+        <div className="admin-mobile-bottom-track flex items-stretch gap-1">
+          {mobileItems.map((item) => (
+            <NavButton
+              icon={item.icon}
+              isActive={activePath === item.path || activePath.startsWith(item.path + '/')}
+              key={item.key}
+              label={item.label}
+              to={item.path}
+              variant="bottom"
+            />
+          ))}
+
+          <button
+            aria-expanded={isMoreOpen}
+            aria-label="Buka menu admin lainnya"
+            className={cn(
+              'admin-bottom-nav-item admin-bottom-more-button group relative grid min-w-0 flex-1 place-items-center gap-1 overflow-hidden rounded-md px-1.5 py-1.5 text-[0.62rem] font-semibold tracking-[-0.01em] transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20',
+              isMoreOpen || isAuditActive
+                ? 'is-active bg-[var(--ui-control-hover)] text-[var(--ui-text-strong)] shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)]'
+                : 'text-[var(--ui-text-muted)] hover:bg-[var(--ui-control)] hover:text-[var(--ui-text-strong)]',
+            )}
+            type="button"
+            onClick={() => setIsMoreOpen((current) => !current)}
+          >
+            <span
+              className={cn(
+                'admin-bottom-nav-icon grid size-7 place-items-center rounded-md transition',
+                isMoreOpen || isAuditActive ? 'text-studio-accent' : 'text-[var(--ui-text-soft)] group-hover:text-studio-accent',
+              )}
+            >
+              <Menu size={17} strokeWidth={2.25} aria-hidden="true" />
+            </span>
+            <span className="admin-bottom-nav-label max-w-full truncate">Menu</span>
+          </button>
+        </div>
+      </nav>
+    </>
+  );
+}
+
+function AdminMobileMoreMenu({
+  activePath,
+  isOpen,
+  onClose,
+  onLogout,
+}) {
+  const { mode, toggleMode } = useTheme();
+  const themeSwitch = adminThemeSwitchStates[mode] || adminThemeSwitchStates.dark;
+  const ThemeSwitchIcon = themeSwitch.knobIcon;
+  const auditItem = adminNavItems.find((item) => item.key === 'audit');
+  const AuditIcon = auditItem?.icon;
+
+  if (!isOpen) return null;
+
+  return (
+    <div
+      className="admin-mobile-more-menu fixed z-50 grid gap-1 rounded-lg border border-[var(--ui-border)] bg-[var(--ui-glass)] p-1 shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] backdrop-blur-xl md:hidden"
+      aria-label="Admin mobile more menu"
     >
-      <div className="admin-mobile-bottom-track flex items-stretch gap-1">
-        {mobileItems.map((item) => (
-          <NavButton
-            icon={item.icon}
-            isActive={activePath === item.path || activePath.startsWith(item.path + '/')}
-            key={item.key}
-            label={item.label}
-            to={item.path}
-            variant="bottom"
-          />
-        ))}
-      </div>
-    </nav>
+      {auditItem && AuditIcon ? (
+        <NavLink
+          className={cn(
+            'admin-mobile-more-item grid min-h-10 grid-cols-[2rem_minmax(0,1fr)] items-center gap-2 rounded-md border px-2 text-left text-xs font-semibold transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20',
+            activePath === auditItem.path || activePath.startsWith(auditItem.path + '/')
+              ? 'is-active border-studio-accent/25 bg-studio-accent/10 text-[var(--ui-text-strong)]'
+              : 'border-transparent bg-transparent text-[var(--ui-text-main)] hover:bg-[var(--ui-control)]',
+          )}
+          to={auditItem.path}
+          onClick={onClose}
+        >
+          <span className="grid size-8 place-items-center rounded-md border border-[var(--ui-border)] bg-[var(--ui-control)] text-studio-accent">
+            <AuditIcon size={15} strokeWidth={2.35} aria-hidden="true" />
+          </span>
+          <span className="grid min-w-0">
+            <span className="truncate">{auditItem.label}</span>
+            <span className="truncate text-[0.65rem] font-medium text-[var(--ui-text-muted)]">{auditItem.helper}</span>
+          </span>
+        </NavLink>
+      ) : null}
+
+      <button
+        aria-checked={themeSwitch.checked}
+        aria-label={themeSwitch.ariaLabel}
+        className={cn(
+          'admin-mobile-more-item admin-mobile-theme-switch relative grid min-h-10 grid-cols-[minmax(0,1fr)_5.2rem] items-center gap-2 rounded-md border border-transparent bg-transparent px-2 text-left text-xs font-semibold text-[var(--ui-text-main)] transition hover:bg-[var(--ui-control)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20',
+          mode === 'dark' ? 'is-dark' : 'is-light',
+        )}
+        role="switch"
+        title={themeSwitch.ariaLabel}
+        type="button"
+        onClick={toggleMode}
+      >
+        <span className="sr-only">{themeSwitch.ariaLabel}</span>
+        <span>Theme</span>
+        <span className="admin-mobile-theme-track" aria-hidden="true">
+          <span className="admin-mobile-theme-icon admin-mobile-theme-icon-sun">
+            <Sun size={13} strokeWidth={2.35} />
+          </span>
+          <span className="admin-mobile-theme-icon admin-mobile-theme-icon-moon">
+            <Moon size={13} strokeWidth={2.35} />
+          </span>
+          <span className="admin-mobile-theme-knob">
+            <ThemeSwitchIcon size={14} strokeWidth={2.35} />
+          </span>
+        </span>
+      </button>
+
+      <button
+        aria-label="Logout admin access"
+        className="admin-mobile-more-item admin-mobile-logout-button grid min-h-10 grid-cols-[2rem_minmax(0,1fr)] items-center gap-2 rounded-md border border-transparent bg-transparent px-2 text-left text-xs font-semibold text-[var(--ui-text-main)] transition hover:bg-[var(--ui-control)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
+        type="button"
+        onClick={onLogout}
+      >
+        <span className="grid size-8 place-items-center rounded-md border border-[var(--ui-border)] bg-[var(--ui-control)] text-studio-accent">
+          <LockKeyhole size={14} strokeWidth={2.35} aria-hidden="true" />
+        </span>
+        <span>Logout</span>
+      </button>
+    </div>
   );
 }
 
@@ -654,7 +777,10 @@ export function AdminPage() {
         <Outlet context={adminOutletContext} />
       </div>
 
-      <AdminBottomBar activePath={location.pathname} />
+      <AdminBottomBar
+        activePath={location.pathname}
+        onLogout={() => { void signOutAdmin(navigate); }}
+      />
     </section>
   );
 }

@@ -4919,3 +4919,1024 @@
   }
 }
 /* 37-booking-detail-mobile-polish-20260613:end */
+
+/* 37-booking-mobile-action-strip-reshape-20260613:start */
+@layer components {
+  @media (max-width: 767px) {
+    .booking-action-controls {
+      display: grid !important;
+      grid-template-columns: minmax(0, 1fr) 4.65rem !important;
+      gap: 0.26rem !important;
+      align-items: center !important;
+      min-height: 2.34rem !important;
+      border: 1px solid var(--ui-border) !important;
+      border-radius: 0.58rem !important;
+      background:
+        linear-gradient(180deg, color-mix(in srgb, var(--ui-bg-base) 94%, var(--ui-control)), color-mix(in srgb, var(--ui-control) 78%, transparent)) !important;
+      padding: 0.22rem !important;
+      box-shadow:
+        0 1px 0 rgb(255 255 255 / 0.1) inset,
+        0 0.55rem 1.3rem rgb(0 0 0 / 0.08) !important;
+    }
+
+    .booking-view-toggle {
+      min-height: 1.88rem !important;
+      border: 0 !important;
+      border-radius: 0.42rem !important;
+      background: transparent !important;
+      box-shadow: none !important;
+      padding: 0 !important;
+    }
+
+    .booking-view-toggle button {
+      min-height: 1.88rem !important;
+      border-radius: 0.36rem !important;
+      padding-inline: 0.18rem !important;
+      font-size: 0.5rem !important;
+      letter-spacing: 0.04em !important;
+      line-height: 1 !important;
+    }
+
+    .booking-view-toggle button[aria-pressed="true"] {
+      background:
+        linear-gradient(180deg, var(--ui-bg-base), color-mix(in srgb, var(--ui-control-hover) 88%, var(--ui-bg-base))) !important;
+      box-shadow:
+        0 1px 0 rgb(255 255 255 / 0.14) inset,
+        0 0.35rem 0.8rem rgb(0 0 0 / 0.1) !important;
+    }
+
+    .booking-add-button {
+      min-width: 0 !important;
+      min-height: 1.88rem !important;
+      gap: 0.28rem !important;
+      border-radius: 0.4rem !important;
+      padding-inline: 0.42rem !important;
+      font-size: 0.66rem !important;
+      line-height: 1 !important;
+      box-shadow: 0 0.45rem 0.9rem rgb(0 0 0 / 0.14) !important;
+    }
+
+    .booking-add-button svg {
+      width: 0.78rem !important;
+      height: 0.78rem !important;
+    }
+  }
+
+  @media (max-width: 380px) {
+    .booking-action-controls {
+      grid-template-columns: minmax(0, 1fr) 4.25rem !important;
+    }
+
+    .booking-view-toggle button {
+      font-size: 0.46rem !important;
+      letter-spacing: 0.03em !important;
+    }
+
+    .booking-add-button {
+      font-size: 0.6rem !important;
+      padding-inline: 0.34rem !important;
+    }
+  }
+}
+/* 37-booking-mobile-action-strip-reshape-20260613:end */
+
+/* 37-booking-desktop-toolbar-reshape-20260613:start */
+@layer components {
+  @media (min-width: 768px) {
+    .booking-calendar-toolbar {
+      grid-template-columns: auto minmax(12rem, 1fr) auto !important;
+      align-items: center !important;
+      gap: 0.38rem !important;
+      min-height: 2.72rem !important;
+      border-radius: 0.56rem !important;
+      padding: 0.32rem !important;
+      background:
+        linear-gradient(180deg, color-mix(in srgb, var(--ui-bg-base) 94%, var(--ui-control)), color-mix(in srgb, var(--ui-control) 72%, transparent)) !important;
+    }
+
+    .booking-period-controls {
+      display: grid !important;
+      grid-template-columns: 2.05rem minmax(8.7rem, 11.6rem) 2.05rem 4.5rem !important;
+      justify-self: start;
+      gap: 0.22rem !important;
+      min-height: 2.22rem !important;
+      border: 1px solid var(--ui-border) !important;
+      border-radius: 0.5rem !important;
+      background: color-mix(in srgb, var(--ui-bg-base) 84%, var(--ui-control)) !important;
+      padding: 0.18rem !important;
+      box-shadow: 0 1px 0 rgb(255 255 255 / 0.08) inset !important;
+    }
+
+    .booking-period-controls .admin-button,
+    .booking-period-controls .admin-badge {
+      min-height: 1.84rem !important;
+      border-radius: 0.36rem !important;
+      box-shadow: none !important;
+    }
+
+    .booking-period-controls .admin-button:first-child,
+    .booking-period-controls .admin-button:nth-child(3) {
+      min-width: 1.84rem !important;
+    }
+
+    .booking-period-controls .admin-button:last-child {
+      min-width: 0 !important;
+      padding-inline: 0.52rem !important;
+      font-size: 0.68rem !important;
+    }
+
+    .booking-period-controls .admin-badge {
+      max-width: none !important;
+      padding-inline: 0.58rem !important;
+      font-size: 0.66rem !important;
+    }
+
+    .booking-status-counters {
+      justify-self: end;
+      width: auto !important;
+      min-height: 2.22rem !important;
+      gap: 0.22rem !important;
+      border-radius: 0.5rem !important;
+      padding: 0.22rem !important;
+      background: color-mix(in srgb, var(--ui-bg-base) 84%, var(--ui-control)) !important;
+      box-shadow: 0 1px 0 rgb(255 255 255 / 0.08) inset !important;
+    }
+
+    .booking-status-counters .admin-badge {
+      min-height: 1.72rem !important;
+      border-radius: 0.34rem !important;
+      padding-inline: 0.48rem !important;
+      font-size: 0.56rem !important;
+      letter-spacing: 0.03em !important;
+    }
+
+    .booking-status-counters .admin-badge strong {
+      font-size: 0.72rem !important;
+    }
+
+    .booking-action-controls {
+      display: grid !important;
+      grid-template-columns: auto 9.6rem !important;
+      justify-self: end;
+      align-items: center !important;
+      gap: 0.24rem !important;
+      min-height: 2.22rem !important;
+      border: 1px solid var(--ui-border) !important;
+      border-radius: 0.5rem !important;
+      background: color-mix(in srgb, var(--ui-bg-base) 84%, var(--ui-control)) !important;
+      padding: 0.18rem !important;
+      box-shadow: 0 1px 0 rgb(255 255 255 / 0.08) inset !important;
+    }
+
+    .booking-view-toggle {
+      min-height: 1.84rem !important;
+      border: 0 !important;
+      border-radius: 0.36rem !important;
+      background: transparent !important;
+      box-shadow: none !important;
+      padding: 0 !important;
+    }
+
+    .booking-view-toggle button {
+      min-height: 1.84rem !important;
+      border-radius: 0.32rem !important;
+      padding-inline: 0.64rem !important;
+      font-size: 0.56rem !important;
+      letter-spacing: 0.05em !important;
+      line-height: 1 !important;
+    }
+
+    .booking-view-toggle button[aria-pressed="true"] {
+      background:
+        linear-gradient(180deg, var(--ui-bg-base), color-mix(in srgb, var(--ui-control-hover) 88%, var(--ui-bg-base))) !important;
+      box-shadow:
+        0 1px 0 rgb(255 255 255 / 0.12) inset,
+        0 0.35rem 0.8rem rgb(0 0 0 / 0.1) !important;
+    }
+
+    .booking-add-button {
+      min-height: 1.84rem !important;
+      border-radius: 0.36rem !important;
+      padding-inline: 0.8rem !important;
+      font-size: 0.78rem !important;
+      line-height: 1 !important;
+      box-shadow: 0 0.42rem 0.9rem rgb(0 0 0 / 0.14) !important;
+    }
+
+    .booking-add-button svg {
+      width: 0.85rem !important;
+      height: 0.85rem !important;
+    }
+  }
+
+  @media (min-width: 768px) and (max-width: 1120px) {
+    .booking-calendar-toolbar {
+      grid-template-columns: minmax(0, 1fr) auto !important;
+    }
+
+    .booking-status-counters {
+      grid-column: 1 / -1;
+      justify-self: end;
+      order: 3;
+    }
+
+    .booking-action-controls {
+      grid-column: 2;
+    }
+  }
+}
+/* 37-booking-desktop-toolbar-reshape-20260613:end */
+
+/* 37-booking-calendar-scroll-behavior-20260613:start */
+@layer components {
+  .booking-calendar-scroller {
+    max-height: none !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    overscroll-behavior-x: contain !important;
+    overscroll-behavior-y: auto !important;
+    scroll-padding-bottom: 0 !important;
+    touch-action: pan-x pan-y !important;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .booking-calendar-inner,
+  .booking-calendar-grid .grid,
+  .booking-calendar-grid button {
+    touch-action: pan-x pan-y !important;
+  }
+
+  @media (max-width: 767px) {
+    .booking-calendar-scroller {
+      max-height: none !important;
+      overflow-x: auto !important;
+      overflow-y: hidden !important;
+    }
+  }
+}
+/* 37-booking-calendar-scroll-behavior-20260613:end */
+
+/* 37-admin-sidebar-redesign-20260613:start */
+@layer components {
+  @media (min-width: 768px) {
+    .admin-sidebar {
+      width: 15.8rem !important;
+      max-height: calc(100vh - 1.25rem) !important;
+      border-radius: 0.62rem !important;
+      border-color: color-mix(in srgb, var(--ui-border) 78%, transparent) !important;
+      background:
+        linear-gradient(180deg, color-mix(in srgb, var(--ui-bg-base) 94%, var(--ui-control)), color-mix(in srgb, var(--ui-bg-base) 88%, var(--ui-control))) !important;
+      box-shadow:
+        0 1px 0 rgb(255 255 255 / 0.08) inset,
+        0 1.2rem 2.8rem rgb(0 0 0 / 0.18) !important;
+      padding: 0.38rem !important;
+    }
+
+    .admin-sidebar.is-expanded {
+      width: 15.8rem !important;
+    }
+
+    .admin-sidebar.is-collapsed {
+      width: 4.35rem !important;
+      padding: 0.34rem !important;
+    }
+
+    .admin-sidebar-inner {
+      gap: 0.42rem !important;
+      overflow-x: hidden !important;
+    }
+
+    .admin-sidebar-brand {
+      min-height: 2.75rem !important;
+      border-radius: 0.48rem !important;
+      border-color: color-mix(in srgb, var(--ui-border) 78%, transparent) !important;
+      background:
+        linear-gradient(180deg, color-mix(in srgb, var(--ui-control-hover) 56%, transparent), color-mix(in srgb, var(--ui-control) 72%, transparent)) !important;
+      box-shadow: 0 1px 0 rgb(255 255 255 / 0.1) inset !important;
+      padding: 0.32rem !important;
+    }
+
+    .admin-sidebar-brand a {
+      gap: 0.58rem !important;
+    }
+
+    .admin-sidebar-brand a > span:first-child {
+      width: 2rem !important;
+      height: 2rem !important;
+      border-radius: 0.42rem !important;
+      font-size: 0.68rem !important;
+      box-shadow:
+        0 1px 0 rgb(255 255 255 / 0.12) inset,
+        0 0.45rem 0.9rem rgb(0 0 0 / 0.14);
+    }
+
+    .admin-sidebar-brand strong {
+      font-size: 0.86rem !important;
+      line-height: 1.05 !important;
+      letter-spacing: -0.01em !important;
+    }
+
+    .admin-sidebar-brand small {
+      font-size: 0.62rem !important;
+      line-height: 1.1 !important;
+      color: color-mix(in srgb, var(--ui-text-muted) 88%, transparent) !important;
+    }
+
+    .admin-sidebar-brand button {
+      width: 2rem !important;
+      height: 2rem !important;
+      border-radius: 0.42rem !important;
+      background: color-mix(in srgb, var(--ui-bg-base) 72%, var(--ui-control)) !important;
+      box-shadow: none !important;
+    }
+
+    .admin-sidebar-section {
+      gap: 0.34rem !important;
+      border-radius: 0.48rem !important;
+    }
+
+    .admin-sidebar-section > div:first-child:not([aria-label]) {
+      padding-inline: 0.42rem !important;
+      padding-top: 0.35rem !important;
+      color: color-mix(in srgb, var(--ui-text-soft) 88%, transparent) !important;
+    }
+
+    .admin-sidebar-section > div:first-child:not([aria-label]) span:first-child,
+    .admin-sidebar-section.mt-auto > div:first-child {
+      font-size: 0.56rem !important;
+      letter-spacing: 0.16em !important;
+    }
+
+    .admin-sidebar-section > div:first-child:not([aria-label]) span:last-child {
+      border-radius: 999px !important;
+      padding: 0.12rem 0.44rem !important;
+      background: color-mix(in srgb, var(--ui-control) 72%, transparent) !important;
+      font-size: 0.54rem !important;
+    }
+
+    .admin-sidebar nav {
+      gap: 0.18rem !important;
+    }
+
+    .admin-sidebar-nav-item {
+      min-height: 2.55rem !important;
+      grid-template-columns: 1.75rem minmax(0, 1fr) !important;
+      gap: 0.48rem !important;
+      border: 1px solid transparent !important;
+      border-radius: 0.46rem !important;
+      padding-inline: 0.38rem 0.55rem !important;
+      color: color-mix(in srgb, var(--ui-text-main) 90%, transparent) !important;
+      box-shadow: none !important;
+    }
+
+    .admin-sidebar-nav-item::before {
+      inset-block: 0.42rem !important;
+      inset-inline-start: 0.16rem !important;
+      width: 0.15rem !important;
+      opacity: 0;
+      transform: scaleY(0.68);
+      background: linear-gradient(180deg, var(--color-studio-accent), var(--color-studio-cyan)) !important;
+    }
+
+    .admin-sidebar-nav-item:hover {
+      border-color: color-mix(in srgb, var(--ui-border) 64%, transparent) !important;
+      background: color-mix(in srgb, var(--ui-control) 52%, transparent) !important;
+      transform: translateX(1px) !important;
+    }
+
+    .admin-sidebar-nav-item.is-active {
+      border-color: color-mix(in srgb, var(--color-studio-accent) 22%, var(--ui-border)) !important;
+      background:
+        linear-gradient(90deg, color-mix(in srgb, var(--color-studio-accent) 11%, transparent), color-mix(in srgb, var(--color-studio-cyan) 5%, transparent) 52%, transparent),
+        color-mix(in srgb, var(--ui-control-hover) 74%, transparent) !important;
+      box-shadow:
+        0 1px 0 rgb(255 255 255 / 0.08) inset,
+        0 0.5rem 1.2rem rgb(0 0 0 / 0.1) !important;
+    }
+
+    .admin-sidebar-nav-item.is-active::before {
+      opacity: 1;
+      transform: scaleY(1);
+    }
+
+    .admin-sidebar-nav-icon {
+      width: 1.75rem !important;
+      height: 1.75rem !important;
+      border-radius: 0.38rem !important;
+      border-color: color-mix(in srgb, var(--ui-border) 64%, transparent) !important;
+      background: color-mix(in srgb, var(--ui-bg-base) 70%, var(--ui-control)) !important;
+      color: color-mix(in srgb, var(--ui-text-muted) 82%, transparent) !important;
+      box-shadow: 0 1px 0 rgb(255 255 255 / 0.08) inset;
+    }
+
+    .admin-sidebar-nav-icon svg {
+      width: 0.88rem !important;
+      height: 0.88rem !important;
+    }
+
+    .admin-sidebar-nav-item.is-active .admin-sidebar-nav-icon {
+      border-color: color-mix(in srgb, var(--color-studio-accent) 34%, var(--ui-border)) !important;
+      background:
+        linear-gradient(180deg, color-mix(in srgb, var(--color-studio-accent) 13%, var(--ui-bg-base)), color-mix(in srgb, var(--color-studio-cyan) 8%, var(--ui-control))) !important;
+      color: var(--color-studio-accent) !important;
+    }
+
+    .admin-sidebar-nav-item span.grid span:first-child {
+      font-size: 0.86rem !important;
+      line-height: 1.05 !important;
+      letter-spacing: -0.01em !important;
+    }
+
+    .admin-sidebar-nav-item span.grid span:last-child {
+      font-size: 0.64rem !important;
+      line-height: 1.1 !important;
+      color: color-mix(in srgb, var(--ui-text-muted) 86%, transparent) !important;
+    }
+
+    .admin-sidebar-section.mt-auto {
+      gap: 0.32rem !important;
+      border-top: 1px solid color-mix(in srgb, var(--ui-border) 72%, transparent);
+      padding-top: 0.42rem !important;
+    }
+
+    .admin-sidebar [aria-label="Admin theme controls"] {
+      display: grid !important;
+      gap: 0.24rem !important;
+      border: 1px solid color-mix(in srgb, var(--ui-border) 70%, transparent) !important;
+      border-radius: 0.52rem !important;
+      background: color-mix(in srgb, var(--ui-control) 48%, transparent) !important;
+      padding: 0.24rem !important;
+    }
+
+    .admin-sidebar [aria-label="Admin theme controls"] > button {
+      min-height: 2rem !important;
+      border-radius: 0.42rem !important;
+      border-color: transparent !important;
+      background: transparent !important;
+      box-shadow: none !important;
+      font-size: 0.68rem !important;
+    }
+
+    .admin-sidebar [aria-label="Admin theme controls"] > button:first-child {
+      justify-content: flex-start !important;
+      padding-inline: 0.56rem !important;
+      color: color-mix(in srgb, var(--ui-text-main) 92%, transparent) !important;
+    }
+
+    .admin-sidebar [aria-label="Admin theme controls"] > button[role="switch"] {
+      height: 2rem !important;
+      width: 100% !important;
+      border: 1px solid color-mix(in srgb, var(--ui-border) 58%, transparent) !important;
+      background:
+        linear-gradient(90deg, color-mix(in srgb, var(--color-studio-accent) 8%, transparent), color-mix(in srgb, var(--color-studio-cyan) 7%, transparent)),
+        color-mix(in srgb, var(--ui-bg-base) 72%, var(--ui-control)) !important;
+      padding: 0.16rem !important;
+    }
+
+    .admin-sidebar [aria-label="Admin theme controls"] > button[role="switch"] > span[aria-hidden="true"]:not(.pointer-events-none) {
+      width: 1.55rem !important;
+      height: 1.55rem !important;
+      box-shadow: 0 0.42rem 0.9rem rgb(0 0 0 / 0.14) !important;
+    }
+
+    .admin-sidebar-logout {
+      min-height: 2.2rem !important;
+      border-radius: 0.48rem !important;
+      border-color: color-mix(in srgb, var(--ui-border) 68%, transparent) !important;
+      background: color-mix(in srgb, var(--ui-bg-base) 74%, var(--ui-control)) !important;
+      box-shadow: none !important;
+      font-size: 0.72rem !important;
+    }
+
+    .admin-sidebar-logout:hover {
+      border-color: color-mix(in srgb, var(--color-studio-accent) 28%, var(--ui-border)) !important;
+      color: var(--color-studio-accent) !important;
+      transform: translateY(-1px) !important;
+    }
+
+    .admin-sidebar.is-collapsed .admin-sidebar-brand {
+      justify-content: center !important;
+    }
+
+    .admin-sidebar.is-collapsed .admin-sidebar-brand button {
+      width: 2.25rem !important;
+      height: 2.25rem !important;
+    }
+
+    .admin-sidebar.is-collapsed .admin-sidebar-nav-item {
+      width: 2.6rem !important;
+      grid-template-columns: 1fr !important;
+      justify-items: center !important;
+      padding-inline: 0 !important;
+    }
+
+    .admin-sidebar.is-collapsed .admin-sidebar-nav-icon {
+      width: 1.95rem !important;
+      height: 1.95rem !important;
+    }
+
+    .admin-sidebar.is-collapsed [aria-label="Admin theme controls"] {
+      width: 2.75rem !important;
+      border: 0 !important;
+      background: transparent !important;
+      padding: 0 !important;
+    }
+
+    .admin-sidebar.is-collapsed [aria-label="Admin theme controls"] > button,
+    .admin-sidebar.is-collapsed .admin-sidebar-logout {
+      width: 2.35rem !important;
+      height: 2.35rem !important;
+      min-height: 2.35rem !important;
+      justify-content: center !important;
+      padding: 0 !important;
+    }
+  }
+}
+/* 37-admin-sidebar-redesign-20260613:end */
+
+/* 37-admin-theme-switch-fix-20260613:start */
+@layer components {
+  @media (min-width: 768px) {
+    .admin-sidebar .admin-theme-switch {
+      position: relative !important;
+      display: block !important;
+      height: 2rem !important;
+      width: 100% !important;
+      overflow: hidden !important;
+      border-radius: 0.48rem !important;
+      border: 1px solid color-mix(in srgb, var(--ui-border) 68%, transparent) !important;
+      background:
+        linear-gradient(90deg, color-mix(in srgb, var(--color-studio-accent) 9%, transparent), color-mix(in srgb, var(--color-studio-cyan) 8%, transparent)),
+        color-mix(in srgb, var(--ui-bg-base) 82%, var(--ui-control)) !important;
+      box-shadow:
+        0 1px 0 rgb(255 255 255 / 0.1) inset,
+        0 0.45rem 1rem rgb(0 0 0 / 0.08) !important;
+      padding: 0 !important;
+      transform: none !important;
+    }
+
+    .admin-sidebar .admin-theme-switch:hover {
+      transform: none !important;
+      border-color: color-mix(in srgb, var(--color-studio-accent) 26%, var(--ui-border)) !important;
+    }
+
+    .admin-sidebar .admin-theme-switch-icon {
+      top: 50% !important;
+      z-index: 1;
+      width: 1.5rem !important;
+      height: 1.5rem !important;
+      border-radius: 0.36rem;
+      transform: translateY(-50%);
+      color: color-mix(in srgb, var(--ui-text-muted) 82%, transparent) !important;
+    }
+
+    .admin-sidebar .admin-theme-switch-icon-sun {
+      left: 0.24rem !important;
+    }
+
+    .admin-sidebar .admin-theme-switch-icon-moon {
+      right: 0.24rem !important;
+    }
+
+    .admin-sidebar .admin-theme-switch-icon svg {
+      width: 0.82rem !important;
+      height: 0.82rem !important;
+      stroke-width: 2.35;
+    }
+
+    .admin-sidebar .admin-theme-switch-knob {
+      position: absolute !important;
+      top: 0.18rem !important;
+      z-index: 3 !important;
+      width: 1.62rem !important;
+      height: 1.62rem !important;
+      border-radius: 0.4rem !important;
+      background:
+        linear-gradient(180deg, color-mix(in srgb, var(--ui-text-strong) 96%, var(--ui-bg-base)), var(--ui-primary-bg)) !important;
+      color: var(--ui-primary-text) !important;
+      box-shadow:
+        0 1px 0 rgb(255 255 255 / 0.14) inset,
+        0 0.45rem 0.9rem rgb(0 0 0 / 0.22) !important;
+      transform: none !important;
+      transition:
+        left 180ms ease,
+        right 180ms ease,
+        background-color 180ms ease,
+        box-shadow 180ms ease !important;
+    }
+
+    .admin-sidebar .admin-theme-switch-knob svg {
+      width: 0.86rem !important;
+      height: 0.86rem !important;
+    }
+
+    .admin-sidebar .admin-theme-switch.is-light .admin-theme-switch-knob {
+      left: 0.18rem !important;
+      right: auto !important;
+    }
+
+    .admin-sidebar .admin-theme-switch.is-dark .admin-theme-switch-knob {
+      right: 0.18rem !important;
+      left: auto !important;
+    }
+
+    .admin-sidebar .admin-theme-switch.is-light .admin-theme-switch-icon-sun,
+    .admin-sidebar .admin-theme-switch.is-dark .admin-theme-switch-icon-moon {
+      color: color-mix(in srgb, var(--ui-text-soft) 72%, transparent) !important;
+      opacity: 0.28;
+    }
+
+    .admin-sidebar .admin-theme-switch.is-light .admin-theme-switch-icon-moon {
+      color: var(--color-studio-cyan) !important;
+      opacity: 0.9;
+    }
+
+    .admin-sidebar .admin-theme-switch.is-dark .admin-theme-switch-icon-sun {
+      color: var(--color-studio-accent) !important;
+      opacity: 0.9;
+    }
+
+    .admin-sidebar .admin-theme-switch-glow {
+      inset: 0.18rem !important;
+      border-radius: 0.4rem !important;
+      opacity: 0.65 !important;
+      filter: blur(0.45rem);
+    }
+
+    .admin-sidebar.is-collapsed .admin-theme-switch {
+      width: 2.35rem !important;
+      height: 2.35rem !important;
+      border-radius: 0.5rem !important;
+    }
+
+    .admin-sidebar.is-collapsed .admin-theme-switch-icon {
+      display: none !important;
+    }
+
+    .admin-sidebar.is-collapsed .admin-theme-switch-knob {
+      inset: 0.24rem !important;
+      width: auto !important;
+      height: auto !important;
+      left: 0.24rem !important;
+      right: 0.24rem !important;
+    }
+  }
+}
+/* 37-admin-theme-switch-fix-20260613:end */
+
+/* 37-admin-sidebar-menu-soften-20260613:start */
+@layer components {
+  @media (min-width: 768px) {
+    .admin-sidebar nav {
+      gap: 0.12rem !important;
+    }
+
+    .admin-sidebar-nav-item {
+      min-height: 2.48rem !important;
+      border-radius: 0.42rem !important;
+      border-color: transparent !important;
+      background: transparent !important;
+      box-shadow: none !important;
+      transform: none !important;
+      transition:
+        background-color 160ms ease,
+        border-color 160ms ease,
+        color 160ms ease,
+        transform 160ms ease !important;
+    }
+
+    .admin-sidebar-nav-item::before {
+      inset-block: 0.52rem !important;
+      inset-inline-start: 0.2rem !important;
+      width: 0.12rem !important;
+      opacity: 0;
+      background: color-mix(in srgb, var(--color-studio-accent) 76%, var(--color-studio-cyan)) !important;
+      box-shadow: none !important;
+    }
+
+    .admin-sidebar-nav-item:hover {
+      border-color: transparent !important;
+      background: color-mix(in srgb, var(--ui-control) 44%, transparent) !important;
+      box-shadow: none !important;
+      transform: none !important;
+    }
+
+    .admin-sidebar-nav-item.is-active {
+      border-color: color-mix(in srgb, var(--color-studio-accent) 16%, transparent) !important;
+      background:
+        linear-gradient(90deg, color-mix(in srgb, var(--color-studio-accent) 8%, transparent), color-mix(in srgb, var(--color-studio-cyan) 3%, transparent) 64%, transparent),
+        color-mix(in srgb, var(--ui-control-hover) 50%, var(--ui-bg-base)) !important;
+      box-shadow:
+        0 1px 0 rgb(255 255 255 / 0.055) inset,
+        0 0 0 1px color-mix(in srgb, var(--ui-border) 36%, transparent) inset !important;
+      transform: none !important;
+    }
+
+    .admin-sidebar-nav-item.is-active::before {
+      opacity: 0.9;
+      transform: scaleY(0.86) !important;
+    }
+
+    .admin-sidebar-nav-item.is-active::after {
+      content: "";
+      position: absolute;
+      inset: 0.28rem 0.32rem;
+      z-index: -1;
+      border-radius: 0.34rem;
+      background: linear-gradient(180deg, rgb(255 255 255 / 0.04), transparent);
+      pointer-events: none;
+    }
+
+    .admin-sidebar-nav-icon {
+      border-color: color-mix(in srgb, var(--ui-border) 54%, transparent) !important;
+      background: color-mix(in srgb, var(--ui-bg-base) 68%, var(--ui-control)) !important;
+      box-shadow: none !important;
+    }
+
+    .admin-sidebar-nav-item.is-active .admin-sidebar-nav-icon {
+      border-color: color-mix(in srgb, var(--color-studio-accent) 24%, var(--ui-border)) !important;
+      background: color-mix(in srgb, var(--color-studio-accent) 8%, var(--ui-control)) !important;
+      box-shadow: none !important;
+    }
+
+    .admin-sidebar-nav-item span.grid {
+      gap: 0.08rem !important;
+    }
+
+    .admin-sidebar-nav-item span.grid span:first-child {
+      font-weight: 650 !important;
+    }
+
+    .admin-sidebar-nav-item.is-active span.grid span:last-child {
+      color: color-mix(in srgb, var(--ui-text-muted) 92%, transparent) !important;
+    }
+  }
+}
+/* 37-admin-sidebar-menu-soften-20260613:end */
+
+/* 37-admin-mobile-utility-bar-20260613:start */
+@layer components {
+  .admin-mobile-utility-bar {
+    left: 50% !important;
+    right: auto !important;
+    bottom: calc(4.25rem + env(safe-area-inset-bottom)) !important;
+    width: min(23rem, calc(100vw - 1rem)) !important;
+    transform: translateX(-50%);
+    border-radius: 0.68rem !important;
+    background:
+      linear-gradient(180deg, color-mix(in srgb, var(--ui-control-hover) 82%, transparent), color-mix(in srgb, var(--ui-bg-base) 92%, transparent)) !important;
+    box-shadow:
+      0 1px 0 rgb(255 255 255 / 0.1) inset,
+      0 0.85rem 1.9rem rgb(0 0 0 / 0.22) !important;
+  }
+
+  .admin-mobile-density-toggle,
+  .admin-mobile-logout-button,
+  .admin-mobile-theme-switch {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .admin-mobile-density-toggle,
+  .admin-mobile-logout-button {
+    border-radius: 0.5rem !important;
+    background: color-mix(in srgb, var(--ui-bg-base) 76%, var(--ui-control)) !important;
+    box-shadow: none !important;
+  }
+
+  .admin-mobile-density-toggle {
+    flex: 0 0 2.25rem;
+  }
+
+  .admin-mobile-theme-switch {
+    flex: 1 1 auto;
+    overflow: hidden;
+    border-radius: 0.5rem !important;
+    background:
+      linear-gradient(90deg, color-mix(in srgb, var(--color-studio-accent) 9%, transparent), color-mix(in srgb, var(--color-studio-cyan) 8%, transparent)),
+      color-mix(in srgb, var(--ui-bg-base) 80%, var(--ui-control)) !important;
+    box-shadow: 0 1px 0 rgb(255 255 255 / 0.1) inset !important;
+  }
+
+  .admin-mobile-theme-icon {
+    position: absolute;
+    top: 50%;
+    z-index: 1;
+    display: grid;
+    width: 1.55rem;
+    height: 1.55rem;
+    place-items: center;
+    border-radius: 0.42rem;
+    transform: translateY(-50%);
+    color: color-mix(in srgb, var(--ui-text-muted) 82%, transparent);
+  }
+
+  .admin-mobile-theme-icon-sun {
+    left: 0.28rem;
+  }
+
+  .admin-mobile-theme-icon-moon {
+    right: 0.28rem;
+  }
+
+  .admin-mobile-theme-knob {
+    position: absolute;
+    top: 0.22rem;
+    z-index: 2;
+    display: grid;
+    width: 1.82rem;
+    height: 1.82rem;
+    place-items: center;
+    border-radius: 0.46rem;
+    background: var(--ui-primary-bg);
+    color: var(--ui-primary-text);
+    box-shadow:
+      0 1px 0 rgb(255 255 255 / 0.14) inset,
+      0 0.45rem 0.9rem rgb(0 0 0 / 0.2);
+    transition: left 180ms ease, right 180ms ease;
+  }
+
+  .admin-mobile-theme-switch.is-light .admin-mobile-theme-knob {
+    left: 0.22rem;
+    right: auto;
+  }
+
+  .admin-mobile-theme-switch.is-dark .admin-mobile-theme-knob {
+    right: 0.22rem;
+    left: auto;
+  }
+
+  .admin-mobile-theme-switch.is-light .admin-mobile-theme-icon-sun,
+  .admin-mobile-theme-switch.is-dark .admin-mobile-theme-icon-moon {
+    opacity: 0.25;
+  }
+
+  .admin-mobile-theme-switch.is-light .admin-mobile-theme-icon-moon {
+    color: var(--color-studio-cyan);
+    opacity: 0.9;
+  }
+
+  .admin-mobile-theme-switch.is-dark .admin-mobile-theme-icon-sun {
+    color: var(--color-studio-accent);
+    opacity: 0.9;
+  }
+
+  .admin-mobile-logout-button {
+    flex: 0 0 auto;
+    color: color-mix(in srgb, var(--ui-text-main) 90%, transparent) !important;
+  }
+
+  body.admin-hide-fixed-nav-for-capture .admin-mobile-utility-bar {
+    display: none !important;
+  }
+
+  @media (max-width: 420px) {
+    .admin-mobile-utility-bar {
+      bottom: calc(4rem + env(safe-area-inset-bottom)) !important;
+      width: min(22rem, calc(100vw - 0.75rem)) !important;
+      padding: 0.22rem !important;
+      gap: 0.22rem !important;
+    }
+
+    .admin-mobile-theme-switch {
+      width: auto !important;
+      min-width: 4.85rem;
+    }
+
+    .admin-mobile-logout-button {
+      padding-inline: 0.55rem !important;
+      font-size: 0.66rem !important;
+    }
+  }
+}
+/* 37-admin-mobile-utility-bar-20260613:end */
+
+/* 37-admin-mobile-more-menu-20260613:start */
+@layer components {
+  .admin-mobile-more-menu {
+    left: 50% !important;
+    right: auto !important;
+    bottom: calc(4.25rem + env(safe-area-inset-bottom)) !important;
+    width: min(18rem, calc(100vw - 1rem)) !important;
+    transform: translateX(-50%);
+    border-radius: 0.68rem !important;
+    background:
+      linear-gradient(180deg, color-mix(in srgb, var(--ui-control-hover) 86%, transparent), color-mix(in srgb, var(--ui-bg-base) 94%, transparent)) !important;
+    box-shadow:
+      0 1px 0 rgb(255 255 255 / 0.1) inset,
+      0 0.9rem 2.1rem rgb(0 0 0 / 0.24) !important;
+  }
+
+  .admin-mobile-more-item {
+    -webkit-tap-highlight-color: transparent;
+    border-radius: 0.5rem !important;
+  }
+
+  .admin-mobile-more-item.is-active {
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-studio-accent) 14%, transparent) inset;
+  }
+
+  .admin-mobile-more-item > span:first-child {
+    box-shadow: none !important;
+  }
+
+  .admin-mobile-more-menu .admin-mobile-theme-switch {
+    display: grid !important;
+    width: 100% !important;
+    height: auto !important;
+    overflow: visible !important;
+    border-radius: 0.5rem !important;
+    box-shadow: none !important;
+  }
+
+  .admin-mobile-more-menu .admin-mobile-theme-track {
+    position: relative;
+    display: block;
+    height: 2rem;
+    overflow: hidden;
+    border: 1px solid color-mix(in srgb, var(--ui-border) 70%, transparent);
+    border-radius: 0.46rem;
+    background:
+      linear-gradient(90deg, color-mix(in srgb, var(--color-studio-accent) 9%, transparent), color-mix(in srgb, var(--color-studio-cyan) 8%, transparent)),
+      color-mix(in srgb, var(--ui-bg-base) 82%, var(--ui-control));
+  }
+
+  .admin-mobile-more-menu .admin-mobile-theme-icon {
+    position: absolute;
+    top: 50%;
+    z-index: 1;
+    display: grid;
+    width: 1.45rem;
+    height: 1.45rem;
+    place-items: center;
+    border-radius: 0.38rem;
+    transform: translateY(-50%);
+    color: color-mix(in srgb, var(--ui-text-muted) 82%, transparent);
+  }
+
+  .admin-mobile-more-menu .admin-mobile-theme-icon-sun {
+    left: 0.24rem;
+  }
+
+  .admin-mobile-more-menu .admin-mobile-theme-icon-moon {
+    right: 0.24rem;
+  }
+
+  .admin-mobile-more-menu .admin-mobile-theme-knob {
+    position: absolute;
+    top: 0.2rem;
+    z-index: 2;
+    display: grid;
+    width: 1.58rem;
+    height: 1.58rem;
+    place-items: center;
+    border-radius: 0.4rem;
+    background: var(--ui-primary-bg);
+    color: var(--ui-primary-text);
+    box-shadow:
+      0 1px 0 rgb(255 255 255 / 0.14) inset,
+      0 0.42rem 0.85rem rgb(0 0 0 / 0.18);
+    transition: left 180ms ease, right 180ms ease;
+  }
+
+  .admin-mobile-more-menu .admin-mobile-theme-switch.is-light .admin-mobile-theme-knob {
+    left: 0.2rem;
+    right: auto;
+  }
+
+  .admin-mobile-more-menu .admin-mobile-theme-switch.is-dark .admin-mobile-theme-knob {
+    right: 0.2rem;
+    left: auto;
+  }
+
+  .admin-mobile-more-menu .admin-mobile-theme-switch.is-light .admin-mobile-theme-icon-sun,
+  .admin-mobile-more-menu .admin-mobile-theme-switch.is-dark .admin-mobile-theme-icon-moon {
+    opacity: 0.28;
+  }
+
+  .admin-mobile-more-menu .admin-mobile-theme-switch.is-light .admin-mobile-theme-icon-moon {
+    color: var(--color-studio-cyan);
+    opacity: 0.9;
+  }
+
+  .admin-mobile-more-menu .admin-mobile-theme-switch.is-dark .admin-mobile-theme-icon-sun {
+    color: var(--color-studio-accent);
+    opacity: 0.9;
+  }
+
+  .admin-bottom-more-button.is-active {
+    border-color: color-mix(in srgb, var(--color-studio-accent) 24%, var(--ui-border)) !important;
+  }
+
+  body.admin-hide-fixed-nav-for-capture .admin-mobile-more-menu {
+    display: none !important;
+  }
+
+  @media (max-width: 420px) {
+    .admin-mobile-more-menu {
+      bottom: calc(4rem + env(safe-area-inset-bottom)) !important;
+      width: min(17rem, calc(100vw - 0.75rem)) !important;
+      padding: 0.24rem !important;
+    }
+  }
+}
+/* 37-admin-mobile-more-menu-20260613:end */
