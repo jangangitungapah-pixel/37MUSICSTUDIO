@@ -57,21 +57,21 @@ const adminNavItems = [
   {
     key: 'bookings',
     label: 'Booking',
-    helper: 'Incoming sessions',
+    helper: 'Jadwal sesi',
     icon: Radio,
     path: '/admin/bookings',
   },
   {
     key: 'billing',
     label: 'Billing',
-    helper: 'Invoices & POS',
+    helper: 'Invoice & POS',
     icon: ReceiptText,
     path: '/admin/billing',
   },
   {
     key: 'customers',
     label: 'Customers',
-    helper: 'Client directory',
+    helper: 'Direktori customer',
     icon: UsersRound,
     path: '/admin/customers',
   },
@@ -79,14 +79,14 @@ const adminNavItems = [
   {
     key: 'inventory',
     label: 'Inventory',
-    helper: 'Gear & assets',
+    helper: 'Gear & aset',
     icon: Boxes,
     path: '/admin/inventory',
   },
 {
     key: 'audit',
     label: 'Audit',
-    helper: 'Action history',
+    helper: 'Riwayat aksi',
     icon: History,
     path: '/admin/audit',
   },
@@ -113,7 +113,7 @@ function AdminLockedState() {
     >
       <div className="grid max-w-2xl gap-4">
         <p className="m-0 text-xs font-semibold uppercase tracking-[0.18em] text-studio-accent">
-          Admin Access
+          Akses Admin
         </p>
 
         <h1
@@ -124,7 +124,7 @@ function AdminLockedState() {
         </h1>
 
         <p className="m-0 max-w-xl leading-8 text-[var(--ui-text-main)]">
-          Halaman admin membutuhkan sesi Firebase Auth. Login dulu untuk membuka portal booking dan customer.
+          Halaman admin membutuhkan sesi Firebase Auth. Login dulu untuk membuka portal jadwal, billing, customer, inventory, dan audit.
         </p>
 
         <Link
@@ -146,7 +146,7 @@ function AdminAuthLoadingState() {
     >
       <div className="grid max-w-2xl gap-3">
         <p className="m-0 text-xs font-semibold uppercase tracking-[0.18em] text-studio-accent">
-          Admin Auth
+          Autentikasi Admin
         </p>
 
         <h1
@@ -157,7 +157,7 @@ function AdminAuthLoadingState() {
         </h1>
 
         <p className="m-0 max-w-xl leading-8 text-[var(--ui-text-main)]">
-          Portal sedang memvalidasi sesi Firebase Auth sebelum membuka dashboard.
+          Portal sedang memvalidasi sesi Firebase Auth sebelum membuka Studio OS.
         </p>
       </div>
     </section>
@@ -181,7 +181,7 @@ function NavButton({
         aria-label={label}
         aria-current={isActive ? 'page' : undefined}
         className={cn(
-          'admin-bottom-nav-item group relative grid min-w-0 flex-1 place-items-center gap-1 overflow-hidden rounded-md px-1.5 py-1.5 text-[0.62rem] font-semibold tracking-[-0.01em] transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20',
+          'admin-bottom-nav-item group relative grid min-w-0 flex-1 place-items-center gap-1 overflow-hidden rounded-[0.95rem] px-1.5 py-1.5 text-[0.62rem] font-semibold tracking-[-0.01em] transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20',
           isActive
             ? 'is-active bg-[var(--ui-control-hover)] text-[var(--ui-text-strong)] shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)]'
             : 'text-[var(--ui-text-muted)] hover:bg-[var(--ui-control)] hover:text-[var(--ui-text-strong)]',
@@ -190,7 +190,7 @@ function NavButton({
       >
         <span
           className={cn(
-            'admin-bottom-nav-icon grid size-7 place-items-center rounded-md transition',
+            'admin-bottom-nav-icon grid size-7 place-items-center rounded-[0.8rem] transition',
             isActive ? 'text-studio-accent' : 'text-[var(--ui-text-soft)] group-hover:text-studio-accent',
           )}
         >
@@ -206,7 +206,7 @@ function NavButton({
       aria-label={collapsed ? label : undefined}
       aria-current={isActive ? 'page' : undefined}
       className={cn(
-        'admin-sidebar-nav-item group relative grid min-h-11 w-full items-center gap-2 overflow-hidden rounded-md border px-2.5 text-left transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20',
+        'admin-sidebar-nav-item group relative grid min-h-11 w-full items-center gap-2 overflow-hidden rounded-[0.95rem] border px-2.5 text-left transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20',
         collapsed ? 'grid-cols-1 justify-items-center' : 'grid-cols-[2rem_minmax(0,1fr)]',
         isActive
           ? 'is-active border-studio-accent/32 bg-[var(--ui-control-hover)] text-[var(--ui-text-strong)] shadow-[var(--ui-shadow-control)] ring-1 ring-studio-accent/14'
@@ -217,7 +217,7 @@ function NavButton({
     >
       <span
         className={cn(
-          'admin-sidebar-nav-icon grid size-8 place-items-center rounded-md border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] transition',
+          'admin-sidebar-nav-icon grid size-8 place-items-center rounded-[0.8rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] transition',
           isActive ? 'text-studio-accent' : 'text-[var(--ui-text-soft)] group-hover:text-studio-accent',
         )}
       >
@@ -257,7 +257,7 @@ function AdminThemeControls({ collapsed = false }) {
         onClick={toggleDensity}
       >
         <SlidersHorizontal size={14} strokeWidth={2.25} aria-hidden="true" />
-        {!collapsed ? <span>Density: {density}</span> : null}
+        {!collapsed ? <span>Kepadatan: {density}</span> : null}
       </button>
 
       <button
@@ -314,7 +314,7 @@ function AdminSidebar({
   return (
     <aside
       className={cn(
-        'admin-sidebar sticky top-2 hidden max-h-[calc(100vh-1rem)] self-start overflow-hidden rounded-lg border border-[var(--ui-border)] bg-[var(--ui-glass)] p-2 shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] md:grid',
+        'admin-sidebar sticky top-2.5 hidden max-h-[calc(100vh-1rem)] self-start overflow-hidden rounded-[1.35rem] border border-[var(--ui-border)] bg-[var(--ui-glass)] p-2 shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] md:grid',
         collapsed ? 'is-collapsed w-[76px]' : 'is-expanded w-[264px]',
       )}
       aria-label="Admin desktop navigation"
@@ -322,7 +322,7 @@ function AdminSidebar({
       <div className={cn('admin-sidebar-inner grid min-h-0 gap-2 overflow-y-auto', collapsed ? 'justify-items-center' : '')}>
         <div
           className={cn(
-            'admin-sidebar-brand flex min-h-12 items-center gap-2 rounded-md border border-[var(--ui-border)] bg-[var(--ui-control)] p-1.5 shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)]',
+            'admin-sidebar-brand flex min-h-12 items-center gap-2 rounded-[1rem] border border-[var(--ui-border)] bg-[var(--ui-control)] p-1.5 shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)]',
             collapsed ? 'justify-center' : 'justify-between',
           )}
         >
@@ -340,7 +340,7 @@ function AdminSidebar({
                 Studio OS
               </strong>
               <small className="truncate text-[0.68rem] font-medium text-[var(--ui-text-muted)]">
-                Admin console
+                Konsol admin
               </small>
             </span>
           </Link>
@@ -367,7 +367,7 @@ function AdminSidebar({
           {!collapsed ? (
             <div className="flex items-center justify-between gap-2 px-2 pt-1">
               <span className="text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-[var(--ui-text-soft)]">
-                Workspace
+                Modul
               </span>
               <span className="rounded-md border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] px-1.5 py-0.5 text-[0.58rem] font-semibold text-[var(--ui-text-muted)]">
                 {adminNavItems.length}
@@ -393,23 +393,23 @@ function AdminSidebar({
         <div className={cn('admin-sidebar-section mt-auto grid gap-2', collapsed ? 'justify-items-center' : '')}>
           {!collapsed ? (
             <div className="px-2 text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-[var(--ui-text-soft)]">
-              Interface
+              Tampilan
             </div>
           ) : null}
 
           <AdminThemeControls collapsed={collapsed} />
 
           <button
-            aria-label="Logout admin access"
+            aria-label="Keluar dari akses admin"
             className={cn(
-              'admin-sidebar-logout grid min-h-10 items-center gap-2 rounded-md border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] px-2.5 text-xs font-semibold text-[var(--ui-secondary-text)] shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20',
+              'admin-sidebar-logout grid min-h-10 items-center gap-2 rounded-[0.95rem] border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] px-2.5 text-xs font-semibold text-[var(--ui-secondary-text)] shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20',
               collapsed ? 'w-10 grid-cols-1 justify-items-center px-0' : 'w-full grid-cols-[1.75rem_minmax(0,1fr)] text-left',
             )}
             type="button"
             onClick={onLogout}
           >
             <LockKeyhole size={15} strokeWidth={2.25} aria-hidden="true" />
-            {!collapsed ? <span>Logout</span> : null}
+            {!collapsed ? <span>Keluar</span> : null}
           </button>
         </div>
       </div>
@@ -439,7 +439,7 @@ function AdminBottomBar({
       />
 
       <nav
-        className="admin-mobile-bottom-bar fixed inset-x-3 bottom-3 z-40 grid rounded-lg border border-[var(--ui-border)] bg-[var(--ui-glass)] p-1.5 shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] backdrop-blur-xl md:hidden"
+        className="admin-mobile-bottom-bar fixed inset-x-3 bottom-3 z-40 grid rounded-[1.35rem] border border-[var(--ui-border)] bg-[var(--ui-glass)] p-1.5 shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] backdrop-blur-xl md:hidden"
         aria-label="Admin mobile navigation"
       >
         <div className="admin-mobile-bottom-track flex items-stretch gap-1">
@@ -456,9 +456,9 @@ function AdminBottomBar({
 
           <button
             aria-expanded={isMoreOpen}
-            aria-label="Buka menu admin lainnya"
+            aria-label="Buka menu lainnya"
             className={cn(
-              'admin-bottom-nav-item admin-bottom-more-button group relative grid min-w-0 flex-1 place-items-center gap-1 overflow-hidden rounded-md px-1.5 py-1.5 text-[0.62rem] font-semibold tracking-[-0.01em] transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20',
+              'admin-bottom-nav-item admin-bottom-more-button group relative grid min-w-0 flex-1 place-items-center gap-1 overflow-hidden rounded-[0.95rem] px-1.5 py-1.5 text-[0.62rem] font-semibold tracking-[-0.01em] transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20',
               isMoreOpen || isAuditActive
                 ? 'is-active bg-[var(--ui-control-hover)] text-[var(--ui-text-strong)] shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)]'
                 : 'text-[var(--ui-text-muted)] hover:bg-[var(--ui-control)] hover:text-[var(--ui-text-strong)]',
@@ -468,7 +468,7 @@ function AdminBottomBar({
           >
             <span
               className={cn(
-                'admin-bottom-nav-icon grid size-7 place-items-center rounded-md transition',
+                'admin-bottom-nav-icon grid size-7 place-items-center rounded-[0.8rem] transition',
                 isMoreOpen || isAuditActive ? 'text-studio-accent' : 'text-[var(--ui-text-soft)] group-hover:text-studio-accent',
               )}
             >
@@ -498,13 +498,13 @@ function AdminMobileMoreMenu({
 
   return (
     <div
-      className="admin-mobile-more-menu fixed z-50 grid gap-1 rounded-lg border border-[var(--ui-border)] bg-[var(--ui-glass)] p-1 shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] backdrop-blur-xl md:hidden"
+      className="admin-mobile-more-menu fixed z-50 grid gap-1 rounded-[1.25rem] border border-[var(--ui-border)] bg-[var(--ui-glass)] p-1 shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] backdrop-blur-xl md:hidden"
       aria-label="Admin mobile more menu"
     >
       {auditItem && AuditIcon ? (
         <NavLink
           className={cn(
-            'admin-mobile-more-item grid min-h-10 grid-cols-[2rem_minmax(0,1fr)] items-center gap-2 rounded-md border px-2 text-left text-xs font-semibold transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20',
+            'admin-mobile-more-item grid min-h-10 grid-cols-[2rem_minmax(0,1fr)] items-center gap-2 rounded-[0.95rem] border px-2 text-left text-xs font-semibold transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20',
             activePath === auditItem.path || activePath.startsWith(auditItem.path + '/')
               ? 'is-active border-studio-accent/25 bg-studio-accent/10 text-[var(--ui-text-strong)]'
               : 'border-transparent bg-transparent text-[var(--ui-text-main)] hover:bg-[var(--ui-control)]',
@@ -526,7 +526,7 @@ function AdminMobileMoreMenu({
         aria-checked={themeSwitch.checked}
         aria-label={themeSwitch.ariaLabel}
         className={cn(
-          'admin-mobile-more-item admin-mobile-theme-switch relative grid min-h-10 grid-cols-[minmax(0,1fr)_5.2rem] items-center gap-2 rounded-md border border-transparent bg-transparent px-2 text-left text-xs font-semibold text-[var(--ui-text-main)] transition hover:bg-[var(--ui-control)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20',
+          'admin-mobile-more-item admin-mobile-theme-switch relative grid min-h-10 grid-cols-[minmax(0,1fr)_5.2rem] items-center gap-2 rounded-[0.95rem] border border-transparent bg-transparent px-2 text-left text-xs font-semibold text-[var(--ui-text-main)] transition hover:bg-[var(--ui-control)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20',
           mode === 'dark' ? 'is-dark' : 'is-light',
         )}
         role="switch"
@@ -535,7 +535,7 @@ function AdminMobileMoreMenu({
         onClick={toggleMode}
       >
         <span className="sr-only">{themeSwitch.ariaLabel}</span>
-        <span>Theme</span>
+        <span>Tema</span>
         <span className="admin-mobile-theme-track" aria-hidden="true">
           <span className="admin-mobile-theme-icon admin-mobile-theme-icon-sun">
             <Sun size={13} strokeWidth={2.35} />
@@ -551,14 +551,14 @@ function AdminMobileMoreMenu({
 
       <button
         aria-label="Logout admin access"
-        className="admin-mobile-more-item admin-mobile-logout-button grid min-h-10 grid-cols-[2rem_minmax(0,1fr)] items-center gap-2 rounded-md border border-transparent bg-transparent px-2 text-left text-xs font-semibold text-[var(--ui-text-main)] transition hover:bg-[var(--ui-control)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
+        className="admin-mobile-more-item admin-mobile-logout-button grid min-h-10 grid-cols-[2rem_minmax(0,1fr)] items-center gap-2 rounded-[0.95rem] border border-transparent bg-transparent px-2 text-left text-xs font-semibold text-[var(--ui-text-main)] transition hover:bg-[var(--ui-control)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
         type="button"
         onClick={onLogout}
       >
         <span className="grid size-8 place-items-center rounded-md border border-[var(--ui-border)] bg-[var(--ui-control)] text-studio-accent">
           <LockKeyhole size={14} strokeWidth={2.35} aria-hidden="true" />
         </span>
-        <span>Logout</span>
+        <span>Keluar</span>
       </button>
     </div>
   );
@@ -572,7 +572,7 @@ function AdminWorkspaceBar({
   const ActiveIcon = activeItem.icon;
 
   return (
-    <header className="admin-workspace-bar hidden min-w-0 items-center justify-between gap-3 rounded-lg border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] px-3 py-2 shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] md:flex">
+    <header className="admin-workspace-bar hidden min-w-0 items-center justify-between gap-3 rounded-[1.35rem] border border-[var(--ui-border)] bg-[linear-gradient(135deg,var(--ui-glass),var(--ui-glass-soft))] px-4 py-3 shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] md:flex">
       <div className="flex min-w-0 items-center gap-3">
         <span className="grid size-9 shrink-0 place-items-center rounded-md border border-[var(--ui-border)] bg-[var(--ui-control)] text-studio-accent ring-1 ring-[var(--ui-ring)]">
           <ActiveIcon size={17} strokeWidth={2.35} aria-hidden="true" />
@@ -590,7 +590,7 @@ function AdminWorkspaceBar({
 
       <div className="flex min-w-0 items-center gap-2">
         <span className="max-w-[260px] truncate rounded-md border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 py-2 text-xs font-semibold text-[var(--ui-text-muted)] ring-1 ring-[var(--ui-ring)]">
-          {adminUser?.email || 'Admin session'}
+          {adminUser?.email || 'Sesi admin'}
         </span>
 
         <button
@@ -599,7 +599,7 @@ function AdminWorkspaceBar({
           onClick={onLogout}
         >
           <LockKeyhole size={14} strokeWidth={2.25} aria-hidden="true" />
-          Logout
+          Keluar
         </button>
       </div>
     </header>
