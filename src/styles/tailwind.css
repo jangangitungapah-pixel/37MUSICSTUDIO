@@ -7078,3 +7078,183 @@
 }
 
 /* === 37 MOBILE PERFORMANCE SMOOTHNESS END === */
+
+/* === 37 MOBILE BOTTOM NAV FIXED RESTORE START === */
+
+/*
+  Restore viewport-fixed mobile bottom nav.
+  Performance pass must not put transform on layout ancestors,
+  because transformed ancestors can trap position: fixed on mobile browsers.
+*/
+
+@media (max-width: 767px) {
+  .admin-shell,
+  .admin-content-shell,
+  .booking-admin-workspace {
+    transform: none !important;
+  }
+
+  .admin-mobile-bottom-bar {
+    position: fixed !important;
+    left: 0.75rem !important;
+    right: 0.75rem !important;
+    bottom: max(0.75rem, env(safe-area-inset-bottom)) !important;
+    top: auto !important;
+    z-index: 80 !important;
+    transform: none !important;
+  }
+
+  .admin-mobile-bottom-track {
+    transform: none !important;
+  }
+
+  .admin-mobile-more-menu {
+    position: fixed !important;
+    z-index: 90 !important;
+    transform: none !important;
+  }
+
+  .booking-admin-workspace {
+    padding-bottom: calc(6.75rem + env(safe-area-inset-bottom)) !important;
+  }
+}
+
+/* === 37 MOBILE BOTTOM NAV FIXED RESTORE END === */
+
+/* === 37 MOBILE BOTTOM NAV VIEWPORT LOCK START === */
+
+/*
+  Hard lock mobile bottom nav to visual viewport.
+  This fixes horizontal drift caused by calendar min-width / horizontal overflow.
+*/
+
+@media (max-width: 767px) {
+  html,
+  body,
+  #root {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  .admin-shell,
+  .admin-content-shell,
+  .booking-admin-workspace,
+  .booking-board-stack {
+    max-width: 100%;
+    overflow-x: clip;
+  }
+
+  @supports not (overflow: clip) {
+    .admin-shell,
+    .admin-content-shell,
+    .booking-admin-workspace,
+    .booking-board-stack {
+      overflow-x: hidden;
+    }
+  }
+
+  .booking-calendar-grid {
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  .booking-calendar-scroller {
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+
+  .admin-mobile-bottom-bar {
+    position: fixed !important;
+    top: auto !important;
+    right: auto !important;
+    bottom: max(0.75rem, env(safe-area-inset-bottom)) !important;
+    left: 50% !important;
+    width: min(calc(100vw - 1.5rem), 34rem) !important;
+    max-width: calc(100vw - 1.5rem) !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+    transform: translate3d(-50%, 0, 0) !important;
+    z-index: 90 !important;
+  }
+
+  .admin-mobile-bottom-track {
+    width: 100% !important;
+    min-width: 0 !important;
+    transform: none !important;
+  }
+
+  .admin-bottom-nav-item {
+    min-width: 0 !important;
+  }
+
+  .admin-bottom-nav-label {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .admin-mobile-more-menu {
+    position: fixed !important;
+    right: 0.75rem !important;
+    bottom: calc(5.15rem + env(safe-area-inset-bottom)) !important;
+    left: auto !important;
+    max-width: calc(100vw - 1.5rem) !important;
+    transform: none !important;
+    z-index: 100 !important;
+  }
+
+  .booking-admin-workspace {
+    padding-bottom: calc(6.75rem + env(safe-area-inset-bottom)) !important;
+  }
+}
+
+/* === 37 MOBILE BOTTOM NAV VIEWPORT LOCK END === */
+
+/* === 37 MOBILE MORE MENU CENTER LOCK START === */
+
+/*
+  Center the mobile more menu above the bottom nav.
+  Fixes right-drift caused by previous right-anchored menu positioning.
+*/
+
+@media (max-width: 767px) {
+  .admin-mobile-more-menu {
+    position: fixed !important;
+    top: auto !important;
+    right: auto !important;
+    bottom: calc(5.15rem + env(safe-area-inset-bottom)) !important;
+    left: 50% !important;
+    width: min(calc(100vw - 1.5rem), 22rem) !important;
+    max-width: calc(100vw - 1.5rem) !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+    transform: translate3d(-50%, 0, 0) !important;
+    z-index: 100 !important;
+  }
+
+  .admin-mobile-more-menu > * {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .admin-mobile-more-item {
+    min-width: 0 !important;
+  }
+
+  .admin-mobile-more-item span {
+    min-width: 0;
+  }
+
+  .admin-mobile-theme-switch {
+    grid-template-columns: minmax(0, 1fr) 4.25rem !important;
+  }
+
+  .admin-mobile-theme-track {
+    justify-self: end;
+  }
+}
+
+/* === 37 MOBILE MORE MENU CENTER LOCK END === */
