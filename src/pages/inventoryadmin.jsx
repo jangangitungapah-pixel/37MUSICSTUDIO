@@ -1075,10 +1075,10 @@ function InventoryFormField({
   value,
 }) {
   return (
-    <label className="grid gap-1.5 text-sm font-semibold text-[var(--ui-text-main)]">
+    <label className="grid min-w-0 gap-1.5 text-sm font-semibold text-[var(--ui-text-main)]">
       <span className="text-[0.68rem] uppercase tracking-[0.12em] text-[var(--ui-text-muted)]">{label}</span>
       <input
-        className="min-h-10 rounded-xl border border-[var(--ui-border)] bg-[var(--ui-control-hover)] px-3 text-sm font-semibold text-[var(--ui-text-strong)] outline-none ring-1 ring-[var(--ui-ring)] placeholder:text-[var(--ui-text-soft)] focus:border-studio-accent/45 focus:ring-4 focus:ring-studio-accent/15"
+        className="min-h-11 w-full min-w-0 rounded-xl border border-[var(--ui-border)] bg-[var(--ui-control-hover)] px-3 text-sm font-semibold text-[var(--ui-text-strong)] outline-none ring-1 ring-[var(--ui-ring)] placeholder:text-[var(--ui-text-soft)] focus:border-studio-accent/45 focus:ring-4 focus:ring-studio-accent/15"
         placeholder={placeholder}
         type={type}
         value={value}
@@ -1089,15 +1089,24 @@ function InventoryFormField({
 }
 
 function InventoryConditionSelect({ onChange, value }) {
+  const conditionOptions = typeof inventoryConditionOptions !== 'undefined'
+    ? inventoryConditionOptions
+    : [
+      { key: 'Excellent', label: 'Excellent' },
+      { key: 'Good', label: 'Good' },
+      { key: 'Poor', label: 'Poor' },
+    ];
+  const normalizedValue = conditionOptions.some((option) => option.key === value) ? value : 'Good';
+
   return (
-    <label className="grid gap-1.5 text-sm font-semibold text-[var(--ui-text-main)]">
+    <label className="grid min-w-0 gap-1.5 text-sm font-semibold text-[var(--ui-text-main)]">
       <span className="text-[0.68rem] uppercase tracking-[0.12em] text-[var(--ui-text-muted)]">Condition</span>
       <select
-        className="min-h-10 rounded-xl border border-[var(--ui-border)] bg-[var(--ui-bg-page)] px-3 text-sm font-semibold text-[var(--ui-text-strong)] outline-none ring-1 ring-[var(--ui-ring)] focus:border-studio-accent/45 focus:ring-4 focus:ring-studio-accent/15"
-        value={normalizeInventoryCondition(value)}
+        className="min-h-11 w-full min-w-0 rounded-xl border border-[var(--ui-border)] bg-[var(--ui-control-hover)] px-3 text-sm font-semibold text-[var(--ui-text-strong)] outline-none ring-1 ring-[var(--ui-ring)] focus:border-studio-accent/45 focus:ring-4 focus:ring-studio-accent/15"
+        value={normalizedValue}
         onChange={(event) => onChange(event.target.value)}
       >
-        {inventoryConditionOptions.map((option) => (
+        {conditionOptions.map((option) => (
           <option key={option.key} value={option.key}>{option.label}</option>
         ))}
       </select>
@@ -1121,20 +1130,20 @@ function InventoryFormPanel({
 
   return (
     <section className="fixed inset-0 z-50 grid justify-items-end bg-black/60 p-3 backdrop-blur-md" aria-label="Inventory asset form">
-      <form className="flex h-full w-full max-w-[520px] flex-col overflow-hidden rounded-[1.4rem] border border-[var(--ui-border-strong)] bg-[var(--ui-bg-base)] shadow-[var(--ui-shadow-strong)] ring-1 ring-[var(--ui-ring)]" onSubmit={onSubmit}>
+      <form className="flex h-full w-full min-w-0 max-w-[540px] flex-col overflow-hidden rounded-[1.4rem] border border-[var(--ui-border-strong)] bg-[var(--ui-bg-base)] shadow-[var(--ui-shadow-strong)] ring-1 ring-[var(--ui-ring)]" onSubmit={onSubmit}>
         <div className="flex items-start justify-between gap-3 border-b border-[var(--ui-border)] p-4">
-          <div className="grid gap-1">
+          <div className="grid min-w-0 gap-1">
             <span className="text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-studio-accent">
               {formMode === 'edit' ? 'Edit asset' : 'New asset'}
             </span>
-            <h2 className="m-0 text-2xl font-semibold tracking-[-0.06em] text-[var(--ui-text-strong)]">
+            <h2 className="m-0 truncate text-2xl font-semibold tracking-[-0.06em] text-[var(--ui-text-strong)]">
               {formMode === 'edit' ? draft.name || 'Edit asset' : 'Tambah asset'}
             </h2>
           </div>
 
           <button
             aria-label="Close inventory form"
-            className="grid size-9 shrink-0 place-items-center rounded-full bg-[var(--ui-control)] text-[var(--ui-text-muted)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
+            className="grid size-9 shrink-0 place-items-center rounded-full bg-[var(--ui-control-hover)] text-[var(--ui-text-muted)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
             type="button"
             onClick={onCancel}
           >
@@ -1142,52 +1151,59 @@ function InventoryFormPanel({
           </button>
         </div>
 
-        <div className="grid flex-1 gap-4 overflow-y-auto p-4">
-          <div className="grid gap-3">
+        <div className="grid min-w-0 flex-1 gap-4 overflow-y-auto overflow-x-hidden p-4">
+          <section className="grid min-w-0 gap-3">
             <InventoryFormField label="Nama" placeholder="Contoh: XLR cable 5m" value={draft.name} onChange={(value) => onChange('name', value)} />
-            <div className="grid gap-3 sm:grid-cols-2">
+
+            <div className="grid min-w-0 gap-3 sm:grid-cols-2">
               <InventoryFormField label="Kategori" placeholder="Cable, Microphone..." value={draft.category} onChange={(value) => onChange('category', value)} />
               <InventoryFormField label="Lokasi" placeholder="Room A, Drawer..." value={draft.location} onChange={(value) => onChange('location', value)} />
             </div>
-          </div>
+          </section>
 
-          <div className="grid gap-3 sm:grid-cols-3">
-            <InventoryFormField label="Qty" type="number" value={draft.quantity} onChange={(value) => onChange('quantity', value)} />
-            <InventoryFormField label="Min" type="number" value={draft.minQuantity} onChange={(value) => onChange('minQuantity', value)} />
+          <section className="grid min-w-0 gap-3 rounded-2xl border border-[var(--ui-border)] bg-[var(--ui-control)] p-3 ring-1 ring-[var(--ui-ring)]">
+            <div className="grid min-w-0 gap-3 sm:grid-cols-2">
+              <InventoryFormField label="Qty" type="number" value={draft.quantity} onChange={(value) => onChange('quantity', value)} />
+              <InventoryFormField label="Min" type="number" value={draft.minQuantity} onChange={(value) => onChange('minQuantity', value)} />
+            </div>
+
             <InventoryFormField label="Value" type="number" value={draft.valueEstimate} onChange={(value) => onChange('valueEstimate', value)} />
-          </div>
+          </section>
 
-          <label className="grid gap-1.5 text-sm font-semibold text-[var(--ui-text-main)]">
+          <label className="grid min-w-0 gap-1.5 text-sm font-semibold text-[var(--ui-text-main)]">
             <span className="text-[0.68rem] uppercase tracking-[0.12em] text-[var(--ui-text-muted)]">Notes</span>
             <textarea
-              className="min-h-24 resize-y rounded-xl border border-[var(--ui-border)] bg-[var(--ui-control-hover)] p-3 text-sm font-medium leading-6 text-[var(--ui-text-strong)] outline-none ring-1 ring-[var(--ui-ring)] placeholder:text-[var(--ui-text-soft)] focus:border-studio-accent/45 focus:ring-4 focus:ring-studio-accent/15"
+              className="min-h-24 w-full min-w-0 resize-y rounded-xl border border-[var(--ui-border)] bg-[var(--ui-control-hover)] p-3 text-sm font-medium leading-6 text-[var(--ui-text-strong)] outline-none ring-1 ring-[var(--ui-ring)] placeholder:text-[var(--ui-text-soft)] focus:border-studio-accent/45 focus:ring-4 focus:ring-studio-accent/15"
               placeholder="Catatan kondisi, kebutuhan restock, noise, sparepart..."
               value={draft.notes}
               onChange={(event) => onChange('notes', event.target.value)}
             />
           </label>
 
-          <details className="rounded-xl border border-[var(--ui-border)] bg-[var(--ui-control-hover)] p-3 ring-1 ring-[var(--ui-ring)]">
+          <details className="min-w-0 rounded-2xl border border-[var(--ui-border)] bg-[var(--ui-control)] p-3 ring-1 ring-[var(--ui-ring)]">
             <summary className="cursor-pointer text-sm font-semibold text-[var(--ui-text-strong)]">
               Detail lanjutan
             </summary>
 
-            <div className="mt-3 grid gap-3">
-              <label className="grid gap-1.5 text-sm font-semibold text-[var(--ui-text-main)]">
-                <span className="text-[0.68rem] uppercase tracking-[0.12em] text-[var(--ui-text-muted)]">Status</span>
-                <select
-                  className="min-h-10 rounded-xl border border-[var(--ui-border)] bg-[var(--ui-bg-base)] px-3 text-sm font-semibold text-[var(--ui-text-strong)] outline-none ring-1 ring-[var(--ui-ring)] focus:border-studio-accent/45 focus:ring-4 focus:ring-studio-accent/15"
-                  value={draft.status}
-                  onChange={(event) => onChange('status', event.target.value)}
-                >
-                  {inventoryFormStatusOptions.map((option) => (
-                    <option key={option.key} value={option.key}>{option.label}</option>
-                  ))}
-                </select>
-              </label>
+            <div className="mt-3 grid min-w-0 gap-3">
+              <div className="grid min-w-0 gap-3 sm:grid-cols-2">
+                <label className="grid min-w-0 gap-1.5 text-sm font-semibold text-[var(--ui-text-main)]">
+                  <span className="text-[0.68rem] uppercase tracking-[0.12em] text-[var(--ui-text-muted)]">Status</span>
+                  <select
+                    className="min-h-11 w-full min-w-0 rounded-xl border border-[var(--ui-border)] bg-[var(--ui-control-hover)] px-3 text-sm font-semibold text-[var(--ui-text-strong)] outline-none ring-1 ring-[var(--ui-ring)] focus:border-studio-accent/45 focus:ring-4 focus:ring-studio-accent/15"
+                    value={draft.status}
+                    onChange={(event) => onChange('status', event.target.value)}
+                  >
+                    {inventoryFormStatusOptions.map((option) => (
+                      <option key={option.key} value={option.key}>{option.label}</option>
+                    ))}
+                  </select>
+                </label>
 
-              <InventoryConditionSelect value={draft.condition} onChange={(value) => onChange('condition', value)} />
-              <div className="grid gap-3 sm:grid-cols-2">
+                <InventoryConditionSelect value={draft.condition} onChange={(value) => onChange('condition', value)} />
+              </div>
+
+              <div className="grid min-w-0 gap-3 sm:grid-cols-2">
                 <InventoryFormField label="Checked" type="date" value={draft.lastChecked} onChange={(value) => onChange('lastChecked', value)} />
                 <InventoryFormField label="Next maintenance" type="date" value={draft.nextMaintenance} onChange={(value) => onChange('nextMaintenance', value)} />
               </div>
@@ -1205,7 +1221,7 @@ function InventoryFormPanel({
 
           <div className="flex flex-wrap gap-2">
             <button
-              className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full bg-[var(--ui-control)] px-4 text-sm font-semibold text-[var(--ui-text-muted)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
+              className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full bg-[var(--ui-control-hover)] px-4 text-sm font-semibold text-[var(--ui-text-muted)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
               disabled={isSaving}
               type="button"
               onClick={onCancel}
