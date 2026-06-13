@@ -1430,6 +1430,7 @@ function InventoryStatusBadge({ status }) {
 
 function InventoryDropdown({
   buttonClassName = '',
+  hideLabel = false,
   icon: Icon,
   label,
   labelClassName = '',
@@ -1459,7 +1460,9 @@ function InventoryDropdown({
       }}
     >
       {label ? (
-        <span className="text-[0.68rem] uppercase tracking-[0.12em] text-[var(--ui-text-muted)]">
+        <span className={cn(
+          hideLabel ? 'sr-only' : 'text-[0.68rem] uppercase tracking-[0.12em] text-[var(--ui-text-muted)]',
+        )}>
           {label}
         </span>
       ) : null}
@@ -1600,92 +1603,108 @@ function InventoryToolbar({
       label: category,
     })),
   ];
+  const secondaryActions = [
+    {
+      icon: FileSpreadsheet,
+      key: 'template',
+      label: 'Template',
+      onClick: onDownloadTemplate,
+    },
+    {
+      icon: Upload,
+      key: 'import',
+      label: 'Import',
+      onClick: onOpenImport,
+    },
+    {
+      icon: Download,
+      key: 'csv',
+      label: 'CSV',
+      onClick: onExportInventory,
+    },
+    {
+      icon: Printer,
+      key: 'print',
+      label: 'Print',
+      onClick: onPrintInventory,
+    },
+  ];
 
   return (
-    <section className="grid gap-2 py-2 xl:grid-cols-[minmax(0,1fr)_auto] xl:items-end">
-      <label className="grid min-w-0 gap-1.5 text-sm font-semibold text-[var(--ui-text-main)]">
-        <span className="sr-only">Cari inventory</span>
-        <span className="flex min-h-11 items-center gap-3 rounded-[1.15rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 ring-1 ring-[var(--ui-ring)] focus-within:border-studio-accent/55 focus-within:ring-4 focus-within:ring-studio-accent/20">
-          <Search className="shrink-0 text-[var(--ui-text-muted)]" size={16} strokeWidth={2.35} aria-hidden="true" />
-          <input
-            className="min-w-0 flex-1 border-0 bg-transparent text-sm font-semibold text-[var(--ui-text-strong)] outline-none placeholder:text-[var(--ui-text-soft)]"
-            placeholder="Cari asset, kategori, lokasi, kondisi..."
-            type="search"
-            value={searchTerm}
-            onChange={(event) => onSearchChange(event.target.value)}
-          />
-        </span>
-      </label>
-
-      <div className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_minmax(0,0.9fr)_auto_auto_auto_auto_auto] xl:min-w-[760px]">
-        <InventoryDropdown
-          icon={SlidersHorizontal}
-          label="Kategori"
-          options={categoryOptions}
-          value={categoryFilter}
-          onChange={onCategoryChange}
-        />
-
-        <InventoryDropdown
-          icon={PackageCheck}
-          label="Kondisi"
-          options={inventoryConditionFilters}
-          value={conditionFilter}
-          onChange={onConditionChange}
-        />
+    <section className="grid max-w-[980px] gap-2 border-y border-[var(--ui-border)] py-2">
+      <div className="grid min-w-0 gap-2 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
+        <label className="grid min-w-0 gap-1.5 text-sm font-semibold text-[var(--ui-text-main)]">
+          <span className="sr-only">Cari inventory</span>
+          <span className="flex min-h-11 items-center gap-3 rounded-[1.15rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 ring-1 ring-[var(--ui-ring)] focus-within:border-studio-accent/55 focus-within:ring-4 focus-within:ring-studio-accent/20">
+            <Search className="shrink-0 text-[var(--ui-text-muted)]" size={16} strokeWidth={2.35} aria-hidden="true" />
+            <input
+              className="min-w-0 flex-1 border-0 bg-transparent text-sm font-semibold text-[var(--ui-text-strong)] outline-none placeholder:text-[var(--ui-text-soft)]"
+              placeholder="Cari asset, kategori, lokasi, kondisi..."
+              type="search"
+              value={searchTerm}
+              onChange={(event) => onSearchChange(event.target.value)}
+            />
+          </span>
+        </label>
 
         <button
-          className="inline-flex min-h-11 items-center justify-center gap-2 self-end rounded-[1.15rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 text-xs font-semibold text-[var(--ui-text-muted)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-cyan/20"
-          type="button"
-          onClick={onDownloadTemplate}
-        >
-          <FileSpreadsheet size={14} strokeWidth={2.35} aria-hidden="true" />
-          Template
-        </button>
-
-        <button
-          className="inline-flex min-h-11 items-center justify-center gap-2 self-end rounded-[1.15rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 text-xs font-semibold text-[var(--ui-text-muted)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-cyan/20"
-          type="button"
-          onClick={onOpenImport}
-        >
-          <Upload size={14} strokeWidth={2.35} aria-hidden="true" />
-          Import
-        </button>
-
-        <button
-          className="inline-flex min-h-11 items-center justify-center gap-2 self-end rounded-[1.15rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 text-xs font-semibold text-[var(--ui-text-muted)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
-          type="button"
-          onClick={onExportInventory}
-        >
-          <Download size={14} strokeWidth={2.35} aria-hidden="true" />
-          CSV
-        </button>
-
-        <button
-          className="inline-flex min-h-11 items-center justify-center gap-2 self-end rounded-[1.15rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 text-xs font-semibold text-[var(--ui-text-muted)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
-          type="button"
-          onClick={onPrintInventory}
-        >
-          <Printer size={14} strokeWidth={2.35} aria-hidden="true" />
-          Print
-        </button>
-
-        <button
-          className="inline-flex min-h-11 items-center justify-center gap-2 self-end rounded-[1.15rem] [background:var(--ui-primary-bg)] px-4 text-sm font-semibold text-[var(--ui-primary-text)] shadow-[var(--ui-shadow-soft)] transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
+          className="inline-flex min-h-11 items-center justify-center gap-2 rounded-[1.15rem] [background:var(--ui-primary-bg)] px-5 text-sm font-semibold text-[var(--ui-primary-text)] shadow-[var(--ui-shadow-soft)] transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
           type="button"
           onClick={onCreateAsset}
         >
           <Plus size={15} strokeWidth={2.35} aria-hidden="true" />
-          Add
+          Add asset
         </button>
       </div>
 
-      <div className="flex flex-wrap items-center gap-2 xl:col-span-2">
-        <span className="text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-[var(--ui-text-soft)]">
+      <div className="grid min-w-0 gap-2 xl:grid-cols-[minmax(0,25rem)_auto] xl:items-center xl:justify-between">
+        <div className="grid min-w-0 gap-2 sm:grid-cols-2">
+          <InventoryDropdown
+            hideLabel
+            icon={SlidersHorizontal}
+            label="Kategori"
+            buttonClassName="min-h-10 rounded-full text-xs"
+            options={categoryOptions}
+            value={categoryFilter}
+            onChange={onCategoryChange}
+          />
+
+          <InventoryDropdown
+            hideLabel
+            icon={PackageCheck}
+            label="Kondisi"
+            buttonClassName="min-h-10 rounded-full text-xs"
+            options={inventoryConditionFilters}
+            value={conditionFilter}
+            onChange={onConditionChange}
+          />
+        </div>
+
+        <div className="flex min-w-0 flex-wrap items-center gap-1.5 rounded-[1.1rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-1 ring-1 ring-[var(--ui-ring)]">
+          {secondaryActions.map((action) => {
+            const Icon = action.icon;
+
+            return (
+              <button
+                className="inline-flex min-h-8 items-center justify-center gap-1.5 rounded-full px-2.5 text-[0.7rem] font-semibold text-[var(--ui-text-muted)] transition hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
+                key={action.key}
+                type="button"
+                onClick={action.onClick}
+              >
+                <Icon size={13} strokeWidth={2.35} aria-hidden="true" />
+                <span>{action.label}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      <div className="flex min-w-0 flex-wrap items-center gap-2">
+        <span className="rounded-full bg-[var(--ui-control)] px-2.5 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-[var(--ui-text-soft)] ring-1 ring-[var(--ui-ring)]">
           {resultCount} item
         </span>
 
-        <div className="flex snap-x items-center gap-1.5 overflow-x-auto pb-1" aria-label="Inventory status filter">
+        <div className="flex min-w-0 snap-x items-center gap-1 overflow-x-auto pb-1" aria-label="Inventory status filter">
           {inventoryStatusFilters.map((item) => (
             <button
               className={cn(
