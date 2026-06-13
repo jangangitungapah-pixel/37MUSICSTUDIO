@@ -29,6 +29,14 @@ import {
   Upload,
 } from 'lucide-react';
 import { cn } from '../lib/cn.js';
+import {
+  AdminBadge,
+  AdminButton,
+  AdminCommandBar,
+  AdminPageHeader,
+  AdminPageShell,
+  AdminPanel,
+} from '../components/admin/AdminPrimitives.jsx';
 import { adminInventoryRepository } from '../services/adminInventoryRepository.js';
 
 const inventoryStatusFilters = [
@@ -1255,48 +1263,57 @@ function InventoryOverviewStrip({ stats, itemCount }) {
       helper: 'asset',
       icon: Boxes,
       label: 'Total',
+      tone: 'strong',
       value: itemCount,
     },
     {
       helper: 'ready',
       icon: ShieldCheck,
       label: 'Ready',
+      tone: 'cyan',
       value: stats.ready,
     },
     {
       helper: 'low',
       icon: AlertTriangle,
       label: 'Low',
+      tone: 'accent',
       value: stats.lowStock,
     },
     {
       helper: 'value',
       icon: Tags,
       label: 'Value',
+      tone: 'neutral',
       value: formatCurrency(stats.valueEstimate),
     },
   ];
 
   return (
-    <section className="grid gap-2 border-y border-[var(--ui-border)] py-2 sm:grid-cols-2 xl:grid-cols-4" aria-label="Inventory summary">
-      {overviewItems.map(({ helper, icon: Icon, label, value }) => (
-        <article className="flex min-h-12 items-center gap-3 px-1" key={label}>
-          <span className="grid size-8 shrink-0 place-items-center rounded-xl bg-[var(--ui-control)] text-studio-accent ring-1 ring-[var(--ui-ring)]">
-            <Icon size={15} strokeWidth={2.35} aria-hidden="true" />
+    <section className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4" aria-label="Inventory summary">
+      {overviewItems.map(({ helper, icon: Icon, label, tone, value }) => (
+        <AdminPanel
+          as="article"
+          className="flex min-h-16 items-center justify-between gap-3 p-3"
+          key={label}
+          variant="flat"
+        >
+          <span className="inline-flex min-w-0 items-center gap-2 text-[0.65rem] font-semibold uppercase tracking-[0.11em] text-[var(--ui-text-muted)]">
+            <span className="grid size-8 shrink-0 place-items-center rounded-full border border-[var(--ui-border)] bg-[var(--ui-control)] text-studio-accent ring-1 ring-[var(--ui-ring)]">
+              <Icon size={14} strokeWidth={2.35} aria-hidden="true" />
+            </span>
+            <span className="truncate">{label}</span>
           </span>
 
-          <div className="grid min-w-0 gap-0.5">
-            <span className="text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-[var(--ui-text-muted)]">
-              {label}
-            </span>
-            <strong className="truncate text-lg font-semibold leading-none tracking-[-0.05em] text-[var(--ui-text-strong)]">
+          <span className="grid justify-items-end gap-0.5">
+            <strong className="shrink-0 text-sm font-semibold tracking-[-0.035em] text-[var(--ui-text-strong)] sm:text-base">
               {value}
             </strong>
-            <span className="truncate text-[0.7rem] font-medium text-[var(--ui-text-soft)]">
+            <AdminBadge className="min-h-5 px-2 text-[0.6rem]" tone={tone}>
               {helper}
-            </span>
-          </div>
-        </article>
+            </AdminBadge>
+          </span>
+        </AdminPanel>
       ))}
     </section>
   );
@@ -1310,53 +1327,51 @@ function InventoryDashboardAlerts({
   const hasActiveAlert = activeAlert !== 'all';
 
   return (
-    <section className="max-w-[980px] border-y border-[var(--ui-border)] py-2" aria-label="Inventory dashboard alerts">
-      <div className="flex flex-wrap items-center gap-2">
-        <button
-          aria-pressed={!hasActiveAlert}
-          className={cn(
-            'inline-flex min-h-9 shrink-0 items-center gap-2 rounded-full border px-3 text-xs font-semibold ring-1 transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20',
-            !hasActiveAlert
-              ? 'border-studio-accent/45 bg-studio-accent/12 text-studio-accent ring-studio-accent/20'
-              : 'border-[var(--ui-border)] bg-transparent text-[var(--ui-text-muted)] ring-[var(--ui-ring)] hover:bg-[var(--ui-control)] hover:text-[var(--ui-text-strong)]',
-          )}
-          type="button"
-          onClick={() => onAlertChange('all')}
-        >
-          <ShieldCheck size={13} strokeWidth={2.35} aria-hidden="true" />
-          All priorities
-          <strong className="rounded-full bg-[var(--ui-glass-soft)] px-1.5 py-0.5 text-[0.68rem] leading-none text-[var(--ui-text-strong)]">
-            {alerts.total}
-          </strong>
-        </button>
+    <AdminPanel className="inventory-priority-rail flex snap-x gap-1.5 overflow-x-auto p-2" aria-label="Inventory dashboard alerts" variant="flat">
+      <button
+        aria-pressed={!hasActiveAlert}
+        className={cn(
+          'inline-flex min-h-9 shrink-0 snap-start items-center gap-2 rounded-full border px-3 text-xs font-semibold ring-1 transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20',
+          !hasActiveAlert
+            ? 'border-studio-accent/45 bg-studio-accent/12 text-studio-accent ring-studio-accent/20'
+            : 'border-[var(--ui-border)] bg-[var(--ui-control)] text-[var(--ui-text-muted)] ring-[var(--ui-ring)] hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)]',
+        )}
+        type="button"
+        onClick={() => onAlertChange('all')}
+      >
+        <ShieldCheck size={13} strokeWidth={2.35} aria-hidden="true" />
+        All priorities
+        <strong className="rounded-full bg-[var(--ui-glass-soft)] px-1.5 py-0.5 text-[0.68rem] leading-none text-[var(--ui-text-strong)]">
+          {alerts.total}
+        </strong>
+      </button>
 
-        {inventoryAlertFilters.map((item) => {
-          const value = alerts[item.key] || 0;
-          const isActive = activeAlert === item.key;
-          const Icon = item.key === 'dueSoon' ? CalendarClock : item.key === 'lowStock' ? PackageCheck : AlertTriangle;
+      {inventoryAlertFilters.map((item) => {
+        const value = alerts[item.key] || 0;
+        const isActive = activeAlert === item.key;
+        const Icon = item.key === 'dueSoon' ? CalendarClock : item.key === 'lowStock' ? PackageCheck : AlertTriangle;
 
-          return (
-            <button
-              aria-pressed={isActive}
-              className={cn(
-                'inline-flex min-h-9 shrink-0 items-center gap-2 rounded-full border px-3 text-xs font-semibold ring-1 transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20',
-                getInventoryAlertToneClass(item.key, value, isActive),
-              )}
-              key={item.key}
-              title={item.helper}
-              type="button"
-              onClick={() => onAlertChange(isActive ? 'all' : item.key)}
-            >
-              <Icon size={13} strokeWidth={2.35} aria-hidden="true" />
-              <span>{item.label}</span>
-              <strong className="rounded-full bg-[var(--ui-glass-soft)] px-1.5 py-0.5 text-[0.68rem] leading-none text-[var(--ui-text-strong)]">
-                {value}
-              </strong>
-            </button>
-          );
-        })}
-      </div>
-    </section>
+        return (
+          <button
+            aria-pressed={isActive}
+            className={cn(
+              'inline-flex min-h-9 shrink-0 snap-start items-center gap-2 rounded-full border px-3 text-xs font-semibold ring-1 transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20',
+              getInventoryAlertToneClass(item.key, value, isActive),
+            )}
+            key={item.key}
+            title={item.helper}
+            type="button"
+            onClick={() => onAlertChange(isActive ? 'all' : item.key)}
+          >
+            <Icon size={13} strokeWidth={2.35} aria-hidden="true" />
+            <span>{item.label}</span>
+            <strong className="rounded-full bg-[var(--ui-glass-soft)] px-1.5 py-0.5 text-[0.68rem] leading-none text-[var(--ui-text-strong)]">
+              {value}
+            </strong>
+          </button>
+        );
+      })}
+    </AdminPanel>
   );
 }
 
@@ -1366,49 +1381,47 @@ function InventorySavedViews({
   onViewChange,
 }) {
   return (
-    <section className="max-w-[980px] border-y border-[var(--ui-border)] py-2" aria-label="Inventory smart saved views">
-      <div className="flex flex-wrap items-center gap-2">
-        <span className="mr-1 text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-studio-cyan">
-          Smart views
-        </span>
+    <AdminPanel className="inventory-saved-views flex snap-x gap-1.5 overflow-x-auto p-2" aria-label="Inventory smart saved views" variant="flat">
+      <span className="inline-flex min-h-9 shrink-0 items-center rounded-full px-2 text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-studio-cyan">
+        Smart views
+      </span>
 
-        {inventorySavedViews.map((view) => {
-          const value = stats[view.key] || 0;
-          const isActive = activeView === view.key;
-          const Icon = view.key === 'critical'
-            ? AlertTriangle
-            : view.key === 'maintenanceQueue'
-              ? CalendarClock
-              : view.key === 'needPurchase'
-                ? PackageCheck
-                : view.key === 'readyGear'
-                  ? ShieldCheck
-                  : view.key === 'retired'
-                    ? Tags
-                    : Boxes;
+      {inventorySavedViews.map((view) => {
+        const value = stats[view.key] || 0;
+        const isActive = activeView === view.key;
+        const Icon = view.key === 'critical'
+          ? AlertTriangle
+          : view.key === 'maintenanceQueue'
+            ? CalendarClock
+            : view.key === 'needPurchase'
+              ? PackageCheck
+              : view.key === 'readyGear'
+                ? ShieldCheck
+                : view.key === 'retired'
+                  ? Tags
+                  : Boxes;
 
-          return (
-            <button
-              aria-pressed={isActive}
-              className={cn(
-                'inline-flex min-h-9 shrink-0 items-center gap-2 rounded-full border px-3 text-xs font-semibold ring-1 transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20',
-                getInventorySavedViewToneClass(view.key, value, isActive),
-              )}
-              key={view.key}
-              title={view.helper}
-              type="button"
-              onClick={() => onViewChange(isActive && view.key !== 'all' ? 'all' : view.key)}
-            >
-              <Icon size={13} strokeWidth={2.35} aria-hidden="true" />
-              <span>{view.label}</span>
-              <strong className="rounded-full bg-[var(--ui-glass-soft)] px-1.5 py-0.5 text-[0.68rem] leading-none text-[var(--ui-text-strong)]">
-                {value}
-              </strong>
-            </button>
-          );
-        })}
-      </div>
-    </section>
+        return (
+          <button
+            aria-pressed={isActive}
+            className={cn(
+              'inline-flex min-h-9 shrink-0 snap-start items-center gap-2 rounded-full border px-3 text-xs font-semibold ring-1 transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20',
+              getInventorySavedViewToneClass(view.key, value, isActive),
+            )}
+            key={view.key}
+            title={view.helper}
+            type="button"
+            onClick={() => onViewChange(isActive && view.key !== 'all' ? 'all' : view.key)}
+          >
+            <Icon size={13} strokeWidth={2.35} aria-hidden="true" />
+            <span>{view.label}</span>
+            <strong className="rounded-full bg-[var(--ui-glass-soft)] px-1.5 py-0.5 text-[0.68rem] leading-none text-[var(--ui-text-strong)]">
+              {value}
+            </strong>
+          </button>
+        );
+      })}
+    </AdminPanel>
   );
 }
 
@@ -1546,36 +1559,32 @@ function InventoryConditionBadge({ condition }) {
 
 function InventoryHero({ stats }) {
   return (
-    <section className="relative overflow-hidden border-b border-[var(--ui-border)] pb-4 pt-2">
-      <div className="pointer-events-none absolute -right-20 -top-24 size-48 rounded-full bg-studio-cyan/10 blur-3xl" aria-hidden="true" />
-      <div className="relative z-10 grid gap-3 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
-        <div className="grid gap-2">
-          <div className="inline-flex w-fit items-center gap-2 rounded-full bg-[var(--ui-control)] px-3 py-1.5 text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-studio-accent ring-1 ring-[var(--ui-ring)]">
-            <Boxes size={14} strokeWidth={2.35} aria-hidden="true" />
-            Studio Asset Inventory
-          </div>
-
-          <div className="grid gap-1">
-            <h1 className="m-0 text-[clamp(2.35rem,5vw,4.6rem)] font-semibold leading-[0.94] tracking-[-0.08em] text-[var(--ui-text-strong)]">
-              Inventory studio.
-            </h1>
-
-            <p className="m-0 max-w-2xl text-sm leading-7 text-[var(--ui-text-muted)]">
-              Console ringkas untuk gear, cable, spare part, dan maintenance studio.
-            </p>
-          </div>
-        </div>
-
-        <div className="hidden min-w-40 text-right lg:grid">
-          <span className="text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-[var(--ui-text-muted)]">
-            Ready
-          </span>
-          <strong className="text-3xl font-semibold leading-none tracking-[-0.06em] text-[var(--ui-text-strong)]">
-            {stats.ready}
-          </strong>
-        </div>
-      </div>
-    </section>
+    <AdminPageHeader
+      actions={(
+        <AdminBadge icon={ShieldCheck} tone="cyan">
+          {stats.ready} ready
+        </AdminBadge>
+      )}
+      description="Kelola gear, cable, spare part, stok minimum, maintenance, dan nilai aset studio dalam satu ledger operasional."
+      eyebrow="Studio Asset Inventory"
+      meta={(
+        <>
+          <AdminBadge icon={Boxes} tone="strong">
+            {stats.totalAssets} total unit
+          </AdminBadge>
+          <AdminBadge icon={AlertTriangle} tone="accent">
+            {stats.lowStock} low stock
+          </AdminBadge>
+          <AdminBadge icon={CalendarClock} tone="purple">
+            {stats.maintenance} maintenance
+          </AdminBadge>
+          <AdminBadge icon={Tags} tone="neutral">
+            {formatCurrency(stats.valueEstimate)}
+          </AdminBadge>
+        </>
+      )}
+      title="Inventory studio"
+    />
   );
 }
 
@@ -1631,11 +1640,11 @@ function InventoryToolbar({
   ];
 
   return (
-    <section className="grid max-w-[980px] gap-2 border-y border-[var(--ui-border)] py-2">
+    <AdminCommandBar className="inventory-command-bar gap-2 p-2">
       <div className="grid min-w-0 gap-2 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
         <label className="grid min-w-0 gap-1.5 text-sm font-semibold text-[var(--ui-text-main)]">
           <span className="sr-only">Cari inventory</span>
-          <span className="flex min-h-11 items-center gap-3 rounded-[1.15rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 ring-1 ring-[var(--ui-ring)] focus-within:border-studio-accent/55 focus-within:ring-4 focus-within:ring-studio-accent/20">
+          <span className="flex min-h-11 items-center gap-3 rounded-full border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 ring-1 ring-[var(--ui-ring)] focus-within:border-studio-accent/55 focus-within:ring-4 focus-within:ring-studio-accent/20">
             <Search className="shrink-0 text-[var(--ui-text-muted)]" size={16} strokeWidth={2.35} aria-hidden="true" />
             <input
               className="min-w-0 flex-1 border-0 bg-transparent text-sm font-semibold text-[var(--ui-text-strong)] outline-none placeholder:text-[var(--ui-text-soft)]"
@@ -1647,17 +1656,17 @@ function InventoryToolbar({
           </span>
         </label>
 
-        <button
-          className="inline-flex min-h-11 items-center justify-center gap-2 rounded-[1.15rem] [background:var(--ui-primary-bg)] px-5 text-sm font-semibold text-[var(--ui-primary-text)] shadow-[var(--ui-shadow-soft)] transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
-          type="button"
+        <AdminButton
+          icon={Plus}
+          size="lg"
+          variant="primary"
           onClick={onCreateAsset}
         >
-          <Plus size={15} strokeWidth={2.35} aria-hidden="true" />
           Add asset
-        </button>
+        </AdminButton>
       </div>
 
-      <div className="grid min-w-0 gap-2 xl:grid-cols-[minmax(0,25rem)_auto] xl:items-center xl:justify-between">
+      <div className="grid min-w-0 gap-2 xl:grid-cols-[minmax(0,30rem)_auto] xl:items-center xl:justify-between">
         <div className="grid min-w-0 gap-2 sm:grid-cols-2">
           <InventoryDropdown
             hideLabel
@@ -1681,28 +1690,25 @@ function InventoryToolbar({
         </div>
 
         <div className="flex min-w-0 flex-wrap items-center gap-1.5 rounded-[1.1rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-1 ring-1 ring-[var(--ui-ring)]">
-          {secondaryActions.map((action) => {
-            const Icon = action.icon;
-
-            return (
-              <button
-                className="inline-flex min-h-8 items-center justify-center gap-1.5 rounded-full px-2.5 text-[0.7rem] font-semibold text-[var(--ui-text-muted)] transition hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
-                key={action.key}
-                type="button"
-                onClick={action.onClick}
-              >
-                <Icon size={13} strokeWidth={2.35} aria-hidden="true" />
-                <span>{action.label}</span>
-              </button>
-            );
-          })}
+          {secondaryActions.map((action) => (
+            <AdminButton
+              className="min-h-8 px-2.5 text-[0.7rem]"
+              icon={action.icon}
+              key={action.key}
+              size="sm"
+              variant="ghost"
+              onClick={action.onClick}
+            >
+              {action.label}
+            </AdminButton>
+          ))}
         </div>
       </div>
 
       <div className="flex min-w-0 flex-wrap items-center gap-2">
-        <span className="rounded-full bg-[var(--ui-control)] px-2.5 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-[var(--ui-text-soft)] ring-1 ring-[var(--ui-ring)]">
+        <AdminBadge className="min-h-8 px-3" tone="strong">
           {resultCount} item
-        </span>
+        </AdminBadge>
 
         <div className="flex min-w-0 snap-x items-center gap-1 overflow-x-auto pb-1" aria-label="Inventory status filter">
           {inventoryStatusFilters.map((item) => (
@@ -1722,7 +1728,7 @@ function InventoryToolbar({
           ))}
         </div>
       </div>
-    </section>
+    </AdminCommandBar>
   );
 }
 
@@ -1838,7 +1844,7 @@ function InventoryBoard({
 }) {
   if (assets.length === 0) {
     return (
-      <section className="grid min-h-[200px] max-w-[980px] content-center justify-items-center gap-4 border-y border-[var(--ui-border)] p-6 text-center">
+      <AdminPanel className="grid min-h-[220px] content-center justify-items-center gap-4 p-6 text-center" variant="flat">
         <AlertTriangle className="text-studio-accent" size={28} strokeWidth={2.35} aria-hidden="true" />
         <div className="grid gap-2">
           <h2 className="m-0 text-2xl font-semibold tracking-[-0.06em] text-[var(--ui-text-strong)]">
@@ -1848,15 +1854,15 @@ function InventoryBoard({
             Ubah filter atau kata pencarian untuk melihat item studio yang lain.
           </p>
         </div>
-      </section>
+      </AdminPanel>
     );
   }
 
   return (
-    <section className="max-w-[980px] overflow-hidden border-y border-[var(--ui-border)]">
+    <AdminPanel className="inventory-ledger overflow-hidden p-0" variant="solid">
       <div className="overflow-x-auto">
         <div className="min-w-[860px]">
-          <div className="grid grid-cols-[300px_128px_128px_210px] gap-3 border-b border-[var(--ui-border)] px-3 py-2 text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-[var(--ui-text-soft)]">
+          <div className="grid grid-cols-[300px_128px_128px_210px] gap-3 border-b border-[var(--ui-border)] bg-[var(--ui-glass-soft)] px-3 py-2 text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-[var(--ui-text-soft)]">
             <span>Asset</span>
             <span>Status</span>
             <span>Stock</span>
@@ -1878,7 +1884,7 @@ function InventoryBoard({
           </div>
         </div>
       </div>
-    </section>
+    </AdminPanel>
   );
 }
 
@@ -3512,7 +3518,7 @@ export function InventoryAdmin() {
   };
 
   return (
-    <section className="grid gap-4 pb-[calc(8.5rem+env(safe-area-inset-bottom))] pt-1 md:pb-4 md:pt-2" aria-labelledby="inventory-admin-title">
+    <AdminPageShell className="inventory-admin-workspace gap-4 pb-[calc(8.5rem+env(safe-area-inset-bottom))] pt-1 md:pb-4 md:pt-2" width="wide">
       <div className="sr-only" id="inventory-admin-title">
         Inventory admin workspace
       </div>
@@ -3639,6 +3645,6 @@ export function InventoryAdmin() {
 
         <InventoryFirestorePlan />
       </div>
-    </section>
+    </AdminPageShell>
   );
 }
