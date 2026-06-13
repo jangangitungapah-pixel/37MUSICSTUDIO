@@ -1329,3 +1329,154 @@
   }
 }
 /* 37-inventory-mobile-card-layout:end */
+
+/* 37-booking-mobile-calendar-polish:start */
+@layer components {
+  @media (max-width: 767px) {
+    .booking-calendar-toolbar {
+      gap: 0.65rem;
+    }
+
+    .booking-calendar-toolbar > div:first-child {
+      grid-template-columns: auto minmax(0, 1fr) auto;
+    }
+
+    .booking-calendar-toolbar > div:first-child .admin-button:last-child {
+      grid-column: 1 / -1;
+      width: 100%;
+    }
+
+    .booking-calendar-toolbar > div:first-child .admin-badge {
+      min-width: 0;
+      max-width: 100%;
+      justify-content: flex-start;
+      font-size: 0.72rem;
+    }
+
+    .booking-status-counters {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.35rem;
+      width: 100%;
+      border-radius: 1.15rem;
+      padding: 0.35rem;
+    }
+
+    .booking-status-counters .admin-badge {
+      min-width: 0;
+      justify-content: center;
+      padding-inline: 0.45rem;
+      font-size: 0.66rem;
+    }
+
+    .booking-slot-counters article {
+      padding-inline: 0.85rem !important;
+      padding-block: 1rem !important;
+    }
+
+    .booking-calendar-grid {
+      border-radius: 1.25rem;
+    }
+
+    .booking-calendar-grid > div:first-child {
+      align-items: flex-start;
+      padding: 1rem;
+    }
+
+    .booking-calendar-grid > div:first-child > div:first-child {
+      align-items: flex-start;
+    }
+
+    .booking-calendar-grid > div:first-child strong {
+      white-space: normal;
+      line-height: 1.25;
+    }
+
+    .booking-calendar-scroller {
+      max-height: min(46rem, calc(100dvh - 12rem));
+      overflow: auto !important;
+      overscroll-behavior: contain;
+      scroll-padding-bottom: 7rem;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .booking-calendar-inner {
+      min-width: 720px !important;
+    }
+
+    .booking-calendar-grid [class*="w-[112px]"] {
+      width: 96px !important;
+    }
+
+    .booking-calendar-grid [class*="min-h-[54px]"] {
+      min-height: 46px !important;
+    }
+
+    .booking-calendar-grid button[aria-label*="Empty slot"],
+    .booking-calendar-grid button[aria-label*="status pembayaran"] {
+      min-height: 46px !important;
+    }
+
+    .booking-calendar-grid button[aria-label*="status pembayaran"] span[class*="absolute"] {
+      border-radius: 0.75rem !important;
+    }
+
+    .booking-calendar-grid button[aria-label*="status pembayaran"] span[class*="tracking"] {
+      letter-spacing: 0.02em !important;
+    }
+
+    .booking-selected-slot-panel {
+      border-radius: 1.15rem;
+      font-size: 0.92rem;
+      line-height: 1.6;
+      padding: 1rem !important;
+    }
+
+    .booking-selected-slot-panel br {
+      display: none;
+    }
+  }
+
+  @media (max-width: 420px) {
+    .booking-calendar-toolbar {
+      gap: 0.55rem;
+      padding: 0.6rem;
+    }
+
+    .booking-calendar-toolbar > div:first-child {
+      gap: 0.5rem;
+    }
+
+    .booking-calendar-toolbar > div:first-child .admin-badge {
+      font-size: 0.68rem;
+    }
+
+    .booking-status-counters .admin-badge {
+      min-height: 2.4rem;
+      font-size: 0.62rem;
+    }
+
+    .booking-calendar-inner {
+      min-width: 690px !important;
+    }
+
+    .booking-calendar-grid [class*="w-[112px]"] {
+      width: 88px !important;
+    }
+
+    .booking-calendar-grid [class*="min-h-[54px]"] {
+      min-height: 43px !important;
+    }
+
+    .booking-calendar-grid button[aria-label*="Empty slot"],
+    .booking-calendar-grid button[aria-label*="status pembayaran"] {
+      min-height: 43px !important;
+    }
+
+    .booking-selected-slot-panel {
+      font-size: 0.88rem;
+      line-height: 1.55;
+    }
+  }
+}
+/* 37-booking-mobile-calendar-polish:end */

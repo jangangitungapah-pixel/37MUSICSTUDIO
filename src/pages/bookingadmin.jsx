@@ -1447,7 +1447,7 @@ function TimeCell({ slot }) {
 
 function BookingStatusCounters({ counts }) {
   return (
-    <div className="flex min-w-0 flex-wrap items-center gap-1.5 rounded-[1.05rem] border border-[var(--ui-border)] bg-[var(--ui-control)] p-1 shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)]">
+    <div className="booking-status-counters flex min-w-0 flex-wrap items-center gap-1.5 rounded-[1.05rem] border border-[var(--ui-border)] bg-[var(--ui-control)] p-1 shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)]">
       {bookingStatusItems.map((item) => {
         const tone = item.key === 'paid' ? 'cyan' : item.key === 'dp' ? 'purple' : 'accent';
 
@@ -1492,7 +1492,7 @@ function BookingSlotCounters({ summary, timeSlots, visibleDays }) {
   ];
 
   return (
-    <AdminPanel className="grid grid-cols-3 gap-0 overflow-hidden p-0" variant="flat">
+    <AdminPanel className="booking-slot-counters grid grid-cols-3 gap-0 overflow-hidden p-0" variant="flat">
       {items.map((item) => (
         <article
           className="grid gap-0.5 border-l border-[var(--ui-border)] px-2 py-2.5 first:border-l-0 sm:px-5 sm:py-3.5"
@@ -1553,7 +1553,7 @@ function CalendarToolbar({
   viewMode,
 }) {
   return (
-    <AdminCommandBar className="gap-2 p-2 sm:gap-3 sm:p-3 lg:grid-cols-[minmax(0,1fr)_auto_auto] lg:items-center">
+    <AdminCommandBar className="booking-calendar-toolbar gap-2 p-2 sm:gap-3 sm:p-3 lg:grid-cols-[minmax(0,1fr)_auto_auto] lg:items-center">
       <div className="grid grid-cols-[auto_minmax(0,1fr)_auto_auto] items-center gap-1.5 sm:flex sm:flex-wrap sm:gap-2">
         <AdminButton
           aria-label="Previous period"
@@ -1626,7 +1626,7 @@ function CalendarGrid({
 
   return (
     <AdminPanel
-      className={cn('isolate overflow-hidden p-0', solidSurfaces.gridShell)}
+      className={cn('booking-calendar-grid isolate overflow-hidden p-0', solidSurfaces.gridShell)}
       variant="solid"
     >
       <div
@@ -1660,9 +1660,9 @@ function CalendarGrid({
         </div>
       </div>
 
-      <div className="relative z-0 overflow-x-auto">
+      <div className="booking-calendar-scroller relative z-0 overflow-x-auto">
         <div
-          className="min-w-max"
+          className="booking-calendar-inner min-w-max"
           style={{ minWidth: gridMinWidth }}
         >
           <div
@@ -1738,18 +1738,18 @@ function SelectedSlotPanel({
 
   return (
     <AdminPanel
-      className="text-sm font-medium leading-6 text-[var(--ui-text-main)] sm:leading-7"
+      className="booking-selected-slot-panel text-sm font-medium leading-6 text-[var(--ui-text-main)] sm:leading-7"
       variant={booking ? 'solid' : 'flat'}
     >
-      <span className="font-semibold text-[var(--ui-text-strong)]">Selected slot:</span>{' '}
-      {selectedSlot.label} jam {selectedSlot.timeKey}.
+      <span className="font-semibold text-[var(--ui-text-strong)]">Slot:</span>{' '}
+      {selectedSlot.label} · {selectedSlot.timeKey}.
       {booking ? (
         <span>
-          {' '}Slot ini sudah terisi untuk <span className="font-semibold text-[var(--ui-text-strong)]">{booking.customerName || booking.title}</span> dengan status <span className="font-semibold text-[var(--ui-text-strong)]">{getStatusLabel(booking.status)}</span>. Total {formatCurrency(booking.totalPrice)} dan sisa {formatCurrency(booking.remainingPayment)}.
+          {' '}Terisi: <span className="font-semibold text-[var(--ui-text-strong)]">{booking.customerName || booking.title}</span> · {getStatusLabel(booking.status)} · total {formatCurrency(booking.totalPrice)} · sisa {formatCurrency(booking.remainingPayment)}.
         </span>
       ) : (
         <span>
-          {' '}Slot ini kosong. Klik slot kosong atau tombol Add booking untuk membuka form.
+          {' '}Kosong. Tekan slot atau Add untuk booking.
         </span>
       )}
     </AdminPanel>
