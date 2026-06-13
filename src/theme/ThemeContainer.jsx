@@ -37,10 +37,6 @@ export function ThemeContainer({ children, currentPath = '/' }) {
       <div className="pointer-events-none fixed inset-y-0 left-0 -z-10 w-[42vw] bg-[linear-gradient(90deg,var(--ui-left-wash),transparent)]" />
       <div className="pointer-events-none fixed inset-y-0 right-0 -z-10 w-[46vw] bg-[linear-gradient(270deg,var(--ui-right-wash),transparent)]" />
 
-      <div className="pointer-events-none fixed -left-40 -top-44 -z-10 size-[520px] rounded-full bg-studio-accent/18 blur-3xl" />
-      <div className="pointer-events-none fixed -right-48 bottom-[10vh] -z-10 size-[560px] rounded-full bg-studio-cyan/16 blur-3xl" />
-      <div className="pointer-events-none fixed left-1/2 top-24 -z-10 size-[360px] -translate-x-1/2 rounded-full bg-studio-purple/10 blur-3xl" />
-
       {!isAdminPage ? (
         <header
           className={cn(
@@ -136,7 +132,7 @@ export function ThemeContainer({ children, currentPath = '/' }) {
           'mx-auto grid',
           isAdminPage ? 'w-[min(1760px,calc(100vw-20px))]' : 'w-[min(1180px,calc(100vw-32px))]',
           isAdminPage
-            ? 'gap-4 py-3 sm:py-4'
+            ? 'gap-3 py-2 sm:py-3'
             : isCompact
               ? 'gap-8 py-4'
               : 'gap-10 py-8 sm:py-12',

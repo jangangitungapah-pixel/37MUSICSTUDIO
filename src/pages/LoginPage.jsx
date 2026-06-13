@@ -166,35 +166,35 @@ export function LoginPage() {
 
   return (
     <section
-      className="grid min-h-[62vh] content-center gap-10 py-4 lg:grid-cols-[minmax(0,0.94fr)_minmax(340px,420px)] lg:items-center lg:gap-12"
+      className="login-overhaul grid min-h-[calc(100dvh-12rem)] content-center gap-6 py-2 lg:grid-cols-[minmax(0,0.92fr)_minmax(340px,400px)] lg:items-center lg:gap-8"
       aria-labelledby="login-title"
     >
-      <div className="grid gap-8">
+      <div className="grid gap-5">
         <div className="inline-flex w-fit items-center gap-2 rounded-full border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] px-3 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-studio-accent ring-1 ring-[var(--ui-ring)]">
           <Sparkles size={14} strokeWidth={2.35} aria-hidden="true" />
           Firebase Admin Access
         </div>
 
-        <div className="grid gap-5">
+        <div className="grid gap-4">
           <h1
-            className="m-0 max-w-[820px] text-[clamp(3rem,7vw,6.3rem)] font-semibold leading-[0.94] tracking-[-0.075em] text-[var(--ui-text-strong)]"
+            className="m-0 max-w-[760px] text-[clamp(2.45rem,5.2vw,4.9rem)] font-semibold leading-[0.96] tracking-[-0.045em] text-[var(--ui-text-strong)]"
             id="login-title"
           >
             Masuk untuk lanjut ke admin studio.
           </h1>
 
-          <p className="m-0 max-w-[640px] text-[clamp(1rem,1.45vw,1.18rem)] leading-8 text-[var(--ui-text-main)]">
+          <p className="m-0 max-w-[620px] text-[clamp(0.95rem,1.2vw,1.06rem)] font-medium leading-7 text-[var(--ui-text-main)]">
             Gunakan akun admin yang sudah dibuat di Firebase Authentication. Setelah login, booking dan customer akan membaca data dari Firestore.
           </p>
         </div>
 
-        <div className="grid gap-0 border-y border-[var(--ui-border-strong)] sm:grid-cols-3">
+        <div className="login-highlight-grid grid gap-2 sm:grid-cols-3">
           {accessHighlights.map((item) => {
             const HighlightIcon = item.icon;
 
             return (
               <article
-                className="grid gap-3 border-[var(--ui-border)] py-5 sm:px-5 sm:[&:not(:first-child)]:border-l"
+                className="grid gap-2 rounded-lg border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-3 ring-1 ring-[var(--ui-ring)]"
                 key={item.title}
               >
                 <HighlightIcon
@@ -219,10 +219,7 @@ export function LoginPage() {
         </div>
       </div>
 
-      <aside className="relative overflow-hidden rounded-[2.25rem] border border-[var(--ui-border-strong)] bg-[linear-gradient(145deg,var(--ui-glass),var(--ui-glass-soft))] p-5 shadow-[var(--ui-shadow-soft)] ring-1 ring-[var(--ui-ring)] backdrop-blur-2xl sm:p-7">
-        <div className="pointer-events-none absolute -right-20 -top-24 size-52 rounded-full bg-studio-accent/16 blur-3xl" aria-hidden="true" />
-        <div className="pointer-events-none absolute -bottom-24 -left-16 size-56 rounded-full bg-studio-cyan/14 blur-3xl" aria-hidden="true" />
-
+      <aside className="login-card relative overflow-hidden rounded-lg border border-[var(--ui-border-strong)] bg-[linear-gradient(145deg,var(--ui-glass),var(--ui-glass-soft))] p-4 shadow-[var(--ui-shadow-soft)] ring-1 ring-[var(--ui-ring)] backdrop-blur-2xl sm:p-5">
         <form className="relative z-10 grid gap-5" onSubmit={handleSubmit} noValidate>
           <div className="grid gap-3">
             <div className="grid size-11 place-items-center rounded-2xl border border-[var(--ui-border)] bg-[var(--ui-control)] text-[var(--ui-text-strong)] shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)]">

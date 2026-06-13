@@ -44,17 +44,17 @@ const solidSurfaces = {
 const viewOptions = [
   {
     key: 'day',
-    label: 'Day',
+    label: 'Hari',
     helper: '1 hari',
   },
   {
     key: 'week',
-    label: 'Week',
+    label: 'Minggu',
     helper: '7 hari',
   },
   {
     key: 'month',
-    label: 'Month',
+    label: 'Bulan',
     helper: '1 bulan',
   },
 ];
@@ -1528,19 +1528,19 @@ function BookingSlotCounters({ summary, timeSlots, visibleDays }) {
   const items = [
     {
       key: 'visible',
-      label: 'Visible',
+      label: 'Terlihat',
       value: summary.totalSlots,
       helper: visibleDays.length + ' hari x ' + timeSlots.length + ' jam',
     },
     {
       key: 'booked',
-      label: 'Booked',
+      label: 'Terisi',
       value: summary.bookedSlots,
       helper: 'Booking aktif',
     },
     {
       key: 'available',
-      label: 'Available',
+      label: 'Kosong',
       value: summary.availableSlots,
       helper: 'Slot kosong',
     },
@@ -1639,7 +1639,7 @@ function CalendarToolbar({
           variant="secondary"
           onClick={onToday}
         >
-          Today
+          Hari ini
         </AdminButton>
       </div>
 
@@ -1657,8 +1657,8 @@ function CalendarToolbar({
           variant="primary"
           onClick={onAddBooking}
         >
-          <span className="sm:hidden">Add</span>
-          <span className="hidden sm:inline">Add booking</span>
+          <span className="sm:hidden">Tambah</span>
+          <span className="hidden sm:inline">Tambah booking</span>
         </AdminButton>
       </div>
     </AdminCommandBar>
@@ -1698,10 +1698,10 @@ function CalendarGrid({
 
           <div className="grid min-w-0 gap-0.5">
             <strong className="truncate text-sm font-semibold tracking-[-0.02em] text-[var(--ui-text-strong)]">
-              Studio booking board
+              Board jadwal studio
             </strong>
             <span className="truncate text-xs font-medium text-[var(--ui-text-muted)]">
-              View {viewMode}: {visibleDays.length} hari terlihat
+              Mode {viewMode}: {visibleDays.length} hari terlihat
             </span>
           </div>
         </div>
@@ -1733,7 +1733,7 @@ function CalendarGrid({
             >
               <span className="grid gap-0.5">
                 <span className="text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-studio-accent">
-                  Booking
+                  Jam
                 </span>
                 <span className="text-[0.64rem] font-semibold text-[var(--ui-text-muted)] sm:text-xs">
                   {padNumber(studioHours.openHour)}:00 - {padNumber(studioHours.closeHour)}:00
@@ -1801,15 +1801,15 @@ function SelectedSlotPanel({
       className="booking-selected-slot-panel text-sm font-medium leading-6 text-[var(--ui-text-main)] sm:leading-7"
       variant={booking ? 'solid' : 'flat'}
     >
-      <span className="font-semibold text-[var(--ui-text-strong)]">Slot:</span>{' '}
-      {selectedSlot.label} · {selectedSlot.timeKey}.
+      <span className="font-semibold text-[var(--ui-text-strong)]">Slot</span>{' '}
+      {selectedSlot.label} - {selectedSlot.timeKey}.
       {booking ? (
         <span>
-          {' '}Terisi: <span className="font-semibold text-[var(--ui-text-strong)]">{booking.customerName || booking.title}</span> · {getStatusLabel(booking.status)} · total {formatCurrency(booking.totalPrice)} · sisa {formatCurrency(booking.remainingPayment)}.
+          {' '}Terisi: <span className="font-semibold text-[var(--ui-text-strong)]">{booking.customerName || booking.title}</span> - {getStatusLabel(booking.status)} - total {formatCurrency(booking.totalPrice)} - sisa {formatCurrency(booking.remainingPayment)}.
         </span>
       ) : (
         <span>
-          {' '}Kosong. Tekan slot atau Add untuk booking.
+          {' '}Kosong. Tekan slot atau Tambah untuk booking.
         </span>
       )}
     </AdminPanel>
@@ -2257,7 +2257,7 @@ export function BookingAdmin() {
   };
 
   return (
-    <AdminPageShell className="gap-3 pb-[calc(7rem+env(safe-area-inset-bottom))] pt-1 md:gap-4 md:pb-4 md:pt-2" width="wide">
+    <AdminPageShell className="booking-admin-workspace gap-2 pb-[calc(7rem+env(safe-area-inset-bottom))] pt-0 md:gap-3 md:pb-3 md:pt-0" width="wide">
       <div className="sr-only" id="booking-admin-title">
         Booking calendar workspace
       </div>
@@ -2268,8 +2268,9 @@ export function BookingAdmin() {
       />
 
       <AdminPageHeader
-        description="Kelola jadwal studio, status pembayaran, dan slot kosong dalam satu board operasional yang lebih solid."
-        eyebrow="Studio schedule"
+        className="booking-page-header"
+        description="Kelola jadwal, status pembayaran, dan slot kosong dari satu board operasional."
+        eyebrow="Studio booking"
         meta={(
           <>
             <AdminBadge icon={CalendarDays} tone="strong">
@@ -2285,9 +2286,9 @@ export function BookingAdmin() {
             ) : null}
           </>
         )}
-        title="Booking board"
+        title="Jadwal booking"
       />
-      <div className="grid gap-3 md:gap-4">
+      <div className="booking-board-stack grid gap-2 md:gap-3">
         <CalendarToolbar
           rangeLabel={rangeLabel}
           statusCounts={statusCounts}
@@ -2302,14 +2303,14 @@ export function BookingAdmin() {
         {normalizedCustomerFilter ? (
           <div className="flex flex-wrap items-center justify-between gap-3 rounded-[1.25rem] border border-studio-accent/30 bg-studio-accent/10 px-4 py-3 text-sm font-semibold text-[var(--ui-text-main)] ring-1 ring-studio-accent/15">
             <span>
-              Booking board difilter untuk customer: <span className="text-[var(--ui-text-strong)]">{customerFilter}</span>
+              Jadwal difilter untuk customer: <span className="text-[var(--ui-text-strong)]">{customerFilter}</span>
             </span>
 
             <Link
               className="inline-flex min-h-9 items-center justify-center rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] px-4 text-xs font-semibold uppercase tracking-[0.12em] text-[var(--ui-secondary-text)] shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/25"
               to="/admin/bookings"
             >
-              Clear filter
+              Hapus filter
             </Link>
           </div>
         ) : null}

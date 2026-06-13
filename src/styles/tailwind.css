@@ -2920,3 +2920,788 @@
   }
 }
 /* 37-customer-filter-toolbar-compact:end */
+
+/* 37-admin-ui-overhaul-20260613:start */
+@layer components {
+  .login-overhaul,
+  .admin-shell {
+    --admin-surface-line: color-mix(in srgb, var(--ui-border) 82%, transparent);
+    --admin-surface-a: color-mix(in srgb, var(--ui-glass) 82%, transparent);
+    --admin-surface-b: color-mix(in srgb, var(--ui-glass-soft) 76%, transparent);
+    --admin-control: color-mix(in srgb, var(--ui-control) 88%, transparent);
+  }
+
+  .login-card,
+  .admin-sidebar,
+  .admin-workspace-bar,
+  .admin-page-header,
+  .admin-command-bar,
+  .admin-panel,
+  .admin-mobile-bottom-bar,
+  .admin-drawer-panel {
+    backdrop-filter: blur(18px) saturate(1.12);
+    background:
+      linear-gradient(180deg, var(--admin-surface-a), var(--admin-surface-b));
+    border-color: var(--admin-surface-line);
+    box-shadow:
+      0 1px 0 rgb(255 255 255 / 0.06) inset,
+      0 16px 38px rgb(0 0 0 / 0.12);
+  }
+
+  html[data-theme="light"] .login-card,
+  html[data-theme="light"] .admin-sidebar,
+  html[data-theme="light"] .admin-workspace-bar,
+  html[data-theme="light"] .admin-page-header,
+  html[data-theme="light"] .admin-command-bar,
+  html[data-theme="light"] .admin-panel,
+  html[data-theme="light"] .admin-mobile-bottom-bar,
+  html[data-theme="light"] .admin-drawer-panel {
+    box-shadow:
+      0 1px 0 rgb(255 255 255 / 0.9) inset,
+      0 14px 32px rgb(35 27 45 / 0.1);
+  }
+
+  .login-highlight-grid article,
+  .admin-page-header,
+  .admin-command-bar,
+  .admin-panel,
+  .admin-workspace-bar {
+    position: relative;
+  }
+
+  .admin-page-header::before,
+  .admin-workspace-bar::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    border-radius: inherit;
+    background:
+      linear-gradient(90deg, rgb(255 74 155 / 0.08), transparent 34%),
+      linear-gradient(270deg, rgb(69 211 255 / 0.07), transparent 40%);
+  }
+
+  .admin-page-header > *,
+  .admin-workspace-bar > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  .admin-page-header {
+    min-height: 8.25rem;
+    align-content: center;
+  }
+
+  .admin-page-header h1 {
+    max-width: 18ch;
+  }
+
+  .admin-page-header p {
+    max-width: 72ch;
+  }
+
+  .login-overhaul h2,
+  .login-overhaul button,
+  .login-overhaul a,
+  .admin-locked-state h1,
+  .admin-locked-state a {
+    word-spacing: 0.08em;
+  }
+
+  .admin-locked-state {
+    width: min(100%, 42rem);
+  }
+
+  .admin-command-bar {
+    align-items: center;
+  }
+
+  .admin-button {
+    box-shadow: none;
+  }
+
+  .admin-button:hover,
+  .admin-dropdown-button:hover,
+  .admin-sidebar a:hover,
+  .admin-sidebar button:hover,
+  .admin-mobile-bottom-bar a:hover {
+    transform: translateY(-1px);
+  }
+
+  .admin-badge {
+    letter-spacing: 0.01em;
+  }
+
+  .admin-sidebar {
+    display: grid;
+    grid-template-rows: minmax(0, 1fr);
+  }
+
+  .admin-sidebar nav {
+    gap: 0.25rem;
+  }
+
+  .admin-sidebar a,
+  .admin-sidebar button,
+  .admin-workspace-bar button,
+  .admin-workspace-bar span,
+  .login-overhaul button,
+  .login-overhaul a {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .admin-content-shell {
+    min-height: calc(100dvh - 1rem);
+  }
+
+  .booking-calendar-toolbar,
+  .billing-command-bar,
+  .customer-toolbar-slim,
+  .inventory-command-bar,
+  .audit-toolbar {
+    min-height: 4.1rem;
+  }
+
+  .booking-slot-counters,
+  .customer-summary-rail,
+  .inventory-focus-bar,
+  .inventory-priority-rail,
+  .inventory-saved-views,
+  .billing-queue,
+  .audit-log-card {
+    border-radius: 0.5rem !important;
+  }
+
+  .customer-directory-content-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  @media (min-width: 1180px) {
+    .customer-directory-content-grid {
+      grid-template-columns: minmax(0, 1fr) minmax(19rem, 0.34fr);
+      align-items: start;
+    }
+
+    .customer-directory-content-grid > :last-child {
+      position: sticky;
+      top: 4.75rem;
+    }
+
+    .billing-admin-workspace,
+    .inventory-admin-workspace,
+    .audit-admin-workspace,
+    .customer-mobile-workspace {
+      gap: 0.75rem !important;
+    }
+  }
+
+  @media (min-width: 768px) {
+    .admin-mobile-bottom-bar {
+      display: none !important;
+    }
+  }
+
+  @media (max-width: 767px) {
+    .login-overhaul {
+      min-height: auto;
+      gap: 1rem;
+      padding-block: 0.5rem 2rem;
+    }
+
+    .login-overhaul h1 {
+      max-width: 10ch;
+      font-size: clamp(2.15rem, 12vw, 3rem);
+      line-height: 1;
+    }
+
+    .login-highlight-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .login-card {
+      padding: 0.9rem;
+    }
+
+    .admin-shell {
+      width: 100%;
+      max-width: 100%;
+    }
+
+    .admin-page-shell {
+      padding-inline: 0.45rem !important;
+    }
+
+    .admin-page-header {
+      min-height: auto;
+      padding: 0.85rem !important;
+    }
+
+    .admin-page-header h1 {
+      max-width: 12ch;
+      font-size: clamp(1.9rem, 9.8vw, 2.55rem) !important;
+      line-height: 1.03 !important;
+    }
+
+    .admin-command-bar,
+    .admin-panel {
+      padding: 0.65rem !important;
+    }
+
+    .booking-calendar-toolbar,
+    .billing-command-bar,
+    .customer-toolbar-slim,
+    .inventory-command-bar,
+    .audit-toolbar {
+      min-height: 0;
+    }
+
+    .admin-mobile-bottom-bar {
+      border-radius: 0.65rem !important;
+      padding: 0.35rem !important;
+    }
+
+    .admin-mobile-bottom-bar a,
+    .admin-mobile-bottom-bar button {
+      min-height: 2.65rem !important;
+      border-radius: 0.5rem !important;
+    }
+
+    .admin-drawer-panel {
+      border-radius: 0.75rem 0.75rem 0 0 !important;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .admin-button,
+    .admin-dropdown-button,
+    .admin-sidebar a,
+    .admin-sidebar button,
+    .admin-mobile-bottom-bar a,
+    .login-overhaul button,
+    .login-overhaul a {
+      transition: none !important;
+    }
+
+    .admin-button:hover,
+    .admin-dropdown-button:hover,
+    .admin-sidebar a:hover,
+    .admin-sidebar button:hover,
+    .admin-mobile-bottom-bar a:hover {
+      transform: none !important;
+    }
+  }
+}
+/* 37-admin-ui-overhaul-20260613:end */
+
+/* 37-admin-navigation-overhaul-20260613:start */
+@layer components {
+  .admin-sidebar {
+    display: none !important;
+    width: 17rem;
+    padding: 0.45rem;
+    transition:
+      width 180ms ease,
+      background-color 180ms ease,
+      border-color 180ms ease;
+  }
+
+  @media (min-width: 768px) {
+    .admin-sidebar {
+      display: grid !important;
+    }
+  }
+
+  .admin-sidebar.is-collapsed {
+    width: 4.75rem;
+  }
+
+  .admin-sidebar.is-expanded {
+    width: 17rem;
+  }
+
+  .admin-sidebar-inner {
+    scrollbar-width: none;
+  }
+
+  .admin-sidebar-inner::-webkit-scrollbar {
+    display: none;
+  }
+
+  .admin-sidebar-brand {
+    background:
+      linear-gradient(180deg, color-mix(in srgb, var(--ui-control-hover) 82%, transparent), color-mix(in srgb, var(--ui-control) 78%, transparent));
+  }
+
+  .admin-sidebar-section {
+    border-radius: 0.55rem;
+  }
+
+  .admin-sidebar-nav-item {
+    min-height: 3rem;
+    isolation: isolate;
+  }
+
+  .admin-sidebar-nav-item::before {
+    content: "";
+    position: absolute;
+    inset-block: 0.55rem;
+    inset-inline-start: 0.3rem;
+    width: 0.18rem;
+    border-radius: 999px;
+    background: transparent;
+    transition: background-color 180ms ease, transform 180ms ease;
+  }
+
+  .admin-sidebar-nav-item.is-active::before {
+    background: linear-gradient(180deg, var(--color-studio-accent), var(--color-studio-cyan));
+  }
+
+  .admin-sidebar-nav-item.is-active {
+    background:
+      linear-gradient(90deg, rgb(255 74 155 / 0.14), transparent 38%),
+      color-mix(in srgb, var(--ui-control-hover) 86%, transparent) !important;
+  }
+
+  .admin-sidebar-nav-icon {
+    background:
+      linear-gradient(180deg, color-mix(in srgb, var(--ui-control-hover) 76%, transparent), color-mix(in srgb, var(--ui-glass-soft) 84%, transparent));
+  }
+
+  .admin-sidebar-nav-item.is-active .admin-sidebar-nav-icon {
+    border-color: color-mix(in srgb, var(--color-studio-accent) 42%, var(--ui-border));
+    background: color-mix(in srgb, var(--color-studio-accent) 12%, var(--ui-control));
+  }
+
+  .admin-sidebar [aria-label="Admin theme controls"] {
+    gap: 0.45rem;
+    border-top: 0;
+    padding-top: 0;
+  }
+
+  .admin-sidebar [aria-label="Admin theme controls"] > button,
+  .admin-sidebar-logout {
+    min-height: 2.55rem;
+  }
+
+  .admin-mobile-bottom-bar {
+    left: 50% !important;
+    right: auto !important;
+    bottom: max(0.7rem, env(safe-area-inset-bottom)) !important;
+    width: min(29rem, calc(100vw - 1rem)) !important;
+    transform: translateX(-50%);
+    padding: 0.35rem !important;
+    border-radius: 0.8rem !important;
+    background:
+      linear-gradient(180deg, color-mix(in srgb, var(--ui-control-hover) 84%, transparent), color-mix(in srgb, var(--ui-bg-base) 92%, transparent)) !important;
+    box-shadow:
+      0 1px 0 rgb(255 255 255 / 0.08) inset,
+      0 1.25rem 3rem rgb(0 0 0 / 0.3) !important;
+  }
+
+  .admin-mobile-bottom-track {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 0.25rem;
+  }
+
+  .admin-bottom-nav-item {
+    min-height: 3.15rem !important;
+    border: 1px solid transparent;
+    isolation: isolate;
+  }
+
+  .admin-bottom-nav-item::before {
+    content: "";
+    position: absolute;
+    inset-inline: 28%;
+    top: 0.18rem;
+    height: 0.16rem;
+    border-radius: 999px;
+    background: transparent;
+    transition: background-color 180ms ease, inset-inline 180ms ease;
+  }
+
+  .admin-bottom-nav-item.is-active::before {
+    inset-inline: 22%;
+    background: linear-gradient(90deg, var(--color-studio-accent), var(--color-studio-cyan));
+  }
+
+  .admin-bottom-nav-item.is-active {
+    border-color: color-mix(in srgb, var(--color-studio-accent) 24%, var(--ui-border));
+    background:
+      linear-gradient(180deg, rgb(255 74 155 / 0.12), rgb(69 211 255 / 0.055)),
+      color-mix(in srgb, var(--ui-control-hover) 82%, transparent) !important;
+  }
+
+  .admin-bottom-nav-icon {
+    width: 1.8rem;
+    height: 1.65rem;
+  }
+
+  .admin-bottom-nav-label {
+    font-size: clamp(0.52rem, 2.45vw, 0.66rem);
+    line-height: 1.05;
+  }
+
+  @media (max-width: 420px) {
+    .admin-mobile-bottom-bar {
+      width: min(27rem, calc(100vw - 0.75rem)) !important;
+      padding: 0.28rem !important;
+      border-radius: 0.7rem !important;
+    }
+
+    .admin-mobile-bottom-track {
+      gap: 0.18rem;
+    }
+
+    .admin-bottom-nav-item {
+      min-height: 2.9rem !important;
+      padding-inline: 0.2rem !important;
+    }
+
+    .admin-bottom-nav-icon {
+      width: 1.55rem;
+      height: 1.45rem;
+    }
+
+    .admin-bottom-nav-icon svg {
+      width: 0.94rem;
+      height: 0.94rem;
+    }
+
+    .admin-bottom-nav-label {
+      font-size: 0.54rem;
+      letter-spacing: -0.02em;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .admin-sidebar,
+    .admin-sidebar-nav-item::before,
+    .admin-bottom-nav-item::before {
+      transition: none !important;
+    }
+  }
+}
+/* 37-admin-navigation-overhaul-20260613:end */
+
+/* 37-booking-workspace-overhaul-20260613:start */
+@layer components {
+  .booking-admin-workspace {
+    --booking-line: color-mix(in srgb, var(--ui-border) 86%, transparent);
+    --booking-surface: color-mix(in srgb, var(--ui-glass) 78%, transparent);
+    --booking-surface-soft: color-mix(in srgb, var(--ui-glass-soft) 74%, transparent);
+    --booking-cell: color-mix(in srgb, var(--ui-bg-base) 90%, var(--ui-control));
+  }
+
+  .booking-page-header {
+    min-height: 6.5rem;
+    padding: 0.95rem !important;
+  }
+
+  .booking-page-header h1 {
+    max-width: 14ch;
+    font-size: clamp(1.7rem, 3vw, 2.6rem) !important;
+    letter-spacing: -0.035em !important;
+  }
+
+  .booking-page-header p {
+    max-width: 58ch;
+    font-size: 0.88rem;
+    line-height: 1.55;
+  }
+
+  .booking-board-stack {
+    min-width: 0;
+  }
+
+  .booking-calendar-toolbar {
+    grid-template-columns: minmax(0, 1.05fr) minmax(18rem, 0.8fr) auto !important;
+    gap: 0.55rem !important;
+    min-height: 3.4rem !important;
+    padding: 0.5rem !important;
+    border-radius: 0.65rem !important;
+    background:
+      linear-gradient(180deg, var(--booking-surface), var(--booking-surface-soft)) !important;
+  }
+
+  .booking-calendar-toolbar > div:first-child,
+  .booking-calendar-toolbar > div:last-child {
+    min-width: 0;
+  }
+
+  .booking-calendar-toolbar .admin-button,
+  .booking-calendar-toolbar .admin-badge,
+  .booking-calendar-toolbar button {
+    border-radius: 0.48rem !important;
+  }
+
+  .booking-calendar-toolbar .admin-button {
+    min-height: 2.35rem !important;
+  }
+
+  .booking-calendar-toolbar > div:first-child .admin-badge {
+    min-height: 2.35rem !important;
+    min-width: 12rem;
+    max-width: 18rem;
+  }
+
+  .booking-status-counters {
+    min-height: 2.35rem !important;
+    border-radius: 0.55rem !important;
+    background: color-mix(in srgb, var(--ui-control) 78%, transparent) !important;
+    box-shadow: none !important;
+  }
+
+  .booking-status-counters .admin-badge {
+    min-height: 1.9rem !important;
+    border-radius: 0.45rem !important;
+    padding-inline: 0.55rem !important;
+    letter-spacing: 0.06em !important;
+  }
+
+  .booking-slot-counters {
+    min-height: 4.05rem;
+    border-radius: 0.65rem !important;
+    background:
+      linear-gradient(180deg, var(--booking-surface), var(--booking-surface-soft)) !important;
+  }
+
+  .booking-slot-counters article {
+    min-height: 4.05rem;
+    align-content: center;
+    padding: 0.7rem 0.95rem !important;
+  }
+
+  .booking-slot-counters strong {
+    font-size: clamp(1.2rem, 2vw, 1.65rem) !important;
+    letter-spacing: -0.04em !important;
+  }
+
+  .booking-calendar-grid {
+    border-radius: 0.7rem !important;
+    background: color-mix(in srgb, var(--ui-bg-base) 94%, var(--ui-control)) !important;
+  }
+
+  .booking-calendar-grid > div:first-child {
+    min-height: 3.25rem;
+    padding: 0.55rem 0.75rem !important;
+  }
+
+  .booking-calendar-grid > div:first-child .size-9,
+  .booking-calendar-grid > div:first-child .sm\:size-10 {
+    width: 2rem !important;
+    height: 2rem !important;
+    border-radius: 0.5rem !important;
+  }
+
+  .booking-calendar-grid > div:first-child strong {
+    font-size: 0.88rem !important;
+  }
+
+  .booking-calendar-grid > div:first-child span {
+    line-height: 1.25;
+  }
+
+  .booking-calendar-scroller {
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+  }
+
+  .booking-calendar-grid {
+    --booking-time-column-width: 96px;
+  }
+
+  .booking-time-corner-cell {
+    height: 2.75rem !important;
+  }
+
+  .booking-time-cell,
+  .booking-calendar-grid button[aria-label*="Empty slot"],
+  .booking-calendar-grid button[aria-label*="status pembayaran"] {
+    min-height: 2.8rem !important;
+  }
+
+  .booking-time-cell,
+  .booking-time-corner-cell {
+    box-shadow: 0.8rem 0 1.2rem rgb(0 0 0 / 0.1) !important;
+  }
+
+  .booking-calendar-grid .booking-block-card {
+    left: 0.35rem !important;
+    right: 0.35rem !important;
+    top: 0.25rem !important;
+    border-radius: 0.48rem !important;
+    padding: 0.35rem 0.45rem !important;
+  }
+
+  .booking-calendar-grid .booking-block-card > span:last-child {
+    padding-left: 0.55rem !important;
+  }
+
+  .booking-calendar-grid .booking-block-card span {
+    letter-spacing: 0 !important;
+  }
+
+  .booking-selected-slot-panel {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 0.4rem;
+    align-items: center;
+    min-height: 2.85rem;
+    border-radius: 0.65rem !important;
+    padding: 0.65rem 0.8rem !important;
+    font-size: 0.86rem !important;
+    line-height: 1.45 !important;
+  }
+
+  .booking-form-modal,
+  .booking-form-card,
+  .booking-payment-card,
+  .booking-payment-summary,
+  .booking-form-card label > span,
+  .booking-payment-card label > span,
+  .booking-form-notes textarea,
+  .booking-payment-options button,
+  .booking-form-cancel,
+  .booking-form-submit {
+    border-radius: 0.6rem !important;
+  }
+
+  .booking-form-modal {
+    max-width: min(720px, calc(100vw - 24px)) !important;
+  }
+
+  .booking-form-header {
+    padding: 0.9rem 1rem 0.75rem !important;
+  }
+
+  .booking-form-body {
+    padding: 0.75rem 1rem !important;
+  }
+
+  .booking-form-card,
+  .booking-payment-card {
+    gap: 0.7rem !important;
+    padding: 0.75rem !important;
+  }
+
+  .booking-form-footer {
+    padding: 0.75rem 1rem max(0.8rem, env(safe-area-inset-bottom)) !important;
+  }
+
+  @media (max-width: 1023px) {
+    .booking-calendar-toolbar {
+      grid-template-columns: minmax(0, 1fr) !important;
+    }
+  }
+
+  @media (max-width: 767px) {
+    .booking-admin-workspace {
+      padding-inline: 0.35rem !important;
+    }
+
+    .booking-page-header {
+      padding: 0.8rem !important;
+    }
+
+    .booking-page-header h1 {
+      max-width: 11ch;
+      font-size: clamp(1.8rem, 8.8vw, 2.35rem) !important;
+    }
+
+    .booking-calendar-toolbar {
+      gap: 0.4rem !important;
+      padding: 0.45rem !important;
+      border-radius: 0.55rem !important;
+    }
+
+    .booking-calendar-toolbar > div:first-child {
+      grid-template-columns: auto minmax(0, 1fr) auto auto !important;
+    }
+
+    .booking-calendar-toolbar > div:first-child .admin-badge {
+      min-width: 0;
+      max-width: 100%;
+    }
+
+    .booking-status-counters {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      width: 100%;
+    }
+
+    .booking-slot-counters article {
+      min-height: 3.45rem;
+      padding: 0.55rem 0.62rem !important;
+    }
+
+    .booking-slot-counters span:first-child {
+      font-size: 0.5rem !important;
+      letter-spacing: 0.08em !important;
+    }
+
+    .booking-calendar-grid {
+      --booking-time-column-width: 86px;
+    }
+
+    .booking-calendar-grid > div:first-child {
+      padding: 0.55rem 0.65rem !important;
+    }
+
+    .booking-calendar-scroller {
+      max-height: min(42rem, calc(100dvh - 12rem)) !important;
+    }
+
+    .booking-calendar-inner {
+      min-width: 660px !important;
+    }
+
+    .booking-time-corner-cell {
+      height: 2.55rem !important;
+    }
+
+    .booking-time-cell,
+    .booking-calendar-grid button[aria-label*="Empty slot"],
+    .booking-calendar-grid button[aria-label*="status pembayaran"] {
+      min-height: 2.55rem !important;
+    }
+
+    .booking-selected-slot-panel {
+      padding: 0.58rem 0.68rem !important;
+      font-size: 0.78rem !important;
+    }
+  }
+
+  @media (max-width: 420px) {
+    .booking-calendar-toolbar > div:first-child {
+      grid-template-columns: 2rem minmax(0, 1fr) 2rem auto !important;
+    }
+
+    .booking-calendar-toolbar .admin-button {
+      min-height: 2rem !important;
+      min-width: 2rem !important;
+      padding-inline: 0.48rem !important;
+    }
+
+    .booking-calendar-toolbar > div:first-child .admin-badge {
+      min-height: 2rem !important;
+      padding-inline: 0.5rem !important;
+      font-size: 0.58rem !important;
+    }
+
+    .booking-status-counters .admin-badge {
+      min-height: 1.65rem !important;
+      padding-inline: 0.28rem !important;
+      font-size: 0.48rem !important;
+    }
+
+    .booking-calendar-grid {
+      --booking-time-column-width: 78px;
+    }
+
+    .booking-calendar-inner {
+      min-width: 620px !important;
+    }
+  }
+}
+/* 37-booking-workspace-overhaul-20260613:end */
