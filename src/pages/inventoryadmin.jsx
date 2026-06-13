@@ -207,6 +207,75 @@ function createInventoryPayloadFromDraft(draft, currentItem) {
   };
 }
 
+const stockMovementOptions = [
+  {
+    helper: 'Tambah stok masuk.',
+    key: 'restock',
+    label: 'Restock',
+  },
+  {
+    helper: 'Stok terpakai operasional.',
+    key: 'usage',
+    label: 'Usage',
+  },
+  {
+    helper: 'Stok rusak atau hilang.',
+    key: 'damage',
+    label: 'Damage',
+  },
+  {
+    helper: 'Set jumlah aktual.',
+    key: 'adjustment',
+    label: 'Adjustment',
+  },
+];
+
+function createStockMovementDraft(asset = {}) {
+  return {
+    movementType: 'restock',
+    note: '',
+    quantity: 1,
+    sourceName: '',
+    stockDate: getTodayDateKey(),
+    targetQuantity: Math.max(0, Number(asset.quantity) || 0),
+  };
+}
+
+function getStockMovementOptionLabel(movementType) {
+  return stockMovementOptions.find((option) => option.key === movementType)?.label || 'Movement';
+}
+
+function getStockMovementPreview(asset, draft) {
+  const currentQuantity = Math.max(0, Number(asset?.quantity) || 0);
+  const inputQuantity = Math.max(0, Number(draft?.quantity) || 0);
+  const targetQuantity = Math.max(0, Number(draft?.targetQuantity) || 0);
+  const movementType = draft?.movementType || 'restock';
+
+  if (movementType === 'usage' || movementType === 'damage') {
+    const nextQuantity = Math.max(0, currentQuantity - inputQuantity);
+
+    return {
+      currentQuantity,
+      nextQuantity,
+      quantityChange: nextQuantity - currentQuantity,
+    };
+  }
+
+  if (movementType === 'adjustment') {
+    return {
+      currentQuantity,
+      nextQuantity: targetQuantity,
+      quantityChange: targetQuantity - currentQuantity,
+    };
+  }
+
+  return {
+    currentQuantity,
+    nextQuantity: currentQuantity + inputQuantity,
+    quantityChange: inputQuantity,
+  };
+}
+
 
 const inventoryStatusToneClasses = {
   low: 'border-studio-accent/35 bg-studio-accent/10 text-studio-accent ring-studio-accent/15',
@@ -720,7 +789,7 @@ function InventoryAssetCard({
   onDeleteAsset,
   onEditAsset,
   onMarkMaintenance,
-  onRestockAsset,
+  onOpenStockMovement,
 }) {
   const stockRatio = asset.minQuantity > 0
     ? Math.min(100, Math.round((asset.quantity / asset.minQuantity) * 100))
@@ -767,15 +836,15 @@ function InventoryAssetCard({
         ) : null}
       </div>
 
-      <div className="grid grid-cols-[52px_72px_34px_34px] justify-end gap-1.5">
+      <div className="grid grid-cols-[72px_72px_34px_34px] justify-end gap-1.5">
         <button
-          aria-label={'Restock ' + asset.name}
+          aria-label={'Open stock movement for ' + asset.name}
           className="inline-flex min-h-8 items-center justify-center gap-1.5 rounded-full bg-studio-cyan/10 px-2 text-[0.7rem] font-semibold text-studio-cyan transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-cyan/20"
           type="button"
-          onClick={() => onRestockAsset(asset)}
+          onClick={() => onOpenStockMovement(asset)}
         >
           <RotateCcw size={12} strokeWidth={2.35} aria-hidden="true" />
-          +1
+          Move
         </button>
 
         <button
@@ -814,7 +883,7 @@ function InventoryBoard({
   onDeleteAsset,
   onEditAsset,
   onMarkMaintenance,
-  onRestockAsset,
+  onOpenStockMovement,
 }) {
   if (assets.length === 0) {
     return (
@@ -851,7 +920,7 @@ function InventoryBoard({
                 onDeleteAsset={onDeleteAsset}
                 onEditAsset={onEditAsset}
                 onMarkMaintenance={onMarkMaintenance}
-                onRestockAsset={onRestockAsset}
+                onOpenStockMovement={onOpenStockMovement}
               />
             ))}
           </div>
@@ -1031,6 +1100,187 @@ function InventoryFormPanel({
   );
 }
 
+function InventoryStockMovementDrawer({
+  asset,
+  draft,
+  movementStatus,
+  onCancel,
+  onChange,
+  onSubmit,
+}) {
+  if (!asset || !draft) {
+    return null;
+  }
+
+  const isSaving = movementStatus === 'saving';
+  const movementPreview = getStockMovementPreview(asset, draft);
+  const quantityLabel = draft.movementType === 'adjustment' ? 'Target quantity' : 'Quantity';
+
+  return (
+    <section className="fixed inset-0 z-50 grid justify-items-end bg-black/30 p-3 backdrop-blur-sm" aria-label="Inventory stock movement drawer">
+      <form className="flex h-full w-full max-w-[480px] flex-col overflow-hidden rounded-[1.4rem] border border-[var(--ui-border-strong)] bg-[var(--ui-bg-page)] shadow-[var(--ui-shadow-strong)] ring-1 ring-[var(--ui-ring)]" onSubmit={onSubmit}>
+        <div className="flex items-start justify-between gap-3 border-b border-[var(--ui-border)] p-4">
+          <div className="grid gap-1">
+            <span className="text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-studio-cyan">
+              Stock movement
+            </span>
+            <h2 className="m-0 text-2xl font-semibold tracking-[-0.06em] text-[var(--ui-text-strong)]">
+              {asset.name}
+            </h2>
+            <p className="m-0 text-sm font-semibold text-[var(--ui-text-muted)]">
+              Current: {movementPreview.currentQuantity} • Next: {movementPreview.nextQuantity}
+            </p>
+          </div>
+
+          <button
+            aria-label="Close stock movement drawer"
+            className="grid size-9 shrink-0 place-items-center rounded-full bg-[var(--ui-control)] text-[var(--ui-text-muted)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
+            type="button"
+            onClick={onCancel}
+          >
+            <X size={15} strokeWidth={2.35} aria-hidden="true" />
+          </button>
+        </div>
+
+        <div className="grid flex-1 gap-4 overflow-y-auto p-4">
+          <div className="grid gap-2">
+            <span className="text-[0.68rem] font-semibold uppercase tracking-[0.12em] text-[var(--ui-text-muted)]">
+              Movement type
+            </span>
+
+            <div className="grid gap-2 sm:grid-cols-2">
+              {stockMovementOptions.map((option) => (
+                <button
+                  className={cn(
+                    'grid gap-1 rounded-xl border p-3 text-left transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-cyan/20',
+                    draft.movementType === option.key
+                      ? 'border-studio-cyan/35 bg-studio-cyan/10 text-studio-cyan ring-1 ring-studio-cyan/15'
+                      : 'border-[var(--ui-border)] bg-[var(--ui-control)] text-[var(--ui-text-main)] ring-1 ring-[var(--ui-ring)] hover:bg-[var(--ui-control-hover)]',
+                  )}
+                  key={option.key}
+                  type="button"
+                  onClick={() => onChange('movementType', option.key)}
+                >
+                  <strong className="text-sm font-semibold">
+                    {option.label}
+                  </strong>
+                  <span className="text-xs font-medium text-[var(--ui-text-muted)]">
+                    {option.helper}
+                  </span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="grid gap-3 sm:grid-cols-2">
+            <label className="grid gap-1.5 text-sm font-semibold text-[var(--ui-text-main)]">
+              <span className="text-[0.68rem] uppercase tracking-[0.12em] text-[var(--ui-text-muted)]">
+                {quantityLabel}
+              </span>
+              <input
+                className="min-h-10 rounded-xl border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 text-sm font-semibold text-[var(--ui-text-strong)] outline-none ring-1 ring-[var(--ui-ring)] focus:border-studio-cyan/45 focus:ring-4 focus:ring-studio-cyan/15"
+                min="0"
+                type="number"
+                value={draft.movementType === 'adjustment' ? draft.targetQuantity : draft.quantity}
+                onChange={(event) => onChange(draft.movementType === 'adjustment' ? 'targetQuantity' : 'quantity', event.target.value)}
+              />
+            </label>
+
+            <label className="grid gap-1.5 text-sm font-semibold text-[var(--ui-text-main)]">
+              <span className="text-[0.68rem] uppercase tracking-[0.12em] text-[var(--ui-text-muted)]">
+                Date
+              </span>
+              <input
+                className="min-h-10 rounded-xl border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 text-sm font-semibold text-[var(--ui-text-strong)] outline-none ring-1 ring-[var(--ui-ring)] focus:border-studio-cyan/45 focus:ring-4 focus:ring-studio-cyan/15"
+                type="date"
+                value={draft.stockDate}
+                onChange={(event) => onChange('stockDate', event.target.value)}
+              />
+            </label>
+          </div>
+
+          <label className="grid gap-1.5 text-sm font-semibold text-[var(--ui-text-main)]">
+            <span className="text-[0.68rem] uppercase tracking-[0.12em] text-[var(--ui-text-muted)]">
+              Source / reason
+            </span>
+            <input
+              className="min-h-10 rounded-xl border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 text-sm font-semibold text-[var(--ui-text-strong)] outline-none ring-1 ring-[var(--ui-ring)] placeholder:text-[var(--ui-text-soft)] focus:border-studio-cyan/45 focus:ring-4 focus:ring-studio-cyan/15"
+              placeholder="Vendor, penggunaan sesi, koreksi opname..."
+              value={draft.sourceName}
+              onChange={(event) => onChange('sourceName', event.target.value)}
+            />
+          </label>
+
+          <label className="grid gap-1.5 text-sm font-semibold text-[var(--ui-text-main)]">
+            <span className="text-[0.68rem] uppercase tracking-[0.12em] text-[var(--ui-text-muted)]">
+              Note
+            </span>
+            <textarea
+              className="min-h-24 resize-y rounded-xl border border-[var(--ui-border)] bg-[var(--ui-control)] p-3 text-sm font-medium leading-6 text-[var(--ui-text-strong)] outline-none ring-1 ring-[var(--ui-ring)] placeholder:text-[var(--ui-text-soft)] focus:border-studio-cyan/45 focus:ring-4 focus:ring-studio-cyan/15"
+              placeholder="Catatan tambahan untuk audit stok..."
+              value={draft.note}
+              onChange={(event) => onChange('note', event.target.value)}
+            />
+          </label>
+
+          <div className="grid gap-2 rounded-xl bg-[var(--ui-control)] p-3 ring-1 ring-[var(--ui-ring)]">
+            <span className="text-[0.68rem] font-semibold uppercase tracking-[0.12em] text-[var(--ui-text-muted)]">
+              Preview
+            </span>
+            <div className="flex items-end justify-between gap-3">
+              <div className="grid gap-0.5">
+                <span className="text-xs font-semibold text-[var(--ui-text-muted)]">Change</span>
+                <strong className={cn(
+                  'text-2xl font-semibold tracking-[-0.055em]',
+                  movementPreview.quantityChange < 0 ? 'text-studio-accent' : 'text-studio-cyan',
+                )}>
+                  {movementPreview.quantityChange > 0 ? '+' : ''}{movementPreview.quantityChange}
+                </strong>
+              </div>
+
+              <div className="grid gap-0.5 text-right">
+                <span className="text-xs font-semibold text-[var(--ui-text-muted)]">After movement</span>
+                <strong className="text-2xl font-semibold tracking-[-0.055em] text-[var(--ui-text-strong)]">
+                  {movementPreview.nextQuantity}
+                </strong>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[var(--ui-border)] p-4">
+          <span className={cn(
+            'text-sm font-semibold',
+            movementStatus === 'error' ? 'text-studio-accent' : 'text-[var(--ui-text-muted)]',
+          )}>
+            {movementStatus === 'saved' ? 'Movement saved.' : movementStatus === 'error' ? 'Movement gagal.' : 'Update quantity dan timeline.'}
+          </span>
+
+          <div className="flex flex-wrap gap-2">
+            <button
+              className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full bg-[var(--ui-control)] px-4 text-sm font-semibold text-[var(--ui-text-muted)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-cyan/20"
+              disabled={isSaving}
+              type="button"
+              onClick={onCancel}
+            >
+              Cancel
+            </button>
+
+            <button
+              className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full [background:var(--ui-primary-bg)] px-5 text-sm font-semibold text-[var(--ui-primary-text)] shadow-[var(--ui-shadow-soft)] transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-cyan/20 disabled:cursor-not-allowed disabled:opacity-60"
+              disabled={isSaving}
+              type="submit"
+            >
+              <Save size={15} strokeWidth={2.35} aria-hidden="true" />
+              {isSaving ? 'Saving...' : 'Save movement'}
+            </button>
+          </div>
+        </div>
+      </form>
+    </section>
+  );
+}
+
 
 function InventorySyncBanner({
   errorMessage,
@@ -1193,6 +1443,9 @@ export function InventoryAdmin() {
   const [activeInventoryItem, setActiveInventoryItem] = useState(null);
   const [assetFormMode, setAssetFormMode] = useState('create');
   const [assetFormStatus, setAssetFormStatus] = useState('idle');
+  const [stockMovementAsset, setStockMovementAsset] = useState(null);
+  const [stockMovementDraft, setStockMovementDraft] = useState(null);
+  const [stockMovementStatus, setStockMovementStatus] = useState('idle');
   const [activityLogs, setActivityLogs] = useState([]);
   const [activityState, setActivityState] = useState({
     errorMessage: '',
@@ -1374,24 +1627,88 @@ export function InventoryAdmin() {
     }
   };
 
-  const handleRestockAsset = async (asset) => {
+  const resetStockMovementStatus = () => {
+    window.setTimeout(() => {
+      setStockMovementStatus('idle');
+    }, 2200);
+  };
+
+  const closeStockMovementDrawer = () => {
+    setStockMovementAsset(null);
+    setStockMovementDraft(null);
+    setStockMovementStatus('idle');
+  };
+
+  const openStockMovementDrawer = (asset) => {
+    setStockMovementAsset(asset);
+    setStockMovementDraft(createStockMovementDraft(asset));
+    setStockMovementStatus('idle');
+  };
+
+  const handleStockMovementChange = (field, value) => {
+    setStockMovementDraft((currentDraft) => {
+      const nextDraft = {
+        ...currentDraft,
+        [field]: value,
+      };
+
+      if (field === 'movementType' && value === 'adjustment') {
+        nextDraft.targetQuantity = Math.max(0, Number(stockMovementAsset?.quantity) || 0);
+      }
+
+      return nextDraft;
+    });
+
+    if (stockMovementStatus !== 'idle') {
+      setStockMovementStatus('idle');
+    }
+  };
+
+  const handleStockMovementSubmit = async (event) => {
+    event.preventDefault();
+
+    if (!stockMovementAsset || !stockMovementDraft) {
+      setStockMovementStatus('error');
+      resetStockMovementStatus();
+      return;
+    }
+
+    const movementPreview = getStockMovementPreview(stockMovementAsset, stockMovementDraft);
+    const movementLabel = getStockMovementOptionLabel(stockMovementDraft.movementType);
+
+    setStockMovementStatus('saving');
+
     try {
       const nextItem = {
-        ...asset,
-        lastChecked: getTodayDateKey(),
-        quantity: Number(asset.quantity || 0) + 1,
-        status: asset.status === 'maintenance' ? 'maintenance' : 'ready',
+        ...stockMovementAsset,
+        lastChecked: stockMovementDraft.stockDate || getTodayDateKey(),
+        quantity: movementPreview.nextQuantity,
+        status: stockMovementAsset.status === 'maintenance' ? 'maintenance' : 'ready',
       };
 
       await adminInventoryRepository.upsertInventoryItem(nextItem, adminUser);
       await recordInventoryLog({
-        action: 'inventory-restock',
-        itemId: asset.id,
-        itemName: asset.name,
-        label: 'Inventory quantity restocked +1',
+        action: 'inventory-stock-' + stockMovementDraft.movementType,
+        itemId: stockMovementAsset.id,
+        itemName: stockMovementAsset.name,
+        label: movementLabel + ': ' + movementPreview.currentQuantity + ' → ' + movementPreview.nextQuantity,
+        movementType: stockMovementDraft.movementType,
+        nextQuantity: movementPreview.nextQuantity,
+        note: stockMovementDraft.note,
+        previousQuantity: movementPreview.currentQuantity,
+        quantityChange: movementPreview.quantityChange,
+        sourceName: stockMovementDraft.sourceName,
       });
+
+      setStockMovementStatus('saved');
+
+      window.setTimeout(() => {
+        closeStockMovementDrawer();
+      }, 650);
     } catch (error) {
-      console.error('Failed to restock inventory asset.', error);
+      console.error('Failed to save inventory stock movement.', error);
+      setStockMovementStatus('error');
+      resetStockMovementStatus();
     }
   };
 
@@ -1486,6 +1803,15 @@ export function InventoryAdmin() {
         onSubmit={handleAssetFormSubmit}
       />
 
+      <InventoryStockMovementDrawer
+        asset={stockMovementAsset}
+        draft={stockMovementDraft}
+        movementStatus={stockMovementStatus}
+        onCancel={closeStockMovementDrawer}
+        onChange={handleStockMovementChange}
+        onSubmit={handleStockMovementSubmit}
+      />
+
       <div className="grid gap-3">
         <InventoryMaintenancePanel assets={activeAssets} />
 
@@ -1494,7 +1820,7 @@ export function InventoryAdmin() {
           onDeleteAsset={handleDeleteAsset}
           onEditAsset={openEditAssetForm}
           onMarkMaintenance={handleMarkMaintenance}
-          onRestockAsset={handleRestockAsset}
+          onOpenStockMovement={openStockMovementDrawer}
         />
 
         <InventoryActivityTimeline logs={activityLogs} state={activityState} />

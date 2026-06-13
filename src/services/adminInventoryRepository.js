@@ -206,7 +206,13 @@ export function normalizeInventoryActivityLog(entry) {
     itemId,
     itemName: safeString(entry.itemName, 'Inventory item'),
     label: safeString(entry.label, 'Inventory activity'),
+    movementType: safeString(entry.movementType),
+    nextQuantity: safeNumber(entry.nextQuantity),
+    note: safeString(entry.note),
+    previousQuantity: safeNumber(entry.previousQuantity),
+    quantityChange: safeNumber(entry.quantityChange),
     source: safeString(entry.source, 'admin'),
+    sourceName: safeString(entry.sourceName),
     studioId: safeString(entry.studioId, DEFAULT_STUDIO_ID),
   };
 }
@@ -547,7 +553,13 @@ export async function recordInventoryActivityLog(entry) {
     itemId,
     itemName: safeString(entry.itemName),
     label: safeString(entry.label, 'Inventory activity'),
+    movementType: safeString(entry.movementType),
+    nextQuantity: safeNumber(entry.nextQuantity),
+    note: safeString(entry.note),
+    previousQuantity: safeNumber(entry.previousQuantity),
+    quantityChange: safeNumber(entry.quantityChange),
     source: safeString(entry.source, 'admin'),
+    sourceName: safeString(entry.sourceName),
     studioId: DEFAULT_STUDIO_ID,
   });
 
