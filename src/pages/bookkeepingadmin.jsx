@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useOutletContext } from 'react-router';
 import {
   BookOpenCheck,
@@ -8,22 +8,60 @@ import {
   TrendingDown,
   TrendingUp,
   WalletCards,
+  Search,
 } from 'lucide-react';
 import {
   AdminBadge,
-  AdminButton,
   AdminCommandBar,
   AdminPageHeader,
   AdminPageShell,
   AdminPanel,
+  AdminDropdown,
+  AdminTableShell,
 } from '../components/admin/AdminPrimitives.jsx';
 
-function formatBookkeepingCurrency(value) {
+const standardCategories = [
+  { key: 'all', label: 'Semua Kategori' },
+  { key: 'studio_rent', label: 'Sewa Studio' },
+  { key: 'gear_rent', label: 'Sewa Gear/Alat' },
+  { key: 'pos_sale', label: 'Penjualan POS' },
+  { key: 'maintenance', label: 'Perawatan Alat' },
+  { key: 'utilities', label: 'Listrik & Internet' },
+  { key: 'salary', label: 'Gaji & Staff' },
+  { key: 'marketing', label: 'Pemasaran' },
+  { key: 'other', label: 'Lain-lain' },
+];
+
+const standardAccounts = [
+  { key: 'all', label: 'Semua Akun' },
+  { key: 'cash', label: 'Cash' },
+  { key: 'transfer', label: 'Bank Transfer' },
+  { key: 'qris', label: 'QRIS' },
+  { key: 'debit', label: 'Debit' },
+  { key: 'other', label: 'Lainnya' },
+];
+
+const periodFilters = [
+  { key: 'month', label: 'Bulan Ini' },
+  { key: '30days', label: '30 Hari Terakhir' },
+  { key: 'all', label: 'Semua' },
+];
+
+const typeFilters = [
+  { key: 'all', label: 'Semua Tipe' },
+  { key: 'income', label: 'Masuk (Income)' },
+  { key: 'expense', label: 'Keluar (Expense)' },
+  { key: 'transfer', label: 'Transfer' },
+];
+
+function formatBookkeepingCurrency(value, allowNegative = false) {
+  const num = Number(value) || 0;
+  const val = allowNegative ? num : Math.max(0, num);
   return new Intl.NumberFormat('id-ID', {
     currency: 'IDR',
     maximumFractionDigits: 0,
     style: 'currency',
-  }).format(Math.max(0, Number(value) || 0));
+  }).format(val);
 }
 
 function getCurrentMonthLabel() {
@@ -71,23 +109,23 @@ function BookkeepingSummaryCard({
   value,
 }) {
   return (
-    <AdminPanel className="bookkeeping-summary-card grid gap-3 p-4" variant="flat">
+    <AdminPanel className="bookkeeping-summary-card grid gap-2.5 p-3.5" variant="flat">
       <div className="flex items-start justify-between gap-3">
-        <span className="grid min-w-0 gap-1">
+        <span className="grid min-w-0 gap-0.5">
           <span className="text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-[var(--ui-text-muted)]">
             {label}
           </span>
-          <strong className="text-2xl font-semibold leading-none tracking-[-0.055em] text-[var(--ui-text-strong)] sm:text-3xl">
+          <strong className="text-xl font-semibold leading-none tracking-[-0.05em] text-[var(--ui-text-strong)] sm:text-2xl">
             {value}
           </strong>
         </span>
 
         <AdminBadge tone={tone}>
-          <Icon size={15} strokeWidth={2.35} aria-hidden="true" />
+          <Icon size={14} strokeWidth={2.35} aria-hidden="true" />
         </AdminBadge>
       </div>
 
-      <p className="m-0 text-xs font-medium leading-5 text-[var(--ui-text-muted)]">
+      <p className="m-0 text-[0.68rem] font-medium leading-4 text-[var(--ui-text-muted)]">
         {helper}
       </p>
     </AdminPanel>
@@ -99,17 +137,17 @@ function BookkeepingComingSoonPanel() {
     <AdminPanel className="grid gap-4 p-4 sm:p-5" variant="solid">
       <div className="grid gap-2">
         <AdminBadge tone="cyan">
-          BOOKKEEPING.2
+          BOOKKEEPING.3
         </AdminBadge>
 
         <h2 className="m-0 text-2xl font-semibold tracking-[-0.05em] text-[var(--ui-text-strong)]">
-          Repositori pembukuan sudah siap.
+          Dashboard metrik & Ledger Buku Besar sudah siap.
         </h2>
 
         <p className="m-0 max-w-3xl text-sm leading-6 text-[var(--ui-text-main)]">
-          Fase ini telah mengimplementasikan repositori pembukuan (Firestore + local fallback) dan
-          mengintegrasikan data stream ke dalam shell admin. Pengisian data manual, dashboard,
-          ledger read model, dan laporan akan masuk di fase berikutnya.
+          Fase ini telah mengimplementasikan kalkulasi metrik all-time/periode, filter multi-dimensi,
+          pencarian teks penuh, dan tabel buku besar (ledger) dengan kalkulasi saldo berjalan kronologis.
+          Pengisian catatan kas manual akan didukung di fase berikutnya.
         </p>
       </div>
 
@@ -119,7 +157,7 @@ function BookkeepingComingSoonPanel() {
             Berikutnya
           </span>
           <strong className="text-sm font-semibold text-[var(--ui-text-strong)]">
-            BOOKKEEPING.3 Dashboard/read model
+            BOOKKEEPING.4 Catatan manual
           </strong>
         </div>
 
@@ -145,22 +183,251 @@ function BookkeepingComingSoonPanel() {
   );
 }
 
+function formatBookkeepingDate(value) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return String(value);
+  }
+  return new Intl.DateTimeFormat('id-ID', {
+    dateStyle: 'medium',
+  }).format(date);
+}
+
+function formatBookkeepingDateTime(entry) {
+  const dateStr = entry.date;
+  const timeStr = entry.transactionAt
+    ? new Date(entry.transactionAt).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
+    : '';
+
+  const formattedDate = formatBookkeepingDate(dateStr);
+  return timeStr ? `${formattedDate} ${timeStr}` : formattedDate;
+}
+
+function formatPaymentMethod(method) {
+  if (!method) return '-';
+  const val = String(method).trim().toLowerCase();
+  if (val === 'qris') return 'QRIS';
+  return val.charAt(0).toUpperCase() + val.slice(1);
+}
+
+function formatSource(entry) {
+  const typeMap = {
+    adjustment: 'Penyesuaian',
+    billing: 'Billing',
+    inventory: 'Inventory',
+    manual: 'Manual',
+  };
+  const typeLabel = typeMap[entry.sourceType] || 'Manual';
+  return entry.sourceLabel ? `${typeLabel} (${entry.sourceLabel})` : typeLabel;
+}
+
+function renderTypeBadge(type) {
+  if (type === 'income') {
+    return <AdminBadge tone="cyan">Masuk</AdminBadge>;
+  }
+  if (type === 'expense') {
+    return <AdminBadge tone="accent">Keluar</AdminBadge>;
+  }
+  return <AdminBadge tone="purple">Transfer</AdminBadge>;
+}
+
+function LedgerEmptyState({ hasEntries }) {
+  return (
+    <AdminPanel className="grid min-h-[16rem] place-items-center border-dashed p-6 text-center" variant="flat">
+      <div className="grid max-w-md gap-3">
+        <span className="mx-auto grid size-12 place-items-center rounded-full border border-[var(--ui-border)] bg-[var(--ui-control)] text-studio-accent ring-1 ring-[var(--ui-ring)]">
+          <BookOpenCheck size={20} strokeWidth={2.35} aria-hidden="true" />
+        </span>
+
+        <h2 className="m-0 text-xl font-semibold tracking-[-0.05em] text-[var(--ui-text-strong)]">
+          {hasEntries ? 'Tidak ada catatan yang cocok.' : 'Belum ada catatan pembukuan.'}
+        </h2>
+
+        <p className="m-0 text-xs leading-5 text-[var(--ui-text-muted)]">
+          {hasEntries
+            ? 'Coba ubah keyword pencarian atau bersihkan filter untuk melihat data lainnya.'
+            : 'Mulai catat kas masuk dan keluar studio untuk melihat laporan keuangan di sini.'}
+        </p>
+      </div>
+    </AdminPanel>
+  );
+}
+
 export function BookkeepingAdmin() {
   const adminContext = useOutletContext() || {};
   const {
     billingLoadError = '',
     billingTransactions = [],
     isBillingReady = false,
-    _bookkeepingEntries = [],
+    bookkeepingEntries = [],
     isBookkeepingReady = false,
     bookkeepingLoadError = '',
   } = adminContext;
+
+  const [searchTerm, setSearchTerm] = useState('');
+  const [periodFilter, setPeriodFilter] = useState('month');
+  const [typeFilter, setTypeFilter] = useState('all');
+  const [categoryFilter, setCategoryFilter] = useState('all');
+  const [accountFilter, setAccountFilter] = useState('all');
 
   const billingSnapshot = useMemo(
     () => getBillingSnapshot(billingTransactions),
     [billingTransactions],
   );
   const currentMonthLabel = useMemo(() => getCurrentMonthLabel(), []);
+
+  const dynamicCategories = useMemo(() => {
+    const categoriesMap = new Map();
+    standardCategories.forEach((cat) => {
+      if (cat.key !== 'all') {
+        categoriesMap.set(cat.key, cat.label);
+      }
+    });
+    bookkeepingEntries.forEach((entry) => {
+      if (entry.categoryId && entry.categoryName) {
+        categoriesMap.set(entry.categoryId, entry.categoryName);
+      }
+    });
+    return [
+      { key: 'all', label: 'Semua Kategori' },
+      ...Array.from(categoriesMap.entries()).map(([key, label]) => ({ key, label })),
+    ];
+  }, [bookkeepingEntries]);
+
+  const dynamicAccounts = useMemo(() => {
+    const accountsMap = new Map();
+    standardAccounts.forEach((acc) => {
+      if (acc.key !== 'all') {
+        accountsMap.set(acc.key, acc.label);
+      }
+    });
+    bookkeepingEntries.forEach((entry) => {
+      if (entry.accountId && entry.accountName) {
+        accountsMap.set(entry.accountId, entry.accountName);
+      }
+    });
+    return [
+      { key: 'all', label: 'Semua Akun' },
+      ...Array.from(accountsMap.entries()).map(([key, label]) => ({ key, label })),
+    ];
+  }, [bookkeepingEntries]);
+
+  const filteredEntries = useMemo(() => {
+    const normalizedQuery = searchTerm.trim().toLowerCase();
+    const today = new Date();
+    const currentMonthPrefix = today.toISOString().slice(0, 7);
+
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    const thirtyDaysAgoStr = thirtyDaysAgo.toISOString().slice(0, 10);
+
+    return bookkeepingEntries.filter((entry) => {
+      if (periodFilter === 'month') {
+        if (!entry.date || !entry.date.startsWith(currentMonthPrefix)) {
+          return false;
+        }
+      } else if (periodFilter === '30days') {
+        if (!entry.date || entry.date < thirtyDaysAgoStr) {
+          return false;
+        }
+      }
+
+      if (typeFilter !== 'all' && entry.type !== typeFilter) {
+        return false;
+      }
+
+      if (categoryFilter !== 'all' && entry.categoryId !== categoryFilter) {
+        return false;
+      }
+
+      if (accountFilter !== 'all' && entry.accountId !== accountFilter) {
+        return false;
+      }
+
+      if (normalizedQuery) {
+        const amountStr = String(entry.amount || '');
+        const matchText = [
+          entry.description,
+          entry.categoryName,
+          entry.accountName,
+          entry.paymentMethod,
+          entry.sourceLabel,
+          entry.sourceType,
+          amountStr,
+        ].join(' ').toLowerCase();
+
+        if (!matchText.includes(normalizedQuery)) {
+          return false;
+        }
+      }
+
+      return true;
+    });
+  }, [bookkeepingEntries, searchTerm, periodFilter, typeFilter, categoryFilter, accountFilter]);
+
+  const entriesWithRunningBalance = useMemo(() => {
+    const sortedChronological = [...bookkeepingEntries].sort((a, b) => {
+      const timeA = new Date(a.transactionAt || a.date || a.createdAt || 0).getTime();
+      const timeB = new Date(b.transactionAt || b.date || b.createdAt || 0).getTime();
+      if (timeA !== timeB) {
+        return timeA - timeB;
+      }
+      return String(a.id || '').localeCompare(String(b.id || ''));
+    });
+
+    let cumulative = 0;
+    const balanceMap = {};
+    sortedChronological.forEach((entry) => {
+      if (entry.direction === 'in' || entry.type === 'income') {
+        cumulative += Number(entry.amount) || 0;
+      } else if (entry.direction === 'out' || entry.type === 'expense') {
+        cumulative -= Number(entry.amount) || 0;
+      }
+      balanceMap[entry.id] = cumulative;
+    });
+
+    return filteredEntries.map((entry) => ({
+      ...entry,
+      runningBalance: balanceMap[entry.id] ?? 0,
+    }));
+  }, [bookkeepingEntries, filteredEntries]);
+
+  const summaryMetrics = useMemo(() => {
+    let income = 0;
+    let expense = 0;
+
+    filteredEntries.forEach((entry) => {
+      if (entry.type === 'income') {
+        income += Number(entry.amount) || 0;
+      } else if (entry.type === 'expense') {
+        expense += Number(entry.amount) || 0;
+      }
+    });
+
+    const allTimeBalance = bookkeepingEntries.reduce((sum, entry) => {
+      if (entry.direction === 'in' || entry.type === 'income') {
+        return sum + (Number(entry.amount) || 0);
+      }
+      if (entry.direction === 'out' || entry.type === 'expense') {
+        return sum - (Number(entry.amount) || 0);
+      }
+      return sum;
+    }, 0);
+
+    const today = new Date();
+    const currentMonthPrefix = today.toISOString().slice(0, 7);
+    const monthlyTransactionsCount = bookkeepingEntries.filter((entry) =>
+      entry.date && entry.date.startsWith(currentMonthPrefix)
+    ).length;
+
+    return {
+      income,
+      expense,
+      profit: income - expense,
+      balance: allTimeBalance,
+      monthlyCount: monthlyTransactionsCount,
+    };
+  }, [bookkeepingEntries, filteredEntries]);
 
   return (
     <AdminPageShell className="bookkeeping-admin-workspace gap-2 pb-[calc(7rem+env(safe-area-inset-bottom))] pt-0 md:gap-3 md:pb-3 md:pt-0" width="wide">
@@ -192,51 +459,179 @@ export function BookkeepingAdmin() {
         title="Pembukuan"
       />
 
-      <AdminCommandBar className="bookkeeping-command-bar gap-2 p-2 sm:p-3 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
-        <div className="flex min-w-0 flex-wrap items-center gap-2">
-          <AdminBadge icon={BookOpenCheck} tone="strong">
-            Ledger read-only shell
-          </AdminBadge>
-          <AdminBadge icon={FileText} tone="purple">
-            Plan ready
-          </AdminBadge>
-        </div>
-
-        <AdminButton disabled icon={CircleDollarSign} variant="primary">
-          Tambah catatan
-        </AdminButton>
-      </AdminCommandBar>
-
-      <section className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4" aria-label="Ringkasan pembukuan">
+      <section className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6" aria-label="Ringkasan pembukuan">
         <BookkeepingSummaryCard
-          helper="Akan dihitung dari bookkeepingEntries pada BOOKKEEPING.3."
+          helper="Kas masuk periode aktif."
           icon={TrendingUp}
           label="Pemasukan"
           tone="cyan"
-          value={formatBookkeepingCurrency(billingSnapshot.paid)}
+          value={formatBookkeepingCurrency(summaryMetrics.income)}
         />
         <BookkeepingSummaryCard
-          helper="Manual expense aktif mulai BOOKKEEPING.4."
+          helper="Kas keluar periode aktif."
           icon={TrendingDown}
           label="Pengeluaran"
           tone="accent"
-          value={formatBookkeepingCurrency(0)}
+          value={formatBookkeepingCurrency(summaryMetrics.expense)}
         />
         <BookkeepingSummaryCard
-          helper="Profit bersih sementara dari billing paid."
+          helper="Profit bersih periode aktif."
           icon={CircleDollarSign}
           label="Profit"
-          tone="strong"
-          value={formatBookkeepingCurrency(billingSnapshot.paid)}
+          tone={summaryMetrics.profit >= 0 ? 'cyan' : 'accent'}
+          value={formatBookkeepingCurrency(summaryMetrics.profit, true)}
         />
         <BookkeepingSummaryCard
-          helper={billingSnapshot.remaining > 0 ? 'Masih ada tagihan belum lunas.' : 'Belum ada piutang terbaca.'}
+          helper="Saldo kas all-time kumulatif."
+          icon={WalletCards}
+          label="Saldo Kas"
+          tone="strong"
+          value={formatBookkeepingCurrency(summaryMetrics.balance, true)}
+        />
+        <BookkeepingSummaryCard
+          helper="Sisa tagihan invoice belum lunas."
           icon={WalletCards}
           label="Piutang"
           tone="purple"
           value={formatBookkeepingCurrency(billingSnapshot.remaining)}
         />
+        <BookkeepingSummaryCard
+          helper="Transaksi studio bulan ini."
+          icon={FileText}
+          label="Bulan Ini"
+          tone="neutral"
+          value={`${summaryMetrics.monthlyCount} Transaksi`}
+        />
       </section>
+
+      <AdminCommandBar className="bookkeeping-command-bar gap-2 p-2 lg:grid-cols-[minmax(0,1fr)_auto_auto_auto_auto] lg:items-center">
+        <label className="flex min-h-11 items-center gap-2 rounded-full border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 ring-1 ring-[var(--ui-ring)] focus-within:border-studio-accent/55 focus-within:ring-4 focus-within:ring-studio-accent/20">
+          <Search className="shrink-0 text-[var(--ui-text-muted)]" size={15} strokeWidth={2.35} aria-hidden="true" />
+          <input
+            className="w-full border-0 bg-transparent text-sm font-semibold text-[var(--ui-text-strong)] outline-none placeholder:text-[var(--ui-text-soft)]"
+            placeholder="Cari deskripsi, kategori, atau akun..."
+            type="search"
+            value={searchTerm}
+            onChange={(event) => setSearchTerm(event.target.value)}
+          />
+        </label>
+
+        <div className="grid grid-cols-3 gap-0.5 rounded-full border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-0.5 ring-1 ring-[var(--ui-ring)] md:inline-flex">
+          {periodFilters.map((item) => (
+            <button
+              aria-pressed={periodFilter === item.key}
+              className={
+                periodFilter === item.key
+                  ? 'min-h-9 rounded-full bg-[var(--ui-control-hover)] px-3.5 text-xs font-semibold text-studio-accent shadow-[var(--ui-shadow-control)]'
+                  : 'min-h-9 rounded-full px-3.5 text-xs font-semibold text-[var(--ui-text-muted)] transition hover:bg-[var(--ui-control)] hover:text-[var(--ui-text-strong)]'
+              }
+              key={item.key}
+              type="button"
+              onClick={() => setPeriodFilter(item.key)}
+            >
+              {item.label}
+            </button>
+          ))}
+        </div>
+
+        <div className="grid grid-cols-4 gap-0.5 rounded-full border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-0.5 ring-1 ring-[var(--ui-ring)] md:inline-flex">
+          {typeFilters.map((item) => (
+            <button
+              aria-pressed={typeFilter === item.key}
+              className={
+                typeFilter === item.key
+                  ? 'min-h-9 rounded-full bg-[var(--ui-control-hover)] px-3.5 text-xs font-semibold text-studio-accent shadow-[var(--ui-shadow-control)]'
+                  : 'min-h-9 rounded-full px-3.5 text-xs font-semibold text-[var(--ui-text-muted)] transition hover:bg-[var(--ui-control)] hover:text-[var(--ui-text-strong)]'
+              }
+              key={item.key}
+              type="button"
+              onClick={() => setTypeFilter(item.key)}
+            >
+              {item.label.split(' ')[0]}
+            </button>
+          ))}
+        </div>
+
+        <AdminDropdown
+          className="min-w-[150px]"
+          hideLabel
+          label="Kategori"
+          options={dynamicCategories}
+          value={categoryFilter}
+          onChange={setCategoryFilter}
+        />
+
+        <AdminDropdown
+          className="min-w-[130px]"
+          hideLabel
+          label="Akun"
+          options={dynamicAccounts}
+          value={accountFilter}
+          onChange={setAccountFilter}
+        />
+      </AdminCommandBar>
+
+      {entriesWithRunningBalance.length > 0 ? (
+        <AdminTableShell minWidth="min-w-[960px]">
+          <table className="w-full border-collapse text-left text-xs text-[var(--ui-text-main)]">
+            <thead>
+              <tr className="border-b border-[var(--ui-border-strong)] bg-[var(--ui-control)] text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-[var(--ui-text-muted)]">
+                <th className="p-3.5">Tanggal</th>
+                <th className="p-3.5">Tipe</th>
+                <th className="p-3.5">Kategori</th>
+                <th className="p-3.5">Deskripsi</th>
+                <th className="p-3.5">Akun</th>
+                <th className="p-3.5">Metode</th>
+                <th className="p-3.5 text-right">Masuk</th>
+                <th className="p-3.5 text-right">Keluar</th>
+                <th className="p-3.5 text-right">Saldo</th>
+                <th className="p-3.5">Sumber</th>
+              </tr>
+            </thead>
+            <tbody>
+              {entriesWithRunningBalance.map((entry) => (
+                <tr
+                  className="border-b border-[var(--ui-border)] hover:bg-[var(--ui-control)]"
+                  key={entry.id}
+                >
+                  <td className="p-3.5 font-medium whitespace-nowrap">
+                    {formatBookkeepingDateTime(entry)}
+                  </td>
+                  <td className="p-3.5 whitespace-nowrap">
+                    {renderTypeBadge(entry.type)}
+                  </td>
+                  <td className="p-3.5 font-semibold text-[var(--ui-text-strong)] whitespace-nowrap">
+                    {entry.categoryName}
+                  </td>
+                  <td className="p-3.5 max-w-[280px] truncate font-medium">
+                    {entry.description}
+                  </td>
+                  <td className="p-3.5 font-semibold whitespace-nowrap">
+                    {entry.accountName}
+                  </td>
+                  <td className="p-3.5 font-medium whitespace-nowrap">
+                    {formatPaymentMethod(entry.paymentMethod)}
+                  </td>
+                  <td className="p-3.5 text-right font-bold text-studio-cyan whitespace-nowrap">
+                    {entry.type === 'income' ? formatBookkeepingCurrency(entry.amount) : '-'}
+                  </td>
+                  <td className="p-3.5 text-right font-bold text-studio-accent whitespace-nowrap">
+                    {entry.type === 'expense' ? formatBookkeepingCurrency(entry.amount) : '-'}
+                  </td>
+                  <td className="p-3.5 text-right font-semibold text-[var(--ui-text-strong)] whitespace-nowrap">
+                    {formatBookkeepingCurrency(entry.runningBalance, true)}
+                  </td>
+                  <td className="p-3.5 font-medium text-[var(--ui-text-muted)] whitespace-nowrap">
+                    {formatSource(entry)}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </AdminTableShell>
+      ) : (
+        <LedgerEmptyState hasEntries={bookkeepingEntries.length > 0} />
+      )}
 
       <BookkeepingComingSoonPanel />
     </AdminPageShell>
