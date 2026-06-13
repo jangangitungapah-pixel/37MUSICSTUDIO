@@ -460,7 +460,10 @@ function InventoryAssetCard({
   const isMaintenance = asset.status === 'maintenance';
 
   return (
-    <article className="group grid gap-3 px-2 py-3 transition hover:bg-[var(--ui-control)] lg:grid-cols-[minmax(260px,1fr)_120px_120px_190px] lg:items-center">
+    <article
+      className="group grid gap-3 px-3 py-3.5 transition hover:bg-[var(--ui-control)] lg:grid-cols-[minmax(320px,1fr)_136px_150px_224px] lg:items-center"
+      title={'Last checked: ' + formatDateLabel(asset.lastChecked)}
+    >
       <div className="grid min-w-0 gap-1">
         <div className="flex min-w-0 items-center gap-2">
           <span className="grid size-7 shrink-0 place-items-center rounded-lg bg-[var(--ui-control)] text-studio-accent ring-1 ring-[var(--ui-ring)]">
@@ -477,7 +480,7 @@ function InventoryAssetCard({
         </p>
       </div>
 
-      <div className="flex items-center lg:justify-start">
+      <div className="flex items-center">
         <InventoryStatusBadge status={asset.status} />
       </div>
 
@@ -489,14 +492,14 @@ function InventoryAssetCard({
           / min {asset.minQuantity}
         </span>
         <span className={cn(
-          'ml-auto rounded-full px-2 py-0.5 text-[0.65rem] font-semibold lg:ml-0',
+          'ml-auto rounded-full px-2 py-0.5 text-[0.65rem] font-semibold lg:ml-1',
           stockRatio < 75 ? 'bg-studio-accent/10 text-studio-accent' : 'bg-studio-cyan/10 text-studio-cyan',
         )}>
           {stockRatio}%
         </span>
       </div>
 
-      <div className="grid grid-cols-4 gap-1.5">
+      <div className="grid grid-cols-[minmax(50px,0.75fr)_minmax(64px,1fr)_36px_36px] gap-1.5">
         <button
           aria-label={'Restock ' + asset.name}
           className="inline-flex min-h-8 items-center justify-center gap-1.5 rounded-full bg-studio-cyan/10 px-2 text-[0.7rem] font-semibold text-studio-cyan transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-cyan/20"
@@ -564,7 +567,7 @@ function InventoryBoard({
 
   return (
     <section className="overflow-hidden border-y border-[var(--ui-border)]">
-      <div className="hidden border-b border-[var(--ui-border)] px-2 py-2 text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-[var(--ui-text-soft)] lg:grid lg:grid-cols-[minmax(260px,1fr)_120px_120px_190px]">
+      <div className="hidden border-b border-[var(--ui-border)] px-3 py-2 text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-[var(--ui-text-soft)] lg:grid lg:grid-cols-[minmax(320px,1fr)_136px_150px_224px]">
         <span>Asset</span>
         <span>Status</span>
         <span>Stock</span>
@@ -588,10 +591,29 @@ function InventoryBoard({
 }
 
 function InventoryMaintenancePanel({ assets }) {
-  const watchItems = assets.filter((asset) => asset.status !== 'ready').slice(0, 3);
+  const watchItems = assets.filter((asset) => asset.status !== 'ready').slice(0, 4);
+
+  if (watchItems.length === 0) {
+    return (
+      <section className="grid gap-2 border-y border-[var(--ui-border)] py-3">
+        <div className="flex items-center justify-between gap-3">
+          <div className="grid gap-0.5">
+            <span className="text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-studio-accent">
+              Watchlist
+            </span>
+            <h2 className="m-0 text-lg font-semibold tracking-[-0.05em] text-[var(--ui-text-strong)]">
+              Semua aman
+            </h2>
+          </div>
+
+          <Wrench className="text-studio-accent" size={17} strokeWidth={2.35} aria-hidden="true" />
+        </div>
+      </section>
+    );
+  }
 
   return (
-    <aside className="grid gap-3 border-t border-[var(--ui-border)] pt-3">
+    <section className="grid gap-3 border-y border-[var(--ui-border)] py-3">
       <div className="flex items-center justify-between gap-3">
         <div className="grid gap-0.5">
           <span className="text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-studio-accent">
@@ -605,9 +627,9 @@ function InventoryMaintenancePanel({ assets }) {
         <Wrench className="text-studio-accent" size={17} strokeWidth={2.35} aria-hidden="true" />
       </div>
 
-      <div className="grid gap-1.5">
-        {watchItems.length > 0 ? watchItems.map((asset) => (
-          <article className="grid gap-1 border-b border-[var(--ui-border)] pb-2" key={asset.id}>
+      <div className="grid gap-2 md:grid-cols-2 xl:grid-cols-4">
+        {watchItems.map((asset) => (
+          <article className="grid gap-1 rounded-xl bg-[var(--ui-control)] px-3 py-2 ring-1 ring-[var(--ui-ring)]" key={asset.id}>
             <div className="flex items-center justify-between gap-3">
               <strong className="truncate text-sm font-semibold text-[var(--ui-text-strong)]">
                 {asset.name}
@@ -616,16 +638,12 @@ function InventoryMaintenancePanel({ assets }) {
             </div>
 
             <p className="m-0 truncate text-xs leading-5 text-[var(--ui-text-muted)]">
-              {asset.notes}
+              {asset.notes || asset.category}
             </p>
           </article>
-        )) : (
-          <p className="m-0 text-sm leading-6 text-[var(--ui-text-muted)]">
-            Semua asset ready.
-          </p>
-        )}
+        ))}
       </div>
-    </aside>
+    </section>
   );
 }
 
@@ -836,19 +854,19 @@ function InventorySyncBanner({
 
 function InventoryFirestorePlan() {
   return (
-    <details className="border-t border-[var(--ui-border)] pt-3">
+    <details className="border-b border-[var(--ui-border)] pb-3">
       <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-sm font-semibold text-[var(--ui-text-strong)]">
-        <span className="grid gap-0.5">
+        <span className="flex items-center gap-2">
           <span className="text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-studio-cyan">
             Data layer
           </span>
-          Firestore realtime
+          <span className="text-[var(--ui-text-muted)]">Firestore realtime</span>
         </span>
 
         <ClipboardList className="text-studio-cyan" size={17} strokeWidth={2.35} aria-hidden="true" />
       </summary>
 
-      <div className="mt-3 grid gap-2 text-xs leading-5 text-[var(--ui-text-muted)]">
+      <div className="mt-3 grid gap-2 text-xs leading-5 text-[var(--ui-text-muted)] md:grid-cols-3">
         {[
           'inventoryItems untuk asset.',
           'inventoryActivityLogs untuk audit.',
@@ -1133,7 +1151,9 @@ export function InventoryAdmin() {
         onSubmit={handleAssetFormSubmit}
       />
 
-      <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(230px,280px)] xl:items-start">
+      <div className="grid gap-4">
+        <InventoryMaintenancePanel assets={activeAssets} />
+
         <InventoryBoard
           assets={filteredAssets}
           onDeleteAsset={handleDeleteAsset}
@@ -1142,10 +1162,7 @@ export function InventoryAdmin() {
           onRestockAsset={handleRestockAsset}
         />
 
-        <div className="grid gap-4">
-          <InventoryMaintenancePanel assets={activeAssets} />
-          <InventoryFirestorePlan />
-        </div>
+        <InventoryFirestorePlan />
       </div>
     </section>
   );
