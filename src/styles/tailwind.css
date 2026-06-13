@@ -2357,3 +2357,38 @@
   }
 }
 /* 37-booking-block-center:end */
+
+/* 37-booking-block-sticky-overlap-hotfix:start */
+@layer components {
+  @media (max-width: 767px) {
+    .booking-time-corner-cell,
+    .booking-time-cell {
+      box-shadow: none !important;
+    }
+
+    .booking-time-corner-cell::after,
+    .booking-time-cell::after {
+      pointer-events: none;
+      content: "";
+      position: absolute;
+      inset-block: 0;
+      inset-inline-end: -1px;
+      width: 1px;
+      background: var(--ui-border);
+    }
+
+    .booking-block-card {
+      width: calc(100% - 1.05rem) !important;
+      left: 50% !important;
+      right: auto !important;
+      transform: translateX(-50%) !important;
+    }
+  }
+
+  @media (max-width: 420px) {
+    .booking-block-card {
+      width: calc(100% - 0.95rem) !important;
+    }
+  }
+}
+/* 37-booking-block-sticky-overlap-hotfix:end */
