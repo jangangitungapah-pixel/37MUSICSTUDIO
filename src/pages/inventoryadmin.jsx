@@ -25,6 +25,8 @@ import {
   Tags,
   Trash2,
   X,
+  FileSpreadsheet,
+  Upload,
 } from 'lucide-react';
 import { cn } from '../lib/cn.js';
 import { adminInventoryRepository } from '../services/adminInventoryRepository.js';
@@ -791,6 +793,269 @@ function downloadInventoryCsv(assets) {
   URL.revokeObjectURL(url);
 }
 
+const inventoryCsvTemplateHeaders = [
+  'id',
+  'name',
+  'category',
+  'location',
+  'condition',
+  'status',
+  'quantity',
+  'minQuantity',
+  'valueEstimate',
+  'lastChecked',
+  'nextMaintenance',
+  'notes',
+];
+
+function createInventoryCsvTemplateContent() {
+  const sampleRows = [
+    [
+      '',
+      'XLR cable 10m',
+      'Cable',
+      'Cable Drawer',
+      'Good',
+      'ready',
+      '10',
+      '6',
+      '750000',
+      getTodayDateKey(),
+      addDaysToInventoryDateKey(getTodayDateKey(), 30),
+      'Contoh item import CSV.',
+    ],
+    [
+      '',
+      'Guitar stand spare',
+      'Accessory',
+      'Storage',
+      'Excellent',
+      'ready',
+      '4',
+      '2',
+      '320000',
+      getTodayDateKey(),
+      addDaysToInventoryDateKey(getTodayDateKey(), 60),
+      'Baris kedua hanya contoh.',
+    ],
+  ];
+
+  return [
+    inventoryCsvTemplateHeaders,
+    ...sampleRows,
+  ]
+    .map((row) => row.map(escapeCsvValue).join(','))
+    .join('\n');
+}
+
+function downloadInventoryCsvTemplate() {
+  if (typeof window === 'undefined' || typeof document === 'undefined') {
+    return;
+  }
+
+  const blob = new Blob([createInventoryCsvTemplateContent()], {
+    type: 'text/csv;charset=utf-8;',
+  });
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement('a');
+
+  anchor.href = url;
+  anchor.download = createInventoryReportFileName('37-studio-inventory-template') + '.csv';
+  anchor.style.display = 'none';
+
+  document.body.appendChild(anchor);
+  anchor.click();
+  anchor.remove();
+
+  URL.revokeObjectURL(url);
+}
+
+function parseInventoryCsvRows(text) {
+  const rows = [];
+  let currentRow = [];
+  let currentField = '';
+  let isQuoted = false;
+
+  for (let index = 0; index < text.length; index += 1) {
+    const char = text[index];
+    const nextChar = text[index + 1];
+
+    if (char === '"' && isQuoted && nextChar === '"') {
+      currentField += '"';
+      index += 1;
+      continue;
+    }
+
+    if (char === '"') {
+      isQuoted = !isQuoted;
+      continue;
+    }
+
+    if (char === ',' && !isQuoted) {
+      currentRow.push(currentField);
+      currentField = '';
+      continue;
+    }
+
+    if ((char === '\n' || char === '\r') && !isQuoted) {
+      if (char === '\r' && nextChar === '\n') {
+        index += 1;
+      }
+
+      currentRow.push(currentField);
+      rows.push(currentRow);
+      currentRow = [];
+      currentField = '';
+      continue;
+    }
+
+    currentField += char;
+  }
+
+  currentRow.push(currentField);
+  rows.push(currentRow);
+
+  return rows.filter((row) => row.some((field) => String(field || '').trim()));
+}
+
+function normalizeInventoryCsvHeader(value) {
+  const key = String(value || '')
+    .trim()
+    .toLowerCase()
+    .replace(/[\s_-]+/gu, '');
+
+  const aliases = {
+    asset: 'name',
+    assetname: 'name',
+    catatan: 'notes',
+    checked: 'lastChecked',
+    condition: 'condition',
+    id: 'id',
+    kategori: 'category',
+    kondisibarang: 'condition',
+    kondisi: 'condition',
+    lastchecked: 'lastChecked',
+    location: 'location',
+    lokasi: 'location',
+    maintenance: 'nextMaintenance',
+    min: 'minQuantity',
+    minimum: 'minQuantity',
+    minquantity: 'minQuantity',
+    name: 'name',
+    nama: 'name',
+    nextmaintenance: 'nextMaintenance',
+    nilai: 'valueEstimate',
+    notes: 'notes',
+    qty: 'quantity',
+    quantity: 'quantity',
+    status: 'status',
+    value: 'valueEstimate',
+    valueestimate: 'valueEstimate',
+  };
+
+  return aliases[key] || key;
+}
+
+function parseInventoryImportNumber(value) {
+  const normalizedValue = String(value ?? '')
+    .trim()
+    .replace(/\./g, '')
+    .replace(/,/g, '.');
+  const numberValue = Number(normalizedValue);
+
+  return Number.isFinite(numberValue) ? Math.max(0, numberValue) : 0;
+}
+
+function normalizeInventoryImportStatus(value) {
+  const normalizedValue = String(value || 'ready').trim().toLowerCase();
+
+  if (normalizedValue === 'maintenance' || normalizedValue === 'maint') {
+    return 'maintenance';
+  }
+
+  if (normalizedValue === 'retired' || normalizedValue === 'retire') {
+    return 'retired';
+  }
+
+  if (normalizedValue === 'low' || normalizedValue === 'lowstock' || normalizedValue === 'low stock') {
+    return 'low';
+  }
+
+  return 'ready';
+}
+
+function normalizeInventoryImportRow(rowMap, rowNumber) {
+  const name = String(rowMap.name || '').trim();
+  const errors = [];
+
+  if (!name) {
+    errors.push('Row ' + rowNumber + ': name wajib diisi.');
+  }
+
+  const importedItem = {
+    category: String(rowMap.category || 'Equipment').trim() || 'Equipment',
+    condition: normalizeInventoryCondition(rowMap.condition),
+    id: String(rowMap.id || '').trim() || createInventoryItemId(name || 'imported-asset'),
+    lastChecked: String(rowMap.lastChecked || getTodayDateKey()).trim() || getTodayDateKey(),
+    location: String(rowMap.location || 'Studio').trim() || 'Studio',
+    minQuantity: parseInventoryImportNumber(rowMap.minQuantity),
+    name,
+    nextMaintenance: String(rowMap.nextMaintenance || '').trim(),
+    notes: String(rowMap.notes || '').trim(),
+    quantity: parseInventoryImportNumber(rowMap.quantity),
+    status: normalizeInventoryImportStatus(rowMap.status),
+    valueEstimate: parseInventoryImportNumber(rowMap.valueEstimate),
+  };
+
+  if (!importedItem.nextMaintenance) {
+    importedItem.nextMaintenance = addDaysToInventoryDateKey(importedItem.lastChecked, 30);
+  }
+
+  return {
+    errors,
+    item: importedItem,
+  };
+}
+
+function parseInventoryImportCsv(text) {
+  const rows = parseInventoryCsvRows(text);
+
+  if (rows.length < 2) {
+    return {
+      errors: ['CSV harus punya header dan minimal 1 baris data.'],
+      rows: [],
+    };
+  }
+
+  const headers = rows[0].map(normalizeInventoryCsvHeader);
+  const requiredHeaders = ['name'];
+  const errors = [];
+
+  for (const requiredHeader of requiredHeaders) {
+    if (!headers.includes(requiredHeader)) {
+      errors.push('Header wajib tidak ada: ' + requiredHeader);
+    }
+  }
+
+  const importedRows = rows.slice(1).flatMap((row, index) => {
+    const rowNumber = index + 2;
+    const rowMap = headers.reduce((currentMap, header, headerIndex) => ({
+      ...currentMap,
+      [header]: row[headerIndex],
+    }), {});
+    const result = normalizeInventoryImportRow(rowMap, rowNumber);
+
+    errors.push(...result.errors);
+
+    return result.errors.length ? [] : [result.item];
+  });
+
+  return {
+    errors,
+    rows: importedRows,
+  };
+}
+
 function createInventoryPrintMarkup(assets, stats) {
   const rows = getInventoryReportRows(assets);
   const generatedAt = new Intl.DateTimeFormat('id-ID', {
@@ -1321,7 +1586,9 @@ function InventoryToolbar({
   onCategoryChange,
   onConditionChange,
   onCreateAsset,
+  onDownloadTemplate,
   onExportInventory,
+  onOpenImport,
   onPrintInventory,
   onSearchChange,
   onStatusChange,
@@ -1350,7 +1617,7 @@ function InventoryToolbar({
         </span>
       </label>
 
-      <div className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_minmax(0,0.9fr)_auto_auto_auto] xl:min-w-[620px]">
+      <div className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_minmax(0,0.9fr)_auto_auto_auto_auto_auto] xl:min-w-[760px]">
         <InventoryDropdown
           icon={SlidersHorizontal}
           label="Kategori"
@@ -1366,6 +1633,24 @@ function InventoryToolbar({
           value={conditionFilter}
           onChange={onConditionChange}
         />
+
+        <button
+          className="inline-flex min-h-11 items-center justify-center gap-2 self-end rounded-[1.15rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 text-xs font-semibold text-[var(--ui-text-muted)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-cyan/20"
+          type="button"
+          onClick={onDownloadTemplate}
+        >
+          <FileSpreadsheet size={14} strokeWidth={2.35} aria-hidden="true" />
+          Template
+        </button>
+
+        <button
+          className="inline-flex min-h-11 items-center justify-center gap-2 self-end rounded-[1.15rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 text-xs font-semibold text-[var(--ui-text-muted)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-cyan/20"
+          type="button"
+          onClick={onOpenImport}
+        >
+          <Upload size={14} strokeWidth={2.35} aria-hidden="true" />
+          Import
+        </button>
 
         <button
           className="inline-flex min-h-11 items-center justify-center gap-2 self-end rounded-[1.15rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 text-xs font-semibold text-[var(--ui-text-muted)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
@@ -2112,6 +2397,160 @@ function InventoryMaintenanceSchedulerDrawer({
   );
 }
 
+function InventoryImportDrawer({
+  importState,
+  importStatus,
+  onCancel,
+  onFileChange,
+  onSubmit,
+}) {
+  if (!importState) {
+    return null;
+  }
+
+  const isSaving = importStatus === 'saving';
+  const rows = importState.rows || [];
+  const errors = importState.errors || [];
+  const previewRows = rows.slice(0, 8);
+
+  return (
+    <section className="fixed inset-0 z-50 grid justify-items-end bg-black/60 p-3 backdrop-blur-md" aria-label="Inventory CSV import drawer">
+      <form className="flex h-full w-full min-w-0 max-w-[560px] flex-col overflow-hidden rounded-[1.4rem] border border-[var(--ui-border-strong)] bg-[var(--ui-bg-base)] shadow-[var(--ui-shadow-strong)] ring-1 ring-[var(--ui-ring)]" onSubmit={onSubmit}>
+        <div className="flex items-start justify-between gap-3 border-b border-[var(--ui-border)] p-4">
+          <div className="grid min-w-0 gap-1">
+            <span className="text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-studio-cyan">
+              Bulk import
+            </span>
+            <h2 className="m-0 truncate text-2xl font-semibold tracking-[-0.06em] text-[var(--ui-text-strong)]">
+              Import inventory CSV
+            </h2>
+            <p className="m-0 text-sm font-semibold text-[var(--ui-text-muted)]">
+              Upload template CSV, preview, lalu save ke inventoryItems.
+            </p>
+          </div>
+
+          <button
+            aria-label="Close import drawer"
+            className="grid size-9 shrink-0 place-items-center rounded-full bg-[var(--ui-control-hover)] text-[var(--ui-text-muted)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-cyan/20"
+            type="button"
+            onClick={onCancel}
+          >
+            <X size={15} strokeWidth={2.35} aria-hidden="true" />
+          </button>
+        </div>
+
+        <div className="grid min-w-0 flex-1 gap-4 overflow-y-auto overflow-x-hidden p-4">
+          <section className="grid gap-3 rounded-2xl border border-[var(--ui-border)] bg-[var(--ui-control)] p-3 ring-1 ring-[var(--ui-ring)]">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div className="grid gap-1">
+                <span className="text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-[var(--ui-text-muted)]">
+                  CSV file
+                </span>
+                <strong className="text-base font-semibold tracking-[-0.04em] text-[var(--ui-text-strong)]">
+                  {importState.fileName || 'Belum ada file dipilih'}
+                </strong>
+              </div>
+
+              <label className="inline-flex min-h-10 cursor-pointer items-center justify-center gap-2 rounded-full bg-studio-cyan/10 px-4 text-sm font-semibold text-studio-cyan transition hover:-translate-y-0.5 focus-within:ring-4 focus-within:ring-studio-cyan/20">
+                <Upload size={14} strokeWidth={2.35} aria-hidden="true" />
+                Choose CSV
+                <input
+                  accept=".csv,text/csv"
+                  className="sr-only"
+                  type="file"
+                  onChange={onFileChange}
+                />
+              </label>
+            </div>
+
+            <p className="m-0 text-xs font-semibold leading-6 text-[var(--ui-text-muted)]">
+              Header minimal: name. Header lengkap: id, name, category, location, condition, status, quantity, minQuantity, valueEstimate, lastChecked, nextMaintenance, notes.
+            </p>
+          </section>
+
+          <section className="grid gap-2">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <span className="text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-[var(--ui-text-muted)]">
+                Preview
+              </span>
+
+              <span className="rounded-full bg-[var(--ui-control)] px-3 py-1 text-xs font-semibold text-[var(--ui-text-main)] ring-1 ring-[var(--ui-ring)]">
+                {rows.length} valid rows
+              </span>
+            </div>
+
+            {errors.length > 0 ? (
+              <div className="grid gap-1 rounded-2xl border border-studio-accent/25 bg-studio-accent/10 p-3 text-xs font-semibold leading-6 text-studio-accent">
+                {errors.slice(0, 6).map((error) => (
+                  <span key={error}>{error}</span>
+                ))}
+                {errors.length > 6 ? (
+                  <span>+{errors.length - 6} error lainnya.</span>
+                ) : null}
+              </div>
+            ) : null}
+
+            {previewRows.length > 0 ? (
+              <div className="overflow-hidden rounded-2xl border border-[var(--ui-border)] ring-1 ring-[var(--ui-ring)]">
+                <div className="grid grid-cols-[1.15fr_0.72fr_0.7fr_0.55fr] gap-2 border-b border-[var(--ui-border)] bg-[var(--ui-control)] px-3 py-2 text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-[var(--ui-text-soft)]">
+                  <span>Asset</span>
+                  <span>Category</span>
+                  <span>Condition</span>
+                  <span>Qty</span>
+                </div>
+
+                <div className="divide-y divide-[var(--ui-border)]">
+                  {previewRows.map((row) => (
+                    <article className="grid grid-cols-[1.15fr_0.72fr_0.7fr_0.55fr] gap-2 px-3 py-2 text-xs font-semibold text-[var(--ui-text-main)]" key={row.id}>
+                      <span className="truncate text-[var(--ui-text-strong)]">{row.name}</span>
+                      <span className="truncate">{row.category}</span>
+                      <span className="truncate">{row.condition}</span>
+                      <span>{row.quantity}</span>
+                    </article>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <p className="m-0 rounded-2xl border border-[var(--ui-border)] bg-[var(--ui-control)] p-3 text-sm font-semibold leading-6 text-[var(--ui-text-muted)] ring-1 ring-[var(--ui-ring)]">
+                Pilih file CSV untuk melihat preview data sebelum import.
+              </p>
+            )}
+          </section>
+        </div>
+
+        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[var(--ui-border)] p-4">
+          <span className={cn(
+            'text-sm font-semibold',
+            importStatus === 'error' ? 'text-studio-accent' : 'text-[var(--ui-text-muted)]',
+          )}>
+            {importStatus === 'saved' ? 'Import selesai.' : importStatus === 'error' ? 'Import gagal.' : 'Preview dulu sebelum save.'}
+          </span>
+
+          <div className="flex flex-wrap gap-2">
+            <button
+              className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full bg-[var(--ui-control-hover)] px-4 text-sm font-semibold text-[var(--ui-text-muted)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-cyan/20"
+              disabled={isSaving}
+              type="button"
+              onClick={onCancel}
+            >
+              Cancel
+            </button>
+
+            <button
+              className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full [background:var(--ui-primary-bg)] px-5 text-sm font-semibold text-[var(--ui-primary-text)] shadow-[var(--ui-shadow-soft)] transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-cyan/20 disabled:cursor-not-allowed disabled:opacity-60"
+              disabled={isSaving || rows.length === 0}
+              type="submit"
+            >
+              <Save size={15} strokeWidth={2.35} aria-hidden="true" />
+              {isSaving ? 'Importing...' : 'Save import'}
+            </button>
+          </div>
+        </div>
+      </form>
+    </section>
+  );
+}
+
 function InventoryItemDetailDrawer({
   asset,
   logs,
@@ -2472,6 +2911,8 @@ export function InventoryAdmin() {
   const [conditionFilter, setConditionFilter] = useState('all');
   const [alertFilter, setAlertFilter] = useState('all');
   const [savedViewFilter, setSavedViewFilter] = useState('all');
+  const [inventoryImportState, setInventoryImportState] = useState(null);
+  const [inventoryImportStatus, setInventoryImportStatus] = useState('idle');
   const [inventoryItems, setInventoryItems] = useState([]);
   const [inventoryState, setInventoryState] = useState({
     errorMessage: '',
@@ -2944,6 +3385,105 @@ export function InventoryAdmin() {
     }
   };
 
+  const resetInventoryImportStatus = () => {
+    window.setTimeout(() => {
+      setInventoryImportStatus('idle');
+    }, 2200);
+  };
+
+  const openInventoryImportDrawer = () => {
+    setInventoryImportState({
+      errors: [],
+      fileName: '',
+      rows: [],
+    });
+    setInventoryImportStatus('idle');
+  };
+
+  const closeInventoryImportDrawer = () => {
+    setInventoryImportState(null);
+    setInventoryImportStatus('idle');
+  };
+
+  const handleInventoryTemplateDownload = () => {
+    downloadInventoryCsvTemplate();
+  };
+
+  const handleInventoryImportFileChange = async (event) => {
+    const file = event.target.files?.[0];
+
+    if (!file) {
+      return;
+    }
+
+    setInventoryImportStatus('parsing');
+
+    try {
+      const text = await file.text();
+      const result = parseInventoryImportCsv(text);
+
+      setInventoryImportState({
+        errors: result.errors,
+        fileName: file.name,
+        rows: result.rows,
+      });
+      setInventoryImportStatus(result.errors.length ? 'error' : 'idle');
+
+      if (result.errors.length) {
+        resetInventoryImportStatus();
+      }
+    } catch (error) {
+      console.error('Failed to parse inventory CSV import.', error);
+      setInventoryImportState({
+        errors: ['File CSV gagal dibaca. Pastikan formatnya text/csv.'],
+        fileName: file.name,
+        rows: [],
+      });
+      setInventoryImportStatus('error');
+      resetInventoryImportStatus();
+    } finally {
+      event.target.value = '';
+    }
+  };
+
+  const handleInventoryImportSubmit = async (event) => {
+    event.preventDefault();
+
+    const rows = inventoryImportState?.rows || [];
+
+    if (rows.length === 0) {
+      setInventoryImportStatus('error');
+      resetInventoryImportStatus();
+      return;
+    }
+
+    setInventoryImportStatus('saving');
+
+    try {
+      for (const item of rows) {
+        await adminInventoryRepository.upsertInventoryItem(item, adminUser);
+        await recordInventoryLog({
+          action: 'inventory-imported',
+          itemId: item.id,
+          itemName: item.name,
+          label: 'Imported from CSV: ' + item.name,
+          note: 'Bulk CSV import',
+          sourceName: 'CSV import',
+        });
+      }
+
+      setInventoryImportStatus('saved');
+
+      window.setTimeout(() => {
+        closeInventoryImportDrawer();
+      }, 800);
+    } catch (error) {
+      console.error('Failed to import inventory CSV.', error);
+      setInventoryImportStatus('error');
+      resetInventoryImportStatus();
+    }
+  };
+
   const handleExportInventory = () => {
     downloadInventoryCsv(filteredAssets);
   };
@@ -2989,7 +3529,9 @@ export function InventoryAdmin() {
           setSavedViewFilter('all');
         }}
         onCreateAsset={openCreateAssetForm}
+        onDownloadTemplate={handleInventoryTemplateDownload}
         onExportInventory={handleExportInventory}
+        onOpenImport={openInventoryImportDrawer}
         onPrintInventory={handlePrintInventory}
         onSearchChange={(nextSearchTerm) => {
           setSearchTerm(nextSearchTerm);
@@ -3022,6 +3564,14 @@ export function InventoryAdmin() {
         onCancel={closeAssetForm}
         onChange={handleAssetDraftChange}
         onSubmit={handleAssetFormSubmit}
+      />
+
+      <InventoryImportDrawer
+        importState={inventoryImportState}
+        importStatus={inventoryImportStatus}
+        onCancel={closeInventoryImportDrawer}
+        onFileChange={handleInventoryImportFileChange}
+        onSubmit={handleInventoryImportSubmit}
       />
 
       <InventoryItemDetailDrawer
