@@ -17,6 +17,9 @@ const INVENTORY_ITEMS_COLLECTION = 'inventoryItems';
 const INVENTORY_ACTIVITY_LOGS_COLLECTION = 'inventoryActivityLogs';
 const DEFAULT_STUDIO_ID = 'main-studio';
 const INVENTORY_ITEMS_STORAGE_KEY = 'thirty-seven-admin-inventory-items';
+const INVENTORY_ACTIVITY_LOGS_STORAGE_KEY = 'thirty-seven-admin-inventory-activity-logs';
+const INVENTORY_ACTIVITY_CHANGED_EVENT = 'admin-inventory-activity:changed';
+const MAX_INVENTORY_ACTIVITY_LOGS = 80;
 
 const inventoryStatusValues = new Set(['ready', 'low', 'maintenance', 'retired']);
 
@@ -88,6 +91,13 @@ function getInventoryActivityLogsCollection() {
 function getStudioInventoryItemsQuery() {
   return query(
     getInventoryItemsCollection(),
+    where('studioId', '==', DEFAULT_STUDIO_ID),
+  );
+}
+
+function getStudioInventoryActivityLogsQuery() {
+  return query(
+    getInventoryActivityLogsCollection(),
     where('studioId', '==', DEFAULT_STUDIO_ID),
   );
 }
@@ -165,6 +175,120 @@ export function normalizeInventoryItem(item) {
   return {
     ...normalizedItem,
     status: getComputedInventoryStatus(normalizedItem),
+  };
+}
+
+function compareInventoryActivityLogs(firstLog, secondLog) {
+  const firstTime = Date.parse(firstLog.at || firstLog.createdAt || '');
+  const secondTime = Date.parse(secondLog.at || secondLog.createdAt || '');
+
+  return (Number.isFinite(secondTime) ? secondTime : 0) - (Number.isFinite(firstTime) ? firstTime : 0);
+}
+
+export function normalizeInventoryActivityLog(entry) {
+  if (!entry || typeof entry !== 'object') {
+    return null;
+  }
+
+  const nowIso = new Date().toISOString();
+  const itemId = safeString(entry.itemId);
+  const id = safeString(entry.id, `activity-${Date.now().toString(36)}`);
+
+  if (!itemId || !id) {
+    return null;
+  }
+
+  return {
+    action: safeString(entry.action, 'inventory-activity'),
+    at: normalizeTimestampValue(entry.at || entry.createdAt, nowIso),
+    by: normalizeInventoryActor(entry.by),
+    id,
+    itemId,
+    itemName: safeString(entry.itemName, 'Inventory item'),
+    label: safeString(entry.label, 'Inventory activity'),
+    source: safeString(entry.source, 'admin'),
+    studioId: safeString(entry.studioId, DEFAULT_STUDIO_ID),
+  };
+}
+
+function readInventoryActivityLogsFromStorage() {
+  if (!canUseBrowserStorage()) {
+    return [];
+  }
+
+  try {
+    const rawValue = window.localStorage.getItem(INVENTORY_ACTIVITY_LOGS_STORAGE_KEY);
+
+    if (!rawValue) {
+      return [];
+    }
+
+    const parsedValue = JSON.parse(rawValue);
+
+    if (!Array.isArray(parsedValue)) {
+      return [];
+    }
+
+    return parsedValue
+      .map((entry) => normalizeInventoryActivityLog(entry))
+      .filter(Boolean)
+      .sort(compareInventoryActivityLogs)
+      .slice(0, MAX_INVENTORY_ACTIVITY_LOGS);
+  } catch {
+    return [];
+  }
+}
+
+function writeInventoryActivityLogsToStorage(logs) {
+  if (!canUseBrowserStorage()) {
+    return;
+  }
+
+  try {
+    window.localStorage.setItem(
+      INVENTORY_ACTIVITY_LOGS_STORAGE_KEY,
+      JSON.stringify(logs.slice(0, MAX_INVENTORY_ACTIVITY_LOGS)),
+    );
+  } catch {
+    // Local activity persistence is best-effort when Firestore is not configured.
+  }
+}
+
+function emitInventoryActivityLogs(logs) {
+  if (typeof window === 'undefined') {
+    return;
+  }
+
+  window.dispatchEvent(
+    new CustomEvent(INVENTORY_ACTIVITY_CHANGED_EVENT, {
+      detail: {
+        logs,
+      },
+    }),
+  );
+}
+
+function subscribeLocalInventoryActivityLogs(callback) {
+  const emitCurrentValue = () => {
+    callback(readInventoryActivityLogsFromStorage());
+  };
+
+  emitCurrentValue();
+
+  if (typeof window === 'undefined') {
+    return () => {};
+  }
+
+  const handleChange = () => {
+    emitCurrentValue();
+  };
+
+  window.addEventListener('storage', handleChange);
+  window.addEventListener(INVENTORY_ACTIVITY_CHANGED_EVENT, handleChange);
+
+  return () => {
+    window.removeEventListener('storage', handleChange);
+    window.removeEventListener(INVENTORY_ACTIVITY_CHANGED_EVENT, handleChange);
   };
 }
 
@@ -270,6 +394,35 @@ export function subscribeInventoryItems(callback, onError = () => {}) {
       console.error('Firestore inventory subscription failed.', error);
       onError(error);
       callback(readInventoryItemsFromStorage());
+    },
+  );
+
+  return unsubscribe;
+}
+
+export function subscribeInventoryActivityLogs(callback, onError = () => {}) {
+  if (!canUseFirestore()) {
+    return subscribeLocalInventoryActivityLogs(callback);
+  }
+
+  const unsubscribe = onSnapshot(
+    getStudioInventoryActivityLogsQuery(),
+    (snapshot) => {
+      const logs = snapshot.docs
+        .map((documentSnapshot) => normalizeInventoryActivityLog({
+          id: documentSnapshot.id,
+          ...documentSnapshot.data(),
+        }))
+        .filter(Boolean)
+        .sort(compareInventoryActivityLogs)
+        .slice(0, MAX_INVENTORY_ACTIVITY_LOGS);
+
+      callback(logs);
+    },
+    (error) => {
+      console.error('Firestore inventory activity subscription failed.', error);
+      onError(error);
+      callback(readInventoryActivityLogsFromStorage());
     },
   );
 
@@ -384,33 +537,64 @@ export async function recordInventoryActivityLog(entry) {
     return null;
   }
 
-  const log = {
+  const nowIso = new Date().toISOString();
+  const localLogId = `activity-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
+  const normalizedLog = normalizeInventoryActivityLog({
     action: safeString(entry.action, 'inventory-activity'),
-    at: serverTimestamp(),
+    at: nowIso,
     by: normalizeInventoryActor(entry.by),
+    id: localLogId,
     itemId,
     itemName: safeString(entry.itemName),
     label: safeString(entry.label, 'Inventory activity'),
     source: safeString(entry.source, 'admin'),
     studioId: DEFAULT_STUDIO_ID,
-  };
+  });
 
-  if (canUseFirestore()) {
-    await setDoc(
-      doc(getInventoryActivityLogsCollection()),
-      log,
-      { merge: true },
-    );
+  if (!normalizedLog) {
+    return null;
   }
 
-  return log;
+  if (canUseFirestore()) {
+    const logRef = doc(getInventoryActivityLogsCollection());
+    const firestoreLog = {
+      ...normalizedLog,
+      at: serverTimestamp(),
+      id: logRef.id,
+    };
+
+    await setDoc(
+      logRef,
+      firestoreLog,
+      { merge: true },
+    );
+
+    return {
+      ...normalizedLog,
+      id: logRef.id,
+    };
+  }
+
+  const nextLogs = [
+    normalizedLog,
+    ...readInventoryActivityLogsFromStorage(),
+  ]
+    .sort(compareInventoryActivityLogs)
+    .slice(0, MAX_INVENTORY_ACTIVITY_LOGS);
+
+  writeInventoryActivityLogsToStorage(nextLogs);
+  emitInventoryActivityLogs(nextLogs);
+
+  return normalizedLog;
 }
 
 export const adminInventoryRepository = {
   deleteInventoryItem,
   normalizeInventoryItem,
+  normalizeInventoryActivityLog,
   recordInventoryActivityLog,
   seedStarterInventoryItems,
+  subscribeInventoryActivityLogs,
   subscribeInventoryItems,
   upsertInventoryItem,
 };

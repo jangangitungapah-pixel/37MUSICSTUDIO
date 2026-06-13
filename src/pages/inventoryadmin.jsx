@@ -239,6 +239,39 @@ function formatDateLabel(value) {
   }).format(date);
 }
 
+function formatActivityTime(value) {
+  if (!value) {
+    return '-';
+  }
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return String(value);
+  }
+
+  return new Intl.DateTimeFormat('id-ID', {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+  }).format(date);
+}
+
+function getInventoryActivityToneClass(action) {
+  if (action.includes('delete')) {
+    return 'text-studio-accent';
+  }
+
+  if (action.includes('maintenance')) {
+    return 'text-studio-purple';
+  }
+
+  if (action.includes('restock') || action.includes('ready')) {
+    return 'text-studio-cyan';
+  }
+
+  return 'text-[var(--ui-text-main)]';
+}
+
 function getInventoryStatusToneClass(status) {
   return inventoryStatusToneClasses[status] || 'border-[var(--ui-border)] bg-[var(--ui-control)] text-[var(--ui-text-main)] ring-[var(--ui-ring)]';
 }
@@ -829,6 +862,62 @@ function InventorySyncBanner({
   );
 }
 
+function InventoryActivityTimeline({ logs, state }) {
+  const visibleLogs = logs.slice(0, 7);
+
+  return (
+    <section className="max-w-[980px] border-b border-[var(--ui-border)] pb-3">
+      <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+        <div className="grid gap-0.5">
+          <span className="text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-studio-cyan">
+            Activity
+          </span>
+          <h2 className="m-0 text-lg font-semibold tracking-[-0.05em] text-[var(--ui-text-strong)]">
+            Timeline inventory
+          </h2>
+        </div>
+
+        <span className="text-xs font-semibold text-[var(--ui-text-muted)]">
+          {state.errorMessage ? 'Log fallback' : state.isReady ? String(logs.length) + ' log' : 'Loading'}
+        </span>
+      </div>
+
+      {state.errorMessage ? (
+        <p className="m-0 mb-2 text-xs leading-5 text-studio-accent">
+          {state.errorMessage}
+        </p>
+      ) : null}
+
+      {visibleLogs.length > 0 ? (
+        <div className="grid gap-0 divide-y divide-[var(--ui-border)]">
+          {visibleLogs.map((log) => (
+            <article className="grid gap-2 py-2 md:grid-cols-[minmax(180px,0.8fr)_minmax(0,1fr)_auto] md:items-center" key={log.id}>
+              <div className="flex min-w-0 items-center gap-2">
+                <span className={cn('size-2 rounded-full bg-current', getInventoryActivityToneClass(log.action))} aria-hidden="true" />
+                <strong className="truncate text-sm font-semibold text-[var(--ui-text-strong)]">
+                  {log.itemName}
+                </strong>
+              </div>
+
+              <p className="m-0 truncate text-xs font-medium text-[var(--ui-text-muted)]">
+                {log.label}
+              </p>
+
+              <time className="text-xs font-semibold text-[var(--ui-text-soft)]" dateTime={log.at}>
+                {formatActivityTime(log.at)}
+              </time>
+            </article>
+          ))}
+        </div>
+      ) : (
+        <p className="m-0 text-sm leading-6 text-[var(--ui-text-muted)]">
+          Belum ada activity. Aksi create, edit, restock, maintenance, dan delete akan muncul di sini.
+        </p>
+      )}
+    </section>
+  );
+}
+
 function InventoryFirestorePlan() {
   return (
     <details className="max-w-[980px] border-b border-[var(--ui-border)] pb-2">
@@ -875,6 +964,11 @@ export function InventoryAdmin() {
   const [activeInventoryItem, setActiveInventoryItem] = useState(null);
   const [assetFormMode, setAssetFormMode] = useState('create');
   const [assetFormStatus, setAssetFormStatus] = useState('idle');
+  const [activityLogs, setActivityLogs] = useState([]);
+  const [activityState, setActivityState] = useState({
+    errorMessage: '',
+    isReady: false,
+  });
 
   useEffect(() => {
     setInventoryState({
@@ -893,6 +987,31 @@ export function InventoryAdmin() {
       (error) => {
         setInventoryState({
           errorMessage: error?.message || 'Firestore inventory belum bisa dibaca. Cek rules inventoryItems.',
+          isReady: true,
+        });
+      },
+    );
+
+    return unsubscribe;
+  }, []);
+
+  useEffect(() => {
+    setActivityState({
+      errorMessage: '',
+      isReady: false,
+    });
+
+    const unsubscribe = adminInventoryRepository.subscribeInventoryActivityLogs(
+      (logs) => {
+        setActivityLogs(logs);
+        setActivityState((current) => ({
+          ...current,
+          isReady: true,
+        }));
+      },
+      (error) => {
+        setActivityState({
+          errorMessage: error?.message || 'Firestore inventoryActivityLogs belum bisa dibaca.',
           isReady: true,
         });
       },
@@ -1138,6 +1257,8 @@ export function InventoryAdmin() {
           onMarkMaintenance={handleMarkMaintenance}
           onRestockAsset={handleRestockAsset}
         />
+
+        <InventoryActivityTimeline logs={activityLogs} state={activityState} />
 
         <InventoryFirestorePlan />
       </div>
