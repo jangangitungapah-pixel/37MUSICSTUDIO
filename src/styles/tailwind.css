@@ -2827,3 +2827,96 @@
   }
 }
 /* 37-customer-summary-flat-rail:end */
+
+/* 37-customer-filter-toolbar-compact:start */
+@layer components {
+  .customer-toolbar-result-chip {
+    font-variant-numeric: tabular-nums;
+  }
+
+  @media (max-width: 767px) {
+    .customer-toolbar-compact {
+      border-radius: 1rem !important;
+      gap: 0.55rem !important;
+      padding: 0.62rem !important;
+    }
+
+    .customer-toolbar-search-row {
+      grid-template-columns: minmax(0, 1fr) auto !important;
+      gap: 0.5rem !important;
+      align-items: center !important;
+    }
+
+    .customer-toolbar-search-control {
+      min-height: 2.7rem !important;
+      padding-inline: 0.8rem !important;
+    }
+
+    .customer-toolbar-search-control input {
+      font-size: 0.82rem !important;
+    }
+
+    .customer-toolbar-result-chip {
+      min-height: 2.35rem !important;
+      min-width: 3.3rem !important;
+      padding-inline: 0.7rem !important;
+      font-size: 0.74rem !important;
+    }
+
+    .customer-toolbar-select-row {
+      grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+      gap: 0.5rem !important;
+    }
+
+    .customer-toolbar-select-shell {
+      min-width: 0 !important;
+    }
+
+    .customer-toolbar-select-shell > label {
+      gap: 0 !important;
+      font-size: 0 !important;
+    }
+
+    .customer-toolbar-select-shell > label > button {
+      min-height: 2.55rem !important;
+      border-radius: 999px !important;
+      padding-inline: 0.78rem !important;
+      font-size: 0.78rem !important;
+    }
+
+    .customer-toolbar-select-shell > label > button svg {
+      width: 0.92rem !important;
+      height: 0.92rem !important;
+    }
+  }
+
+  @media (max-width: 420px) {
+    .customer-toolbar-compact {
+      gap: 0.48rem !important;
+      padding: 0.54rem !important;
+    }
+
+    .customer-toolbar-search-control {
+      min-height: 2.55rem !important;
+      padding-inline: 0.72rem !important;
+    }
+
+    .customer-toolbar-result-chip {
+      min-height: 2.25rem !important;
+      min-width: 3rem !important;
+      padding-inline: 0.58rem !important;
+      font-size: 0.68rem !important;
+    }
+
+    .customer-toolbar-select-row {
+      gap: 0.42rem !important;
+    }
+
+    .customer-toolbar-select-shell > label > button {
+      min-height: 2.42rem !important;
+      padding-inline: 0.68rem !important;
+      font-size: 0.72rem !important;
+    }
+  }
+}
+/* 37-customer-filter-toolbar-compact:end */

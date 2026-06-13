@@ -1402,51 +1402,60 @@ function CustomerToolbar({
   onStatusFilterChange,
 }) {
   return (
-    <AdminCommandBar className="customer-toolbar-slim gap-2 p-2 lg:grid-cols-[minmax(0,1fr)_minmax(13rem,0.28fr)_minmax(13rem,0.28fr)_auto] lg:items-end">
-      <label className="grid gap-1 text-xs font-semibold text-[var(--ui-text-main)]">
-        <span className="sr-only">Search customer</span>
+    <AdminCommandBar className="customer-toolbar-slim customer-toolbar-compact grid gap-2 p-2 lg:grid-cols-[minmax(0,1fr)_minmax(13rem,0.28fr)_minmax(13rem,0.28fr)] lg:items-end">
+      <div className="customer-toolbar-search-row grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center lg:col-span-1">
+        <label className="grid gap-1 text-xs font-semibold text-[var(--ui-text-main)]">
+          <span className="sr-only">Search customer</span>
 
-        <span className="flex min-h-11 items-center gap-2 rounded-full border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 ring-1 ring-[var(--ui-ring)] focus-within:border-studio-accent/55 focus-within:ring-4 focus-within:ring-studio-accent/20">
-          <Search className="shrink-0 text-[var(--ui-text-muted)]" size={15} strokeWidth={2.35} aria-hidden="true" />
-          <input
-            className="w-full border-0 bg-transparent text-sm font-semibold text-[var(--ui-text-strong)] outline-none placeholder:text-[var(--ui-text-soft)]"
-            placeholder="Cari customer, HP, sesi..."
-            type="search"
-            value={searchTerm}
-            onChange={(event) => onSearchChange(event.target.value)}
-          />
-          {searchTerm ? (
-            <button
-              aria-label="Clear customer search"
-              className="grid size-8 shrink-0 place-items-center rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] text-[var(--ui-secondary-text)] transition hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)]"
-              type="button"
-              onClick={() => onSearchChange('')}
-            >
-              <X size={13} strokeWidth={2.35} aria-hidden="true" />
-            </button>
-          ) : null}
+          <span className="customer-toolbar-search-control flex min-h-11 items-center gap-2 rounded-full border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 ring-1 ring-[var(--ui-ring)] focus-within:border-studio-accent/55 focus-within:ring-4 focus-within:ring-studio-accent/20">
+            <Search className="shrink-0 text-[var(--ui-text-muted)]" size={15} strokeWidth={2.35} aria-hidden="true" />
+            <input
+              className="w-full border-0 bg-transparent text-sm font-semibold text-[var(--ui-text-strong)] outline-none placeholder:text-[var(--ui-text-soft)]"
+              placeholder="Cari customer..."
+              type="search"
+              value={searchTerm}
+              onChange={(event) => onSearchChange(event.target.value)}
+            />
+            {searchTerm ? (
+              <button
+                aria-label="Clear customer search"
+                className="grid size-8 shrink-0 place-items-center rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] text-[var(--ui-secondary-text)] transition hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)]"
+                type="button"
+                onClick={() => onSearchChange('')}
+              >
+                <X size={13} strokeWidth={2.35} aria-hidden="true" />
+              </button>
+            ) : null}
+          </span>
+        </label>
+
+        <span className="customer-toolbar-result-chip inline-flex min-h-8 items-center justify-center gap-1.5 rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] px-3 text-xs font-semibold text-[var(--ui-secondary-text)] ring-1 ring-[var(--ui-ring)]">
+          <UsersRound size={13} strokeWidth={2.35} aria-hidden="true" />
+          {resultCount}
         </span>
-      </label>
+      </div>
 
-      <ToolbarSelect
-        icon={ListFilter}
-        label="Segment"
-        options={customerStatusFilters}
-        value={statusFilter}
-        onChange={onStatusFilterChange}
-      />
+      <div className="customer-toolbar-select-row grid grid-cols-2 gap-2 lg:contents">
+        <div className="customer-toolbar-select-shell">
+          <ToolbarSelect
+            icon={ListFilter}
+            label="Segment"
+            options={customerStatusFilters}
+            value={statusFilter}
+            onChange={onStatusFilterChange}
+          />
+        </div>
 
-      <ToolbarSelect
-        icon={History}
-        label="Sort"
-        options={customerSortOptions}
-        value={sortMode}
-        onChange={onSortChange}
-      />
-
-      <AdminBadge className="min-h-11 justify-center px-3" icon={UsersRound} tone="strong">
-        {resultCount} customer
-      </AdminBadge>
+        <div className="customer-toolbar-select-shell">
+          <ToolbarSelect
+            icon={History}
+            label="Sort"
+            options={customerSortOptions}
+            value={sortMode}
+            onChange={onSortChange}
+          />
+        </div>
+      </div>
     </AdminCommandBar>
   );
 }
