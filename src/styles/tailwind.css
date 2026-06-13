@@ -1036,3 +1036,162 @@
   }
 }
 /* 37-admin-mobile-header-nav-polish:end */
+
+/* 37-admin-mobile-density-refine:start */
+@layer components {
+  @media (max-width: 767px) {
+    .admin-page-shell {
+      padding-inline: 0.65rem;
+    }
+
+    .admin-page-header,
+    .admin-command-bar,
+    .admin-panel {
+      box-shadow: none;
+    }
+
+    .admin-page-header {
+      background:
+        radial-gradient(circle at 0% 0%, color-mix(in srgb, var(--ui-primary-bg) 10%, transparent), transparent 42%),
+        radial-gradient(circle at 100% 16%, color-mix(in srgb, var(--color-studio-cyan) 10%, transparent), transparent 40%),
+        var(--ui-glass-soft);
+    }
+
+    .admin-page-header .admin-badge {
+      min-height: 1.9rem;
+      font-size: 0.66rem;
+    }
+
+    .admin-command-bar {
+      padding: 0.7rem;
+    }
+
+    .admin-command-bar > * {
+      min-width: 0;
+    }
+
+    .admin-button {
+      min-height: 2.75rem;
+      padding-inline: 1rem;
+    }
+
+    .admin-button svg,
+    .admin-badge svg {
+      flex: 0 0 auto;
+    }
+
+    .customer-attention-strip,
+    .customer-tag-filter-strip,
+    .inventory-priority-rail,
+    .inventory-saved-views {
+      margin-inline: -0.15rem;
+      padding-inline: 0.65rem;
+      scroll-padding-inline: 0.65rem;
+    }
+
+    .customer-attention-strip > *,
+    .customer-tag-filter-strip > *,
+    .inventory-priority-rail > *,
+    .inventory-saved-views > * {
+      scroll-snap-align: start;
+    }
+
+    .customer-toolbar-slim,
+    .inventory-command-bar,
+    .audit-toolbar {
+      gap: 0.7rem;
+    }
+
+    .customer-export-panel {
+      display: grid;
+      gap: 0.75rem;
+    }
+
+    .customer-export-panel > div:last-child {
+      justify-content: stretch;
+      width: 100%;
+    }
+
+    .customer-export-panel .admin-button {
+      flex: 1 1 0;
+    }
+
+    .audit-log-card {
+      gap: 0.85rem;
+      padding: 1rem;
+    }
+
+    .audit-log-card .admin-button {
+      width: 100%;
+    }
+
+    .inventory-command-bar .admin-button,
+    .customer-toolbar-slim .admin-badge,
+    .audit-toolbar button {
+      min-height: 2.65rem;
+    }
+
+    .inventory-ledger {
+      margin-inline: -0.15rem;
+      max-width: calc(100vw - 1rem);
+    }
+
+    .inventory-ledger > div {
+      scroll-padding-inline: 1rem;
+    }
+
+    .inventory-ledger [class*="min-w-"] {
+      min-width: 820px;
+    }
+
+    .admin-mobile-bottom-bar {
+      border-radius: 1.45rem;
+      background:
+        linear-gradient(180deg, color-mix(in srgb, var(--ui-control-hover) 86%, transparent), color-mix(in srgb, var(--ui-bg-base) 92%, transparent));
+      box-shadow: 0 1rem 3rem rgb(0 0 0 / 0.28);
+    }
+
+    .admin-mobile-bottom-bar a,
+    .admin-mobile-bottom-bar button {
+      border-radius: 1.15rem;
+      font-size: 0.72rem;
+    }
+  }
+
+  @media (max-width: 420px) {
+    .admin-page-shell {
+      padding-inline: 0.5rem;
+    }
+
+    .admin-page-header {
+      border-radius: 1.15rem;
+    }
+
+    .admin-page-header .admin-badge {
+      max-width: 100%;
+    }
+
+    .admin-command-bar {
+      padding: 0.6rem;
+    }
+
+    .customer-attention-strip,
+    .customer-tag-filter-strip,
+    .inventory-priority-rail,
+    .inventory-saved-views {
+      padding-inline: 0.5rem;
+      scroll-padding-inline: 0.5rem;
+    }
+
+    .inventory-ledger [class*="min-w-"] {
+      min-width: 780px;
+    }
+
+    .admin-mobile-bottom-bar a,
+    .admin-mobile-bottom-bar button {
+      min-height: 2.8rem;
+      font-size: 0.68rem;
+    }
+  }
+}
+/* 37-admin-mobile-density-refine:end */
