@@ -22,6 +22,7 @@ import {
   Sun,
   History,
   Boxes,
+  BookOpenCheck,
 } from 'lucide-react';
 import { cn } from '../lib/cn.js';
 import { useTheme } from '../theme/ThemeProvider.jsx';
@@ -82,6 +83,13 @@ const adminNavItems = [
     helper: 'Gear & aset',
     icon: Boxes,
     path: '/admin/inventory',
+  },
+  {
+    key: 'bookkeeping',
+    label: 'Pembukuan',
+    helper: 'Kas & laporan',
+    icon: BookOpenCheck,
+    path: '/admin/bookkeeping',
   },
 {
     key: 'audit',
@@ -422,8 +430,9 @@ function AdminBottomBar({
   onLogout,
 }) {
   const [isMoreOpen, setIsMoreOpen] = useState(false);
-  const mobileItems = adminNavItems.filter((item) => item.key !== 'audit').slice(0, 4);
-  const isAuditActive = activePath === '/admin/audit' || activePath.startsWith('/admin/audit/');
+  const mobileItems = adminNavItems.slice(0, 4);
+  const moreItems = adminNavItems.slice(4);
+  const isMoreActive = moreItems.some((item) => activePath === item.path || activePath.startsWith(item.path + '/'));
 
   useEffect(() => {
     setIsMoreOpen(false);
@@ -434,6 +443,7 @@ function AdminBottomBar({
       <AdminMobileMoreMenu
         activePath={activePath}
         isOpen={isMoreOpen}
+        items={moreItems}
         onClose={() => setIsMoreOpen(false)}
         onLogout={onLogout}
       />
@@ -454,28 +464,30 @@ function AdminBottomBar({
             />
           ))}
 
-          <button
-            aria-expanded={isMoreOpen}
-            aria-label="Buka menu lainnya"
-            className={cn(
-              'admin-bottom-nav-item admin-bottom-more-button group relative grid min-w-0 flex-1 place-items-center gap-1 overflow-hidden rounded-[0.95rem] px-1.5 py-1.5 text-[0.62rem] font-semibold tracking-[-0.01em] transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20',
-              isMoreOpen || isAuditActive
-                ? 'is-active bg-[var(--ui-control-hover)] text-[var(--ui-text-strong)] shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)]'
-                : 'text-[var(--ui-text-muted)] hover:bg-[var(--ui-control)] hover:text-[var(--ui-text-strong)]',
-            )}
-            type="button"
-            onClick={() => setIsMoreOpen((current) => !current)}
-          >
-            <span
+          {moreItems.length > 0 ? (
+            <button
+              aria-expanded={isMoreOpen}
+              aria-label="Buka menu lainnya"
               className={cn(
-                'admin-bottom-nav-icon grid size-7 place-items-center rounded-[0.8rem] transition',
-                isMoreOpen || isAuditActive ? 'text-studio-accent' : 'text-[var(--ui-text-soft)] group-hover:text-studio-accent',
+                'admin-bottom-nav-item admin-bottom-more-button group relative grid min-w-0 flex-1 place-items-center gap-1 overflow-hidden rounded-[0.95rem] px-1.5 py-1.5 text-[0.62rem] font-semibold tracking-[-0.01em] transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20',
+                isMoreOpen || isMoreActive
+                  ? 'is-active bg-[var(--ui-control-hover)] text-[var(--ui-text-strong)] shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)]'
+                  : 'text-[var(--ui-text-muted)] hover:bg-[var(--ui-control)] hover:text-[var(--ui-text-strong)]',
               )}
+              type="button"
+              onClick={() => setIsMoreOpen((current) => !current)}
             >
-              <Menu size={17} strokeWidth={2.25} aria-hidden="true" />
-            </span>
-            <span className="admin-bottom-nav-label max-w-full truncate">Menu</span>
-          </button>
+              <span
+                className={cn(
+                  'admin-bottom-nav-icon grid size-7 place-items-center rounded-[0.8rem] transition',
+                  isMoreOpen || isMoreActive ? 'text-studio-accent' : 'text-[var(--ui-text-soft)] group-hover:text-studio-accent',
+                )}
+              >
+                <Menu size={17} strokeWidth={2.25} aria-hidden="true" />
+              </span>
+              <span className="admin-bottom-nav-label max-w-full truncate">Menu</span>
+            </button>
+          ) : null}
         </div>
       </nav>
     </>
@@ -485,14 +497,13 @@ function AdminBottomBar({
 function AdminMobileMoreMenu({
   activePath,
   isOpen,
+  items = [],
   onClose,
   onLogout,
 }) {
   const { mode, toggleMode } = useTheme();
   const themeSwitch = adminThemeSwitchStates[mode] || adminThemeSwitchStates.dark;
   const ThemeSwitchIcon = themeSwitch.knobIcon;
-  const auditItem = adminNavItems.find((item) => item.key === 'audit');
-  const AuditIcon = auditItem?.icon;
 
   if (!isOpen) return null;
 
@@ -501,26 +512,32 @@ function AdminMobileMoreMenu({
       className="admin-mobile-more-menu fixed z-50 grid gap-1 rounded-[1.25rem] border border-[var(--ui-border)] bg-[var(--ui-glass)] p-1 shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] backdrop-blur-xl md:hidden"
       aria-label="Admin mobile more menu"
     >
-      {auditItem && AuditIcon ? (
-        <NavLink
-          className={cn(
-            'admin-mobile-more-item grid min-h-10 grid-cols-[2rem_minmax(0,1fr)] items-center gap-2 rounded-[0.95rem] border px-2 text-left text-xs font-semibold transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20',
-            activePath === auditItem.path || activePath.startsWith(auditItem.path + '/')
-              ? 'is-active border-studio-accent/25 bg-studio-accent/10 text-[var(--ui-text-strong)]'
-              : 'border-transparent bg-transparent text-[var(--ui-text-main)] hover:bg-[var(--ui-control)]',
-          )}
-          to={auditItem.path}
-          onClick={onClose}
-        >
-          <span className="grid size-8 place-items-center rounded-md border border-[var(--ui-border)] bg-[var(--ui-control)] text-studio-accent">
-            <AuditIcon size={15} strokeWidth={2.35} aria-hidden="true" />
-          </span>
-          <span className="grid min-w-0">
-            <span className="truncate">{auditItem.label}</span>
-            <span className="truncate text-[0.65rem] font-medium text-[var(--ui-text-muted)]">{auditItem.helper}</span>
-          </span>
-        </NavLink>
-      ) : null}
+      {items.map((item) => {
+        const ItemIcon = item.icon;
+        const isActive = activePath === item.path || activePath.startsWith(item.path + '/');
+
+        return (
+          <NavLink
+            className={cn(
+              'admin-mobile-more-item grid min-h-10 grid-cols-[2rem_minmax(0,1fr)] items-center gap-2 rounded-[0.95rem] border px-2 text-left text-xs font-semibold transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20',
+              isActive
+                ? 'is-active border-studio-accent/25 bg-studio-accent/10 text-[var(--ui-text-strong)]'
+                : 'border-transparent bg-transparent text-[var(--ui-text-main)] hover:bg-[var(--ui-control)]',
+            )}
+            key={item.key}
+            to={item.path}
+            onClick={onClose}
+          >
+            <span className="grid size-8 place-items-center rounded-[0.8rem] border border-[var(--ui-border)] bg-[var(--ui-control)] text-studio-accent">
+              <ItemIcon size={15} strokeWidth={2.35} aria-hidden="true" />
+            </span>
+            <span className="grid min-w-0">
+              <span className="truncate">{item.label}</span>
+              <span className="truncate text-[0.65rem] font-medium text-[var(--ui-text-muted)]">{item.helper}</span>
+            </span>
+          </NavLink>
+        );
+      })}
 
       <button
         aria-checked={themeSwitch.checked}
@@ -550,12 +567,12 @@ function AdminMobileMoreMenu({
       </button>
 
       <button
-        aria-label="Logout admin access"
+        aria-label="Keluar dari akses admin"
         className="admin-mobile-more-item admin-mobile-logout-button grid min-h-10 grid-cols-[2rem_minmax(0,1fr)] items-center gap-2 rounded-[0.95rem] border border-transparent bg-transparent px-2 text-left text-xs font-semibold text-[var(--ui-text-main)] transition hover:bg-[var(--ui-control)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
         type="button"
         onClick={onLogout}
       >
-        <span className="grid size-8 place-items-center rounded-md border border-[var(--ui-border)] bg-[var(--ui-control)] text-studio-accent">
+        <span className="grid size-8 place-items-center rounded-[0.8rem] border border-[var(--ui-border)] bg-[var(--ui-control)] text-studio-accent">
           <LockKeyhole size={14} strokeWidth={2.35} aria-hidden="true" />
         </span>
         <span>Keluar</span>
