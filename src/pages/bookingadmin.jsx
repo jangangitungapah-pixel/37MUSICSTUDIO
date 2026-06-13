@@ -758,37 +758,38 @@ function BookingModal({
 
   return (
     <div
-      className="booking-form-overlay fixed inset-0 z-50 flex items-end justify-center bg-black/60 p-0 backdrop-blur-md sm:items-center sm:p-4"
+      className="booking-form-overlay fixed inset-0 z-50 flex items-end justify-center p-2 pb-[max(0.75rem,env(safe-area-inset-bottom))] bg-black/60 backdrop-blur-md sm:items-center sm:p-4"
       role="dialog"
       aria-modal="true"
       aria-labelledby="booking-modal-title"
     >
       <form
-        className="booking-form-modal flex max-h-[min(92dvh,calc(100dvh-0.65rem))] w-full flex-col overflow-hidden rounded-t-[1.45rem] border border-[var(--ui-border-strong)] bg-[var(--ui-bg-base)] shadow-[var(--ui-shadow-soft)] ring-1 ring-[var(--ui-ring)] sm:max-h-[calc(100dvh-32px)] sm:w-[min(760px,calc(100vw-32px))] sm:rounded-[1.75rem]"
+        className="booking-form-modal flex max-h-[calc(100dvh-5.5rem)] w-full flex-col overflow-hidden rounded-[1.5rem] border border-[var(--ui-border-strong)] bg-[var(--ui-bg-base)] shadow-[var(--ui-shadow-soft)] ring-1 ring-[var(--ui-ring)] sm:max-h-[calc(100dvh-32px)] sm:w-[min(760px,calc(100vw-32px))] sm:rounded-[2rem]"
         onSubmit={onSubmit}
       >
-        <header className="booking-form-header shrink-0 border-b border-[var(--ui-border)] px-4 pb-3 pt-4 sm:px-5 sm:pb-4 sm:pt-5">
-          <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3">
-            <div className="grid min-w-0 gap-1.5">
-              <span className="booking-form-eyebrow inline-flex w-fit items-center rounded-full border border-studio-accent/25 bg-studio-accent/10 px-2.5 py-1 text-[0.58rem] font-semibold uppercase tracking-[0.18em] text-studio-accent ring-1 ring-studio-accent/10">
+        <header className="booking-form-header shrink-0 border-b border-[var(--ui-border)] px-4 py-3 sm:px-6 sm:py-5">
+          <div className="flex items-start justify-between gap-3">
+            <div className="grid min-w-0 gap-2">
+              <span className="booking-form-eyebrow inline-flex w-fit items-center gap-2 rounded-full border border-[var(--ui-border)] bg-[var(--ui-control)] px-2.5 py-1.5 text-[0.58rem] font-semibold uppercase tracking-[0.16em] text-studio-accent ring-1 ring-[var(--ui-ring)] sm:px-3 sm:text-[0.68rem] sm:tracking-[0.18em]">
+                <ReceiptText size={13} strokeWidth={2.35} aria-hidden="true" />
                 {modalEyebrow}
               </span>
 
               <h2
-                className="booking-form-title m-0 text-[clamp(1.6rem,7.2vw,2.35rem)] font-semibold leading-[0.98] tracking-[-0.025em] text-[var(--ui-text-strong)]"
+                className="booking-form-title m-0 truncate text-3xl font-semibold leading-none tracking-[-0.07em] text-[var(--ui-text-strong)] sm:text-[clamp(2rem,4vw,3.25rem)]"
                 id="booking-modal-title"
               >
                 {compactModalTitle}
               </h2>
 
-              <p className="booking-form-description m-0 max-w-[34rem] text-sm leading-6 text-[var(--ui-text-muted)]">
+              <p className="booking-form-description m-0 max-w-2xl text-sm leading-6 text-[var(--ui-text-muted)]">
                 {compactDescription}
               </p>
             </div>
 
             <button
               aria-label="Close booking form"
-              className="grid size-10 shrink-0 place-items-center rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] text-[var(--ui-secondary-text)] shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] transition hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/25"
+              className="grid size-9 shrink-0 place-items-center rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] text-[var(--ui-secondary-text)] shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/25 sm:size-10"
               type="button"
               onClick={onClose}
             >
@@ -797,7 +798,7 @@ function BookingModal({
           </div>
         </header>
 
-        <div className="booking-form-body min-h-0 flex-1 overflow-y-auto px-4 py-3 sm:px-5 sm:py-4">
+        <div className="booking-form-body grid gap-4 overflow-y-auto px-4 py-4 sm:px-6 sm:py-5">
           <div className="grid gap-3">
             {saveError ? (
               <div className="rounded-[1rem] border border-studio-accent/35 bg-studio-accent/10 px-3 py-2.5 text-sm font-semibold leading-6 text-[var(--ui-text-main)] ring-1 ring-studio-accent/15">
@@ -986,7 +987,7 @@ function BookingModal({
           </div>
         </div>
 
-        <footer className="booking-form-footer shrink-0 border-t border-[var(--ui-border)] bg-[var(--ui-bg-base)] px-4 pb-[max(0.85rem,env(safe-area-inset-bottom))] pt-3 sm:px-5 sm:pb-4">
+        <footer className="booking-form-footer shrink-0 border-t border-[var(--ui-border)] bg-[var(--ui-bg-base)] px-4 pb-[max(0.85rem,env(safe-area-inset-bottom))] pt-3 sm:px-6 sm:pb-5">
           <div className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
             <span className="inline-flex min-w-0 items-center gap-2 text-xs font-semibold text-[var(--ui-text-muted)]">
               <ReceiptText size={15} strokeWidth={2.35} aria-hidden="true" />
