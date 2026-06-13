@@ -548,26 +548,28 @@ function getViewRangeLabel(viewMode, visibleDays, cursorDate) {
 
 function getDayColumnTemplate(viewMode) {
   if (viewMode === 'day') {
-    return 'minmax(220px,1fr)';
+    return 'minmax(240px,1fr)';
   }
 
   if (viewMode === 'week') {
-    return 'minmax(104px,1fr)';
+    return 'minmax(118px,1fr)';
   }
 
-  return '92px';
+  return '100px';
 }
 
 function getGridMinWidth(viewMode, visibleDays) {
+  const timeColumnWidth = 'var(--booking-time-column-width, 112px)';
+
   if (viewMode === 'month') {
-    return 'calc(var(--booking-time-column-width, 112px) + ' + visibleDays.length + ' * 92px)';
+    return 'calc(' + timeColumnWidth + ' + ' + (visibleDays.length * 100) + 'px)';
   }
 
   if (viewMode === 'week') {
-    return 'calc(var(--booking-time-column-width, 112px) + ' + visibleDays.length + ' * 104px)';
+    return 'calc(' + timeColumnWidth + ' + ' + (visibleDays.length * 118) + 'px)';
   }
 
-  return 'calc(var(--booking-time-column-width, 112px) + 220px)';
+  return 'calc(' + timeColumnWidth + ' + 240px)';
 }
 
 function getInitialViewMode() {
