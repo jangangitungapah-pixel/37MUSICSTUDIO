@@ -23,6 +23,7 @@ import {
   History,
   Boxes,
   BookOpenCheck,
+  Settings2,
 } from 'lucide-react';
 import { cn } from '../lib/cn.js';
 import { useTheme } from '../theme/ThemeProvider.jsx';
@@ -71,13 +72,19 @@ const adminNavItems = [
     path: '/admin/billing',
   },
   {
+    key: 'bookkeeping',
+    label: 'Pembukuan',
+    helper: 'Kas & laporan',
+    icon: BookOpenCheck,
+    path: '/admin/bookkeeping',
+  },
+  {
     key: 'customers',
     label: 'Customers',
     helper: 'Direktori customer',
     icon: UsersRound,
     path: '/admin/customers',
   },
-  
   {
     key: 'inventory',
     label: 'Inventory',
@@ -86,18 +93,18 @@ const adminNavItems = [
     path: '/admin/inventory',
   },
   {
-    key: 'bookkeeping',
-    label: 'Pembukuan',
-    helper: 'Kas & laporan',
-    icon: BookOpenCheck,
-    path: '/admin/bookkeeping',
-  },
-{
     key: 'audit',
     label: 'Audit',
     helper: 'Riwayat aksi',
     icon: History,
     path: '/admin/audit',
+  },
+  {
+    key: 'settings',
+    label: 'Settings',
+    helper: 'Kontrol aplikasi',
+    icon: Settings2,
+    path: '/admin/settings',
   },
 ];
 

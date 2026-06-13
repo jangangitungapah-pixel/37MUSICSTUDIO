@@ -7,6 +7,7 @@ import { BookingAdmin } from './pages/bookingadmin.jsx';
 import { CustomerAdmin, CustomerDetailAdmin } from './pages/customeradmin.jsx';
 import { InventoryAdmin } from './pages/inventoryadmin.jsx';
 import { LoginPage } from './pages/LoginPage.jsx';
+import { SettingsAdmin } from './pages/settingsadmin.jsx';
 import { ThemeContainer } from './theme/ThemeContainer.jsx';
 import { ThemePreview } from './theme/ThemePreview.jsx';
 
@@ -28,6 +29,7 @@ function App() {
           <Route path="customers/:customerId" element={<CustomerDetailAdmin />} />
           <Route path="inventory" element={<InventoryAdmin />} />
           <Route path="audit" element={<AuditAdmin />} />
+          <Route path="settings" element={<SettingsAdmin />} />
           <Route path="*" element={<Navigate replace to="/admin/bookings" />} />
         </Route>
 
