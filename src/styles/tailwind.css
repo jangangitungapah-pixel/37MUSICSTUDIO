@@ -2095,3 +2095,178 @@
   }
 }
 /* 37-inventory-mobile-summary-value-row:end */
+
+/* 37-booking-mobile-toolbar-compact:start */
+@layer components {
+  @media (max-width: 767px) {
+    .booking-calendar-toolbar {
+      gap: 0.45rem !important;
+      padding: 0.55rem !important;
+      border-radius: 1rem !important;
+    }
+
+    .booking-calendar-toolbar > div:first-child {
+      display: grid !important;
+      grid-template-columns: auto minmax(0, 1fr) auto auto !important;
+      gap: 0.42rem !important;
+      align-items: center !important;
+    }
+
+    .booking-calendar-toolbar > div:first-child .admin-button {
+      min-height: 2.25rem !important;
+      min-width: 2.25rem !important;
+      padding-inline: 0.68rem !important;
+      font-size: 0.66rem !important;
+      border-radius: 999px !important;
+    }
+
+    .booking-calendar-toolbar > div:first-child .admin-button:first-child,
+    .booking-calendar-toolbar > div:first-child .admin-button:nth-child(3) {
+      width: 2.25rem !important;
+      padding-inline: 0 !important;
+    }
+
+    .booking-calendar-toolbar > div:first-child .admin-button:last-child {
+      grid-column: auto !important;
+      width: auto !important;
+      min-width: 3.05rem !important;
+      padding-inline: 0.72rem !important;
+    }
+
+    .booking-calendar-toolbar > div:first-child .admin-badge {
+      min-height: 2.25rem !important;
+      min-width: 0 !important;
+      max-width: 100% !important;
+      justify-content: flex-start !important;
+      padding-inline: 0.7rem !important;
+      font-size: 0.66rem !important;
+      letter-spacing: -0.015em !important;
+      overflow: hidden !important;
+    }
+
+    .booking-calendar-toolbar > div:first-child .admin-badge span {
+      min-width: 0 !important;
+      overflow: hidden !important;
+      text-overflow: ellipsis !important;
+      white-space: nowrap !important;
+    }
+
+    .booking-status-counters {
+      min-height: 2.35rem !important;
+      gap: 0.28rem !important;
+      border-radius: 1rem !important;
+      padding: 0.25rem !important;
+    }
+
+    .booking-status-counters .admin-badge {
+      min-height: 1.9rem !important;
+      padding-inline: 0.38rem !important;
+      font-size: 0.58rem !important;
+      letter-spacing: 0.08em !important;
+      border-radius: 0.82rem !important;
+    }
+
+    .booking-status-counters .admin-badge svg {
+      width: 0.72rem !important;
+      height: 0.72rem !important;
+    }
+
+    .booking-calendar-toolbar > div:last-child {
+      display: grid !important;
+      grid-template-columns: minmax(0, 1fr) auto !important;
+      gap: 0.45rem !important;
+      align-items: center !important;
+    }
+
+    .booking-calendar-toolbar > div:last-child > div:first-child {
+      min-height: 2.45rem !important;
+      border-radius: 999px !important;
+      padding: 0.25rem !important;
+    }
+
+    .booking-calendar-toolbar > div:last-child button {
+      min-height: 2rem !important;
+      padding-inline: 0.65rem !important;
+      font-size: 0.62rem !important;
+      letter-spacing: 0.11em !important;
+    }
+
+    .booking-calendar-toolbar > div:last-child .admin-button {
+      min-height: 2.45rem !important;
+      padding-inline: 0.9rem !important;
+      font-size: 0.78rem !important;
+      letter-spacing: -0.015em !important;
+      border-radius: 999px !important;
+    }
+
+    .booking-calendar-toolbar > div:last-child .admin-button svg {
+      width: 1rem !important;
+      height: 1rem !important;
+    }
+  }
+
+  @media (max-width: 420px) {
+    .booking-calendar-toolbar {
+      gap: 0.38rem !important;
+      padding: 0.48rem !important;
+    }
+
+    .booking-calendar-toolbar > div:first-child {
+      gap: 0.35rem !important;
+    }
+
+    .booking-calendar-toolbar > div:first-child .admin-button {
+      min-height: 2.05rem !important;
+      min-width: 2.05rem !important;
+      font-size: 0.6rem !important;
+    }
+
+    .booking-calendar-toolbar > div:first-child .admin-button:first-child,
+    .booking-calendar-toolbar > div:first-child .admin-button:nth-child(3) {
+      width: 2.05rem !important;
+    }
+
+    .booking-calendar-toolbar > div:first-child .admin-button:last-child {
+      min-width: 2.85rem !important;
+      padding-inline: 0.58rem !important;
+    }
+
+    .booking-calendar-toolbar > div:first-child .admin-badge {
+      min-height: 2.05rem !important;
+      padding-inline: 0.55rem !important;
+      font-size: 0.59rem !important;
+    }
+
+    .booking-status-counters {
+      min-height: 2.12rem !important;
+    }
+
+    .booking-status-counters .admin-badge {
+      min-height: 1.72rem !important;
+      font-size: 0.53rem !important;
+      letter-spacing: 0.07em !important;
+    }
+
+    .booking-calendar-toolbar > div:last-child {
+      gap: 0.35rem !important;
+    }
+
+    .booking-calendar-toolbar > div:last-child > div:first-child {
+      min-height: 2.25rem !important;
+    }
+
+    .booking-calendar-toolbar > div:last-child button {
+      min-height: 1.82rem !important;
+      padding-inline: 0.5rem !important;
+      font-size: 0.56rem !important;
+      letter-spacing: 0.1em !important;
+    }
+
+    .booking-calendar-toolbar > div:last-child .admin-button {
+      min-height: 2.25rem !important;
+      padding-inline: 0.78rem !important;
+      font-size: 0.72rem !important;
+    }
+  }
+}
+/* 37-booking-mobile-toolbar-compact:end */
