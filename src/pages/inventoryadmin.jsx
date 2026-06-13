@@ -461,7 +461,7 @@ function InventoryAssetCard({
 
   return (
     <article
-      className="group grid gap-3 px-3 py-3.5 transition hover:bg-[var(--ui-control)] lg:grid-cols-[minmax(320px,1fr)_136px_150px_224px] lg:items-center"
+      className="group grid gap-3 px-3 py-3.5 transition hover:bg-[var(--ui-control)] lg:grid-cols-[minmax(220px,260px)_140px_140px_minmax(300px,1fr)] lg:items-center"
       title={'Last checked: ' + formatDateLabel(asset.lastChecked)}
     >
       <div className="grid min-w-0 gap-1">
@@ -470,12 +470,12 @@ function InventoryAssetCard({
             <PackageCheck size={14} strokeWidth={2.35} aria-hidden="true" />
           </span>
 
-          <h2 className="m-0 min-w-0 truncate text-base font-semibold tracking-[-0.04em] text-[var(--ui-text-strong)]">
+          <h2 className="m-0 min-w-0 truncate text-[0.95rem] font-semibold tracking-[-0.035em] text-[var(--ui-text-strong)]">
             {asset.name}
           </h2>
         </div>
 
-        <p className="m-0 truncate pl-9 text-xs font-semibold text-[var(--ui-text-muted)]">
+        <p className="m-0 truncate pl-9 text-[0.7rem] font-semibold text-[var(--ui-text-muted)]">
           {asset.category} • {asset.location}
         </p>
       </div>
@@ -499,7 +499,7 @@ function InventoryAssetCard({
         </span>
       </div>
 
-      <div className="grid grid-cols-[minmax(50px,0.75fr)_minmax(64px,1fr)_36px_36px] gap-1.5">
+      <div className="grid grid-cols-[72px_88px_38px_38px] justify-end gap-1.5">
         <button
           aria-label={'Restock ' + asset.name}
           className="inline-flex min-h-8 items-center justify-center gap-1.5 rounded-full bg-studio-cyan/10 px-2 text-[0.7rem] font-semibold text-studio-cyan transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-cyan/20"
@@ -567,7 +567,7 @@ function InventoryBoard({
 
   return (
     <section className="overflow-hidden border-y border-[var(--ui-border)]">
-      <div className="hidden border-b border-[var(--ui-border)] px-3 py-2 text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-[var(--ui-text-soft)] lg:grid lg:grid-cols-[minmax(320px,1fr)_136px_150px_224px]">
+      <div className="hidden border-b border-[var(--ui-border)] px-3 py-2 text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-[var(--ui-text-soft)] lg:grid lg:grid-cols-[minmax(220px,260px)_140px_140px_minmax(300px,1fr)]">
         <span>Asset</span>
         <span>Status</span>
         <span>Stock</span>
