@@ -823,7 +823,7 @@ function InventoryToolbar({
         <label className="flex min-h-9 items-center gap-2 rounded-full bg-[var(--ui-control)] px-3 text-xs font-semibold text-[var(--ui-text-muted)] ring-1 ring-[var(--ui-ring)]">
           <SlidersHorizontal size={14} strokeWidth={2.35} aria-hidden="true" />
           <select
-            className="min-h-8 w-full border-0 bg-transparent font-semibold outline-none"
+            className="inventory-token-select w-full min-w-0 outline-none min-h-8 font-semibold"
             value={categoryFilter}
             onChange={(event) => onCategoryChange(event.target.value)}
           >
@@ -837,7 +837,7 @@ function InventoryToolbar({
         <label className="flex min-h-9 items-center gap-2 rounded-full bg-[var(--ui-control)] px-3 text-xs font-semibold text-[var(--ui-text-muted)] ring-1 ring-[var(--ui-ring)]">
           <PackageCheck size={14} strokeWidth={2.35} aria-hidden="true" />
           <select
-            className="min-h-8 w-full border-0 bg-transparent font-semibold outline-none"
+            className="inventory-token-select w-full min-w-0 outline-none min-h-8 font-semibold"
             value={conditionFilter}
             onChange={(event) => onConditionChange(event.target.value)}
           >
@@ -1102,7 +1102,7 @@ function InventoryConditionSelect({ onChange, value }) {
     <label className="grid min-w-0 gap-1.5 text-sm font-semibold text-[var(--ui-text-main)]">
       <span className="text-[0.68rem] uppercase tracking-[0.12em] text-[var(--ui-text-muted)]">Condition</span>
       <select
-        className="min-h-11 w-full min-w-0 rounded-xl border border-[var(--ui-border)] bg-[var(--ui-control-hover)] px-3 text-sm font-semibold text-[var(--ui-text-strong)] outline-none ring-1 ring-[var(--ui-ring)] focus:border-studio-accent/45 focus:ring-4 focus:ring-studio-accent/15"
+        className="inventory-token-select w-full min-w-0 outline-none min-h-11 rounded-xl -[var(--ui-)] px-3 text-sm font-semibold focus:-studio-accent/45"
         value={normalizedValue}
         onChange={(event) => onChange(event.target.value)}
       >
@@ -1190,7 +1190,7 @@ function InventoryFormPanel({
                 <label className="grid min-w-0 gap-1.5 text-sm font-semibold text-[var(--ui-text-main)]">
                   <span className="text-[0.68rem] uppercase tracking-[0.12em] text-[var(--ui-text-muted)]">Status</span>
                   <select
-                    className="min-h-11 w-full min-w-0 rounded-xl border border-[var(--ui-border)] bg-[var(--ui-control-hover)] px-3 text-sm font-semibold text-[var(--ui-text-strong)] outline-none ring-1 ring-[var(--ui-ring)] focus:border-studio-accent/45 focus:ring-4 focus:ring-studio-accent/15"
+                    className="inventory-token-select w-full min-w-0 outline-none min-h-11 rounded-xl -[var(--ui-)] px-3 text-sm font-semibold focus:-studio-accent/45"
                     value={draft.status}
                     onChange={(event) => onChange('status', event.target.value)}
                   >
