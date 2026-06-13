@@ -1170,40 +1170,11 @@ function printCustomerList(customers) {
 }
 
 
-function CustomerHero({
-  activeCustomer,
-  stats,
-}) {
-  const activeLabel = activeCustomer ? activeCustomer.name : stats.totalCustomers + ' customers';
-  const activeHelper = activeCustomer
-    ? activeCustomer.totalBookings + ' booking • ' + activeCustomer.favoriteSession
-    : 'Firestore';
-
+function CustomerHero() {
   return (
     <AdminPageHeader
-      actions={(
-        <AdminBadge icon={UsersRound} tone="strong">
-          {activeLabel}
-        </AdminBadge>
-      )}
       description="Kontak, histori booking, tag CRM, dan follow-up pembayaran."
       eyebrow="Studio CRM"
-      meta={(
-        <>
-          <AdminBadge icon={CalendarClock} tone="cyan">
-            {stats.upcomingCustomers} next
-          </AdminBadge>
-          <AdminBadge icon={CheckCircle2} tone="purple">
-            {stats.returningCustomers} return
-          </AdminBadge>
-          <AdminBadge icon={CreditCard} tone="neutral">
-            {formatCurrency(stats.totalRevenue)}
-          </AdminBadge>
-          <AdminBadge tone="muted">
-            {activeHelper}
-          </AdminBadge>
-        </>
-      )}
       title="Customer list"
     />
   );
