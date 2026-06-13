@@ -32,6 +32,9 @@ const studioHours = {
   closeHour: 23,
 };
 
+const BOOKING_GRID_ROW_HEIGHT = 54;
+const BOOKING_BLOCK_VERTICAL_GAP = 8;
+
 const solidSurfaces = {
   gridShell: '[background:color-mix(in_srgb,var(--ui-bg-base)_90%,var(--ui-control-hover))]',
   gridHeader: '[background:color-mix(in_srgb,var(--ui-bg-base)_94%,var(--ui-control-hover))]',
@@ -506,7 +509,7 @@ function getBookingSpanForSlot(bookings, dayKey, timeKey) {
 function getBookingDurationHeight(booking) {
   const duration = getClampedBookingDuration(booking);
 
-  return Math.max(38, duration * 54 - 18);
+  return Math.max(42, duration * BOOKING_GRID_ROW_HEIGHT - BOOKING_BLOCK_VERTICAL_GAP);
 }
 
 function getVisibleBookings(bookings, visibleDays) {
@@ -557,6 +560,10 @@ function getViewRangeLabel(viewMode, visibleDays, cursorDate) {
   }
 
   return formatMonthYear(cursorDate);
+}
+
+function getViewLabel(viewMode) {
+  return viewOptions.find((option) => option.key === viewMode)?.label.toLowerCase() || viewMode;
 }
 
 function getDayColumnTemplate(viewMode) {
@@ -1100,16 +1107,16 @@ function BookingDetailModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end justify-center p-2 pb-[max(0.75rem,env(safe-area-inset-bottom))] bg-black/60 backdrop-blur-md sm:items-center sm:p-4"
+      className="booking-detail-overlay fixed inset-0 z-50 flex items-end justify-center p-2 pb-[max(0.75rem,env(safe-area-inset-bottom))] bg-black/60 backdrop-blur-md sm:items-center sm:p-4"
       role="dialog"
       aria-modal="true"
       aria-labelledby="booking-detail-title"
     >
-      <div className="flex max-h-[calc(100dvh-5.5rem)] w-full flex-col overflow-hidden rounded-[1.5rem] border border-[var(--ui-border-strong)] bg-[var(--ui-bg-base)] shadow-[var(--ui-shadow-soft)] ring-1 ring-[var(--ui-ring)] sm:max-h-[calc(100dvh-32px)] sm:w-[min(760px,calc(100vw-32px))] sm:rounded-[2rem]">
-        <header className="shrink-0 border-b border-[var(--ui-border)] px-4 py-3 sm:px-6 sm:py-5">
+      <div className="booking-detail-modal flex max-h-[calc(100dvh-5.5rem)] w-full flex-col overflow-hidden rounded-[1.5rem] border border-[var(--ui-border-strong)] bg-[var(--ui-bg-base)] shadow-[var(--ui-shadow-soft)] ring-1 ring-[var(--ui-ring)] sm:max-h-[calc(100dvh-32px)] sm:w-[min(760px,calc(100vw-32px))] sm:rounded-[2rem]">
+        <header className="booking-detail-header shrink-0 border-b border-[var(--ui-border)] px-4 py-3 sm:px-6 sm:py-5">
           <div className="flex items-start justify-between gap-3">
             <div className="grid min-w-0 gap-2">
-              <span className="inline-flex w-fit items-center gap-2 rounded-full border border-[var(--ui-border)] bg-[var(--ui-control)] px-2.5 py-1.5 text-[0.58rem] font-semibold uppercase tracking-[0.16em] text-studio-accent ring-1 ring-[var(--ui-ring)] sm:px-3 sm:text-[0.68rem] sm:tracking-[0.18em]">
+              <span className="booking-detail-eyebrow inline-flex w-fit items-center gap-2 rounded-full border border-[var(--ui-border)] bg-[var(--ui-control)] px-2.5 py-1.5 text-[0.58rem] font-semibold uppercase tracking-[0.16em] text-studio-accent ring-1 ring-[var(--ui-ring)] sm:px-3 sm:text-[0.68rem] sm:tracking-[0.18em]">
                 <ReceiptText size={13} strokeWidth={2.35} aria-hidden="true" />
                 Detail booking
               </span>
@@ -1122,7 +1129,7 @@ function BookingDetailModal({
                   {displayName}
                 </h2>
 
-                <p className="m-0 max-w-2xl text-sm leading-6 text-[var(--ui-text-muted)]">
+                <p className="booking-detail-meta m-0 max-w-2xl text-sm leading-6 text-[var(--ui-text-muted)]">
                   {sessionLabel} • {formatFullDateLabel(bookingDate)} • {booking.time} - {endTime}
                 </p>
               </div>
@@ -1139,9 +1146,9 @@ function BookingDetailModal({
           </div>
         </header>
 
-        <div className="grid gap-4 overflow-y-auto px-4 py-4 sm:px-6 sm:py-5">
-          <section className="grid gap-3.5 sm:gap-4" aria-label="Ringkasan booking">
-            <div className="flex items-center justify-between gap-3 pb-1 sm:pb-1.5">
+        <div className="booking-detail-body grid gap-4 overflow-y-auto px-4 py-4 sm:px-6 sm:py-5">
+          <section className="booking-detail-summary grid gap-3.5 sm:gap-4" aria-label="Ringkasan booking">
+            <div className="booking-detail-status-row flex items-center justify-between gap-3 pb-1 sm:pb-1.5">
               <div className="grid min-w-0 gap-1">
                 <span className="text-[0.58rem] font-semibold uppercase tracking-[0.14em] text-[var(--ui-text-muted)] sm:text-[0.68rem] sm:tracking-[0.16em]">
                   Status pembayaran
@@ -1159,7 +1166,7 @@ function BookingDetailModal({
               </span>
             </div>
 
-            <div className="grid grid-cols-3 gap-0 border-y border-[var(--ui-border)] py-1">
+            <div className="booking-detail-payment-grid grid grid-cols-3 gap-0 border-y border-[var(--ui-border)] py-1">
               <PaymentMini
                 icon={WalletCards}
                 label="Total"
@@ -1183,8 +1190,8 @@ function BookingDetailModal({
             </div>
           </section>
 
-          <section className="grid gap-3 sm:grid-cols-2 sm:gap-6" aria-label="Data booking">
-            <div className="grid gap-0">
+          <section className="booking-detail-data-grid grid gap-3 sm:grid-cols-2 sm:gap-6" aria-label="Data booking">
+            <div className="booking-detail-data-card grid gap-0">
               <span className="pb-1 text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-studio-accent">
                 Customer
               </span>
@@ -1204,7 +1211,7 @@ function BookingDetailModal({
               />
             </div>
 
-            <div className="grid gap-0">
+            <div className="booking-detail-data-card grid gap-0">
               <span className="pb-1 text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-studio-accent">
                 Jadwal
               </span>
@@ -1225,7 +1232,7 @@ function BookingDetailModal({
             </div>
           </section>
 
-          <section className="grid gap-1.5 border-y border-[var(--ui-border)] py-3" aria-label="Catatan booking">
+          <section className="booking-detail-notes grid gap-1.5 border-y border-[var(--ui-border)] py-3" aria-label="Catatan booking">
             <span className="text-[0.58rem] font-semibold uppercase tracking-[0.14em] text-[var(--ui-text-muted)] sm:text-[0.68rem] sm:tracking-[0.16em]">
               Catatan
             </span>
@@ -1235,9 +1242,9 @@ function BookingDetailModal({
             </p>
           </section>
 
-          <section className="grid gap-2 border-b border-[var(--ui-border)] pb-3" aria-label="Riwayat aktivitas booking">
+          <section className="booking-detail-activity grid gap-2 border-b border-[var(--ui-border)] pb-3" aria-label="Riwayat aktivitas booking">
             <span className="text-[0.58rem] font-semibold uppercase tracking-[0.14em] text-[var(--ui-text-muted)] sm:text-[0.68rem] sm:tracking-[0.16em]">
-              Activity history
+              Riwayat aktivitas
             </span>
 
             {auditTrail.length > 0 ? (
@@ -1265,19 +1272,19 @@ function BookingDetailModal({
           </section>
         </div>
 
-        <footer className="shrink-0 border-t border-[var(--ui-border)] bg-[var(--ui-bg-base)] px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 sm:px-6 sm:pb-5">
+        <footer className="booking-detail-footer shrink-0 border-t border-[var(--ui-border)] bg-[var(--ui-bg-base)] px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 sm:px-6 sm:pb-5">
           <div className="grid gap-3 sm:flex sm:items-center sm:justify-between">
-            <span className="text-xs font-semibold leading-5 text-[var(--ui-text-muted)]">
+            <span className="booking-detail-footer-note text-xs font-semibold leading-5 text-[var(--ui-text-muted)]">
               {canManageBooking
                 ? 'Booking ini tersimpan di Firestore dan bisa dikelola dari admin.'
                 : 'Booking ini belum punya metadata admin lengkap untuk action Firestore.'}
             </span>
 
-            <div className="flex flex-wrap items-center gap-2 sm:justify-end">
+            <div className="booking-detail-actions flex flex-wrap items-center gap-2 sm:justify-end">
               {canManageBooking ? (
                 <>
                   <button
-                    className="inline-flex min-h-10 items-center justify-center rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] px-4 text-sm font-semibold text-[var(--ui-secondary-text)] shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20 disabled:cursor-not-allowed disabled:opacity-50"
+                    className="booking-detail-action inline-flex min-h-10 items-center justify-center rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] px-4 text-sm font-semibold text-[var(--ui-secondary-text)] shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20 disabled:cursor-not-allowed disabled:opacity-50"
                     disabled={isActionPending}
                     type="button"
                     onClick={() => onEdit(booking)}
@@ -1286,7 +1293,7 @@ function BookingDetailModal({
                   </button>
 
                   <button
-                    className="inline-flex min-h-10 items-center justify-center rounded-full border border-studio-cyan/35 bg-studio-cyan/10 px-4 text-sm font-semibold text-studio-cyan ring-1 ring-studio-cyan/15 transition hover:-translate-y-0.5 hover:bg-studio-cyan/15 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-cyan/20 disabled:cursor-not-allowed disabled:opacity-50"
+                    className="booking-detail-action inline-flex min-h-10 items-center justify-center rounded-full border border-studio-cyan/35 bg-studio-cyan/10 px-4 text-sm font-semibold text-studio-cyan ring-1 ring-studio-cyan/15 transition hover:-translate-y-0.5 hover:bg-studio-cyan/15 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-cyan/20 disabled:cursor-not-allowed disabled:opacity-50"
                     disabled={isActionPending || isPaid}
                     type="button"
                     onClick={() => onMarkPaid(booking)}
@@ -1295,7 +1302,7 @@ function BookingDetailModal({
                   </button>
 
                   <button
-                    className="inline-flex min-h-10 items-center justify-center rounded-full border border-studio-accent/35 bg-studio-accent/10 px-4 text-sm font-semibold text-studio-accent ring-1 ring-studio-accent/15 transition hover:-translate-y-0.5 hover:bg-studio-accent/15 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20 disabled:cursor-not-allowed disabled:opacity-50"
+                    className="booking-detail-action inline-flex min-h-10 items-center justify-center rounded-full border border-studio-accent/35 bg-studio-accent/10 px-4 text-sm font-semibold text-studio-accent ring-1 ring-studio-accent/15 transition hover:-translate-y-0.5 hover:bg-studio-accent/15 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20 disabled:cursor-not-allowed disabled:opacity-50"
                     disabled={isActionPending}
                     type="button"
                     onClick={() => onDelete(booking)}
@@ -1306,7 +1313,7 @@ function BookingDetailModal({
               ) : null}
 
               <button
-                className="inline-flex min-h-10 items-center justify-center rounded-full [background:var(--ui-primary-bg)] px-5 text-sm font-semibold text-[var(--ui-primary-text)] shadow-[var(--ui-shadow-soft)] transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
+                className="booking-detail-action booking-detail-close-action inline-flex min-h-10 items-center justify-center rounded-full [background:var(--ui-primary-bg)] px-5 text-sm font-semibold text-[var(--ui-primary-text)] shadow-[var(--ui-shadow-soft)] transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
                 type="button"
                 onClick={onClose}
               >
@@ -1465,7 +1472,7 @@ function CalendarHeaderCell({
       aria-label={'Select ' + day.fullLabel}
       aria-pressed={isActiveDay}
       className={cn(
-        'relative z-20 grid h-12 place-items-center border-b border-r border-[var(--ui-border-strong)] px-1.5 text-center transition hover:[background:color-mix(in_srgb,var(--ui-bg-base)_72%,var(--ui-control-hover))] focus-visible:relative focus-visible:z-30 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/25 sm:h-14 sm:px-2',
+        'booking-day-header-cell relative z-20 grid h-12 place-items-center border-b border-r border-[var(--ui-border-strong)] px-1.5 text-center transition hover:[background:color-mix(in_srgb,var(--ui-bg-base)_72%,var(--ui-control-hover))] focus-visible:relative focus-visible:z-30 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/25 sm:h-14 sm:px-2',
         solidSurfaces.gridHeader,
         day.isWeekend ? 'text-studio-accent' : 'text-[var(--ui-text-main)]',
         isActiveDay ? 'ring-2 ring-studio-accent/25 [background:color-mix(in_srgb,var(--ui-bg-base)_70%,var(--ui-control-hover))]' : '',
@@ -1493,7 +1500,7 @@ function TimeCell({ slot }) {
         solidSurfaces.gridSticky,
       )}
     >
-      <span className="text-[0.68rem] font-semibold tracking-[-0.015em] text-[var(--ui-text-main)] sm:text-xs">
+      <span className="booking-time-label text-[0.68rem] font-semibold tracking-[-0.015em] text-[var(--ui-text-main)] sm:text-xs">
         {slot.label}
       </span>
     </div>
@@ -1575,7 +1582,7 @@ function ViewToggle({
   value,
 }) {
   return (
-    <div className="grid w-full grid-cols-3 rounded-full border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-1 shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] sm:flex sm:w-auto sm:flex-wrap">
+    <div className="booking-view-toggle grid w-full grid-cols-3 rounded-full border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-1 shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] sm:flex sm:w-auto sm:flex-wrap">
       {viewOptions.map((option) => (
         <button
           aria-pressed={value === option.key}
@@ -1609,9 +1616,9 @@ function CalendarToolbar({
 }) {
   return (
     <AdminCommandBar className="booking-calendar-toolbar gap-2 p-2 sm:gap-3 sm:p-3 lg:grid-cols-[minmax(0,1fr)_auto_auto] lg:items-center">
-      <div className="grid grid-cols-[auto_minmax(0,1fr)_auto_auto] items-center gap-1.5 sm:flex sm:flex-wrap sm:gap-2">
+      <div className="booking-period-controls grid grid-cols-[auto_minmax(0,1fr)_auto_auto] items-center gap-1.5 sm:flex sm:flex-wrap sm:gap-2">
         <AdminButton
-          aria-label="Previous period"
+          aria-label="Periode sebelumnya"
           icon={ChevronLeft}
           size="icon"
           variant="secondary"
@@ -1627,7 +1634,7 @@ function CalendarToolbar({
         </AdminBadge>
 
         <AdminButton
-          aria-label="Next period"
+          aria-label="Periode berikutnya"
           icon={ChevronRight}
           size="icon"
           variant="secondary"
@@ -1645,13 +1652,14 @@ function CalendarToolbar({
 
       <BookingStatusCounters counts={statusCounts} />
 
-      <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 sm:flex sm:flex-wrap lg:justify-end">
+      <div className="booking-action-controls grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 sm:flex sm:flex-wrap lg:justify-end">
         <ViewToggle
           onChange={onViewChange}
           value={viewMode}
         />
 
         <AdminButton
+          className="booking-add-button"
           icon={Plus}
           size="md"
           variant="primary"
@@ -1687,12 +1695,12 @@ function CalendarGrid({
     >
       <div
         className={cn(
-          'flex items-center justify-between gap-2 border-b border-[var(--ui-border-strong)] px-3 py-2.5 sm:gap-3 sm:px-4 sm:py-3',
+          'booking-board-header flex items-center justify-between gap-2 border-b border-[var(--ui-border-strong)] px-3 py-2.5 sm:gap-3 sm:px-4 sm:py-3',
           solidSurfaces.gridCorner,
         )}
       >
         <div className="flex min-w-0 items-center gap-3">
-          <div className="grid size-9 shrink-0 place-items-center rounded-[1rem] border border-[var(--ui-border)] bg-[var(--ui-control)] text-studio-accent shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] sm:size-10 sm:rounded-2xl">
+          <div className="booking-board-icon grid size-9 shrink-0 place-items-center rounded-[1rem] border border-[var(--ui-border)] bg-[var(--ui-control)] text-studio-accent shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] sm:size-10 sm:rounded-2xl">
             <Grid3X3 size={18} strokeWidth={2.35} aria-hidden="true" />
           </div>
 
@@ -1700,8 +1708,8 @@ function CalendarGrid({
             <strong className="truncate text-sm font-semibold tracking-[-0.02em] text-[var(--ui-text-strong)]">
               Board jadwal studio
             </strong>
-            <span className="truncate text-xs font-medium text-[var(--ui-text-muted)]">
-              Mode {viewMode}: {visibleDays.length} hari terlihat
+            <span className="booking-board-subtitle truncate text-xs font-medium text-[var(--ui-text-muted)]">
+              Mode {getViewLabel(viewMode)}: {visibleDays.length} hari terlihat
             </span>
           </div>
         </div>
@@ -1731,11 +1739,11 @@ function CalendarGrid({
                 solidSurfaces.gridCorner,
               )}
             >
-              <span className="grid gap-0.5">
-                <span className="text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-studio-accent">
+              <span className="booking-time-corner-label grid gap-0.5">
+                <span className="booking-time-corner-title text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-studio-accent">
                   Jam
                 </span>
-                <span className="text-[0.64rem] font-semibold text-[var(--ui-text-muted)] sm:text-xs">
+                <span className="booking-time-corner-range text-[0.64rem] font-semibold text-[var(--ui-text-muted)] sm:text-xs">
                   {padNumber(studioHours.openHour)}:00 - {padNumber(studioHours.closeHour)}:00
                 </span>
               </span>
