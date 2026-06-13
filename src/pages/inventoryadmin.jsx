@@ -520,6 +520,113 @@ function getInventoryAlertToneClass(alertKey, count, isActive) {
   return 'border-studio-accent/35 bg-studio-accent/10 text-studio-accent ring-studio-accent/15 hover:bg-studio-accent/15';
 }
 
+const inventorySavedViews = [
+  {
+    helper: 'Semua asset aktif sesuai filter normal.',
+    key: 'all',
+    label: 'All assets',
+  },
+  {
+    helper: 'Overdue, Poor, atau low stock.',
+    key: 'critical',
+    label: 'Critical',
+  },
+  {
+    helper: 'Masuk antrean maintenance.',
+    key: 'maintenanceQueue',
+    label: 'Maintenance queue',
+  },
+  {
+    helper: 'Perlu dibeli atau ditambah.',
+    key: 'needPurchase',
+    label: 'Need purchase',
+  },
+  {
+    helper: 'Ready dan kondisi aman.',
+    key: 'readyGear',
+    label: 'Ready gear',
+  },
+  {
+    helper: 'Asset retired.',
+    key: 'retired',
+    label: 'Retired',
+  },
+];
+
+function matchesInventorySavedView(asset, savedViewFilter) {
+  if (savedViewFilter === 'critical') {
+    return (
+      getInventoryMaintenanceDiffDays(asset) < 0 ||
+      normalizeInventoryCondition(asset.condition) === 'Poor' ||
+      isInventoryLowStock(asset)
+    );
+  }
+
+  if (savedViewFilter === 'maintenanceQueue') {
+    const diffDays = getInventoryMaintenanceDiffDays(asset);
+
+    return asset.status === 'maintenance' || diffDays <= 7 || normalizeInventoryCondition(asset.condition) === 'Poor';
+  }
+
+  if (savedViewFilter === 'needPurchase') {
+    return isInventoryLowStock(asset);
+  }
+
+  if (savedViewFilter === 'readyGear') {
+    return (
+      asset.status === 'ready' &&
+      normalizeInventoryCondition(asset.condition) !== 'Poor' &&
+      !isInventoryLowStock(asset) &&
+      getInventoryMaintenanceDiffDays(asset) > 7
+    );
+  }
+
+  if (savedViewFilter === 'retired') {
+    return asset.status === 'retired';
+  }
+
+  return true;
+}
+
+function getInventorySavedViewStats(assets) {
+  const safeAssets = Array.isArray(assets) ? assets : [];
+
+  return inventorySavedViews.reduce((stats, view) => ({
+    ...stats,
+    [view.key]: view.key === 'all'
+      ? safeAssets.length
+      : safeAssets.filter((asset) => matchesInventorySavedView(asset, view.key)).length,
+  }), {});
+}
+
+function getInventorySavedViewToneClass(viewKey, count, isActive) {
+  if (isActive) {
+    return 'border-studio-accent/45 bg-studio-accent/12 text-studio-accent ring-studio-accent/20';
+  }
+
+  if (count <= 0 && viewKey !== 'all') {
+    return 'border-[var(--ui-border)] bg-transparent text-[var(--ui-text-muted)] ring-[var(--ui-ring)] hover:bg-[var(--ui-control)] hover:text-[var(--ui-text-strong)]';
+  }
+
+  if (viewKey === 'readyGear') {
+    return 'border-studio-cyan/35 bg-studio-cyan/10 text-studio-cyan ring-studio-cyan/15 hover:bg-studio-cyan/15';
+  }
+
+  if (viewKey === 'maintenanceQueue') {
+    return 'border-studio-purple/35 bg-studio-purple/10 text-studio-purple ring-studio-purple/15 hover:bg-studio-purple/15';
+  }
+
+  if (viewKey === 'needPurchase') {
+    return 'border-studio-cyan/35 bg-studio-cyan/10 text-studio-cyan ring-studio-cyan/15 hover:bg-studio-cyan/15';
+  }
+
+  if (viewKey === 'critical') {
+    return 'border-studio-accent/35 bg-studio-accent/10 text-studio-accent ring-studio-accent/15 hover:bg-studio-accent/15';
+  }
+
+  return 'border-[var(--ui-border)] bg-[var(--ui-control)] text-[var(--ui-text-main)] ring-[var(--ui-ring)] hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)]';
+}
+
 
 const inventoryStatusToneClasses = {
   low: 'border-studio-accent/35 bg-studio-accent/10 text-studio-accent ring-studio-accent/15',
@@ -855,7 +962,7 @@ function getInventoryCategories(assets) {
   return Array.from(new Set(assets.map((asset) => asset.category))).sort((first, second) => first.localeCompare(second));
 }
 
-function getFilteredAssets(assets, searchTerm, statusFilter, categoryFilter, conditionFilter, alertFilter = 'all') {
+function getFilteredAssets(assets, searchTerm, statusFilter, categoryFilter, conditionFilter, alertFilter = 'all', savedViewFilter = 'all') {
   const query = normalizeSearchText(searchTerm);
 
   return assets.filter((asset) => {
@@ -864,6 +971,7 @@ function getFilteredAssets(assets, searchTerm, statusFilter, categoryFilter, con
     const matchesCategory = categoryFilter === 'all' || asset.category === categoryFilter;
     const matchesCondition = conditionFilter === 'all' || assetCondition === conditionFilter;
     const matchesAlert = alertFilter === 'all' || matchesInventoryAlertFilter(asset, alertFilter);
+    const matchesSavedView = savedViewFilter === 'all' || matchesInventorySavedView(asset, savedViewFilter);
     const searchableText = normalizeSearchText([
       asset.name,
       asset.category,
@@ -872,7 +980,7 @@ function getFilteredAssets(assets, searchTerm, statusFilter, categoryFilter, con
       asset.notes,
     ].join(' '));
 
-    return matchesStatus && matchesCategory && matchesCondition && matchesAlert && (!query || searchableText.includes(query));
+    return matchesStatus && matchesCategory && matchesCondition && matchesAlert && matchesSavedView && (!query || searchableText.includes(query));
   });
 }
 
@@ -976,6 +1084,58 @@ function InventoryDashboardAlerts({
             >
               <Icon size={13} strokeWidth={2.35} aria-hidden="true" />
               <span>{item.label}</span>
+              <strong className="rounded-full bg-[var(--ui-glass-soft)] px-1.5 py-0.5 text-[0.68rem] leading-none text-[var(--ui-text-strong)]">
+                {value}
+              </strong>
+            </button>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
+function InventorySavedViews({
+  activeView,
+  stats,
+  onViewChange,
+}) {
+  return (
+    <section className="max-w-[980px] border-y border-[var(--ui-border)] py-2" aria-label="Inventory smart saved views">
+      <div className="flex flex-wrap items-center gap-2">
+        <span className="mr-1 text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-studio-cyan">
+          Smart views
+        </span>
+
+        {inventorySavedViews.map((view) => {
+          const value = stats[view.key] || 0;
+          const isActive = activeView === view.key;
+          const Icon = view.key === 'critical'
+            ? AlertTriangle
+            : view.key === 'maintenanceQueue'
+              ? CalendarClock
+              : view.key === 'needPurchase'
+                ? PackageCheck
+                : view.key === 'readyGear'
+                  ? ShieldCheck
+                  : view.key === 'retired'
+                    ? Tags
+                    : Boxes;
+
+          return (
+            <button
+              aria-pressed={isActive}
+              className={cn(
+                'inline-flex min-h-9 shrink-0 items-center gap-2 rounded-full border px-3 text-xs font-semibold ring-1 transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20',
+                getInventorySavedViewToneClass(view.key, value, isActive),
+              )}
+              key={view.key}
+              title={view.helper}
+              type="button"
+              onClick={() => onViewChange(isActive && view.key !== 'all' ? 'all' : view.key)}
+            >
+              <Icon size={13} strokeWidth={2.35} aria-hidden="true" />
+              <span>{view.label}</span>
               <strong className="rounded-full bg-[var(--ui-glass-soft)] px-1.5 py-0.5 text-[0.68rem] leading-none text-[var(--ui-text-strong)]">
                 {value}
               </strong>
@@ -2311,6 +2471,7 @@ export function InventoryAdmin() {
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [conditionFilter, setConditionFilter] = useState('all');
   const [alertFilter, setAlertFilter] = useState('all');
+  const [savedViewFilter, setSavedViewFilter] = useState('all');
   const [inventoryItems, setInventoryItems] = useState([]);
   const [inventoryState, setInventoryState] = useState({
     errorMessage: '',
@@ -2390,11 +2551,12 @@ export function InventoryAdmin() {
   const isUsingStarterAssets = inventoryState.isReady && inventoryItems.length === 0;
   const categories = useMemo(() => getInventoryCategories(activeAssets), [activeAssets]);
   const filteredAssets = useMemo(
-    () => getFilteredAssets(activeAssets, searchTerm, statusFilter, categoryFilter, conditionFilter, alertFilter),
-    [activeAssets, alertFilter, categoryFilter, conditionFilter, searchTerm, statusFilter],
+    () => getFilteredAssets(activeAssets, searchTerm, statusFilter, categoryFilter, conditionFilter, alertFilter, savedViewFilter),
+    [activeAssets, alertFilter, categoryFilter, conditionFilter, savedViewFilter, searchTerm, statusFilter],
   );
   const stats = useMemo(() => getInventoryStats(activeAssets), [activeAssets]);
   const dashboardAlerts = useMemo(() => getInventoryDashboardAlerts(activeAssets), [activeAssets]);
+  const savedViewStats = useMemo(() => getInventorySavedViewStats(activeAssets), [activeAssets]);
   const selectedDetailAsset = useMemo(
     () => (detailAsset
       ? activeAssets.find((asset) => asset.id === detailAsset.id) || detailAsset
@@ -2758,8 +2920,21 @@ export function InventoryAdmin() {
     openMaintenanceSchedulerDrawer(asset);
   };
 
+  const handleSavedViewFilterChange = (nextSavedViewFilter) => {
+    setSavedViewFilter(nextSavedViewFilter);
+
+    if (nextSavedViewFilter !== 'all') {
+      setSearchTerm('');
+      setStatusFilter('all');
+      setCategoryFilter('all');
+      setConditionFilter('all');
+      setAlertFilter('all');
+    }
+  };
+
   const handleAlertFilterChange = (nextAlertFilter) => {
     setAlertFilter(nextAlertFilter);
+    setSavedViewFilter('all');
 
     if (nextAlertFilter !== 'all') {
       setSearchTerm('');
@@ -2806,10 +2981,12 @@ export function InventoryAdmin() {
         onCategoryChange={(nextCategoryFilter) => {
           setCategoryFilter(nextCategoryFilter);
           setAlertFilter('all');
+          setSavedViewFilter('all');
         }}
         onConditionChange={(nextConditionFilter) => {
           setConditionFilter(nextConditionFilter);
           setAlertFilter('all');
+          setSavedViewFilter('all');
         }}
         onCreateAsset={openCreateAssetForm}
         onExportInventory={handleExportInventory}
@@ -2817,10 +2994,12 @@ export function InventoryAdmin() {
         onSearchChange={(nextSearchTerm) => {
           setSearchTerm(nextSearchTerm);
           setAlertFilter('all');
+          setSavedViewFilter('all');
         }}
         onStatusChange={(nextStatusFilter) => {
           setStatusFilter(nextStatusFilter);
           setAlertFilter('all');
+          setSavedViewFilter('all');
         }}
       />
 
@@ -2828,6 +3007,12 @@ export function InventoryAdmin() {
         activeAlert={alertFilter}
         alerts={dashboardAlerts}
         onAlertChange={handleAlertFilterChange}
+      />
+
+      <InventorySavedViews
+        activeView={savedViewFilter}
+        stats={savedViewStats}
+        onViewChange={handleSavedViewFilterChange}
       />
 
       <InventoryFormPanel
