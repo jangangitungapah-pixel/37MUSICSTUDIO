@@ -1195,3 +1195,137 @@
   }
 }
 /* 37-admin-mobile-density-refine:end */
+
+/* 37-inventory-mobile-card-layout:start */
+@layer components {
+  @media (max-width: 767px) {
+    .inventory-ledger {
+      overflow: visible !important;
+      padding: 0 !important;
+      background: transparent !important;
+      border: 0 !important;
+      box-shadow: none !important;
+      ring: none;
+    }
+
+    .inventory-ledger::after {
+      display: none !important;
+    }
+
+    .inventory-ledger > div {
+      overflow: visible !important;
+    }
+
+    .inventory-ledger > div > div {
+      min-width: 0 !important;
+      width: 100% !important;
+    }
+
+    .inventory-ledger > div > div > div:first-child {
+      display: none !important;
+    }
+
+    .inventory-ledger .divide-y {
+      display: grid !important;
+      gap: 0.75rem !important;
+      border: 0 !important;
+    }
+
+    .inventory-ledger .divide-y > article {
+      display: grid !important;
+      min-width: 0 !important;
+      grid-template-columns: minmax(0, 1fr) !important;
+      gap: 0.9rem !important;
+      border: 1px solid var(--ui-border) !important;
+      border-radius: 1.2rem !important;
+      background:
+        radial-gradient(circle at 100% 0%, color-mix(in srgb, var(--color-studio-cyan) 8%, transparent), transparent 38%),
+        var(--ui-glass-soft) !important;
+      padding: 1rem !important;
+      box-shadow: none !important;
+      ring: none;
+    }
+
+    .inventory-ledger .divide-y > article:hover {
+      background:
+        radial-gradient(circle at 100% 0%, color-mix(in srgb, var(--color-studio-cyan) 10%, transparent), transparent 38%),
+        var(--ui-glass-soft) !important;
+    }
+
+    .inventory-ledger .divide-y > article > div {
+      min-width: 0 !important;
+    }
+
+    .inventory-ledger .divide-y > article > div:first-child {
+      gap: 0.35rem !important;
+    }
+
+    .inventory-ledger .divide-y > article > div:first-child p {
+      padding-left: 0 !important;
+      white-space: normal !important;
+      overflow: visible !important;
+      text-overflow: clip !important;
+      line-height: 1.55 !important;
+    }
+
+    .inventory-ledger .divide-y > article > div:nth-child(2) {
+      display: flex !important;
+      width: 100% !important;
+      flex-wrap: wrap !important;
+      gap: 0.45rem !important;
+    }
+
+    .inventory-ledger .divide-y > article > div:nth-child(3) {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      gap: 0.75rem !important;
+      border-block: 1px solid var(--ui-border) !important;
+      padding-block: 0.75rem !important;
+    }
+
+    .inventory-ledger .divide-y > article > div:nth-child(4) {
+      display: grid !important;
+      width: 100% !important;
+      grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+      gap: 0.5rem !important;
+      justify-content: stretch !important;
+    }
+
+    .inventory-ledger .divide-y > article > div:nth-child(4) > button {
+      min-height: 2.55rem !important;
+      width: 100% !important;
+      border-radius: 999px !important;
+    }
+
+    .inventory-ledger .divide-y > article > div:nth-child(4) > button:nth-child(3),
+    .inventory-ledger .divide-y > article > div:nth-child(4) > button:nth-child(4) {
+      min-width: 0 !important;
+    }
+
+    .inventory-ledger .divide-y > article > div:nth-child(4) > button svg {
+      flex: 0 0 auto !important;
+    }
+  }
+
+  @media (max-width: 420px) {
+    .inventory-ledger .divide-y {
+      gap: 0.65rem !important;
+    }
+
+    .inventory-ledger .divide-y > article {
+      border-radius: 1.05rem !important;
+      padding: 0.85rem !important;
+    }
+
+    .inventory-ledger .divide-y > article > div:nth-child(4) {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+    }
+
+    .inventory-ledger .divide-y > article > div:nth-child(4) > button {
+      min-height: 2.45rem !important;
+      font-size: 0.68rem !important;
+    }
+  }
+}
+/* 37-inventory-mobile-card-layout:end */
