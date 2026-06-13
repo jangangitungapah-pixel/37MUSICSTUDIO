@@ -26,6 +26,7 @@ import { cn } from '../lib/cn.js';
 import { useTheme } from '../theme/ThemeProvider.jsx';
 import { adminAuthRepository } from '../services/adminAuthRepository.js';
 import { adminBookingRepository } from '../services/adminBookingRepository.js';
+import { adminBillingRepository } from '../services/adminBillingRepository.js';
 
 const initialAdminAuthState = {
   errorMessage: '',
@@ -424,7 +425,12 @@ function AdminBottomBar({
 export function AdminPage() {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [manualBookings, setManualBookings] = useState([]);
+  const [billingTransactions, setBillingTransactions] = useState([]);
   const [adminBookingsState, setAdminBookingsState] = useState({
+    errorMessage: '',
+    isReady: false,
+  });
+  const [adminBillingState, setAdminBillingState] = useState({
     errorMessage: '',
     isReady: false,
   });
@@ -469,6 +475,41 @@ export function AdminPage() {
     return unsubscribe;
   }, [adminAuthState.isAuthenticated]);
 
+  useEffect(() => {
+    if (!adminAuthState.isAuthenticated) {
+      setBillingTransactions([]);
+      setAdminBillingState({
+        errorMessage: '',
+        isReady: false,
+      });
+
+      return undefined;
+    }
+
+    setAdminBillingState({
+      errorMessage: '',
+      isReady: false,
+    });
+
+    const unsubscribe = adminBillingRepository.subscribeBillingTransactions(
+      (transactions) => {
+        setBillingTransactions(transactions);
+        setAdminBillingState((current) => ({
+          ...current,
+          isReady: true,
+        }));
+      },
+      () => {
+        setAdminBillingState({
+          errorMessage: 'Billing belum bisa dibaca penuh. Customer billing history memakai data kosong jika fallback tidak tersedia.',
+          isReady: true,
+        });
+      },
+    );
+
+    return unsubscribe;
+  }, [adminAuthState.isAuthenticated]);
+
   const activeItem = useMemo(
     () => getActiveAdminItem(location.pathname),
     [location.pathname],
@@ -493,6 +534,9 @@ export function AdminPage() {
           throw error;
         }
       },
+      billingLoadError: adminBillingState.errorMessage,
+      billingTransactions,
+      isBillingReady: adminBillingState.isReady,
       bookingLoadError: adminBookingsState.errorMessage,
       isBookingsReady: adminBookingsState.isReady,
       manualBookings,
@@ -512,7 +556,7 @@ export function AdminPage() {
         }
       },
     }),
-    [activeItem, adminAuthState.user, adminBookingsState, manualBookings],
+    [activeItem, adminAuthState.user, adminBillingState, adminBookingsState, billingTransactions, manualBookings],
   );
 
   if (!adminAuthState.isReady) {

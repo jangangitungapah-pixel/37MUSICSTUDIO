@@ -2661,7 +2661,206 @@ function CustomerActivityTimeline({
   );
 }
 
+function normalizeBillingCustomerName(value) {
+  return normalizeCustomerValue(prettifyCustomerName(value));
+}
+
+function getCustomerBillingHistory(customer, billingTransactions = []) {
+  if (!customer || !Array.isArray(billingTransactions)) {
+    return {
+      count: 0,
+      invoices: [],
+      lastInvoice: null,
+      outstandingAmount: 0,
+      totalAmount: 0,
+      totalPaid: 0,
+    };
+  }
+
+  const customerPhoneDigits = normalizePhoneDigits(customer.phone);
+  const customerNameKey = normalizeBillingCustomerName(customer.name);
+  const bookingIds = new Set(
+    (Array.isArray(customer.bookings) ? customer.bookings : [])
+      .map((booking) => booking.id)
+      .filter(Boolean),
+  );
+
+  const invoices = billingTransactions
+    .filter((transaction) => {
+      if (!transaction || typeof transaction !== 'object') {
+        return false;
+      }
+
+      const transactionPhoneDigits = normalizePhoneDigits(transaction.phone);
+      const transactionNameKey = normalizeBillingCustomerName(transaction.customerName);
+      const bookingMatch = transaction.bookingId && bookingIds.has(transaction.bookingId);
+      const phoneMatch = customerPhoneDigits && transactionPhoneDigits && customerPhoneDigits === transactionPhoneDigits;
+      const nameMatch = customerNameKey && transactionNameKey && customerNameKey === transactionNameKey;
+
+      return Boolean(bookingMatch || phoneMatch || nameMatch);
+    })
+    .sort((firstItem, secondItem) => {
+      const firstTime = new Date(firstItem.createdAt || firstItem.updatedAt || 0).getTime();
+      const secondTime = new Date(secondItem.createdAt || secondItem.updatedAt || 0).getTime();
+
+      if (firstTime !== secondTime) {
+        return secondTime - firstTime;
+      }
+
+      return String(secondItem.id || '').localeCompare(String(firstItem.id || ''));
+    });
+
+  return {
+    count: invoices.length,
+    invoices,
+    lastInvoice: invoices[0] || null,
+    outstandingAmount: invoices.reduce((sum, invoice) => sum + Math.max(0, Number(invoice.remainingAmount) || 0), 0),
+    totalAmount: invoices.reduce((sum, invoice) => sum + Math.max(0, Number(invoice.totalAmount) || 0), 0),
+    totalPaid: invoices.reduce((sum, invoice) => sum + Math.max(0, Number(invoice.paidAmount) || 0), 0),
+  };
+}
+
+function getBillingInvoiceStatusLabel(status) {
+  if (status === 'paid') return 'Paid';
+  if (status === 'dp') return 'DP';
+
+  return 'Pending';
+}
+
+function getBillingInvoiceTone(status) {
+  if (status === 'paid') return 'cyan';
+  if (status === 'dp') return 'purple';
+
+  return 'accent';
+}
+
+function formatBillingInvoiceDate(value) {
+  if (!value) {
+    return '-';
+  }
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return '-';
+  }
+
+  return new Intl.DateTimeFormat('id-ID', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+  }).format(date);
+}
+
+function CustomerBillingHistoryPanel({
+  billingHistory,
+}) {
+  const history = billingHistory || {
+    count: 0,
+    invoices: [],
+    lastInvoice: null,
+    outstandingAmount: 0,
+    totalAmount: 0,
+    totalPaid: 0,
+  };
+  const recentInvoices = history.invoices.slice(0, 4);
+
+  return (
+    <section className="customer-billing-history-panel grid gap-2" aria-label="Customer billing history">
+      <div className="flex items-center justify-between gap-3">
+        <div className="grid gap-0.5">
+          <span className="text-xs font-semibold uppercase tracking-[0.16em] text-studio-accent">
+            Billing history
+          </span>
+
+          <span className="text-[0.68rem] font-medium text-[var(--ui-text-muted)]">
+            Invoice, paid amount, dan outstanding dari Billing/POS.
+          </span>
+        </div>
+
+        <AdminBadge icon={ReceiptText} tone={history.outstandingAmount > 0 ? 'accent' : 'cyan'}>
+          {history.count} invoice
+        </AdminBadge>
+      </div>
+
+      <div className="grid grid-cols-3 gap-1 rounded-[0.95rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-1.5 ring-1 ring-[var(--ui-ring)]">
+        <div className="grid gap-0.5 rounded-[0.75rem] bg-[var(--ui-control)] px-2 py-1.5">
+          <span className="text-[0.5rem] font-semibold uppercase tracking-[0.1em] text-[var(--ui-text-muted)]">
+            Paid
+          </span>
+          <strong className="truncate text-[0.64rem] font-semibold text-[var(--ui-text-strong)]">
+            {formatCurrency(history.totalPaid)}
+          </strong>
+        </div>
+
+        <div className="grid gap-0.5 rounded-[0.75rem] bg-[var(--ui-control)] px-2 py-1.5">
+          <span className="text-[0.5rem] font-semibold uppercase tracking-[0.1em] text-[var(--ui-text-muted)]">
+            Outstanding
+          </span>
+          <strong className="truncate text-[0.64rem] font-semibold text-studio-accent">
+            {formatCurrency(history.outstandingAmount)}
+          </strong>
+        </div>
+
+        <div className="grid gap-0.5 rounded-[0.75rem] bg-[var(--ui-control)] px-2 py-1.5">
+          <span className="text-[0.5rem] font-semibold uppercase tracking-[0.1em] text-[var(--ui-text-muted)]">
+            Total
+          </span>
+          <strong className="truncate text-[0.64rem] font-semibold text-[var(--ui-text-strong)]">
+            {formatCurrency(history.totalAmount)}
+          </strong>
+        </div>
+      </div>
+
+      {recentInvoices.length ? (
+        <div className="grid gap-1.5">
+          {recentInvoices.map((invoice) => (
+            <article className="grid gap-2 rounded-[0.95rem] border border-[var(--ui-border)] bg-[var(--ui-control)] p-2 ring-1 ring-[var(--ui-ring)]" key={invoice.id || invoice.invoiceNumber}>
+              <div className="flex items-start justify-between gap-2">
+                <div className="grid min-w-0 gap-0.5">
+                  <strong className="truncate text-xs font-semibold text-[var(--ui-text-strong)]">
+                    {invoice.invoiceNumber || 'Invoice'}
+                  </strong>
+                  <span className="text-[0.62rem] font-medium text-[var(--ui-text-muted)]">
+                    {formatBillingInvoiceDate(invoice.createdAt)} • {invoice.sourceType === 'manual' ? 'Manual POS' : 'Booking'}
+                  </span>
+                </div>
+
+                <AdminBadge tone={getBillingInvoiceTone(invoice.paymentStatus)}>
+                  {getBillingInvoiceStatusLabel(invoice.paymentStatus)}
+                </AdminBadge>
+              </div>
+
+              <div className="grid grid-cols-3 gap-1 text-right">
+                <span className="grid gap-0.5">
+                  <span className="text-[0.5rem] font-semibold uppercase tracking-[0.09em] text-[var(--ui-text-muted)]">Total</span>
+                  <strong className="truncate text-[0.62rem] font-semibold text-[var(--ui-text-strong)]">{formatCurrency(invoice.totalAmount)}</strong>
+                </span>
+                <span className="grid gap-0.5">
+                  <span className="text-[0.5rem] font-semibold uppercase tracking-[0.09em] text-[var(--ui-text-muted)]">Paid</span>
+                  <strong className="truncate text-[0.62rem] font-semibold text-[var(--ui-text-strong)]">{formatCurrency(invoice.paidAmount)}</strong>
+                </span>
+                <span className="grid gap-0.5">
+                  <span className="text-[0.5rem] font-semibold uppercase tracking-[0.09em] text-[var(--ui-text-muted)]">Sisa</span>
+                  <strong className="truncate text-[0.62rem] font-semibold text-studio-accent">{formatCurrency(invoice.remainingAmount)}</strong>
+                </span>
+              </div>
+            </article>
+          ))}
+        </div>
+      ) : (
+        <div className="grid min-h-24 place-items-center rounded-[1.15rem] border border-dashed border-[var(--ui-border-strong)] bg-[var(--ui-glass-soft)] p-4 text-center ring-1 ring-[var(--ui-ring)]">
+          <p className="m-0 text-sm font-medium leading-6 text-[var(--ui-text-muted)]">
+            Belum ada invoice billing yang cocok dengan customer ini.
+          </p>
+        </div>
+      )}
+    </section>
+  );
+}
+
 function CustomerDetailPanel({
+  billingTransactions = [],
   customer,
   onClose,
   onCrmChange = () => {},
@@ -2689,6 +2888,7 @@ function CustomerDetailPanel({
   const historyStats = getCustomerHistoryStats(customer);
   const historyFilterOptions = getHistoryFilterOptions(customer);
   const filteredHistoryBookings = getFilteredCustomerBookings(customer, historyFilter);
+  const customerBillingHistory = getCustomerBillingHistory(customer, billingTransactions);
 
   const resetActionStatus = (setter) => {
     if (typeof window !== 'undefined') {
@@ -3068,6 +3268,8 @@ function CustomerDetailPanel({
 
       <CustomerPaymentSummary customer={customer} />
 
+      <CustomerBillingHistoryPanel billingHistory={customerBillingHistory} />
+
       <div className="customer-session-grid-compact grid gap-3 sm:grid-cols-2">
         <BookingSummaryCard
           actionHref={boardHref}
@@ -3102,6 +3304,7 @@ function CustomerDetailPanel({
 export function CustomerDetailAdmin() {
   const adminContext = useOutletContext() || {};
   const {
+    billingTransactions = [],
     bookingLoadError = '',
     isBookingsReady = true,
     manualBookings = [],
@@ -3178,6 +3381,7 @@ export function CustomerDetailAdmin() {
       ) : selectedCustomer ? (
         <CustomerDetailPanel
           key={selectedCustomer.id}
+          billingTransactions={billingTransactions}
           customer={selectedCustomer}
           onClose={handleBackToCustomers}
           onCrmChange={handleCustomerCrmChange}
