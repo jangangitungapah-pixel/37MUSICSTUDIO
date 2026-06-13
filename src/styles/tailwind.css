@@ -6653,3 +6653,247 @@
 }
 
 /* === 37 BOOKING FORM COMPACT DENSITY END === */
+
+/* === 37 BOOKING FORM ULTRA COMPACT MOBILE START === */
+
+/*
+  Mobile-only density pass for BookingModal.
+  Goal: closer to BookingDetailModal density while keeping form usable.
+  Appended last so it wins over older booking modal overrides.
+*/
+
+@media (max-width: 767px) {
+  .booking-form-overlay {
+    padding: 0.42rem;
+    padding-bottom: max(0.42rem, env(safe-area-inset-bottom));
+  }
+
+  .booking-form-modal {
+    max-height: calc(100dvh - 1.75rem);
+    border-radius: 1.15rem;
+  }
+
+  .booking-form-header {
+    padding: 0.5rem 0.85rem 0.45rem;
+  }
+
+  .booking-form-header > div {
+    gap: 0.5rem;
+  }
+
+  .booking-form-eyebrow {
+    gap: 0.32rem;
+    padding: 0.2rem 0.5rem;
+    font-size: 0.48rem;
+    line-height: 0.7rem;
+    letter-spacing: 0.15em;
+  }
+
+  .booking-form-eyebrow svg {
+    width: 0.68rem;
+    height: 0.68rem;
+  }
+
+  .booking-form-title {
+    max-width: min(15ch, calc(100vw - 5.75rem));
+    font-size: clamp(1.72rem, 7.45vw, 2.25rem);
+    line-height: 0.9;
+    letter-spacing: -0.078em;
+  }
+
+  .booking-form-description {
+    display: -webkit-box;
+    max-width: calc(100vw - 5.75rem);
+    overflow: hidden;
+    font-size: 0.7rem;
+    line-height: 1rem;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+  }
+
+  .booking-form-header button[aria-label="Close booking form"] {
+    width: 2.1rem;
+    height: 2.1rem;
+  }
+
+  .booking-form-body {
+    gap: 0.42rem;
+    padding: 0.42rem 0.72rem;
+  }
+
+  .booking-form-body > .grid {
+    gap: 0.42rem;
+  }
+
+  .booking-form-card,
+  .booking-payment-card {
+    gap: 0.32rem;
+    padding: 0.48rem 0.55rem;
+    border-radius: 0.82rem;
+  }
+
+  .booking-form-card > div:first-child,
+  .booking-payment-card > div:first-child {
+    gap: 0.1rem;
+  }
+
+  .booking-form-section-title {
+    font-size: 0.5rem;
+    line-height: 0.72rem;
+    letter-spacing: 0.16em;
+  }
+
+  .booking-form-card p,
+  .booking-payment-card p {
+    display: none;
+  }
+
+  .booking-form-card:not(.booking-schedule-card) > div:nth-of-type(2),
+  .booking-schedule-card > div:nth-of-type(2) {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.36rem;
+  }
+
+  .booking-form-card:not(.booking-schedule-card) > div:nth-of-type(2) > *,
+  .booking-schedule-card > div:nth-of-type(2) > * {
+    min-width: 0;
+  }
+
+  .booking-form-card label,
+  .booking-payment-card label,
+  .booking-form-notes {
+    gap: 0.18rem;
+    font-size: 0.72rem;
+    line-height: 1rem;
+  }
+
+  .booking-form-card label > span,
+  .booking-payment-card label > span,
+  .booking-form-card button[aria-haspopup="listbox"],
+  .booking-payment-card button[aria-haspopup="listbox"] {
+    min-height: 2rem;
+    border-radius: 0.72rem;
+    padding-inline: 0.48rem;
+    gap: 0.42rem;
+  }
+
+  .booking-form-card input,
+  .booking-payment-card input,
+  .booking-form-card button[aria-haspopup="listbox"],
+  .booking-payment-card button[aria-haspopup="listbox"] {
+    font-size: 0.72rem;
+  }
+
+  .booking-form-card svg,
+  .booking-payment-card svg {
+    width: 0.85rem;
+    height: 0.85rem;
+  }
+
+  .booking-form-card [role="listbox"],
+  .booking-payment-card [role="listbox"] {
+    border-radius: 0.85rem;
+  }
+
+  .booking-form-card [role="option"],
+  .booking-payment-card [role="option"] {
+    min-height: 1.95rem;
+    border-radius: 0.72rem;
+    font-size: 0.72rem;
+  }
+
+  .booking-payment-card {
+    gap: 0.38rem;
+  }
+
+  .booking-payment-card > div:first-child > span:first-child {
+    gap: 0.35rem;
+    font-size: 0.82rem;
+  }
+
+  .booking-payment-card > div:first-child > span:last-child {
+    padding: 0.18rem 0.5rem;
+    font-size: 0.64rem;
+  }
+
+  .booking-payment-options {
+    gap: 0.28rem;
+  }
+
+  .booking-payment-options button {
+    min-height: 1.78rem;
+    border-radius: 0.72rem;
+    padding-inline: 0.45rem;
+    font-size: 0.68rem;
+  }
+
+  .booking-payment-summary {
+    border-radius: 0.78rem;
+  }
+
+  .booking-payment-summary > div {
+    gap: 0.08rem;
+    padding: 0.38rem 0.45rem;
+  }
+
+  .booking-payment-summary span {
+    font-size: 0.46rem;
+    line-height: 0.62rem;
+    letter-spacing: 0.1em;
+  }
+
+  .booking-payment-summary strong {
+    font-size: 0.76rem;
+    line-height: 0.95rem;
+  }
+
+  .booking-form-notes textarea {
+    min-height: 2.15rem;
+    border-radius: 0.78rem;
+    padding: 0.48rem 0.55rem;
+    font-size: 0.72rem;
+    line-height: 1rem;
+  }
+
+  .booking-form-footer {
+    padding: 0.42rem 0.72rem max(0.45rem, env(safe-area-inset-bottom));
+  }
+
+  .booking-form-footer > div {
+    gap: 0.36rem;
+  }
+
+  .booking-form-footer > div > span {
+    gap: 0.35rem;
+    font-size: 0.66rem;
+  }
+
+  .booking-form-footer svg {
+    width: 0.8rem;
+    height: 0.8rem;
+  }
+
+  .booking-form-actions {
+    gap: 0.35rem;
+  }
+
+  .booking-form-cancel,
+  .booking-form-submit {
+    min-height: 2.08rem;
+    border-radius: 0.75rem;
+    padding-inline: 0.7rem;
+    font-size: 0.74rem;
+  }
+
+  .booking-form-submit {
+    gap: 0.35rem;
+  }
+
+  .booking-form-submit svg {
+    width: 0.82rem;
+    height: 0.82rem;
+  }
+}
+
+/* === 37 BOOKING FORM ULTRA COMPACT MOBILE END === */
