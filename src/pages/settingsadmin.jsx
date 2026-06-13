@@ -1,9 +1,4 @@
-import {
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useOutletContext } from 'react-router';
 import {
   AlertTriangle,
@@ -662,430 +657,499 @@ function AppearanceToggleField({
   );
 }
 
-function AppearancePolicyEditor({
-  draft,
-  isDirty,
-  isSaving,
-  lastSavedAt,
-  localDensityMode,
-  localThemeMode,
-  saveError,
-  saveStatus,
-  validation,
-  onChange,
-  onDiscard,
-  onSave,
-}) {
-  const safeDraft = draft || adminSettingsRepository.getDefaultStudioSettings().appearancePolicy;
-  const canSave = isDirty && !isSaving && validation.isValid;
+// SETTINGS.5 APPEARANCE EDITOR HELPERS START
+const APPEARANCE_POLICY_FALLBACK = Object.freeze({
+  defaultTheme: 'system',
+  defaultDensity: 'comfortable',
+  allowUserOverride: true,
+  compactTables: false,
+  reducedMotion: false,
+  financialPrivacyMask: true,
+  defaultAdminRoute: '/admin',
+  sidebarDefaultCollapsed: false,
+  mobileBottomNavBehavior: 'auto',
+  showCommandBarHints: true,
+  showAdvancedBadges: true,
+  dashboardDensity: 'comfortable',
+  tableRowDensity: 'comfortable',
+  receiptPrintTheme: 'system',
+});
 
-  const themeOptions = [
+const APPEARANCE_POLICY_OPTIONS = Object.freeze({
+  defaultTheme: [
+    { value: 'system', label: 'Ikuti sistem' },
     { value: 'dark', label: 'Dark' },
     { value: 'light', label: 'Light' },
-    { value: 'system', label: 'System preference' },
-  ];
-
-  const densityOptions = [
+  ],
+  defaultDensity: [
     { value: 'comfortable', label: 'Comfortable' },
     { value: 'compact', label: 'Compact' },
+    { value: 'spacious', label: 'Spacious' },
+  ],
+  mobileBottomNavBehavior: [
+    { value: 'auto', label: 'Auto adaptif' },
+    { value: 'always-visible', label: 'Selalu tampil' },
+    { value: 'compact', label: 'Compact' },
+    { value: 'hidden', label: 'Disembunyikan' },
+  ],
+  dashboardDensity: [
+    { value: 'comfortable', label: 'Comfortable' },
+    { value: 'compact', label: 'Compact' },
+    { value: 'spacious', label: 'Spacious' },
+  ],
+  tableRowDensity: [
+    { value: 'comfortable', label: 'Comfortable' },
+    { value: 'compact', label: 'Compact' },
+    { value: 'spacious', label: 'Spacious' },
+  ],
+  receiptPrintTheme: [
+    { value: 'system', label: 'Ikuti tema' },
+    { value: 'light', label: 'Light print' },
+    { value: 'dark', label: 'Dark print' },
+    { value: 'ink', label: 'Ink saver' },
+  ],
+});
+
+function normalizeAppearanceBoolean(value, fallback) {
+  if (typeof value === 'boolean') return value;
+  return fallback;
+}
+
+function normalizeAppearanceString(value, fallback) {
+  if (typeof value !== 'string') return fallback;
+
+  const trimmed = value.trim();
+
+  return trimmed || fallback;
+}
+
+function normalizeAppearancePolicyDraft(draft = {}) {
+  return {
+    defaultTheme: normalizeAppearanceString(draft.defaultTheme, APPEARANCE_POLICY_FALLBACK.defaultTheme),
+    defaultDensity: normalizeAppearanceString(draft.defaultDensity, APPEARANCE_POLICY_FALLBACK.defaultDensity),
+    allowUserOverride: normalizeAppearanceBoolean(draft.allowUserOverride, APPEARANCE_POLICY_FALLBACK.allowUserOverride),
+    compactTables: normalizeAppearanceBoolean(draft.compactTables, APPEARANCE_POLICY_FALLBACK.compactTables),
+    reducedMotion: normalizeAppearanceBoolean(draft.reducedMotion, APPEARANCE_POLICY_FALLBACK.reducedMotion),
+    financialPrivacyMask: normalizeAppearanceBoolean(draft.financialPrivacyMask, APPEARANCE_POLICY_FALLBACK.financialPrivacyMask),
+    defaultAdminRoute: normalizeAppearanceString(draft.defaultAdminRoute, APPEARANCE_POLICY_FALLBACK.defaultAdminRoute),
+    sidebarDefaultCollapsed: normalizeAppearanceBoolean(draft.sidebarDefaultCollapsed, APPEARANCE_POLICY_FALLBACK.sidebarDefaultCollapsed),
+    mobileBottomNavBehavior: normalizeAppearanceString(draft.mobileBottomNavBehavior, APPEARANCE_POLICY_FALLBACK.mobileBottomNavBehavior),
+    showCommandBarHints: normalizeAppearanceBoolean(draft.showCommandBarHints, APPEARANCE_POLICY_FALLBACK.showCommandBarHints),
+    showAdvancedBadges: normalizeAppearanceBoolean(draft.showAdvancedBadges, APPEARANCE_POLICY_FALLBACK.showAdvancedBadges),
+    dashboardDensity: normalizeAppearanceString(draft.dashboardDensity, APPEARANCE_POLICY_FALLBACK.dashboardDensity),
+    tableRowDensity: normalizeAppearanceString(draft.tableRowDensity, APPEARANCE_POLICY_FALLBACK.tableRowDensity),
+    receiptPrintTheme: normalizeAppearanceString(draft.receiptPrintTheme, APPEARANCE_POLICY_FALLBACK.receiptPrintTheme),
+  };
+}
+
+function pickAppearanceSettingsCandidate(props = {}) {
+  const candidates = [
+    props.settings,
+    props.settingsSnapshot,
+    props.snapshot,
+    props.data,
+    props.value,
+    props.readModel,
+    props.settingsState,
+    props.currentSettings,
   ];
 
-  const routeOptions = [
-    { value: '/admin/bookings', label: 'Booking' },
-    { value: '/admin/billing', label: 'Billing' },
-    { value: '/admin/bookkeeping', label: 'Pembukuan' },
-    { value: '/admin/customers', label: 'Customers' },
-    { value: '/admin/inventory', label: 'Inventory' },
-    { value: '/admin/audit', label: 'Audit' },
-    { value: '/admin/settings', label: 'Settings' },
-  ];
+  for (const candidate of candidates) {
+    if (!candidate || typeof candidate !== 'object') continue;
 
-  const bottomNavOptions = [
-    { value: 'fixed', label: 'Fixed bottom bar' },
-    { value: 'compact', label: 'Compact bottom bar' },
-  ];
+    if (candidate.appearancePolicy) return candidate;
+    if (candidate.settings?.appearancePolicy) return candidate.settings;
+    if (candidate.data?.appearancePolicy) return candidate.data;
+    if (candidate.snapshot?.appearancePolicy) return candidate.snapshot;
+    if (candidate.value?.appearancePolicy) return candidate.value;
+  }
 
-  const printThemeOptions = [
-    { value: 'default', label: 'Default receipt' },
-    { value: 'minimal', label: 'Minimal receipt' },
-    { value: 'studio', label: 'Studio branded' },
-  ];
+  return {};
+}
+
+function getAppearancePolicyFromEditorProps(props = {}) {
+  const settingsCandidate = pickAppearanceSettingsCandidate(props);
+
+  return normalizeAppearancePolicyDraft({
+    ...APPEARANCE_POLICY_FALLBACK,
+    ...(settingsCandidate.appearancePolicy || {}),
+    ...(props.appearancePolicy || {}),
+  });
+}
+
+function validateAppearancePolicyDraft(draft = {}) {
+  const payload = normalizeAppearancePolicyDraft(draft);
+  const issues = [];
+
+  if (!payload.defaultAdminRoute.startsWith('/admin')) {
+    issues.push('Default admin route harus diawali /admin agar tetap berada di portal admin.');
+  }
+
+  if (payload.defaultAdminRoute.includes('://')) {
+    issues.push('Default admin route tidak boleh berupa URL eksternal.');
+  }
+
+  return issues;
+}
+// SETTINGS.5 APPEARANCE EDITOR HELPERS END
+
+function AppearancePolicyEditor(props = {}) {
+  const sourcePolicy = getAppearancePolicyFromEditorProps(props);
+  const sourcePolicyHash = JSON.stringify(sourcePolicy);
+  const [draft, setDraft] = useState(sourcePolicy);
+  const [saveStatus, setSaveStatus] = useState({ status: 'idle', message: '' });
+
+  useEffect(() => {
+    setDraft(sourcePolicy);
+    setSaveStatus({ status: 'idle', message: '' });
+  }, [sourcePolicyHash]);
+
+  const normalizedDraft = normalizeAppearancePolicyDraft(draft);
+  const draftHash = JSON.stringify(normalizedDraft);
+  const isDirty = draftHash !== sourcePolicyHash;
+  const validationIssues = useMemo(() => validateAppearancePolicyDraft(draft), [draft]);
+  const canSave = isDirty && validationIssues.length === 0 && saveStatus.status !== 'saving';
+
+  const fieldStyle = {
+    background: 'var(--ui-control)',
+    borderColor: 'var(--ui-border)',
+    boxShadow: 'var(--ui-shadow-control)',
+    color: 'var(--ui-text-main)',
+  };
+
+  const surfaceStyle = {
+    background: 'var(--ui-glass-soft)',
+    borderColor: 'var(--ui-border)',
+    boxShadow: 'var(--ui-shadow-soft)',
+    color: 'var(--ui-text-main)',
+  };
+
+  const softTextStyle = {
+    color: 'var(--ui-text-soft)',
+  };
+
+  const mutedTextStyle = {
+    color: 'var(--ui-text-muted)',
+  };
+
+  const updateField = (field, value) => {
+    setDraft((currentDraft) => ({
+      ...currentDraft,
+      [field]: value,
+    }));
+    setSaveStatus({ status: 'idle', message: '' });
+  };
+
+  const handleDiscard = () => {
+    setDraft(sourcePolicy);
+    setSaveStatus({ status: 'idle', message: 'Perubahan appearance dibatalkan.' });
+  };
+
+  const handleSave = async () => {
+    const issues = validateAppearancePolicyDraft(draft);
+
+    if (issues.length > 0) {
+      setSaveStatus({ status: 'error', message: issues[0] });
+      return;
+    }
+
+    const payload = normalizeAppearancePolicyDraft(draft);
+
+    setSaveStatus({ status: 'saving', message: 'Menyimpan appearance settings...' });
+
+    try {
+      await adminSettingsRepository.updateStudioSettingsSection('appearancePolicy', payload);
+      setSaveStatus({ status: 'success', message: 'Appearance settings berhasil disimpan.' });
+    } catch (error) {
+      setSaveStatus({
+        status: 'error',
+        message: error instanceof Error ? error.message : 'Gagal menyimpan appearance settings.',
+      });
+    }
+  };
+
+  const renderSelectOptions = (options, value) => {
+    const hasCurrentValue = options.some((option) => option.value === value);
+    const finalOptions = hasCurrentValue ? options : [{ value, label: 'Custom: ' + value }, ...options];
+
+    return finalOptions.map((option) => (
+      <option key={option.value} value={option.value}>
+        {option.label}
+      </option>
+    ));
+  };
+
+  const TextField = ({ label, description, field, placeholder }) => (
+    <label className="flex flex-col gap-2 rounded-3xl border p-4" style={surfaceStyle}>
+      <span className="text-sm font-semibold" style={{ color: 'var(--ui-text-strong)' }}>
+        {label}
+      </span>
+      <input
+        className="w-full rounded-2xl border px-3 py-2 text-sm outline-none transition focus:ring-2"
+        value={normalizedDraft[field]}
+        placeholder={placeholder}
+        style={fieldStyle}
+        onChange={(event) => updateField(field, event.target.value)}
+      />
+      <span className="text-xs leading-relaxed" style={softTextStyle}>
+        {description}
+      </span>
+    </label>
+  );
+
+  const SelectField = ({ label, description, field, options }) => (
+    <label className="flex flex-col gap-2 rounded-3xl border p-4" style={surfaceStyle}>
+      <span className="text-sm font-semibold" style={{ color: 'var(--ui-text-strong)' }}>
+        {label}
+      </span>
+      <select
+        className="w-full rounded-2xl border px-3 py-2 text-sm outline-none transition focus:ring-2"
+        value={normalizedDraft[field]}
+        style={fieldStyle}
+        onChange={(event) => updateField(field, event.target.value)}
+      >
+        {renderSelectOptions(options, normalizedDraft[field])}
+      </select>
+      <span className="text-xs leading-relaxed" style={softTextStyle}>
+        {description}
+      </span>
+    </label>
+  );
+
+  const ToggleField = ({ label, description, field, warning }) => (
+    <button
+      type="button"
+      className="flex min-h-[116px] w-full items-start justify-between gap-4 rounded-3xl border p-4 text-left transition hover:-translate-y-0.5"
+      style={surfaceStyle}
+      aria-pressed={normalizedDraft[field]}
+      onClick={() => updateField(field, !normalizedDraft[field])}
+    >
+      <span className="flex flex-col gap-2">
+        <span className="text-sm font-semibold" style={{ color: 'var(--ui-text-strong)' }}>
+          {label}
+        </span>
+        <span className="text-xs leading-relaxed" style={softTextStyle}>
+          {description}
+        </span>
+        {warning ? (
+          <span
+            className="rounded-2xl border px-3 py-2 text-xs leading-relaxed"
+            style={{
+              background: 'var(--ui-bg-base)',
+              borderColor: 'var(--ui-border)',
+              color: 'var(--ui-text-muted)',
+            }}
+          >
+            {warning}
+          </span>
+        ) : null}
+      </span>
+
+      <span
+        className="mt-1 inline-flex h-7 w-12 shrink-0 items-center rounded-full border p-1 transition"
+        style={{
+          background: normalizedDraft[field] ? 'var(--ui-primary-bg)' : 'var(--ui-control)',
+          borderColor: 'var(--ui-border)',
+        }}
+      >
+        <span
+          className={[
+            'h-5 w-5 rounded-full transition',
+            normalizedDraft[field] ? 'translate-x-5' : 'translate-x-0',
+          ].join(' ')}
+          style={{
+            background: normalizedDraft[field] ? 'var(--ui-primary-text)' : 'var(--ui-text-muted)',
+          }}
+        />
+      </span>
+    </button>
+  );
 
   return (
-    <AdminPanel className="grid gap-3 p-3" variant="default">
-      <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_auto] md:items-start">
-        <div className="grid gap-1">
-          <div className="flex min-w-0 flex-wrap items-center gap-2">
-            <h2 className="m-0 text-base font-semibold tracking-[-0.035em] text-[var(--ui-text-strong)]">
-              Appearance / UI editor
-            </h2>
-            <AdminBadge tone={isDirty ? 'purple' : 'cyan'}>
-              {isDirty ? 'Draft changed' : 'Clean'}
-            </AdminBadge>
-            <AdminBadge tone={validation.isValid ? 'cyan' : 'accent'}>
-              {validation.isValid ? 'Valid' : 'Needs review'}
-            </AdminBadge>
-          </div>
-
-          <p className="m-0 text-xs font-medium leading-5 text-[var(--ui-text-muted)]">
-            Save hanya mengubah appearancePolicy. ThemeProvider lokal tetap aman memakai preferensi device/browser user.
+    <section className="rounded-[2rem] border p-5 sm:p-6" style={surfaceStyle}>
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+        <div className="max-w-3xl">
+          <p className="text-xs font-semibold uppercase tracking-[0.26em]" style={mutedTextStyle}>
+            SETTINGS.5
+          </p>
+          <h2 className="mt-2 text-2xl font-black tracking-tight" style={{ color: 'var(--ui-text-strong)' }}>
+            Appearance / UI Editor
+          </h2>
+          <p className="mt-2 text-sm leading-relaxed" style={softTextStyle}>
+            Mengatur default tampilan admin tanpa memaksa preferensi lokal user. ThemeProvider tetap aman:
+            editor ini hanya menyimpan policy appearance, bukan mengubah mode aktif secara langsung.
           </p>
         </div>
 
-        <div className="flex min-w-0 flex-wrap gap-2 md:justify-end">
-          <AdminButton
-            className="min-w-[6.5rem]"
-            disabled={!isDirty || isSaving}
-            icon={RotateCcw}
-            size="sm"
-            variant="secondary"
-            onClick={onDiscard}
+        <div className="flex flex-wrap gap-2">
+          <span
+            className="rounded-full border px-3 py-2 text-xs font-semibold"
+            style={{
+              background: isDirty ? 'var(--ui-secondary-bg)' : 'var(--ui-control)',
+              borderColor: 'var(--ui-border)',
+              color: isDirty ? 'var(--ui-secondary-text)' : 'var(--ui-text-muted)',
+            }}
           >
-            Discard
-          </AdminButton>
-          <AdminButton
-            className="min-w-[8rem]"
-            disabled={!canSave}
-            icon={Save}
-            size="sm"
-            variant="primary"
-            onClick={onSave}
+            {isDirty ? 'Draft berubah' : 'Sinkron'}
+          </span>
+          <span
+            className="rounded-full border px-3 py-2 text-xs font-semibold"
+            style={{
+              background: validationIssues.length ? 'var(--ui-bg-base)' : 'var(--ui-control)',
+              borderColor: validationIssues.length ? 'var(--ui-border-strong)' : 'var(--ui-border)',
+              color: validationIssues.length ? 'var(--ui-text-strong)' : 'var(--ui-text-muted)',
+            }}
           >
-            {isSaving ? 'Saving...' : 'Save appearance'}
-          </AdminButton>
+            {validationIssues.length ? validationIssues.length + ' validasi' : 'Valid'}
+          </span>
         </div>
       </div>
 
-      {validation.errors.length > 0 ? (
-        <div className="rounded-md border border-studio-accent/30 bg-studio-accent/10 p-3 text-xs font-semibold leading-5 text-studio-accent">
-          {validation.errors[0]}
-        </div>
-      ) : null}
-
-      {saveError ? (
-        <div className="rounded-md border border-studio-accent/30 bg-studio-accent/10 p-3 text-xs font-semibold leading-5 text-studio-accent">
-          {saveError}
-        </div>
-      ) : null}
-
-      {saveStatus === 'saved' ? (
-        <div className="rounded-md border border-studio-cyan/30 bg-studio-cyan/10 p-3 text-xs font-semibold leading-5 text-studio-cyan">
-          Appearance policy tersimpan. Tidak ada perubahan otomatis ke preferensi lokal user.
-        </div>
-      ) : null}
-
-      <div className="grid min-w-0 gap-3 xl:grid-cols-[minmax(0,1fr)_18rem] xl:items-start">
-        <div className="grid min-w-0 gap-3">
-          <section className="grid gap-3 border-t border-[var(--ui-border)] pt-3 first:border-t-0 first:pt-0">
-            <h3 className="m-0 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--ui-text-muted)]">
-              Global defaults
-            </h3>
-
-            <div className="grid min-w-0 gap-3 md:grid-cols-12">
-              <div className="md:col-span-4">
-                <AppearanceChoiceField
-                  helper="Default global untuk user baru. Tidak memaksa user lama."
-                  label="Default theme"
-                  name="defaultTheme"
-                  options={themeOptions}
-                  value={safeDraft.defaultTheme}
-                  onChange={onChange}
-                />
-              </div>
-              <div className="md:col-span-4">
-                <AppearanceChoiceField
-                  helper="Default global untuk density admin."
-                  label="Default density"
-                  name="defaultDensity"
-                  options={densityOptions}
-                  value={safeDraft.defaultDensity}
-                  onChange={onChange}
-                />
-              </div>
-              <div className="md:col-span-4">
-                <AppearanceChoiceField
-                  helper="Halaman admin awal setelah login atau redirect."
-                  label="Default admin route"
-                  name="defaultAdminRoute"
-                  options={routeOptions}
-                  value={safeDraft.defaultAdminRoute}
-                  onChange={onChange}
-                />
-              </div>
-            </div>
-          </section>
-
-          <section className="grid gap-3 border-t border-[var(--ui-border)] pt-3">
-            <h3 className="m-0 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--ui-text-muted)]">
-              Tables, dashboard, and privacy
-            </h3>
-
-            <div className="grid min-w-0 gap-3 md:grid-cols-12">
-              <div className="md:col-span-4">
-                <AppearanceChoiceField
-                  helper="Density default untuk dashboard cards."
-                  label="Dashboard density"
-                  name="dashboardDensity"
-                  options={densityOptions}
-                  value={safeDraft.dashboardDensity}
-                  onChange={onChange}
-                />
-              </div>
-              <div className="md:col-span-4">
-                <AppearanceChoiceField
-                  helper="Density default untuk table row."
-                  label="Table row density"
-                  name="tableRowDensity"
-                  options={densityOptions}
-                  value={safeDraft.tableRowDensity}
-                  onChange={onChange}
-                />
-              </div>
-              <div className="md:col-span-4">
-                <AppearanceChoiceField
-                  helper="Tema receipt print untuk fase Billing berikutnya."
-                  label="Receipt print theme"
-                  name="receiptPrintTheme"
-                  options={printThemeOptions}
-                  value={safeDraft.receiptPrintTheme}
-                  onChange={onChange}
-                />
-              </div>
-            </div>
-
-            <div className="grid min-w-0 gap-2 md:grid-cols-2">
-              <AppearanceToggleField
-                checked={safeDraft.compactTables}
-                helper="Preferensi global untuk tabel lebih padat di halaman data."
-                label="Compact tables"
-                name="compactTables"
-                onChange={onChange}
-              />
-              <AppearanceToggleField
-                checked={safeDraft.financialPrivacyMask}
-                helper="Rencana mask nominal uang untuk mode privasi finansial."
-                label="Financial privacy mask"
-                name="financialPrivacyMask"
-                onChange={onChange}
-              />
-              <AppearanceToggleField
-                checked={safeDraft.showCommandBarHints}
-                helper="Tampilkan hint kecil pada command bar admin."
-                label="Show command bar hints"
-                name="showCommandBarHints"
-                onChange={onChange}
-              />
-              <AppearanceToggleField
-                checked={safeDraft.showAdvancedBadges}
-                helper="Tampilkan badge advanced seperti source, schema, dan phase."
-                label="Show advanced badges"
-                name="showAdvancedBadges"
-                onChange={onChange}
-              />
-            </div>
-          </section>
-
-          <section className="grid gap-3 border-t border-[var(--ui-border)] pt-3">
-            <h3 className="m-0 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--ui-text-muted)]">
-              Motion and navigation
-            </h3>
-
-            <div className="grid min-w-0 gap-3 md:grid-cols-12">
-              <div className="md:col-span-6">
-                <AppearanceChoiceField
-                  helper="Mobile bottom nav tetap aman. Tidak menambah CSS overflow/transform baru."
-                  label="Mobile bottom nav"
-                  name="mobileBottomNavBehavior"
-                  options={bottomNavOptions}
-                  value={safeDraft.mobileBottomNavBehavior}
-                  onChange={onChange}
-                />
-              </div>
-              <div className="md:col-span-6">
-                <AppearanceToggleField
-                  checked={safeDraft.sidebarDefaultCollapsed}
-                  helper="Default sidebar desktop collapsed untuk sesi baru/future integration."
-                  label="Sidebar default collapsed"
-                  name="sidebarDefaultCollapsed"
-                  onChange={onChange}
-                />
-              </div>
-            </div>
-
-            <div className="grid min-w-0 gap-2 md:grid-cols-2">
-              <AppearanceToggleField
-                checked={safeDraft.allowUserOverride}
-                helper="User tetap boleh punya preferensi lokal mode dan density."
-                label="Allow user override"
-                name="allowUserOverride"
-                onChange={onChange}
-              />
-              <AppearanceToggleField
-                checked={safeDraft.reducedMotion}
-                helper="Kurangi intensitas motion tanpa mengubah struktur layout."
-                label="Reduced motion"
-                name="reducedMotion"
-                onChange={onChange}
-              />
-            </div>
-          </section>
-        </div>
-
-        <aside className="grid min-w-0 gap-3">
-          <div className="grid gap-2 rounded-md border border-[var(--ui-border)] bg-[var(--ui-control)] p-3 ring-1 ring-[var(--ui-ring)]">
-            <span className="text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-[var(--ui-text-muted)]">
-              Local preference
-            </span>
-            <strong className="text-sm font-semibold text-[var(--ui-text-strong)]">
-              {localThemeMode} / {localDensityMode}
-            </strong>
-            <span className="text-xs font-medium leading-5 text-[var(--ui-text-muted)]">
-              Ini dibaca dari ThemeProvider lokal. Editor ini tidak memanggil setMode atau setDensity.
-            </span>
-          </div>
-
-          <div className="grid gap-2 rounded-md border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-3 ring-1 ring-[var(--ui-ring)]">
-            <span className="text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-[var(--ui-text-muted)]">
-              Save state
-            </span>
-            <strong className="text-sm font-semibold text-[var(--ui-text-strong)]">
-              {isSaving ? 'Saving appearance...' : saveStatus === 'saved' ? 'Saved' : isDirty ? 'Unsaved draft' : 'No draft changes'}
-            </strong>
-            <span className="text-xs font-medium leading-5 text-[var(--ui-text-muted)]">
-              Last saved: {formatSettingsTimestamp(lastSavedAt)}
-            </span>
-          </div>
-
-          <div className="grid gap-2 rounded-md border border-studio-cyan/20 bg-studio-cyan/10 p-3 text-xs font-semibold leading-5 text-studio-cyan ring-1 ring-studio-cyan/10">
-            <span>one component, two palettes</span>
-            <span className="font-medium text-[var(--ui-text-muted)]">
-              Dark/light hanya beda token warna, bukan layout, DOM, spacing, visibility, atau struktur.
-            </span>
-          </div>
-        </aside>
+      <div className="mt-5 grid gap-4 xl:grid-cols-3">
+        <SelectField
+          label="Default Theme"
+          description="Default awal saat user belum punya preferensi lokal. Tidak memaksa mode aktif."
+          field="defaultTheme"
+          options={APPEARANCE_POLICY_OPTIONS.defaultTheme}
+        />
+        <SelectField
+          label="Default Density"
+          description="Kepadatan UI dasar untuk halaman admin."
+          field="defaultDensity"
+          options={APPEARANCE_POLICY_OPTIONS.defaultDensity}
+        />
+        <TextField
+          label="Default Admin Route"
+          description="Route awal setelah masuk portal admin. Harus tetap di bawah /admin."
+          field="defaultAdminRoute"
+          placeholder="/admin"
+        />
+        <SelectField
+          label="Mobile Bottom Nav"
+          description="Policy tampilan navigasi bawah mobile. Tidak mengubah struktur layout dark/light."
+          field="mobileBottomNavBehavior"
+          options={APPEARANCE_POLICY_OPTIONS.mobileBottomNavBehavior}
+        />
+        <SelectField
+          label="Dashboard Density"
+          description="Kepadatan dashboard untuk kartu, ringkasan, dan panel."
+          field="dashboardDensity"
+          options={APPEARANCE_POLICY_OPTIONS.dashboardDensity}
+        />
+        <SelectField
+          label="Table Row Density"
+          description="Kepadatan row tabel default untuk modul admin."
+          field="tableRowDensity"
+          options={APPEARANCE_POLICY_OPTIONS.tableRowDensity}
+        />
+        <SelectField
+          label="Receipt Print Theme"
+          description="Tema default untuk preview cetak struk dan invoice."
+          field="receiptPrintTheme"
+          options={APPEARANCE_POLICY_OPTIONS.receiptPrintTheme}
+        />
       </div>
-    </AdminPanel>
-  );
-}
 
-function parseSettingsList(value) {
-  return String(value || '')
-    .split(/[\\n,]/u)
-    .map((item) => item.trim())
-    .filter(Boolean);
-}
+      <div className="mt-4 grid gap-4 xl:grid-cols-3">
+        <ToggleField
+          label="Allow User Override"
+          description="User tetap boleh memakai preferensi lokal masing-masing."
+          field="allowUserOverride"
+        />
+        <ToggleField
+          label="Compact Tables"
+          description="Tabel memakai mode lebih ringkas secara default."
+          field="compactTables"
+        />
+        <ToggleField
+          label="Reduced Motion"
+          description="Mengurangi animasi UI untuk user yang butuh tampilan lebih tenang."
+          field="reducedMotion"
+        />
+        <ToggleField
+          label="Financial Privacy Mask"
+          description="Menyamarkan nominal sensitif secara default pada area finansial."
+          field="financialPrivacyMask"
+          warning="Policy ini hanya default tampilan. Keamanan data tetap harus dijaga oleh rules/backend."
+        />
+        <ToggleField
+          label="Sidebar Default Collapsed"
+          description="Sidebar desktop dibuka dalam kondisi collapse secara default."
+          field="sidebarDefaultCollapsed"
+        />
+        <ToggleField
+          label="Show Command Bar Hints"
+          description="Menampilkan hint shortcut atau command bar pada UI admin."
+          field="showCommandBarHints"
+        />
+        <ToggleField
+          label="Show Advanced Badges"
+          description="Menampilkan badge fitur advanced untuk operator/admin."
+          field="showAdvancedBadges"
+        />
+      </div>
 
-function PolicyNumberField({
-  helper = '',
-  label,
-  min = 0,
-  name,
-  step = 1,
-  value,
-  onChange,
-}) {
-  return (
-    <label className="grid min-w-0 gap-1.5 text-[0.68rem] font-semibold uppercase tracking-[0.12em] text-[var(--ui-text-muted)]">
-      {label}
-      <input
-        className="min-h-10 w-full min-w-0 rounded-md border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 text-sm font-semibold normal-case tracking-normal text-[var(--ui-text-strong)] outline-none ring-1 ring-[var(--ui-ring)] transition placeholder:text-[var(--ui-text-soft)] focus:border-studio-accent/55 focus:ring-4 focus:ring-studio-accent/20"
-        min={min}
-        name={name}
-        step={step}
-        type="number"
-        value={value ?? 0}
-        onChange={(event) => onChange(name, Number(event.target.value))}
-      />
-      {helper ? (
-        <span className="text-[0.68rem] font-medium normal-case leading-5 tracking-normal text-[var(--ui-text-soft)]">
-          {helper}
-        </span>
+      {validationIssues.length ? (
+        <div
+          className="mt-4 rounded-3xl border p-4 text-sm"
+          style={{
+            background: 'var(--ui-bg-base)',
+            borderColor: 'var(--ui-border-strong)',
+            color: 'var(--ui-text-main)',
+          }}
+        >
+          <p className="font-semibold" style={{ color: 'var(--ui-text-strong)' }}>
+            Validasi perlu dicek:
+          </p>
+          <ul className="mt-2 list-disc space-y-1 pl-5">
+            {validationIssues.map((issue) => (
+              <li key={issue}>{issue}</li>
+            ))}
+          </ul>
+        </div>
       ) : null}
-    </label>
-  );
-}
 
-function PolicyTextAreaField({
-  helper = '',
-  label,
-  name,
-  value,
-  onChange,
-}) {
-  return (
-    <label className="grid min-w-0 gap-1.5 text-[0.68rem] font-semibold uppercase tracking-[0.12em] text-[var(--ui-text-muted)]">
-      {label}
-      <textarea
-        className="min-h-[5.5rem] w-full min-w-0 resize-y rounded-md border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 py-2 text-sm font-semibold normal-case tracking-normal text-[var(--ui-text-strong)] outline-none ring-1 ring-[var(--ui-ring)] transition placeholder:text-[var(--ui-text-soft)] focus:border-studio-accent/55 focus:ring-4 focus:ring-studio-accent/20"
-        name={name}
-        value={value}
-        onChange={(event) => onChange(name, event.target.value)}
-      />
-      {helper ? (
-        <span className="text-[0.68rem] font-medium normal-case leading-5 tracking-normal text-[var(--ui-text-soft)]">
-          {helper}
-        </span>
+      {saveStatus.message ? (
+        <div
+          className="mt-4 rounded-3xl border p-4 text-sm"
+          style={{
+            background: saveStatus.status === 'success' ? 'var(--ui-secondary-bg)' : 'var(--ui-bg-base)',
+            borderColor: saveStatus.status === 'error' ? 'var(--ui-border-strong)' : 'var(--ui-border)',
+            color: saveStatus.status === 'success' ? 'var(--ui-secondary-text)' : 'var(--ui-text-main)',
+          }}
+        >
+          {saveStatus.message}
+        </div>
       ) : null}
-    </label>
-  );
-}
 
-function WeeklyHoursEditor({
-  weeklyHours,
-  onChange,
-}) {
-  const weekDays = [
-    { key: 'monday', label: 'Monday' },
-    { key: 'tuesday', label: 'Tuesday' },
-    { key: 'wednesday', label: 'Wednesday' },
-    { key: 'thursday', label: 'Thursday' },
-    { key: 'friday', label: 'Friday' },
-    { key: 'saturday', label: 'Saturday' },
-    { key: 'sunday', label: 'Sunday' },
-  ];
-
-  return (
-    <section className="grid gap-2">
-      {weekDays.map((item) => {
-        const day = weeklyHours?.[item.key] || { open: false, start: '10:00', end: '22:00' };
-
-        return (
-          <div
-            className="grid min-w-0 gap-2 rounded-md border border-[var(--ui-border)] bg-[var(--ui-control)] p-2.5 ring-1 ring-[var(--ui-ring)] md:grid-cols-[minmax(0,1.1fr)_9rem_9rem] md:items-center"
-            key={item.key}
-          >
-            <AppearanceToggleField
-              checked={Boolean(day.open)}
-              helper={day.open ? 'Hari aktif untuk jadwal studio.' : 'Hari ini dianggap tutup.'}
-              label={item.label}
-              name={item.key + '.open'}
-              onChange={(_name, checked) => onChange(item.key, 'open', checked)}
-            />
-
-            <label className="grid min-w-0 gap-1 text-[0.65rem] font-semibold uppercase tracking-[0.12em] text-[var(--ui-text-muted)]">
-              Start
-              <input
-                className="min-h-10 rounded-md border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] px-3 text-sm font-semibold normal-case tracking-normal text-[var(--ui-text-strong)] outline-none ring-1 ring-[var(--ui-ring)] disabled:opacity-50"
-                disabled={!day.open}
-                type="time"
-                value={day.start || '10:00'}
-                onChange={(event) => onChange(item.key, 'start', event.target.value)}
-              />
-            </label>
-
-            <label className="grid min-w-0 gap-1 text-[0.65rem] font-semibold uppercase tracking-[0.12em] text-[var(--ui-text-muted)]">
-              End
-              <input
-                className="min-h-10 rounded-md border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] px-3 text-sm font-semibold normal-case tracking-normal text-[var(--ui-text-strong)] outline-none ring-1 ring-[var(--ui-ring)] disabled:opacity-50"
-                disabled={!day.open}
-                type="time"
-                value={day.end || '22:00'}
-                onChange={(event) => onChange(item.key, 'end', event.target.value)}
-              />
-            </label>
-          </div>
-        );
-      })}
+      <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:justify-end">
+        <button
+          type="button"
+          className="rounded-2xl border px-4 py-2 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-50"
+          style={{
+            background: 'var(--ui-control)',
+            borderColor: 'var(--ui-border)',
+            color: 'var(--ui-text-main)',
+          }}
+          disabled={!isDirty || saveStatus.status === 'saving'}
+          onClick={handleDiscard}
+        >
+          Discard
+        </button>
+        <button
+          type="button"
+          className="rounded-2xl border px-4 py-2 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-50"
+          style={{
+            background: 'var(--ui-primary-bg)',
+            borderColor: 'var(--ui-border)',
+            color: 'var(--ui-primary-text)',
+          }}
+          disabled={!canSave}
+          onClick={handleSave}
+        >
+          {saveStatus.status === 'saving' ? 'Saving...' : 'Save Appearance'}
+        </button>
+      </div>
     </section>
   );
 }
