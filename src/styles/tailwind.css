@@ -2421,3 +2421,30 @@
   }
 }
 /* 37-booking-first-day-card-offset-css:end */
+
+/* 37-booking-mobile-disable-sticky-time-rail:start */
+@layer components {
+  @media (max-width: 767px) {
+    .booking-time-corner-cell,
+    .booking-time-cell {
+      position: relative !important;
+      left: auto !important;
+      z-index: 1 !important;
+      box-shadow: none !important;
+    }
+
+    .booking-time-corner-cell::after,
+    .booking-time-cell::after {
+      display: none !important;
+    }
+
+    .booking-calendar-inner .booking-block-card {
+      z-index: 5 !important;
+    }
+
+    .booking-calendar-inner > .grid {
+      isolation: isolate;
+    }
+  }
+}
+/* 37-booking-mobile-disable-sticky-time-rail:end */
