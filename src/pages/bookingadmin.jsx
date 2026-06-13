@@ -1509,13 +1509,13 @@ function TimeCell({ slot }) {
 
 function BookingStatusCounters({ counts }) {
   return (
-    <div className="booking-status-counters flex min-w-0 flex-wrap items-center gap-1.5 rounded-[1.05rem] border border-[var(--ui-border)] bg-[var(--ui-control)] p-1 shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)]">
+    <div className="booking-status-counters grid min-w-0 grid-cols-3 items-center gap-0.5 rounded-[1rem] border border-[var(--ui-border)] bg-[var(--ui-control)] p-0.5 shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] sm:flex sm:flex-wrap sm:gap-1 sm:p-1">
       {bookingStatusItems.map((item) => {
         const tone = item.key === 'paid' ? 'cyan' : item.key === 'dp' ? 'purple' : 'accent';
 
         return (
           <AdminBadge
-            className="min-h-8 justify-center px-2.5 text-[0.64rem] uppercase tracking-[0.1em] sm:min-h-9 sm:px-3 sm:text-xs sm:tracking-[0.13em]"
+            className="min-h-7 justify-center px-2 text-[0.58rem] uppercase tracking-[0.08em] sm:min-h-8 sm:px-2.5 sm:text-[0.68rem] sm:tracking-[0.11em]"
             key={item.key}
             tone={tone}
           >
@@ -1582,12 +1582,12 @@ function ViewToggle({
   value,
 }) {
   return (
-    <div className="booking-view-toggle grid w-full grid-cols-3 rounded-full border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-1 shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] sm:flex sm:w-auto sm:flex-wrap">
+    <div className="booking-view-toggle grid w-full grid-cols-3 rounded-full border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-0.5 shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] sm:flex sm:w-auto sm:flex-wrap sm:p-1">
       {viewOptions.map((option) => (
         <button
           aria-pressed={value === option.key}
           className={cn(
-            'inline-flex min-h-8 items-center justify-center rounded-full px-2 text-[0.66rem] font-semibold uppercase tracking-[0.11em] transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/25 sm:min-h-9 sm:px-3 sm:text-xs sm:tracking-[0.14em]',
+            'inline-flex min-h-7 items-center justify-center rounded-full px-2 text-[0.58rem] font-semibold uppercase tracking-[0.08em] transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/25 sm:min-h-8 sm:px-2.5 sm:text-[0.68rem] sm:tracking-[0.11em]',
             value === option.key
               ? 'bg-[var(--ui-control-hover)] text-studio-accent shadow-[var(--ui-shadow-control)]'
               : 'text-[var(--ui-text-muted)] hover:bg-[var(--ui-control)] hover:text-[var(--ui-text-strong)]',
@@ -1615,8 +1615,8 @@ function CalendarToolbar({
   viewMode,
 }) {
   return (
-    <AdminCommandBar className="booking-calendar-toolbar gap-2 p-2 sm:gap-3 sm:p-3 lg:grid-cols-[minmax(0,1fr)_auto_auto] lg:items-center">
-      <div className="booking-period-controls grid grid-cols-[auto_minmax(0,1fr)_auto_auto] items-center gap-1.5 sm:flex sm:flex-wrap sm:gap-2">
+    <AdminCommandBar className="booking-calendar-toolbar gap-1.5 p-1.5 sm:gap-2 sm:p-2.5 lg:grid-cols-[minmax(0,1fr)_auto_auto] lg:items-center">
+      <div className="booking-period-controls grid grid-cols-[auto_minmax(0,1fr)_auto_auto] items-center gap-1 sm:flex sm:flex-wrap sm:gap-1.5">
         <AdminButton
           aria-label="Periode sebelumnya"
           icon={ChevronLeft}
@@ -1626,7 +1626,7 @@ function CalendarToolbar({
         />
 
         <AdminBadge
-          className="min-h-9 flex-1 justify-start px-3 sm:min-h-10 sm:min-w-[220px] sm:flex-none sm:px-4"
+          className="min-h-8 flex-1 justify-start px-2.5 text-[0.68rem] sm:min-h-9 sm:min-w-[220px] sm:flex-none sm:px-3 sm:text-xs"
           icon={CalendarDays}
           tone="strong"
         >
@@ -1652,14 +1652,14 @@ function CalendarToolbar({
 
       <BookingStatusCounters counts={statusCounts} />
 
-      <div className="booking-action-controls grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 sm:flex sm:flex-wrap lg:justify-end">
+      <div className="booking-action-controls grid grid-cols-[minmax(0,1fr)_auto] items-center gap-1.5 sm:flex sm:flex-wrap lg:justify-end">
         <ViewToggle
           onChange={onViewChange}
           value={viewMode}
         />
 
         <AdminButton
-          className="booking-add-button"
+          className="booking-add-button min-h-8 px-3 text-[0.68rem] sm:min-h-9 sm:px-4 sm:text-sm"
           icon={Plus}
           size="md"
           variant="primary"
