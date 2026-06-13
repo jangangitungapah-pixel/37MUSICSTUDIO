@@ -2716,3 +2716,114 @@
   }
 }
 /* 37-customer-summary-compact:end */
+
+/* 37-customer-summary-flat-rail:start */
+@layer components {
+  .customer-summary-flat-rail {
+    width: 100%;
+  }
+
+  .customer-summary-rail {
+    background:
+      radial-gradient(circle at 0% 0%, color-mix(in srgb, var(--ui-primary-bg) 5%, transparent), transparent 38%),
+      var(--ui-glass-soft) !important;
+  }
+
+  .customer-summary-pill,
+  .customer-summary-revenue {
+    background: transparent !important;
+    border-color: transparent !important;
+    box-shadow: none !important;
+    ring: 0 !important;
+  }
+
+  .customer-summary-pill {
+    position: relative;
+  }
+
+  .customer-summary-pill:not(:first-child)::before {
+    content: "";
+    position: absolute;
+    inset-block: 0.35rem;
+    inset-inline-start: -0.25rem;
+    width: 1px;
+    background: var(--ui-border);
+  }
+
+  .customer-summary-revenue {
+    border-top: 1px solid var(--ui-border) !important;
+    border-radius: 0 !important;
+  }
+
+  @media (max-width: 767px) {
+    .customer-summary-rail {
+      gap: 0 !important;
+      padding: 0.45rem 0.7rem !important;
+    }
+
+    .customer-summary-main {
+      gap: 0 !important;
+      padding-block: 0.15rem 0.35rem !important;
+    }
+
+    .customer-summary-pill {
+      min-height: 2.35rem !important;
+      border-radius: 0 !important;
+      padding: 0.35rem 0.42rem !important;
+    }
+
+    .customer-summary-pill span {
+      font-size: 0.46rem !important;
+      letter-spacing: 0.08em !important;
+    }
+
+    .customer-summary-pill strong {
+      font-size: 0.82rem !important;
+    }
+
+    .customer-summary-revenue {
+      min-height: 2.25rem !important;
+      margin-top: 0.2rem !important;
+      padding: 0.55rem 0.42rem 0.25rem !important;
+    }
+
+    .customer-summary-revenue span {
+      font-size: 0.5rem !important;
+      letter-spacing: 0.095em !important;
+    }
+
+    .customer-summary-revenue strong {
+      max-width: min(14rem, 64vw) !important;
+      font-size: clamp(0.82rem, 3.2vw, 0.98rem) !important;
+    }
+  }
+
+  @media (max-width: 420px) {
+    .customer-summary-rail {
+      padding: 0.38rem 0.58rem !important;
+    }
+
+    .customer-summary-pill {
+      min-height: 2.2rem !important;
+      padding-inline: 0.35rem !important;
+    }
+
+    .customer-summary-pill span {
+      font-size: 0.43rem !important;
+    }
+
+    .customer-summary-pill strong {
+      font-size: 0.78rem !important;
+    }
+
+    .customer-summary-revenue {
+      min-height: 2.1rem !important;
+      padding-inline: 0.35rem !important;
+    }
+
+    .customer-summary-revenue strong {
+      font-size: 0.88rem !important;
+    }
+  }
+}
+/* 37-customer-summary-flat-rail:end */
