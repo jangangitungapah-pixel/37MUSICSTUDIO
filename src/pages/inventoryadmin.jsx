@@ -275,24 +275,58 @@ function getFilteredAssets(assets, searchTerm, statusFilter, categoryFilter) {
   });
 }
 
-function InventoryMetric({ helper, icon: Icon, label, value }) {
+function InventoryOverviewStrip({ stats, itemCount }) {
+  const overviewItems = [
+    {
+      helper: 'Item aktif',
+      icon: Boxes,
+      label: 'Assets',
+      value: itemCount,
+    },
+    {
+      helper: 'Siap dipakai',
+      icon: ShieldCheck,
+      label: 'Ready',
+      value: stats.ready,
+    },
+    {
+      helper: 'Butuh restock',
+      icon: AlertTriangle,
+      label: 'Low stock',
+      value: stats.lowStock,
+    },
+    {
+      helper: 'Estimasi value',
+      icon: Tags,
+      label: 'Value',
+      value: formatCurrency(stats.valueEstimate),
+    },
+  ];
+
   return (
-    <article className="grid gap-3 rounded-[1.5rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-4 ring-1 ring-[var(--ui-ring)]">
-      <div className="flex items-center justify-between gap-3">
-        <span className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--ui-text-muted)]">
-          {label}
-        </span>
-        <Icon className="text-studio-accent" size={18} strokeWidth={2.35} aria-hidden="true" />
+    <section className="rounded-[1.45rem] border border-[var(--ui-border-strong)] bg-[linear-gradient(145deg,var(--ui-glass),var(--ui-glass-soft))] p-2 shadow-[var(--ui-shadow-soft)] ring-1 ring-[var(--ui-ring)] backdrop-blur-2xl">
+      <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
+        {overviewItems.map(({ helper, icon: Icon, label, value }) => (
+          <article className="flex min-h-16 items-center gap-3 rounded-[1.1rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 py-2 ring-1 ring-[var(--ui-ring)]" key={label}>
+            <span className="grid size-9 shrink-0 place-items-center rounded-xl border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] text-studio-accent">
+              <Icon size={16} strokeWidth={2.35} aria-hidden="true" />
+            </span>
+
+            <div className="grid min-w-0 gap-0.5">
+              <span className="text-[0.64rem] font-semibold uppercase tracking-[0.14em] text-[var(--ui-text-muted)]">
+                {label}
+              </span>
+              <strong className="truncate text-xl font-semibold leading-none tracking-[-0.055em] text-[var(--ui-text-strong)]">
+                {value}
+              </strong>
+              <span className="truncate text-xs font-medium text-[var(--ui-text-muted)]">
+                {helper}
+              </span>
+            </div>
+          </article>
+        ))}
       </div>
-
-      <strong className="text-3xl font-semibold leading-none tracking-[-0.07em] text-[var(--ui-text-strong)]">
-        {value}
-      </strong>
-
-      <span className="text-sm font-medium leading-6 text-[var(--ui-text-muted)]">
-        {helper}
-      </span>
-    </article>
+    </section>
   );
 }
 
@@ -308,45 +342,39 @@ function InventoryStatusBadge({ status }) {
 
 function InventoryHero({ stats }) {
   return (
-    <section className="relative overflow-hidden rounded-[2rem] border border-[var(--ui-border-strong)] bg-[linear-gradient(145deg,var(--ui-glass),var(--ui-glass-soft))] p-5 shadow-[var(--ui-shadow-soft)] ring-1 ring-[var(--ui-ring)] backdrop-blur-2xl sm:p-7">
-      <div className="pointer-events-none absolute -right-20 -top-28 size-64 rounded-full bg-studio-cyan/14 blur-3xl" aria-hidden="true" />
-      <div className="pointer-events-none absolute -bottom-24 left-8 size-60 rounded-full bg-studio-accent/12 blur-3xl" aria-hidden="true" />
+    <section className="relative overflow-hidden rounded-[1.75rem] border border-[var(--ui-border-strong)] bg-[linear-gradient(145deg,var(--ui-glass),var(--ui-glass-soft))] p-4 shadow-[var(--ui-shadow-soft)] ring-1 ring-[var(--ui-ring)] backdrop-blur-2xl sm:p-5">
+      <div className="pointer-events-none absolute -right-16 -top-24 size-52 rounded-full bg-studio-cyan/14 blur-3xl" aria-hidden="true" />
+      <div className="pointer-events-none absolute -bottom-20 left-8 size-44 rounded-full bg-studio-accent/12 blur-3xl" aria-hidden="true" />
 
-      <div className="relative z-10 grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(280px,360px)] lg:items-end">
-        <div className="grid gap-4">
-          <div className="inline-flex w-fit items-center gap-2 rounded-full border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-studio-accent ring-1 ring-[var(--ui-ring)]">
-            <Boxes size={15} strokeWidth={2.35} aria-hidden="true" />
+      <div className="relative z-10 grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(220px,300px)] lg:items-end">
+        <div className="grid gap-3">
+          <div className="inline-flex w-fit items-center gap-2 rounded-full border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 py-1.5 text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-studio-accent ring-1 ring-[var(--ui-ring)]">
+            <Boxes size={14} strokeWidth={2.35} aria-hidden="true" />
             Studio Asset Inventory
           </div>
 
-          <div className="grid gap-3">
-            <h1 className="m-0 max-w-4xl text-[clamp(2.8rem,7vw,5.8rem)] font-semibold leading-[0.92] tracking-[-0.08em] text-[var(--ui-text-strong)]">
-              Inventory studio yang siap diaudit.
+          <div className="grid gap-2">
+            <h1 className="m-0 max-w-4xl text-[clamp(2.2rem,5vw,4.35rem)] font-semibold leading-[0.94] tracking-[-0.075em] text-[var(--ui-text-strong)]">
+              Inventory studio.
             </h1>
 
-            <p className="m-0 max-w-2xl text-base leading-8 text-[var(--ui-text-main)]">
-              Pantau gear, cable, microphone, amplifier, spare part, dan maintenance supaya operasional studio tetap aman saat jam padat.
+            <p className="m-0 max-w-2xl text-sm leading-7 text-[var(--ui-text-main)]">
+              Kelola gear, cable, microphone, amplifier, spare part, dan maintenance tanpa layar terasa sesak.
             </p>
           </div>
         </div>
 
-        <div className="grid gap-2 rounded-[1.5rem] border border-[var(--ui-border)] bg-[var(--ui-control)] p-4 ring-1 ring-[var(--ui-ring)]">
-          <div className="flex items-start justify-between gap-3">
-            <div className="grid gap-1">
-              <span className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--ui-text-muted)]">
-                Inventory status
-              </span>
-              <strong className="text-2xl font-semibold tracking-[-0.055em] text-[var(--ui-text-strong)]">
-                {stats.ready} ready item
-              </strong>
-            </div>
-
-            <ShieldCheck className="text-studio-cyan" size={22} strokeWidth={2.35} aria-hidden="true" />
+        <div className="flex items-center justify-between gap-3 rounded-[1.25rem] border border-[var(--ui-border)] bg-[var(--ui-control)] p-3 ring-1 ring-[var(--ui-ring)]">
+          <div className="grid gap-0.5">
+            <span className="text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-[var(--ui-text-muted)]">
+              Ready status
+            </span>
+            <strong className="text-2xl font-semibold tracking-[-0.055em] text-[var(--ui-text-strong)]">
+              {stats.ready} ready
+            </strong>
           </div>
 
-          <p className="m-0 text-sm leading-6 text-[var(--ui-text-muted)]">
-            Inventory sekarang siap membaca Firestore realtime. Kalau collection masih kosong, seed starter asset bisa dipakai sebagai data awal.
-          </p>
+          <ShieldCheck className="text-studio-cyan" size={22} strokeWidth={2.35} aria-hidden="true" />
         </div>
       </div>
     </section>
@@ -365,23 +393,23 @@ function InventoryToolbar({
   onStatusChange,
 }) {
   return (
-    <section className="grid gap-3 rounded-[1.75rem] border border-[var(--ui-border-strong)] bg-[linear-gradient(145deg,var(--ui-glass),var(--ui-glass-soft))] p-3 shadow-[var(--ui-shadow-soft)] ring-1 ring-[var(--ui-ring)] backdrop-blur-2xl lg:grid-cols-[minmax(0,1fr)_auto_auto_auto] lg:items-center">
-      <label className="flex min-h-12 items-center gap-3 rounded-[1.25rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-3.5 text-[var(--ui-text-strong)] ring-1 ring-[var(--ui-ring)]">
-        <Search className="shrink-0 text-[var(--ui-text-soft)]" size={17} strokeWidth={2.35} aria-hidden="true" />
+    <section className="grid gap-2 rounded-[1.35rem] border border-[var(--ui-border-strong)] bg-[linear-gradient(145deg,var(--ui-glass),var(--ui-glass-soft))] p-2 shadow-[var(--ui-shadow-soft)] ring-1 ring-[var(--ui-ring)] backdrop-blur-2xl lg:grid-cols-[minmax(0,1fr)_auto_auto] lg:items-center">
+      <label className="flex min-h-11 items-center gap-3 rounded-[1rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 text-[var(--ui-text-strong)] ring-1 ring-[var(--ui-ring)]">
+        <Search className="shrink-0 text-[var(--ui-text-soft)]" size={16} strokeWidth={2.35} aria-hidden="true" />
         <input
-          className="min-h-10 w-full border-0 bg-transparent text-sm font-semibold outline-none placeholder:text-[var(--ui-text-soft)]"
-          placeholder="Cari gear, lokasi, kategori, catatan..."
+          className="min-h-9 w-full border-0 bg-transparent text-sm font-semibold outline-none placeholder:text-[var(--ui-text-soft)]"
+          placeholder="Cari asset, kategori, lokasi..."
           type="search"
           value={searchTerm}
           onChange={(event) => onSearchChange(event.target.value)}
         />
       </label>
 
-      <div className="flex snap-x gap-2 overflow-x-auto pb-1 lg:pb-0" aria-label="Inventory status filter">
+      <div className="flex snap-x items-center gap-1.5 overflow-x-auto pb-1 lg:pb-0" aria-label="Inventory status filter">
         {inventoryStatusFilters.map((item) => (
           <button
             className={cn(
-              'inline-flex min-h-10 shrink-0 items-center justify-center rounded-full border px-3 text-xs font-semibold transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20',
+              'inline-flex min-h-9 shrink-0 items-center justify-center rounded-full border px-3 text-[0.7rem] font-semibold transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20',
               statusFilter === item.key
                 ? 'border-studio-accent/35 bg-studio-accent/10 text-studio-accent ring-1 ring-studio-accent/15'
                 : 'border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] text-[var(--ui-secondary-text)] hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)]',
@@ -395,30 +423,32 @@ function InventoryToolbar({
         ))}
       </div>
 
-      <label className="flex min-h-11 items-center gap-2 rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] px-3 text-xs font-semibold text-[var(--ui-secondary-text)] ring-1 ring-[var(--ui-ring)]">
-        <SlidersHorizontal size={15} strokeWidth={2.35} aria-hidden="true" />
-        <select
-          className="min-h-9 border-0 bg-transparent font-semibold outline-none"
-          value={categoryFilter}
-          onChange={(event) => onCategoryChange(event.target.value)}
+      <div className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto] lg:min-w-[270px]">
+        <label className="flex min-h-10 items-center gap-2 rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] px-3 text-xs font-semibold text-[var(--ui-secondary-text)] ring-1 ring-[var(--ui-ring)]">
+          <SlidersHorizontal size={14} strokeWidth={2.35} aria-hidden="true" />
+          <select
+            className="min-h-8 w-full border-0 bg-transparent font-semibold outline-none"
+            value={categoryFilter}
+            onChange={(event) => onCategoryChange(event.target.value)}
+          >
+            <option value="all">Semua kategori</option>
+            {categories.map((category) => (
+              <option key={category} value={category}>{category}</option>
+            ))}
+          </select>
+        </label>
+
+        <button
+          className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full [background:var(--ui-primary-bg)] px-4 text-sm font-semibold text-[var(--ui-primary-text)] shadow-[var(--ui-shadow-soft)] transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
+          type="button"
+          onClick={onCreateAsset}
         >
-          <option value="all">Semua kategori</option>
-          {categories.map((category) => (
-            <option key={category} value={category}>{category}</option>
-          ))}
-        </select>
-      </label>
+          <Plus size={15} strokeWidth={2.35} aria-hidden="true" />
+          Add
+        </button>
+      </div>
 
-      <button
-        className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full [background:var(--ui-primary-bg)] px-4 text-sm font-semibold text-[var(--ui-primary-text)] shadow-[var(--ui-shadow-soft)] transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
-        type="button"
-        onClick={onCreateAsset}
-      >
-        <Plus size={15} strokeWidth={2.35} aria-hidden="true" />
-        Add asset
-      </button>
-
-      <span className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--ui-text-muted)] lg:col-span-4">
+      <span className="text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-[var(--ui-text-muted)] lg:col-span-3">
         {resultCount} item tampil
       </span>
     </section>
@@ -438,56 +468,54 @@ function InventoryAssetCard({
   const isMaintenance = asset.status === 'maintenance';
 
   return (
-    <article className="grid gap-4 rounded-[1.6rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-4 ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control)]">
-      <div className="flex items-start justify-between gap-3">
-        <div className="grid min-w-0 gap-2">
+    <article className="grid gap-3 p-3 transition hover:bg-[var(--ui-control)] lg:grid-cols-[minmax(230px,1.25fr)_minmax(160px,0.6fr)_minmax(180px,0.7fr)_minmax(230px,auto)] lg:items-center">
+      <div className="grid min-w-0 gap-1.5">
+        <div className="flex min-w-0 items-center gap-2">
           <InventoryStatusBadge status={asset.status} />
+          <h2 className="m-0 min-w-0 truncate text-base font-semibold tracking-[-0.04em] text-[var(--ui-text-strong)]">
+            {asset.name}
+          </h2>
+        </div>
 
-          <div className="grid gap-1">
-            <h2 className="m-0 truncate text-lg font-semibold tracking-[-0.045em] text-[var(--ui-text-strong)]">
-              {asset.name}
-            </h2>
+        <p className="m-0 truncate text-xs font-semibold text-[var(--ui-text-muted)]">
+          {asset.category} • {asset.location}
+        </p>
 
-            <p className="m-0 text-sm font-medium text-[var(--ui-text-muted)]">
-              {asset.category} • {asset.location}
-            </p>
+        <p className="m-0 line-clamp-2 text-sm leading-6 text-[var(--ui-text-main)]">
+          {asset.notes || 'Belum ada catatan.'}
+        </p>
+      </div>
+
+      <div className="grid grid-cols-3 gap-1.5 rounded-[1rem] border border-[var(--ui-border)] bg-[var(--ui-control)] p-1.5 ring-1 ring-[var(--ui-ring)]">
+        {[
+          ['Qty', asset.quantity],
+          ['Min', asset.minQuantity],
+          ['Stock', `${stockRatio}%`],
+        ].map(([label, value]) => (
+          <div className="grid gap-0.5 rounded-[0.8rem] bg-[var(--ui-secondary-bg)] px-2 py-1.5" key={label}>
+            <span className="text-[0.58rem] font-semibold uppercase tracking-[0.12em] text-[var(--ui-text-muted)]">
+              {label}
+            </span>
+            <strong className="text-base font-semibold text-[var(--ui-text-strong)]">
+              {value}
+            </strong>
           </div>
-        </div>
-
-        <span className="grid size-11 shrink-0 place-items-center rounded-2xl border border-[var(--ui-border)] bg-[var(--ui-control)] text-studio-accent">
-          <PackageCheck size={19} strokeWidth={2.35} aria-hidden="true" />
-        </span>
+        ))}
       </div>
 
-      <div className="grid grid-cols-3 gap-2">
-        <div className="grid gap-1 rounded-[1rem] border border-[var(--ui-border)] bg-[var(--ui-control)] p-3">
-          <span className="text-[0.62rem] font-semibold uppercase tracking-[0.12em] text-[var(--ui-text-muted)]">Qty</span>
-          <strong className="text-xl font-semibold text-[var(--ui-text-strong)]">{asset.quantity}</strong>
-        </div>
-
-        <div className="grid gap-1 rounded-[1rem] border border-[var(--ui-border)] bg-[var(--ui-control)] p-3">
-          <span className="text-[0.62rem] font-semibold uppercase tracking-[0.12em] text-[var(--ui-text-muted)]">Min</span>
-          <strong className="text-xl font-semibold text-[var(--ui-text-strong)]">{asset.minQuantity}</strong>
-        </div>
-
-        <div className="grid gap-1 rounded-[1rem] border border-[var(--ui-border)] bg-[var(--ui-control)] p-3">
-          <span className="text-[0.62rem] font-semibold uppercase tracking-[0.12em] text-[var(--ui-text-muted)]">Stock</span>
-          <strong className="text-xl font-semibold text-[var(--ui-text-strong)]">{stockRatio}%</strong>
-        </div>
+      <div className="grid gap-1 text-[0.72rem] font-semibold text-[var(--ui-text-muted)] sm:grid-cols-2 lg:grid-cols-1">
+        <span>Checked: {formatDateLabel(asset.lastChecked)}</span>
+        <span>Next: {formatDateLabel(asset.nextMaintenance)}</span>
       </div>
 
-      <p className="m-0 min-h-12 text-sm leading-6 text-[var(--ui-text-main)]">
-        {asset.notes}
-      </p>
-
-      <div className="grid gap-2 sm:grid-cols-2">
+      <div className="grid gap-1.5 sm:grid-cols-4 lg:grid-cols-2">
         <button
           className="inline-flex min-h-9 items-center justify-center gap-2 rounded-full border border-studio-cyan/35 bg-studio-cyan/10 px-3 text-xs font-semibold text-studio-cyan ring-1 ring-studio-cyan/15 transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-cyan/20"
           type="button"
           onClick={() => onRestockAsset(asset)}
         >
           <RotateCcw size={13} strokeWidth={2.35} aria-hidden="true" />
-          Restock +1
+          Restock
         </button>
 
         <button
@@ -496,11 +524,9 @@ function InventoryAssetCard({
           onClick={() => onMarkMaintenance(asset)}
         >
           <Wrench size={13} strokeWidth={2.35} aria-hidden="true" />
-          {isMaintenance ? 'Mark ready' : 'Maintenance'}
+          {isMaintenance ? 'Ready' : 'Maintenance'}
         </button>
-      </div>
 
-      <div className="grid gap-2 sm:grid-cols-2">
         <button
           className="inline-flex min-h-9 items-center justify-center gap-2 rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] px-3 text-xs font-semibold text-[var(--ui-secondary-text)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
           type="button"
@@ -519,11 +545,6 @@ function InventoryAssetCard({
           Delete
         </button>
       </div>
-
-      <div className="grid gap-2 border-t border-[var(--ui-border)] pt-3 text-xs font-semibold text-[var(--ui-text-muted)] sm:grid-cols-2">
-        <span>Checked: {formatDateLabel(asset.lastChecked)}</span>
-        <span>Maintenance: {formatDateLabel(asset.nextMaintenance)}</span>
-      </div>
     </article>
   );
 }
@@ -537,7 +558,7 @@ function InventoryBoard({
 }) {
   if (assets.length === 0) {
     return (
-      <section className="grid min-h-[280px] content-center justify-items-center gap-4 rounded-[2rem] border border-[var(--ui-border-strong)] bg-[linear-gradient(145deg,var(--ui-glass),var(--ui-glass-soft))] p-6 text-center shadow-[var(--ui-shadow-soft)] ring-1 ring-[var(--ui-ring)]">
+      <section className="grid min-h-[240px] content-center justify-items-center gap-4 rounded-[1.5rem] border border-[var(--ui-border-strong)] bg-[linear-gradient(145deg,var(--ui-glass),var(--ui-glass-soft))] p-6 text-center shadow-[var(--ui-shadow-soft)] ring-1 ring-[var(--ui-ring)]">
         <AlertTriangle className="text-studio-accent" size={28} strokeWidth={2.35} aria-hidden="true" />
         <div className="grid gap-2">
           <h2 className="m-0 text-2xl font-semibold tracking-[-0.06em] text-[var(--ui-text-strong)]">
@@ -552,56 +573,65 @@ function InventoryBoard({
   }
 
   return (
-    <section className="grid gap-3 lg:grid-cols-2 2xl:grid-cols-3">
-      {assets.map((asset) => (
-        <InventoryAssetCard
-          asset={asset}
-          key={asset.id}
-          onDeleteAsset={onDeleteAsset}
-          onEditAsset={onEditAsset}
-          onMarkMaintenance={onMarkMaintenance}
-          onRestockAsset={onRestockAsset}
-        />
-      ))}
+    <section className="overflow-hidden rounded-[1.5rem] border border-[var(--ui-border-strong)] bg-[linear-gradient(145deg,var(--ui-glass),var(--ui-glass-soft))] shadow-[var(--ui-shadow-soft)] ring-1 ring-[var(--ui-ring)]">
+      <div className="hidden border-b border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] px-3 py-2 text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-[var(--ui-text-muted)] lg:grid lg:grid-cols-[minmax(230px,1.25fr)_minmax(160px,0.6fr)_minmax(180px,0.7fr)_minmax(230px,auto)]">
+        <span>Asset</span>
+        <span>Stock</span>
+        <span>Schedule</span>
+        <span>Actions</span>
+      </div>
+
+      <div className="divide-y divide-[var(--ui-border)]">
+        {assets.map((asset) => (
+          <InventoryAssetCard
+            asset={asset}
+            key={asset.id}
+            onDeleteAsset={onDeleteAsset}
+            onEditAsset={onEditAsset}
+            onMarkMaintenance={onMarkMaintenance}
+            onRestockAsset={onRestockAsset}
+          />
+        ))}
+      </div>
     </section>
   );
 }
 
 function InventoryMaintenancePanel({ assets }) {
-  const watchItems = assets.filter((asset) => asset.status !== 'ready');
+  const watchItems = assets.filter((asset) => asset.status !== 'ready').slice(0, 4);
 
   return (
-    <aside className="grid gap-4 rounded-[1.75rem] border border-[var(--ui-border-strong)] bg-[linear-gradient(145deg,var(--ui-glass),var(--ui-glass-soft))] p-4 shadow-[var(--ui-shadow-soft)] ring-1 ring-[var(--ui-ring)] backdrop-blur-2xl">
+    <aside className="grid gap-3 rounded-[1.35rem] border border-[var(--ui-border-strong)] bg-[linear-gradient(145deg,var(--ui-glass),var(--ui-glass-soft))] p-3 shadow-[var(--ui-shadow-soft)] ring-1 ring-[var(--ui-ring)] backdrop-blur-2xl">
       <div className="flex items-start justify-between gap-3">
-        <div className="grid gap-1">
-          <span className="text-xs font-semibold uppercase tracking-[0.16em] text-studio-accent">
-            Maintenance watch
+        <div className="grid gap-0.5">
+          <span className="text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-studio-accent">
+            Watchlist
           </span>
-          <h2 className="m-0 text-2xl font-semibold tracking-[-0.06em] text-[var(--ui-text-strong)]">
-            Gear yang perlu perhatian.
+          <h2 className="m-0 text-xl font-semibold tracking-[-0.055em] text-[var(--ui-text-strong)]">
+            Perlu perhatian.
           </h2>
         </div>
 
-        <Wrench className="text-studio-accent" size={21} strokeWidth={2.35} aria-hidden="true" />
+        <Wrench className="text-studio-accent" size={18} strokeWidth={2.35} aria-hidden="true" />
       </div>
 
       <div className="grid gap-2">
         {watchItems.length > 0 ? watchItems.map((asset) => (
-          <article className="grid gap-2 rounded-[1.15rem] border border-[var(--ui-border)] bg-[var(--ui-control)] p-3 ring-1 ring-[var(--ui-ring)]" key={asset.id}>
-            <div className="flex items-start justify-between gap-3">
-              <strong className="text-sm font-semibold text-[var(--ui-text-strong)]">
+          <article className="grid gap-1 rounded-[1rem] border border-[var(--ui-border)] bg-[var(--ui-control)] p-3 ring-1 ring-[var(--ui-ring)]" key={asset.id}>
+            <div className="flex items-center justify-between gap-3">
+              <strong className="truncate text-sm font-semibold text-[var(--ui-text-strong)]">
                 {asset.name}
               </strong>
               <InventoryStatusBadge status={asset.status} />
             </div>
 
-            <p className="m-0 text-xs leading-5 text-[var(--ui-text-muted)]">
+            <p className="m-0 line-clamp-2 text-xs leading-5 text-[var(--ui-text-muted)]">
               {asset.notes}
             </p>
           </article>
         )) : (
-          <p className="m-0 rounded-[1.15rem] border border-[var(--ui-border)] bg-[var(--ui-control)] p-3 text-sm leading-6 text-[var(--ui-text-muted)]">
-            Semua asset starter sedang ready. Mantap, studio lagi kalem seperti preamp bersih.
+          <p className="m-0 rounded-[1rem] border border-[var(--ui-border)] bg-[var(--ui-control)] p-3 text-sm leading-6 text-[var(--ui-text-muted)]">
+            Semua asset ready.
           </p>
         )}
       </div>
@@ -646,75 +676,92 @@ function InventoryFormPanel({
   const isSaving = formStatus === 'saving';
 
   return (
-    <section className="rounded-[1.75rem] border border-[var(--ui-border-strong)] bg-[linear-gradient(145deg,var(--ui-glass),var(--ui-glass-soft))] p-4 shadow-[var(--ui-shadow-soft)] ring-1 ring-[var(--ui-ring)] backdrop-blur-2xl" aria-label="Inventory asset form">
-      <form className="grid gap-4" onSubmit={onSubmit}>
-        <div className="flex items-start justify-between gap-3">
-          <div className="grid gap-1">
-            <span className="text-xs font-semibold uppercase tracking-[0.16em] text-studio-accent">
+    <section className="rounded-[1.45rem] border border-[var(--ui-border-strong)] bg-[linear-gradient(145deg,var(--ui-glass),var(--ui-glass-soft))] p-3 shadow-[var(--ui-shadow-soft)] ring-1 ring-[var(--ui-ring)] backdrop-blur-2xl" aria-label="Inventory asset form">
+      <form className="grid gap-3" onSubmit={onSubmit}>
+        <div className="flex items-start justify-between gap-3 rounded-[1.1rem] border border-[var(--ui-border)] bg-[var(--ui-control)] p-3 ring-1 ring-[var(--ui-ring)]">
+          <div className="grid gap-0.5">
+            <span className="text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-studio-accent">
               {formMode === 'edit' ? 'Edit asset' : 'New asset'}
             </span>
-            <h2 className="m-0 text-2xl font-semibold tracking-[-0.06em] text-[var(--ui-text-strong)]">
-              {formMode === 'edit' ? draft.name || 'Edit inventory item' : 'Tambah asset inventory'}
+            <h2 className="m-0 text-xl font-semibold tracking-[-0.055em] text-[var(--ui-text-strong)]">
+              {formMode === 'edit' ? draft.name || 'Edit inventory item' : 'Tambah asset'}
             </h2>
           </div>
 
           <button
             aria-label="Close inventory form"
-            className="grid size-10 shrink-0 place-items-center rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] text-[var(--ui-secondary-text)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
+            className="grid size-9 shrink-0 place-items-center rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] text-[var(--ui-secondary-text)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
             type="button"
             onClick={onCancel}
           >
-            <X size={16} strokeWidth={2.35} aria-hidden="true" />
+            <X size={15} strokeWidth={2.35} aria-hidden="true" />
           </button>
         </div>
 
-        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-          <InventoryFormField label="Nama asset" placeholder="Contoh: XLR cable 5m" value={draft.name} onChange={(value) => onChange('name', value)} />
-          <InventoryFormField label="Kategori" placeholder="Cable, Microphone, Amplifier..." value={draft.category} onChange={(value) => onChange('category', value)} />
-          <InventoryFormField label="Lokasi" placeholder="Room A, Rack, Drawer..." value={draft.location} onChange={(value) => onChange('location', value)} />
+        <div className="grid gap-3 xl:grid-cols-[minmax(0,1fr)_minmax(280px,360px)]">
+          <div className="grid gap-3 rounded-[1.1rem] border border-[var(--ui-border)] bg-[var(--ui-control)] p-3 ring-1 ring-[var(--ui-ring)]">
+            <div className="grid gap-3 md:grid-cols-3">
+              <InventoryFormField label="Nama asset" placeholder="Contoh: XLR cable 5m" value={draft.name} onChange={(value) => onChange('name', value)} />
+              <InventoryFormField label="Kategori" placeholder="Cable, Microphone..." value={draft.category} onChange={(value) => onChange('category', value)} />
+              <InventoryFormField label="Lokasi" placeholder="Room A, Drawer..." value={draft.location} onChange={(value) => onChange('location', value)} />
+            </div>
 
-          <label className="grid gap-2 text-sm font-semibold text-[var(--ui-text-main)]">
-            <span className="px-1">Status</span>
-            <select
-              className="min-h-11 rounded-[1rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 text-sm font-semibold text-[var(--ui-text-strong)] outline-none ring-1 ring-[var(--ui-ring)] focus:border-studio-accent/45 focus:ring-4 focus:ring-studio-accent/15"
-              value={draft.status}
-              onChange={(event) => onChange('status', event.target.value)}
-            >
-              {inventoryFormStatusOptions.map((option) => (
-                <option key={option.key} value={option.key}>{option.label}</option>
-              ))}
-            </select>
-          </label>
+            <label className="grid gap-2 text-sm font-semibold text-[var(--ui-text-main)]">
+              <span className="px-1">Notes</span>
+              <textarea
+                className="min-h-20 resize-y rounded-[1rem] border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] p-3 text-sm font-medium leading-6 text-[var(--ui-text-strong)] outline-none ring-1 ring-[var(--ui-ring)] placeholder:text-[var(--ui-text-soft)] focus:border-studio-accent/45 focus:ring-4 focus:ring-studio-accent/15"
+                placeholder="Catatan kondisi, kebutuhan restock, noise, sparepart..."
+                value={draft.notes}
+                onChange={(event) => onChange('notes', event.target.value)}
+              />
+            </label>
+          </div>
 
-          <InventoryFormField label="Quantity" type="number" value={draft.quantity} onChange={(value) => onChange('quantity', value)} />
-          <InventoryFormField label="Minimum stock" type="number" value={draft.minQuantity} onChange={(value) => onChange('minQuantity', value)} />
-          <InventoryFormField label="Estimasi value" type="number" value={draft.valueEstimate} onChange={(value) => onChange('valueEstimate', value)} />
-          <InventoryFormField label="Condition" placeholder="Good, Excellent, Watch..." value={draft.condition} onChange={(value) => onChange('condition', value)} />
-          <InventoryFormField label="Last checked" type="date" value={draft.lastChecked} onChange={(value) => onChange('lastChecked', value)} />
-          <InventoryFormField label="Next maintenance" type="date" value={draft.nextMaintenance} onChange={(value) => onChange('nextMaintenance', value)} />
+          <div className="grid gap-3 rounded-[1.1rem] border border-[var(--ui-border)] bg-[var(--ui-control)] p-3 ring-1 ring-[var(--ui-ring)]">
+            <div className="grid gap-3 sm:grid-cols-3 xl:grid-cols-1">
+              <InventoryFormField label="Quantity" type="number" value={draft.quantity} onChange={(value) => onChange('quantity', value)} />
+              <InventoryFormField label="Minimum" type="number" value={draft.minQuantity} onChange={(value) => onChange('minQuantity', value)} />
+              <InventoryFormField label="Value" type="number" value={draft.valueEstimate} onChange={(value) => onChange('valueEstimate', value)} />
+            </div>
+
+            <details className="rounded-[1rem] border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] p-3 ring-1 ring-[var(--ui-ring)]">
+              <summary className="cursor-pointer text-sm font-semibold text-[var(--ui-text-strong)]">
+                Detail lanjutan
+              </summary>
+
+              <div className="mt-3 grid gap-3">
+                <label className="grid gap-2 text-sm font-semibold text-[var(--ui-text-main)]">
+                  <span className="px-1">Status</span>
+                  <select
+                    className="min-h-11 rounded-[1rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 text-sm font-semibold text-[var(--ui-text-strong)] outline-none ring-1 ring-[var(--ui-ring)] focus:border-studio-accent/45 focus:ring-4 focus:ring-studio-accent/15"
+                    value={draft.status}
+                    onChange={(event) => onChange('status', event.target.value)}
+                  >
+                    {inventoryFormStatusOptions.map((option) => (
+                      <option key={option.key} value={option.key}>{option.label}</option>
+                    ))}
+                  </select>
+                </label>
+
+                <InventoryFormField label="Condition" placeholder="Good, Excellent..." value={draft.condition} onChange={(value) => onChange('condition', value)} />
+                <InventoryFormField label="Last checked" type="date" value={draft.lastChecked} onChange={(value) => onChange('lastChecked', value)} />
+                <InventoryFormField label="Next maintenance" type="date" value={draft.nextMaintenance} onChange={(value) => onChange('nextMaintenance', value)} />
+              </div>
+            </details>
+          </div>
         </div>
 
-        <label className="grid gap-2 text-sm font-semibold text-[var(--ui-text-main)]">
-          <span className="px-1">Notes</span>
-          <textarea
-            className="min-h-28 resize-y rounded-[1.1rem] border border-[var(--ui-border)] bg-[var(--ui-control)] p-3 text-sm font-medium leading-6 text-[var(--ui-text-strong)] outline-none ring-1 ring-[var(--ui-ring)] placeholder:text-[var(--ui-text-soft)] focus:border-studio-accent/45 focus:ring-4 focus:ring-studio-accent/15"
-            placeholder="Catatan kondisi, kebutuhan restock, noise, sparepart..."
-            value={draft.notes}
-            onChange={(event) => onChange('notes', event.target.value)}
-          />
-        </label>
-
-        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[var(--ui-border)] pt-3">
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-[1.1rem] border border-[var(--ui-border)] bg-[var(--ui-control)] p-3 ring-1 ring-[var(--ui-ring)]">
           <span className={cn(
             'text-sm font-semibold',
             formStatus === 'error' ? 'text-studio-accent' : 'text-[var(--ui-text-muted)]',
           )}>
-            {formStatus === 'saved' ? 'Asset tersimpan.' : formStatus === 'error' ? 'Gagal menyimpan asset.' : 'Perubahan akan disimpan ke inventoryItems.'}
+            {formStatus === 'saved' ? 'Asset tersimpan.' : formStatus === 'error' ? 'Gagal menyimpan asset.' : 'Simpan ke inventoryItems.'}
           </span>
 
           <div className="flex flex-wrap gap-2">
             <button
-              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] px-4 text-sm font-semibold text-[var(--ui-secondary-text)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
+              className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] px-4 text-sm font-semibold text-[var(--ui-secondary-text)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
               disabled={isSaving}
               type="button"
               onClick={onCancel}
@@ -723,12 +770,12 @@ function InventoryFormPanel({
             </button>
 
             <button
-              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full [background:var(--ui-primary-bg)] px-5 text-sm font-semibold text-[var(--ui-primary-text)] shadow-[var(--ui-shadow-soft)] transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20 disabled:cursor-not-allowed disabled:opacity-60"
+              className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full [background:var(--ui-primary-bg)] px-5 text-sm font-semibold text-[var(--ui-primary-text)] shadow-[var(--ui-shadow-soft)] transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20 disabled:cursor-not-allowed disabled:opacity-60"
               disabled={isSaving}
               type="submit"
             >
               <Save size={15} strokeWidth={2.35} aria-hidden="true" />
-              {isSaving ? 'Saving...' : 'Save asset'}
+              {isSaving ? 'Saving...' : 'Save'}
             </button>
           </div>
         </div>
@@ -799,33 +846,31 @@ function InventorySyncBanner({
 
 function InventoryFirestorePlan() {
   return (
-    <section className="grid gap-4 rounded-[1.75rem] border border-[var(--ui-border-strong)] bg-[linear-gradient(145deg,var(--ui-glass),var(--ui-glass-soft))] p-4 shadow-[var(--ui-shadow-soft)] ring-1 ring-[var(--ui-ring)] backdrop-blur-2xl">
-      <div className="flex items-start justify-between gap-3">
-        <div className="grid gap-1">
-          <span className="text-xs font-semibold uppercase tracking-[0.16em] text-studio-cyan">
-            Active data layer
+    <details className="rounded-[1.35rem] border border-[var(--ui-border-strong)] bg-[linear-gradient(145deg,var(--ui-glass),var(--ui-glass-soft))] p-3 shadow-[var(--ui-shadow-soft)] ring-1 ring-[var(--ui-ring)] backdrop-blur-2xl">
+      <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-sm font-semibold text-[var(--ui-text-strong)]">
+        <span className="grid gap-0.5">
+          <span className="text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-studio-cyan">
+            Data layer
           </span>
-          <h2 className="m-0 text-2xl font-semibold tracking-[-0.06em] text-[var(--ui-text-strong)]">
-            Firestore inventory realtime.
-          </h2>
-        </div>
+          Firestore realtime
+        </span>
 
-        <ClipboardList className="text-studio-cyan" size={21} strokeWidth={2.35} aria-hidden="true" />
-      </div>
+        <ClipboardList className="text-studio-cyan" size={18} strokeWidth={2.35} aria-hidden="true" />
+      </summary>
 
-      <div className="grid gap-2">
+      <div className="mt-3 grid gap-2 border-t border-[var(--ui-border)] pt-3">
         {[
-          'inventoryItems menyimpan gear, cable, spare part, dan consumable.',
-          'inventoryActivityLogs disiapkan untuk check-in, maintenance, restock, dan audit.',
-          'Rules harus mengizinkan akun admin membaca dan menulis inventory.',
+          'inventoryItems menyimpan gear dan consumable.',
+          'inventoryActivityLogs disiapkan untuk audit.',
+          'Rules harus mengizinkan akun admin.',
         ].map((item) => (
-          <div className="flex items-start gap-2 rounded-[1.1rem] border border-[var(--ui-border)] bg-[var(--ui-control)] p-3 text-sm leading-6 text-[var(--ui-text-main)]" key={item}>
-            <ArrowUpRight className="mt-1 shrink-0 text-studio-cyan" size={14} strokeWidth={2.35} aria-hidden="true" />
+          <div className="flex items-start gap-2 rounded-[0.95rem] border border-[var(--ui-border)] bg-[var(--ui-control)] p-2.5 text-xs leading-5 text-[var(--ui-text-main)]" key={item}>
+            <ArrowUpRight className="mt-0.5 shrink-0 text-studio-cyan" size={13} strokeWidth={2.35} aria-hidden="true" />
             <span>{item}</span>
           </div>
         ))}
       </div>
-    </section>
+    </details>
   );
 }
 
@@ -1066,12 +1111,7 @@ export function InventoryAdmin() {
 
       <InventoryHero stats={stats} />
 
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        <InventoryMetric helper="Total quantity dari asset aktif." icon={Boxes} label="Total asset" value={stats.totalAssets} />
-        <InventoryMetric helper="Item yang siap dipakai." icon={ShieldCheck} label="Ready" value={stats.ready} />
-        <InventoryMetric helper="Perlu restock atau cadangan." icon={AlertTriangle} label="Low stock" value={stats.lowStock} />
-        <InventoryMetric helper="Estimasi kasar asset tercatat." icon={Tags} label="Value" value={formatCurrency(stats.valueEstimate)} />
-      </div>
+      <InventoryOverviewStrip stats={stats} itemCount={activeAssets.length} />
 
       <InventorySyncBanner
         errorMessage={inventoryState.errorMessage}
@@ -1103,7 +1143,7 @@ export function InventoryAdmin() {
         onSubmit={handleAssetFormSubmit}
       />
 
-      <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(320px,390px)] xl:items-start">
+      <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(270px,320px)] xl:items-start">
         <InventoryBoard
           assets={filteredAssets}
           onDeleteAsset={handleDeleteAsset}
