@@ -6898,273 +6898,18 @@
 
 /* === 37 BOOKING FORM ULTRA COMPACT MOBILE END === */
 
-/* === 37 MOBILE PERFORMANCE SMOOTHNESS START === */
+/* === 37 MOBILE SAFE NAV ANCHOR START === */
 
 /*
-  Mobile performance pass.
-  Goals:
-  - reduce expensive backdrop-filter paint on mobile
-  - reduce heavy layered shadows on mobile
-  - make modal/body/calendar scroll more stable
-  - reduce transition duration on high-frequency interactive surfaces
-  - keep same DOM/layout and same token-based theme system
+  Minimal safe mobile nav anchor.
+  Purpose:
+  - keep bottom nav and more menu centered in viewport
+  - do not touch page vertical scroll
+  - do not set transform on layout ancestors
+  - do not lock html/body/#root overflow-y
 */
 
 @media (max-width: 767px) {
-  html,
-  body {
-    overscroll-behavior-y: none;
-    text-rendering: optimizeSpeed;
-  }
-
-  button,
-  a,
-  input,
-  select,
-  textarea,
-  [role="button"] {
-    touch-action: manipulation;
-  }
-
-  .admin-shell,
-  .admin-content-shell,
-  .booking-admin-workspace {
-    transform: translateZ(0);
-  }
-
-  .booking-calendar-scroller,
-  .booking-form-body,
-  .booking-detail-body,
-  .admin-sidebar-inner {
-    -webkit-overflow-scrolling: touch;
-    overscroll-behavior: contain;
-    scroll-behavior: auto;
-  }
-
-  .booking-form-overlay,
-  .booking-detail-overlay {
-    background: rgb(0 0 0 / 0.54);
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-  }
-
-  .admin-mobile-bottom-bar,
-  .admin-mobile-more-menu {
-    background:
-      linear-gradient(
-        135deg,
-        color-mix(in srgb, var(--ui-bg-base) 96%, transparent),
-        color-mix(in srgb, var(--ui-control) 88%, transparent)
-      );
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-    box-shadow: 0 12px 28px rgb(0 0 0 / 0.18);
-  }
-
-  .booking-form-modal,
-  .booking-detail-modal {
-    contain: layout paint;
-    box-shadow: 0 18px 44px rgb(0 0 0 / 0.24);
-    transform: translateZ(0);
-  }
-
-  .booking-form-card,
-  .booking-payment-card,
-  .booking-detail-data-card,
-  .booking-detail-notes,
-  .booking-detail-activity,
-  .booking-selected-slot-panel,
-  .booking-slot-counters {
-    box-shadow: none !important;
-  }
-
-  .booking-form-card,
-  .booking-payment-card,
-  .booking-detail-data-card {
-    background:
-      linear-gradient(
-        135deg,
-        color-mix(in srgb, var(--ui-bg-base) 94%, var(--ui-control)),
-        color-mix(in srgb, var(--ui-bg-base) 98%, transparent)
-      );
-  }
-
-  .booking-block-card {
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-    box-shadow: 0 8px 18px rgb(0 0 0 / 0.16) !important;
-    transform: translateZ(0);
-  }
-
-  .booking-time-cell,
-  .booking-time-corner-cell {
-    box-shadow: 7px 0 14px rgb(0 0 0 / 0.10) !important;
-  }
-
-  .booking-calendar-grid,
-  .booking-calendar-inner {
-    isolation: isolate;
-  }
-
-  .booking-calendar-grid button,
-  .booking-calendar-toolbar button,
-  .booking-form-modal button,
-  .booking-detail-modal button,
-  .admin-mobile-bottom-bar a,
-  .admin-mobile-bottom-bar button,
-  .admin-mobile-more-menu a,
-  .admin-mobile-more-menu button {
-    transition-duration: 120ms !important;
-  }
-
-  .booking-calendar-grid button:hover,
-  .booking-form-modal button:hover,
-  .booking-detail-modal button:hover,
-  .admin-mobile-bottom-bar button:hover,
-  .admin-mobile-bottom-bar a:hover,
-  .admin-mobile-more-menu button:hover,
-  .admin-mobile-more-menu a:hover {
-    transform: none !important;
-  }
-
-  .booking-form-modal input,
-  .booking-form-modal textarea,
-  .booking-form-modal button,
-  .booking-detail-modal button {
-    box-shadow: none;
-  }
-
-  .booking-form-modal input:focus,
-  .booking-form-modal textarea:focus,
-  .booking-form-modal button:focus-visible,
-  .booking-detail-modal button:focus-visible {
-    box-shadow: 0 0 0 3px rgb(255 59 161 / 0.14);
-  }
-
-  .booking-payment-options button,
-  .booking-view-toggle button,
-  .booking-status-counters > *,
-  .booking-form-cancel,
-  .booking-form-submit {
-    will-change: auto;
-  }
-
-  .booking-form-body::-webkit-scrollbar,
-  .booking-detail-body::-webkit-scrollbar,
-  .booking-calendar-scroller::-webkit-scrollbar {
-    width: 0.35rem;
-    height: 0.35rem;
-  }
-
-  .booking-form-body::-webkit-scrollbar-thumb,
-  .booking-detail-body::-webkit-scrollbar-thumb,
-  .booking-calendar-scroller::-webkit-scrollbar-thumb {
-    background: color-mix(in srgb, var(--ui-text-muted) 32%, transparent);
-    border-radius: 999px;
-  }
-}
-
-@media (max-width: 767px) and (prefers-reduced-motion: reduce) {
-  .booking-calendar-grid *,
-  .booking-calendar-toolbar *,
-  .booking-form-modal *,
-  .booking-detail-modal *,
-  .admin-mobile-bottom-bar *,
-  .admin-mobile-more-menu * {
-    animation: none !important;
-    transition-duration: 1ms !important;
-    scroll-behavior: auto !important;
-  }
-}
-
-/* === 37 MOBILE PERFORMANCE SMOOTHNESS END === */
-
-/* === 37 MOBILE BOTTOM NAV FIXED RESTORE START === */
-
-/*
-  Restore viewport-fixed mobile bottom nav.
-  Performance pass must not put transform on layout ancestors,
-  because transformed ancestors can trap position: fixed on mobile browsers.
-*/
-
-@media (max-width: 767px) {
-  .admin-shell,
-  .admin-content-shell,
-  .booking-admin-workspace {
-    transform: none !important;
-  }
-
-  .admin-mobile-bottom-bar {
-    position: fixed !important;
-    left: 0.75rem !important;
-    right: 0.75rem !important;
-    bottom: max(0.75rem, env(safe-area-inset-bottom)) !important;
-    top: auto !important;
-    z-index: 80 !important;
-    transform: none !important;
-  }
-
-  .admin-mobile-bottom-track {
-    transform: none !important;
-  }
-
-  .admin-mobile-more-menu {
-    position: fixed !important;
-    z-index: 90 !important;
-    transform: none !important;
-  }
-
-  .booking-admin-workspace {
-    padding-bottom: calc(6.75rem + env(safe-area-inset-bottom)) !important;
-  }
-}
-
-/* === 37 MOBILE BOTTOM NAV FIXED RESTORE END === */
-
-/* === 37 MOBILE BOTTOM NAV VIEWPORT LOCK START === */
-
-/*
-  Hard lock mobile bottom nav to visual viewport.
-  This fixes horizontal drift caused by calendar min-width / horizontal overflow.
-*/
-
-@media (max-width: 767px) {
-  html,
-  body,
-  #root {
-    width: 100%;
-    max-width: 100%;
-    overflow-x: hidden;
-  }
-
-  .admin-shell,
-  .admin-content-shell,
-  .booking-admin-workspace,
-  .booking-board-stack {
-    max-width: 100%;
-    overflow-x: clip;
-  }
-
-  @supports not (overflow: clip) {
-    .admin-shell,
-    .admin-content-shell,
-    .booking-admin-workspace,
-    .booking-board-stack {
-      overflow-x: hidden;
-    }
-  }
-
-  .booking-calendar-grid {
-    max-width: 100%;
-    overflow: hidden;
-  }
-
-  .booking-calendar-scroller {
-    max-width: 100%;
-    overflow-x: auto;
-    overflow-y: hidden;
-  }
-
   .admin-mobile-bottom-bar {
     position: fixed !important;
     top: auto !important;
@@ -7175,14 +6920,20 @@
     max-width: calc(100vw - 1.5rem) !important;
     margin: 0 !important;
     box-sizing: border-box !important;
-    transform: translate3d(-50%, 0, 0) !important;
+    transform: translateX(-50%) !important;
     z-index: 90 !important;
+  }
+
+  @supports (width: 100svw) {
+    .admin-mobile-bottom-bar {
+      width: min(calc(100svw - 1.5rem), 34rem) !important;
+      max-width: calc(100svw - 1.5rem) !important;
+    }
   }
 
   .admin-mobile-bottom-track {
     width: 100% !important;
     min-width: 0 !important;
-    transform: none !important;
   }
 
   .admin-bottom-nav-item {
@@ -7198,31 +6949,6 @@
 
   .admin-mobile-more-menu {
     position: fixed !important;
-    right: 0.75rem !important;
-    bottom: calc(5.15rem + env(safe-area-inset-bottom)) !important;
-    left: auto !important;
-    max-width: calc(100vw - 1.5rem) !important;
-    transform: none !important;
-    z-index: 100 !important;
-  }
-
-  .booking-admin-workspace {
-    padding-bottom: calc(6.75rem + env(safe-area-inset-bottom)) !important;
-  }
-}
-
-/* === 37 MOBILE BOTTOM NAV VIEWPORT LOCK END === */
-
-/* === 37 MOBILE MORE MENU CENTER LOCK START === */
-
-/*
-  Center the mobile more menu above the bottom nav.
-  Fixes right-drift caused by previous right-anchored menu positioning.
-*/
-
-@media (max-width: 767px) {
-  .admin-mobile-more-menu {
-    position: fixed !important;
     top: auto !important;
     right: auto !important;
     bottom: calc(5.15rem + env(safe-area-inset-bottom)) !important;
@@ -7231,30 +6957,34 @@
     max-width: calc(100vw - 1.5rem) !important;
     margin: 0 !important;
     box-sizing: border-box !important;
-    transform: translate3d(-50%, 0, 0) !important;
+    transform: translateX(-50%) !important;
     z-index: 100 !important;
   }
 
-  .admin-mobile-more-menu > * {
-    width: 100%;
-    min-width: 0;
+  @supports (width: 100svw) {
+    .admin-mobile-more-menu {
+      width: min(calc(100svw - 1.5rem), 22rem) !important;
+      max-width: calc(100svw - 1.5rem) !important;
+    }
   }
 
   .admin-mobile-more-item {
     min-width: 0 !important;
   }
 
-  .admin-mobile-more-item span {
-    min-width: 0;
-  }
-
   .admin-mobile-theme-switch {
     grid-template-columns: minmax(0, 1fr) 4.25rem !important;
   }
 
-  .admin-mobile-theme-track {
-    justify-self: end;
+  .booking-admin-workspace {
+    padding-bottom: calc(7.25rem + env(safe-area-inset-bottom)) !important;
+  }
+
+  .booking-calendar-scroller,
+  .booking-form-body,
+  .booking-detail-body {
+    -webkit-overflow-scrolling: touch;
   }
 }
 
-/* === 37 MOBILE MORE MENU CENTER LOCK END === */
+/* === 37 MOBILE SAFE NAV ANCHOR END === */
