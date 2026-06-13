@@ -98,18 +98,18 @@ function BookkeepingComingSoonPanel() {
   return (
     <AdminPanel className="grid gap-4 p-4 sm:p-5" variant="solid">
       <div className="grid gap-2">
-        <AdminBadge tone="purple">
-          BOOKKEEPING.1
+        <AdminBadge tone="cyan">
+          BOOKKEEPING.2
         </AdminBadge>
 
         <h2 className="m-0 text-2xl font-semibold tracking-[-0.05em] text-[var(--ui-text-strong)]">
-          Shell pembukuan sudah siap.
+          Repositori pembukuan sudah siap.
         </h2>
 
         <p className="m-0 max-w-3xl text-sm leading-6 text-[var(--ui-text-main)]">
-          Fase ini baru menambahkan route, navigasi, dan layout awal. Data pembukuan,
-          repository Firestore, input income/expense, import Billing, dan laporan akan
-          masuk di fase berikutnya.
+          Fase ini telah mengimplementasikan repositori pembukuan (Firestore + local fallback) dan
+          mengintegrasikan data stream ke dalam shell admin. Pengisian data manual, dashboard,
+          ledger read model, dan laporan akan masuk di fase berikutnya.
         </p>
       </div>
 
@@ -119,7 +119,7 @@ function BookkeepingComingSoonPanel() {
             Berikutnya
           </span>
           <strong className="text-sm font-semibold text-[var(--ui-text-strong)]">
-            BOOKKEEPING.2 Repository
+            BOOKKEEPING.3 Dashboard/read model
           </strong>
         </div>
 
@@ -151,6 +151,9 @@ export function BookkeepingAdmin() {
     billingLoadError = '',
     billingTransactions = [],
     isBillingReady = false,
+    _bookkeepingEntries = [],
+    isBookkeepingReady = false,
+    bookkeepingLoadError = '',
   } = adminContext;
 
   const billingSnapshot = useMemo(
@@ -173,12 +176,15 @@ export function BookkeepingAdmin() {
             <AdminBadge icon={CalendarDays} tone="strong">
               {currentMonthLabel}
             </AdminBadge>
+            <AdminBadge icon={BookOpenCheck} tone={isBookkeepingReady ? 'cyan' : 'purple'}>
+              {isBookkeepingReady ? 'Repository terbaca' : 'Loading repository'}
+            </AdminBadge>
             <AdminBadge icon={WalletCards} tone={isBillingReady ? 'cyan' : 'purple'}>
               {isBillingReady ? 'Billing terbaca' : 'Loading billing'}
             </AdminBadge>
-            {billingLoadError ? (
+            {bookkeepingLoadError || billingLoadError ? (
               <AdminBadge tone="accent">
-                Fallback billing
+                Fallback aktif
               </AdminBadge>
             ) : null}
           </>

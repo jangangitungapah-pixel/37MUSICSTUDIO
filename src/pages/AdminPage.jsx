@@ -29,6 +29,7 @@ import { useTheme } from '../theme/ThemeProvider.jsx';
 import { adminAuthRepository } from '../services/adminAuthRepository.js';
 import { adminBookingRepository } from '../services/adminBookingRepository.js';
 import { adminBillingRepository } from '../services/adminBillingRepository.js';
+import { adminBookkeepingRepository } from '../services/adminBookkeepingRepository.js';
 
 const initialAdminAuthState = {
   errorMessage: '',
@@ -635,6 +636,11 @@ export function AdminPage() {
     errorMessage: '',
     isReady: false,
   });
+  const [bookkeepingEntries, setBookkeepingEntries] = useState([]);
+  const [adminBookkeepingState, setAdminBookkeepingState] = useState({
+    errorMessage: '',
+    isReady: false,
+  });
   const [adminAuthState, setAdminAuthState] = useState(initialAdminAuthState);
   const location = useLocation();
   const navigate = useNavigate();
@@ -711,6 +717,41 @@ export function AdminPage() {
     return unsubscribe;
   }, [adminAuthState.isAuthenticated]);
 
+  useEffect(() => {
+    if (!adminAuthState.isAuthenticated) {
+      setBookkeepingEntries([]);
+      setAdminBookkeepingState({
+        errorMessage: '',
+        isReady: false,
+      });
+
+      return undefined;
+    }
+
+    setAdminBookkeepingState({
+      errorMessage: '',
+      isReady: false,
+    });
+
+    const unsubscribe = adminBookkeepingRepository.subscribeBookkeepingEntries(
+      (entries) => {
+        setBookkeepingEntries(entries);
+        setAdminBookkeepingState((current) => ({
+          ...current,
+          isReady: true,
+        }));
+      },
+      () => {
+        setAdminBookkeepingState({
+          errorMessage: 'Pembukuan belum bisa dibaca penuh. Pembukuan memakai data lokal jika fallback tidak tersedia.',
+          isReady: true,
+        });
+      },
+    );
+
+    return unsubscribe;
+  }, [adminAuthState.isAuthenticated]);
+
   const activeItem = useMemo(
     () => getActiveAdminItem(location.pathname),
     [location.pathname],
@@ -756,8 +797,43 @@ export function AdminPage() {
           throw error;
         }
       },
+      bookkeepingEntries,
+      isBookkeepingReady: adminBookkeepingState.isReady,
+      bookkeepingLoadError: adminBookkeepingState.errorMessage,
+      createBookkeepingEntry: async (entry) => {
+        try {
+          return await adminBookkeepingRepository.createBookkeepingEntry(entry);
+        } catch (error) {
+          console.error('Failed to create bookkeeping entry.', error);
+          throw error;
+        }
+      },
+      updateBookkeepingEntry: async (entry) => {
+        try {
+          return await adminBookkeepingRepository.updateBookkeepingEntry(entry);
+        } catch (error) {
+          console.error('Failed to update bookkeeping entry.', error);
+          throw error;
+        }
+      },
+      recordBookkeepingAuditLog: async (log) => {
+        try {
+          await adminBookkeepingRepository.recordBookkeepingAuditLog(log);
+        } catch (error) {
+          console.error('Failed to record bookkeeping audit log.', error);
+        }
+      },
     }),
-    [activeItem, adminAuthState.user, adminBillingState, adminBookingsState, billingTransactions, manualBookings],
+    [
+      activeItem,
+      adminAuthState.user,
+      adminBillingState,
+      adminBookingsState,
+      adminBookkeepingState,
+      billingTransactions,
+      manualBookings,
+      bookkeepingEntries,
+    ],
   );
 
   if (!adminAuthState.isReady) {
