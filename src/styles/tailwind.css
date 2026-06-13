@@ -2270,3 +2270,66 @@
   }
 }
 /* 37-booking-mobile-toolbar-compact:end */
+
+/* 37-booking-calendar-time-column-align:start */
+@layer components {
+  .booking-calendar-grid {
+    --booking-time-column-width: 112px;
+  }
+
+  .booking-time-corner-cell,
+  .booking-time-cell {
+    width: var(--booking-time-column-width, 112px) !important;
+    min-width: var(--booking-time-column-width, 112px) !important;
+    max-width: var(--booking-time-column-width, 112px) !important;
+    box-sizing: border-box;
+  }
+
+  .booking-time-corner-cell {
+    border-top-left-radius: inherit;
+  }
+
+  @media (max-width: 767px) {
+    .booking-calendar-grid {
+      --booking-time-column-width: 96px;
+    }
+
+    .booking-time-corner-cell,
+    .booking-time-cell {
+      padding-inline: 0.35rem !important;
+    }
+
+    .booking-time-corner-cell span span:first-child {
+      font-size: 0.58rem !important;
+      letter-spacing: 0.14em !important;
+    }
+
+    .booking-time-corner-cell span span:last-child,
+    .booking-time-cell span {
+      font-size: 0.62rem !important;
+      line-height: 1.15 !important;
+      white-space: normal !important;
+    }
+
+    .booking-calendar-inner {
+      min-width: max-content;
+    }
+  }
+
+  @media (max-width: 420px) {
+    .booking-calendar-grid {
+      --booking-time-column-width: 88px;
+    }
+
+    .booking-time-corner-cell span span:first-child {
+      font-size: 0.54rem !important;
+      letter-spacing: 0.12em !important;
+    }
+
+    .booking-time-corner-cell span span:last-child,
+    .booking-time-cell span {
+      font-size: 0.58rem !important;
+    }
+  }
+}
+/* 37-booking-calendar-time-column-align:end */

@@ -560,14 +560,14 @@ function getDayColumnTemplate(viewMode) {
 
 function getGridMinWidth(viewMode, visibleDays) {
   if (viewMode === 'month') {
-    return 112 + visibleDays.length * 92;
+    return 'calc(var(--booking-time-column-width, 112px) + ' + visibleDays.length + ' * 92px)';
   }
 
   if (viewMode === 'week') {
-    return 112 + visibleDays.length * 104;
+    return 'calc(var(--booking-time-column-width, 112px) + ' + visibleDays.length + ' * 104px)';
   }
 
-  return 332;
+  return 'calc(var(--booking-time-column-width, 112px) + 220px)';
 }
 
 function getInitialViewMode() {
@@ -1434,7 +1434,7 @@ function TimeCell({ slot }) {
   return (
     <div
       className={cn(
-        'sticky left-0 z-40 grid min-h-[54px] w-[112px] place-items-center border-b border-r border-[var(--ui-border-strong)] px-1.5 text-center shadow-[12px_0_22px_rgb(0_0_0/0.14)] sm:w-[136px] sm:px-2',
+        'booking-time-cell sticky left-0 z-40 grid min-h-[54px] w-[var(--booking-time-column-width,112px)] place-items-center border-b border-r border-[var(--ui-border-strong)] px-1.5 text-center shadow-[12px_0_22px_rgb(0_0_0/0.14)] sm:w-[var(--booking-time-column-width,112px)] sm:px-2',
         solidSurfaces.gridSticky,
       )}
     >
@@ -1621,7 +1621,8 @@ function CalendarGrid({
   visibleDays,
 }) {
   const dayColumnTemplate = getDayColumnTemplate(viewMode);
-  const gridTemplateColumns = '112px repeat(' + visibleDays.length + ', ' + dayColumnTemplate + ')';
+  const timeColumnTemplate = 'var(--booking-time-column-width, 112px)';
+  const gridTemplateColumns = timeColumnTemplate + ' repeat(' + visibleDays.length + ', ' + dayColumnTemplate + ')';
   const gridMinWidth = getGridMinWidth(viewMode, visibleDays);
 
   return (
@@ -1671,7 +1672,7 @@ function CalendarGrid({
           >
             <div
               className={cn(
-                'sticky left-0 z-50 grid h-12 w-[112px] place-items-center border-b border-r border-[var(--ui-border-strong)] px-1.5 text-center shadow-[12px_0_22px_rgb(0_0_0/0.16)] sm:h-14 sm:w-[136px] sm:px-2',
+                'booking-time-corner-cell sticky left-0 z-50 grid h-12 w-[var(--booking-time-column-width,112px)] place-items-center border-b border-r border-[var(--ui-border-strong)] px-1.5 text-center shadow-[12px_0_22px_rgb(0_0_0/0.16)] sm:h-14 sm:w-[var(--booking-time-column-width,112px)] sm:px-2',
                 solidSurfaces.gridCorner,
               )}
             >
