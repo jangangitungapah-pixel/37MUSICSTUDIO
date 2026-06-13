@@ -1,6 +1,7 @@
 import {
   addDoc,
   collection,
+  deleteDoc,
   doc,
   limit,
   onSnapshot,
@@ -559,8 +560,31 @@ export async function recordBookkeepingAuditLog(entry) {
   return normalizedLog;
 }
 
+export async function deleteBookkeepingEntry(entryId) {
+  const normalizedEntryId = safeString(entryId);
+
+  if (!normalizedEntryId) {
+    return false;
+  }
+
+  if (canUseFirestore()) {
+    const entryRef = doc(getBookkeepingEntriesCollection(), normalizedEntryId);
+    await deleteDoc(entryRef);
+    return true;
+  }
+
+  const currentEntries = readBookkeepingEntriesFromStorage();
+  const nextEntries = currentEntries.filter((item) => item.id !== normalizedEntryId);
+
+  writeBookkeepingEntriesToStorage(nextEntries);
+  emitBookkeepingEntries(nextEntries);
+
+  return true;
+}
+
 export const adminBookkeepingRepository = {
   createBookkeepingEntry,
+  deleteBookkeepingEntry,
   normalizeBookkeepingAuditLog,
   normalizeBookkeepingEntry,
   recordBookkeepingAuditLog,

@@ -12,12 +12,14 @@ import {
 } from 'lucide-react';
 import {
   AdminBadge,
+  AdminButton,
   AdminCommandBar,
   AdminPageHeader,
   AdminPageShell,
   AdminPanel,
   AdminDropdown,
   AdminTableShell,
+  AdminDrawer,
 } from '../components/admin/AdminPrimitives.jsx';
 
 const standardCategories = [
@@ -52,6 +54,25 @@ const typeFilters = [
   { key: 'income', label: 'Masuk (Income)' },
   { key: 'expense', label: 'Keluar (Expense)' },
   { key: 'transfer', label: 'Transfer' },
+];
+
+const incomeCategories = [
+  { key: 'studio_rent', label: 'Sewa Studio' },
+  { key: 'gear_rent', label: 'Sewa Gear/Alat' },
+  { key: 'pos_sale', label: 'Penjualan POS' },
+  { key: 'other', label: 'Lain-lain (Pendapatan)' },
+];
+
+const expenseCategories = [
+  { key: 'maintenance', label: 'Perawatan Alat' },
+  { key: 'utilities', label: 'Listrik & Internet' },
+  { key: 'salary', label: 'Gaji & Staff' },
+  { key: 'marketing', label: 'Pemasaran' },
+  { key: 'other', label: 'Lain-lain (Pengeluaran)' },
+];
+
+const transferCategories = [
+  { key: 'transfer', label: 'Transfer Internal' },
 ];
 
 function formatBookkeepingCurrency(value, allowNegative = false) {
@@ -137,17 +158,17 @@ function BookkeepingComingSoonPanel() {
     <AdminPanel className="grid gap-4 p-4 sm:p-5" variant="solid">
       <div className="grid gap-2">
         <AdminBadge tone="cyan">
-          BOOKKEEPING.3
+          BOOKKEEPING.4
         </AdminBadge>
 
         <h2 className="m-0 text-2xl font-semibold tracking-[-0.05em] text-[var(--ui-text-strong)]">
-          Dashboard metrik & Ledger Buku Besar sudah siap.
+          Pencatatan kas manual sudah aktif.
         </h2>
 
         <p className="m-0 max-w-3xl text-sm leading-6 text-[var(--ui-text-main)]">
-          Fase ini telah mengimplementasikan kalkulasi metrik all-time/periode, filter multi-dimensi,
-          pencarian teks penuh, dan tabel buku besar (ledger) dengan kalkulasi saldo berjalan kronologis.
-          Pengisian catatan kas manual akan didukung di fase berikutnya.
+          Fase ini telah mengaktifkan laci penambahan dan pengeditan transaksi kas secara manual.
+          Setiap aktivitas transaksi akan tercatat secara akurat di log audit. Catatan otomatis
+          dari Billing/POS terkunci demi integritas data.
         </p>
       </div>
 
@@ -157,7 +178,7 @@ function BookkeepingComingSoonPanel() {
             Berikutnya
           </span>
           <strong className="text-sm font-semibold text-[var(--ui-text-strong)]">
-            BOOKKEEPING.4 Catatan manual
+            BOOKKEEPING.5 Billing import
           </strong>
         </div>
 
@@ -175,7 +196,7 @@ function BookkeepingComingSoonPanel() {
             Guard
           </span>
           <strong className="text-sm font-semibold text-[var(--ui-text-strong)]">
-            Tidak sync otomatis
+            Audit trail aktif
           </strong>
         </div>
       </div>
@@ -211,6 +232,7 @@ function formatPaymentMethod(method) {
 }
 
 function formatSource(entry) {
+  if (!entry) return 'Manual';
   const typeMap = {
     adjustment: 'Penyesuaian',
     billing: 'Billing',
@@ -256,12 +278,17 @@ function LedgerEmptyState({ hasEntries }) {
 export function BookkeepingAdmin() {
   const adminContext = useOutletContext() || {};
   const {
+    adminUser = null,
     billingLoadError = '',
     billingTransactions = [],
     isBillingReady = false,
     bookkeepingEntries = [],
     isBookkeepingReady = false,
     bookkeepingLoadError = '',
+    createBookkeepingEntry,
+    updateBookkeepingEntry,
+    deleteBookkeepingEntry,
+    recordBookkeepingAuditLog,
   } = adminContext;
 
   const [searchTerm, setSearchTerm] = useState('');
@@ -269,6 +296,21 @@ export function BookkeepingAdmin() {
   const [typeFilter, setTypeFilter] = useState('all');
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [accountFilter, setAccountFilter] = useState('all');
+
+  // Form states for the Drawer
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [selectedEntry, setSelectedEntry] = useState(null); // null means CREATE mode
+  const [formType, setFormType] = useState('income');
+  const [formDate, setFormDate] = useState(() => new Date().toISOString().slice(0, 10));
+  const [formCategory, setFormCategory] = useState('studio_rent');
+  const [formAccount, setFormAccount] = useState('cash');
+  const [formTargetAccount, setFormTargetAccount] = useState('transfer');
+  const [formPaymentMethod, setFormPaymentMethod] = useState('cash');
+  const [formAmount, setFormAmount] = useState('');
+  const [formDescription, setFormDescription] = useState('');
+  const [formNotes, setFormNotes] = useState('');
+  const [validationError, setValidationError] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
 
   const billingSnapshot = useMemo(
     () => getBillingSnapshot(billingTransactions),
@@ -311,6 +353,192 @@ export function BookkeepingAdmin() {
       ...Array.from(accountsMap.entries()).map(([key, label]) => ({ key, label })),
     ];
   }, [bookkeepingEntries]);
+
+  const categoryOptions = useMemo(() => {
+    if (formType === 'income') return incomeCategories;
+    if (formType === 'expense') return expenseCategories;
+    return transferCategories;
+  }, [formType]);
+
+  const isReadOnly = useMemo(() => {
+    return selectedEntry && selectedEntry.sourceType !== 'manual';
+  }, [selectedEntry]);
+
+  const handleTypeChange = (newType) => {
+    setFormType(newType);
+    if (newType === 'income') {
+      setFormCategory('studio_rent');
+      setFormPaymentMethod('cash');
+    } else if (newType === 'expense') {
+      setFormCategory('maintenance');
+      setFormPaymentMethod('cash');
+    } else {
+      setFormCategory('transfer');
+      setFormPaymentMethod('transfer');
+    }
+  };
+
+  const handleAddNew = () => {
+    setSelectedEntry(null);
+    setFormType('income');
+    setFormDate(new Date().toISOString().slice(0, 10));
+    setFormCategory('studio_rent');
+    setFormAccount('cash');
+    setFormTargetAccount('transfer');
+    setFormPaymentMethod('cash');
+    setFormAmount('');
+    setFormDescription('');
+    setFormNotes('');
+    setValidationError('');
+    setIsDrawerOpen(true);
+  };
+
+  const handleRowClick = (entry) => {
+    setSelectedEntry(entry);
+    setFormType(entry.type);
+    setFormDate(entry.date);
+    setFormCategory(entry.categoryId);
+    setFormAccount(entry.accountId);
+    setFormPaymentMethod(entry.paymentMethod);
+    setFormAmount(String(entry.amount));
+    setFormDescription(entry.description);
+
+    const targetMatch = entry.notes.match(/Target Account: (.*)/);
+    if (targetMatch && targetMatch[1]) {
+      const matchKey = standardAccounts.find((a) => a.label === targetMatch[1])?.key || 'transfer';
+      setFormTargetAccount(matchKey);
+      setFormNotes(entry.notes.replace(/\nTarget Account: .*/, ''));
+    } else {
+      setFormTargetAccount('transfer');
+      setFormNotes(entry.notes);
+    }
+
+    setValidationError('');
+    setIsDrawerOpen(true);
+  };
+
+  const handleSave = async () => {
+    if (isSaving || isReadOnly) return;
+
+    const amountVal = Number(formAmount);
+    if (!formDescription.trim() && formType !== 'transfer') {
+      setValidationError('Deskripsi wajib diisi.');
+      return;
+    }
+    if (Number.isNaN(amountVal) || amountVal <= 0) {
+      setValidationError('Nominal harus berupa angka dan lebih besar dari 0.');
+      return;
+    }
+    if (formType === 'transfer' && formAccount === formTargetAccount) {
+      setValidationError('Akun asal dan akun tujuan tidak boleh sama.');
+      return;
+    }
+
+    setIsSaving(true);
+    setValidationError('');
+
+    try {
+      const categoryName = categoryOptions.find((c) => c.key === formCategory)?.label || 'Lain-lain';
+      const accountName = standardAccounts.find((a) => a.key === formAccount)?.label || 'Cash';
+      const targetAccountName = standardAccounts.find((a) => a.key === formTargetAccount)?.label || 'Bank Transfer';
+
+      let direction = 'in';
+      if (formType === 'expense') direction = 'out';
+      else if (formType === 'transfer') direction = 'neutral';
+
+      const actor = {
+        displayName: adminUser?.displayName || adminUser?.email || 'Admin',
+        email: adminUser?.email || '',
+        uid: adminUser?.uid || '',
+      };
+
+      const entryId = selectedEntry ? selectedEntry.id : 'bookkeeping-' + Date.now();
+      const defaultDesc = formType === 'transfer' ? `Transfer: ${accountName} -> ${targetAccountName}` : 'Transaksi manual';
+      const notesClean = formNotes.trim();
+      const notesPayload = formType === 'transfer' ? `${notesClean}\nTarget Account: ${targetAccountName}` : notesClean;
+
+      const payload = {
+        amount: amountVal,
+        categoryId: formCategory,
+        categoryName,
+        createdAt: selectedEntry ? selectedEntry.createdAt : new Date().toISOString(),
+        createdBy: selectedEntry ? selectedEntry.createdBy : actor,
+        date: formDate,
+        description: formDescription.trim() || defaultDesc,
+        direction,
+        id: entryId,
+        notes: notesPayload,
+        paymentMethod: formPaymentMethod,
+        sourceId: '',
+        sourceLabel: '',
+        sourceType: 'manual',
+        studioId: 'main-studio',
+        transactionAt: new Date(formDate).toISOString(),
+        type: formType,
+        updatedAt: new Date().toISOString(),
+        updatedBy: actor,
+        accountId: formAccount,
+        accountName,
+      };
+
+      if (selectedEntry) {
+        await updateBookkeepingEntry(payload);
+        await recordBookkeepingAuditLog({
+          action: 'bookkeeping.update',
+          entryId,
+          entrySnapshot: payload,
+          by: actor,
+        });
+      } else {
+        await createBookkeepingEntry(payload);
+        await recordBookkeepingAuditLog({
+          action: 'bookkeeping.create',
+          entryId,
+          entrySnapshot: payload,
+          by: actor,
+        });
+      }
+
+      setIsDrawerOpen(false);
+    } catch (error) {
+      console.error(error);
+      setValidationError('Gagal menyimpan catatan keuangan.');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (isSaving || isReadOnly || !selectedEntry) return;
+
+    if (window.confirm('Apakah Anda yakin ingin menghapus catatan pembukuan ini?')) {
+      setIsSaving(true);
+      setValidationError('');
+
+      try {
+        const actor = {
+          displayName: adminUser?.displayName || adminUser?.email || 'Admin',
+          email: adminUser?.email || '',
+          uid: adminUser?.uid || '',
+        };
+
+        await deleteBookkeepingEntry(selectedEntry.id);
+        await recordBookkeepingAuditLog({
+          action: 'bookkeeping.delete',
+          entryId: selectedEntry.id,
+          entrySnapshot: selectedEntry,
+          by: actor,
+        });
+
+        setIsDrawerOpen(false);
+      } catch (error) {
+        console.error(error);
+        setValidationError('Gagal menghapus catatan keuangan.');
+      } finally {
+        setIsSaving(false);
+      }
+    }
+  };
 
   const filteredEntries = useMemo(() => {
     const normalizedQuery = searchTerm.trim().toLowerCase();
@@ -504,7 +732,7 @@ export function BookkeepingAdmin() {
         />
       </section>
 
-      <AdminCommandBar className="bookkeeping-command-bar gap-2 p-2 lg:grid-cols-[minmax(0,1fr)_auto_auto_auto_auto] lg:items-center">
+      <AdminCommandBar className="bookkeeping-command-bar gap-2 p-2 lg:grid-cols-[minmax(0,1fr)_auto_auto_auto_auto_auto] lg:items-center">
         <label className="flex min-h-11 items-center gap-2 rounded-full border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 ring-1 ring-[var(--ui-ring)] focus-within:border-studio-accent/55 focus-within:ring-4 focus-within:ring-studio-accent/20">
           <Search className="shrink-0 text-[var(--ui-text-muted)]" size={15} strokeWidth={2.35} aria-hidden="true" />
           <input
@@ -569,6 +797,14 @@ export function BookkeepingAdmin() {
           value={accountFilter}
           onChange={setAccountFilter}
         />
+
+        <AdminButton
+          icon={CircleDollarSign}
+          variant="primary"
+          onClick={handleAddNew}
+        >
+          Tambah catatan
+        </AdminButton>
       </AdminCommandBar>
 
       {entriesWithRunningBalance.length > 0 ? (
@@ -591,8 +827,9 @@ export function BookkeepingAdmin() {
             <tbody>
               {entriesWithRunningBalance.map((entry) => (
                 <tr
-                  className="border-b border-[var(--ui-border)] hover:bg-[var(--ui-control)]"
+                  className="border-b border-[var(--ui-border)] hover:bg-[var(--ui-control)] cursor-pointer"
                   key={entry.id}
+                  onClick={() => handleRowClick(entry)}
                 >
                   <td className="p-3.5 font-medium whitespace-nowrap">
                     {formatBookkeepingDateTime(entry)}
@@ -632,6 +869,210 @@ export function BookkeepingAdmin() {
       ) : (
         <LedgerEmptyState hasEntries={bookkeepingEntries.length > 0} />
       )}
+
+      <AdminDrawer
+        actions={(
+          <>
+            {!isReadOnly && selectedEntry ? (
+              <AdminButton
+                disabled={isSaving}
+                size="sm"
+                variant="danger"
+                onClick={handleDelete}
+              >
+                Hapus Catatan
+              </AdminButton>
+            ) : null}
+
+            <AdminButton
+              disabled={isSaving}
+              size="sm"
+              variant="secondary"
+              onClick={() => setIsDrawerOpen(false)}
+            >
+              Batal
+            </AdminButton>
+
+            {!isReadOnly ? (
+              <AdminButton
+                disabled={isSaving}
+                size="sm"
+                variant="primary"
+                onClick={handleSave}
+              >
+                {isSaving ? 'Menyimpan...' : 'Simpan'}
+              </AdminButton>
+            ) : (
+              <AdminButton
+                size="sm"
+                variant="primary"
+                onClick={() => setIsDrawerOpen(false)}
+              >
+                Tutup
+              </AdminButton>
+            )}
+          </>
+        )}
+        description={selectedEntry ? `${selectedEntry.id} • ${formatSource(selectedEntry)}` : 'Catat transaksi kas masuk, keluar, atau transfer internal.'}
+        isOpen={isDrawerOpen}
+        title={selectedEntry ? (isReadOnly ? 'Detail Transaksi' : 'Edit Transaksi') : 'Tambah Catatan Kas'}
+        widthClass="max-w-xl"
+        onClose={() => setIsDrawerOpen(false)}
+      >
+        <div className="grid gap-4">
+          {isReadOnly ? (
+            <div className="rounded-[1.15rem] border border-studio-purple/32 bg-studio-purple/10 p-3.5 text-xs font-semibold leading-5 text-[var(--ui-text-strong)] ring-1 ring-studio-purple/14">
+              Catatan otomatis dari {formatSource(selectedEntry)} bersifat read-only dan tidak dapat dimodifikasi di Pembukuan.
+            </div>
+          ) : null}
+
+          {validationError ? (
+            <div className="rounded-[1.15rem] border border-studio-accent/32 bg-studio-accent/10 p-3.5 text-xs font-semibold leading-5 text-studio-accent ring-1 ring-studio-accent/14">
+              {validationError}
+            </div>
+          ) : null}
+
+          <div className="grid gap-3 sm:grid-cols-2">
+            <label className="grid gap-1.5 text-xs font-semibold text-[var(--ui-text-muted)] uppercase tracking-[0.12em]">
+              Tipe Transaksi
+              <select
+                disabled={isReadOnly || selectedEntry !== null}
+                className="min-h-11 rounded-[1.15rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 text-sm font-semibold text-[var(--ui-text-strong)] outline-none ring-1 ring-[var(--ui-ring)] transition disabled:opacity-60 focus:border-studio-accent/55"
+                value={formType}
+                onChange={(e) => handleTypeChange(e.target.value)}
+              >
+                <option value="income">Pemasukan (Income)</option>
+                <option value="expense">Pengeluaran (Expense)</option>
+                <option value="transfer">Transfer Internal</option>
+              </select>
+            </label>
+
+            <label className="grid gap-1.5 text-xs font-semibold text-[var(--ui-text-muted)] uppercase tracking-[0.12em]">
+              Tanggal
+              <input
+                disabled={isReadOnly}
+                className="min-h-11 rounded-[1.15rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 text-sm font-semibold text-[var(--ui-text-strong)] outline-none ring-1 ring-[var(--ui-ring)] transition disabled:opacity-60 focus:border-studio-accent/55"
+                type="date"
+                value={formDate}
+                onChange={(e) => setFormDate(e.target.value)}
+              />
+            </label>
+          </div>
+
+          <div className="grid gap-3 sm:grid-cols-2">
+            <label className="grid gap-1.5 text-xs font-semibold text-[var(--ui-text-muted)] uppercase tracking-[0.12em]">
+              Kategori
+              <select
+                disabled={isReadOnly || formType === 'transfer'}
+                className="min-h-11 rounded-[1.15rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 text-sm font-semibold text-[var(--ui-text-strong)] outline-none ring-1 ring-[var(--ui-ring)] transition disabled:opacity-60 focus:border-studio-accent/55"
+                value={formCategory}
+                onChange={(e) => setFormCategory(e.target.value)}
+              >
+                {categoryOptions.map((opt) => (
+                  <option key={opt.key} value={opt.key}>{opt.label}</option>
+                ))}
+              </select>
+            </label>
+
+            <label className="grid gap-1.5 text-xs font-semibold text-[var(--ui-text-muted)] uppercase tracking-[0.12em]">
+              Metode Pembayaran
+              <select
+                disabled={isReadOnly || formType === 'transfer'}
+                className="min-h-11 rounded-[1.15rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 text-sm font-semibold text-[var(--ui-text-strong)] outline-none ring-1 ring-[var(--ui-ring)] transition disabled:opacity-60 focus:border-studio-accent/55"
+                value={formPaymentMethod}
+                onChange={(e) => setFormPaymentMethod(e.target.value)}
+              >
+                {standardAccounts.filter((a) => a.key !== 'all').map((opt) => (
+                  <option key={opt.key} value={opt.key}>{opt.label}</option>
+                ))}
+              </select>
+            </label>
+          </div>
+
+          <div className="grid gap-3 sm:grid-cols-2">
+            <label className="grid gap-1.5 text-xs font-semibold text-[var(--ui-text-muted)] uppercase tracking-[0.12em]">
+              {formType === 'transfer' ? 'Akun Asal (From)' : 'Akun Kas'}
+              <select
+                disabled={isReadOnly}
+                className="min-h-11 rounded-[1.15rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 text-sm font-semibold text-[var(--ui-text-strong)] outline-none ring-1 ring-[var(--ui-ring)] transition disabled:opacity-60 focus:border-studio-accent/55"
+                value={formAccount}
+                onChange={(e) => setFormAccount(e.target.value)}
+              >
+                {standardAccounts.filter((a) => a.key !== 'all').map((opt) => (
+                  <option key={opt.key} value={opt.key}>{opt.label}</option>
+                ))}
+              </select>
+            </label>
+
+            {formType === 'transfer' ? (
+              <label className="grid gap-1.5 text-xs font-semibold text-[var(--ui-text-muted)] uppercase tracking-[0.12em]">
+                Akun Tujuan (To)
+                <select
+                  disabled={isReadOnly}
+                  className="min-h-11 rounded-[1.15rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 text-sm font-semibold text-[var(--ui-text-strong)] outline-none ring-1 ring-[var(--ui-ring)] transition disabled:opacity-60 focus:border-studio-accent/55"
+                  value={formTargetAccount}
+                  onChange={(e) => setFormTargetAccount(e.target.value)}
+                >
+                  {standardAccounts.filter((a) => a.key !== 'all').map((opt) => (
+                    <option key={opt.key} value={opt.key}>{opt.label}</option>
+                  ))}
+                </select>
+              </label>
+            ) : (
+              <label className="grid gap-1.5 text-xs font-semibold text-[var(--ui-text-muted)] uppercase tracking-[0.12em]">
+                Nominal (IDR)
+                <input
+                  disabled={isReadOnly}
+                  className="min-h-11 rounded-[1.15rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 text-sm font-semibold text-[var(--ui-text-strong)] outline-none ring-1 ring-[var(--ui-ring)] transition disabled:opacity-60 focus:border-studio-accent/55 placeholder:text-[var(--ui-text-soft)]"
+                  placeholder="Contoh: 150000"
+                  type="number"
+                  min="1"
+                  value={formAmount}
+                  onChange={(e) => setFormAmount(e.target.value)}
+                />
+              </label>
+            )}
+          </div>
+
+          {formType === 'transfer' ? (
+            <label className="grid gap-1.5 text-xs font-semibold text-[var(--ui-text-muted)] uppercase tracking-[0.12em]">
+              Nominal Transfer (IDR)
+              <input
+                disabled={isReadOnly}
+                className="min-h-11 rounded-[1.15rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 text-sm font-semibold text-[var(--ui-text-strong)] outline-none ring-1 ring-[var(--ui-ring)] transition disabled:opacity-60 focus:border-studio-accent/55 placeholder:text-[var(--ui-text-soft)]"
+                placeholder="Contoh: 150000"
+                type="number"
+                min="1"
+                value={formAmount}
+                onChange={(e) => setFormAmount(e.target.value)}
+              />
+            </label>
+          ) : null}
+
+          <label className="grid gap-1.5 text-xs font-semibold text-[var(--ui-text-muted)] uppercase tracking-[0.12em]">
+            Deskripsi
+            <input
+              disabled={isReadOnly}
+              className="min-h-11 rounded-[1.15rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 text-sm font-semibold text-[var(--ui-text-strong)] outline-none ring-1 ring-[var(--ui-ring)] transition disabled:opacity-60 focus:border-studio-accent/55 placeholder:text-[var(--ui-text-soft)]"
+              placeholder={formType === 'transfer' ? 'Misal: Pemindahan kas bulanan' : 'Misal: Pembayaran Listrik bulanan'}
+              type="text"
+              value={formDescription}
+              onChange={(e) => setFormDescription(e.target.value)}
+            />
+          </label>
+
+          <label className="grid gap-1.5 text-xs font-semibold text-[var(--ui-text-muted)] uppercase tracking-[0.12em]">
+            Catatan Tambahan
+            <textarea
+              disabled={isReadOnly}
+              className="min-h-20 resize-none rounded-[1.15rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 py-2 text-sm font-semibold text-[var(--ui-text-strong)] outline-none ring-1 ring-[var(--ui-ring)] transition disabled:opacity-60 focus:border-studio-accent/55 placeholder:text-[var(--ui-text-soft)]"
+              placeholder="Tambahkan informasi pelengkap..."
+              value={formNotes}
+              onChange={(e) => setFormNotes(e.target.value)}
+            />
+          </label>
+        </div>
+      </AdminDrawer>
 
       <BookkeepingComingSoonPanel />
     </AdminPageShell>

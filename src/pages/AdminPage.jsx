@@ -823,6 +823,14 @@ export function AdminPage() {
           console.error('Failed to record bookkeeping audit log.', error);
         }
       },
+      deleteBookkeepingEntry: async (entryId) => {
+        try {
+          return await adminBookkeepingRepository.deleteBookkeepingEntry(entryId);
+        } catch (error) {
+          console.error('Failed to delete bookkeeping entry.', error);
+          throw error;
+        }
+      },
     }),
     [
       activeItem,
