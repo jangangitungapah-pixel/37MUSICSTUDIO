@@ -18,6 +18,14 @@ import {
   UserRound,
 } from 'lucide-react';
 import { cn } from '../lib/cn.js';
+import {
+  AdminBadge,
+  AdminButton,
+  AdminCommandBar,
+  AdminPageHeader,
+  AdminPageShell,
+  AdminPanel,
+} from '../components/admin/AdminPrimitives.jsx';
 import { adminBookingRepository } from '../services/adminBookingRepository.js';
 
 const actionFilters = [
@@ -200,17 +208,20 @@ function AuditMetric({
   helper,
   icon: Icon,
   label,
+  tone = 'neutral',
   value,
 }) {
   return (
-    <div className="grid gap-2 rounded-[1.35rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-4 ring-1 ring-[var(--ui-ring)]">
+    <AdminPanel className="grid gap-2 p-4" variant="flat">
       <div className="flex items-center justify-between gap-3">
         <span className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--ui-text-muted)]">
           {label}
         </span>
 
         {Icon ? (
-          <Icon className="text-studio-accent" size={17} strokeWidth={2.35} aria-hidden="true" />
+          <AdminBadge className="size-8 justify-center px-0" icon={Icon} tone={tone}>
+            <span className="sr-only">{label}</span>
+          </AdminBadge>
         ) : null}
       </div>
 
@@ -221,7 +232,7 @@ function AuditMetric({
       <span className="text-xs font-medium leading-5 text-[var(--ui-text-muted)]">
         {helper}
       </span>
-    </div>
+    </AdminPanel>
   );
 }
 
@@ -232,8 +243,8 @@ function AuditToolbar({
   searchQuery,
 }) {
   return (
-    <div className="grid gap-3 rounded-[1.5rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-3 ring-1 ring-[var(--ui-ring)] md:grid-cols-[minmax(0,1fr)_auto] md:items-center">
-      <label className="flex min-h-12 items-center gap-3 rounded-[1.2rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] focus-within:border-studio-accent/55 focus-within:ring-4 focus-within:ring-studio-accent/20">
+    <AdminCommandBar className="audit-toolbar gap-3 p-3 md:grid-cols-[minmax(0,1fr)_auto] md:items-center">
+      <label className="flex min-h-11 items-center gap-3 rounded-full border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] focus-within:border-studio-accent/55 focus-within:ring-4 focus-within:ring-studio-accent/20">
         <Search className="shrink-0 text-[var(--ui-text-muted)]" size={17} strokeWidth={2.35} aria-hidden="true" />
         <span className="sr-only">Cari audit log</span>
         <input
@@ -245,7 +256,7 @@ function AuditToolbar({
         />
       </label>
 
-      <div className="flex flex-wrap gap-2">
+      <div className="flex min-w-0 flex-wrap gap-1.5">
         {actionFilters.map((item) => {
           const isActive = actionFilter === item.key;
 
@@ -253,7 +264,7 @@ function AuditToolbar({
             <button
               aria-pressed={isActive}
               className={cn(
-                'min-h-10 rounded-full border px-4 text-xs font-semibold uppercase tracking-[0.12em] ring-1 transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20',
+                'min-h-9 rounded-full border px-3 text-xs font-semibold uppercase tracking-[0.12em] ring-1 transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20',
                 isActive
                   ? 'border-studio-accent/35 bg-studio-accent/10 text-studio-accent ring-studio-accent/15'
                   : 'border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] text-[var(--ui-secondary-text)] ring-[var(--ui-ring)] hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)]',
@@ -267,7 +278,7 @@ function AuditToolbar({
           );
         })}
       </div>
-    </div>
+    </AdminCommandBar>
   );
 }
 
@@ -281,7 +292,7 @@ function AuditLogCard({
   const customerQuery = encodeURIComponent(customer);
 
   return (
-    <article className="grid gap-4 rounded-[1.5rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-4 ring-1 ring-[var(--ui-ring)] sm:p-5">
+    <AdminPanel as="article" className="audit-log-card grid gap-4 p-4 sm:p-5" variant="default">
       <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_auto] md:items-start">
         <div className="grid min-w-0 gap-2">
           <div className="flex flex-wrap items-center gap-2">
@@ -289,10 +300,9 @@ function AuditLogCard({
               {log.label || log.action}
             </span>
 
-            <span className="inline-flex min-h-8 items-center gap-1.5 rounded-full border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 text-xs font-semibold text-[var(--ui-text-main)] ring-1 ring-[var(--ui-ring)]">
-              <Clock3 size={13} strokeWidth={2.35} aria-hidden="true" />
+            <AdminBadge icon={Clock3} tone="neutral">
               {formatAuditTimestamp(log.at)}
-            </span>
+            </AdminBadge>
           </div>
 
           <h2 className="m-0 truncate text-2xl font-semibold leading-tight tracking-[-0.055em] text-[var(--ui-text-strong)] sm:text-3xl">
@@ -304,13 +314,15 @@ function AuditLogCard({
           </p>
         </div>
 
-        <Link
-          className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full [background:var(--ui-primary-bg)] px-4 text-sm font-semibold text-[var(--ui-primary-text)] shadow-[var(--ui-shadow-soft)] transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
+        <AdminButton
+          as={Link}
+          className="w-fit"
+          icon={ArrowUpRight}
           to={'/admin/bookings?customer=' + customerQuery}
+          variant="primary"
         >
           Board
-          <ArrowUpRight size={15} strokeWidth={2.35} aria-hidden="true" />
-        </Link>
+        </AdminButton>
       </div>
 
       <div className="grid gap-2 border-y border-[var(--ui-border)] py-3 sm:grid-cols-3">
@@ -351,7 +363,7 @@ function AuditLogCard({
           Source: {log.source || 'admin'} • Studio: {log.studioId || 'main-studio'}
         </span>
       </div>
-    </article>
+    </AdminPanel>
   );
 }
 
@@ -359,7 +371,7 @@ function AuditEmptyState({
   hasLogs,
 }) {
   return (
-    <div className="grid min-h-[20rem] place-items-center rounded-[1.75rem] border border-dashed border-[var(--ui-border-strong)] bg-[var(--ui-glass-soft)] p-6 text-center ring-1 ring-[var(--ui-ring)]">
+    <AdminPanel className="grid min-h-[20rem] place-items-center border-dashed p-6 text-center" variant="flat">
       <div className="grid max-w-md gap-3">
         <span className="mx-auto grid size-12 place-items-center rounded-full border border-[var(--ui-border)] bg-[var(--ui-control)] text-studio-accent ring-1 ring-[var(--ui-ring)]">
           <History size={20} strokeWidth={2.35} aria-hidden="true" />
@@ -375,7 +387,7 @@ function AuditEmptyState({
             : 'Activity create/edit/paid dibaca dari auditTrail booking aktif. Log delete dibaca dari bookingAuditLogs karena booking-nya sudah dihapus.'}
         </p>
       </div>
-    </div>
+    </AdminPanel>
   );
 }
 
@@ -455,44 +467,42 @@ export function AuditAdmin() {
   }, [auditLogs]);
 
   return (
-    <section className="grid gap-4 pb-[calc(7rem+env(safe-area-inset-bottom))] pt-1 md:pb-4 md:pt-2" aria-labelledby="audit-admin-title">
-      <div className="grid gap-4 rounded-[1.75rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-4 ring-1 ring-[var(--ui-ring)] sm:p-5">
-        <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
-          <div className="grid gap-2">
-            <span className="inline-flex w-fit items-center gap-2 rounded-full border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.16em] text-studio-accent ring-1 ring-[var(--ui-ring)]">
-              <History size={14} strokeWidth={2.35} aria-hidden="true" />
-              Audit viewer
-            </span>
+    <AdminPageShell className="audit-admin-workspace gap-4 pb-[calc(7rem+env(safe-area-inset-bottom))] pt-1 md:pb-4 md:pt-2" width="wide">
 
-            <h1
-              className="m-0 text-[clamp(2.6rem,6vw,5.75rem)] font-semibold leading-[0.94] tracking-[-0.078em] text-[var(--ui-text-strong)]"
-              id="audit-admin-title"
-            >
-              Booking activity.
-            </h1>
-
-            <p className="m-0 max-w-2xl text-sm leading-6 text-[var(--ui-text-muted)]">
-              Monitor aktivitas booking dari auditTrail booking aktif dan bookingAuditLogs. Login aktif: {adminUser?.email || 'admin'}.
-            </p>
-          </div>
-
-          <Link
-            className="inline-flex min-h-11 items-center justify-center rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] px-5 text-sm font-semibold text-[var(--ui-secondary-text)] shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
+      <AdminPageHeader
+        actions={(
+          <AdminButton
+            as={Link}
+            icon={ArrowUpRight}
             to="/admin/bookings"
+            variant="secondary"
           >
             Kembali ke booking
-          </Link>
-        </div>
+          </AdminButton>
+        )}
+        description={`Monitor aktivitas booking dari auditTrail booking aktif dan bookingAuditLogs. Login aktif: ${adminUser?.email || 'admin'}.`}
+        eyebrow="Audit viewer"
+        meta={(
+          <>
+            <AdminBadge icon={History} tone="strong">
+              {auditLogs.length} total logs
+            </AdminBadge>
+            <AdminBadge icon={Search} tone="neutral">
+              {filteredLogs.length} visible
+            </AdminBadge>
+          </>
+        )}
+        title="Booking activity"
+      />
 
-        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-          <AuditMetric icon={ReceiptText} label="Create" value={metrics.create} helper="Booking dibuat" />
-          <AuditMetric icon={History} label="Edit" value={metrics.edit} helper="Booking diperbarui" />
-          <AuditMetric icon={ShieldCheck} label="Paid" value={metrics.paid} helper="Ditandai lunas" />
-          <AuditMetric icon={CalendarDays} label="Delete" value={metrics.delete} helper="Log penghapusan" />
-        </div>
-      </div>
+      <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4" aria-label="Audit summary">
+        <AuditMetric icon={ReceiptText} label="Create" value={metrics.create} helper="Booking dibuat" tone="cyan" />
+        <AuditMetric icon={History} label="Edit" value={metrics.edit} helper="Booking diperbarui" tone="purple" />
+        <AuditMetric icon={ShieldCheck} label="Paid" value={metrics.paid} helper="Ditandai lunas" tone="cyan" />
+        <AuditMetric icon={CalendarDays} label="Delete" value={metrics.delete} helper="Log penghapusan" tone="accent" />
+      </section>
 
-      <AuditToolbar
+<AuditToolbar
         actionFilter={actionFilter}
         searchQuery={searchQuery}
         onActionFilterChange={setActionFilter}
@@ -525,6 +535,6 @@ export function AuditAdmin() {
       ) : (
         <AuditEmptyState hasLogs={auditLogs.length > 0} />
       )}
-    </section>
+    </AdminPageShell>
   );
 }
