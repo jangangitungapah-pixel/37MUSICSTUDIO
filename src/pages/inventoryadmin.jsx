@@ -22,6 +22,8 @@ import {
   X,
   Download,
   Printer,
+  ChevronDown,
+  ListFilter,
 } from 'lucide-react';
 import { cn } from '../lib/cn.js';
 import { adminInventoryRepository } from '../services/adminInventoryRepository.js';
@@ -728,6 +730,109 @@ function InventoryStatusBadge({ status }) {
   );
 }
 
+function InventoryDropdown({
+  buttonClassName = '',
+  icon: Icon,
+  label,
+  labelClassName = '',
+  options,
+  value,
+  onChange,
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+  const safeOptions = Array.isArray(options) ? options : [];
+  const selectedOption = safeOptions.find((item) => item.key === value) || safeOptions[0] || {
+    key: '',
+    label: 'Select',
+  };
+
+  const handleSelect = (nextValue) => {
+    onChange(nextValue);
+    setIsOpen(false);
+  };
+
+  return (
+    <label
+      className={cn('relative grid min-w-0 gap-1.5 text-sm font-semibold text-[var(--ui-text-main)]', labelClassName)}
+      onBlur={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget)) {
+          setIsOpen(false);
+        }
+      }}
+    >
+      {label ? (
+        <span className="text-[0.68rem] uppercase tracking-[0.12em] text-[var(--ui-text-muted)]">
+          {label}
+        </span>
+      ) : null}
+
+      <button
+        aria-expanded={isOpen}
+        aria-haspopup="listbox"
+        className={cn(
+          'flex min-h-11 w-full min-w-0 items-center gap-3 rounded-[1.15rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 text-left text-sm font-semibold text-[var(--ui-text-strong)] ring-1 ring-[var(--ui-ring)] transition hover:bg-[var(--ui-control-hover)] focus-visible:border-studio-accent/55 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20',
+          buttonClassName,
+        )}
+        type="button"
+        onClick={() => setIsOpen((currentOpen) => !currentOpen)}
+      >
+        {Icon ? (
+          <Icon className="shrink-0 text-[var(--ui-text-muted)]" size={16} strokeWidth={2.35} aria-hidden="true" />
+        ) : null}
+
+        <span className="min-w-0 flex-1 truncate">
+          {selectedOption.label}
+        </span>
+
+        <ChevronDown
+          className={cn(
+            'shrink-0 text-[var(--ui-text-muted)] transition-transform',
+            isOpen ? 'rotate-180' : '',
+          )}
+          size={16}
+          strokeWidth={2.35}
+          aria-hidden="true"
+        />
+      </button>
+
+      {isOpen ? (
+        <div
+          className="absolute left-0 right-0 top-[calc(100%+0.5rem)] z-[80] max-h-64 overflow-auto rounded-[1.25rem] border border-[var(--ui-border-strong)] bg-[var(--ui-bg-base)] p-1.5 shadow-[var(--ui-shadow-soft)] ring-1 ring-[var(--ui-ring)] backdrop-blur-2xl"
+          role="listbox"
+        >
+          {safeOptions.map((option) => {
+            const isSelected = option.key === selectedOption.key;
+
+            return (
+              <button
+                aria-selected={isSelected}
+                className={cn(
+                  'flex min-h-10 w-full items-center justify-between gap-3 rounded-2xl px-3 text-left text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20',
+                  isSelected
+                    ? 'bg-[var(--ui-control-hover)] text-studio-accent'
+                    : 'text-[var(--ui-text-main)] hover:bg-[var(--ui-control)] hover:text-[var(--ui-text-strong)]',
+                )}
+                key={option.key}
+                role="option"
+                type="button"
+                onClick={() => handleSelect(option.key)}
+              >
+                <span className="truncate">
+                  {option.label}
+                </span>
+
+                {isSelected ? (
+                  <span className="size-2 rounded-full bg-studio-accent" aria-hidden="true" />
+                ) : null}
+              </button>
+            );
+          })}
+        </div>
+      ) : null}
+    </label>
+  );
+}
+
 function InventoryConditionBadge({ condition }) {
   const normalizedCondition = normalizeInventoryCondition(condition);
 
@@ -788,67 +893,49 @@ function InventoryToolbar({
   onSearchChange,
   onStatusChange,
 }) {
+  const categoryOptions = [
+    { key: 'all', label: 'Semua kategori' },
+    ...categories.map((category) => ({
+      key: category,
+      label: category,
+    })),
+  ];
+
   return (
-    <section className="grid gap-2 py-2 lg:grid-cols-[minmax(0,1fr)_auto_auto] lg:items-center">
-      <label className="flex min-h-10 items-center gap-3 rounded-full bg-[var(--ui-control)] px-3 text-[var(--ui-text-strong)] ring-1 ring-[var(--ui-ring)]">
-        <Search className="shrink-0 text-[var(--ui-text-soft)]" size={15} strokeWidth={2.35} aria-hidden="true" />
-        <input
-          className="min-h-8 w-full border-0 bg-transparent text-sm font-semibold outline-none placeholder:text-[var(--ui-text-soft)]"
-          placeholder="Cari asset, kategori, lokasi, kondisi..."
-          type="search"
-          value={searchTerm}
-          onChange={(event) => onSearchChange(event.target.value)}
-        />
+    <section className="grid gap-2 py-2 xl:grid-cols-[minmax(0,1fr)_auto] xl:items-end">
+      <label className="grid min-w-0 gap-1.5 text-sm font-semibold text-[var(--ui-text-main)]">
+        <span className="sr-only">Cari inventory</span>
+        <span className="flex min-h-11 items-center gap-3 rounded-[1.15rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 ring-1 ring-[var(--ui-ring)] focus-within:border-studio-accent/55 focus-within:ring-4 focus-within:ring-studio-accent/20">
+          <Search className="shrink-0 text-[var(--ui-text-muted)]" size={16} strokeWidth={2.35} aria-hidden="true" />
+          <input
+            className="min-w-0 flex-1 border-0 bg-transparent text-sm font-semibold text-[var(--ui-text-strong)] outline-none placeholder:text-[var(--ui-text-soft)]"
+            placeholder="Cari asset, kategori, lokasi, kondisi..."
+            type="search"
+            value={searchTerm}
+            onChange={(event) => onSearchChange(event.target.value)}
+          />
+        </span>
       </label>
 
-      <div className="flex snap-x items-center gap-1.5 overflow-x-auto pb-1 lg:pb-0" aria-label="Inventory status filter">
-        {inventoryStatusFilters.map((item) => (
-          <button
-            className={cn(
-              'inline-flex min-h-8 shrink-0 items-center justify-center rounded-full px-3 text-[0.7rem] font-semibold transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20',
-              statusFilter === item.key
-                ? 'bg-studio-accent/10 text-studio-accent ring-1 ring-studio-accent/15'
-                : 'bg-transparent text-[var(--ui-text-muted)] hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)]',
-            )}
-            key={item.key}
-            type="button"
-            onClick={() => onStatusChange(item.key)}
-          >
-            {item.label}
-          </button>
-        ))}
-      </div>
+      <div className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_minmax(0,0.9fr)_auto_auto_auto] xl:min-w-[620px]">
+        <InventoryDropdown
+          icon={SlidersHorizontal}
+          label="Kategori"
+          options={categoryOptions}
+          value={categoryFilter}
+          onChange={onCategoryChange}
+        />
 
-      <div className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_minmax(0,0.82fr)_auto_auto_auto] lg:min-w-[560px]">
-        <label className="flex min-h-9 items-center gap-2 rounded-full bg-[var(--ui-control)] px-3 text-xs font-semibold text-[var(--ui-text-muted)] ring-1 ring-[var(--ui-ring)]">
-          <SlidersHorizontal size={14} strokeWidth={2.35} aria-hidden="true" />
-          <select
-            className="inventory-token-select w-full min-w-0 outline-none min-h-8 font-semibold"
-            value={categoryFilter}
-            onChange={(event) => onCategoryChange(event.target.value)}
-          >
-            <option value="all">Semua kategori</option>
-            {categories.map((category) => (
-              <option key={category} value={category}>{category}</option>
-            ))}
-          </select>
-        </label>
-
-        <label className="flex min-h-9 items-center gap-2 rounded-full bg-[var(--ui-control)] px-3 text-xs font-semibold text-[var(--ui-text-muted)] ring-1 ring-[var(--ui-ring)]">
-          <PackageCheck size={14} strokeWidth={2.35} aria-hidden="true" />
-          <select
-            className="inventory-token-select w-full min-w-0 outline-none min-h-8 font-semibold"
-            value={conditionFilter}
-            onChange={(event) => onConditionChange(event.target.value)}
-          >
-            {inventoryConditionFilters.map((condition) => (
-              <option key={condition.key} value={condition.key}>{condition.label}</option>
-            ))}
-          </select>
-        </label>
+        <InventoryDropdown
+          icon={PackageCheck}
+          label="Kondisi"
+          options={inventoryConditionFilters}
+          value={conditionFilter}
+          onChange={onConditionChange}
+        />
 
         <button
-          className="inline-flex min-h-9 items-center justify-center gap-2 rounded-full bg-[var(--ui-control)] px-3 text-xs font-semibold text-[var(--ui-text-muted)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
+          className="inline-flex min-h-11 items-center justify-center gap-2 self-end rounded-[1.15rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 text-xs font-semibold text-[var(--ui-text-muted)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
           type="button"
           onClick={onExportInventory}
         >
@@ -857,7 +944,7 @@ function InventoryToolbar({
         </button>
 
         <button
-          className="inline-flex min-h-9 items-center justify-center gap-2 rounded-full bg-[var(--ui-control)] px-3 text-xs font-semibold text-[var(--ui-text-muted)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
+          className="inline-flex min-h-11 items-center justify-center gap-2 self-end rounded-[1.15rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 text-xs font-semibold text-[var(--ui-text-muted)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
           type="button"
           onClick={onPrintInventory}
         >
@@ -866,7 +953,7 @@ function InventoryToolbar({
         </button>
 
         <button
-          className="inline-flex min-h-9 items-center justify-center gap-2 rounded-full [background:var(--ui-primary-bg)] px-4 text-sm font-semibold text-[var(--ui-primary-text)] shadow-[var(--ui-shadow-soft)] transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
+          className="inline-flex min-h-11 items-center justify-center gap-2 self-end rounded-[1.15rem] [background:var(--ui-primary-bg)] px-4 text-sm font-semibold text-[var(--ui-primary-text)] shadow-[var(--ui-shadow-soft)] transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
           type="button"
           onClick={onCreateAsset}
         >
@@ -875,9 +962,29 @@ function InventoryToolbar({
         </button>
       </div>
 
-      <span className="text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-[var(--ui-text-soft)] lg:col-span-3">
-        {resultCount} item
-      </span>
+      <div className="flex flex-wrap items-center gap-2 xl:col-span-2">
+        <span className="text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-[var(--ui-text-soft)]">
+          {resultCount} item
+        </span>
+
+        <div className="flex snap-x items-center gap-1.5 overflow-x-auto pb-1" aria-label="Inventory status filter">
+          {inventoryStatusFilters.map((item) => (
+            <button
+              className={cn(
+                'inline-flex min-h-8 shrink-0 items-center justify-center rounded-full px-3 text-[0.7rem] font-semibold transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20',
+                statusFilter === item.key
+                  ? 'bg-studio-accent/10 text-studio-accent ring-1 ring-studio-accent/15'
+                  : 'bg-transparent text-[var(--ui-text-muted)] hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)]',
+              )}
+              key={item.key}
+              type="button"
+              onClick={() => onStatusChange(item.key)}
+            >
+              {item.label}
+            </button>
+          ))}
+        </div>
+      </div>
     </section>
   );
 }
@@ -1089,28 +1196,14 @@ function InventoryFormField({
 }
 
 function InventoryConditionSelect({ onChange, value }) {
-  const conditionOptions = typeof inventoryConditionOptions !== 'undefined'
-    ? inventoryConditionOptions
-    : [
-      { key: 'Excellent', label: 'Excellent' },
-      { key: 'Good', label: 'Good' },
-      { key: 'Poor', label: 'Poor' },
-    ];
-  const normalizedValue = conditionOptions.some((option) => option.key === value) ? value : 'Good';
-
   return (
-    <label className="grid min-w-0 gap-1.5 text-sm font-semibold text-[var(--ui-text-main)]">
-      <span className="text-[0.68rem] uppercase tracking-[0.12em] text-[var(--ui-text-muted)]">Condition</span>
-      <select
-        className="inventory-token-select w-full min-w-0 outline-none min-h-11 rounded-xl -[var(--ui-)] px-3 text-sm font-semibold focus:-studio-accent/45"
-        value={normalizedValue}
-        onChange={(event) => onChange(event.target.value)}
-      >
-        {conditionOptions.map((option) => (
-          <option key={option.key} value={option.key}>{option.label}</option>
-        ))}
-      </select>
-    </label>
+    <InventoryDropdown
+      icon={PackageCheck}
+      label="Condition"
+      options={inventoryConditionOptions}
+      value={normalizeInventoryCondition(value)}
+      onChange={onChange}
+    />
   );
 }
 
@@ -1180,25 +1273,20 @@ function InventoryFormPanel({
             />
           </label>
 
-          <details className="min-w-0 rounded-2xl border border-[var(--ui-border)] bg-[var(--ui-control)] p-3 ring-1 ring-[var(--ui-ring)]">
+          <details className="min-w-0 overflow-visible rounded-2xl border border-[var(--ui-border)] bg-[var(--ui-control)] p-3 ring-1 ring-[var(--ui-ring)]">
             <summary className="cursor-pointer text-sm font-semibold text-[var(--ui-text-strong)]">
               Detail lanjutan
             </summary>
 
             <div className="mt-3 grid min-w-0 gap-3">
               <div className="grid min-w-0 gap-3 sm:grid-cols-2">
-                <label className="grid min-w-0 gap-1.5 text-sm font-semibold text-[var(--ui-text-main)]">
-                  <span className="text-[0.68rem] uppercase tracking-[0.12em] text-[var(--ui-text-muted)]">Status</span>
-                  <select
-                    className="inventory-token-select w-full min-w-0 outline-none min-h-11 rounded-xl -[var(--ui-)] px-3 text-sm font-semibold focus:-studio-accent/45"
-                    value={draft.status}
-                    onChange={(event) => onChange('status', event.target.value)}
-                  >
-                    {inventoryFormStatusOptions.map((option) => (
-                      <option key={option.key} value={option.key}>{option.label}</option>
-                    ))}
-                  </select>
-                </label>
+                <InventoryDropdown
+                  icon={ListFilter}
+                  label="Status"
+                  options={inventoryFormStatusOptions}
+                  value={draft.status}
+                  onChange={(value) => onChange('status', value)}
+                />
 
                 <InventoryConditionSelect value={draft.condition} onChange={(value) => onChange('condition', value)} />
               </div>
