@@ -1392,75 +1392,6 @@ function CustomerTagFilterStrip({
   );
 }
 
-function CustomerAttentionStrip({
-  activeFilter,
-  stats,
-  onFilterChange,
-}) {
-  const items = [
-    {
-      icon: UsersRound,
-      key: 'all',
-      label: 'All',
-      value: stats.total,
-    },
-    {
-      icon: AlertTriangle,
-      key: 'needsReview',
-      label: 'Review',
-      value: stats.needsReview,
-    },
-    {
-      icon: CreditCard,
-      key: 'unpaid',
-      label: 'Unpaid',
-      value: stats.unpaid,
-    },
-    {
-      icon: Phone,
-      key: 'missingPhone',
-      label: 'No HP',
-      value: stats.missingPhone,
-    },
-    {
-      icon: BadgeCheck,
-      key: 'clean',
-      label: 'Clean',
-      value: stats.clean,
-    },
-  ];
-
-  return (
-    <AdminPanel className="customer-attention-strip flex snap-x gap-1.5 overflow-x-auto p-2" aria-label="Customer attention filters" variant="flat">
-      {items.map((item) => {
-        const Icon = item.icon;
-        const isActive = activeFilter === item.key;
-
-        return (
-          <button
-            aria-pressed={isActive}
-            className={cn(
-              'inline-flex min-h-9 shrink-0 snap-start items-center gap-1.5 rounded-full border px-3 text-xs font-semibold ring-1 transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20',
-              isActive
-                ? 'border-studio-accent/45 bg-studio-accent/12 text-studio-accent ring-studio-accent/20'
-                : 'border-[var(--ui-border)] bg-[var(--ui-control)] text-[var(--ui-text-main)] ring-[var(--ui-ring)] hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)]',
-            )}
-            key={item.key}
-            type="button"
-            onClick={() => onFilterChange(item.key)}
-          >
-            <Icon size={13} strokeWidth={2.35} aria-hidden="true" />
-            <span>{item.label}</span>
-            <strong className="rounded-full bg-[var(--ui-glass-soft)] px-1.5 py-0.5 text-[0.68rem] leading-none text-[var(--ui-text-strong)]">
-              {item.value}
-            </strong>
-          </button>
-        );
-      })}
-    </AdminPanel>
-  );
-}
-
 function CustomerToolbar({
   resultCount,
   searchTerm,
@@ -3322,11 +3253,6 @@ export function CustomerAdmin() {
 
       <MetricStrip stats={stats} />
 
-      <CustomerAttentionStrip
-        activeFilter={statusFilter}
-        stats={qualityStats}
-        onFilterChange={setStatusFilter}
-      />
 
       <CustomerTagFilterStrip
         activeTagFilter={tagFilter}
