@@ -2334,117 +2334,37 @@
 }
 /* 37-booking-calendar-time-column-align:end */
 
-/* 37-booking-block-center:start */
+/* 37-booking-capsule-position-reset:start */
 @layer components {
-  .booking-block-card {
-    transform: translateX(-50%);
-    box-sizing: border-box;
+  .booking-calendar-grid .booking-block-card {
+    left: 0.5rem !important;
+    right: 0.5rem !important;
+    width: auto !important;
+    max-width: none !important;
+    transform: none !important;
+    translate: 0 0 !important;
+    box-sizing: border-box !important;
+  }
+
+  .booking-calendar-grid button[aria-label*="status pembayaran"] {
+    overflow: visible !important;
+    isolation: isolate;
   }
 
   @media (max-width: 767px) {
-    .booking-block-card {
-      width: calc(100% - 0.85rem) !important;
-      left: 50% !important;
-      right: auto !important;
-      transform: translateX(-50%) !important;
+    .booking-calendar-grid .booking-block-card {
+      left: 0.45rem !important;
+      right: 0.45rem !important;
+      top: 0.28rem !important;
+      z-index: 35 !important;
     }
   }
 
   @media (max-width: 420px) {
-    .booking-block-card {
-      width: calc(100% - 0.7rem) !important;
+    .booking-calendar-grid .booking-block-card {
+      left: 0.4rem !important;
+      right: 0.4rem !important;
     }
   }
 }
-/* 37-booking-block-center:end */
-
-/* 37-booking-block-sticky-overlap-hotfix:start */
-@layer components {
-  @media (max-width: 767px) {
-    .booking-time-corner-cell,
-    .booking-time-cell {
-      box-shadow: none !important;
-    }
-
-    .booking-time-corner-cell::after,
-    .booking-time-cell::after {
-      pointer-events: none;
-      content: "";
-      position: absolute;
-      inset-block: 0;
-      inset-inline-end: -1px;
-      width: 1px;
-      background: var(--ui-border);
-    }
-
-    .booking-block-card {
-      width: calc(100% - 1.05rem) !important;
-      left: 50% !important;
-      right: auto !important;
-      transform: translateX(-50%) !important;
-    }
-  }
-
-  @media (max-width: 420px) {
-    .booking-block-card {
-      width: calc(100% - 0.95rem) !important;
-    }
-  }
-}
-/* 37-booking-block-sticky-overlap-hotfix:end */
-
-/* 37-booking-first-day-card-offset-css:start */
-@layer components {
-  @media (max-width: 767px) {
-    .booking-time-corner-cell,
-    .booking-time-cell {
-      box-shadow: none !important;
-      z-index: 30 !important;
-    }
-
-    .booking-calendar-inner > .grid > button:nth-child(2) .booking-block-card {
-      left: calc(50% + 0.45rem) !important;
-      width: calc(100% - 1.15rem) !important;
-      transform: translateX(-50%) !important;
-    }
-
-    .booking-calendar-inner > .grid > button:nth-child(2) {
-      overflow: visible !important;
-    }
-  }
-
-  @media (max-width: 420px) {
-    .booking-calendar-inner > .grid > button:nth-child(2) .booking-block-card {
-      left: calc(50% + 0.55rem) !important;
-      width: calc(100% - 1.3rem) !important;
-    }
-  }
-}
-/* 37-booking-first-day-card-offset-css:end */
-
-/* 37-booking-mobile-disable-sticky-time-rail:start */
-@layer components {
-  @media (max-width: 767px) {
-    .booking-time-corner-cell,
-    .booking-time-cell {
-      position: relative !important;
-      left: auto !important;
-      z-index: 1 !important;
-      box-shadow: none !important;
-    }
-
-    .booking-time-corner-cell::after,
-    .booking-time-cell::after {
-      display: none !important;
-    }
-
-    .booking-calendar-inner .booking-block-card {
-      z-index: 5 !important;
-    }
-
-    .booking-calendar-inner > .grid {
-      isolation: isolate;
-    }
-  }
-}
-/* 37-booking-mobile-disable-sticky-time-rail:end */
+/* 37-booking-capsule-position-reset:end */

@@ -1342,7 +1342,7 @@ function CalendarCell({
         day.isWeekend ? solidSurfaces.gridCellWeekend : '',
         isSelected ? 'ring-2 ring-studio-accent/30 [background:color-mix(in_srgb,var(--ui-bg-base)_72%,var(--ui-control-hover))]' : '',
         isBookingSpan ? '[background:color-mix(in_srgb,var(--ui-bg-base)_80%,var(--ui-control))]' : '',
-        isBookingStart ? 'z-10' : 'z-0',
+        isBookingStart ? 'z-30' : 'z-0',
         !isBookingSpan ? 'hover:[background:color-mix(in_srgb,var(--ui-bg-base)_78%,var(--ui-control))]' : '',
       )}
       type="button"
@@ -1351,7 +1351,7 @@ function CalendarCell({
       {booking && isBookingStart ? (
         <span
           className={cn(
-            'booking-block-card pointer-events-none absolute left-1/2 top-1 z-10 grid w-[calc(100%-0.7rem)] -translate-x-1/2 content-start overflow-hidden rounded-[0.85rem] border px-1.5 py-1.5 text-left ring-1 ring-[var(--ui-ring)] backdrop-blur-xl sm:top-1.5 sm:w-[calc(100%-0.9rem)] sm:rounded-[0.95rem] sm:px-2',
+            'booking-block-card pointer-events-none absolute left-2 right-2 top-1 z-20 grid w-auto content-start overflow-hidden rounded-[0.85rem] border px-1.5 py-1.5 text-left ring-1 ring-[var(--ui-ring)] backdrop-blur-xl sm:left-2 sm:right-2 sm:top-1.5 sm:rounded-[0.95rem] sm:px-2',
             blockToneClass,
           )}
           style={{ height: durationHeight }}
