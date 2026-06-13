@@ -550,6 +550,12 @@ function getInventoryActivityToneClass(action) {
   return 'text-[var(--ui-text-main)]';
 }
 
+function getInventoryItemActivityLogs(logs, itemId) {
+  return Array.isArray(logs)
+    ? logs.filter((log) => log.itemId === itemId).slice(0, 6)
+    : [];
+}
+
 function _getInventoryStatusToneClass(status) {
   return inventoryStatusToneClasses[status] || 'border-[var(--ui-border)] bg-[var(--ui-control)] text-[var(--ui-text-main)] ring-[var(--ui-ring)]';
 }
@@ -789,6 +795,7 @@ function InventoryAssetCard({
   onDeleteAsset,
   onEditAsset,
   onMarkMaintenance,
+  onOpenDetail,
   onOpenStockMovement,
 }) {
   const stockRatio = asset.minQuantity > 0
@@ -808,9 +815,13 @@ function InventoryAssetCard({
             <PackageCheck size={13} strokeWidth={2.35} aria-hidden="true" />
           </span>
 
-          <h2 className="m-0 min-w-0 truncate text-[0.95rem] font-semibold tracking-[-0.035em] text-[var(--ui-text-strong)]">
+          <button
+            className="m-0 min-w-0 truncate text-left text-[0.95rem] font-semibold tracking-[-0.035em] text-[var(--ui-text-strong)] underline-offset-4 transition hover:text-studio-accent hover:underline focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
+            type="button"
+            onClick={() => onOpenDetail(asset)}
+          >
             {asset.name}
-          </h2>
+          </button>
         </div>
 
         <p className="m-0 truncate pl-8 text-[0.68rem] font-semibold text-[var(--ui-text-muted)]">
@@ -883,6 +894,7 @@ function InventoryBoard({
   onDeleteAsset,
   onEditAsset,
   onMarkMaintenance,
+  onOpenDetail,
   onOpenStockMovement,
 }) {
   if (assets.length === 0) {
@@ -920,6 +932,7 @@ function InventoryBoard({
                 onDeleteAsset={onDeleteAsset}
                 onEditAsset={onEditAsset}
                 onMarkMaintenance={onMarkMaintenance}
+                onOpenDetail={onOpenDetail}
                 onOpenStockMovement={onOpenStockMovement}
               />
             ))}
@@ -1281,6 +1294,199 @@ function InventoryStockMovementDrawer({
   );
 }
 
+function InventoryItemDetailDrawer({
+  asset,
+  logs,
+  onCancel,
+  onDeleteAsset,
+  onEditAsset,
+  onMarkMaintenance,
+  onOpenStockMovement,
+}) {
+  if (!asset) {
+    return null;
+  }
+
+  const stockPercent = getInventoryStockPercent(asset);
+  const isMaintenance = asset.status === 'maintenance';
+  const itemLogs = getInventoryItemActivityLogs(logs, asset.id);
+
+  return (
+    <section className="fixed inset-0 z-40 grid justify-items-end bg-black/25 p-3 backdrop-blur-sm" aria-label="Inventory item detail drawer">
+      <aside className="flex h-full w-full max-w-[560px] flex-col overflow-hidden rounded-[1.4rem] border border-[var(--ui-border-strong)] bg-[var(--ui-bg-page)] shadow-[var(--ui-shadow-strong)] ring-1 ring-[var(--ui-ring)]">
+        <div className="flex items-start justify-between gap-3 border-b border-[var(--ui-border)] p-4">
+          <div className="grid min-w-0 gap-1">
+            <span className="text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-studio-accent">
+              Asset detail
+            </span>
+
+            <h2 className="m-0 truncate text-2xl font-semibold tracking-[-0.06em] text-[var(--ui-text-strong)]">
+              {asset.name}
+            </h2>
+
+            <p className="m-0 text-sm font-semibold text-[var(--ui-text-muted)]">
+              {asset.category} • {asset.location}
+            </p>
+          </div>
+
+          <button
+            aria-label="Close asset detail"
+            className="grid size-9 shrink-0 place-items-center rounded-full bg-[var(--ui-control)] text-[var(--ui-text-muted)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
+            type="button"
+            onClick={onCancel}
+          >
+            <X size={15} strokeWidth={2.35} aria-hidden="true" />
+          </button>
+        </div>
+
+        <div className="grid flex-1 gap-4 overflow-y-auto p-4">
+          <section className="grid gap-3">
+            <div className="flex flex-wrap items-center gap-2">
+              <InventoryStatusBadge status={asset.status} />
+              <span className="rounded-md bg-[var(--ui-control)] px-2 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.12em] text-[var(--ui-text-muted)] ring-1 ring-[var(--ui-ring)]">
+                {asset.condition || 'Good'}
+              </span>
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-3">
+              <div className="grid gap-1 border-y border-[var(--ui-border)] py-3">
+                <span className="text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-[var(--ui-text-muted)]">
+                  Quantity
+                </span>
+                <strong className="text-3xl font-semibold leading-none tracking-[-0.06em] text-[var(--ui-text-strong)]">
+                  {asset.quantity}
+                </strong>
+              </div>
+
+              <div className="grid gap-1 border-y border-[var(--ui-border)] py-3">
+                <span className="text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-[var(--ui-text-muted)]">
+                  Minimum
+                </span>
+                <strong className="text-3xl font-semibold leading-none tracking-[-0.06em] text-[var(--ui-text-strong)]">
+                  {asset.minQuantity}
+                </strong>
+              </div>
+
+              <div className="grid gap-1 border-y border-[var(--ui-border)] py-3">
+                <span className="text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-[var(--ui-text-muted)]">
+                  Stock
+                </span>
+                <strong className={cn(
+                  'text-3xl font-semibold leading-none tracking-[-0.06em]',
+                  stockPercent < 75 ? 'text-studio-accent' : 'text-studio-cyan',
+                )}>
+                  {stockPercent}%
+                </strong>
+              </div>
+            </div>
+          </section>
+
+          <section className="grid gap-2 border-b border-[var(--ui-border)] pb-4">
+            <span className="text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-[var(--ui-text-muted)]">
+              Notes
+            </span>
+            <p className="m-0 text-sm leading-7 text-[var(--ui-text-main)]">
+              {asset.notes || 'Belum ada catatan untuk asset ini.'}
+            </p>
+          </section>
+
+          <section className="grid gap-2 border-b border-[var(--ui-border)] pb-4">
+            <span className="text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-[var(--ui-text-muted)]">
+              Schedule
+            </span>
+
+            <div className="grid gap-2 text-sm font-semibold text-[var(--ui-text-main)] sm:grid-cols-2">
+              <span>Checked: {formatDateLabel(asset.lastChecked)}</span>
+              <span>Next: {formatDateLabel(asset.nextMaintenance)}</span>
+            </div>
+          </section>
+
+          <section className="grid gap-2">
+            <div className="flex items-center justify-between gap-3">
+              <span className="text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-studio-cyan">
+                Recent activity
+              </span>
+              <span className="text-xs font-semibold text-[var(--ui-text-muted)]">
+                {itemLogs.length} log
+              </span>
+            </div>
+
+            {itemLogs.length > 0 ? (
+              <div className="grid divide-y divide-[var(--ui-border)]">
+                {itemLogs.map((log) => (
+                  <article className="grid gap-1 py-2" key={log.id}>
+                    <div className="flex items-center justify-between gap-3">
+                      <strong className={cn('truncate text-sm font-semibold', getInventoryActivityToneClass(log.action))}>
+                        {log.label}
+                      </strong>
+                      <time className="shrink-0 text-xs font-semibold text-[var(--ui-text-soft)]" dateTime={log.at}>
+                        {formatActivityTime(log.at)}
+                      </time>
+                    </div>
+
+                    {log.quantityChange ? (
+                      <p className="m-0 text-xs font-semibold text-[var(--ui-text-muted)]">
+                        Qty {log.previousQuantity} → {log.nextQuantity} ({log.quantityChange > 0 ? '+' : ''}{log.quantityChange})
+                      </p>
+                    ) : null}
+
+                    {log.note || log.sourceName ? (
+                      <p className="m-0 truncate text-xs font-medium text-[var(--ui-text-muted)]">
+                        {[log.sourceName, log.note].filter(Boolean).join(' • ')}
+                      </p>
+                    ) : null}
+                  </article>
+                ))}
+              </div>
+            ) : (
+              <p className="m-0 text-sm leading-6 text-[var(--ui-text-muted)]">
+                Belum ada activity khusus untuk asset ini.
+              </p>
+            )}
+          </section>
+        </div>
+
+        <div className="grid gap-2 border-t border-[var(--ui-border)] p-4 sm:grid-cols-[1fr_1fr_auto_auto]">
+          <button
+            className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full bg-studio-cyan/10 px-4 text-sm font-semibold text-studio-cyan transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-cyan/20"
+            type="button"
+            onClick={() => onOpenStockMovement(asset)}
+          >
+            <RotateCcw size={14} strokeWidth={2.35} aria-hidden="true" />
+            Move stock
+          </button>
+
+          <button
+            className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full bg-studio-purple/10 px-4 text-sm font-semibold text-studio-purple transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-purple/20"
+            type="button"
+            onClick={() => onMarkMaintenance(asset)}
+          >
+            {isMaintenance ? 'Mark ready' : 'Maintenance'}
+          </button>
+
+          <button
+            aria-label={'Edit ' + asset.name}
+            className="inline-flex min-h-10 items-center justify-center rounded-full bg-[var(--ui-control)] px-4 text-[var(--ui-text-muted)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
+            type="button"
+            onClick={() => onEditAsset(asset)}
+          >
+            <Pencil size={15} strokeWidth={2.35} aria-hidden="true" />
+          </button>
+
+          <button
+            aria-label={'Delete ' + asset.name}
+            className="inline-flex min-h-10 items-center justify-center rounded-full bg-studio-accent/10 px-4 text-studio-accent transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
+            type="button"
+            onClick={() => onDeleteAsset(asset)}
+          >
+            <Trash2 size={15} strokeWidth={2.35} aria-hidden="true" />
+          </button>
+        </div>
+      </aside>
+    </section>
+  );
+}
+
 
 function InventorySyncBanner({
   errorMessage,
@@ -1446,6 +1652,7 @@ export function InventoryAdmin() {
   const [stockMovementAsset, setStockMovementAsset] = useState(null);
   const [stockMovementDraft, setStockMovementDraft] = useState(null);
   const [stockMovementStatus, setStockMovementStatus] = useState('idle');
+  const [detailAsset, setDetailAsset] = useState(null);
   const [activityLogs, setActivityLogs] = useState([]);
   const [activityState, setActivityState] = useState({
     errorMessage: '',
@@ -1512,6 +1719,12 @@ export function InventoryAdmin() {
     [activeAssets, categoryFilter, searchTerm, statusFilter],
   );
   const stats = useMemo(() => getInventoryStats(activeAssets), [activeAssets]);
+  const selectedDetailAsset = useMemo(
+    () => (detailAsset
+      ? activeAssets.find((asset) => asset.id === detailAsset.id) || detailAsset
+      : null),
+    [activeAssets, detailAsset],
+  );
 
   const resetAssetFormStatus = () => {
     window.setTimeout(() => {
@@ -1753,6 +1966,29 @@ export function InventoryAdmin() {
     }
   };
 
+  const openItemDetailDrawer = (asset) => {
+    setDetailAsset(asset);
+  };
+
+  const closeItemDetailDrawer = () => {
+    setDetailAsset(null);
+  };
+
+  const handleDetailMoveAsset = (asset) => {
+    closeItemDetailDrawer();
+    openStockMovementDrawer(asset);
+  };
+
+  const handleDetailEditAsset = (asset) => {
+    closeItemDetailDrawer();
+    openEditAssetForm(asset);
+  };
+
+  const handleDetailDeleteAsset = async (asset) => {
+    closeItemDetailDrawer();
+    await handleDeleteAsset(asset);
+  };
+
   const handleExportInventory = () => {
     downloadInventoryCsv(filteredAssets);
   };
@@ -1803,6 +2039,16 @@ export function InventoryAdmin() {
         onSubmit={handleAssetFormSubmit}
       />
 
+      <InventoryItemDetailDrawer
+        asset={selectedDetailAsset}
+        logs={activityLogs}
+        onCancel={closeItemDetailDrawer}
+        onDeleteAsset={handleDetailDeleteAsset}
+        onEditAsset={handleDetailEditAsset}
+        onMarkMaintenance={handleMarkMaintenance}
+        onOpenStockMovement={handleDetailMoveAsset}
+      />
+
       <InventoryStockMovementDrawer
         asset={stockMovementAsset}
         draft={stockMovementDraft}
@@ -1820,6 +2066,7 @@ export function InventoryAdmin() {
           onDeleteAsset={handleDeleteAsset}
           onEditAsset={openEditAssetForm}
           onMarkMaintenance={handleMarkMaintenance}
+          onOpenDetail={openItemDetailDrawer}
           onOpenStockMovement={openStockMovementDrawer}
         />
 
