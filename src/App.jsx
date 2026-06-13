@@ -3,6 +3,7 @@ import { AdminPage } from './pages/AdminPage.jsx';
 import { AuditAdmin } from './pages/auditadmin.jsx';
 import { BookingAdmin } from './pages/bookingadmin.jsx';
 import { CustomerAdmin, CustomerDetailAdmin } from './pages/customeradmin.jsx';
+import { InventoryAdmin } from './pages/inventoryadmin.jsx';
 import { LoginPage } from './pages/LoginPage.jsx';
 import { ThemeContainer } from './theme/ThemeContainer.jsx';
 import { ThemePreview } from './theme/ThemePreview.jsx';
@@ -21,6 +22,7 @@ function App() {
           <Route path="bookings" element={<BookingAdmin />} />
           <Route path="customers" element={<CustomerAdmin />} />
           <Route path="customers/:customerId" element={<CustomerDetailAdmin />} />
+          <Route path="inventory" element={<InventoryAdmin />} />
           <Route path="audit" element={<AuditAdmin />} />
           <Route path="*" element={<Navigate replace to="/admin/bookings" />} />
         </Route>

@@ -19,6 +19,7 @@ import {
   Moon,
   Sun,
   History,
+  Boxes,
 } from 'lucide-react';
 import { cn } from '../lib/cn.js';
 import { useTheme } from '../theme/ThemeProvider.jsx';
@@ -64,7 +65,15 @@ const adminNavItems = [
     icon: UsersRound,
     path: '/admin/customers',
   },
+  
   {
+    key: 'inventory',
+    label: 'Inventory',
+    helper: 'Gear & assets',
+    icon: Boxes,
+    path: '/admin/inventory',
+  },
+{
     key: 'audit',
     label: 'Audit',
     helper: 'Action history',
