@@ -2394,3 +2394,24 @@
   }
 }
 /* 37-booking-capsule-vertical-gap:end */
+
+/* 37-booking-capsule-center-finetune:start */
+@layer components {
+  @media (max-width: 767px) {
+    .booking-calendar-grid .booking-block-card {
+      top: 0.25rem !important;
+      align-content: center !important;
+    }
+
+    .booking-calendar-grid .booking-block-card > span:last-child {
+      align-content: center !important;
+    }
+  }
+
+  @media (max-width: 420px) {
+    .booking-calendar-grid .booking-block-card {
+      top: 0.24rem !important;
+    }
+  }
+}
+/* 37-booking-capsule-center-finetune:end */
