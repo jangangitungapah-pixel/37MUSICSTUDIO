@@ -822,7 +822,7 @@ function BookingModal({
               </div>
             </section>
 
-            <section className="booking-form-card grid gap-3 rounded-[1.15rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-3 ring-1 ring-[var(--ui-ring)] sm:rounded-[1.35rem] sm:p-4">
+            <section className="booking-form-card booking-schedule-card grid gap-3 rounded-[1.15rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-3 ring-1 ring-[var(--ui-ring)] sm:rounded-[1.35rem] sm:p-4">
               <div className="grid gap-0.5">
                 <h3 className="booking-form-section-title m-0 text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-studio-cyan">
                   Jadwal

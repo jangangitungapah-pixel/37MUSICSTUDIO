@@ -2570,3 +2570,55 @@
   }
 }
 /* 37-booking-form-modal-overhaul:end */
+
+/* 37-booking-time-duration-align:start */
+@layer components {
+  @media (max-width: 767px) {
+    .booking-schedule-card > div:last-child {
+      display: grid !important;
+      grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+      gap: 0.7rem !important;
+      align-items: start !important;
+    }
+
+    .booking-schedule-card > div:last-child > label:first-child,
+    .booking-schedule-card > div:last-child > label:last-child {
+      grid-column: 1 / -1 !important;
+    }
+
+    .booking-schedule-card > div:last-child > label,
+    .booking-schedule-card > div:last-child > div {
+      min-width: 0 !important;
+    }
+
+    .booking-schedule-card > div:last-child > label > span,
+    .booking-schedule-card > div:last-child > div > button {
+      min-height: 2.55rem !important;
+      padding-inline: 0.75rem !important;
+    }
+
+    .booking-schedule-card > div:last-child > label:nth-child(2),
+    .booking-schedule-card > div:last-child > div:nth-child(2),
+    .booking-schedule-card > div:last-child > label:nth-child(3),
+    .booking-schedule-card > div:last-child > div:nth-child(3) {
+      grid-column: auto !important;
+    }
+  }
+
+  @media (max-width: 420px) {
+    .booking-schedule-card > div:last-child {
+      gap: 0.58rem !important;
+    }
+
+    .booking-schedule-card > div:last-child > label > span,
+    .booking-schedule-card > div:last-child > div > button {
+      min-height: 2.45rem !important;
+      padding-inline: 0.65rem !important;
+    }
+
+    .booking-schedule-card > div:last-child label {
+      font-size: 0.74rem !important;
+    }
+  }
+}
+/* 37-booking-time-duration-align:end */
