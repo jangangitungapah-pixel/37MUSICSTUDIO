@@ -1319,6 +1319,74 @@ function InventoryOverviewStrip({ stats, itemCount }) {
   );
 }
 
+function getInventoryFocusAsset(assets) {
+  const safeAssets = Array.isArray(assets) ? assets : [];
+
+  return safeAssets.find((asset) => isInventoryLowStock(asset)) ||
+    safeAssets.find((asset) => asset.status === 'maintenance') ||
+    safeAssets.find((asset) => normalizeInventoryCondition(asset.condition) === 'Poor') ||
+    safeAssets.find((asset) => getInventoryMaintenanceDiffDays(asset) <= 7) ||
+    safeAssets[0] ||
+    null;
+}
+
+function InventoryFocusBar({
+  alerts,
+  assets,
+  onReview,
+}) {
+  const focusAsset = getInventoryFocusAsset(assets);
+  const focusTitle = focusAsset ? focusAsset.name : 'Semua asset aman';
+  const focusReason = focusAsset
+    ? [
+      isInventoryLowStock(focusAsset) ? 'low stock' : null,
+      focusAsset.status === 'maintenance' ? 'maintenance' : null,
+      normalizeInventoryCondition(focusAsset.condition) === 'Poor' ? 'poor condition' : null,
+      getInventoryMaintenanceDiffDays(focusAsset) <= 7 ? 'due soon' : null,
+    ].filter(Boolean).join(' • ') || 'needs review'
+    : 'Tidak ada priority queue saat ini.';
+
+  return (
+    <AdminPanel className="inventory-focus-bar grid gap-3 p-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center" variant="flat">
+      <div className="grid min-w-0 gap-1">
+        <span className="inline-flex items-center gap-2 text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-studio-accent">
+          <AlertTriangle size={13} strokeWidth={2.35} aria-hidden="true" />
+          Priority queue
+        </span>
+
+        <strong className="min-w-0 truncate text-base font-semibold tracking-[-0.04em] text-[var(--ui-text-strong)]">
+          {focusTitle}
+        </strong>
+
+        <span className="min-w-0 truncate text-xs font-semibold text-[var(--ui-text-muted)]">
+          {focusReason}
+        </span>
+      </div>
+
+      <div className="flex min-w-0 flex-wrap items-center gap-1.5 sm:justify-end">
+        <AdminBadge tone="accent">
+          {alerts.lowStock || 0} low
+        </AdminBadge>
+        <AdminBadge tone="purple">
+          {alerts.dueSoon || 0} due
+        </AdminBadge>
+        <AdminBadge tone="neutral">
+          {alerts.poorCondition || 0} poor
+        </AdminBadge>
+        <AdminButton
+          className="inventory-focus-review"
+          size="sm"
+          variant="primary"
+          onClick={onReview}
+        >
+          Review
+        </AdminButton>
+      </div>
+    </AdminPanel>
+  );
+}
+
+
 function InventoryDashboardAlerts({
   activeAlert,
   alerts,
@@ -3572,16 +3640,12 @@ export function InventoryAdmin() {
         }}
       />
 
-      <InventoryDashboardAlerts
-        activeAlert={alertFilter}
+      <InventoryFocusBar
         alerts={dashboardAlerts}
-        onAlertChange={handleAlertFilterChange}
-      />
-
-      <InventorySavedViews
-        activeView={savedViewFilter}
-        stats={savedViewStats}
-        onViewChange={handleSavedViewFilterChange}
+        assets={activeAssets}
+        onReview={() => {
+          handleSavedViewFilterChange('critical');
+        }}
       />
 
       <InventoryFormPanel
@@ -3632,7 +3696,7 @@ export function InventoryAdmin() {
       />
 
       <div className="grid gap-3">
-        <InventoryMaintenancePanel assets={activeAssets} />
+        <div className="inventory-maintenance-panel"><InventoryMaintenancePanel assets={activeAssets} /></div>
 
         <InventoryBoard
           assets={filteredAssets}
