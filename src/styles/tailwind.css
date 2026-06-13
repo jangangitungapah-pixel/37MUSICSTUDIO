@@ -40,79 +40,79 @@
   :root {
     color-scheme: light;
 
-    --ui-bg-base: #f7f1fb;
+    --ui-bg-base: #f5f2f7;
     --ui-bg-page:
-      radial-gradient(circle at 8% 8%, rgb(255 74 155 / 0.24), transparent 25rem),
-      radial-gradient(circle at 88% 24%, rgb(69 211 255 / 0.22), transparent 32rem),
-      radial-gradient(circle at 52% 4%, rgb(154 118 255 / 0.12), transparent 28rem),
-      linear-gradient(180deg, #fff9fd 0%, #f4edfb 42%, #edf9ff 76%, #fffafd 100%);
-    --ui-grid-opacity: 0.26;
-    --ui-grid-line: rgb(23 20 29 / 0.04);
-    --ui-grid-line-soft: rgb(23 20 29 / 0.032);
-    --ui-top-fade: rgb(255 255 255 / 0.78);
-    --ui-left-wash: rgb(255 74 155 / 0.12);
-    --ui-right-wash: rgb(69 211 255 / 0.14);
+      radial-gradient(circle at 10% 0%, rgb(255 74 155 / 0.115), transparent 26rem),
+      radial-gradient(circle at 92% 12%, rgb(69 211 255 / 0.105), transparent 30rem),
+      linear-gradient(180deg, #fbf9fc 0%, #f5f2f7 42%, #f0f4f8 100%);
+    --ui-grid-opacity: 0.16;
+    --ui-grid-line: rgb(17 15 23 / 0.035);
+    --ui-grid-line-soft: rgb(17 15 23 / 0.026);
+    --ui-top-fade: rgb(251 249 252 / 0.82);
+    --ui-left-wash: rgb(255 74 155 / 0.07);
+    --ui-right-wash: rgb(69 211 255 / 0.075);
 
-    --ui-text-strong: #0b0910;
-    --ui-text-main: rgb(20 17 27 / 0.84);
-    --ui-text-muted: rgb(20 17 27 / 0.68);
-    --ui-text-soft: rgb(20 17 27 / 0.52);
+    --ui-text-strong: #111017;
+    --ui-text-main: rgb(17 16 23 / 0.84);
+    --ui-text-muted: rgb(17 16 23 / 0.64);
+    --ui-text-soft: rgb(17 16 23 / 0.46);
 
-    --ui-border: rgb(20 17 27 / 0.14);
-    --ui-border-strong: rgb(20 17 27 / 0.2);
-    --ui-glass: rgb(255 255 255 / 0.66);
-    --ui-glass-soft: rgb(255 255 255 / 0.34);
+    --ui-border: rgb(17 16 23 / 0.12);
+    --ui-border-strong: rgb(17 16 23 / 0.18);
+    --ui-glass: rgb(255 255 255 / 0.78);
+    --ui-glass-soft: rgb(255 255 255 / 0.48);
     --ui-control: rgb(255 255 255 / 0.86);
-    --ui-control-hover: rgb(255 255 255 / 0.98);
+    --ui-control-hover: #ffffff;
 
-    --ui-primary-bg: linear-gradient(135deg, #0b0910 0%, #2c2534 100%);
+    --ui-primary-bg: linear-gradient(135deg, #111017 0%, #28232f 100%);
     --ui-primary-text: #ffffff;
-    --ui-secondary-bg: rgb(255 255 255 / 0.72);
-    --ui-secondary-text: rgb(20 17 27 / 0.82);
+    --ui-secondary-bg: rgb(255 255 255 / 0.7);
+    --ui-secondary-text: rgb(17 16 23 / 0.78);
 
-    --ui-shadow-soft: 0 22px 70px rgb(73 48 94 / 0.16);
-    --ui-shadow-control: 0 14px 34px rgb(73 48 94 / 0.1);
+    --ui-shadow-soft: 0 20px 54px rgb(40 32 51 / 0.12);
+    --ui-shadow-strong: 0 28px 80px rgb(40 32 51 / 0.18);
+    --ui-shadow-control: 0 12px 28px rgb(40 32 51 / 0.09);
     --ui-shadow-header: none;
-    --ui-ring: rgb(20 17 27 / 0.045);
+    --ui-ring: rgb(17 16 23 / 0.055);
   }
 
   html[data-theme="dark"] {
     color-scheme: dark;
 
-    --ui-bg-base: #090a10;
+    --ui-bg-base: #0b0c10;
     --ui-bg-page:
-      radial-gradient(circle at 8% 8%, rgb(255 74 155 / 0.18), transparent 28rem),
-      radial-gradient(circle at 88% 24%, rgb(69 211 255 / 0.14), transparent 34rem),
-      radial-gradient(circle at 52% 6%, rgb(154 118 255 / 0.12), transparent 26rem),
-      linear-gradient(180deg, #090a10 0%, #0b0b13 48%, #07080d 100%);
-    --ui-grid-opacity: 0.12;
-    --ui-grid-line: rgb(255 255 255 / 0.045);
-    --ui-grid-line-soft: rgb(255 255 255 / 0.032);
-    --ui-top-fade: rgb(9 10 16 / 0.78);
-    --ui-left-wash: rgb(255 74 155 / 0.08);
-    --ui-right-wash: rgb(69 211 255 / 0.09);
+      radial-gradient(circle at 10% 0%, rgb(255 74 155 / 0.105), transparent 28rem),
+      radial-gradient(circle at 90% 12%, rgb(69 211 255 / 0.08), transparent 32rem),
+      linear-gradient(180deg, #0b0c10 0%, #0d0e13 46%, #08090d 100%);
+    --ui-grid-opacity: 0.08;
+    --ui-grid-line: rgb(255 255 255 / 0.034);
+    --ui-grid-line-soft: rgb(255 255 255 / 0.024);
+    --ui-top-fade: rgb(11 12 16 / 0.82);
+    --ui-left-wash: rgb(255 74 155 / 0.055);
+    --ui-right-wash: rgb(69 211 255 / 0.052);
 
-    --ui-text-strong: #ffffff;
-    --ui-text-main: rgb(255 255 255 / 0.86);
-    --ui-text-muted: rgb(255 255 255 / 0.7);
-    --ui-text-soft: rgb(255 255 255 / 0.54);
+    --ui-text-strong: #f7f7fb;
+    --ui-text-main: rgb(247 247 251 / 0.84);
+    --ui-text-muted: rgb(247 247 251 / 0.64);
+    --ui-text-soft: rgb(247 247 251 / 0.46);
 
-    --ui-border: rgb(255 255 255 / 0.16);
-    --ui-border-strong: rgb(255 255 255 / 0.22);
-    --ui-glass: rgb(255 255 255 / 0.055);
-    --ui-glass-soft: rgb(255 255 255 / 0.028);
-    --ui-control: rgb(255 255 255 / 0.105);
-    --ui-control-hover: rgb(255 255 255 / 0.16);
+    --ui-border: rgb(255 255 255 / 0.115);
+    --ui-border-strong: rgb(255 255 255 / 0.175);
+    --ui-glass: rgb(255 255 255 / 0.072);
+    --ui-glass-soft: rgb(255 255 255 / 0.045);
+    --ui-control: rgb(255 255 255 / 0.085);
+    --ui-control-hover: rgb(255 255 255 / 0.135);
 
-    --ui-primary-bg: #ffffff;
-    --ui-primary-text: #090a10;
-    --ui-secondary-bg: rgb(255 255 255 / 0.075);
-    --ui-secondary-text: rgb(255 255 255 / 0.9);
+    --ui-primary-bg: #f7f7fb;
+    --ui-primary-text: #0b0c10;
+    --ui-secondary-bg: rgb(255 255 255 / 0.07);
+    --ui-secondary-text: rgb(247 247 251 / 0.86);
 
-    --ui-shadow-soft: 0 22px 70px rgb(0 0 0 / 0.28);
-    --ui-shadow-control: 0 12px 32px rgb(0 0 0 / 0.18);
+    --ui-shadow-soft: 0 22px 62px rgb(0 0 0 / 0.28);
+    --ui-shadow-strong: 0 30px 90px rgb(0 0 0 / 0.42);
+    --ui-shadow-control: 0 12px 28px rgb(0 0 0 / 0.2);
     --ui-shadow-header: none;
-    --ui-ring: rgb(255 255 255 / 0.08);
+    --ui-ring: rgb(255 255 255 / 0.065);
   }
 
   * {
