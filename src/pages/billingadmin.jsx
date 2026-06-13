@@ -7,6 +7,7 @@ import {
   AlertTriangle,
   Banknote,
   CreditCard,
+  FilePlus2,
   Plus,
   Printer,
   ReceiptText,
@@ -59,6 +60,20 @@ function getTodayDateKey() {
   return new Date().toISOString().slice(0, 10);
 }
 
+function createLocalInvoiceSeed(value) {
+  return String(value || Date.now())
+    .replace(/[^a-zA-Z0-9]/g, '')
+    .slice(-6)
+    .toUpperCase();
+}
+
+function createInvoiceNumberFromDraft(draft, createdAt) {
+  const dateKey = String(createdAt || new Date().toISOString()).slice(0, 10).replace(/-/g, '');
+  const seed = createLocalInvoiceSeed(draft.bookingId || draft.invoiceNumber || Date.now());
+
+  return 'INV-' + dateKey + '-' + seed;
+}
+
 function getBookingCustomerName(booking) {
   return String(booking?.customerName || booking?.title || 'Walk-in customer').trim();
 }
@@ -109,6 +124,25 @@ function getBillingSourceLabel(sourceType) {
   return 'Booking';
 }
 
+function normalizeBillingActor(actor) {
+  if (!actor || typeof actor !== 'object') {
+    return {
+      displayName: 'Admin',
+      email: '',
+      uid: '',
+    };
+  }
+
+  const email = String(actor.email || '').trim();
+  const displayName = String(actor.displayName || actor.name || email || 'Admin').trim();
+
+  return {
+    displayName,
+    email,
+    uid: String(actor.uid || '').trim(),
+  };
+}
+
 function createBillingQueueFromTransactions(transactions) {
   return (Array.isArray(transactions) ? transactions : []).map((transaction) => ({
     bookingId: transaction.bookingId || '',
@@ -142,12 +176,17 @@ function createDraftQueueFromBookings(bookings, transactions) {
 
       return {
         bookingId: booking.id || '',
+        bookingSnapshot: booking,
         createdAt: booking.createdAt || '',
         customerName: getBookingCustomerName(booking),
         dateKey: booking.dateKey || '',
-        invoiceNumber: 'DRAFT-' + String(booking.id || booking.dateKey || Date.now()).slice(-6).toUpperCase(),
+        durationHours: Math.max(1, Number(booking.durationHours) || 1),
+        invoiceNumber: 'DRAFT-' + createLocalInvoiceSeed(booking.id || booking.dateKey || Date.now()),
+        notes: String(booking.notes || '').trim(),
         paidAmount: getBookingPaidAmount(booking),
+        phone: String(booking.phone || '').trim(),
         remainingAmount: getBookingRemainingAmount(booking),
+        sessionType: String(booking.sessionType || booking.title || 'Studio session').trim(),
         sourceLabel: 'Booking draft',
         sourceType: 'booking',
         status,
@@ -191,6 +230,63 @@ function getBillingSummary(queue) {
     revenueToday,
     transactions: transactions.length,
   };
+}
+
+function createInvoiceItemsFromDraft(draft) {
+  const durationHours = Math.max(1, Number(draft.durationHours) || 1);
+  const totalAmount = Math.max(0, Number(draft.totalAmount) || 0);
+
+  return [
+    {
+      category: 'studio_booking',
+      id: 'booking-session',
+      inventoryItemId: '',
+      name: draft.sessionType || 'Studio session',
+      qty: durationHours,
+      subtotal: totalAmount,
+      unitPrice: durationHours > 0 ? Math.round(totalAmount / durationHours) : totalAmount,
+    },
+  ];
+}
+
+function createBillingTransactionFromDraft(draft, actor) {
+  const createdAt = new Date().toISOString();
+  const totalAmount = Math.max(0, Number(draft.totalAmount) || 0);
+  const paidAmount = Math.max(0, Number(draft.paidAmount) || 0);
+  const remainingAmount = Math.max(0, totalAmount - paidAmount);
+  const paymentStatus = paidAmount >= totalAmount && totalAmount > 0
+    ? 'paid'
+    : paidAmount > 0
+      ? 'dp'
+      : 'unpaid';
+  const normalizedActor = normalizeBillingActor(actor);
+
+  return {
+    bookingId: draft.bookingId || '',
+    createdAt,
+    createdBy: normalizedActor,
+    customerId: draft.bookingId || '',
+    customerName: draft.customerName || 'Walk-in customer',
+    discountAmount: 0,
+    id: draft.bookingId ? 'billing-booking-' + draft.bookingId : 'billing-' + Date.now(),
+    invoiceNumber: createInvoiceNumberFromDraft(draft, createdAt),
+    items: createInvoiceItemsFromDraft(draft),
+    notes: draft.notes || 'Invoice dibuat dari booking draft.',
+    paidAmount,
+    paymentMethod: paidAmount > 0 ? 'other' : 'cash',
+    paymentStatus,
+    phone: draft.phone || '',
+    remainingAmount,
+    sourceType: 'booking',
+    subtotal: totalAmount,
+    totalAmount,
+    updatedAt: createdAt,
+    updatedBy: normalizedActor,
+  };
+}
+
+function getQueueItemKey(item) {
+  return item.type + '-' + (item.bookingId || item.invoiceNumber);
 }
 
 function BillingSummaryRail({ summary }) {
@@ -318,7 +414,11 @@ function BillingStatePanel({
   );
 }
 
-function BillingQueue({ queue }) {
+function BillingQueue({
+  creatingInvoiceKey,
+  queue,
+  onCreateInvoice,
+}) {
   if (!queue.length) {
     return (
       <BillingStatePanel
@@ -330,49 +430,73 @@ function BillingQueue({ queue }) {
 
   return (
     <AdminPanel className="billing-queue grid gap-2 p-2" variant="flat">
-      {queue.map((item) => (
-        <article
-          className="grid gap-3 rounded-[1.15rem] border border-[var(--ui-border)] bg-[var(--ui-control)] p-3 ring-1 ring-[var(--ui-ring)] sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center"
-          key={item.type + '-' + (item.bookingId || item.invoiceNumber)}
-        >
-          <div className="grid min-w-0 gap-1">
-            <div className="flex flex-wrap items-center gap-2">
-              <AdminBadge tone={getBillingStatusTone(item.status)}>
-                {getBillingStatusLabel(item.status)}
-              </AdminBadge>
-              <AdminBadge tone={item.type === 'transaction' ? 'cyan' : 'neutral'}>
-                {item.type === 'transaction' ? 'Saved' : 'Draft'}
-              </AdminBadge>
-              <span className="text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-[var(--ui-text-muted)]">
-                {item.invoiceNumber}
+      {queue.map((item) => {
+        const itemKey = getQueueItemKey(item);
+        const isDraft = item.type === 'draft';
+        const isCreating = creatingInvoiceKey === itemKey;
+
+        return (
+          <article
+            className="grid gap-3 rounded-[1.15rem] border border-[var(--ui-border)] bg-[var(--ui-control)] p-3 ring-1 ring-[var(--ui-ring)] lg:grid-cols-[minmax(0,1fr)_minmax(18rem,auto)_auto] lg:items-center"
+            key={itemKey}
+          >
+            <div className="grid min-w-0 gap-1">
+              <div className="flex flex-wrap items-center gap-2">
+                <AdminBadge tone={getBillingStatusTone(item.status)}>
+                  {getBillingStatusLabel(item.status)}
+                </AdminBadge>
+                <AdminBadge tone={isDraft ? 'neutral' : 'cyan'}>
+                  {isDraft ? 'Draft' : 'Saved'}
+                </AdminBadge>
+                <span className="text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-[var(--ui-text-muted)]">
+                  {item.invoiceNumber}
+                </span>
+              </div>
+
+              <strong className="truncate text-base font-semibold tracking-[-0.04em] text-[var(--ui-text-strong)]">
+                {item.customerName}
+              </strong>
+
+              <span className="text-xs font-medium text-[var(--ui-text-muted)]">
+                {item.sourceLabel} • {item.dateKey || 'No date'} • {item.time || 'No time'}
               </span>
             </div>
 
-            <strong className="truncate text-base font-semibold tracking-[-0.04em] text-[var(--ui-text-strong)]">
-              {item.customerName}
-            </strong>
+            <div className="grid grid-cols-3 gap-2 text-right">
+              <span className="grid gap-1">
+                <span className="text-[0.58rem] font-semibold uppercase tracking-[0.12em] text-[var(--ui-text-muted)]">Total</span>
+                <strong className="truncate text-sm font-semibold text-[var(--ui-text-strong)]">{formatCurrency(item.totalAmount)}</strong>
+              </span>
+              <span className="grid gap-1">
+                <span className="text-[0.58rem] font-semibold uppercase tracking-[0.12em] text-[var(--ui-text-muted)]">Paid</span>
+                <strong className="truncate text-sm font-semibold text-[var(--ui-text-strong)]">{formatCurrency(item.paidAmount)}</strong>
+              </span>
+              <span className="grid gap-1">
+                <span className="text-[0.58rem] font-semibold uppercase tracking-[0.12em] text-[var(--ui-text-muted)]">Sisa</span>
+                <strong className="truncate text-sm font-semibold text-[var(--ui-text-strong)]">{formatCurrency(item.remainingAmount)}</strong>
+              </span>
+            </div>
 
-            <span className="text-xs font-medium text-[var(--ui-text-muted)]">
-              {item.sourceLabel} • {item.dateKey || 'No date'} • {item.time || 'No time'}
-            </span>
-          </div>
-
-          <div className="grid grid-cols-3 gap-2 text-right sm:min-w-[18rem]">
-            <span className="grid gap-1">
-              <span className="text-[0.58rem] font-semibold uppercase tracking-[0.12em] text-[var(--ui-text-muted)]">Total</span>
-              <strong className="truncate text-sm font-semibold text-[var(--ui-text-strong)]">{formatCurrency(item.totalAmount)}</strong>
-            </span>
-            <span className="grid gap-1">
-              <span className="text-[0.58rem] font-semibold uppercase tracking-[0.12em] text-[var(--ui-text-muted)]">Paid</span>
-              <strong className="truncate text-sm font-semibold text-[var(--ui-text-strong)]">{formatCurrency(item.paidAmount)}</strong>
-            </span>
-            <span className="grid gap-1">
-              <span className="text-[0.58rem] font-semibold uppercase tracking-[0.12em] text-[var(--ui-text-muted)]">Sisa</span>
-              <strong className="truncate text-sm font-semibold text-[var(--ui-text-strong)]">{formatCurrency(item.remainingAmount)}</strong>
-            </span>
-          </div>
-        </article>
-      ))}
+            <div className="flex justify-end">
+              {isDraft ? (
+                <AdminButton
+                  disabled={Boolean(creatingInvoiceKey)}
+                  icon={FilePlus2}
+                  size="sm"
+                  variant="primary"
+                  onClick={() => { void onCreateInvoice(item); }}
+                >
+                  {isCreating ? 'Creating...' : 'Create invoice'}
+                </AdminButton>
+              ) : (
+                <AdminButton disabled icon={ReceiptText} size="sm" variant="secondary">
+                  Saved
+                </AdminButton>
+              )}
+            </div>
+          </article>
+        );
+      })}
     </AdminPanel>
   );
 }
@@ -383,7 +507,7 @@ function BillingNextPhasePanel({ transactionCount }) {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="grid gap-1">
           <span className="text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-studio-accent">
-            Read model connected
+            Invoice creation enabled
           </span>
           <strong className="text-base font-semibold text-[var(--ui-text-strong)]">
             {transactionCount} saved transaction
@@ -401,7 +525,7 @@ function BillingNextPhasePanel({ transactionCount }) {
       </div>
 
       <p className="m-0 text-sm leading-6 text-[var(--ui-text-muted)]">
-        BILLING.3 hanya membaca billingTransactions dari repository. Create invoice, mark paid, DP flow, sync booking, dan receipt print masuk fase berikutnya.
+        BILLING.4 sudah bisa membuat invoice dari booking draft. Payment flow, mark paid, DP update, sync booking, manual POS, dan receipt print masuk fase berikutnya.
       </p>
     </AdminPanel>
   );
@@ -409,9 +533,14 @@ function BillingNextPhasePanel({ transactionCount }) {
 
 export function BillingAdmin() {
   const adminContext = useOutletContext() || {};
-  const { manualBookings = [] } = adminContext;
+  const {
+    adminUser = null,
+    manualBookings = [],
+  } = adminContext;
   const [billingTransactions, setBillingTransactions] = useState([]);
   const [billingLoadError, setBillingLoadError] = useState('');
+  const [createInvoiceError, setCreateInvoiceError] = useState('');
+  const [creatingInvoiceKey, setCreatingInvoiceKey] = useState('');
   const [isBillingReady, setIsBillingReady] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
@@ -458,6 +587,38 @@ export function BillingAdmin() {
     [queue],
   );
 
+  const handleCreateInvoice = async (draft) => {
+    if (!draft || draft.type !== 'draft' || creatingInvoiceKey) {
+      return;
+    }
+
+    const itemKey = getQueueItemKey(draft);
+
+    setCreateInvoiceError('');
+    setCreatingInvoiceKey(itemKey);
+
+    try {
+      const transaction = createBillingTransactionFromDraft(draft, adminUser);
+      const savedTransaction = await adminBillingRepository.createBillingTransaction(transaction);
+
+      if (savedTransaction) {
+        await adminBillingRepository.recordBillingAuditLog({
+          action: 'billing.booking_invoice_create',
+          by: normalizeBillingActor(adminUser),
+          label: 'Invoice dibuat dari booking draft',
+          source: 'admin',
+          transactionId: savedTransaction.id,
+          transactionSnapshot: savedTransaction,
+        });
+      }
+    } catch (error) {
+      console.error('Failed to create billing invoice from booking draft.', error);
+      setCreateInvoiceError(error?.message || 'Gagal membuat invoice dari booking draft.');
+    } finally {
+      setCreatingInvoiceKey('');
+    }
+  };
+
   return (
     <AdminPageShell className="billing-admin-workspace gap-3 pb-[calc(8.5rem+env(safe-area-inset-bottom))] pt-1 sm:gap-4 md:pb-4 md:pt-2" width="wide">
       <div className="sr-only" id="billing-admin-title">
@@ -470,7 +631,7 @@ export function BillingAdmin() {
         meta={(
           <>
             <AdminBadge icon={ReceiptText} tone="strong">
-              Read model
+              Invoice draft
             </AdminBadge>
             <AdminBadge icon={WalletCards} tone="cyan">
               {isBillingReady ? 'Live' : 'Loading'}
@@ -490,6 +651,15 @@ export function BillingAdmin() {
         onStatusFilterChange={setStatusFilter}
       />
 
+      {createInvoiceError ? (
+        <BillingStatePanel
+          icon={AlertTriangle}
+          message={createInvoiceError}
+          title="Invoice gagal dibuat."
+          tone="warning"
+        />
+      ) : null}
+
       {billingLoadError ? (
         <BillingStatePanel
           icon={AlertTriangle}
@@ -503,7 +673,11 @@ export function BillingAdmin() {
           title="Memuat data billing."
         />
       ) : (
-        <BillingQueue queue={filteredQueue} />
+        <BillingQueue
+          creatingInvoiceKey={creatingInvoiceKey}
+          queue={filteredQueue}
+          onCreateInvoice={handleCreateInvoice}
+        />
       )}
 
       <BillingNextPhasePanel transactionCount={billingTransactions.length} />
