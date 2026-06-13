@@ -11,6 +11,8 @@ import {
   Search,
   Check,
   Plus,
+  Printer,
+  Download,
 } from 'lucide-react';
 import {
   AdminBadge,
@@ -132,79 +134,30 @@ function BookkeepingSummaryCard({
   value,
 }) {
   return (
-    <AdminPanel className="bookkeeping-summary-card grid gap-2.5 p-3.5" variant="flat">
-      <div className="flex items-start justify-between gap-3">
+    <AdminPanel className="bookkeeping-summary-card grid gap-1.5 p-2.5 sm:gap-2.5 sm:p-3.5" variant="flat">
+      <div className="flex items-start justify-between gap-2 sm:gap-3">
         <span className="grid min-w-0 gap-0.5">
-          <span className="text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-[var(--ui-text-muted)]">
+          <span className="text-[0.58rem] sm:text-[0.62rem] font-semibold uppercase tracking-[0.12em] sm:tracking-[0.16em] text-[var(--ui-text-muted)] truncate">
             {label}
           </span>
-          <strong className="text-xl font-semibold leading-none tracking-[-0.05em] text-[var(--ui-text-strong)] sm:text-2xl">
+          <strong className="text-[0.88rem] xs:text-[0.98rem] sm:text-xl font-bold leading-none tracking-tight text-[var(--ui-text-strong)] sm:tracking-[-0.05em] sm:font-semibold">
             {value}
           </strong>
         </span>
 
-        <AdminBadge tone={tone}>
-          <Icon size={14} strokeWidth={2.35} aria-hidden="true" />
+        <AdminBadge tone={tone} className="shrink-0 max-h-7">
+          <Icon size={13} strokeWidth={2.35} aria-hidden="true" />
         </AdminBadge>
       </div>
 
-      <p className="m-0 text-[0.68rem] font-medium leading-4 text-[var(--ui-text-muted)]">
+      <p className="m-0 text-[0.58rem] sm:text-[0.68rem] font-medium leading-normal text-[var(--ui-text-muted)] truncate">
         {helper}
       </p>
     </AdminPanel>
   );
 }
 
-function BookkeepingComingSoonPanel() {
-  return (
-    <AdminPanel className="grid gap-4 p-4 sm:p-5" variant="solid">
-      <div className="grid gap-2">
-        <AdminBadge tone="cyan">
-          BOOKKEEPING.5
-        </AdminBadge>
-
-        <h2 className="m-0 text-2xl font-semibold tracking-[-0.05em] text-[var(--ui-text-strong)]">
-          Saran impor billing terintegrasi.
-        </h2>
-
-        <p className="m-0 max-w-3xl text-sm leading-6 text-[var(--ui-text-main)]">
-          Fase ini telah menghubungkan modul Billing/POS dengan Pembukuan. Transaksi invoice yang lunas
-          atau deposit (DP) akan dideteksi secara otomatis dan disajikan sebagai saran impor kas sekali klik
-          dengan proteksi anti-double-count.
-        </p>
-      </div>
-
-      <div className="grid gap-2 rounded-[1.25rem] border border-[var(--ui-border)] bg-[var(--ui-control)] p-3 ring-1 ring-[var(--ui-ring)] sm:grid-cols-3">
-        <div className="grid gap-1">
-          <span className="text-[0.58rem] font-semibold uppercase tracking-[0.14em] text-[var(--ui-text-muted)]">
-            Berikutnya
-          </span>
-          <strong className="text-sm font-semibold text-[var(--ui-text-strong)]">
-            BOOKKEEPING.6 Laporan bulanan
-          </strong>
-        </div>
-
-        <div className="grid gap-1">
-          <span className="text-[0.58rem] font-semibold uppercase tracking-[0.14em] text-[var(--ui-text-muted)]">
-            Collection
-          </span>
-          <strong className="text-sm font-semibold text-[var(--ui-text-strong)]">
-            bookkeepingEntries
-          </strong>
-        </div>
-
-        <div className="grid gap-1">
-          <span className="text-[0.58rem] font-semibold uppercase tracking-[0.14em] text-[var(--ui-text-muted)]">
-            Guard
-          </span>
-          <strong className="text-sm font-semibold text-[var(--ui-text-strong)]">
-            Anti-double-count
-          </strong>
-        </div>
-      </div>
-    </AdminPanel>
-  );
-}
+// BookkeepingComingSoonPanel has been removed in BOOKKEEPING.7
 
 function formatBookkeepingDate(value) {
   const date = new Date(value);
@@ -373,6 +326,9 @@ export function BookkeepingAdmin() {
     recordBookkeepingAuditLog,
   } = adminContext;
 
+  const [activeTab, setActiveTab] = useState('ledger'); // 'ledger' | 'reports'
+  const [selectedReportMonth, setSelectedReportMonth] = useState(() => new Date().toISOString().slice(0, 7));
+
   const [searchTerm, setSearchTerm] = useState('');
   const [periodFilter, setPeriodFilter] = useState('month');
   const [typeFilter, setTypeFilter] = useState('all');
@@ -449,6 +405,61 @@ export function BookkeepingAdmin() {
       ...Array.from(accountsMap.entries()).map(([key, label]) => ({ key, label })),
     ];
   }, [bookkeepingEntries]);
+
+  // Available months options computed dynamically
+  const availableMonths = useMemo(() => {
+    const monthsSet = new Set();
+    const currentMonthKey = new Date().toISOString().slice(0, 7);
+    monthsSet.add(currentMonthKey);
+    bookkeepingEntries.forEach((entry) => {
+      if (entry.date && entry.date.length >= 7) {
+        monthsSet.add(entry.date.slice(0, 7));
+      }
+    });
+    return Array.from(monthsSet).sort().reverse().map((mKey) => {
+      const [year, month] = mKey.split('-');
+      const date = new Date(Number(year), Number(month) - 1, 1);
+      const label = new Intl.DateTimeFormat('id-ID', { month: 'long', year: 'numeric' }).format(date);
+      return { key: mKey, label };
+    });
+  }, [bookkeepingEntries]);
+
+  // Report performance metrics calculations
+  const reportMetrics = useMemo(() => {
+    const monthEntries = bookkeepingEntries.filter(
+      (entry) => entry.date && entry.date.startsWith(selectedReportMonth)
+    );
+
+    let totalIncome = 0;
+    let totalExpense = 0;
+
+    const incomeMap = {};
+    const expenseMap = {};
+    const methodMap = {};
+
+    monthEntries.forEach((entry) => {
+      const amt = Number(entry.amount) || 0;
+      if (entry.type === 'income') {
+        totalIncome += amt;
+        incomeMap[entry.categoryName] = (incomeMap[entry.categoryName] || 0) + amt;
+      } else if (entry.type === 'expense') {
+        totalExpense += amt;
+        expenseMap[entry.categoryName] = (expenseMap[entry.categoryName] || 0) + amt;
+      }
+
+      const methodLabel = formatPaymentMethod(entry.paymentMethod);
+      methodMap[methodLabel] = (methodMap[methodLabel] || 0) + (entry.type === 'income' ? amt : -amt);
+    });
+
+    return {
+      totalIncome,
+      totalExpense,
+      netProfit: totalIncome - totalExpense,
+      incomeCategories: Object.entries(incomeMap).map(([name, amount]) => ({ name, amount })),
+      expenseCategories: Object.entries(expenseMap).map(([name, amount]) => ({ name, amount })),
+      paymentMethods: Object.entries(methodMap).map(([name, amount]) => ({ name, amount })),
+    };
+  }, [bookkeepingEntries, selectedReportMonth]);
 
   const categoryOptions = useMemo(() => {
     if (formType === 'income') return incomeCategories;
@@ -694,6 +705,68 @@ export function BookkeepingAdmin() {
     }
   };
 
+  const handleExportCSV = () => {
+    if (entriesWithRunningBalance.length === 0) {
+      alert('Tidak ada data untuk diekspor.');
+      return;
+    }
+
+    const headers = [
+      'Tanggal',
+      'Tipe',
+      'Kategori',
+      'Deskripsi',
+      'Akun',
+      'Metode Pembayaran',
+      'Masuk (IDR)',
+      'Keluar (IDR)',
+      'Saldo (IDR)',
+      'Sumber',
+      'Catatan',
+    ];
+
+    const rows = entriesWithRunningBalance.map((entry) => {
+      const formattedDate = formatBookkeepingDateTime(entry);
+      const isIncome = entry.type === 'income';
+      const isExpense = entry.type === 'expense';
+      const incomeVal = isIncome ? entry.amount : 0;
+      const expenseVal = isExpense ? entry.amount : 0;
+      const sourceStr = formatSource(entry);
+      const notesClean = (entry.notes || '').replace(/"/g, '""');
+
+      return [
+        formattedDate,
+        entry.type === 'income' ? 'Masuk' : entry.type === 'expense' ? 'Keluar' : 'Transfer',
+        entry.categoryName || '',
+        (entry.description || '').replace(/"/g, '""'),
+        entry.accountName || '',
+        formatPaymentMethod(entry.paymentMethod),
+        incomeVal,
+        expenseVal,
+        entry.runningBalance,
+        sourceStr.replace(/"/g, '""'),
+        notesClean,
+      ];
+    });
+
+    const csvContent = [
+      headers.join(','),
+      ...rows.map((r) => r.map((val) => `"${val}"`).join(',')),
+    ].join('\r\n');
+
+    const blob = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    
+    const dateStr = new Date().toISOString().slice(0, 10);
+    link.setAttribute('download', `laporan_buku_besar_${dateStr}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   const filteredEntries = useMemo(() => {
     const normalizedQuery = searchTerm.trim().toLowerCase();
     const today = new Date();
@@ -811,37 +884,48 @@ export function BookkeepingAdmin() {
     };
   }, [bookkeepingEntries, filteredEntries]);
 
+  // Render variables for Monthly Reports breakdown shares
+  const maxIncomeReport = useMemo(() => {
+    return Math.max(...reportMetrics.incomeCategories.map((c) => c.amount), 1);
+  }, [reportMetrics.incomeCategories]);
+
+  const maxExpenseReport = useMemo(() => {
+    return Math.max(...reportMetrics.expenseCategories.map((c) => c.amount), 1);
+  }, [reportMetrics.expenseCategories]);
+
   return (
     <AdminPageShell className="bookkeeping-admin-workspace gap-2 pb-[calc(7rem+env(safe-area-inset-bottom))] pt-0 md:gap-3 md:pb-3 md:pt-0" width="wide">
       <div className="sr-only" id="bookkeeping-admin-title">
         Pembukuan 37 Music Studio
       </div>
 
-      <AdminPageHeader
-        description="Pantau kas masuk, kas keluar, profit, saldo, dan laporan keuangan studio."
-        eyebrow="Studio finance"
-        meta={(
-          <>
-            <AdminBadge icon={CalendarDays} tone="strong">
-              {currentMonthLabel}
-            </AdminBadge>
-            <AdminBadge icon={BookOpenCheck} tone={isBookkeepingReady ? 'cyan' : 'purple'}>
-              {isBookkeepingReady ? 'Repository terbaca' : 'Loading repository'}
-            </AdminBadge>
-            <AdminBadge icon={WalletCards} tone={isBillingReady ? 'cyan' : 'purple'}>
-              {isBillingReady ? 'Billing terbaca' : 'Loading billing'}
-            </AdminBadge>
-            {bookkeepingLoadError || billingLoadError ? (
-              <AdminBadge tone="accent">
-                Fallback aktif
+      <div className="print:hidden">
+        <AdminPageHeader
+          description="Pantau kas masuk, kas keluar, profit, saldo, dan laporan keuangan studio."
+          eyebrow="Studio finance"
+          meta={(
+            <>
+              <AdminBadge icon={CalendarDays} tone="strong">
+                {currentMonthLabel}
               </AdminBadge>
-            ) : null}
-          </>
-        )}
-        title="Pembukuan"
-      />
+              <AdminBadge icon={BookOpenCheck} tone={isBookkeepingReady ? 'cyan' : 'purple'}>
+                {isBookkeepingReady ? 'Repository terbaca' : 'Loading repository'}
+              </AdminBadge>
+              <AdminBadge icon={WalletCards} tone={isBillingReady ? 'cyan' : 'purple'}>
+                {isBillingReady ? 'Billing terbaca' : 'Loading billing'}
+              </AdminBadge>
+              {bookkeepingLoadError || billingLoadError ? (
+                <AdminBadge tone="accent">
+                  Fallback aktif
+                </AdminBadge>
+              ) : null}
+            </>
+          )}
+          title="Pembukuan"
+        />
+      </div>
 
-      <section className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6" aria-label="Ringkasan pembukuan">
+      <section className="grid grid-cols-2 gap-2 lg:grid-cols-3 xl:grid-cols-6 print:hidden" aria-label="Ringkasan pembukuan">
         <BookkeepingSummaryCard
           helper="Kas masuk periode aktif."
           icon={TrendingUp}
@@ -886,152 +970,383 @@ export function BookkeepingAdmin() {
         />
       </section>
 
-      <AdminCommandBar className="bookkeeping-command-bar gap-2 p-2 lg:grid-cols-[minmax(0,1fr)_auto_auto_auto_auto_auto] lg:items-center">
-        <label className="flex min-h-11 items-center gap-2 rounded-full border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 ring-1 ring-[var(--ui-ring)] focus-within:border-studio-accent/55 focus-within:ring-4 focus-within:ring-studio-accent/20">
-          <Search className="shrink-0 text-[var(--ui-text-muted)]" size={15} strokeWidth={2.35} aria-hidden="true" />
-          <input
-            className="w-full border-0 bg-transparent text-sm font-semibold text-[var(--ui-text-strong)] outline-none placeholder:text-[var(--ui-text-soft)]"
-            placeholder="Cari deskripsi, kategori, atau akun..."
-            type="search"
-            value={searchTerm}
-            onChange={(event) => setSearchTerm(event.target.value)}
-          />
-        </label>
-
-        <div className="grid grid-cols-3 gap-0.5 rounded-full border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-0.5 ring-1 ring-[var(--ui-ring)] md:inline-flex">
-          {periodFilters.map((item) => (
-            <button
-              aria-pressed={periodFilter === item.key}
-              className={
-                periodFilter === item.key
-                  ? 'min-h-9 rounded-full bg-[var(--ui-control-hover)] px-3.5 text-xs font-semibold text-studio-accent shadow-[var(--ui-shadow-control)]'
-                  : 'min-h-9 rounded-full px-3.5 text-xs font-semibold text-[var(--ui-text-muted)] transition hover:bg-[var(--ui-control)] hover:text-[var(--ui-text-strong)]'
-              }
-              key={item.key}
-              type="button"
-              onClick={() => setPeriodFilter(item.key)}
-            >
-              {item.label}
-            </button>
-          ))}
+      {/* Tab Navigation */}
+      <div className="flex border-b border-[var(--ui-border)] pb-2.5 print:hidden">
+        <div className="flex gap-2 rounded-full border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-1 ring-1 ring-[var(--ui-ring)]">
+          <button
+            aria-pressed={activeTab === 'ledger'}
+            className={
+              activeTab === 'ledger'
+                ? 'min-h-9 rounded-full bg-[var(--ui-control-hover)] px-5 text-xs font-semibold text-studio-accent shadow-[var(--ui-shadow-control)]'
+                : 'min-h-9 rounded-full px-5 text-xs font-semibold text-[var(--ui-text-muted)] transition hover:bg-[var(--ui-control)] hover:text-[var(--ui-text-strong)]'
+            }
+            type="button"
+            onClick={() => setActiveTab('ledger')}
+          >
+            Buku Besar
+          </button>
+          <button
+            aria-pressed={activeTab === 'reports'}
+            className={
+              activeTab === 'reports'
+                ? 'min-h-9 rounded-full bg-[var(--ui-control-hover)] px-5 text-xs font-semibold text-studio-accent shadow-[var(--ui-shadow-control)]'
+                : 'min-h-9 rounded-full px-5 text-xs font-semibold text-[var(--ui-text-muted)] transition hover:bg-[var(--ui-control)] hover:text-[var(--ui-text-strong)]'
+            }
+            type="button"
+            onClick={() => setActiveTab('reports')}
+          >
+            Laporan Keuangan
+          </button>
         </div>
-
-        <div className="grid grid-cols-4 gap-0.5 rounded-full border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-0.5 ring-1 ring-[var(--ui-ring)] md:inline-flex">
-          {typeFilters.map((item) => (
-            <button
-              aria-pressed={typeFilter === item.key}
-              className={
-                typeFilter === item.key
-                  ? 'min-h-9 rounded-full bg-[var(--ui-control-hover)] px-3.5 text-xs font-semibold text-studio-accent shadow-[var(--ui-shadow-control)]'
-                  : 'min-h-9 rounded-full px-3.5 text-xs font-semibold text-[var(--ui-text-muted)] transition hover:bg-[var(--ui-control)] hover:text-[var(--ui-text-strong)]'
-              }
-              key={item.key}
-              type="button"
-              onClick={() => setTypeFilter(item.key)}
-            >
-              {item.label.split(' ')[0]}
-            </button>
-          ))}
-        </div>
-
-        <AdminDropdown
-          className="min-w-[150px]"
-          hideLabel
-          label="Kategori"
-          options={dynamicCategories}
-          value={categoryFilter}
-          onChange={setCategoryFilter}
-        />
-
-        <AdminDropdown
-          className="min-w-[130px]"
-          hideLabel
-          label="Akun"
-          options={dynamicAccounts}
-          value={accountFilter}
-          onChange={setAccountFilter}
-        />
-
-        <AdminButton
-          icon={CircleDollarSign}
-          variant="primary"
-          onClick={handleAddNew}
-        >
-          Tambah catatan
-        </AdminButton>
-      </AdminCommandBar>
-
-      <div className="grid gap-3 lg:grid-cols-[1fr_340px] lg:items-start md:gap-3.5">
-        <div className="grid gap-2 min-w-0 md:gap-3">
-          {entriesWithRunningBalance.length > 0 ? (
-            <AdminTableShell minWidth="min-w-[960px]">
-              <table className="w-full border-collapse text-left text-xs text-[var(--ui-text-main)]">
-                <thead>
-                  <tr className="border-b border-[var(--ui-border-strong)] bg-[var(--ui-control)] text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-[var(--ui-text-muted)]">
-                    <th className="p-3.5">Tanggal</th>
-                    <th className="p-3.5">Tipe</th>
-                    <th className="p-3.5">Kategori</th>
-                    <th className="p-3.5">Deskripsi</th>
-                    <th className="p-3.5">Akun</th>
-                    <th className="p-3.5">Metode</th>
-                    <th className="p-3.5 text-right">Masuk</th>
-                    <th className="p-3.5 text-right">Keluar</th>
-                    <th className="p-3.5 text-right">Saldo</th>
-                    <th className="p-3.5">Sumber</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {entriesWithRunningBalance.map((entry) => (
-                    <tr
-                      className="border-b border-[var(--ui-border)] hover:bg-[var(--ui-control)] cursor-pointer"
-                      key={entry.id}
-                      onClick={() => handleRowClick(entry)}
-                    >
-                      <td className="p-3.5 font-medium whitespace-nowrap">
-                        {formatBookkeepingDateTime(entry)}
-                      </td>
-                      <td className="p-3.5 whitespace-nowrap">
-                        {renderTypeBadge(entry.type)}
-                      </td>
-                      <td className="p-3.5 font-semibold text-[var(--ui-text-strong)] whitespace-nowrap">
-                        {entry.categoryName}
-                      </td>
-                      <td className="p-3.5 max-w-[280px] truncate font-medium">
-                        {entry.description}
-                      </td>
-                      <td className="p-3.5 font-semibold whitespace-nowrap">
-                        {entry.accountName}
-                      </td>
-                      <td className="p-3.5 font-medium whitespace-nowrap">
-                        {formatPaymentMethod(entry.paymentMethod)}
-                      </td>
-                      <td className="p-3.5 text-right font-bold text-studio-cyan whitespace-nowrap">
-                        {entry.type === 'income' ? formatBookkeepingCurrency(entry.amount) : '-'}
-                      </td>
-                      <td className="p-3.5 text-right font-bold text-studio-accent whitespace-nowrap">
-                        {entry.type === 'expense' ? formatBookkeepingCurrency(entry.amount) : '-'}
-                      </td>
-                      <td className="p-3.5 text-right font-semibold text-[var(--ui-text-strong)] whitespace-nowrap">
-                        {formatBookkeepingCurrency(entry.runningBalance, true)}
-                      </td>
-                      <td className="p-3.5 font-medium text-[var(--ui-text-muted)] whitespace-nowrap">
-                        {formatSource(entry)}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </AdminTableShell>
-          ) : (
-            <LedgerEmptyState hasEntries={bookkeepingEntries.length > 0} />
-          )}
-        </div>
-
-        <BillingImportSuggestionsPanel
-          suggestions={billingImportSuggestions}
-          onImport={handleImportBillingTransaction}
-        />
       </div>
+
+      {activeTab === 'ledger' ? (
+        <div className="grid gap-2 md:gap-3">
+          <AdminCommandBar className="bookkeeping-command-bar gap-2 p-2 lg:grid-cols-[minmax(0,1fr)_auto_auto_auto_auto_auto] lg:items-center">
+            <label className="flex min-h-11 items-center gap-2 rounded-full border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 ring-1 ring-[var(--ui-ring)] focus-within:border-studio-accent/55 focus-within:ring-4 focus-within:ring-studio-accent/20">
+              <Search className="shrink-0 text-[var(--ui-text-muted)]" size={15} strokeWidth={2.35} aria-hidden="true" />
+              <input
+                className="w-full border-0 bg-transparent text-sm font-semibold text-[var(--ui-text-strong)] outline-none placeholder:text-[var(--ui-text-soft)]"
+                placeholder="Cari deskripsi, kategori, atau akun..."
+                type="search"
+                value={searchTerm}
+                onChange={(event) => setSearchTerm(event.target.value)}
+              />
+            </label>
+
+            <div className="grid grid-cols-3 gap-0.5 rounded-full border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-0.5 ring-1 ring-[var(--ui-ring)] md:inline-flex">
+              {periodFilters.map((item) => (
+                <button
+                  aria-pressed={periodFilter === item.key}
+                  className={
+                    periodFilter === item.key
+                      ? 'min-h-9 rounded-full bg-[var(--ui-control-hover)] px-3.5 text-xs font-semibold text-studio-accent shadow-[var(--ui-shadow-control)]'
+                      : 'min-h-9 rounded-full px-3.5 text-xs font-semibold text-[var(--ui-text-muted)] transition hover:bg-[var(--ui-control)] hover:text-[var(--ui-text-strong)]'
+                  }
+                  key={item.key}
+                  type="button"
+                  onClick={() => setPeriodFilter(item.key)}
+                >
+                  {item.label}
+                </button>
+              ))}
+            </div>
+
+            <div className="grid grid-cols-4 gap-0.5 rounded-full border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-0.5 ring-1 ring-[var(--ui-ring)] md:inline-flex">
+              {typeFilters.map((item) => (
+                <button
+                  aria-pressed={typeFilter === item.key}
+                  className={
+                    typeFilter === item.key
+                      ? 'min-h-9 rounded-full bg-[var(--ui-control-hover)] px-3.5 text-xs font-semibold text-studio-accent shadow-[var(--ui-shadow-control)]'
+                      : 'min-h-9 rounded-full px-3.5 text-xs font-semibold text-[var(--ui-text-muted)] transition hover:bg-[var(--ui-control)] hover:text-[var(--ui-text-strong)]'
+                  }
+                  key={item.key}
+                  type="button"
+                  onClick={() => setTypeFilter(item.key)}
+                >
+                  {item.label.split(' ')[0]}
+                </button>
+              ))}
+            </div>
+
+            <div className="grid grid-cols-2 gap-2 w-full lg:contents">
+              <AdminDropdown
+                className="min-w-0"
+                hideLabel
+                label="Kategori"
+                options={dynamicCategories}
+                value={categoryFilter}
+                onChange={setCategoryFilter}
+              />
+
+              <AdminDropdown
+                className="min-w-0"
+                hideLabel
+                label="Akun"
+                options={dynamicAccounts}
+                value={accountFilter}
+                onChange={setAccountFilter}
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-2 w-full lg:contents">
+              <AdminButton
+                className="w-full lg:w-auto"
+                icon={Download}
+                variant="secondary"
+                onClick={handleExportCSV}
+              >
+                Ekspor CSV
+              </AdminButton>
+
+              <AdminButton
+                className="w-full lg:w-auto"
+                icon={CircleDollarSign}
+                variant="primary"
+                onClick={handleAddNew}
+              >
+                Tambah catatan
+              </AdminButton>
+            </div>
+          </AdminCommandBar>
+
+          <div className="grid gap-3 lg:grid-cols-[1fr_340px] lg:items-start md:gap-3.5">
+            <div className="grid gap-2 min-w-0 md:gap-3">
+              {entriesWithRunningBalance.length > 0 ? (
+                <AdminTableShell minWidth="min-w-[960px]">
+                  <table className="w-full border-collapse text-left text-xs text-[var(--ui-text-main)]">
+                    <thead>
+                      <tr className="border-b border-[var(--ui-border-strong)] bg-[var(--ui-control)] text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-[var(--ui-text-muted)]">
+                        <th className="p-3.5">Tanggal</th>
+                        <th className="p-3.5">Tipe</th>
+                        <th className="p-3.5">Kategori</th>
+                        <th className="p-3.5">Deskripsi</th>
+                        <th className="p-3.5">Akun</th>
+                        <th className="p-3.5">Metode</th>
+                        <th className="p-3.5 text-right">Masuk</th>
+                        <th className="p-3.5 text-right">Keluar</th>
+                        <th className="p-3.5 text-right">Saldo</th>
+                        <th className="p-3.5">Sumber</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {entriesWithRunningBalance.map((entry) => (
+                        <tr
+                          className="border-b border-[var(--ui-border)] hover:bg-[var(--ui-control)] cursor-pointer"
+                          key={entry.id}
+                          onClick={() => handleRowClick(entry)}
+                        >
+                          <td className="p-3.5 font-medium whitespace-nowrap">
+                            {formatBookkeepingDateTime(entry)}
+                          </td>
+                          <td className="p-3.5 whitespace-nowrap">
+                            {renderTypeBadge(entry.type)}
+                          </td>
+                          <td className="p-3.5 font-semibold text-[var(--ui-text-strong)] whitespace-nowrap">
+                            {entry.categoryName}
+                          </td>
+                          <td className="p-3.5 max-w-[280px] truncate font-medium">
+                            {entry.description}
+                          </td>
+                          <td className="p-3.5 font-semibold whitespace-nowrap">
+                            {entry.accountName}
+                          </td>
+                          <td className="p-3.5 font-medium whitespace-nowrap">
+                            {formatPaymentMethod(entry.paymentMethod)}
+                          </td>
+                          <td className="p-3.5 text-right font-bold text-studio-cyan whitespace-nowrap">
+                            {entry.type === 'income' ? formatBookkeepingCurrency(entry.amount) : '-'}
+                          </td>
+                          <td className="p-3.5 text-right font-bold text-studio-accent whitespace-nowrap">
+                            {entry.type === 'expense' ? formatBookkeepingCurrency(entry.amount) : '-'}
+                          </td>
+                          <td className="p-3.5 text-right font-semibold text-[var(--ui-text-strong)] whitespace-nowrap">
+                            {formatBookkeepingCurrency(entry.runningBalance, true)}
+                          </td>
+                          <td className="p-3.5 font-medium text-[var(--ui-text-muted)] whitespace-nowrap">
+                            {formatSource(entry)}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </AdminTableShell>
+              ) : (
+                <LedgerEmptyState hasEntries={bookkeepingEntries.length > 0} />
+              )}
+            </div>
+
+            <BillingImportSuggestionsPanel
+              suggestions={billingImportSuggestions}
+              onImport={handleImportBillingTransaction}
+            />
+          </div>
+        </div>
+      ) : (
+        <div className="grid gap-3.5">
+          {/* Print Header */}
+          <div className="hidden print:block text-center border-b border-[var(--ui-border-strong)] pb-5 mb-3">
+            <h1 className="text-2xl font-bold tracking-tight text-[var(--ui-text-strong)]">
+              LAPORAN KEUANGAN BULANAN
+            </h1>
+            <p className="text-sm font-semibold text-[var(--ui-text-muted)] mt-1">
+              37 Music Studio • Periode: {availableMonths.find((m) => m.key === selectedReportMonth)?.label || selectedReportMonth}
+            </p>
+          </div>
+
+          {/* Month Selector Panel */}
+          <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-3 ring-1 ring-[var(--ui-ring)] print:hidden">
+            <div className="flex items-center gap-3">
+              <span className="text-xs font-semibold text-[var(--ui-text-strong)] uppercase tracking-[0.1em]">
+                Pilih Bulan Laporan:
+              </span>
+              <AdminDropdown
+                className="min-w-[200px]"
+                hideLabel
+                options={availableMonths}
+                value={selectedReportMonth}
+                onChange={setSelectedReportMonth}
+              />
+            </div>
+
+            <AdminButton
+              icon={Printer}
+              variant="secondary"
+              onClick={() => window.print()}
+            >
+              Cetak Laporan
+            </AdminButton>
+          </div>
+
+          {/* Monthly Metrics Summary */}
+          <section className="grid grid-cols-3 gap-1.5 sm:gap-2" aria-label="Ringkasan bulan laporan">
+            <AdminPanel className="grid gap-1 p-2.5 sm:gap-2 sm:p-4" variant="flat">
+              <span className="text-[0.55rem] sm:text-[0.62rem] font-bold uppercase tracking-[0.1em] sm:tracking-[0.14em] text-[var(--ui-text-muted)] truncate">
+                Pemasukan
+              </span>
+              <strong className="text-[0.82rem] xs:text-[0.92rem] sm:text-xl md:text-2xl font-bold tracking-tight text-studio-cyan whitespace-nowrap">
+                {formatBookkeepingCurrency(reportMetrics.totalIncome)}
+              </strong>
+              <p className="m-0 text-[0.55rem] sm:text-[0.65rem] text-[var(--ui-text-muted)] font-medium hidden xs:block">
+                Total kas masuk terbukukan.
+              </p>
+            </AdminPanel>
+            <AdminPanel className="grid gap-1 p-2.5 sm:gap-2 sm:p-4" variant="flat">
+              <span className="text-[0.55rem] sm:text-[0.62rem] font-bold uppercase tracking-[0.1em] sm:tracking-[0.14em] text-[var(--ui-text-muted)] truncate">
+                Pengeluaran
+              </span>
+              <strong className="text-[0.82rem] xs:text-[0.92rem] sm:text-xl md:text-2xl font-bold tracking-tight text-studio-accent whitespace-nowrap">
+                {formatBookkeepingCurrency(reportMetrics.totalExpense)}
+              </strong>
+              <p className="m-0 text-[0.55rem] sm:text-[0.65rem] text-[var(--ui-text-muted)] font-medium hidden xs:block">
+                Total kas keluar terbukukan.
+              </p>
+            </AdminPanel>
+            <AdminPanel className="grid gap-1 p-2.5 sm:gap-2 sm:p-4" variant="flat">
+              <span className="text-[0.55rem] sm:text-[0.62rem] font-bold uppercase tracking-[0.1em] sm:tracking-[0.14em] text-[var(--ui-text-muted)] truncate">
+                Laba Bersih
+              </span>
+              <strong className={`text-[0.82rem] xs:text-[0.92rem] sm:text-xl md:text-2xl font-bold tracking-tight whitespace-nowrap ${reportMetrics.netProfit >= 0 ? 'text-studio-cyan' : 'text-studio-accent'}`}>
+                {formatBookkeepingCurrency(reportMetrics.netProfit, true)}
+              </strong>
+              <p className="m-0 text-[0.55rem] sm:text-[0.65rem] text-[var(--ui-text-muted)] font-medium hidden xs:block">
+                Selisih pemasukan - pengeluaran.
+              </p>
+            </AdminPanel>
+          </section>
+
+          {/* Category breakdowns & Payment methods breakdowns */}
+          <div className="grid gap-3.5 lg:grid-cols-[1fr_360px] lg:items-start">
+            <div className="grid gap-3.5">
+              {/* Income Categories Shares */}
+              <AdminPanel className="grid gap-2.5 p-3 sm:gap-4 sm:p-4" variant="default">
+                <h3 className="m-0 text-xs sm:text-sm font-semibold tracking-[-0.02em] text-[var(--ui-text-strong)] flex items-center gap-2 pb-2 border-b border-[var(--ui-border)]">
+                  <TrendingUp size={16} className="text-studio-cyan" />
+                  Rincian Kategori Pemasukan
+                </h3>
+                {reportMetrics.incomeCategories.length > 0 ? (
+                  <div className="grid gap-3">
+                    {reportMetrics.incomeCategories.map((cat) => {
+                      const percentage = Math.round((cat.amount / reportMetrics.totalIncome) * 100) || 0;
+                      const widthPercentage = Math.round((cat.amount / maxIncomeReport) * 100) || 0;
+                      return (
+                        <div key={cat.name} className="grid gap-1">
+                          <div className="flex justify-between text-xs font-semibold text-[var(--ui-text-strong)]">
+                            <span>{cat.name} ({percentage}%)</span>
+                            <span>{formatBookkeepingCurrency(cat.amount)}</span>
+                          </div>
+                          <div className="h-2 w-full rounded-full bg-[var(--ui-control)] overflow-hidden ring-1 ring-[var(--ui-ring)]">
+                            <div
+                              className="h-full rounded-full bg-studio-cyan"
+                              style={{ width: `${widthPercentage}%` }}
+                            />
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <p className="m-0 text-xs text-[var(--ui-text-muted)] font-medium py-2 text-center">
+                    Tidak ada pemasukan tercatat di bulan ini.
+                  </p>
+                )}
+              </AdminPanel>
+
+              {/* Expense Categories Shares */}
+              <AdminPanel className="grid gap-2.5 p-3 sm:gap-4 sm:p-4" variant="default">
+                <h3 className="m-0 text-xs sm:text-sm font-semibold tracking-[-0.02em] text-[var(--ui-text-strong)] flex items-center gap-2 pb-2 border-b border-[var(--ui-border)]">
+                  <TrendingDown size={16} className="text-studio-accent" />
+                  Rincian Kategori Pengeluaran
+                </h3>
+                {reportMetrics.expenseCategories.length > 0 ? (
+                  <div className="grid gap-3">
+                    {reportMetrics.expenseCategories.map((cat) => {
+                      const percentage = Math.round((cat.amount / reportMetrics.totalExpense) * 100) || 0;
+                      const widthPercentage = Math.round((cat.amount / maxExpenseReport) * 100) || 0;
+                      return (
+                        <div key={cat.name} className="grid gap-1">
+                          <div className="flex justify-between text-xs font-semibold text-[var(--ui-text-strong)]">
+                            <span>{cat.name} ({percentage}%)</span>
+                            <span>{formatBookkeepingCurrency(cat.amount)}</span>
+                          </div>
+                          <div className="h-2 w-full rounded-full bg-[var(--ui-control)] overflow-hidden ring-1 ring-[var(--ui-ring)]">
+                            <div
+                              className="h-full rounded-full bg-studio-accent"
+                              style={{ width: `${widthPercentage}%` }}
+                            />
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <p className="m-0 text-xs text-[var(--ui-text-muted)] font-medium py-2 text-center">
+                    Tidak ada pengeluaran tercatat di bulan ini.
+                  </p>
+                )}
+              </AdminPanel>
+            </div>
+
+            {/* Cashflow by Payment Methods */}
+            <AdminPanel className="grid gap-2.5 p-3 sm:gap-4 sm:p-4" variant="default">
+              <h3 className="m-0 text-xs sm:text-sm font-semibold tracking-[-0.02em] text-[var(--ui-text-strong)] flex items-center gap-2 pb-2 border-b border-[var(--ui-border)]">
+                <WalletCards size={16} className="text-studio-accent" />
+                Arus Kas Metode Pembayaran
+              </h3>
+              {reportMetrics.paymentMethods.length > 0 ? (
+                <div className="grid gap-3">
+                  {reportMetrics.paymentMethods.map((pm) => {
+                    const isPositive = pm.amount >= 0;
+                    return (
+                      <div
+                        className="flex items-center justify-between rounded-lg border border-[var(--ui-border)] bg-[var(--ui-control)] p-3 ring-1 ring-[var(--ui-ring)]"
+                        key={pm.name}
+                      >
+                        <span className="text-xs font-bold text-[var(--ui-text-strong)]">
+                          {pm.name}
+                        </span>
+                        <div className="text-right">
+                          <strong className={`text-xs font-bold ${isPositive ? 'text-studio-cyan' : 'text-studio-accent'}`}>
+                            {isPositive ? '+' : ''}{formatBookkeepingCurrency(pm.amount, true)}
+                          </strong>
+                          <span className="block text-[0.58rem] font-semibold text-[var(--ui-text-muted)]">
+                            Saldo bersih masuk
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <p className="m-0 text-xs text-[var(--ui-text-muted)] font-medium py-2 text-center">
+                  Tidak ada sirkulasi kas tercatat di bulan ini.
+                </p>
+              )}
+            </AdminPanel>
+          </div>
+        </div>
+      )}
 
       <AdminDrawer
         actions={(
@@ -1095,26 +1410,26 @@ export function BookkeepingAdmin() {
             </div>
           ) : null}
 
-          <div className="grid gap-3 sm:grid-cols-2">
-            <label className="grid gap-1.5 text-xs font-semibold text-[var(--ui-text-muted)] uppercase tracking-[0.12em]">
+          <div className="grid grid-cols-2 gap-2.5 sm:gap-3">
+            <label className="grid gap-1.5 text-[0.68rem] font-semibold text-[var(--ui-text-muted)] uppercase tracking-[0.12em]">
               Tipe Transaksi
               <select
                 disabled={isReadOnly || selectedEntry !== null}
-                className="min-h-11 rounded-[1.15rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 text-sm font-semibold text-[var(--ui-text-strong)] outline-none ring-1 ring-[var(--ui-ring)] transition disabled:opacity-60 focus:border-studio-accent/55"
+                className="min-h-10 rounded-[0.95rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-2.5 text-xs font-semibold text-[var(--ui-text-strong)] outline-none ring-1 ring-[var(--ui-ring)] transition disabled:opacity-60 focus:border-studio-accent/55"
                 value={formType}
                 onChange={(e) => handleTypeChange(e.target.value)}
               >
-                <option value="income">Pemasukan (Income)</option>
-                <option value="expense">Pengeluaran (Expense)</option>
-                <option value="transfer">Transfer Internal</option>
+                <option value="income">Masuk</option>
+                <option value="expense">Keluar</option>
+                <option value="transfer">Transfer</option>
               </select>
             </label>
 
-            <label className="grid gap-1.5 text-xs font-semibold text-[var(--ui-text-muted)] uppercase tracking-[0.12em]">
+            <label className="grid gap-1.5 text-[0.68rem] font-semibold text-[var(--ui-text-muted)] uppercase tracking-[0.12em]">
               Tanggal
               <input
                 disabled={isReadOnly}
-                className="min-h-11 rounded-[1.15rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 text-sm font-semibold text-[var(--ui-text-strong)] outline-none ring-1 ring-[var(--ui-ring)] transition disabled:opacity-60 focus:border-studio-accent/55"
+                className="min-h-10 rounded-[0.95rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-2.5 text-xs font-semibold text-[var(--ui-text-strong)] outline-none ring-1 ring-[var(--ui-ring)] transition disabled:opacity-60 focus:border-studio-accent/55"
                 type="date"
                 value={formDate}
                 onChange={(e) => setFormDate(e.target.value)}
@@ -1122,12 +1437,12 @@ export function BookkeepingAdmin() {
             </label>
           </div>
 
-          <div className="grid gap-3 sm:grid-cols-2">
-            <label className="grid gap-1.5 text-xs font-semibold text-[var(--ui-text-muted)] uppercase tracking-[0.12em]">
+          <div className="grid grid-cols-2 gap-2.5 sm:gap-3">
+            <label className="grid gap-1.5 text-[0.68rem] font-semibold text-[var(--ui-text-muted)] uppercase tracking-[0.12em]">
               Kategori
               <select
                 disabled={isReadOnly || formType === 'transfer'}
-                className="min-h-11 rounded-[1.15rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 text-sm font-semibold text-[var(--ui-text-strong)] outline-none ring-1 ring-[var(--ui-ring)] transition disabled:opacity-60 focus:border-studio-accent/55"
+                className="min-h-10 rounded-[0.95rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-2.5 text-xs font-semibold text-[var(--ui-text-strong)] outline-none ring-1 ring-[var(--ui-ring)] transition disabled:opacity-60 focus:border-studio-accent/55"
                 value={formCategory}
                 onChange={(e) => setFormCategory(e.target.value)}
               >
@@ -1137,11 +1452,11 @@ export function BookkeepingAdmin() {
               </select>
             </label>
 
-            <label className="grid gap-1.5 text-xs font-semibold text-[var(--ui-text-muted)] uppercase tracking-[0.12em]">
-              Metode Pembayaran
+            <label className="grid gap-1.5 text-[0.68rem] font-semibold text-[var(--ui-text-muted)] uppercase tracking-[0.12em]">
+              Metode
               <select
                 disabled={isReadOnly || formType === 'transfer'}
-                className="min-h-11 rounded-[1.15rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 text-sm font-semibold text-[var(--ui-text-strong)] outline-none ring-1 ring-[var(--ui-ring)] transition disabled:opacity-60 focus:border-studio-accent/55"
+                className="min-h-10 rounded-[0.95rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-2.5 text-xs font-semibold text-[var(--ui-text-strong)] outline-none ring-1 ring-[var(--ui-ring)] transition disabled:opacity-60 focus:border-studio-accent/55"
                 value={formPaymentMethod}
                 onChange={(e) => setFormPaymentMethod(e.target.value)}
               >
@@ -1152,12 +1467,12 @@ export function BookkeepingAdmin() {
             </label>
           </div>
 
-          <div className="grid gap-3 sm:grid-cols-2">
-            <label className="grid gap-1.5 text-xs font-semibold text-[var(--ui-text-muted)] uppercase tracking-[0.12em]">
-              {formType === 'transfer' ? 'Akun Asal (From)' : 'Akun Kas'}
+          <div className="grid grid-cols-2 gap-2.5 sm:gap-3">
+            <label className="grid gap-1.5 text-[0.68rem] font-semibold text-[var(--ui-text-muted)] uppercase tracking-[0.12em]">
+              {formType === 'transfer' ? 'Kas Asal' : 'Akun Kas'}
               <select
                 disabled={isReadOnly}
-                className="min-h-11 rounded-[1.15rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 text-sm font-semibold text-[var(--ui-text-strong)] outline-none ring-1 ring-[var(--ui-ring)] transition disabled:opacity-60 focus:border-studio-accent/55"
+                className="min-h-10 rounded-[0.95rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-2.5 text-xs font-semibold text-[var(--ui-text-strong)] outline-none ring-1 ring-[var(--ui-ring)] transition disabled:opacity-60 focus:border-studio-accent/55"
                 value={formAccount}
                 onChange={(e) => setFormAccount(e.target.value)}
               >
@@ -1168,11 +1483,11 @@ export function BookkeepingAdmin() {
             </label>
 
             {formType === 'transfer' ? (
-              <label className="grid gap-1.5 text-xs font-semibold text-[var(--ui-text-muted)] uppercase tracking-[0.12em]">
-                Akun Tujuan (To)
+              <label className="grid gap-1.5 text-[0.68rem] font-semibold text-[var(--ui-text-muted)] uppercase tracking-[0.12em]">
+                Kas Tujuan
                 <select
                   disabled={isReadOnly}
-                  className="min-h-11 rounded-[1.15rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 text-sm font-semibold text-[var(--ui-text-strong)] outline-none ring-1 ring-[var(--ui-ring)] transition disabled:opacity-60 focus:border-studio-accent/55"
+                  className="min-h-10 rounded-[0.95rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-2.5 text-xs font-semibold text-[var(--ui-text-strong)] outline-none ring-1 ring-[var(--ui-ring)] transition disabled:opacity-60 focus:border-studio-accent/55"
                   value={formTargetAccount}
                   onChange={(e) => setFormTargetAccount(e.target.value)}
                 >
@@ -1182,11 +1497,11 @@ export function BookkeepingAdmin() {
                 </select>
               </label>
             ) : (
-              <label className="grid gap-1.5 text-xs font-semibold text-[var(--ui-text-muted)] uppercase tracking-[0.12em]">
+              <label className="grid gap-1.5 text-[0.68rem] font-semibold text-[var(--ui-text-muted)] uppercase tracking-[0.12em]">
                 Nominal (IDR)
                 <input
                   disabled={isReadOnly}
-                  className="min-h-11 rounded-[1.15rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 text-sm font-semibold text-[var(--ui-text-strong)] outline-none ring-1 ring-[var(--ui-ring)] transition disabled:opacity-60 focus:border-studio-accent/55 placeholder:text-[var(--ui-text-soft)]"
+                  className="min-h-10 rounded-[0.95rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-2.5 text-xs font-semibold text-[var(--ui-text-strong)] outline-none ring-1 ring-[var(--ui-ring)] transition disabled:opacity-60 focus:border-studio-accent/55 placeholder:text-[var(--ui-text-soft)]"
                   placeholder="Contoh: 150000"
                   type="number"
                   min="1"
@@ -1198,11 +1513,11 @@ export function BookkeepingAdmin() {
           </div>
 
           {formType === 'transfer' ? (
-            <label className="grid gap-1.5 text-xs font-semibold text-[var(--ui-text-muted)] uppercase tracking-[0.12em]">
+            <label className="grid gap-1.5 text-[0.68rem] font-semibold text-[var(--ui-text-muted)] uppercase tracking-[0.12em]">
               Nominal Transfer (IDR)
               <input
                 disabled={isReadOnly}
-                className="min-h-11 rounded-[1.15rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 text-sm font-semibold text-[var(--ui-text-strong)] outline-none ring-1 ring-[var(--ui-ring)] transition disabled:opacity-60 focus:border-studio-accent/55 placeholder:text-[var(--ui-text-soft)]"
+                className="min-h-10 rounded-[0.95rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-2.5 text-xs font-semibold text-[var(--ui-text-strong)] outline-none ring-1 ring-[var(--ui-ring)] transition disabled:opacity-60 focus:border-studio-accent/55 placeholder:text-[var(--ui-text-soft)]"
                 placeholder="Contoh: 150000"
                 type="number"
                 min="1"
@@ -1212,11 +1527,11 @@ export function BookkeepingAdmin() {
             </label>
           ) : null}
 
-          <label className="grid gap-1.5 text-xs font-semibold text-[var(--ui-text-muted)] uppercase tracking-[0.12em]">
+          <label className="grid gap-1.5 text-[0.68rem] font-semibold text-[var(--ui-text-muted)] uppercase tracking-[0.12em]">
             Deskripsi
             <input
               disabled={isReadOnly}
-              className="min-h-11 rounded-[1.15rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 text-sm font-semibold text-[var(--ui-text-strong)] outline-none ring-1 ring-[var(--ui-ring)] transition disabled:opacity-60 focus:border-studio-accent/55 placeholder:text-[var(--ui-text-soft)]"
+              className="min-h-10 rounded-[0.95rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-2.5 text-xs font-semibold text-[var(--ui-text-strong)] outline-none ring-1 ring-[var(--ui-ring)] transition disabled:opacity-60 focus:border-studio-accent/55 placeholder:text-[var(--ui-text-soft)]"
               placeholder={formType === 'transfer' ? 'Misal: Pemindahan kas bulanan' : 'Misal: Pembayaran Listrik bulanan'}
               type="text"
               value={formDescription}
@@ -1224,11 +1539,11 @@ export function BookkeepingAdmin() {
             />
           </label>
 
-          <label className="grid gap-1.5 text-xs font-semibold text-[var(--ui-text-muted)] uppercase tracking-[0.12em]">
+          <label className="grid gap-1.5 text-[0.68rem] font-semibold text-[var(--ui-text-muted)] uppercase tracking-[0.12em]">
             Catatan Tambahan
             <textarea
               disabled={isReadOnly}
-              className="min-h-20 resize-none rounded-[1.15rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 py-2 text-sm font-semibold text-[var(--ui-text-strong)] outline-none ring-1 ring-[var(--ui-ring)] transition disabled:opacity-60 focus:border-studio-accent/55 placeholder:text-[var(--ui-text-soft)]"
+              className="min-h-16 resize-none rounded-[0.95rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-2.5 py-1.5 text-xs font-semibold text-[var(--ui-text-strong)] outline-none ring-1 ring-[var(--ui-ring)] transition disabled:opacity-60 focus:border-studio-accent/55 placeholder:text-[var(--ui-text-soft)]"
               placeholder="Tambahkan informasi pelengkap..."
               value={formNotes}
               onChange={(e) => setFormNotes(e.target.value)}
@@ -1237,7 +1552,6 @@ export function BookkeepingAdmin() {
         </div>
       </AdminDrawer>
 
-      <BookkeepingComingSoonPanel />
     </AdminPageShell>
   );
 }

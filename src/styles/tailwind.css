@@ -6988,3 +6988,130 @@
 }
 
 /* === 37 MOBILE SAFE NAV ANCHOR END === */
+
+/* === 37 PRINT STYLESHEET OVERHAUL === */
+@media print {
+  .admin-sidebar,
+  .admin-workspace-bar,
+  .admin-mobile-bottom-bar,
+  .no-print {
+    display: none !important;
+  }
+
+  .admin-shell {
+    display: block !important;
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+
+  .admin-content-shell {
+    display: block !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  body, html, #root {
+    background: #ffffff !important;
+    background-image: none !important;
+    color: #000000 !important;
+  }
+
+  /* Force light colors and contrast */
+  * {
+    color-scheme: light !important;
+    text-shadow: none !important;
+  }
+
+  /* Make sure reports elements look clean on white paper */
+  .admin-panel {
+    border: 1px solid var(--ui-border-strong, #ccc) !important;
+    background: #ffffff !important;
+    box-shadow: none !important;
+    color: #000000 !important;
+  }
+
+  .text-studio-cyan {
+    color: #0d9488 !important; /* darker teal for print readability */
+  }
+
+  .text-studio-accent {
+    color: #db2777 !important; /* darker pink for print readability */
+  }
+
+  .bg-studio-cyan {
+    background-color: #0d9488 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .bg-studio-accent {
+    background-color: #db2777 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Category progress bar background representation */
+  .h-2.w-full.rounded-full.bg-\[var\(--ui-control\)\] {
+    background-color: #f3f4f6 !important;
+    border: 1px solid #e5e7eb !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
+
+/* === 37 BOOKKEEPING MOBILE OVERRIDES === */
+@media (max-width: 767px) {
+  /* Kecilkan font header yang kebesaran */
+  .bookkeeping-admin-workspace .admin-page-header h1 {
+    font-size: 1.55rem !important;
+    letter-spacing: -0.04em !important;
+    line-height: 1.1 !important;
+  }
+  .bookkeeping-admin-workspace .admin-page-header p {
+    font-size: 0.72rem !important;
+    line-height: 1.4 !important;
+  }
+  .bookkeeping-admin-workspace .admin-page-header {
+    padding: 0.75rem !important;
+    gap: 1.5px !important;
+  }
+
+  /* Rapatkan tabel Buku Besar */
+  .bookkeeping-admin-workspace table th,
+  .bookkeeping-admin-workspace table td {
+    padding: 0.55rem 0.65rem !important;
+    font-size: 0.72rem !important;
+  }
+
+  /* Rapatkan spacing antartab navigasi */
+  .bookkeeping-admin-workspace .flex.border-b {
+    padding-bottom: 0.5rem !important;
+  }
+
+  /* Rapatkan input command bar */
+  .bookkeeping-command-bar {
+    padding: 0.4rem !important;
+    gap: 0.35rem !important;
+  }
+  .bookkeeping-command-bar label {
+    min-height: 2.35rem !important;
+    padding-inline: 0.75rem !important;
+  }
+  .bookkeeping-command-bar button {
+    min-height: 2.25rem !important;
+    font-size: 0.72rem !important;
+    padding-inline: 0.75rem !important;
+  }
+
+  /* Dropdown custom height inside command bar */
+  .bookkeeping-command-bar .admin-dropdown-button {
+    min-height: 2.25rem !important;
+    font-size: 0.72rem !important;
+    padding-inline: 0.75rem !important;
+  }
+}
+
+
