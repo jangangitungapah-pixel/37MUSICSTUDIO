@@ -8,22 +8,23 @@ import {
   AlertTriangle,
   ArrowUpRight,
   Boxes,
+  CalendarClock,
+  ChevronDown,
   ClipboardList,
+  Download,
+  ListFilter,
   PackageCheck,
+  Pencil,
+  Plus,
+  Printer,
+  RotateCcw,
+  Save,
   Search,
   ShieldCheck,
   SlidersHorizontal,
   Tags,
-  Pencil,
-  Plus,
-  RotateCcw,
-  Save,
   Trash2,
   X,
-  Download,
-  Printer,
-  ChevronDown,
-  ListFilter,
 } from 'lucide-react';
 import { cn } from '../lib/cn.js';
 import { adminInventoryRepository } from '../services/adminInventoryRepository.js';
@@ -304,6 +305,113 @@ function getStockMovementPreview(asset, draft) {
     nextQuantity: currentQuantity + inputQuantity,
     quantityChange: inputQuantity,
   };
+}
+
+const maintenanceSchedulePresets = [
+  {
+    days: 7,
+    key: '7d',
+    label: '7 hari',
+  },
+  {
+    days: 14,
+    key: '14d',
+    label: '14 hari',
+  },
+  {
+    days: 30,
+    key: '30d',
+    label: '30 hari',
+  },
+  {
+    days: 60,
+    key: '60d',
+    label: '60 hari',
+  },
+];
+
+function parseInventoryDateKey(value) {
+  const parts = String(value || '').split('-').map(Number);
+
+  if (parts.length !== 3 || parts.some((part) => Number.isNaN(part))) {
+    return new Date();
+  }
+
+  return new Date(parts[0], parts[1] - 1, parts[2]);
+}
+
+function formatInventoryDateKey(date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+
+  return [year, month, day].join('-');
+}
+
+function addDaysToInventoryDateKey(value, days) {
+  const baseDate = value ? parseInventoryDateKey(value) : new Date();
+
+  baseDate.setDate(baseDate.getDate() + Number(days || 0));
+
+  return formatInventoryDateKey(baseDate);
+}
+
+function createMaintenanceDraft(asset = {}) {
+  return {
+    checkedDate: getTodayDateKey(),
+    condition: normalizeInventoryCondition(asset.condition),
+    nextMaintenance: asset.nextMaintenance || addDaysToInventoryDateKey(getTodayDateKey(), 30),
+    note: '',
+    status: asset.status === 'retired' ? 'retired' : 'ready',
+  };
+}
+
+function getMaintenanceDueState(asset) {
+  const nextDate = parseInventoryDateKey(asset.nextMaintenance);
+  const today = parseInventoryDateKey(getTodayDateKey());
+  const diffDays = Math.ceil((nextDate.getTime() - today.getTime()) / 86400000);
+
+  if (Number.isNaN(diffDays)) {
+    return {
+      label: 'No schedule',
+      tone: 'muted',
+    };
+  }
+
+  if (diffDays < 0) {
+    return {
+      label: Math.abs(diffDays) + ' hari overdue',
+      tone: 'danger',
+    };
+  }
+
+  if (diffDays <= 7) {
+    return {
+      label: diffDays + ' hari lagi',
+      tone: 'warning',
+    };
+  }
+
+  return {
+    label: diffDays + ' hari lagi',
+    tone: 'safe',
+  };
+}
+
+function getMaintenanceDueToneClass(tone) {
+  if (tone === 'danger') {
+    return 'bg-studio-accent/10 text-studio-accent';
+  }
+
+  if (tone === 'warning') {
+    return 'bg-studio-purple/10 text-studio-purple';
+  }
+
+  if (tone === 'safe') {
+    return 'bg-studio-cyan/10 text-studio-cyan';
+  }
+
+  return 'bg-[var(--ui-control)] text-[var(--ui-text-muted)]';
 }
 
 
@@ -1513,6 +1621,172 @@ function InventoryStockMovementDrawer({
   );
 }
 
+function InventoryMaintenanceSchedulerDrawer({
+  asset,
+  draft,
+  schedulerStatus,
+  onApplyPreset,
+  onCancel,
+  onChange,
+  onSubmit,
+}) {
+  if (!asset || !draft) {
+    return null;
+  }
+
+  const isSaving = schedulerStatus === 'saving';
+  const dueState = getMaintenanceDueState({
+    ...asset,
+    nextMaintenance: draft.nextMaintenance,
+  });
+
+  return (
+    <section className="fixed inset-0 z-50 grid justify-items-end bg-black/60 p-3 backdrop-blur-md" aria-label="Inventory maintenance scheduler drawer">
+      <form className="flex h-full w-full min-w-0 max-w-[500px] flex-col overflow-hidden rounded-[1.4rem] border border-[var(--ui-border-strong)] bg-[var(--ui-bg-base)] shadow-[var(--ui-shadow-strong)] ring-1 ring-[var(--ui-ring)]" onSubmit={onSubmit}>
+        <div className="flex items-start justify-between gap-3 border-b border-[var(--ui-border)] p-4">
+          <div className="grid min-w-0 gap-1">
+            <span className="text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-studio-purple">
+              Maintenance scheduler
+            </span>
+            <h2 className="m-0 truncate text-2xl font-semibold tracking-[-0.06em] text-[var(--ui-text-strong)]">
+              {asset.name}
+            </h2>
+            <p className="m-0 text-sm font-semibold text-[var(--ui-text-muted)]">
+              {asset.category} • {asset.location}
+            </p>
+          </div>
+
+          <button
+            aria-label="Close maintenance scheduler"
+            className="grid size-9 shrink-0 place-items-center rounded-full bg-[var(--ui-control-hover)] text-[var(--ui-text-muted)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-purple/20"
+            type="button"
+            onClick={onCancel}
+          >
+            <X size={15} strokeWidth={2.35} aria-hidden="true" />
+          </button>
+        </div>
+
+        <div className="grid min-w-0 flex-1 gap-4 overflow-y-auto overflow-x-hidden p-4">
+          <section className="grid gap-3 rounded-2xl border border-[var(--ui-border)] bg-[var(--ui-control)] p-3 ring-1 ring-[var(--ui-ring)]">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div className="grid gap-0.5">
+                <span className="text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-[var(--ui-text-muted)]">
+                  Current schedule
+                </span>
+                <strong className="text-xl font-semibold tracking-[-0.05em] text-[var(--ui-text-strong)]">
+                  {formatDateLabel(asset.nextMaintenance)}
+                </strong>
+              </div>
+
+              <span className={cn('rounded-full px-3 py-1 text-xs font-semibold', getMaintenanceDueToneClass(dueState.tone))}>
+                {dueState.label}
+              </span>
+            </div>
+          </section>
+
+          <section className="grid gap-3">
+            <label className="grid min-w-0 gap-1.5 text-sm font-semibold text-[var(--ui-text-main)]">
+              <span className="text-[0.68rem] uppercase tracking-[0.12em] text-[var(--ui-text-muted)]">
+                Checked date
+              </span>
+              <input
+                className="min-h-11 w-full min-w-0 rounded-xl border border-[var(--ui-border)] bg-[var(--ui-control-hover)] px-3 text-sm font-semibold text-[var(--ui-text-strong)] outline-none ring-1 ring-[var(--ui-ring)] focus:border-studio-purple/45 focus:ring-4 focus:ring-studio-purple/15"
+                type="date"
+                value={draft.checkedDate}
+                onChange={(event) => onChange('checkedDate', event.target.value)}
+              />
+            </label>
+
+            <label className="grid min-w-0 gap-1.5 text-sm font-semibold text-[var(--ui-text-main)]">
+              <span className="text-[0.68rem] uppercase tracking-[0.12em] text-[var(--ui-text-muted)]">
+                Next maintenance
+              </span>
+              <input
+                className="min-h-11 w-full min-w-0 rounded-xl border border-[var(--ui-border)] bg-[var(--ui-control-hover)] px-3 text-sm font-semibold text-[var(--ui-text-strong)] outline-none ring-1 ring-[var(--ui-ring)] focus:border-studio-purple/45 focus:ring-4 focus:ring-studio-purple/15"
+                type="date"
+                value={draft.nextMaintenance}
+                onChange={(event) => onChange('nextMaintenance', event.target.value)}
+              />
+            </label>
+
+            <div className="grid gap-2">
+              <span className="text-[0.68rem] font-semibold uppercase tracking-[0.12em] text-[var(--ui-text-muted)]">
+                Quick schedule
+              </span>
+
+              <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+                {maintenanceSchedulePresets.map((preset) => (
+                  <button
+                    className="inline-flex min-h-10 items-center justify-center rounded-xl border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 text-xs font-semibold text-[var(--ui-text-main)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-purple/20"
+                    key={preset.key}
+                    type="button"
+                    onClick={() => onApplyPreset(preset.days)}
+                  >
+                    {preset.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </section>
+
+          <section className="grid min-w-0 gap-3 sm:grid-cols-2">
+            <InventoryDropdown
+              icon={ListFilter}
+              label="Status setelah cek"
+              options={inventoryFormStatusOptions}
+              value={draft.status}
+              onChange={(value) => onChange('status', value)}
+            />
+
+            <InventoryConditionSelect value={draft.condition} onChange={(value) => onChange('condition', value)} />
+          </section>
+
+          <label className="grid min-w-0 gap-1.5 text-sm font-semibold text-[var(--ui-text-main)]">
+            <span className="text-[0.68rem] uppercase tracking-[0.12em] text-[var(--ui-text-muted)]">
+              Maintenance note
+            </span>
+            <textarea
+              className="min-h-28 w-full min-w-0 resize-y rounded-xl border border-[var(--ui-border)] bg-[var(--ui-control-hover)] p-3 text-sm font-medium leading-6 text-[var(--ui-text-strong)] outline-none ring-1 ring-[var(--ui-ring)] placeholder:text-[var(--ui-text-soft)] focus:border-studio-purple/45 focus:ring-4 focus:ring-studio-purple/15"
+              placeholder="Contoh: pot volume dibersihkan, kabel dicek ulang, clamp stand dikencangkan..."
+              value={draft.note}
+              onChange={(event) => onChange('note', event.target.value)}
+            />
+          </label>
+        </div>
+
+        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[var(--ui-border)] p-4">
+          <span className={cn(
+            'text-sm font-semibold',
+            schedulerStatus === 'error' ? 'text-studio-accent' : 'text-[var(--ui-text-muted)]',
+          )}>
+            {schedulerStatus === 'saved' ? 'Maintenance saved.' : schedulerStatus === 'error' ? 'Maintenance gagal.' : 'Update jadwal dan timeline.'}
+          </span>
+
+          <div className="flex flex-wrap gap-2">
+            <button
+              className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full bg-[var(--ui-control-hover)] px-4 text-sm font-semibold text-[var(--ui-text-muted)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-purple/20"
+              disabled={isSaving}
+              type="button"
+              onClick={onCancel}
+            >
+              Cancel
+            </button>
+
+            <button
+              className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full [background:var(--ui-primary-bg)] px-5 text-sm font-semibold text-[var(--ui-primary-text)] shadow-[var(--ui-shadow-soft)] transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-purple/20 disabled:cursor-not-allowed disabled:opacity-60"
+              disabled={isSaving}
+              type="submit"
+            >
+              <Save size={15} strokeWidth={2.35} aria-hidden="true" />
+              {isSaving ? 'Saving...' : 'Save schedule'}
+            </button>
+          </div>
+        </div>
+      </form>
+    </section>
+  );
+}
+
 function InventoryItemDetailDrawer({
   asset,
   logs,
@@ -1520,6 +1794,7 @@ function InventoryItemDetailDrawer({
   onDeleteAsset,
   onEditAsset,
   onMarkMaintenance,
+  onOpenMaintenanceScheduler,
   onOpenStockMovement,
 }) {
   if (!asset) {
@@ -1529,6 +1804,7 @@ function InventoryItemDetailDrawer({
   const stockPercent = getInventoryStockPercent(asset);
   const isMaintenance = asset.status === 'maintenance';
   const itemLogs = getInventoryItemActivityLogs(logs, asset.id);
+  const dueState = getMaintenanceDueState(asset);
 
   return (
     <section className="fixed inset-0 z-40 grid justify-items-end bg-black/60 p-3 backdrop-blur-md" aria-label="Inventory item detail drawer">
@@ -1550,7 +1826,7 @@ function InventoryItemDetailDrawer({
 
           <button
             aria-label="Close asset detail"
-            className="grid size-9 shrink-0 place-items-center rounded-full bg-[var(--ui-control)] text-[var(--ui-text-muted)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
+            className="grid size-9 shrink-0 place-items-center rounded-full bg-[var(--ui-control-hover)] text-[var(--ui-text-muted)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
             type="button"
             onClick={onCancel}
           >
@@ -1558,11 +1834,14 @@ function InventoryItemDetailDrawer({
           </button>
         </div>
 
-        <div className="grid flex-1 gap-4 overflow-y-auto p-4">
+        <div className="grid flex-1 gap-4 overflow-y-auto overflow-x-hidden p-4">
           <section className="grid gap-3">
             <div className="flex flex-wrap items-center gap-2">
               <InventoryStatusBadge status={asset.status} />
               <InventoryConditionBadge condition={asset.condition} />
+              <span className={cn('rounded-md px-2 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.12em]', getMaintenanceDueToneClass(dueState.tone))}>
+                {dueState.label}
+              </span>
             </div>
 
             <div className="grid gap-3 sm:grid-cols-3">
@@ -1663,14 +1942,23 @@ function InventoryItemDetailDrawer({
           </section>
         </div>
 
-        <div className="grid gap-2 border-t border-[var(--ui-border)] p-4 sm:grid-cols-[1fr_1fr_auto_auto]">
+        <div className="grid gap-2 border-t border-[var(--ui-border)] p-4 sm:grid-cols-[1fr_1fr_1fr_auto_auto]">
           <button
             className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full bg-studio-cyan/10 px-4 text-sm font-semibold text-studio-cyan transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-cyan/20"
             type="button"
             onClick={() => onOpenStockMovement(asset)}
           >
             <RotateCcw size={14} strokeWidth={2.35} aria-hidden="true" />
-            Move stock
+            Move
+          </button>
+
+          <button
+            className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full bg-studio-purple/10 px-4 text-sm font-semibold text-studio-purple transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-purple/20"
+            type="button"
+            onClick={() => onOpenMaintenanceScheduler(asset)}
+          >
+            <CalendarClock size={14} strokeWidth={2.35} aria-hidden="true" />
+            Schedule
           </button>
 
           <button
@@ -1678,7 +1966,7 @@ function InventoryItemDetailDrawer({
             type="button"
             onClick={() => onMarkMaintenance(asset)}
           >
-            {isMaintenance ? 'Mark ready' : 'Maintenance'}
+            {isMaintenance ? 'Ready' : 'Maint'}
           </button>
 
           <button
@@ -1871,6 +2159,9 @@ export function InventoryAdmin() {
   const [stockMovementDraft, setStockMovementDraft] = useState(null);
   const [stockMovementStatus, setStockMovementStatus] = useState('idle');
   const [detailAsset, setDetailAsset] = useState(null);
+  const [maintenanceSchedulerAsset, setMaintenanceSchedulerAsset] = useState(null);
+  const [maintenanceSchedulerDraft, setMaintenanceSchedulerDraft] = useState(null);
+  const [maintenanceSchedulerStatus, setMaintenanceSchedulerStatus] = useState('idle');
   const [activityLogs, setActivityLogs] = useState([]);
   const [activityState, setActivityState] = useState({
     errorMessage: '',
@@ -1942,6 +2233,12 @@ export function InventoryAdmin() {
       ? activeAssets.find((asset) => asset.id === detailAsset.id) || detailAsset
       : null),
     [activeAssets, detailAsset],
+  );
+  const selectedMaintenanceSchedulerAsset = useMemo(
+    () => (maintenanceSchedulerAsset
+      ? activeAssets.find((asset) => asset.id === maintenanceSchedulerAsset.id) || maintenanceSchedulerAsset
+      : null),
+    [activeAssets, maintenanceSchedulerAsset],
   );
 
   const resetAssetFormStatus = () => {
@@ -2207,6 +2504,93 @@ export function InventoryAdmin() {
     await handleDeleteAsset(asset);
   };
 
+  const resetMaintenanceSchedulerStatus = () => {
+    window.setTimeout(() => {
+      setMaintenanceSchedulerStatus('idle');
+    }, 2200);
+  };
+
+  const closeMaintenanceSchedulerDrawer = () => {
+    setMaintenanceSchedulerAsset(null);
+    setMaintenanceSchedulerDraft(null);
+    setMaintenanceSchedulerStatus('idle');
+  };
+
+  const openMaintenanceSchedulerDrawer = (asset) => {
+    setMaintenanceSchedulerAsset(asset);
+    setMaintenanceSchedulerDraft(createMaintenanceDraft(asset));
+    setMaintenanceSchedulerStatus('idle');
+  };
+
+  const handleMaintenanceSchedulerChange = (field, value) => {
+    setMaintenanceSchedulerDraft((currentDraft) => ({
+      ...currentDraft,
+      [field]: value,
+    }));
+
+    if (maintenanceSchedulerStatus !== 'idle') {
+      setMaintenanceSchedulerStatus('idle');
+    }
+  };
+
+  const handleMaintenanceSchedulerPreset = (days) => {
+    setMaintenanceSchedulerDraft((currentDraft) => ({
+      ...currentDraft,
+      nextMaintenance: addDaysToInventoryDateKey(currentDraft?.checkedDate || getTodayDateKey(), days),
+    }));
+
+    if (maintenanceSchedulerStatus !== 'idle') {
+      setMaintenanceSchedulerStatus('idle');
+    }
+  };
+
+  const handleMaintenanceSchedulerSubmit = async (event) => {
+    event.preventDefault();
+
+    if (!maintenanceSchedulerAsset || !maintenanceSchedulerDraft) {
+      setMaintenanceSchedulerStatus('error');
+      resetMaintenanceSchedulerStatus();
+      return;
+    }
+
+    setMaintenanceSchedulerStatus('saving');
+
+    try {
+      const nextItem = {
+        ...maintenanceSchedulerAsset,
+        condition: normalizeInventoryCondition(maintenanceSchedulerDraft.condition),
+        lastChecked: maintenanceSchedulerDraft.checkedDate || getTodayDateKey(),
+        nextMaintenance: maintenanceSchedulerDraft.nextMaintenance || maintenanceSchedulerAsset.nextMaintenance,
+        status: maintenanceSchedulerDraft.status || maintenanceSchedulerAsset.status,
+      };
+
+      await adminInventoryRepository.upsertInventoryItem(nextItem, adminUser);
+      await recordInventoryLog({
+        action: 'inventory-maintenance-scheduled',
+        itemId: maintenanceSchedulerAsset.id,
+        itemName: maintenanceSchedulerAsset.name,
+        label: 'Maintenance scheduled: ' + formatDateLabel(nextItem.nextMaintenance),
+        note: maintenanceSchedulerDraft.note,
+        sourceName: 'Maintenance scheduler',
+      });
+
+      setMaintenanceSchedulerStatus('saved');
+
+      window.setTimeout(() => {
+        closeMaintenanceSchedulerDrawer();
+      }, 650);
+    } catch (error) {
+      console.error('Failed to save inventory maintenance schedule.', error);
+      setMaintenanceSchedulerStatus('error');
+      resetMaintenanceSchedulerStatus();
+    }
+  };
+
+  const handleDetailScheduleMaintenance = (asset) => {
+    closeItemDetailDrawer();
+    openMaintenanceSchedulerDrawer(asset);
+  };
+
   const handleExportInventory = () => {
     downloadInventoryCsv(filteredAssets);
   };
@@ -2266,7 +2650,18 @@ export function InventoryAdmin() {
         onDeleteAsset={handleDetailDeleteAsset}
         onEditAsset={handleDetailEditAsset}
         onMarkMaintenance={handleMarkMaintenance}
+        onOpenMaintenanceScheduler={handleDetailScheduleMaintenance}
         onOpenStockMovement={handleDetailMoveAsset}
+      />
+
+      <InventoryMaintenanceSchedulerDrawer
+        asset={selectedMaintenanceSchedulerAsset}
+        draft={maintenanceSchedulerDraft}
+        schedulerStatus={maintenanceSchedulerStatus}
+        onApplyPreset={handleMaintenanceSchedulerPreset}
+        onCancel={closeMaintenanceSchedulerDrawer}
+        onChange={handleMaintenanceSchedulerChange}
+        onSubmit={handleMaintenanceSchedulerSubmit}
       />
 
       <InventoryStockMovementDrawer
