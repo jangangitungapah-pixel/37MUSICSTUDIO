@@ -33,6 +33,14 @@ import {
   ReceiptText,
 } from 'lucide-react';
 import { cn } from '../lib/cn.js';
+import {
+  AdminBadge,
+  AdminButton,
+  AdminCommandBar,
+  AdminPageHeader,
+  AdminPageShell,
+  AdminPanel,
+} from '../components/admin/AdminPrimitives.jsx';
 
 const customerStatusFilters = [
   {
@@ -1172,31 +1180,32 @@ function CustomerHero({
     : 'Data booking real Firestore';
 
   return (
-    <header className="customer-page-header flex flex-wrap items-end justify-between gap-3 rounded-[1.25rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] px-3 py-3 ring-1 ring-[var(--ui-ring)] sm:px-4">
-      <div className="grid gap-1">
-        <h1 className="m-0 text-2xl font-semibold tracking-[-0.055em] text-[var(--ui-text-strong)] sm:text-3xl">
-          Customer List
-        </h1>
-
-        <p className="m-0 text-xs font-medium leading-5 text-[var(--ui-text-muted)] sm:text-sm">
-          Kontak, status, dan shortcut booking dari data real.
-        </p>
-      </div>
-
-      <div className="customer-page-active grid min-w-[9.5rem] gap-0.5 rounded-[1rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 py-2 text-right ring-1 ring-[var(--ui-ring)]">
-        <span className="text-[0.58rem] font-semibold uppercase tracking-[0.14em] text-[var(--ui-text-muted)]">
-          Active
-        </span>
-
-        <strong className="truncate text-sm font-semibold tracking-[-0.03em] text-[var(--ui-text-strong)]">
+    <AdminPageHeader
+      actions={(
+        <AdminBadge icon={UsersRound} tone="strong">
           {activeLabel}
-        </strong>
-
-        <span className="truncate text-[0.68rem] font-medium text-[var(--ui-text-muted)]">
-          {activeHelper}
-        </span>
-      </div>
-    </header>
+        </AdminBadge>
+      )}
+      description="Kelola kontak, histori booking, follow-up pembayaran, tag CRM, dan shortcut komunikasi dari data booking real."
+      eyebrow="Studio CRM"
+      meta={(
+        <>
+          <AdminBadge icon={CalendarClock} tone="cyan">
+            {stats.upcomingCustomers} upcoming
+          </AdminBadge>
+          <AdminBadge icon={CheckCircle2} tone="purple">
+            {stats.returningCustomers} returning
+          </AdminBadge>
+          <AdminBadge icon={CreditCard} tone="neutral">
+            {formatCurrency(stats.totalRevenue)}
+          </AdminBadge>
+          <AdminBadge tone="muted">
+            {activeHelper}
+          </AdminBadge>
+        </>
+      )}
+      title="Customer list"
+    />
   );
 }
 
@@ -1207,21 +1216,25 @@ function MetricStrip({
     {
       icon: UsersRound,
       label: 'Customers',
+      tone: 'strong',
       value: stats.totalCustomers,
     },
     {
       icon: CheckCircle2,
       label: 'Returning',
+      tone: 'purple',
       value: stats.returningCustomers,
     },
     {
       icon: CalendarClock,
       label: 'Upcoming',
+      tone: 'cyan',
       value: stats.upcomingCustomers,
     },
     {
       icon: CreditCard,
       label: 'Revenue',
+      tone: 'neutral',
       value: formatCurrency(stats.totalRevenue),
     },
   ];
@@ -1232,19 +1245,23 @@ function MetricStrip({
         const Icon = item.icon;
 
         return (
-          <article
-            className="flex min-h-14 items-center justify-between gap-2 rounded-[1rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] px-3 py-2 ring-1 ring-[var(--ui-ring)]"
+          <AdminPanel
+            as="article"
+            className="flex min-h-16 items-center justify-between gap-3 p-3"
             key={item.label}
+            variant="flat"
           >
-            <span className="inline-flex min-w-0 items-center gap-1.5 text-[0.65rem] font-semibold uppercase tracking-[0.11em] text-[var(--ui-text-muted)]">
-              <Icon className="shrink-0 text-studio-accent" size={13} strokeWidth={2.35} aria-hidden="true" />
+            <span className="inline-flex min-w-0 items-center gap-2 text-[0.65rem] font-semibold uppercase tracking-[0.11em] text-[var(--ui-text-muted)]">
+              <span className="grid size-8 shrink-0 place-items-center rounded-full border border-[var(--ui-border)] bg-[var(--ui-control)] text-studio-accent ring-1 ring-[var(--ui-ring)]">
+                <Icon size={14} strokeWidth={2.35} aria-hidden="true" />
+              </span>
               <span className="truncate">{item.label}</span>
             </span>
 
-            <strong className="shrink-0 text-sm font-semibold tracking-[-0.035em] text-[var(--ui-text-strong)]">
+            <strong className="shrink-0 text-sm font-semibold tracking-[-0.035em] text-[var(--ui-text-strong)] sm:text-base">
               {item.value}
             </strong>
-          </article>
+          </AdminPanel>
         );
       })}
     </section>
@@ -1353,7 +1370,7 @@ function CustomerTagFilterStrip({
   }
 
   return (
-    <section className="customer-tag-filter-strip -mx-1 flex snap-x gap-1.5 overflow-x-auto px-1 pb-1" aria-label="Customer CRM tag filters">
+    <AdminPanel className="customer-tag-filter-strip flex snap-x gap-1.5 overflow-x-auto p-2" aria-label="Customer CRM tag filters" variant="flat">
       <button
         aria-pressed={activeTagFilter === 'all'}
         className={cn(
@@ -1395,7 +1412,7 @@ function CustomerTagFilterStrip({
           </button>
         );
       })}
-    </section>
+    </AdminPanel>
   );
 }
 
@@ -1438,7 +1455,7 @@ function CustomerAttentionStrip({
   ];
 
   return (
-    <section className="customer-attention-strip -mx-1 flex snap-x gap-1.5 overflow-x-auto px-1 pb-1" aria-label="Customer attention filters">
+    <AdminPanel className="customer-attention-strip flex snap-x gap-1.5 overflow-x-auto p-2" aria-label="Customer attention filters" variant="flat">
       {items.map((item) => {
         const Icon = item.icon;
         const isActive = activeFilter === item.key;
@@ -1464,7 +1481,7 @@ function CustomerAttentionStrip({
           </button>
         );
       })}
-    </section>
+    </AdminPanel>
   );
 }
 
@@ -1478,15 +1495,15 @@ function CustomerToolbar({
   onStatusFilterChange,
 }) {
   return (
-    <section className="customer-toolbar-slim grid gap-2 rounded-[1.15rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-2 ring-1 ring-[var(--ui-ring)]">
+    <AdminCommandBar className="customer-toolbar-slim gap-2 p-2 lg:grid-cols-[minmax(0,1fr)_minmax(13rem,0.28fr)_minmax(13rem,0.28fr)_auto] lg:items-end">
       <label className="grid gap-1 text-xs font-semibold text-[var(--ui-text-main)]">
         <span className="sr-only">Search customer</span>
 
-        <span className="flex min-h-10 items-center gap-2 rounded-[0.95rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 ring-1 ring-[var(--ui-ring)] focus-within:border-studio-accent/55 focus-within:ring-4 focus-within:ring-studio-accent/20">
+        <span className="flex min-h-11 items-center gap-2 rounded-full border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 ring-1 ring-[var(--ui-ring)] focus-within:border-studio-accent/55 focus-within:ring-4 focus-within:ring-studio-accent/20">
           <Search className="shrink-0 text-[var(--ui-text-muted)]" size={15} strokeWidth={2.35} aria-hidden="true" />
           <input
-            className="w-full border-0 bg-transparent text-xs font-semibold text-[var(--ui-text-strong)] outline-none placeholder:text-[var(--ui-text-soft)]"
-            placeholder="Cari nama, nomor HP, atau tipe sesi..."
+            className="w-full border-0 bg-transparent text-sm font-semibold text-[var(--ui-text-strong)] outline-none placeholder:text-[var(--ui-text-soft)]"
+            placeholder="Cari nama, nomor HP, tipe sesi, tag, atau notes..."
             type="search"
             value={searchTerm}
             onChange={(event) => onSearchChange(event.target.value)}
@@ -1494,7 +1511,7 @@ function CustomerToolbar({
           {searchTerm ? (
             <button
               aria-label="Clear customer search"
-              className="grid size-7 shrink-0 place-items-center rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] text-[var(--ui-secondary-text)] transition hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)]"
+              className="grid size-8 shrink-0 place-items-center rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] text-[var(--ui-secondary-text)] transition hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)]"
               type="button"
               onClick={() => onSearchChange('')}
             >
@@ -1504,28 +1521,26 @@ function CustomerToolbar({
         </span>
       </label>
 
-      <div className="grid grid-cols-2 gap-2">
-        <ToolbarSelect
-          icon={ListFilter}
-          label="Segment"
-          options={customerStatusFilters}
-          value={statusFilter}
-          onChange={onStatusFilterChange}
-        />
+      <ToolbarSelect
+        icon={ListFilter}
+        label="Segment"
+        options={customerStatusFilters}
+        value={statusFilter}
+        onChange={onStatusFilterChange}
+      />
 
-        <ToolbarSelect
-          icon={History}
-          label="Sort"
-          options={customerSortOptions}
-          value={sortMode}
-          onChange={onSortChange}
-        />
-      </div>
+      <ToolbarSelect
+        icon={History}
+        label="Sort"
+        options={customerSortOptions}
+        value={sortMode}
+        onChange={onSortChange}
+      />
 
-      <div className="text-xs font-semibold text-[var(--ui-text-muted)]">
-        <span className="text-[var(--ui-text-strong)]">{resultCount}</span> customer
-      </div>
-    </section>
+      <AdminBadge className="min-h-11 justify-center px-3" icon={UsersRound} tone="strong">
+        {resultCount} customer
+      </AdminBadge>
+    </AdminCommandBar>
   );
 }
 
@@ -1559,39 +1574,39 @@ function CustomerExportPanel({
   };
 
   return (
-    <section className="customer-export-panel flex flex-wrap items-center justify-between gap-2 rounded-[1rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-2 ring-1 ring-[var(--ui-ring)]" aria-label="Customer export and print">
+    <AdminPanel className="customer-export-panel flex flex-wrap items-center justify-between gap-3 p-3" aria-label="Customer export and print" variant="flat">
       <div className="grid gap-0.5">
         <span className="text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-[var(--ui-text-muted)]">
           Export contact list
         </span>
 
-        <strong className="text-xs font-semibold text-[var(--ui-text-strong)]">
+        <strong className="text-sm font-semibold text-[var(--ui-text-strong)]">
           {visibleLabel}
         </strong>
       </div>
 
-      <div className="flex flex-wrap items-center gap-1.5">
-        <button
-          className="inline-flex min-h-9 items-center justify-center gap-1.5 rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] px-3 text-xs font-semibold text-[var(--ui-secondary-text)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20 disabled:cursor-not-allowed disabled:opacity-50"
+      <div className="flex flex-wrap items-center gap-2">
+        <AdminButton
           disabled={!hasCustomers}
-          type="button"
+          icon={Download}
+          size="sm"
+          variant="secondary"
           onClick={handleExportCsv}
         >
-          <Download size={13} strokeWidth={2.35} aria-hidden="true" />
-          {exportStatus === 'done' ? 'CSV ready' : exportStatus === 'error' ? 'No data' : 'Export CSV'}
-        </button>
+          {exportStatus === 'done' ? 'CSV ready' : exportStatus === 'error' ? 'No data' : 'CSV'}
+        </AdminButton>
 
-        <button
-          className="inline-flex min-h-9 items-center justify-center gap-1.5 rounded-full border border-studio-cyan/35 bg-studio-cyan/10 px-3 text-xs font-semibold text-studio-cyan ring-1 ring-studio-cyan/15 transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-cyan/20 disabled:cursor-not-allowed disabled:opacity-50"
+        <AdminButton
           disabled={!hasCustomers}
-          type="button"
+          icon={Printer}
+          size="sm"
+          variant="secondary"
           onClick={handlePrintList}
         >
-          <Printer size={13} strokeWidth={2.35} aria-hidden="true" />
-          {printStatus === 'done' ? 'Print opened' : printStatus === 'error' ? 'Popup blocked' : 'Print list'}
-        </button>
+          {printStatus === 'done' ? 'Print opened' : printStatus === 'error' ? 'No data' : 'Print'}
+        </AdminButton>
       </div>
-    </section>
+    </AdminPanel>
   );
 }
 
@@ -3322,7 +3337,7 @@ export function CustomerAdmin() {
   };
 
   return (
-    <section className="customer-mobile-workspace grid gap-3 pb-[calc(8.5rem+env(safe-area-inset-bottom))] pt-1 sm:gap-4 md:pb-4 md:pt-2" aria-labelledby="customer-admin-title">
+    <AdminPageShell className="customer-mobile-workspace gap-3 pb-[calc(8.5rem+env(safe-area-inset-bottom))] pt-1 sm:gap-4 md:pb-4 md:pt-2" width="wide">
       <div className="sr-only" id="customer-admin-title">
         Customer admin workspace
       </div>
@@ -3402,6 +3417,6 @@ export function CustomerAdmin() {
           />
         </div>
       )}
-    </section>
+    </AdminPageShell>
   );
 }
