@@ -14,13 +14,14 @@ import {
   ShieldCheck,
   SlidersHorizontal,
   Tags,
-  Wrench,
   Pencil,
   Plus,
   RotateCcw,
   Save,
   Trash2,
   X,
+  Download,
+  Printer,
 } from 'lucide-react';
 import { cn } from '../lib/cn.js';
 import { adminInventoryRepository } from '../services/adminInventoryRepository.js';
@@ -225,6 +226,214 @@ function formatCurrency(value) {
   }).format(Number(value) || 0);
 }
 
+function createInventoryReportFileName(prefix = 'inventory-report') {
+  return prefix + '-' + new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+}
+
+function escapeCsvValue(value) {
+  const text = String(value ?? '');
+
+  if (/[",\n\r]/u.test(text)) {
+    return '"' + text.replace(/"/g, '""') + '"';
+  }
+
+  return text;
+}
+
+function escapeReportHtml(value) {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+function getInventoryStockPercent(asset) {
+  const quantity = Number(asset.quantity) || 0;
+  const minQuantity = Number(asset.minQuantity) || 0;
+
+  if (minQuantity <= 0) {
+    return 100;
+  }
+
+  return Math.min(100, Math.round((quantity / minQuantity) * 100));
+}
+
+function getInventoryReportRows(assets) {
+  return assets.map((asset) => ({
+    category: asset.category || '',
+    condition: asset.condition || '',
+    id: asset.id || '',
+    lastChecked: asset.lastChecked || '',
+    location: asset.location || '',
+    minQuantity: Number(asset.minQuantity) || 0,
+    name: asset.name || '',
+    nextMaintenance: asset.nextMaintenance || '',
+    notes: asset.notes || '',
+    quantity: Number(asset.quantity) || 0,
+    status: asset.status || '',
+    stockPercent: getInventoryStockPercent(asset),
+    valueEstimate: Number(asset.valueEstimate) || 0,
+  }));
+}
+
+function downloadInventoryCsv(assets) {
+  if (typeof window === 'undefined' || typeof document === 'undefined') {
+    return;
+  }
+
+  const headers = [
+    'Name',
+    'Category',
+    'Location',
+    'Status',
+    'Quantity',
+    'Minimum',
+    'Stock %',
+    'Condition',
+    'Value Estimate',
+    'Last Checked',
+    'Next Maintenance',
+    'Notes',
+  ];
+
+  const rows = getInventoryReportRows(assets).map((row) => [
+    row.name,
+    row.category,
+    row.location,
+    row.status,
+    row.quantity,
+    row.minQuantity,
+    row.stockPercent,
+    row.condition,
+    row.valueEstimate,
+    row.lastChecked,
+    row.nextMaintenance,
+    row.notes,
+  ]);
+
+  const csvContent = [
+    headers,
+    ...rows,
+  ]
+    .map((row) => row.map(escapeCsvValue).join(','))
+    .join('\n');
+
+  const blob = new Blob([csvContent], {
+    type: 'text/csv;charset=utf-8;',
+  });
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement('a');
+
+  anchor.href = url;
+  anchor.download = createInventoryReportFileName('37-studio-inventory') + '.csv';
+  anchor.style.display = 'none';
+
+  document.body.appendChild(anchor);
+  anchor.click();
+  anchor.remove();
+
+  URL.revokeObjectURL(url);
+}
+
+function createInventoryPrintMarkup(assets, stats) {
+  const rows = getInventoryReportRows(assets);
+  const generatedAt = new Intl.DateTimeFormat('id-ID', {
+    dateStyle: 'full',
+    timeStyle: 'short',
+  }).format(new Date());
+
+  const rowMarkup = rows.map((row, index) => (
+    '<tr>' +
+      '<td>' + String(index + 1) + '</td>' +
+      '<td><strong>' + escapeReportHtml(row.name) + '</strong><br><span>' + escapeReportHtml(row.category) + ' • ' + escapeReportHtml(row.location) + '</span></td>' +
+      '<td>' + escapeReportHtml(row.status) + '</td>' +
+      '<td>' + escapeReportHtml(row.quantity) + ' / min ' + escapeReportHtml(row.minQuantity) + '</td>' +
+      '<td>' + escapeReportHtml(row.stockPercent) + '%</td>' +
+      '<td>' + escapeReportHtml(formatCurrency(row.valueEstimate)) + '</td>' +
+    '</tr>'
+  )).join('');
+
+  return '<!doctype html>' +
+    '<html lang="id">' +
+    '<head>' +
+      '<meta charset="utf-8">' +
+      '<title>37 Music Studio Inventory Report</title>' +
+      '<style>' +
+        '*{box-sizing:border-box}' +
+        'body{margin:0;padding:32px;font-family:Inter,Arial,sans-serif;color:#111827;background:#fff}' +
+        '.report-header{display:flex;justify-content:space-between;gap:24px;border-bottom:2px solid #111827;padding-bottom:18px;margin-bottom:22px}' +
+        '.eyebrow{font-size:11px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:#be185d;margin:0 0 8px}' +
+        'h1{font-size:34px;line-height:1;margin:0;letter-spacing:-.06em}' +
+        '.meta{font-size:12px;color:#4b5563;text-align:right;line-height:1.6}' +
+        '.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:0 0 20px}' +
+        '.stat{border:1px solid #d1d5db;border-radius:14px;padding:12px}' +
+        '.stat span{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.14em;color:#6b7280;font-weight:800}' +
+        '.stat strong{display:block;font-size:22px;margin-top:4px;letter-spacing:-.04em}' +
+        'table{width:100%;border-collapse:collapse;font-size:12px}' +
+        'th{border-bottom:1px solid #111827;text-align:left;text-transform:uppercase;letter-spacing:.14em;font-size:10px;padding:10px 8px;color:#374151}' +
+        'td{border-bottom:1px solid #e5e7eb;padding:10px 8px;vertical-align:top}' +
+        'td span{color:#6b7280;font-size:11px}' +
+        '@media print{body{padding:20px}.no-print{display:none}}' +
+      '</style>' +
+    '</head>' +
+    '<body>' +
+      '<header class="report-header">' +
+        '<div>' +
+          '<p class="eyebrow">37 Music Studio</p>' +
+          '<h1>Inventory Report</h1>' +
+        '</div>' +
+        '<div class="meta">' +
+          '<strong>Generated</strong><br>' +
+          escapeReportHtml(generatedAt) +
+        '</div>' +
+      '</header>' +
+      '<section class="stats">' +
+        '<div class="stat"><span>Total Asset</span><strong>' + escapeReportHtml(assets.length) + '</strong></div>' +
+        '<div class="stat"><span>Ready</span><strong>' + escapeReportHtml(stats.ready) + '</strong></div>' +
+        '<div class="stat"><span>Low Stock</span><strong>' + escapeReportHtml(stats.lowStock) + '</strong></div>' +
+        '<div class="stat"><span>Value</span><strong>' + escapeReportHtml(formatCurrency(stats.valueEstimate)) + '</strong></div>' +
+      '</section>' +
+      '<table>' +
+        '<thead>' +
+          '<tr>' +
+            '<th>#</th>' +
+            '<th>Asset</th>' +
+            '<th>Status</th>' +
+            '<th>Stock</th>' +
+            '<th>%</th>' +
+            '<th>Value</th>' +
+          '</tr>' +
+        '</thead>' +
+        '<tbody>' + rowMarkup + '</tbody>' +
+      '</table>' +
+    '</body>' +
+    '</html>';
+}
+
+function printInventoryReport(assets, stats) {
+  if (typeof window === 'undefined') {
+    return;
+  }
+
+  const markup = createInventoryPrintMarkup(assets, stats);
+  const printWindow = window.open('', '_blank', 'noopener,noreferrer,width=1120,height=800');
+
+  if (!printWindow) {
+    window.print();
+    return;
+  }
+
+  printWindow.document.open();
+  printWindow.document.write(markup);
+  printWindow.document.close();
+  printWindow.focus();
+
+  window.setTimeout(() => {
+    printWindow.print();
+  }, 250);
+}
+
 function formatDateLabel(value) {
   if (!value) return '-';
 
@@ -272,7 +481,7 @@ function getInventoryActivityToneClass(action) {
   return 'text-[var(--ui-text-main)]';
 }
 
-function getInventoryStatusToneClass(status) {
+function _getInventoryStatusToneClass(status) {
   return inventoryStatusToneClasses[status] || 'border-[var(--ui-border)] bg-[var(--ui-control)] text-[var(--ui-text-main)] ring-[var(--ui-ring)]';
 }
 
@@ -420,6 +629,8 @@ function InventoryToolbar({
   statusFilter,
   onCategoryChange,
   onCreateAsset,
+  onExportInventory,
+  onPrintInventory,
   onSearchChange,
   onStatusChange,
 }) {
@@ -454,7 +665,7 @@ function InventoryToolbar({
         ))}
       </div>
 
-      <div className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto] lg:min-w-[230px]">
+      <div className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto_auto_auto] lg:min-w-[390px]">
         <label className="flex min-h-9 items-center gap-2 rounded-full bg-[var(--ui-control)] px-3 text-xs font-semibold text-[var(--ui-text-muted)] ring-1 ring-[var(--ui-ring)]">
           <SlidersHorizontal size={14} strokeWidth={2.35} aria-hidden="true" />
           <select
@@ -468,6 +679,24 @@ function InventoryToolbar({
             ))}
           </select>
         </label>
+
+        <button
+          className="inline-flex min-h-9 items-center justify-center gap-2 rounded-full bg-[var(--ui-control)] px-3 text-xs font-semibold text-[var(--ui-text-muted)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
+          type="button"
+          onClick={onExportInventory}
+        >
+          <Download size={14} strokeWidth={2.35} aria-hidden="true" />
+          CSV
+        </button>
+
+        <button
+          className="inline-flex min-h-9 items-center justify-center gap-2 rounded-full bg-[var(--ui-control)] px-3 text-xs font-semibold text-[var(--ui-text-muted)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
+          type="button"
+          onClick={onPrintInventory}
+        >
+          <Printer size={14} strokeWidth={2.35} aria-hidden="true" />
+          Print
+        </button>
 
         <button
           className="inline-flex min-h-9 items-center justify-center gap-2 rounded-full [background:var(--ui-primary-bg)] px-4 text-sm font-semibold text-[var(--ui-primary-text)] shadow-[var(--ui-shadow-soft)] transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20"
@@ -1207,6 +1436,14 @@ export function InventoryAdmin() {
     }
   };
 
+  const handleExportInventory = () => {
+    downloadInventoryCsv(filteredAssets);
+  };
+
+  const handlePrintInventory = () => {
+    printInventoryReport(filteredAssets, stats);
+  };
+
   return (
     <section className="grid gap-4 pb-[calc(8.5rem+env(safe-area-inset-bottom))] pt-1 md:pb-4 md:pt-2" aria-labelledby="inventory-admin-title">
       <div className="sr-only" id="inventory-admin-title">
@@ -1234,6 +1471,8 @@ export function InventoryAdmin() {
         statusFilter={statusFilter}
         onCategoryChange={setCategoryFilter}
         onCreateAsset={openCreateAssetForm}
+        onExportInventory={handleExportInventory}
+        onPrintInventory={handlePrintInventory}
         onSearchChange={setSearchTerm}
         onStatusChange={setStatusFilter}
       />
