@@ -980,7 +980,7 @@ function InventoryFormField({
     <label className="grid gap-1.5 text-sm font-semibold text-[var(--ui-text-main)]">
       <span className="text-[0.68rem] uppercase tracking-[0.12em] text-[var(--ui-text-muted)]">{label}</span>
       <input
-        className="min-h-10 rounded-xl border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 text-sm font-semibold text-[var(--ui-text-strong)] outline-none ring-1 ring-[var(--ui-ring)] placeholder:text-[var(--ui-text-soft)] focus:border-studio-accent/45 focus:ring-4 focus:ring-studio-accent/15"
+        className="min-h-10 rounded-xl border border-[var(--ui-border)] bg-[var(--ui-control-hover)] px-3 text-sm font-semibold text-[var(--ui-text-strong)] outline-none ring-1 ring-[var(--ui-ring)] placeholder:text-[var(--ui-text-soft)] focus:border-studio-accent/45 focus:ring-4 focus:ring-studio-accent/15"
         placeholder={placeholder}
         type={type}
         value={value}
@@ -1005,8 +1005,8 @@ function InventoryFormPanel({
   const isSaving = formStatus === 'saving';
 
   return (
-    <section className="fixed inset-0 z-50 grid justify-items-end bg-black/30 p-3 backdrop-blur-sm" aria-label="Inventory asset form">
-      <form className="flex h-full w-full max-w-[520px] flex-col overflow-hidden rounded-[1.4rem] border border-[var(--ui-border-strong)] bg-[var(--ui-bg-page)] shadow-[var(--ui-shadow-strong)] ring-1 ring-[var(--ui-ring)]" onSubmit={onSubmit}>
+    <section className="fixed inset-0 z-50 grid justify-items-end bg-black/60 p-3 backdrop-blur-md" aria-label="Inventory asset form">
+      <form className="flex h-full w-full max-w-[520px] flex-col overflow-hidden rounded-[1.4rem] border border-[var(--ui-border-strong)] bg-[var(--ui-bg-base)] shadow-[var(--ui-shadow-strong)] ring-1 ring-[var(--ui-ring)]" onSubmit={onSubmit}>
         <div className="flex items-start justify-between gap-3 border-b border-[var(--ui-border)] p-4">
           <div className="grid gap-1">
             <span className="text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-studio-accent">
@@ -1045,14 +1045,14 @@ function InventoryFormPanel({
           <label className="grid gap-1.5 text-sm font-semibold text-[var(--ui-text-main)]">
             <span className="text-[0.68rem] uppercase tracking-[0.12em] text-[var(--ui-text-muted)]">Notes</span>
             <textarea
-              className="min-h-24 resize-y rounded-xl border border-[var(--ui-border)] bg-[var(--ui-control)] p-3 text-sm font-medium leading-6 text-[var(--ui-text-strong)] outline-none ring-1 ring-[var(--ui-ring)] placeholder:text-[var(--ui-text-soft)] focus:border-studio-accent/45 focus:ring-4 focus:ring-studio-accent/15"
+              className="min-h-24 resize-y rounded-xl border border-[var(--ui-border)] bg-[var(--ui-control-hover)] p-3 text-sm font-medium leading-6 text-[var(--ui-text-strong)] outline-none ring-1 ring-[var(--ui-ring)] placeholder:text-[var(--ui-text-soft)] focus:border-studio-accent/45 focus:ring-4 focus:ring-studio-accent/15"
               placeholder="Catatan kondisi, kebutuhan restock, noise, sparepart..."
               value={draft.notes}
               onChange={(event) => onChange('notes', event.target.value)}
             />
           </label>
 
-          <details className="rounded-xl border border-[var(--ui-border)] bg-[var(--ui-control)] p-3 ring-1 ring-[var(--ui-ring)]">
+          <details className="rounded-xl border border-[var(--ui-border)] bg-[var(--ui-control-hover)] p-3 ring-1 ring-[var(--ui-ring)]">
             <summary className="cursor-pointer text-sm font-semibold text-[var(--ui-text-strong)]">
               Detail lanjutan
             </summary>
@@ -1061,7 +1061,7 @@ function InventoryFormPanel({
               <label className="grid gap-1.5 text-sm font-semibold text-[var(--ui-text-main)]">
                 <span className="text-[0.68rem] uppercase tracking-[0.12em] text-[var(--ui-text-muted)]">Status</span>
                 <select
-                  className="min-h-10 rounded-xl border border-[var(--ui-border)] bg-[var(--ui-bg-page)] px-3 text-sm font-semibold text-[var(--ui-text-strong)] outline-none ring-1 ring-[var(--ui-ring)] focus:border-studio-accent/45 focus:ring-4 focus:ring-studio-accent/15"
+                  className="min-h-10 rounded-xl border border-[var(--ui-border)] bg-[var(--ui-bg-base)] px-3 text-sm font-semibold text-[var(--ui-text-strong)] outline-none ring-1 ring-[var(--ui-ring)] focus:border-studio-accent/45 focus:ring-4 focus:ring-studio-accent/15"
                   value={draft.status}
                   onChange={(event) => onChange('status', event.target.value)}
                 >
@@ -1130,8 +1130,8 @@ function InventoryStockMovementDrawer({
   const quantityLabel = draft.movementType === 'adjustment' ? 'Target quantity' : 'Quantity';
 
   return (
-    <section className="fixed inset-0 z-50 grid justify-items-end bg-black/30 p-3 backdrop-blur-sm" aria-label="Inventory stock movement drawer">
-      <form className="flex h-full w-full max-w-[480px] flex-col overflow-hidden rounded-[1.4rem] border border-[var(--ui-border-strong)] bg-[var(--ui-bg-page)] shadow-[var(--ui-shadow-strong)] ring-1 ring-[var(--ui-ring)]" onSubmit={onSubmit}>
+    <section className="fixed inset-0 z-50 grid justify-items-end bg-black/60 p-3 backdrop-blur-md" aria-label="Inventory stock movement drawer">
+      <form className="flex h-full w-full max-w-[480px] flex-col overflow-hidden rounded-[1.4rem] border border-[var(--ui-border-strong)] bg-[var(--ui-bg-base)] shadow-[var(--ui-shadow-strong)] ring-1 ring-[var(--ui-ring)]" onSubmit={onSubmit}>
         <div className="flex items-start justify-between gap-3 border-b border-[var(--ui-border)] p-4">
           <div className="grid gap-1">
             <span className="text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-studio-cyan">
@@ -1191,7 +1191,7 @@ function InventoryStockMovementDrawer({
                 {quantityLabel}
               </span>
               <input
-                className="min-h-10 rounded-xl border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 text-sm font-semibold text-[var(--ui-text-strong)] outline-none ring-1 ring-[var(--ui-ring)] focus:border-studio-cyan/45 focus:ring-4 focus:ring-studio-cyan/15"
+                className="min-h-10 rounded-xl border border-[var(--ui-border)] bg-[var(--ui-control-hover)] px-3 text-sm font-semibold text-[var(--ui-text-strong)] outline-none ring-1 ring-[var(--ui-ring)] focus:border-studio-cyan/45 focus:ring-4 focus:ring-studio-cyan/15"
                 min="0"
                 type="number"
                 value={draft.movementType === 'adjustment' ? draft.targetQuantity : draft.quantity}
@@ -1204,7 +1204,7 @@ function InventoryStockMovementDrawer({
                 Date
               </span>
               <input
-                className="min-h-10 rounded-xl border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 text-sm font-semibold text-[var(--ui-text-strong)] outline-none ring-1 ring-[var(--ui-ring)] focus:border-studio-cyan/45 focus:ring-4 focus:ring-studio-cyan/15"
+                className="min-h-10 rounded-xl border border-[var(--ui-border)] bg-[var(--ui-control-hover)] px-3 text-sm font-semibold text-[var(--ui-text-strong)] outline-none ring-1 ring-[var(--ui-ring)] focus:border-studio-cyan/45 focus:ring-4 focus:ring-studio-cyan/15"
                 type="date"
                 value={draft.stockDate}
                 onChange={(event) => onChange('stockDate', event.target.value)}
@@ -1217,7 +1217,7 @@ function InventoryStockMovementDrawer({
               Source / reason
             </span>
             <input
-              className="min-h-10 rounded-xl border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 text-sm font-semibold text-[var(--ui-text-strong)] outline-none ring-1 ring-[var(--ui-ring)] placeholder:text-[var(--ui-text-soft)] focus:border-studio-cyan/45 focus:ring-4 focus:ring-studio-cyan/15"
+              className="min-h-10 rounded-xl border border-[var(--ui-border)] bg-[var(--ui-control-hover)] px-3 text-sm font-semibold text-[var(--ui-text-strong)] outline-none ring-1 ring-[var(--ui-ring)] placeholder:text-[var(--ui-text-soft)] focus:border-studio-cyan/45 focus:ring-4 focus:ring-studio-cyan/15"
               placeholder="Vendor, penggunaan sesi, koreksi opname..."
               value={draft.sourceName}
               onChange={(event) => onChange('sourceName', event.target.value)}
@@ -1229,7 +1229,7 @@ function InventoryStockMovementDrawer({
               Note
             </span>
             <textarea
-              className="min-h-24 resize-y rounded-xl border border-[var(--ui-border)] bg-[var(--ui-control)] p-3 text-sm font-medium leading-6 text-[var(--ui-text-strong)] outline-none ring-1 ring-[var(--ui-ring)] placeholder:text-[var(--ui-text-soft)] focus:border-studio-cyan/45 focus:ring-4 focus:ring-studio-cyan/15"
+              className="min-h-24 resize-y rounded-xl border border-[var(--ui-border)] bg-[var(--ui-control-hover)] p-3 text-sm font-medium leading-6 text-[var(--ui-text-strong)] outline-none ring-1 ring-[var(--ui-ring)] placeholder:text-[var(--ui-text-soft)] focus:border-studio-cyan/45 focus:ring-4 focus:ring-studio-cyan/15"
               placeholder="Catatan tambahan untuk audit stok..."
               value={draft.note}
               onChange={(event) => onChange('note', event.target.value)}
@@ -1312,8 +1312,8 @@ function InventoryItemDetailDrawer({
   const itemLogs = getInventoryItemActivityLogs(logs, asset.id);
 
   return (
-    <section className="fixed inset-0 z-40 grid justify-items-end bg-black/25 p-3 backdrop-blur-sm" aria-label="Inventory item detail drawer">
-      <aside className="flex h-full w-full max-w-[560px] flex-col overflow-hidden rounded-[1.4rem] border border-[var(--ui-border-strong)] bg-[var(--ui-bg-page)] shadow-[var(--ui-shadow-strong)] ring-1 ring-[var(--ui-ring)]">
+    <section className="fixed inset-0 z-40 grid justify-items-end bg-black/60 p-3 backdrop-blur-md" aria-label="Inventory item detail drawer">
+      <aside className="flex h-full w-full max-w-[560px] flex-col overflow-hidden rounded-[1.4rem] border border-[var(--ui-border-strong)] bg-[var(--ui-bg-base)] shadow-[var(--ui-shadow-strong)] ring-1 ring-[var(--ui-ring)]">
         <div className="flex items-start justify-between gap-3 border-b border-[var(--ui-border)] p-4">
           <div className="grid min-w-0 gap-1">
             <span className="text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-studio-accent">
