@@ -19,6 +19,7 @@ import {
   AdminBadge,
   AdminButton,
   AdminCommandBar,
+  AdminDrawer,
   AdminPageHeader,
   AdminPageShell,
   AdminPanel,
@@ -41,6 +42,29 @@ const billingStatusFilters = [
   {
     key: 'paid',
     label: 'Paid',
+  },
+];
+
+const billingPaymentMethodOptions = [
+  {
+    key: 'cash',
+    label: 'Cash',
+  },
+  {
+    key: 'transfer',
+    label: 'Transfer',
+  },
+  {
+    key: 'qris',
+    label: 'QRIS',
+  },
+  {
+    key: 'debit',
+    label: 'Debit',
+  },
+  {
+    key: 'other',
+    label: 'Other',
   },
 ];
 
@@ -143,12 +167,36 @@ function normalizeBillingActor(actor) {
   };
 }
 
+function clampPaymentAmount(value, totalAmount) {
+  const parsedValue = Number(value);
+  const safeValue = Number.isFinite(parsedValue) ? parsedValue : 0;
+  const safeTotal = Math.max(0, Number(totalAmount) || 0);
+
+  return Math.min(safeTotal, Math.max(0, safeValue));
+}
+
+function getPaymentStatusFromAmount(paidAmount, totalAmount) {
+  const safeTotal = Math.max(0, Number(totalAmount) || 0);
+  const safePaid = clampPaymentAmount(paidAmount, safeTotal);
+
+  if (safeTotal > 0 && safePaid >= safeTotal) {
+    return 'paid';
+  }
+
+  if (safePaid > 0) {
+    return 'dp';
+  }
+
+  return 'unpaid';
+}
+
 function createBillingQueueFromTransactions(transactions) {
   return (Array.isArray(transactions) ? transactions : []).map((transaction) => ({
     bookingId: transaction.bookingId || '',
     createdAt: transaction.createdAt || '',
     customerName: transaction.customerName || 'Walk-in customer',
     dateKey: String(transaction.createdAt || '').slice(0, 10),
+    id: transaction.id || '',
     invoiceNumber: transaction.invoiceNumber || transaction.id || 'Invoice',
     paidAmount: Number(transaction.paidAmount) || 0,
     remainingAmount: Number(transaction.remainingAmount) || 0,
@@ -157,6 +205,7 @@ function createBillingQueueFromTransactions(transactions) {
     status: transaction.paymentStatus || 'unpaid',
     time: String(transaction.createdAt || '').slice(11, 16),
     totalAmount: Number(transaction.totalAmount) || 0,
+    transactionSnapshot: transaction,
     type: 'transaction',
   }));
 }
@@ -285,8 +334,42 @@ function createBillingTransactionFromDraft(draft, actor) {
   };
 }
 
+function createUpdatedPaymentTransaction(item, paymentForm, actor, options = {}) {
+  const baseTransaction = item?.transactionSnapshot && typeof item.transactionSnapshot === 'object'
+    ? item.transactionSnapshot
+    : {};
+  const totalAmount = Math.max(0, Number(baseTransaction.totalAmount ?? item?.totalAmount) || 0);
+  const paidAmount = options.markPaid
+    ? totalAmount
+    : clampPaymentAmount(paymentForm.paidAmount, totalAmount);
+  const remainingAmount = Math.max(0, totalAmount - paidAmount);
+  const paymentStatus = getPaymentStatusFromAmount(paidAmount, totalAmount);
+  const updatedAt = new Date().toISOString();
+  const updatedBy = normalizeBillingActor(actor);
+
+  return {
+    ...baseTransaction,
+    id: baseTransaction.id || item?.id || '',
+    invoiceNumber: baseTransaction.invoiceNumber || item?.invoiceNumber || '',
+    paidAmount,
+    paymentMethod: paymentForm.paymentMethod || baseTransaction.paymentMethod || 'cash',
+    paymentStatus,
+    remainingAmount,
+    totalAmount,
+    updatedAt,
+    updatedBy,
+  };
+}
+
 function getQueueItemKey(item) {
-  return item.type + '-' + (item.bookingId || item.invoiceNumber);
+  return item.type + '-' + (item.id || item.bookingId || item.invoiceNumber);
+}
+
+function createPaymentFormFromItem(item) {
+  return {
+    paidAmount: String(Math.max(0, Number(item?.paidAmount) || 0)),
+    paymentMethod: item?.transactionSnapshot?.paymentMethod || 'cash',
+  };
 }
 
 function BillingSummaryRail({ summary }) {
@@ -414,10 +497,134 @@ function BillingStatePanel({
   );
 }
 
+function PaymentMethodPills({
+  value,
+  onChange,
+}) {
+  return (
+    <div className="grid grid-cols-2 gap-2 sm:grid-cols-5" aria-label="Payment method">
+      {billingPaymentMethodOptions.map((option) => {
+        const isActive = option.key === value;
+
+        return (
+          <button
+            aria-pressed={isActive}
+            className={
+              isActive
+                ? 'min-h-10 rounded-full border border-studio-accent/35 bg-studio-accent/12 px-3 text-xs font-semibold text-studio-accent ring-1 ring-studio-accent/20'
+                : 'min-h-10 rounded-full border border-[var(--ui-border)] bg-[var(--ui-control)] px-3 text-xs font-semibold text-[var(--ui-text-main)] ring-1 ring-[var(--ui-ring)] transition hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)]'
+            }
+            key={option.key}
+            type="button"
+            onClick={() => onChange(option.key)}
+          >
+            {option.label}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+function BillingPaymentDrawer({
+  isOpen,
+  isSaving,
+  paymentForm,
+  saveError,
+  selectedItem,
+  onClose,
+  onMarkPaid,
+  onPaymentFormChange,
+  onSavePayment,
+}) {
+  const totalAmount = Math.max(0, Number(selectedItem?.totalAmount) || 0);
+  const paidAmount = clampPaymentAmount(paymentForm.paidAmount, totalAmount);
+  const remainingAmount = Math.max(0, totalAmount - paidAmount);
+  const nextStatus = getPaymentStatusFromAmount(paidAmount, totalAmount);
+
+  return (
+    <AdminDrawer
+      actions={(
+        <>
+          <AdminButton disabled={isSaving} size="sm" variant="secondary" onClick={onClose}>
+            Cancel
+          </AdminButton>
+          <AdminButton disabled={isSaving || totalAmount <= 0} icon={CreditCard} size="sm" variant="soft" onClick={onMarkPaid}>
+            Mark paid
+          </AdminButton>
+          <AdminButton disabled={isSaving} icon={WalletCards} size="sm" variant="primary" onClick={onSavePayment}>
+            {isSaving ? 'Saving...' : 'Save payment'}
+          </AdminButton>
+        </>
+      )}
+      description={selectedItem ? selectedItem.invoiceNumber + ' • ' + selectedItem.customerName : ''}
+      isOpen={isOpen}
+      title="Update payment"
+      widthClass="max-w-lg"
+      onClose={onClose}
+    >
+      <div className="grid gap-4">
+        <AdminPanel className="grid gap-3 p-3" variant="flat">
+          <div className="grid grid-cols-3 gap-2 text-center">
+            <span className="grid gap-1 rounded-[1rem] border border-[var(--ui-border)] bg-[var(--ui-control)] p-2">
+              <span className="text-[0.58rem] font-semibold uppercase tracking-[0.12em] text-[var(--ui-text-muted)]">Total</span>
+              <strong className="truncate text-sm font-semibold text-[var(--ui-text-strong)]">{formatCurrency(totalAmount)}</strong>
+            </span>
+            <span className="grid gap-1 rounded-[1rem] border border-[var(--ui-border)] bg-[var(--ui-control)] p-2">
+              <span className="text-[0.58rem] font-semibold uppercase tracking-[0.12em] text-[var(--ui-text-muted)]">Paid</span>
+              <strong className="truncate text-sm font-semibold text-[var(--ui-text-strong)]">{formatCurrency(paidAmount)}</strong>
+            </span>
+            <span className="grid gap-1 rounded-[1rem] border border-[var(--ui-border)] bg-[var(--ui-control)] p-2">
+              <span className="text-[0.58rem] font-semibold uppercase tracking-[0.12em] text-[var(--ui-text-muted)]">Sisa</span>
+              <strong className="truncate text-sm font-semibold text-[var(--ui-text-strong)]">{formatCurrency(remainingAmount)}</strong>
+            </span>
+          </div>
+
+          <AdminBadge tone={getBillingStatusTone(nextStatus)}>
+            Next status: {getBillingStatusLabel(nextStatus)}
+          </AdminBadge>
+        </AdminPanel>
+
+        <label className="grid gap-1.5 text-sm font-semibold text-[var(--ui-text-main)]">
+          Amount paid
+          <input
+            className="min-h-12 rounded-[1.15rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-4 text-sm font-semibold text-[var(--ui-text-strong)] outline-none ring-1 ring-[var(--ui-ring)] transition placeholder:text-[var(--ui-text-soft)] focus:border-studio-accent/55 focus:ring-4 focus:ring-studio-accent/20"
+            inputMode="numeric"
+            min="0"
+            step="1000"
+            type="number"
+            value={paymentForm.paidAmount}
+            onChange={(event) => onPaymentFormChange({ paidAmount: event.target.value })}
+          />
+        </label>
+
+        <div className="grid gap-1.5">
+          <span className="text-sm font-semibold text-[var(--ui-text-main)]">Payment method</span>
+          <PaymentMethodPills
+            value={paymentForm.paymentMethod}
+            onChange={(paymentMethod) => onPaymentFormChange({ paymentMethod })}
+          />
+        </div>
+
+        {saveError ? (
+          <AdminPanel className="p-3 text-sm font-semibold text-studio-accent" variant="flat">
+            {saveError}
+          </AdminPanel>
+        ) : null}
+
+        <p className="m-0 text-xs leading-5 text-[var(--ui-text-muted)]">
+          Payment flow ini hanya update billingTransactions dan billingAuditLogs. Booking status belum disinkronkan pada fase ini.
+        </p>
+      </div>
+    </AdminDrawer>
+  );
+}
+
 function BillingQueue({
   creatingInvoiceKey,
   queue,
   onCreateInvoice,
+  onOpenPayment,
 }) {
   if (!queue.length) {
     return (
@@ -484,13 +691,13 @@ function BillingQueue({
                   icon={FilePlus2}
                   size="sm"
                   variant="primary"
-                  onClick={() => { void onCreateInvoice(item); }}
+                  onClick={() => { onCreateInvoice(item); }}
                 >
                   {isCreating ? 'Creating...' : 'Create invoice'}
                 </AdminButton>
               ) : (
-                <AdminButton disabled icon={ReceiptText} size="sm" variant="secondary">
-                  Saved
+                <AdminButton icon={CreditCard} size="sm" variant="secondary" onClick={() => onOpenPayment(item)}>
+                  Payment
                 </AdminButton>
               )}
             </div>
@@ -507,7 +714,7 @@ function BillingNextPhasePanel({ transactionCount }) {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="grid gap-1">
           <span className="text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-studio-accent">
-            Invoice creation enabled
+            Payment flow enabled
           </span>
           <strong className="text-base font-semibold text-[var(--ui-text-strong)]">
             {transactionCount} saved transaction
@@ -525,7 +732,7 @@ function BillingNextPhasePanel({ transactionCount }) {
       </div>
 
       <p className="m-0 text-sm leading-6 text-[var(--ui-text-muted)]">
-        BILLING.4 sudah bisa membuat invoice dari booking draft. Payment flow, mark paid, DP update, sync booking, manual POS, dan receipt print masuk fase berikutnya.
+        BILLING.5 bisa update payment di billingTransactions. Sync booking, manual POS, dan receipt print masuk fase berikutnya.
       </p>
     </AdminPanel>
   );
@@ -542,7 +749,11 @@ export function BillingAdmin() {
   const [createInvoiceError, setCreateInvoiceError] = useState('');
   const [creatingInvoiceKey, setCreatingInvoiceKey] = useState('');
   const [isBillingReady, setIsBillingReady] = useState(false);
+  const [isPaymentSaving, setIsPaymentSaving] = useState(false);
+  const [paymentForm, setPaymentForm] = useState(createPaymentFormFromItem(null));
+  const [paymentSaveError, setPaymentSaveError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedPaymentItem, setSelectedPaymentItem] = useState(null);
   const [statusFilter, setStatusFilter] = useState('all');
 
   useEffect(() => {
@@ -619,6 +830,75 @@ export function BillingAdmin() {
     }
   };
 
+  const handleOpenPayment = (item) => {
+    if (!item || item.type !== 'transaction') {
+      return;
+    }
+
+    setPaymentSaveError('');
+    setSelectedPaymentItem(item);
+    setPaymentForm(createPaymentFormFromItem(item));
+  };
+
+  const handleClosePayment = () => {
+    if (isPaymentSaving) {
+      return;
+    }
+
+    setPaymentSaveError('');
+    setSelectedPaymentItem(null);
+    setPaymentForm(createPaymentFormFromItem(null));
+  };
+
+  const handlePaymentFormChange = (patch) => {
+    setPaymentForm((currentForm) => ({
+      ...currentForm,
+      ...patch,
+    }));
+  };
+
+  const savePaymentUpdate = async (options = {}) => {
+    if (!selectedPaymentItem || isPaymentSaving) {
+      return;
+    }
+
+    setIsPaymentSaving(true);
+    setPaymentSaveError('');
+
+    try {
+      const nextTransaction = createUpdatedPaymentTransaction(
+        selectedPaymentItem,
+        paymentForm,
+        adminUser,
+        options,
+      );
+
+      const savedTransaction = await adminBillingRepository.updateBillingTransaction(nextTransaction);
+
+      if (savedTransaction) {
+        await adminBillingRepository.recordBillingAuditLog({
+          action: 'billing.pay',
+          by: normalizeBillingActor(adminUser),
+          label: 'Payment billing diperbarui',
+          source: 'admin',
+          transactionId: savedTransaction.id,
+          transactionSnapshot: savedTransaction,
+        });
+      }
+
+      setSelectedPaymentItem(null);
+      setPaymentForm(createPaymentFormFromItem(null));
+    } catch (error) {
+      console.error('Failed to update billing payment.', error);
+      setPaymentSaveError(error?.message || 'Gagal update payment billing.');
+    } finally {
+      setIsPaymentSaving(false);
+    }
+  };
+
+  const handleSavePayment = () => savePaymentUpdate();
+  const handleMarkPaid = () => savePaymentUpdate({ markPaid: true });
+
   return (
     <AdminPageShell className="billing-admin-workspace gap-3 pb-[calc(8.5rem+env(safe-area-inset-bottom))] pt-1 sm:gap-4 md:pb-4 md:pt-2" width="wide">
       <div className="sr-only" id="billing-admin-title">
@@ -631,7 +911,7 @@ export function BillingAdmin() {
         meta={(
           <>
             <AdminBadge icon={ReceiptText} tone="strong">
-              Invoice draft
+              Payment flow
             </AdminBadge>
             <AdminBadge icon={WalletCards} tone="cyan">
               {isBillingReady ? 'Live' : 'Loading'}
@@ -677,10 +957,23 @@ export function BillingAdmin() {
           creatingInvoiceKey={creatingInvoiceKey}
           queue={filteredQueue}
           onCreateInvoice={handleCreateInvoice}
+          onOpenPayment={handleOpenPayment}
         />
       )}
 
       <BillingNextPhasePanel transactionCount={billingTransactions.length} />
+
+      <BillingPaymentDrawer
+        isOpen={Boolean(selectedPaymentItem)}
+        isSaving={isPaymentSaving}
+        paymentForm={paymentForm}
+        saveError={paymentSaveError}
+        selectedItem={selectedPaymentItem}
+        onClose={handleClosePayment}
+        onMarkPaid={handleMarkPaid}
+        onPaymentFormChange={handlePaymentFormChange}
+        onSavePayment={handleSavePayment}
+      />
     </AdminPageShell>
   );
 }
