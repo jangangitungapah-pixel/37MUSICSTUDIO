@@ -1619,3 +1619,299 @@
   }
 }
 /* 37-customer-mobile-copy-chip-polish:end */
+
+/* 37-inventory-mobile-declutter:start */
+@layer components {
+  @media (max-width: 767px) {
+    .inventory-admin-workspace {
+      gap: 0.65rem !important;
+    }
+
+    .inventory-hero-header {
+      padding: 0.9rem !important;
+    }
+
+    .inventory-hero-header h1 {
+      font-size: clamp(1.8rem, 10vw, 2.5rem) !important;
+      line-height: 1.04 !important;
+    }
+
+    .inventory-hero-header p {
+      font-size: 0.82rem !important;
+      line-height: 1.55 !important;
+    }
+
+    .inventory-hero-header .admin-badge {
+      min-height: 1.7rem !important;
+      max-width: 9.25rem;
+      padding-inline: 0.55rem !important;
+      font-size: 0.6rem !important;
+    }
+
+    .inventory-summary-strip {
+      grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+      gap: 0.5rem !important;
+    }
+
+    .inventory-summary-strip .admin-panel {
+      display: grid !important;
+      min-height: 3.65rem !important;
+      grid-template-columns: minmax(0, 1fr) auto !important;
+      align-items: center !important;
+      gap: 0.45rem !important;
+      border-radius: 1rem !important;
+      padding: 0.7rem !important;
+    }
+
+    .inventory-summary-strip .admin-panel > span:first-child {
+      gap: 0.4rem !important;
+      min-width: 0 !important;
+    }
+
+    .inventory-summary-strip .admin-panel > span:first-child > span:first-child {
+      width: 1.65rem !important;
+      height: 1.65rem !important;
+      border-radius: 999px !important;
+    }
+
+    .inventory-summary-strip .admin-panel > span:first-child > span:last-child {
+      max-width: 4.5rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .inventory-summary-strip .admin-panel > span:last-child {
+      justify-items: end !important;
+      min-width: 0 !important;
+    }
+
+    .inventory-summary-strip .admin-panel > span:last-child .admin-badge {
+      display: none !important;
+    }
+
+    .inventory-summary-strip .admin-panel strong {
+      max-width: 5.4rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: 0.9rem !important;
+    }
+
+    .inventory-sync-banner {
+      padding-block: 0.35rem !important;
+    }
+
+    .inventory-sync-banner > div {
+      min-width: 0;
+      flex: 1 1 auto;
+    }
+
+    .inventory-sync-banner > div > span:first-child {
+      width: 1.8rem !important;
+      height: 1.8rem !important;
+      border-radius: 0.75rem !important;
+    }
+
+    .inventory-sync-banner strong {
+      font-size: 0.78rem !important;
+    }
+
+    .inventory-sync-banner div div span:last-child {
+      display: none !important;
+    }
+
+    .inventory-sync-banner button {
+      min-height: 2rem !important;
+      padding-inline: 0.7rem !important;
+      font-size: 0.65rem !important;
+    }
+
+    .inventory-command-bar {
+      gap: 0.5rem !important;
+      padding: 0.6rem !important;
+      border-radius: 1rem !important;
+    }
+
+    .inventory-command-bar > div {
+      gap: 0.5rem !important;
+    }
+
+    .inventory-command-bar label span.flex {
+      min-height: 2.55rem !important;
+    }
+
+    .inventory-command-bar input {
+      font-size: 0.82rem !important;
+    }
+
+    .inventory-command-bar > div:first-child {
+      grid-template-columns: minmax(0, 1fr) auto !important;
+    }
+
+    .inventory-command-bar > div:first-child .admin-button {
+      min-height: 2.55rem !important;
+      padding-inline: 1rem !important;
+    }
+
+    .inventory-secondary-actions {
+      display: grid !important;
+      grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+      width: 100% !important;
+      gap: 0.35rem !important;
+      border-radius: 999px !important;
+      padding: 0.35rem !important;
+    }
+
+    .inventory-secondary-actions .admin-button {
+      min-height: 2.1rem !important;
+      padding-inline: 0.35rem !important;
+      font-size: 0.58rem !important;
+    }
+
+    .inventory-command-bar [aria-label="Inventory status filter"] {
+      flex-wrap: nowrap !important;
+      overflow-x: auto !important;
+      padding-bottom: 0 !important;
+      scrollbar-width: none;
+    }
+
+    .inventory-command-bar [aria-label="Inventory status filter"]::-webkit-scrollbar {
+      display: none;
+    }
+
+    .inventory-priority-rail,
+    .inventory-saved-views {
+      gap: 0.4rem !important;
+      border-radius: 1rem !important;
+      padding: 0.5rem !important;
+    }
+
+    .inventory-priority-rail button,
+    .inventory-saved-views button {
+      min-height: 2.15rem !important;
+      max-width: 7.75rem;
+      gap: 0.4rem !important;
+      padding-inline: 0.65rem !important;
+      font-size: 0.66rem !important;
+    }
+
+    .inventory-priority-rail button span,
+    .inventory-saved-views button span {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .inventory-saved-views > span:first-child {
+      display: none !important;
+    }
+
+    .inventory-ledger .divide-y {
+      gap: 0.55rem !important;
+    }
+
+    .inventory-ledger .divide-y > article {
+      grid-template-columns: minmax(0, 1fr) auto !important;
+      align-items: start !important;
+      gap: 0.55rem 0.75rem !important;
+      border-radius: 1rem !important;
+      padding: 0.75rem !important;
+    }
+
+    .inventory-ledger .divide-y > article > div:first-child {
+      grid-column: 1 / 2 !important;
+      grid-row: 1 !important;
+    }
+
+    .inventory-ledger .divide-y > article > div:first-child p {
+      font-size: 0.62rem !important;
+      line-height: 1.35 !important;
+    }
+
+    .inventory-ledger .divide-y > article > div:nth-child(2) {
+      grid-column: 1 / -1 !important;
+      grid-row: 2 !important;
+      gap: 0.35rem !important;
+    }
+
+    .inventory-ledger .divide-y > article > div:nth-child(3) {
+      grid-column: 2 / 3 !important;
+      grid-row: 1 !important;
+      min-width: 3.5rem !important;
+      border: 0 !important;
+      padding-block: 0 !important;
+      justify-content: end !important;
+    }
+
+    .inventory-ledger .divide-y > article > div:nth-child(4) {
+      grid-column: 1 / -1 !important;
+      grid-row: 3 !important;
+      grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+      gap: 0.4rem !important;
+    }
+
+    .inventory-ledger .divide-y > article > div:nth-child(4) > button {
+      min-height: 2.25rem !important;
+      font-size: 0.65rem !important;
+    }
+
+    .inventory-activity-timeline {
+      padding-bottom: 0.5rem !important;
+    }
+
+    .inventory-activity-timeline h2 {
+      font-size: 1rem !important;
+    }
+
+    .inventory-activity-timeline article {
+      gap: 0.35rem !important;
+      padding-block: 0.55rem !important;
+    }
+
+    .inventory-activity-timeline p {
+      white-space: normal !important;
+      overflow: visible !important;
+      text-overflow: clip !important;
+      line-height: 1.35 !important;
+    }
+  }
+
+  @media (max-width: 420px) {
+    .inventory-hero-header {
+      padding: 0.8rem !important;
+    }
+
+    .inventory-summary-strip .admin-panel {
+      min-height: 3.35rem !important;
+      padding: 0.6rem !important;
+    }
+
+    .inventory-summary-strip .admin-panel > span:first-child > span:first-child {
+      width: 1.45rem !important;
+      height: 1.45rem !important;
+    }
+
+    .inventory-summary-strip .admin-panel strong {
+      max-width: 4.8rem;
+      font-size: 0.84rem !important;
+    }
+
+    .inventory-priority-rail button,
+    .inventory-saved-views button {
+      max-width: 7rem;
+      padding-inline: 0.55rem !important;
+      font-size: 0.62rem !important;
+    }
+
+    .inventory-ledger .divide-y > article {
+      padding: 0.68rem !important;
+    }
+
+    .inventory-ledger .divide-y > article > div:nth-child(4) > button {
+      min-height: 2.15rem !important;
+    }
+  }
+}
+/* 37-inventory-mobile-declutter:end */

@@ -534,7 +534,7 @@ const inventorySavedViews = [
   {
     helper: 'Semua asset aktif sesuai filter normal.',
     key: 'all',
-    label: 'All assets',
+    label: 'All',
   },
   {
     helper: 'Overdue, Poor, atau low stock.',
@@ -544,17 +544,17 @@ const inventorySavedViews = [
   {
     helper: 'Masuk antrean maintenance.',
     key: 'maintenanceQueue',
-    label: 'Maintenance queue',
+    label: 'Maint',
   },
   {
     helper: 'Perlu dibeli atau ditambah.',
     key: 'needPurchase',
-    label: 'Need purchase',
+    label: 'Buy',
   },
   {
     helper: 'Ready dan kondisi aman.',
     key: 'readyGear',
-    label: 'Ready gear',
+    label: 'Ready',
   },
   {
     helper: 'Asset retired.',
@@ -1290,7 +1290,7 @@ function InventoryOverviewStrip({ stats, itemCount }) {
   ];
 
   return (
-    <section className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4" aria-label="Inventory summary">
+    <section className="inventory-summary-strip grid gap-2 sm:grid-cols-2 xl:grid-cols-4" aria-label="Inventory summary">
       {overviewItems.map(({ helper, icon: Icon, label, tone, value }) => (
         <AdminPanel
           as="article"
@@ -1340,7 +1340,7 @@ function InventoryDashboardAlerts({
         onClick={() => onAlertChange('all')}
       >
         <ShieldCheck size={13} strokeWidth={2.35} aria-hidden="true" />
-        All priorities
+        All
         <strong className="rounded-full bg-[var(--ui-glass-soft)] px-1.5 py-0.5 text-[0.68rem] leading-none text-[var(--ui-text-strong)]">
           {alerts.total}
         </strong>
@@ -1383,7 +1383,7 @@ function InventorySavedViews({
   return (
     <AdminPanel className="inventory-saved-views flex snap-x gap-1.5 overflow-x-auto p-2" aria-label="Inventory smart saved views" variant="flat">
       <span className="inline-flex min-h-9 shrink-0 items-center rounded-full px-2 text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-studio-cyan">
-        Smart views
+        Views
       </span>
 
       {inventorySavedViews.map((view) => {
@@ -1560,23 +1560,24 @@ function InventoryConditionBadge({ condition }) {
 function InventoryHero({ stats }) {
   return (
     <AdminPageHeader
+      className="inventory-hero-header"
       actions={(
         <AdminBadge icon={ShieldCheck} tone="cyan">
           {stats.ready} ready
         </AdminBadge>
       )}
-      description="Kelola gear, cable, spare part, stok minimum, maintenance, dan nilai aset studio dalam satu ledger operasional."
+      description="Gear, stok minimum, maintenance, dan nilai aset studio."
       eyebrow="Studio Asset Inventory"
       meta={(
         <>
           <AdminBadge icon={Boxes} tone="strong">
-            {stats.totalAssets} total unit
+            {stats.totalAssets} unit
           </AdminBadge>
           <AdminBadge icon={AlertTriangle} tone="accent">
-            {stats.lowStock} low stock
+            {stats.lowStock} low
           </AdminBadge>
           <AdminBadge icon={CalendarClock} tone="purple">
-            {stats.maintenance} maintenance
+            {stats.maintenance} maint
           </AdminBadge>
           <AdminBadge icon={Tags} tone="neutral">
             {formatCurrency(stats.valueEstimate)}
@@ -1606,7 +1607,7 @@ function InventoryToolbar({
   onStatusChange,
 }) {
   const categoryOptions = [
-    { key: 'all', label: 'Semua kategori' },
+    { key: 'all', label: 'Kategori' },
     ...categories.map((category) => ({
       key: category,
       label: category,
@@ -1648,7 +1649,7 @@ function InventoryToolbar({
             <Search className="shrink-0 text-[var(--ui-text-muted)]" size={16} strokeWidth={2.35} aria-hidden="true" />
             <input
               className="min-w-0 flex-1 border-0 bg-transparent text-sm font-semibold text-[var(--ui-text-strong)] outline-none placeholder:text-[var(--ui-text-soft)]"
-              placeholder="Cari asset, kategori, lokasi, kondisi..."
+              placeholder="Cari asset..."
               type="search"
               value={searchTerm}
               onChange={(event) => onSearchChange(event.target.value)}
@@ -1662,7 +1663,8 @@ function InventoryToolbar({
           variant="primary"
           onClick={onCreateAsset}
         >
-          Add asset
+          <span className="sm:hidden">Add</span>
+          <span className="hidden sm:inline">Add asset</span>
         </AdminButton>
       </div>
 
@@ -1689,7 +1691,7 @@ function InventoryToolbar({
           />
         </div>
 
-        <div className="flex min-w-0 flex-wrap items-center gap-1.5 rounded-[1.1rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-1 ring-1 ring-[var(--ui-ring)]">
+        <div className="inventory-secondary-actions flex min-w-0 flex-wrap items-center gap-1.5 rounded-[1.1rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] p-1 ring-1 ring-[var(--ui-ring)]">
           {secondaryActions.map((action) => (
             <AdminButton
               className="min-h-8 px-2.5 text-[0.7rem]"
@@ -2803,7 +2805,7 @@ function InventorySyncBanner({
       : String(itemCount) + ' item realtime.';
 
   return (
-    <section className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--ui-border)] py-2">
+    <section className="inventory-sync-banner flex flex-wrap items-center justify-between gap-3 border-b border-[var(--ui-border)] py-2">
       <div className="flex min-w-0 items-center gap-2">
         <span className={cn(
           'grid size-8 shrink-0 place-items-center rounded-xl ring-1',
@@ -2842,10 +2844,10 @@ function InventorySyncBanner({
 }
 
 function InventoryActivityTimeline({ logs, state }) {
-  const visibleLogs = logs.slice(0, 7);
+  const visibleLogs = logs.slice(0, 4);
 
   return (
-    <section className="max-w-[980px] border-b border-[var(--ui-border)] pb-3">
+    <section className="inventory-activity-timeline max-w-[980px] border-b border-[var(--ui-border)] pb-3">
       <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
         <div className="grid gap-0.5">
           <span className="text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-studio-cyan">
