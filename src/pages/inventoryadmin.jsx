@@ -67,7 +67,7 @@ const starterInventoryAssets = [
     name: 'Bass amp main',
     category: 'Amplifier',
     location: 'Room B',
-    condition: 'Watch',
+    condition: 'Poor',
     status: 'maintenance',
     quantity: 1,
     minQuantity: 1,
@@ -95,7 +95,7 @@ const starterInventoryAssets = [
     name: 'XLR cable 5m',
     category: 'Cable',
     location: 'Cable Drawer',
-    condition: 'Low',
+    condition: 'Poor',
     status: 'low',
     quantity: 3,
     minQuantity: 8,
@@ -109,7 +109,7 @@ const starterInventoryAssets = [
     name: 'Jack cable 3m',
     category: 'Cable',
     location: 'Cable Drawer',
-    condition: 'Low',
+    condition: 'Poor',
     status: 'low',
     quantity: 4,
     minQuantity: 10,
@@ -169,6 +169,32 @@ const inventoryFormStatusOptions = [
   { key: 'retired', label: 'Retired' },
 ];
 
+const inventoryConditionOptions = [
+  {
+    helper: 'Kondisi sangat baik.',
+    key: 'Excellent',
+    label: 'Excellent',
+  },
+  {
+    helper: 'Layak pakai normal.',
+    key: 'Good',
+    label: 'Good',
+  },
+  {
+    helper: 'Perlu perhatian.',
+    key: 'Poor',
+    label: 'Poor',
+  },
+];
+
+const inventoryConditionFilters = [
+  { key: 'all', label: 'Semua kondisi' },
+  ...inventoryConditionOptions.map((option) => ({
+    key: option.key,
+    label: option.label,
+  })),
+];
+
 function getTodayDateKey() {
   return new Date().toISOString().slice(0, 10);
 }
@@ -186,6 +212,7 @@ function createInventoryDraftFromItem(item = {}) {
   return {
     ...emptyInventoryDraft,
     ...item,
+    condition: normalizeInventoryCondition(item.condition || emptyInventoryDraft.condition),
     id: item.id || '',
     lastChecked: item.lastChecked || getTodayDateKey(),
     minQuantity: Number(item.minQuantity) || 0,
@@ -200,6 +227,7 @@ function createInventoryPayloadFromDraft(draft, currentItem) {
   return {
     ...(currentItem || {}),
     ...draft,
+    condition: normalizeInventoryCondition(draft.condition),
     id: draft.id || createInventoryItemId(draft.name),
     minQuantity: Math.max(0, Number(draft.minQuantity) || 0),
     quantity: Math.max(0, Number(draft.quantity) || 0),
@@ -287,6 +315,41 @@ function normalizeSearchText(value) {
   return String(value || '').trim().toLowerCase();
 }
 
+function normalizeInventoryCondition(value) {
+  const normalizedValue = String(value || 'Good').trim().toLowerCase();
+
+  if (normalizedValue === 'excellent' || normalizedValue === 'excelent') {
+    return 'Excellent';
+  }
+
+  if (
+    normalizedValue === 'poor' ||
+    normalizedValue === 'low' ||
+    normalizedValue === 'watch' ||
+    normalizedValue === 'bad' ||
+    normalizedValue === 'broken' ||
+    normalizedValue === 'damaged'
+  ) {
+    return 'Poor';
+  }
+
+  return 'Good';
+}
+
+function getInventoryConditionToneClass(condition) {
+  const normalizedCondition = normalizeInventoryCondition(condition);
+
+  if (normalizedCondition === 'Excellent') {
+    return 'bg-studio-cyan/10 text-studio-cyan';
+  }
+
+  if (normalizedCondition === 'Poor') {
+    return 'bg-studio-accent/10 text-studio-accent';
+  }
+
+  return 'bg-[var(--ui-control)] text-[var(--ui-text-muted)]';
+}
+
 function formatCurrency(value) {
   return new Intl.NumberFormat('id-ID', {
     currency: 'IDR',
@@ -331,7 +394,7 @@ function getInventoryStockPercent(asset) {
 function getInventoryReportRows(assets) {
   return assets.map((asset) => ({
     category: asset.category || '',
-    condition: asset.condition || '',
+    condition: normalizeInventoryCondition(asset.condition),
     id: asset.id || '',
     lastChecked: asset.lastChecked || '',
     location: asset.location || '',
@@ -417,6 +480,7 @@ function createInventoryPrintMarkup(assets, stats) {
       '<td>' + String(index + 1) + '</td>' +
       '<td><strong>' + escapeReportHtml(row.name) + '</strong><br><span>' + escapeReportHtml(row.category) + ' • ' + escapeReportHtml(row.location) + '</span></td>' +
       '<td>' + escapeReportHtml(row.status) + '</td>' +
+      '<td>' + escapeReportHtml(row.condition) + '</td>' +
       '<td>' + escapeReportHtml(row.quantity) + ' / min ' + escapeReportHtml(row.minQuantity) + '</td>' +
       '<td>' + escapeReportHtml(row.stockPercent) + '%</td>' +
       '<td>' + escapeReportHtml(formatCurrency(row.valueEstimate)) + '</td>' +
@@ -469,6 +533,7 @@ function createInventoryPrintMarkup(assets, stats) {
             '<th>#</th>' +
             '<th>Asset</th>' +
             '<th>Status</th>' +
+            '<th>Condition</th>' +
             '<th>Stock</th>' +
             '<th>%</th>' +
             '<th>Value</th>' +
@@ -574,21 +639,23 @@ function getInventoryCategories(assets) {
   return Array.from(new Set(assets.map((asset) => asset.category))).sort((first, second) => first.localeCompare(second));
 }
 
-function getFilteredAssets(assets, searchTerm, statusFilter, categoryFilter) {
+function getFilteredAssets(assets, searchTerm, statusFilter, categoryFilter, conditionFilter) {
   const query = normalizeSearchText(searchTerm);
 
   return assets.filter((asset) => {
+    const assetCondition = normalizeInventoryCondition(asset.condition);
     const matchesStatus = statusFilter === 'all' || asset.status === statusFilter;
     const matchesCategory = categoryFilter === 'all' || asset.category === categoryFilter;
+    const matchesCondition = conditionFilter === 'all' || assetCondition === conditionFilter;
     const searchableText = normalizeSearchText([
       asset.name,
       asset.category,
       asset.location,
-      asset.condition,
+      assetCondition,
       asset.notes,
     ].join(' '));
 
-    return matchesStatus && matchesCategory && (!query || searchableText.includes(query));
+    return matchesStatus && matchesCategory && matchesCondition && (!query || searchableText.includes(query));
   });
 }
 
@@ -661,6 +728,16 @@ function InventoryStatusBadge({ status }) {
   );
 }
 
+function InventoryConditionBadge({ condition }) {
+  const normalizedCondition = normalizeInventoryCondition(condition);
+
+  return (
+    <span className={cn('inline-flex w-fit items-center rounded-md px-2 py-1 text-[0.62rem] font-semibold uppercase tracking-[0.14em]', getInventoryConditionToneClass(normalizedCondition))}>
+      {normalizedCondition}
+    </span>
+  );
+}
+
 function InventoryHero({ stats }) {
   return (
     <section className="relative overflow-hidden border-b border-[var(--ui-border)] pb-4 pt-2">
@@ -699,10 +776,12 @@ function InventoryHero({ stats }) {
 function InventoryToolbar({
   categoryFilter,
   categories,
+  conditionFilter,
   resultCount,
   searchTerm,
   statusFilter,
   onCategoryChange,
+  onConditionChange,
   onCreateAsset,
   onExportInventory,
   onPrintInventory,
@@ -715,7 +794,7 @@ function InventoryToolbar({
         <Search className="shrink-0 text-[var(--ui-text-soft)]" size={15} strokeWidth={2.35} aria-hidden="true" />
         <input
           className="min-h-8 w-full border-0 bg-transparent text-sm font-semibold outline-none placeholder:text-[var(--ui-text-soft)]"
-          placeholder="Cari asset, kategori, lokasi..."
+          placeholder="Cari asset, kategori, lokasi, kondisi..."
           type="search"
           value={searchTerm}
           onChange={(event) => onSearchChange(event.target.value)}
@@ -740,7 +819,7 @@ function InventoryToolbar({
         ))}
       </div>
 
-      <div className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto_auto_auto] lg:min-w-[390px]">
+      <div className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_minmax(0,0.82fr)_auto_auto_auto] lg:min-w-[560px]">
         <label className="flex min-h-9 items-center gap-2 rounded-full bg-[var(--ui-control)] px-3 text-xs font-semibold text-[var(--ui-text-muted)] ring-1 ring-[var(--ui-ring)]">
           <SlidersHorizontal size={14} strokeWidth={2.35} aria-hidden="true" />
           <select
@@ -751,6 +830,19 @@ function InventoryToolbar({
             <option value="all">Semua kategori</option>
             {categories.map((category) => (
               <option key={category} value={category}>{category}</option>
+            ))}
+          </select>
+        </label>
+
+        <label className="flex min-h-9 items-center gap-2 rounded-full bg-[var(--ui-control)] px-3 text-xs font-semibold text-[var(--ui-text-muted)] ring-1 ring-[var(--ui-ring)]">
+          <PackageCheck size={14} strokeWidth={2.35} aria-hidden="true" />
+          <select
+            className="min-h-8 w-full border-0 bg-transparent font-semibold outline-none"
+            value={conditionFilter}
+            onChange={(event) => onConditionChange(event.target.value)}
+          >
+            {inventoryConditionFilters.map((condition) => (
+              <option key={condition.key} value={condition.key}>{condition.label}</option>
             ))}
           </select>
         </label>
@@ -825,11 +917,14 @@ function InventoryAssetCard({
         </div>
 
         <p className="m-0 truncate pl-8 text-[0.68rem] font-semibold text-[var(--ui-text-muted)]">
-          {asset.category} • {asset.location}
+          {asset.category} • {asset.location} • {normalizeInventoryCondition(asset.condition)}
         </p>
       </div>
 
-      <InventoryStatusBadge status={asset.status} />
+      <div className="grid w-fit gap-1">
+        <InventoryStatusBadge status={asset.status} />
+        <InventoryConditionBadge condition={asset.condition} />
+      </div>
 
       <div className="flex items-center gap-2 text-sm font-semibold text-[var(--ui-text-main)]">
         <strong className="text-lg font-semibold tracking-[-0.04em] text-[var(--ui-text-strong)]">
@@ -944,7 +1039,9 @@ function InventoryBoard({
 }
 
 function InventoryMaintenancePanel({ assets }) {
-  const watchItems = assets.filter((asset) => asset.status !== 'ready').slice(0, 4);
+  const watchItems = assets
+    .filter((asset) => asset.status !== 'ready' || normalizeInventoryCondition(asset.condition) === 'Poor')
+    .slice(0, 4);
 
   return (
     <section className="max-w-[980px] border-y border-[var(--ui-border)] py-2">
@@ -954,13 +1051,14 @@ function InventoryMaintenancePanel({ assets }) {
         </span>
 
         {watchItems.length > 0 ? watchItems.map((asset) => (
-          <span className="inline-flex min-h-8 max-w-[260px] items-center gap-2 rounded-full bg-[var(--ui-control)] px-3 text-xs font-semibold text-[var(--ui-text-main)] ring-1 ring-[var(--ui-ring)]" key={asset.id}>
+          <span className="inline-flex min-h-8 max-w-[300px] items-center gap-2 rounded-full bg-[var(--ui-control)] px-3 text-xs font-semibold text-[var(--ui-text-main)] ring-1 ring-[var(--ui-ring)]" key={asset.id}>
             <span className="truncate">{asset.name}</span>
             <InventoryStatusBadge status={asset.status} />
+            <InventoryConditionBadge condition={asset.condition} />
           </span>
         )) : (
           <span className="text-sm font-semibold text-[var(--ui-text-muted)]">
-            Semua asset ready.
+            Semua asset ready dan kondisinya aman.
           </span>
         )}
       </div>
@@ -986,6 +1084,23 @@ function InventoryFormField({
         value={value}
         onChange={(event) => onChange(event.target.value)}
       />
+    </label>
+  );
+}
+
+function InventoryConditionSelect({ onChange, value }) {
+  return (
+    <label className="grid gap-1.5 text-sm font-semibold text-[var(--ui-text-main)]">
+      <span className="text-[0.68rem] uppercase tracking-[0.12em] text-[var(--ui-text-muted)]">Condition</span>
+      <select
+        className="min-h-10 rounded-xl border border-[var(--ui-border)] bg-[var(--ui-bg-page)] px-3 text-sm font-semibold text-[var(--ui-text-strong)] outline-none ring-1 ring-[var(--ui-ring)] focus:border-studio-accent/45 focus:ring-4 focus:ring-studio-accent/15"
+        value={normalizeInventoryCondition(value)}
+        onChange={(event) => onChange(event.target.value)}
+      >
+        {inventoryConditionOptions.map((option) => (
+          <option key={option.key} value={option.key}>{option.label}</option>
+        ))}
+      </select>
     </label>
   );
 }
@@ -1071,7 +1186,7 @@ function InventoryFormPanel({
                 </select>
               </label>
 
-              <InventoryFormField label="Condition" placeholder="Good, Excellent..." value={draft.condition} onChange={(value) => onChange('condition', value)} />
+              <InventoryConditionSelect value={draft.condition} onChange={(value) => onChange('condition', value)} />
               <div className="grid gap-3 sm:grid-cols-2">
                 <InventoryFormField label="Checked" type="date" value={draft.lastChecked} onChange={(value) => onChange('lastChecked', value)} />
                 <InventoryFormField label="Next maintenance" type="date" value={draft.nextMaintenance} onChange={(value) => onChange('nextMaintenance', value)} />
@@ -1343,9 +1458,7 @@ function InventoryItemDetailDrawer({
           <section className="grid gap-3">
             <div className="flex flex-wrap items-center gap-2">
               <InventoryStatusBadge status={asset.status} />
-              <span className="rounded-md bg-[var(--ui-control)] px-2 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.12em] text-[var(--ui-text-muted)] ring-1 ring-[var(--ui-ring)]">
-                {asset.condition || 'Good'}
-              </span>
+              <InventoryConditionBadge condition={asset.condition} />
             </div>
 
             <div className="grid gap-3 sm:grid-cols-3">
@@ -1639,6 +1752,7 @@ export function InventoryAdmin() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [categoryFilter, setCategoryFilter] = useState('all');
+  const [conditionFilter, setConditionFilter] = useState('all');
   const [inventoryItems, setInventoryItems] = useState([]);
   const [inventoryState, setInventoryState] = useState({
     errorMessage: '',
@@ -1715,8 +1829,8 @@ export function InventoryAdmin() {
   const isUsingStarterAssets = inventoryState.isReady && inventoryItems.length === 0;
   const categories = useMemo(() => getInventoryCategories(activeAssets), [activeAssets]);
   const filteredAssets = useMemo(
-    () => getFilteredAssets(activeAssets, searchTerm, statusFilter, categoryFilter),
-    [activeAssets, categoryFilter, searchTerm, statusFilter],
+    () => getFilteredAssets(activeAssets, searchTerm, statusFilter, categoryFilter, conditionFilter),
+    [activeAssets, categoryFilter, conditionFilter, searchTerm, statusFilter],
   );
   const stats = useMemo(() => getInventoryStats(activeAssets), [activeAssets]);
   const selectedDetailAsset = useMemo(
@@ -2019,10 +2133,12 @@ export function InventoryAdmin() {
       <InventoryToolbar
         categories={categories}
         categoryFilter={categoryFilter}
+        conditionFilter={conditionFilter}
         resultCount={filteredAssets.length}
         searchTerm={searchTerm}
         statusFilter={statusFilter}
         onCategoryChange={setCategoryFilter}
+        onConditionChange={setConditionFilter}
         onCreateAsset={openCreateAssetForm}
         onExportInventory={handleExportInventory}
         onPrintInventory={handlePrintInventory}

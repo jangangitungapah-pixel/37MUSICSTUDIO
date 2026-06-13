@@ -41,6 +41,27 @@ function safeNumber(value, fallback = 0) {
   return Number.isFinite(parsedValue) ? parsedValue : fallback;
 }
 
+function normalizeInventoryCondition(value) {
+  const normalizedValue = safeString(value, 'Good').toLowerCase();
+
+  if (normalizedValue === 'excellent' || normalizedValue === 'excelent') {
+    return 'Excellent';
+  }
+
+  if (
+    normalizedValue === 'poor' ||
+    normalizedValue === 'low' ||
+    normalizedValue === 'watch' ||
+    normalizedValue === 'bad' ||
+    normalizedValue === 'broken' ||
+    normalizedValue === 'damaged'
+  ) {
+    return 'Poor';
+  }
+
+  return 'Good';
+}
+
 function normalizeTimestampValue(value, fallback) {
   if (!value) {
     return fallback;
@@ -153,7 +174,7 @@ export function normalizeInventoryItem(item) {
 
   const normalizedItem = {
     category: safeString(item.category, 'General'),
-    condition: safeString(item.condition, 'Good'),
+    condition: normalizeInventoryCondition(item.condition),
     createdAt: normalizeTimestampValue(item.createdAt, nowIso),
     createdBy: normalizeInventoryActor(item.createdBy),
     id,
