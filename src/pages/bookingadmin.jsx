@@ -1695,31 +1695,31 @@ function CalendarGrid({
     >
       <div
         className={cn(
-          'booking-board-header flex items-center justify-between gap-2 border-b border-[var(--ui-border-strong)] px-3 py-2.5 sm:gap-3 sm:px-4 sm:py-3',
+          'booking-board-header flex items-center justify-between gap-2 border-b border-[var(--ui-border-strong)] px-2.5 py-2 sm:gap-3 sm:px-3.5 sm:py-2.5',
           solidSurfaces.gridCorner,
         )}
       >
         <div className="flex min-w-0 items-center gap-3">
-          <div className="booking-board-icon grid size-9 shrink-0 place-items-center rounded-[1rem] border border-[var(--ui-border)] bg-[var(--ui-control)] text-studio-accent shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] sm:size-10 sm:rounded-2xl">
+          <div className="booking-board-icon grid size-8 shrink-0 place-items-center rounded-[0.95rem] border border-[var(--ui-border)] bg-[var(--ui-control)] text-studio-accent shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] sm:size-9 sm:rounded-[1rem]">
             <Grid3X3 size={18} strokeWidth={2.35} aria-hidden="true" />
           </div>
 
           <div className="grid min-w-0 gap-0.5">
-            <strong className="truncate text-sm font-semibold tracking-[-0.02em] text-[var(--ui-text-strong)]">
+            <strong className="truncate text-sm font-semibold tracking-[-0.025em] text-[var(--ui-text-strong)]">
               Board jadwal studio
             </strong>
-            <span className="booking-board-subtitle truncate text-xs font-medium text-[var(--ui-text-muted)]">
+            <span className="booking-board-subtitle truncate text-[0.68rem] font-medium text-[var(--ui-text-muted)] sm:text-xs">
               Mode {getViewLabel(viewMode)}: {visibleDays.length} hari terlihat
             </span>
           </div>
         </div>
 
-        <div className="hidden items-center gap-2 text-xs font-semibold text-[var(--ui-text-muted)] sm:flex">
+        <div className="hidden items-center gap-1.5 rounded-full border border-[var(--ui-border)] bg-[var(--ui-control)] px-2.5 py-1.5 text-[0.66rem] font-semibold text-[var(--ui-text-muted)] ring-1 ring-[var(--ui-ring)] sm:flex">
           <span className="size-2 rounded-full bg-studio-accent" />
           Pending
-          <span className="ml-2 size-2 rounded-full bg-studio-purple" />
+          <span className="ml-1.5 size-2 rounded-full bg-studio-purple" />
           DP
-          <span className="ml-2 size-2 rounded-full bg-studio-cyan" />
+          <span className="ml-1.5 size-2 rounded-full bg-studio-cyan" />
           Lunas
         </div>
       </div>
@@ -1803,23 +1803,73 @@ function SelectedSlotPanel({
   }
 
   const booking = getBookingForSlot(bookings, selectedSlot.dateKey, selectedSlot.timeKey);
+  const statusTone = booking ? getToneByStatus(booking.status) : 'cyan';
+  const statusLabel = booking ? getStatusLabel(booking.status) : 'Kosong';
+  const displayName = booking?.customerName || booking?.title || 'Slot kosong';
+  const sessionLabel = booking?.sessionType || booking?.title || 'Belum ada booking';
+  const selectedLabel = selectedSlot.label + ' • ' + selectedSlot.timeKey;
 
   return (
     <AdminPanel
-      className="booking-selected-slot-panel text-sm font-medium leading-6 text-[var(--ui-text-main)] sm:leading-7"
+      className="booking-selected-slot-panel grid gap-2 p-2.5 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center sm:gap-3 sm:p-3"
       variant={booking ? 'solid' : 'flat'}
     >
-      <span className="font-semibold text-[var(--ui-text-strong)]">Slot</span>{' '}
-      {selectedSlot.label} - {selectedSlot.timeKey}.
-      {booking ? (
-        <span>
-          {' '}Terisi: <span className="font-semibold text-[var(--ui-text-strong)]">{booking.customerName || booking.title}</span> - {getStatusLabel(booking.status)} - total {formatCurrency(booking.totalPrice)} - sisa {formatCurrency(booking.remainingPayment)}.
+      <div className="flex min-w-0 items-center gap-2.5">
+        <span className={cn(
+          'grid size-9 shrink-0 place-items-center rounded-[1rem] border shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)]',
+          booking
+            ? 'border-studio-accent/30 bg-studio-accent/10 text-studio-accent'
+            : 'border-studio-cyan/30 bg-studio-cyan/10 text-studio-cyan',
+        )}>
+          {booking ? (
+            <ReceiptText size={16} strokeWidth={2.35} aria-hidden="true" />
+          ) : (
+            <Plus size={16} strokeWidth={2.35} aria-hidden="true" />
+          )}
         </span>
-      ) : (
-        <span>
-          {' '}Kosong. Tekan slot atau Tambah untuk booking.
+
+        <span className="grid min-w-0 gap-0.5">
+          <span className="text-[0.58rem] font-semibold uppercase tracking-[0.14em] text-[var(--ui-text-muted)] sm:text-[0.66rem]">
+            Slot terpilih
+          </span>
+
+          <strong className="truncate text-sm font-semibold tracking-[-0.025em] text-[var(--ui-text-strong)] sm:text-base">
+            {displayName}
+          </strong>
+
+          <span className="truncate text-xs font-medium text-[var(--ui-text-muted)]">
+            {selectedLabel} • {sessionLabel}
+          </span>
         </span>
-      )}
+      </div>
+
+      <div className="grid grid-cols-3 gap-1 sm:flex sm:flex-wrap sm:justify-end">
+        <AdminBadge className="min-h-8 justify-center px-2 text-[0.58rem] uppercase tracking-[0.08em] sm:text-[0.66rem]" tone={statusTone}>
+          {statusLabel}
+        </AdminBadge>
+
+        {booking ? (
+          <>
+            <AdminBadge className="min-h-8 justify-center px-2 text-[0.58rem] uppercase tracking-[0.08em] sm:text-[0.66rem]" tone="strong">
+              {formatCurrency(booking.totalPrice)}
+            </AdminBadge>
+
+            <AdminBadge className="min-h-8 justify-center px-2 text-[0.58rem] uppercase tracking-[0.08em] sm:text-[0.66rem]" tone={booking.remainingPayment > 0 ? 'accent' : 'cyan'}>
+              Sisa {formatCurrency(booking.remainingPayment)}
+            </AdminBadge>
+          </>
+        ) : (
+          <>
+            <AdminBadge className="min-h-8 justify-center px-2 text-[0.58rem] uppercase tracking-[0.08em] sm:text-[0.66rem]" tone="strong">
+              Siap booking
+            </AdminBadge>
+
+            <AdminBadge className="min-h-8 justify-center px-2 text-[0.58rem] uppercase tracking-[0.08em] sm:text-[0.66rem]" tone="cyan">
+              Tap slot
+            </AdminBadge>
+          </>
+        )}
+      </div>
     </AdminPanel>
   );
 }
