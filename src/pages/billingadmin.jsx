@@ -450,6 +450,186 @@ function createManualPosTransactionFromForm(form, actor) {
   };
 }
 
+function escapeReceiptHtml(value) {
+  return String(value ?? '').replace(/[&<>"']/g, (character) => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;',
+  }[character] || character));
+}
+
+function formatReceiptDate(value) {
+  const date = value ? new Date(value) : new Date();
+
+  if (Number.isNaN(date.getTime())) {
+    return new Intl.DateTimeFormat('id-ID', {
+      dateStyle: 'medium',
+      timeStyle: 'short',
+    }).format(new Date());
+  }
+
+  return new Intl.DateTimeFormat('id-ID', {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+  }).format(date);
+}
+
+function getReceiptItemsFromItem(item) {
+  const transactionItems = item?.transactionSnapshot?.items;
+
+  if (Array.isArray(transactionItems) && transactionItems.length) {
+    return transactionItems.map((lineItem, index) => ({
+      name: String(lineItem.name || 'Billing item').trim(),
+      qty: Math.max(1, Number(lineItem.qty) || 1),
+      subtotal: Math.max(0, Number(lineItem.subtotal) || 0),
+      unitPrice: Math.max(0, Number(lineItem.unitPrice) || 0),
+      key: String(lineItem.id || index),
+    }));
+  }
+
+  return [
+    {
+      key: 'single',
+      name: item?.sourceLabel || 'Studio transaction',
+      qty: 1,
+      subtotal: Math.max(0, Number(item?.totalAmount) || 0),
+      unitPrice: Math.max(0, Number(item?.totalAmount) || 0),
+    },
+  ];
+}
+
+function createReceiptHtmlFromItem(item) {
+  const items = getReceiptItemsFromItem(item);
+  const itemRows = items.map((lineItem) => [
+    '<tr>',
+    '<td>',
+    escapeReceiptHtml(lineItem.name),
+    '<small>Qty ',
+    escapeReceiptHtml(lineItem.qty),
+    ' x ',
+    escapeReceiptHtml(formatCurrency(lineItem.unitPrice)),
+    '</small>',
+    '</td>',
+    '<td>',
+    escapeReceiptHtml(formatCurrency(lineItem.subtotal)),
+    '</td>',
+    '</tr>',
+  ].join('')).join('');
+  const invoiceNumber = escapeReceiptHtml(item?.invoiceNumber || 'Invoice');
+  const customerName = escapeReceiptHtml(item?.customerName || 'Walk-in customer');
+  const sourceLabel = escapeReceiptHtml(item?.sourceLabel || 'Billing');
+  const statusLabel = escapeReceiptHtml(getBillingStatusLabel(item?.status));
+  const createdAt = escapeReceiptHtml(formatReceiptDate(item?.createdAt || new Date().toISOString()));
+  const totalAmount = escapeReceiptHtml(formatCurrency(item?.totalAmount));
+  const paidAmount = escapeReceiptHtml(formatCurrency(item?.paidAmount));
+  const remainingAmount = escapeReceiptHtml(formatCurrency(item?.remainingAmount));
+
+  return [
+    '<!doctype html>',
+    '<html>',
+    '<head>',
+    '<meta charset="utf-8" />',
+    '<meta name="viewport" content="width=device-width, initial-scale=1" />',
+    '<title>37 Music Studio Receipt</title>',
+    '<style>',
+    '*{box-sizing:border-box}',
+    'body{margin:0;background:#f4f4f5;color:#111827;font-family:Inter,Arial,sans-serif}',
+    '.receipt{width:100%;max-width:420px;margin:0 auto;background:#fff;min-height:100vh;padding:24px}',
+    '.brand{display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid #e5e7eb;padding-bottom:16px}',
+    '.logo{display:grid;place-items:center;width:44px;height:44px;border-radius:16px;background:#111827;color:#fff;font-weight:800;letter-spacing:-.05em}',
+    'h1{margin:0;font-size:20px;letter-spacing:-.04em}',
+    'p{margin:0;color:#6b7280;font-size:12px;line-height:1.6}',
+    '.meta{display:grid;gap:8px;margin:18px 0;padding:14px;border:1px solid #e5e7eb;border-radius:18px;background:#fafafa}',
+    '.meta-row{display:flex;justify-content:space-between;gap:12px;font-size:12px}',
+    '.meta-row strong{text-align:right;color:#111827}',
+    'table{width:100%;border-collapse:collapse;margin-top:12px}',
+    'td{padding:10px 0;border-bottom:1px solid #e5e7eb;font-size:12px;vertical-align:top}',
+    'td:last-child{text-align:right;font-weight:700;color:#111827}',
+    'small{display:block;margin-top:3px;color:#6b7280;font-size:10px}',
+    '.totals{display:grid;gap:8px;margin-top:16px;padding-top:12px}',
+    '.total-row{display:flex;justify-content:space-between;gap:12px;font-size:13px}',
+    '.total-row.grand{font-size:18px;font-weight:800;letter-spacing:-.04em}',
+    '.footer{margin-top:24px;text-align:center;border-top:1px dashed #d1d5db;padding-top:16px}',
+    '@media print{body{background:#fff}.receipt{max-width:none;min-height:auto;padding:0}.no-print{display:none}}',
+    '</style>',
+    '</head>',
+    '<body>',
+    '<main class="receipt">',
+    '<section class="brand">',
+    '<div>',
+    '<h1>37 Music Studio</h1>',
+    '<p>Receipt / Invoice</p>',
+    '</div>',
+    '<div class="logo">37</div>',
+    '</section>',
+    '<section class="meta">',
+    '<div class="meta-row"><span>Invoice</span><strong>',
+    invoiceNumber,
+    '</strong></div>',
+    '<div class="meta-row"><span>Customer</span><strong>',
+    customerName,
+    '</strong></div>',
+    '<div class="meta-row"><span>Source</span><strong>',
+    sourceLabel,
+    '</strong></div>',
+    '<div class="meta-row"><span>Status</span><strong>',
+    statusLabel,
+    '</strong></div>',
+    '<div class="meta-row"><span>Date</span><strong>',
+    createdAt,
+    '</strong></div>',
+    '</section>',
+    '<table>',
+    '<tbody>',
+    itemRows,
+    '</tbody>',
+    '</table>',
+    '<section class="totals">',
+    '<div class="total-row grand"><span>Total</span><strong>',
+    totalAmount,
+    '</strong></div>',
+    '<div class="total-row"><span>Paid</span><strong>',
+    paidAmount,
+    '</strong></div>',
+    '<div class="total-row"><span>Remaining</span><strong>',
+    remainingAmount,
+    '</strong></div>',
+    '</section>',
+    '<section class="footer">',
+    '<p>Terima kasih sudah menggunakan 37 Music Studio.</p>',
+    '<p>Generated from Studio OS Billing.</p>',
+    '</section>',
+    '</main>',
+    '</body>',
+    '</html>',
+  ].join('');
+}
+
+function printBillingReceiptFromItem(item) {
+  if (typeof window === 'undefined') {
+    return false;
+  }
+
+  const printWindow = window.open('', '_blank', 'width=420,height=720');
+
+  if (!printWindow) {
+    return false;
+  }
+
+  printWindow.document.open();
+  printWindow.document.write(createReceiptHtmlFromItem(item));
+  printWindow.document.close();
+  printWindow.focus();
+
+  window.setTimeout(() => {
+    printWindow.print();
+  }, 150);
+
+  return true;
+}
+
 function BillingSummaryRail({ summary }) {
   const items = [
     {
@@ -863,6 +1043,7 @@ function BillingQueue({
   queue,
   onCreateInvoice,
   onOpenPayment,
+  onPrintReceipt,
 }) {
   if (!queue.length) {
     return (
@@ -934,9 +1115,14 @@ function BillingQueue({
                   {isCreating ? 'Creating...' : 'Create invoice'}
                 </AdminButton>
               ) : (
-                <AdminButton icon={CreditCard} size="sm" variant="secondary" onClick={() => onOpenPayment(item)}>
-                  Payment
-                </AdminButton>
+                <div className="flex flex-wrap justify-end gap-2">
+                  <AdminButton icon={CreditCard} size="sm" variant="secondary" onClick={() => onOpenPayment(item)}>
+                    Payment
+                  </AdminButton>
+                  <AdminButton icon={Printer} size="sm" variant="secondary" onClick={() => onPrintReceipt(item)}>
+                    Print
+                  </AdminButton>
+                </div>
               )}
             </div>
           </article>
@@ -955,7 +1141,7 @@ function BillingNextPhasePanel({
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="grid gap-1">
           <span className="text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-studio-accent">
-            Manual POS enabled
+            Receipt print enabled
           </span>
           <strong className="text-base font-semibold text-[var(--ui-text-strong)]">
             {transactionCount} saved transaction
@@ -973,7 +1159,7 @@ function BillingNextPhasePanel({
       </div>
 
       <p className="m-0 text-sm leading-6 text-[var(--ui-text-muted)]">
-        BILLING.6 bisa membuat transaksi manual POS. Sync booking, inventory stock, dan receipt print masuk fase berikutnya.
+        BILLING.7 bisa print receipt HTML untuk saved invoice. Sync booking, inventory stock, dan PDF generator tetap ditahan.
       </p>
     </AdminPanel>
   );
@@ -1200,6 +1386,32 @@ export function BillingAdmin() {
     }
   };
 
+  const handlePrintReceipt = async (item) => {
+    if (!item || item.type !== 'transaction') {
+      return;
+    }
+
+    const didPrint = printBillingReceiptFromItem(item);
+
+    if (!didPrint) {
+      setCreateInvoiceError('Popup print diblokir browser. Izinkan popup lalu coba lagi.');
+      return;
+    }
+
+    try {
+      await adminBillingRepository.recordBillingAuditLog({
+        action: 'billing.print',
+        by: normalizeBillingActor(adminUser),
+        label: 'Receipt billing dicetak',
+        source: 'admin',
+        transactionId: item.id || item.transactionSnapshot?.id || '',
+        transactionSnapshot: item.transactionSnapshot || item,
+      });
+    } catch (error) {
+      console.error('Failed to record billing print audit log.', error);
+    }
+  };
+
   return (
     <AdminPageShell className="billing-admin-workspace gap-3 pb-[calc(8.5rem+env(safe-area-inset-bottom))] pt-1 sm:gap-4 md:pb-4 md:pt-2" width="wide">
       <div className="sr-only" id="billing-admin-title">
@@ -1259,6 +1471,7 @@ export function BillingAdmin() {
           queue={filteredQueue}
           onCreateInvoice={handleCreateInvoice}
           onOpenPayment={handleOpenPayment}
+          onPrintReceipt={handlePrintReceipt}
         />
       )}
 
