@@ -1,7 +1,9 @@
 import {
   useMemo,
   useState,
+  useEffect,
 } from 'react';
+import { useOutletContext } from 'react-router';
 import {
   AlertTriangle,
   ArrowUpRight,
@@ -15,6 +17,7 @@ import {
   Wrench,
 } from 'lucide-react';
 import { cn } from '../lib/cn.js';
+import { adminInventoryRepository } from '../services/adminInventoryRepository.js';
 
 const inventoryStatusFilters = [
   { key: 'all', label: 'Semua' },
@@ -23,7 +26,7 @@ const inventoryStatusFilters = [
   { key: 'maintenance', label: 'Maintenance' },
 ];
 
-const inventoryAssets = [
+const starterInventoryAssets = [
   {
     id: 'asset-drum-kit-a',
     name: 'Drum kit Studio A',
@@ -276,7 +279,7 @@ function InventoryHero({ stats }) {
           </div>
 
           <p className="m-0 text-sm leading-6 text-[var(--ui-text-muted)]">
-            Fase ini masih workspace foundation. Sync Firestore inventory akan dipasang setelah struktur collection disepakati.
+            Inventory sekarang siap membaca Firestore realtime. Kalau collection masih kosong, seed starter asset bisa dipakai sebagai data awal.
           </p>
         </div>
       </div>
@@ -470,16 +473,76 @@ function InventoryMaintenancePanel({ assets }) {
   );
 }
 
+
+function InventorySyncBanner({
+  errorMessage,
+  isReady,
+  isUsingStarterAssets,
+  itemCount,
+  seedStatus,
+  onSeedStarterInventory,
+}) {
+  const statusTitle = errorMessage
+    ? 'Firestore inventory belum terbaca'
+    : isReady
+      ? 'Firestore inventory aktif'
+      : 'Menghubungkan inventory';
+
+  const statusText = errorMessage
+    ? errorMessage
+    : isUsingStarterAssets
+      ? 'Collection inventoryItems masih kosong. Starter asset lokal ditampilkan sementara dan bisa disalin ke Firestore.'
+      : `${itemCount} item inventory terbaca dari Firestore realtime.`;
+
+  return (
+    <section className="grid gap-3 rounded-[1.5rem] border border-[var(--ui-border-strong)] bg-[linear-gradient(145deg,var(--ui-glass),var(--ui-glass-soft))] p-4 shadow-[var(--ui-shadow-soft)] ring-1 ring-[var(--ui-ring)] backdrop-blur-2xl lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
+      <div className="flex min-w-0 items-start gap-3">
+        <span className={cn(
+          'grid size-11 shrink-0 place-items-center rounded-2xl border ring-1',
+          errorMessage
+            ? 'border-studio-accent/35 bg-studio-accent/10 text-studio-accent ring-studio-accent/15'
+            : 'border-studio-cyan/35 bg-studio-cyan/10 text-studio-cyan ring-studio-cyan/15',
+        )}>
+          {errorMessage ? (
+            <AlertTriangle size={18} strokeWidth={2.35} aria-hidden="true" />
+          ) : (
+            <ShieldCheck size={18} strokeWidth={2.35} aria-hidden="true" />
+          )}
+        </span>
+
+        <div className="grid min-w-0 gap-1">
+          <strong className="text-base font-semibold tracking-[-0.035em] text-[var(--ui-text-strong)]">
+            {statusTitle}
+          </strong>
+          <p className="m-0 text-sm leading-6 text-[var(--ui-text-muted)]">
+            {statusText}
+          </p>
+        </div>
+      </div>
+
+      <button
+        className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-studio-cyan/35 bg-studio-cyan/10 px-4 text-sm font-semibold text-studio-cyan ring-1 ring-studio-cyan/15 transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-cyan/20 disabled:cursor-not-allowed disabled:opacity-60"
+        disabled={seedStatus === 'saving'}
+        type="button"
+        onClick={onSeedStarterInventory}
+      >
+        <ClipboardList size={15} strokeWidth={2.35} aria-hidden="true" />
+        {seedStatus === 'saving' ? 'Syncing...' : seedStatus === 'saved' ? 'Seeded' : seedStatus === 'error' ? 'Seed gagal' : 'Seed starter'}
+      </button>
+    </section>
+  );
+}
+
 function InventoryFirestorePlan() {
   return (
     <section className="grid gap-4 rounded-[1.75rem] border border-[var(--ui-border-strong)] bg-[linear-gradient(145deg,var(--ui-glass),var(--ui-glass-soft))] p-4 shadow-[var(--ui-shadow-soft)] ring-1 ring-[var(--ui-ring)] backdrop-blur-2xl">
       <div className="flex items-start justify-between gap-3">
         <div className="grid gap-1">
           <span className="text-xs font-semibold uppercase tracking-[0.16em] text-studio-cyan">
-            Next data layer
+            Active data layer
           </span>
           <h2 className="m-0 text-2xl font-semibold tracking-[-0.06em] text-[var(--ui-text-strong)]">
-            Firestore inventory sync.
+            Firestore inventory realtime.
           </h2>
         </div>
 
@@ -488,9 +551,9 @@ function InventoryFirestorePlan() {
 
       <div className="grid gap-2">
         {[
-          'inventoryItems untuk gear, cable, spare part, dan consumable.',
-          'inventoryActivityLogs untuk check-in, maintenance, restock, dan audit.',
-          'Rules mengikuti akun admin yang sudah dipakai login.',
+          'inventoryItems menyimpan gear, cable, spare part, dan consumable.',
+          'inventoryActivityLogs disiapkan untuk check-in, maintenance, restock, dan audit.',
+          'Rules harus mengizinkan akun admin membaca dan menulis inventory.',
         ].map((item) => (
           <div className="flex items-start gap-2 rounded-[1.1rem] border border-[var(--ui-border)] bg-[var(--ui-control)] p-3 text-sm leading-6 text-[var(--ui-text-main)]" key={item}>
             <ArrowUpRight className="mt-1 shrink-0 text-studio-cyan" size={14} strokeWidth={2.35} aria-hidden="true" />
@@ -503,16 +566,82 @@ function InventoryFirestorePlan() {
 }
 
 export function InventoryAdmin() {
+  const adminContext = useOutletContext() || {};
+  const { adminUser = null } = adminContext;
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [categoryFilter, setCategoryFilter] = useState('all');
+  const [inventoryItems, setInventoryItems] = useState([]);
+  const [inventoryState, setInventoryState] = useState({
+    errorMessage: '',
+    isReady: false,
+  });
+  const [seedStatus, setSeedStatus] = useState('idle');
 
-  const categories = useMemo(() => getInventoryCategories(inventoryAssets), []);
+  useEffect(() => {
+    setInventoryState({
+      errorMessage: '',
+      isReady: false,
+    });
+
+    const unsubscribe = adminInventoryRepository.subscribeInventoryItems(
+      (items) => {
+        setInventoryItems(items);
+        setInventoryState((current) => ({
+          ...current,
+          isReady: true,
+        }));
+      },
+      (error) => {
+        setInventoryState({
+          errorMessage: error?.message || 'Firestore inventory belum bisa dibaca. Cek rules inventoryItems.',
+          isReady: true,
+        });
+      },
+    );
+
+    return unsubscribe;
+  }, []);
+
+  const activeAssets = inventoryItems.length > 0
+    ? inventoryItems
+    : starterInventoryAssets;
+  const isUsingStarterAssets = inventoryState.isReady && inventoryItems.length === 0;
+  const categories = useMemo(() => getInventoryCategories(activeAssets), [activeAssets]);
   const filteredAssets = useMemo(
-    () => getFilteredAssets(inventoryAssets, searchTerm, statusFilter, categoryFilter),
-    [categoryFilter, searchTerm, statusFilter],
+    () => getFilteredAssets(activeAssets, searchTerm, statusFilter, categoryFilter),
+    [activeAssets, categoryFilter, searchTerm, statusFilter],
   );
-  const stats = useMemo(() => getInventoryStats(inventoryAssets), []);
+  const stats = useMemo(() => getInventoryStats(activeAssets), [activeAssets]);
+
+  const handleSeedStarterInventory = async () => {
+    setSeedStatus('saving');
+
+    try {
+      const seededItems = await adminInventoryRepository.seedStarterInventoryItems(
+        starterInventoryAssets,
+        adminUser,
+      );
+
+      setInventoryItems(seededItems);
+      setInventoryState({
+        errorMessage: '',
+        isReady: true,
+      });
+      setSeedStatus('saved');
+
+      window.setTimeout(() => {
+        setSeedStatus('idle');
+      }, 2200);
+    } catch (error) {
+      console.error('Failed to seed starter inventory.', error);
+      setSeedStatus('error');
+
+      window.setTimeout(() => {
+        setSeedStatus('idle');
+      }, 2200);
+    }
+  };
 
   return (
     <section className="grid gap-4 pb-[calc(8.5rem+env(safe-area-inset-bottom))] pt-1 md:pb-4 md:pt-2" aria-labelledby="inventory-admin-title">
@@ -523,11 +652,20 @@ export function InventoryAdmin() {
       <InventoryHero stats={stats} />
 
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        <InventoryMetric helper="Total quantity dari asset starter." icon={Boxes} label="Total asset" value={stats.totalAssets} />
+        <InventoryMetric helper="Total quantity dari asset aktif." icon={Boxes} label="Total asset" value={stats.totalAssets} />
         <InventoryMetric helper="Item yang siap dipakai." icon={ShieldCheck} label="Ready" value={stats.ready} />
         <InventoryMetric helper="Perlu restock atau cadangan." icon={AlertTriangle} label="Low stock" value={stats.lowStock} />
         <InventoryMetric helper="Estimasi kasar asset tercatat." icon={Tags} label="Value" value={formatCurrency(stats.valueEstimate)} />
       </div>
+
+      <InventorySyncBanner
+        errorMessage={inventoryState.errorMessage}
+        isReady={inventoryState.isReady}
+        isUsingStarterAssets={isUsingStarterAssets}
+        itemCount={inventoryItems.length}
+        seedStatus={seedStatus}
+        onSeedStarterInventory={handleSeedStarterInventory}
+      />
 
       <InventoryToolbar
         categories={categories}
@@ -544,7 +682,7 @@ export function InventoryAdmin() {
         <InventoryBoard assets={filteredAssets} />
 
         <div className="grid gap-4">
-          <InventoryMaintenancePanel assets={inventoryAssets} />
+          <InventoryMaintenancePanel assets={activeAssets} />
           <InventoryFirestorePlan />
         </div>
       </div>
