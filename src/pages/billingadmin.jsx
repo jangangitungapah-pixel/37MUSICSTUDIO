@@ -372,6 +372,84 @@ function createPaymentFormFromItem(item) {
   };
 }
 
+function createEmptyManualPosForm() {
+  return {
+    customerName: '',
+    itemName: 'Studio walk-in session',
+    notes: '',
+    paidAmount: '0',
+    paymentMethod: 'cash',
+    phone: '',
+    qty: '1',
+    unitPrice: '0',
+  };
+}
+
+function getManualPosFormTotals(form) {
+  const qty = Math.max(1, Number(form?.qty) || 1);
+  const unitPrice = Math.max(0, Number(form?.unitPrice) || 0);
+  const totalAmount = Math.max(0, qty * unitPrice);
+  const paidAmount = clampPaymentAmount(form?.paidAmount, totalAmount);
+  const remainingAmount = Math.max(0, totalAmount - paidAmount);
+
+  return {
+    paidAmount,
+    paymentStatus: getPaymentStatusFromAmount(paidAmount, totalAmount),
+    qty,
+    remainingAmount,
+    totalAmount,
+    unitPrice,
+  };
+}
+
+function createManualPosTransactionFromForm(form, actor) {
+  const createdAt = new Date().toISOString();
+  const totals = getManualPosFormTotals(form);
+  const normalizedActor = normalizeBillingActor(actor);
+  const itemName = String(form?.itemName || 'Manual POS item').trim() || 'Manual POS item';
+  const customerName = String(form?.customerName || 'Walk-in customer').trim() || 'Walk-in customer';
+  const transactionId = 'billing-manual-' + Date.now();
+
+  return {
+    bookingId: '',
+    createdAt,
+    createdBy: normalizedActor,
+    customerId: '',
+    customerName,
+    discountAmount: 0,
+    id: transactionId,
+    invoiceNumber: createInvoiceNumberFromDraft(
+      {
+        bookingId: transactionId,
+        invoiceNumber: transactionId,
+      },
+      createdAt,
+    ),
+    items: [
+      {
+        category: 'manual_pos',
+        id: 'manual-pos-item',
+        inventoryItemId: '',
+        name: itemName,
+        qty: totals.qty,
+        subtotal: totals.totalAmount,
+        unitPrice: totals.unitPrice,
+      },
+    ],
+    notes: String(form?.notes || '').trim(),
+    paidAmount: totals.paidAmount,
+    paymentMethod: form?.paymentMethod || 'cash',
+    paymentStatus: totals.paymentStatus,
+    phone: String(form?.phone || '').trim(),
+    remainingAmount: totals.remainingAmount,
+    sourceType: 'manual',
+    subtotal: totals.totalAmount,
+    totalAmount: totals.totalAmount,
+    updatedAt: createdAt,
+    updatedBy: normalizedActor,
+  };
+}
+
 function BillingSummaryRail({ summary }) {
   const items = [
     {
@@ -620,6 +698,166 @@ function BillingPaymentDrawer({
   );
 }
 
+function ManualPosDrawer({
+  form,
+  isOpen,
+  isSaving,
+  saveError,
+  onClose,
+  onFormChange,
+  onSave,
+}) {
+  const totals = getManualPosFormTotals(form);
+  const canSave = String(form?.itemName || '').trim() && totals.totalAmount > 0;
+
+  return (
+    <AdminDrawer
+      actions={(
+        <>
+          <AdminButton disabled={isSaving} size="sm" variant="secondary" onClick={onClose}>
+            Cancel
+          </AdminButton>
+          <AdminButton disabled={isSaving || !canSave} icon={Plus} size="sm" variant="primary" onClick={onSave}>
+            {isSaving ? 'Saving...' : 'Save POS'}
+          </AdminButton>
+        </>
+      )}
+      description="Buat invoice manual untuk walk-in, overtime, atau item tambahan."
+      isOpen={isOpen}
+      title="New manual POS"
+      widthClass="max-w-xl"
+      onClose={onClose}
+    >
+      <div className="grid gap-4">
+        <div className="grid gap-3 sm:grid-cols-2">
+          <label className="grid gap-1.5 text-sm font-semibold text-[var(--ui-text-main)]">
+            Customer
+            <input
+              className="min-h-12 rounded-[1.15rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-4 text-sm font-semibold text-[var(--ui-text-strong)] outline-none ring-1 ring-[var(--ui-ring)] transition placeholder:text-[var(--ui-text-soft)] focus:border-studio-accent/55 focus:ring-4 focus:ring-studio-accent/20"
+              placeholder="Walk-in customer"
+              type="text"
+              value={form.customerName}
+              onChange={(event) => onFormChange({ customerName: event.target.value })}
+            />
+          </label>
+
+          <label className="grid gap-1.5 text-sm font-semibold text-[var(--ui-text-main)]">
+            Phone
+            <input
+              className="min-h-12 rounded-[1.15rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-4 text-sm font-semibold text-[var(--ui-text-strong)] outline-none ring-1 ring-[var(--ui-ring)] transition placeholder:text-[var(--ui-text-soft)] focus:border-studio-accent/55 focus:ring-4 focus:ring-studio-accent/20"
+              placeholder="Optional"
+              type="tel"
+              value={form.phone}
+              onChange={(event) => onFormChange({ phone: event.target.value })}
+            />
+          </label>
+        </div>
+
+        <label className="grid gap-1.5 text-sm font-semibold text-[var(--ui-text-main)]">
+          Item
+          <input
+            className="min-h-12 rounded-[1.15rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-4 text-sm font-semibold text-[var(--ui-text-strong)] outline-none ring-1 ring-[var(--ui-ring)] transition placeholder:text-[var(--ui-text-soft)] focus:border-studio-accent/55 focus:ring-4 focus:ring-studio-accent/20"
+            placeholder="Studio walk-in session"
+            type="text"
+            value={form.itemName}
+            onChange={(event) => onFormChange({ itemName: event.target.value })}
+          />
+        </label>
+
+        <div className="grid gap-3 sm:grid-cols-3">
+          <label className="grid gap-1.5 text-sm font-semibold text-[var(--ui-text-main)]">
+            Qty
+            <input
+              className="min-h-12 rounded-[1.15rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-4 text-sm font-semibold text-[var(--ui-text-strong)] outline-none ring-1 ring-[var(--ui-ring)] transition placeholder:text-[var(--ui-text-soft)] focus:border-studio-accent/55 focus:ring-4 focus:ring-studio-accent/20"
+              inputMode="numeric"
+              min="1"
+              step="1"
+              type="number"
+              value={form.qty}
+              onChange={(event) => onFormChange({ qty: event.target.value })}
+            />
+          </label>
+
+          <label className="grid gap-1.5 text-sm font-semibold text-[var(--ui-text-main)]">
+            Unit price
+            <input
+              className="min-h-12 rounded-[1.15rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-4 text-sm font-semibold text-[var(--ui-text-strong)] outline-none ring-1 ring-[var(--ui-ring)] transition placeholder:text-[var(--ui-text-soft)] focus:border-studio-accent/55 focus:ring-4 focus:ring-studio-accent/20"
+              inputMode="numeric"
+              min="0"
+              step="1000"
+              type="number"
+              value={form.unitPrice}
+              onChange={(event) => onFormChange({ unitPrice: event.target.value })}
+            />
+          </label>
+
+          <label className="grid gap-1.5 text-sm font-semibold text-[var(--ui-text-main)]">
+            Paid
+            <input
+              className="min-h-12 rounded-[1.15rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-4 text-sm font-semibold text-[var(--ui-text-strong)] outline-none ring-1 ring-[var(--ui-ring)] transition placeholder:text-[var(--ui-text-soft)] focus:border-studio-accent/55 focus:ring-4 focus:ring-studio-accent/20"
+              inputMode="numeric"
+              min="0"
+              step="1000"
+              type="number"
+              value={form.paidAmount}
+              onChange={(event) => onFormChange({ paidAmount: event.target.value })}
+            />
+          </label>
+        </div>
+
+        <AdminPanel className="grid gap-3 p-3" variant="flat">
+          <div className="grid grid-cols-3 gap-2 text-center">
+            <span className="grid gap-1 rounded-[1rem] border border-[var(--ui-border)] bg-[var(--ui-control)] p-2">
+              <span className="text-[0.58rem] font-semibold uppercase tracking-[0.12em] text-[var(--ui-text-muted)]">Total</span>
+              <strong className="truncate text-sm font-semibold text-[var(--ui-text-strong)]">{formatCurrency(totals.totalAmount)}</strong>
+            </span>
+            <span className="grid gap-1 rounded-[1rem] border border-[var(--ui-border)] bg-[var(--ui-control)] p-2">
+              <span className="text-[0.58rem] font-semibold uppercase tracking-[0.12em] text-[var(--ui-text-muted)]">Paid</span>
+              <strong className="truncate text-sm font-semibold text-[var(--ui-text-strong)]">{formatCurrency(totals.paidAmount)}</strong>
+            </span>
+            <span className="grid gap-1 rounded-[1rem] border border-[var(--ui-border)] bg-[var(--ui-control)] p-2">
+              <span className="text-[0.58rem] font-semibold uppercase tracking-[0.12em] text-[var(--ui-text-muted)]">Sisa</span>
+              <strong className="truncate text-sm font-semibold text-[var(--ui-text-strong)]">{formatCurrency(totals.remainingAmount)}</strong>
+            </span>
+          </div>
+
+          <AdminBadge tone={getBillingStatusTone(totals.paymentStatus)}>
+            Status: {getBillingStatusLabel(totals.paymentStatus)}
+          </AdminBadge>
+        </AdminPanel>
+
+        <div className="grid gap-1.5">
+          <span className="text-sm font-semibold text-[var(--ui-text-main)]">Payment method</span>
+          <PaymentMethodPills
+            value={form.paymentMethod}
+            onChange={(paymentMethod) => onFormChange({ paymentMethod })}
+          />
+        </div>
+
+        <label className="grid gap-1.5 text-sm font-semibold text-[var(--ui-text-main)]">
+          Notes
+          <textarea
+            className="min-h-24 resize-none rounded-[1.15rem] border border-[var(--ui-border)] bg-[var(--ui-control)] px-4 py-3 text-sm font-semibold text-[var(--ui-text-strong)] outline-none ring-1 ring-[var(--ui-ring)] transition placeholder:text-[var(--ui-text-soft)] focus:border-studio-accent/55 focus:ring-4 focus:ring-studio-accent/20"
+            placeholder="Catatan transaksi..."
+            value={form.notes}
+            onChange={(event) => onFormChange({ notes: event.target.value })}
+          />
+        </label>
+
+        {saveError ? (
+          <AdminPanel className="p-3 text-sm font-semibold text-studio-accent" variant="flat">
+            {saveError}
+          </AdminPanel>
+        ) : null}
+
+        <p className="m-0 text-xs leading-5 text-[var(--ui-text-muted)]">
+          Manual POS hanya membuat billingTransactions dan billingAuditLogs. Tidak mengurangi inventory stock pada fase ini.
+        </p>
+      </div>
+    </AdminDrawer>
+  );
+}
+
 function BillingQueue({
   creatingInvoiceKey,
   queue,
@@ -708,13 +946,16 @@ function BillingQueue({
   );
 }
 
-function BillingNextPhasePanel({ transactionCount }) {
+function BillingNextPhasePanel({
+  transactionCount,
+  onOpenManualPos,
+}) {
   return (
     <AdminPanel className="grid gap-3 p-4" variant="flat">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="grid gap-1">
           <span className="text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-studio-accent">
-            Payment flow enabled
+            Manual POS enabled
           </span>
           <strong className="text-base font-semibold text-[var(--ui-text-strong)]">
             {transactionCount} saved transaction
@@ -722,7 +963,7 @@ function BillingNextPhasePanel({ transactionCount }) {
         </div>
 
         <div className="flex flex-wrap gap-2">
-          <AdminButton disabled icon={Plus} size="sm" variant="primary">
+          <AdminButton icon={Plus} size="sm" variant="primary" onClick={onOpenManualPos}>
             New POS
           </AdminButton>
           <AdminButton disabled icon={Printer} size="sm" variant="secondary">
@@ -732,7 +973,7 @@ function BillingNextPhasePanel({ transactionCount }) {
       </div>
 
       <p className="m-0 text-sm leading-6 text-[var(--ui-text-muted)]">
-        BILLING.5 bisa update payment di billingTransactions. Sync booking, manual POS, dan receipt print masuk fase berikutnya.
+        BILLING.6 bisa membuat transaksi manual POS. Sync booking, inventory stock, dan receipt print masuk fase berikutnya.
       </p>
     </AdminPanel>
   );
@@ -749,7 +990,11 @@ export function BillingAdmin() {
   const [createInvoiceError, setCreateInvoiceError] = useState('');
   const [creatingInvoiceKey, setCreatingInvoiceKey] = useState('');
   const [isBillingReady, setIsBillingReady] = useState(false);
+  const [isManualPosOpen, setIsManualPosOpen] = useState(false);
+  const [isManualPosSaving, setIsManualPosSaving] = useState(false);
   const [isPaymentSaving, setIsPaymentSaving] = useState(false);
+  const [manualPosForm, setManualPosForm] = useState(createEmptyManualPosForm());
+  const [manualPosSaveError, setManualPosSaveError] = useState('');
   const [paymentForm, setPaymentForm] = useState(createPaymentFormFromItem(null));
   const [paymentSaveError, setPaymentSaveError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
@@ -899,6 +1144,62 @@ export function BillingAdmin() {
   const handleSavePayment = () => savePaymentUpdate();
   const handleMarkPaid = () => savePaymentUpdate({ markPaid: true });
 
+  const handleOpenManualPos = () => {
+    setManualPosSaveError('');
+    setManualPosForm(createEmptyManualPosForm());
+    setIsManualPosOpen(true);
+  };
+
+  const handleCloseManualPos = () => {
+    if (isManualPosSaving) {
+      return;
+    }
+
+    setManualPosSaveError('');
+    setManualPosForm(createEmptyManualPosForm());
+    setIsManualPosOpen(false);
+  };
+
+  const handleManualPosFormChange = (patch) => {
+    setManualPosForm((currentForm) => ({
+      ...currentForm,
+      ...patch,
+    }));
+  };
+
+  const handleSaveManualPos = async () => {
+    if (isManualPosSaving) {
+      return;
+    }
+
+    setIsManualPosSaving(true);
+    setManualPosSaveError('');
+
+    try {
+      const transaction = createManualPosTransactionFromForm(manualPosForm, adminUser);
+      const savedTransaction = await adminBillingRepository.createBillingTransaction(transaction);
+
+      if (savedTransaction) {
+        await adminBillingRepository.recordBillingAuditLog({
+          action: 'billing.manual_create',
+          by: normalizeBillingActor(adminUser),
+          label: 'Manual POS transaction dibuat',
+          source: 'admin',
+          transactionId: savedTransaction.id,
+          transactionSnapshot: savedTransaction,
+        });
+      }
+
+      setManualPosForm(createEmptyManualPosForm());
+      setIsManualPosOpen(false);
+    } catch (error) {
+      console.error('Failed to create manual billing POS transaction.', error);
+      setManualPosSaveError(error?.message || 'Gagal membuat transaksi POS manual.');
+    } finally {
+      setIsManualPosSaving(false);
+    }
+  };
+
   return (
     <AdminPageShell className="billing-admin-workspace gap-3 pb-[calc(8.5rem+env(safe-area-inset-bottom))] pt-1 sm:gap-4 md:pb-4 md:pt-2" width="wide">
       <div className="sr-only" id="billing-admin-title">
@@ -911,7 +1212,7 @@ export function BillingAdmin() {
         meta={(
           <>
             <AdminBadge icon={ReceiptText} tone="strong">
-              Payment flow
+              Manual POS
             </AdminBadge>
             <AdminBadge icon={WalletCards} tone="cyan">
               {isBillingReady ? 'Live' : 'Loading'}
@@ -961,7 +1262,10 @@ export function BillingAdmin() {
         />
       )}
 
-      <BillingNextPhasePanel transactionCount={billingTransactions.length} />
+      <BillingNextPhasePanel
+        transactionCount={billingTransactions.length}
+        onOpenManualPos={handleOpenManualPos}
+      />
 
       <BillingPaymentDrawer
         isOpen={Boolean(selectedPaymentItem)}
@@ -973,6 +1277,16 @@ export function BillingAdmin() {
         onMarkPaid={handleMarkPaid}
         onPaymentFormChange={handlePaymentFormChange}
         onSavePayment={handleSavePayment}
+      />
+
+      <ManualPosDrawer
+        form={manualPosForm}
+        isOpen={isManualPosOpen}
+        isSaving={isManualPosSaving}
+        saveError={manualPosSaveError}
+        onClose={handleCloseManualPos}
+        onFormChange={handleManualPosFormChange}
+        onSave={handleSaveManualPos}
       />
     </AdminPageShell>
   );
