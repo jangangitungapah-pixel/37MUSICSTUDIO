@@ -2392,3 +2392,32 @@
   }
 }
 /* 37-booking-block-sticky-overlap-hotfix:end */
+
+/* 37-booking-first-day-card-offset-css:start */
+@layer components {
+  @media (max-width: 767px) {
+    .booking-time-corner-cell,
+    .booking-time-cell {
+      box-shadow: none !important;
+      z-index: 30 !important;
+    }
+
+    .booking-calendar-inner > .grid > button:nth-child(2) .booking-block-card {
+      left: calc(50% + 0.45rem) !important;
+      width: calc(100% - 1.15rem) !important;
+      transform: translateX(-50%) !important;
+    }
+
+    .booking-calendar-inner > .grid > button:nth-child(2) {
+      overflow: visible !important;
+    }
+  }
+
+  @media (max-width: 420px) {
+    .booking-calendar-inner > .grid > button:nth-child(2) .booking-block-card {
+      left: calc(50% + 0.55rem) !important;
+      width: calc(100% - 1.3rem) !important;
+    }
+  }
+}
+/* 37-booking-first-day-card-offset-css:end */
