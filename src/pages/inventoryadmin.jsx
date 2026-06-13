@@ -330,9 +330,15 @@ function InventoryOverviewStrip({ stats, itemCount }) {
 
 function InventoryStatusBadge({ status }) {
   const label = inventoryStatusFilters.find((item) => item.key === status)?.label || status;
+  const toneClass = {
+    low: 'bg-studio-accent/10 text-studio-accent',
+    maintenance: 'bg-studio-purple/10 text-studio-purple',
+    ready: 'bg-studio-cyan/10 text-studio-cyan',
+    retired: 'bg-[var(--ui-control)] text-[var(--ui-text-muted)]',
+  }[status] || 'bg-[var(--ui-control)] text-[var(--ui-text-main)]';
 
   return (
-    <span className={cn('inline-flex w-fit items-center rounded-full border px-2.5 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.12em] ring-1', getInventoryStatusToneClass(status))}>
+    <span className={cn('inline-flex w-fit items-center rounded-md px-2 py-1 text-[0.62rem] font-semibold uppercase tracking-[0.14em]', toneClass)}>
       {label}
     </span>
   );
@@ -458,16 +464,17 @@ function InventoryAssetCard({
     ? Math.min(100, Math.round((asset.quantity / asset.minQuantity) * 100))
     : 100;
   const isMaintenance = asset.status === 'maintenance';
+  const isLowStock = stockRatio < 75;
 
   return (
     <article
-      className="group grid gap-3 px-3 py-3.5 transition hover:bg-[var(--ui-control)] lg:grid-cols-[minmax(220px,260px)_140px_140px_minmax(300px,1fr)] lg:items-center"
+      className="grid min-w-[860px] grid-cols-[300px_128px_128px_210px] items-center gap-3 px-3 py-2.5 transition hover:bg-[var(--ui-control)]"
       title={'Last checked: ' + formatDateLabel(asset.lastChecked)}
     >
-      <div className="grid min-w-0 gap-1">
+      <div className="grid min-w-0 gap-0.5">
         <div className="flex min-w-0 items-center gap-2">
-          <span className="grid size-7 shrink-0 place-items-center rounded-lg bg-[var(--ui-control)] text-studio-accent ring-1 ring-[var(--ui-ring)]">
-            <PackageCheck size={14} strokeWidth={2.35} aria-hidden="true" />
+          <span className="grid size-6 shrink-0 place-items-center rounded-lg bg-[var(--ui-control)] text-studio-accent ring-1 ring-[var(--ui-ring)]">
+            <PackageCheck size={13} strokeWidth={2.35} aria-hidden="true" />
           </span>
 
           <h2 className="m-0 min-w-0 truncate text-[0.95rem] font-semibold tracking-[-0.035em] text-[var(--ui-text-strong)]">
@@ -475,31 +482,30 @@ function InventoryAssetCard({
           </h2>
         </div>
 
-        <p className="m-0 truncate pl-9 text-[0.7rem] font-semibold text-[var(--ui-text-muted)]">
+        <p className="m-0 truncate pl-8 text-[0.68rem] font-semibold text-[var(--ui-text-muted)]">
           {asset.category} • {asset.location}
         </p>
       </div>
 
-      <div className="flex items-center">
-        <InventoryStatusBadge status={asset.status} />
-      </div>
+      <InventoryStatusBadge status={asset.status} />
 
-      <div className="flex items-baseline gap-2 text-sm font-semibold text-[var(--ui-text-main)]">
-        <strong className="text-xl font-semibold tracking-[-0.04em] text-[var(--ui-text-strong)]">
+      <div className="flex items-center gap-2 text-sm font-semibold text-[var(--ui-text-main)]">
+        <strong className="text-lg font-semibold tracking-[-0.04em] text-[var(--ui-text-strong)]">
           {asset.quantity}
         </strong>
-        <span className="text-[0.72rem] text-[var(--ui-text-muted)]">
-          / min {asset.minQuantity}
+
+        <span className="text-[0.7rem] text-[var(--ui-text-muted)]">
+          min {asset.minQuantity}
         </span>
-        <span className={cn(
-          'ml-auto rounded-full px-2 py-0.5 text-[0.65rem] font-semibold lg:ml-1',
-          stockRatio < 75 ? 'bg-studio-accent/10 text-studio-accent' : 'bg-studio-cyan/10 text-studio-cyan',
-        )}>
-          {stockRatio}%
-        </span>
+
+        {isLowStock ? (
+          <span className="rounded-full bg-studio-accent/10 px-2 py-0.5 text-[0.62rem] font-semibold text-studio-accent">
+            {stockRatio}%
+          </span>
+        ) : null}
       </div>
 
-      <div className="grid grid-cols-[72px_88px_38px_38px] justify-end gap-1.5">
+      <div className="grid grid-cols-[52px_72px_34px_34px] justify-end gap-1.5">
         <button
           aria-label={'Restock ' + asset.name}
           className="inline-flex min-h-8 items-center justify-center gap-1.5 rounded-full bg-studio-cyan/10 px-2 text-[0.7rem] font-semibold text-studio-cyan transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-cyan/20"
@@ -512,11 +518,10 @@ function InventoryAssetCard({
 
         <button
           aria-label={(isMaintenance ? 'Mark ready ' : 'Mark maintenance ') + asset.name}
-          className="inline-flex min-h-8 items-center justify-center gap-1.5 rounded-full bg-studio-purple/10 px-2 text-[0.7rem] font-semibold text-studio-purple transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-purple/20"
+          className="inline-flex min-h-8 items-center justify-center rounded-full bg-studio-purple/10 px-2 text-[0.68rem] font-semibold text-studio-purple transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-purple/20"
           type="button"
           onClick={() => onMarkMaintenance(asset)}
         >
-          <Wrench size={12} strokeWidth={2.35} aria-hidden="true" />
           {isMaintenance ? 'Ready' : 'Maint'}
         </button>
 
@@ -551,7 +556,7 @@ function InventoryBoard({
 }) {
   if (assets.length === 0) {
     return (
-      <section className="grid min-h-[220px] content-center justify-items-center gap-4 border-y border-[var(--ui-border)] p-6 text-center">
+      <section className="grid min-h-[200px] max-w-[980px] content-center justify-items-center gap-4 border-y border-[var(--ui-border)] p-6 text-center">
         <AlertTriangle className="text-studio-accent" size={28} strokeWidth={2.35} aria-hidden="true" />
         <div className="grid gap-2">
           <h2 className="m-0 text-2xl font-semibold tracking-[-0.06em] text-[var(--ui-text-strong)]">
@@ -566,25 +571,29 @@ function InventoryBoard({
   }
 
   return (
-    <section className="overflow-hidden border-y border-[var(--ui-border)]">
-      <div className="hidden border-b border-[var(--ui-border)] px-3 py-2 text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-[var(--ui-text-soft)] lg:grid lg:grid-cols-[minmax(220px,260px)_140px_140px_minmax(300px,1fr)]">
-        <span>Asset</span>
-        <span>Status</span>
-        <span>Stock</span>
-        <span>Actions</span>
-      </div>
+    <section className="max-w-[980px] overflow-hidden border-y border-[var(--ui-border)]">
+      <div className="overflow-x-auto">
+        <div className="min-w-[860px]">
+          <div className="grid grid-cols-[300px_128px_128px_210px] gap-3 border-b border-[var(--ui-border)] px-3 py-2 text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-[var(--ui-text-soft)]">
+            <span>Asset</span>
+            <span>Status</span>
+            <span>Stock</span>
+            <span className="text-right">Actions</span>
+          </div>
 
-      <div className="divide-y divide-[var(--ui-border)]">
-        {assets.map((asset) => (
-          <InventoryAssetCard
-            asset={asset}
-            key={asset.id}
-            onDeleteAsset={onDeleteAsset}
-            onEditAsset={onEditAsset}
-            onMarkMaintenance={onMarkMaintenance}
-            onRestockAsset={onRestockAsset}
-          />
-        ))}
+          <div className="divide-y divide-[var(--ui-border)]">
+            {assets.map((asset) => (
+              <InventoryAssetCard
+                asset={asset}
+                key={asset.id}
+                onDeleteAsset={onDeleteAsset}
+                onEditAsset={onEditAsset}
+                onMarkMaintenance={onMarkMaintenance}
+                onRestockAsset={onRestockAsset}
+              />
+            ))}
+          </div>
+        </div>
       </div>
     </section>
   );
@@ -593,55 +602,23 @@ function InventoryBoard({
 function InventoryMaintenancePanel({ assets }) {
   const watchItems = assets.filter((asset) => asset.status !== 'ready').slice(0, 4);
 
-  if (watchItems.length === 0) {
-    return (
-      <section className="grid gap-2 border-y border-[var(--ui-border)] py-3">
-        <div className="flex items-center justify-between gap-3">
-          <div className="grid gap-0.5">
-            <span className="text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-studio-accent">
-              Watchlist
-            </span>
-            <h2 className="m-0 text-lg font-semibold tracking-[-0.05em] text-[var(--ui-text-strong)]">
-              Semua aman
-            </h2>
-          </div>
-
-          <Wrench className="text-studio-accent" size={17} strokeWidth={2.35} aria-hidden="true" />
-        </div>
-      </section>
-    );
-  }
-
   return (
-    <section className="grid gap-3 border-y border-[var(--ui-border)] py-3">
-      <div className="flex items-center justify-between gap-3">
-        <div className="grid gap-0.5">
-          <span className="text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-studio-accent">
-            Watchlist
+    <section className="max-w-[980px] border-y border-[var(--ui-border)] py-2">
+      <div className="flex flex-wrap items-center gap-2">
+        <span className="mr-1 text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-studio-accent">
+          Watchlist
+        </span>
+
+        {watchItems.length > 0 ? watchItems.map((asset) => (
+          <span className="inline-flex min-h-8 max-w-[260px] items-center gap-2 rounded-full bg-[var(--ui-control)] px-3 text-xs font-semibold text-[var(--ui-text-main)] ring-1 ring-[var(--ui-ring)]" key={asset.id}>
+            <span className="truncate">{asset.name}</span>
+            <InventoryStatusBadge status={asset.status} />
           </span>
-          <h2 className="m-0 text-lg font-semibold tracking-[-0.05em] text-[var(--ui-text-strong)]">
-            Perlu perhatian
-          </h2>
-        </div>
-
-        <Wrench className="text-studio-accent" size={17} strokeWidth={2.35} aria-hidden="true" />
-      </div>
-
-      <div className="grid gap-2 md:grid-cols-2 xl:grid-cols-4">
-        {watchItems.map((asset) => (
-          <article className="grid gap-1 rounded-xl bg-[var(--ui-control)] px-3 py-2 ring-1 ring-[var(--ui-ring)]" key={asset.id}>
-            <div className="flex items-center justify-between gap-3">
-              <strong className="truncate text-sm font-semibold text-[var(--ui-text-strong)]">
-                {asset.name}
-              </strong>
-              <InventoryStatusBadge status={asset.status} />
-            </div>
-
-            <p className="m-0 truncate text-xs leading-5 text-[var(--ui-text-muted)]">
-              {asset.notes || asset.category}
-            </p>
-          </article>
-        ))}
+        )) : (
+          <span className="text-sm font-semibold text-[var(--ui-text-muted)]">
+            Semua asset ready.
+          </span>
+        )}
       </div>
     </section>
   );
@@ -854,16 +831,16 @@ function InventorySyncBanner({
 
 function InventoryFirestorePlan() {
   return (
-    <details className="border-b border-[var(--ui-border)] pb-3">
-      <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-sm font-semibold text-[var(--ui-text-strong)]">
+    <details className="max-w-[980px] border-b border-[var(--ui-border)] pb-2">
+      <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-xs font-semibold text-[var(--ui-text-muted)]">
         <span className="flex items-center gap-2">
           <span className="text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-studio-cyan">
             Data layer
           </span>
-          <span className="text-[var(--ui-text-muted)]">Firestore realtime</span>
+          <span>Firestore realtime</span>
         </span>
 
-        <ClipboardList className="text-studio-cyan" size={17} strokeWidth={2.35} aria-hidden="true" />
+        <ClipboardList className="text-studio-cyan" size={15} strokeWidth={2.35} aria-hidden="true" />
       </summary>
 
       <div className="mt-3 grid gap-2 text-xs leading-5 text-[var(--ui-text-muted)] md:grid-cols-3">
@@ -1151,7 +1128,7 @@ export function InventoryAdmin() {
         onSubmit={handleAssetFormSubmit}
       />
 
-      <div className="grid gap-4">
+      <div className="grid gap-3">
         <InventoryMaintenancePanel assets={activeAssets} />
 
         <InventoryBoard
