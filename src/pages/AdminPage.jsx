@@ -171,14 +171,21 @@ function NavButton({
         aria-label={label}
         aria-current={isActive ? 'page' : undefined}
         className={cn(
-          'grid min-w-0 flex-1 place-items-center gap-1 rounded-2xl px-2 py-2 text-[0.66rem] font-semibold tracking-[-0.015em] transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/25',
+          'group relative grid min-w-0 flex-1 place-items-center gap-1 rounded-[1.05rem] px-2 py-2 text-[0.64rem] font-semibold tracking-[-0.015em] transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20',
           isActive
-            ? 'bg-[var(--ui-control-hover)] text-studio-accent shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)]'
+            ? 'bg-[var(--ui-control-hover)] text-[var(--ui-text-strong)] shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)]'
             : 'text-[var(--ui-text-muted)] hover:bg-[var(--ui-control)] hover:text-[var(--ui-text-strong)]',
         )}
         to={to}
       >
-        <Icon size={18} strokeWidth={2.25} aria-hidden="true" />
+        <span
+          className={cn(
+            'grid size-7 place-items-center rounded-xl transition',
+            isActive ? 'text-studio-accent' : 'text-[var(--ui-text-soft)] group-hover:text-studio-accent',
+          )}
+        >
+          <Icon size={17} strokeWidth={2.25} aria-hidden="true" />
+        </span>
         <span className="max-w-full truncate">{label}</span>
       </NavLink>
     );
@@ -189,10 +196,10 @@ function NavButton({
       aria-label={collapsed ? label : undefined}
       aria-current={isActive ? 'page' : undefined}
       className={cn(
-        'group grid min-h-12 w-full items-center gap-3 rounded-2xl border px-3 text-left transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/25',
-        collapsed ? 'grid-cols-1 justify-items-center' : 'grid-cols-[2.25rem_minmax(0,1fr)]',
+        'group grid min-h-11 w-full items-center gap-2 rounded-[1.1rem] border px-2.5 text-left transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20',
+        collapsed ? 'grid-cols-1 justify-items-center' : 'grid-cols-[2rem_minmax(0,1fr)]',
         isActive
-          ? 'border-studio-accent/35 bg-[var(--ui-control-hover)] text-[var(--ui-text-strong)] shadow-[var(--ui-shadow-control)] ring-1 ring-studio-accent/15'
+          ? 'border-studio-accent/32 bg-[var(--ui-control-hover)] text-[var(--ui-text-strong)] shadow-[var(--ui-shadow-control)] ring-1 ring-studio-accent/14'
           : 'border-transparent bg-transparent text-[var(--ui-text-main)] hover:border-[var(--ui-border)] hover:bg-[var(--ui-control)] hover:text-[var(--ui-text-strong)]',
       )}
       title={collapsed ? label : undefined}
@@ -200,17 +207,17 @@ function NavButton({
     >
       <span
         className={cn(
-          'grid size-9 place-items-center rounded-xl border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] transition',
+          'grid size-8 place-items-center rounded-xl border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] transition',
           isActive ? 'text-studio-accent' : 'text-[var(--ui-text-soft)] group-hover:text-studio-accent',
         )}
       >
-        <Icon size={17} strokeWidth={2.25} aria-hidden="true" />
+        <Icon size={16} strokeWidth={2.25} aria-hidden="true" />
       </span>
 
       {!collapsed ? (
         <span className="grid min-w-0 gap-0.5">
           <span className="truncate text-sm font-semibold">{label}</span>
-          <span className="truncate text-xs font-medium text-[var(--ui-text-muted)]">{helper}</span>
+          <span className="truncate text-[0.7rem] font-medium text-[var(--ui-text-muted)]">{helper}</span>
         </span>
       ) : null}
     </NavLink>
@@ -233,13 +240,13 @@ function AdminThemeControls({ collapsed = false }) {
       <button
         aria-label="Toggle density"
         className={cn(
-          'min-h-10 items-center gap-2 rounded-2xl border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] text-sm font-semibold text-[var(--ui-secondary-text)] shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/25',
-          collapsed ? 'grid w-11 place-items-center px-0' : 'inline-flex justify-center px-3',
+          'min-h-10 items-center gap-2 rounded-[1.05rem] border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] text-xs font-semibold text-[var(--ui-secondary-text)] shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20',
+          collapsed ? 'grid w-10 place-items-center px-0' : 'inline-flex justify-center px-3',
         )}
         type="button"
         onClick={toggleDensity}
       >
-        <SlidersHorizontal size={15} strokeWidth={2.25} aria-hidden="true" />
+        <SlidersHorizontal size={14} strokeWidth={2.25} aria-hidden="true" />
         {!collapsed ? <span>Density: {density}</span> : null}
       </button>
 
@@ -247,8 +254,8 @@ function AdminThemeControls({ collapsed = false }) {
         aria-checked={themeSwitch.checked}
         aria-label={themeSwitch.ariaLabel}
         className={cn(
-          'group relative h-10 items-center rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] p-1 shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/25',
-          collapsed ? 'inline-flex w-[76px]' : 'inline-flex w-full',
+          'group relative h-10 items-center rounded-full border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] p-1 shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20',
+          collapsed ? 'inline-flex w-[72px]' : 'inline-flex w-full',
         )}
         role="switch"
         title={themeSwitch.ariaLabel}
@@ -258,11 +265,11 @@ function AdminThemeControls({ collapsed = false }) {
         <span className="sr-only">{themeSwitch.ariaLabel}</span>
 
         <span className="absolute left-2 grid size-6 place-items-center text-[var(--ui-text-soft)] transition group-hover:text-studio-accent">
-          <Sun size={14} aria-hidden="true" />
+          <Sun size={13} aria-hidden="true" />
         </span>
 
         <span className="absolute right-2 grid size-6 place-items-center text-[var(--ui-text-soft)] transition group-hover:text-studio-cyan">
-          <Moon size={14} aria-hidden="true" />
+          <Moon size={13} aria-hidden="true" />
         </span>
 
         <span
@@ -272,7 +279,7 @@ function AdminThemeControls({ collapsed = false }) {
           )}
           aria-hidden="true"
         >
-          <ThemeSwitchIcon size={16} strokeWidth={2.35} />
+          <ThemeSwitchIcon size={15} strokeWidth={2.35} />
         </span>
 
         <span
@@ -296,33 +303,33 @@ function AdminSidebar({
   return (
     <aside
       className={cn(
-        'sticky top-4 hidden self-start overflow-hidden rounded-[2rem] border border-[var(--ui-border-strong)] bg-[linear-gradient(145deg,var(--ui-glass),var(--ui-glass-soft))] p-3 shadow-[var(--ui-shadow-soft)] ring-1 ring-[var(--ui-ring)] backdrop-blur-2xl md:grid',
-        collapsed ? 'w-[88px]' : 'w-[292px]',
+        'admin-sidebar sticky top-3 hidden max-h-[calc(100vh-1.5rem)] self-start overflow-hidden rounded-[1.55rem] border border-[var(--ui-border)] bg-[var(--ui-glass)] p-2 shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] md:grid',
+        collapsed ? 'w-[76px]' : 'w-[264px]',
       )}
       aria-label="Admin desktop navigation"
     >
-      <div className={cn('grid gap-4', collapsed ? 'justify-items-center' : '')}>
+      <div className={cn('grid gap-3 overflow-y-auto', collapsed ? 'justify-items-center' : '')}>
         <div
           className={cn(
-            'flex min-h-14 items-center gap-3 rounded-[1.35rem] border border-[var(--ui-border)] bg-[var(--ui-control)] p-2 shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)]',
+            'flex min-h-12 items-center gap-2 rounded-[1.2rem] border border-[var(--ui-border)] bg-[var(--ui-control)] p-1.5 shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)]',
             collapsed ? 'justify-center' : 'justify-between',
           )}
         >
           <Link
-            className={cn('min-w-0 items-center gap-3', collapsed ? 'hidden' : 'flex')}
+            className={cn('min-w-0 items-center gap-2', collapsed ? 'hidden' : 'flex')}
             to="/"
             aria-label="Back to 37 Music Studio landing"
           >
-            <span className="grid size-10 shrink-0 place-items-center rounded-2xl [background:var(--ui-primary-bg)] text-sm font-semibold tracking-[-0.04em] text-[var(--ui-primary-text)]">
+            <span className="grid size-9 shrink-0 place-items-center rounded-[1rem] [background:var(--ui-primary-bg)] text-xs font-semibold tracking-[-0.04em] text-[var(--ui-primary-text)]">
               37
             </span>
 
-            <span className="grid min-w-0 gap-0.5">
+            <span className="grid min-w-0 gap-0">
               <strong className="truncate text-sm font-semibold tracking-[-0.025em] text-[var(--ui-text-strong)]">
-                Admin Studio
+                Studio OS
               </strong>
-              <small className="truncate text-xs font-medium text-[var(--ui-text-muted)]">
-                Routed portal shell
+              <small className="truncate text-[0.68rem] font-medium text-[var(--ui-text-muted)]">
+                Admin console
               </small>
             </span>
           </Link>
@@ -330,7 +337,7 @@ function AdminSidebar({
           <button
             aria-label={collapsed ? 'Expand admin sidebar' : 'Collapse admin sidebar'}
             className={cn(
-              'grid size-10 shrink-0 place-items-center rounded-2xl border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] text-[var(--ui-text-main)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-studio-accent focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/25',
+              'grid size-9 shrink-0 place-items-center rounded-[1rem] border border-[var(--ui-border)] bg-[var(--ui-glass-soft)] text-[var(--ui-text-main)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-studio-accent focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20',
               collapsed ? '' : 'ml-auto',
             )}
             type="button"
@@ -338,14 +345,14 @@ function AdminSidebar({
           >
             <ArrowRight
               className={cn('transition-transform duration-300', collapsed ? '' : 'rotate-180')}
-              size={17}
+              size={16}
               strokeWidth={2.35}
               aria-hidden="true"
             />
           </button>
         </div>
 
-        <nav className="grid gap-1.5" aria-label="Admin modules">
+        <nav className="grid gap-1" aria-label="Admin modules">
           {adminNavItems.map((item) => (
             <NavButton
               collapsed={collapsed}
@@ -365,14 +372,14 @@ function AdminSidebar({
           <button
             aria-label="Logout admin access"
             className={cn(
-              'grid min-h-11 items-center gap-3 rounded-2xl border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] px-3 text-sm font-semibold text-[var(--ui-secondary-text)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/25',
-              collapsed ? 'w-11 grid-cols-1 justify-items-center px-0' : 'w-full grid-cols-[2rem_minmax(0,1fr)] text-left',
+              'grid min-h-10 items-center gap-2 rounded-[1.05rem] border border-[var(--ui-border)] bg-[var(--ui-secondary-bg)] px-2.5 text-xs font-semibold text-[var(--ui-secondary-text)] shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] transition hover:-translate-y-0.5 hover:bg-[var(--ui-control-hover)] hover:text-[var(--ui-text-strong)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-studio-accent/20',
+              collapsed ? 'w-10 grid-cols-1 justify-items-center px-0' : 'w-full grid-cols-[1.75rem_minmax(0,1fr)] text-left',
             )}
             type="button"
             onClick={onLogout}
           >
-            <LockKeyhole size={16} strokeWidth={2.25} aria-hidden="true" />
-            {!collapsed ? <span>Logout admin</span> : null}
+            <LockKeyhole size={15} strokeWidth={2.25} aria-hidden="true" />
+            {!collapsed ? <span>Logout</span> : null}
           </button>
         </div>
       </div>
@@ -387,7 +394,7 @@ function AdminBottomBar({
 
   return (
     <nav
-      className="admin-mobile-bottom-bar fixed inset-x-3 bottom-3 z-40 grid rounded-[1.5rem] border border-[var(--ui-border-strong)] bg-[linear-gradient(145deg,var(--ui-glass),var(--ui-glass-soft))] p-1.5 shadow-[var(--ui-shadow-soft)] ring-1 ring-[var(--ui-ring)] backdrop-blur-2xl md:hidden"
+      className="admin-mobile-bottom-bar fixed inset-x-3 bottom-3 z-40 grid rounded-[1.35rem] border border-[var(--ui-border)] bg-[var(--ui-glass)] p-1.5 shadow-[var(--ui-shadow-control)] ring-1 ring-[var(--ui-ring)] backdrop-blur-xl md:hidden"
       aria-label="Admin mobile navigation"
     >
       <div className="flex items-stretch gap-1">
@@ -510,7 +517,7 @@ export function AdminPage() {
 
   return (
     <section
-      className="admin-mobile-shell grid gap-4 pb-24 pt-0 md:grid-cols-[auto_minmax(0,1fr)] md:gap-5 md:pb-4"
+      className="admin-shell mx-auto grid w-full max-w-[1480px] gap-3 pb-24 pt-0 md:grid-cols-[auto_minmax(0,1fr)] md:gap-4 md:pb-3"
       aria-labelledby="admin-shell-title"
     >
       <AdminSidebar
@@ -520,7 +527,7 @@ export function AdminPage() {
         onToggleCollapse={() => setIsSidebarCollapsed((current) => !current)}
       />
 
-      <div className="grid min-w-0 gap-0">
+      <div className="admin-content-shell grid min-w-0 gap-0">
         <div className="sr-only" id="admin-shell-title">
           37 Music Studio Admin Shell
         </div>
