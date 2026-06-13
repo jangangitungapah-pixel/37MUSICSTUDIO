@@ -1625,33 +1625,12 @@ function InventoryConditionBadge({ condition }) {
   );
 }
 
-function InventoryHero({ stats }) {
+function InventoryHero() {
   return (
     <AdminPageHeader
       className="inventory-hero-header"
-      actions={(
-        <AdminBadge icon={ShieldCheck} tone="cyan">
-          {stats.ready} ready
-        </AdminBadge>
-      )}
       description="Gear, stok minimum, maintenance, dan nilai aset studio."
       eyebrow="Studio Asset Inventory"
-      meta={(
-        <>
-          <AdminBadge icon={Boxes} tone="strong">
-            {stats.totalAssets} unit
-          </AdminBadge>
-          <AdminBadge icon={AlertTriangle} tone="accent">
-            {stats.lowStock} low
-          </AdminBadge>
-          <AdminBadge icon={CalendarClock} tone="purple">
-            {stats.maintenance} maint
-          </AdminBadge>
-          <AdminBadge icon={Tags} tone="neutral">
-            {formatCurrency(stats.valueEstimate)}
-          </AdminBadge>
-        </>
-      )}
       title="Inventory studio"
     />
   );
