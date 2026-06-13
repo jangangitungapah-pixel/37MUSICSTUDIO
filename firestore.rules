@@ -8,7 +8,7 @@ service cloud.firestore {
 
     function isAdminUid() {
       return isSignedIn()
-        && request.auth.uid in [];
+        && request.auth.uid in ["X04qB13q6oVHRPSaAq3cEGGCc0o2"];
     }
 
     function isAdminEmail() {
@@ -51,6 +51,15 @@ service cloud.firestore {
 		match /billingAuditLogs/{auditLogId} {
   		allow read, create: if isAdmin();
   		allow update, delete: if false;
+		}
+
+		match /bookkeepingEntries/{entryId} {
+			allow read, create, update, delete: if isAdmin();
+		}
+
+		match /bookkeepingAuditLogs/{auditLogId} {
+			allow read, create: if isAdmin();
+			allow update, delete: if false;
 		}
   }
 }

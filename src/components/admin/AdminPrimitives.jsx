@@ -193,7 +193,7 @@ export function AdminDrawer({
   }
 
   return (
-    <div className="admin-drawer-overlay fixed inset-0 z-[90] grid bg-black/60 p-3 backdrop-blur-md sm:justify-items-end" role="presentation">
+    <div className="admin-drawer-overlay fixed inset-0 z-[9999] grid bg-black/60 p-3 backdrop-blur-md sm:justify-items-end" role="presentation">
       <button
         aria-label="Close drawer overlay"
         className="absolute inset-0 cursor-default"
