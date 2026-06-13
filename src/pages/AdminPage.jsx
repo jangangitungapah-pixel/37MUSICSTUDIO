@@ -14,6 +14,7 @@ import {
   ArrowRight,
   LockKeyhole,
   Radio,
+  ReceiptText,
   UsersRound,
   SlidersHorizontal,
   Moon,
@@ -57,6 +58,13 @@ const adminNavItems = [
     helper: 'Incoming sessions',
     icon: Radio,
     path: '/admin/bookings',
+  },
+  {
+    key: 'billing',
+    label: 'Billing',
+    helper: 'Invoices & POS',
+    icon: ReceiptText,
+    path: '/admin/billing',
   },
   {
     key: 'customers',
